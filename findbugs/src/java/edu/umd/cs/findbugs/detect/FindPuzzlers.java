@@ -337,26 +337,37 @@ public class FindPuzzlers extends OpcodeStackDetector {
         }
 
 
-        if (seen == IADD  && isShift(getNextOpcode()) && stack.getStackDepth() >=3) {
+        if (seen == IADD && (getNextOpcode() == ISHL || getNextOpcode() == LSHL) && stack.getStackDepth() >=3) {
+            OpcodeStack.Item l = stack.getStackItem(2);
             OpcodeStack.Item v = stack.getStackItem(1);
             Object constantValue = v.getConstant();
-            if (constantValue instanceof Integer) {
+            // Ignore 1 << (const + var) as it's usually intended
+            if (constantValue instanceof Integer && !Integer.valueOf(1).equals(l.getConstant())) {
                 int c = ((Integer) constantValue).intValue();
                 int priority = LOW_PRIORITY;
-                if (c == 8) {
-                    priority--;
+                // If (foo << 32 + var) encountered, then ((foo << 32) + var) is absolutely meaningless,
+                // but (foo << (32 + var)) can be meaningful for negative var values
+                if (c < 32 || (c < 64 && getNextOpcode() == LSHL)) {
+                    if (c == 8) {
+                        priority--;
+                    }
+                    if (getPrevOpcode(1) == IAND) {
+                        priority--;
+                    }
+                    if (getMethodName().equals("hashCode") && getMethodSig().equals("()I")
+                            && (getCode().getCode()[getNextPC() + 1] & 0xFF) == IRETURN) {
+                        // commonly observed error is hashCode body like "return foo << 16 + bar;"
+                        priority = HIGH_PRIORITY;
+                    }
+                    bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", priority)
+                    .addClassAndMethod(this)
+                    .addString("Possible bad parsing of shift operation; shift operator has lower precedence than +").describe(StringAnnotation.STRING_MESSAGE)
+                    .addInt(c).describe(IntAnnotation.INT_SHIFT)
+                    .addValueSource(stack.getStackItem(2), this)
+                    .addValueSource(stack.getStackItem(1), this)
+                    .addValueSource(stack.getStackItem(0), this)
+                    , this);
                 }
-                if (getPrevOpcode(1) == IAND) {
-                    priority--;
-                }
-                bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", priority)
-                .addClassAndMethod(this)
-                .addString("Possible bad parsing of shift operation; shift operator has lower precedence than +").describe(StringAnnotation.STRING_MESSAGE)
-                .addInt(c).describe(IntAnnotation.INT_SHIFT)
-                .addValueSource(stack.getStackItem(2), this)
-                .addValueSource(stack.getStackItem(1), this)
-                .addValueSource(stack.getStackItem(0), this)
-                , this);
             }
 
         }
