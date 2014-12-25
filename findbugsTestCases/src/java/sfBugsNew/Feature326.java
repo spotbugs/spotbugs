@@ -436,4 +436,15 @@ public class Feature326 {
         }
         return 0;
     }
+    
+    @NoWarning("UC_USELESS_CONDITION")
+    public int branchingTest(int x, boolean b) {
+        if((x > 0) == b) {
+            return 1;
+        }
+        if(b) {
+            return 2;
+        }
+        return 3;
+    }
 }

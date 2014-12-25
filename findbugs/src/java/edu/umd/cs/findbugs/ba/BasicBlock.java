@@ -339,11 +339,11 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     /**
      * A reverse Iterator over the instructions in a basic block.
      */
-    public static class InstructionReverseIterator implements Iterator<InstructionHandle> {
+    private static class InstructionReverseIterator implements Iterator<InstructionHandle> {
         private InstructionHandle next;
         private final InstructionHandle first;
 
-        public InstructionReverseIterator(InstructionHandle last, @Nullable InstructionHandle first) {
+        public InstructionReverseIterator(InstructionHandle last, InstructionHandle first) {
             this.next = last;
             this.first = first;
         }

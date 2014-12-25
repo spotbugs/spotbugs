@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -480,8 +481,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             Edge edge = edgeIterator.next();
             if (edge.getType() == EdgeTypes.IFCMP_EDGE) {
                 BasicBlock source = edge.getSource();
-                Condition condition = extractCondition(new BasicBlock.InstructionReverseIterator(source.getLastInstruction(), null),
-                        jClass.getConstantPool(), lvTable, types);
+                Condition condition = extractCondition(new BackIterator(cfg, source), jClass.getConstantPool(), lvTable, types);
                 if(condition == null) {
                     continue;
                 }
@@ -859,6 +859,52 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             if (branch != null) {
                 break;
             }
+        }
+    }
+
+    private static class BackIterator implements Iterator<InstructionHandle> {
+        private BasicBlock block;
+        private InstructionHandle next;
+        private final CFG cfg;
+
+        public BackIterator(CFG cfg, BasicBlock block) {
+            this.block = block;
+            this.cfg = cfg;
+            this.next = block.getLastInstruction();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        @Override
+        public InstructionHandle next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            InstructionHandle result = next;
+            if(result == block.getFirstInstruction()) {
+                do {
+                    Iterator<Edge> edgeIterator = cfg.incomingEdgeIterator(block);
+                    if(!edgeIterator.hasNext()) {
+                        break;
+                    }
+                    Edge edge = edgeIterator.next();
+                    if(!edgeIterator.hasNext() && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE) {
+                        block = edge.getSource();
+                    } else {
+                        break;
+                    }
+                } while(block.isExceptionThrower());
+            }
+            next = (result == block.getFirstInstruction()) ? null : next.getPrev();
+            return result;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 
