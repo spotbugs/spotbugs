@@ -785,11 +785,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    /**
-     * @param signature
-     * @param number
-     * @return
-     */
     private static String convertNumber(String signature, Number number) {
         long val = number.longValue();
         switch (signature) {
@@ -802,23 +797,32 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             if ((val >= 32 && val < 128) || val == '\n' || val == '\r' || val == '\b' || val == '\t') {
                 return "'" + ((char) val) + "'";
             }
-            //$FALL-THROUGH$
+            return convertNumber(val);
+        case "I":
+            if(val >= 32 && val < 128) {
+                return val+" ('" + ((char) val) + "')";
+            }
+            return convertNumber(val);
         default:
-            if(val == Long.MIN_VALUE) {
-                return "Long.MIN_VALUE";
-            }
-            if(val == Long.MAX_VALUE) {
-                return "Long.MAX_VALUE";
-            }
-            String suffix = "";
-            if (val > Integer.MAX_VALUE || val < Integer.MIN_VALUE) {
-                suffix = "L";
-            }
-            if (val > 128) {
-                return number + suffix + " (0x" + Long.toHexString(val) + suffix + ")";
-            }
-            return number + suffix;
+            return convertNumber(val);
         }
+    }
+
+    private static String convertNumber(long val) {
+        if(val == Long.MIN_VALUE) {
+            return "Long.MIN_VALUE";
+        }
+        if(val == Long.MAX_VALUE) {
+            return "Long.MAX_VALUE";
+        }
+        String suffix = "";
+        if (val > Integer.MAX_VALUE || val < Integer.MIN_VALUE) {
+            suffix = "L";
+        }
+        if (val > 128) {
+            return val + suffix + " (0x" + Long.toHexString(val) + suffix + ")";
+        }
+        return val + suffix;
     }
 
     private static Map<Integer, String> getParameterTypes(MethodDescriptor descriptor) {
