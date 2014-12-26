@@ -1,0 +1,17 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="io.netty" name="netty-example" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-transport-udt" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-transport-sctp" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-transport-rxtx" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-codec-socks" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-codec-memcache" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-codec-http" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-handler" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-codec" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-transport" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-buffer" rev="5.0.0.Alpha1"/>
+        <dependency org="io.netty" name="netty-common" rev="5.0.0.Alpha1"/>
+    </dependencies>
+</ivy-module>

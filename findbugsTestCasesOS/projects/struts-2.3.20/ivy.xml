@@ -1,0 +1,36 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.struts" name="struts2-osgi-demo-bundle" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-osgi-admin-bundle" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-tiles3-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-cdi-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-gxp-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-embeddedjsp-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-osgi-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-oval-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-testng-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-sitegraph-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-plexus-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-pell-multipart-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-jfreechart-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-jasperreports-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-javatemplates-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-codebehind-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-rest-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-json-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-sitemesh-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-config-browser-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-jsf-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-dojo-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-struts1-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-portlet-tiles-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-tiles-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-dwr-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-portlet-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-core" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-junit-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-convention-plugin" rev="2.3.20" />
+        <dependency org="org.apache.struts" name="struts2-spring-plugin" rev="2.3.20" />
+    </dependencies>
+</ivy-module>

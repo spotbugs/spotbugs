@@ -1,0 +1,31 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.tapestry" name="tapestry5-annotations" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-webresources" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-upload" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-test-data" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-test-constants" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-test" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-spring" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-runner" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-mongodb" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-kaptcha" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-json" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-jpa" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-jmx" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-javadoc" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-ioc-junit" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-ioc-jcache" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-ioc" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-internal-test" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-hibernate-core" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-hibernate" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-func" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-core" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-clojure" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="tapestry-beanvalidator" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="quickstart" rev="5.4-beta-22" />
+        <dependency org="org.apache.tapestry" name="plastic" rev="5.4-beta-22" />
+    </dependencies>
+</ivy-module>

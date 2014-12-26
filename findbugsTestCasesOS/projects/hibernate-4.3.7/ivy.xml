@@ -1,0 +1,15 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.hibernate" name="hibernate-entitymanager" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-core" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-ehcache" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-c3p0" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-testing" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-envers" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-jpamodelgen" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-infinispan" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-osgi" rev="4.3.7.Final"/>
+        <dependency org="org.hibernate" name="hibernate-proxool" rev="4.3.7.Final"/>
+    </dependencies>
+</ivy-module>

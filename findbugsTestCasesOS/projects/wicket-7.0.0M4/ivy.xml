@@ -1,0 +1,29 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.wicket" name="wicket-native-websocket-tomcat" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-native-websocket-jetty9" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-native-websocket-jetty" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-native-websocket-javax" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-native-websocket-core" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-native-websocket" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-archetype-quickstart" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-examples" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-cdi-1.1" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-bean-validation" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-objectsizeof-agent" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-jmx" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-guice" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-auth-roles" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-velocity" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-spring" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-cdi" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-ioc" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-devutils" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-extensions" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-datetime" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-core" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-request" rev="7.0.0-M4"/>
+        <dependency org="org.apache.wicket" name="wicket-util" rev="7.0.0-M4"/>
+    </dependencies>
+</ivy-module>
