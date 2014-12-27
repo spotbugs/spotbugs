@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -649,4 +650,24 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         return previouslyKnownAs;
     }
 
+    @Override
+    public boolean sameAs(Frame<ValueNumber> other) {
+        if(!super.sameAs(other)) {
+            return false;
+        }
+        if (isTop() && other.isTop() || isBottom() && other.isBottom()) {
+            return true;
+        }
+        ValueNumberFrame o = (ValueNumberFrame)other;
+        if(availableLoadMap.size() != o.availableLoadMap.size()) {
+            return false;
+        }
+        for(Entry<AvailableLoad, ValueNumber[]> entry : availableLoadMap.entrySet()) {
+            ValueNumber[] oValue = o.availableLoadMap.get(entry.getKey());
+            if(!Arrays.equals(entry.getValue(), oValue)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
