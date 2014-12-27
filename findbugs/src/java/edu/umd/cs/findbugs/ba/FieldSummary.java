@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import org.apache.bcel.generic.Type;
 
@@ -143,7 +144,7 @@ public class FieldSummary {
         fieldsWritten.put(method, Util.makeSmallHashSet(fields));
     }
 
-    public Set<XField> getFieldsWritten(XMethod method) {
+    public Set<XField> getFieldsWritten(@Nullable XMethod method) {
         Set<XField> result = fieldsWritten.get(method);
         if (result == null) {
             return Collections.<XField> emptySet();

@@ -58,6 +58,8 @@ import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
 
 /**
  * Visitor which models the effects of bytecode instructions on value numbers of
@@ -161,7 +163,8 @@ Debug, ValueNumberAnalysisFeatures {
             return false;
         }
 
-        if (!xfield.isReferenceType()) {
+        if(xfield.getSignature().equals("D") || xfield.getSignature().equals("J")) {
+            // TODO: support two-slot fields
             return false;
         }
 
@@ -192,7 +195,7 @@ Debug, ValueNumberAnalysisFeatures {
             return false;
         }
 
-        if (!xfield.isReferenceType()) {
+        if(xfield.getSignature().equals("D") || xfield.getSignature().equals("J")) {
             return false;
         }
 
@@ -431,6 +434,11 @@ Debug, ValueNumberAnalysisFeatures {
         try {
 
             XMethod called = Hierarchy2.findExactMethod(ins, methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
+            if (called != null
+                    && Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class)
+                    .hasNoSideEffect(called.getMethodDescriptor())) {
+                return;
+            }
             FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
             Set<XField> touched = fieldSummary.getFieldsWritten(called);
             if (!touched.isEmpty()) {
@@ -445,6 +453,11 @@ Debug, ValueNumberAnalysisFeatures {
             for (ValueNumber v : arguments) {
                 getFrame().killAllLoadsOf(v);
             }
+
+            // Too many false-positives for primitives without transitive FieldSummary analysis,
+            // so currently we simply kill any writable primitive on any method call
+            // TODO: implement transitive FieldSummary
+            getFrame().killAllLoads(true);
 
         } catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Error in killLoadsOfObjectsPassed", e);

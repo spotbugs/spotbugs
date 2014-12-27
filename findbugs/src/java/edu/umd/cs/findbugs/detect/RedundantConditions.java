@@ -72,7 +72,7 @@ public class RedundantConditions implements Detector {
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
                         condition.getLocation().getHandle().getPosition());
                 BugInstance bug = new BugInstance(condition.isByType()?"UC_USELESS_CONDITION_TYPE":"UC_USELESS_CONDITION", priority)
-                .addClassAndMethod(methodDescriptor).addString(condition.getTrueCondition());
+                .addClassAndMethod(methodDescriptor).addString(normalize(condition.getTrueCondition()));
                 if(condition.isByType()) {
                     bug.addType(condition.getSignature());
                 }
@@ -84,6 +84,16 @@ public class RedundantConditions implements Detector {
             bugAccumulator.reportAccumulatedBugs();
         }
 
+    }
+
+    private String normalize(String condition) {
+        if(condition.startsWith("this.this$")) {
+            return condition.substring("this.".length());
+        }
+        if(condition.startsWith("this.val$")) {
+            return condition.substring("this.val$".length());
+        }
+        return condition;
     }
 
     private int getPriority(MethodDescriptor methodDescriptor, RedundantCondition condition) {

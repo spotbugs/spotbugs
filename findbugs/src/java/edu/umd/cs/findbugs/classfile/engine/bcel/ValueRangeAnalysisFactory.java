@@ -37,19 +37,21 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantObject;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARRAYLENGTH;
 import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ConstantPushInstruction;
+import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IFNE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -65,6 +67,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
@@ -73,7 +76,6 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
@@ -343,13 +345,13 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
     }
 
     private static class Value {
-        String name;
-        int index;
-        String signature;
+        final String name;
+        final ValueNumber vn;
+        final String signature;
 
-        public Value(String name, int index, String signature) {
+        public Value(String name, @Nullable ValueNumber vn, String signature) {
             this.name = name;
-            this.index = index;
+            this.vn = vn;
             this.signature = signature;
         }
     }
@@ -364,6 +366,179 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.opcode = opcode;
             this.value = value;
             this.number = number;
+        }
+    }
+
+    private static class Context {
+        final ConstantPool cp;
+        final LocalVariableTable lvTable;
+        final Map<Integer, Value> types;
+        final ValueNumberDataflow vnaDataflow;
+
+        public Context(ConstantPool cp, LocalVariableTable lvTable, Map<Integer, Value> types, ValueNumberDataflow vnaDataflow) {
+            this.cp = cp;
+            this.lvTable = lvTable;
+            this.types = types;
+            this.vnaDataflow = vnaDataflow;
+        }
+
+        public Condition extractCondition(BackIterator iterator) throws DataflowAnalysisException {
+            Instruction comparisonInstruction = iterator.next().getInstruction();
+            if (!(comparisonInstruction instanceof IfInstruction)) {
+                return null;
+            }
+            short cmpOpcode = comparisonInstruction.getOpcode();
+            int nargs = ((IfInstruction) comparisonInstruction).consumeStack(null);
+            if (nargs == 2) {
+                return extractTwoArgCondition(iterator, cmpOpcode, "I");
+            } else if (nargs == 1) {
+                Object val = extractValue(iterator, "I");
+                if(val instanceof Value) {
+                    return new Condition(cmpOpcode, (Value) val, 0);
+                } else if(val instanceof LCMP) {
+                    return extractTwoArgCondition(iterator, cmpOpcode, "J");
+                }
+            }
+            return null;
+        }
+
+        private Object extractValue(BackIterator iterator, String defSignature) throws DataflowAnalysisException {
+            if(!iterator.hasNext()) {
+                return null;
+            }
+            BasicBlock block = iterator.block;
+            InstructionHandle ih = iterator.next();
+            Instruction inst = ih.getInstruction();
+            if (inst instanceof ConstantPushInstruction) {
+                return ((ConstantPushInstruction) inst).getValue();
+            }
+            if (inst instanceof CPInstruction && inst instanceof PushInstruction) {
+                Constant constant = cp.getConstant(((CPInstruction) inst).getIndex());
+                if (constant instanceof ConstantObject) {
+                    Object value = ((ConstantObject) constant).getConstantValue(cp);
+                    if (value instanceof Number) {
+                        return value;
+                    }
+                }
+                return inst;
+            }
+            if(inst instanceof ARRAYLENGTH) {
+                Object valueObj = extractValue(iterator, defSignature);
+                if(valueObj instanceof Value) {
+                    Value value = (Value)valueObj;
+                    return new Value(value.name+".length", value.vn, "I");
+                }
+                return null;
+            }
+            if(inst instanceof GETFIELD) {
+                Object valueObj = extractValue(iterator, defSignature);
+                if(valueObj instanceof Value) {
+                    Value value = (Value)valueObj;
+                    ConstantCP desc = (ConstantCP)cp.getConstant(((GETFIELD)inst).getIndex());
+                    ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+                    String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
+                    String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                    return new Value(value.name+"."+name, vnaDataflow.getFactAfterLocation(new Location(ih, block)).getStackValue(0), signature);
+                }
+                return null;
+            }
+            if(inst instanceof INVOKEVIRTUAL) {
+                ConstantCP desc = (ConstantCP)cp.getConstant(((INVOKEVIRTUAL)inst).getIndex());
+                ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
+                String className = cp.getConstantString(desc.getClassIndex(), CONSTANT_Class);
+                String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
+                String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                if(className.equals("java/lang/Integer") && name.equals("intValue") && signature.equals("()I") ||
+                        className.equals("java/lang/Long") && name.equals("longValue") && signature.equals("()J") ||
+                        className.equals("java/lang/Short") && name.equals("shortValue") && signature.equals("()S") ||
+                        className.equals("java/lang/Byte") && name.equals("byteValue") && signature.equals("()B") ||
+                        className.equals("java/lang/Boolean") && name.equals("booleanValue") && signature.equals("()Z") ||
+                        className.equals("java/lang/Character") && name.equals("charValue") && signature.equals("()C")) {
+                    Object valueObj = extractValue(iterator, defSignature);
+                    if(valueObj instanceof Value) {
+                        Value value = (Value)valueObj;
+                        return new Value(value.name, value.vn, String.valueOf(signature.charAt(signature.length()-1)));
+                    }
+                }
+                if(className.equals("java/lang/String") && name.equals("length") && signature.equals("()I")) {
+                    Object valueObj = extractValue(iterator, defSignature);
+                    if(valueObj instanceof Value) {
+                        Value value = (Value)valueObj;
+                        return new Value(value.name+".length()", value.vn, "I");
+                    }
+                }
+                return null;
+            }
+            if(inst instanceof LoadInstruction) {
+                int index = ((LoadInstruction)inst).getIndex();
+                LocalVariable lv = lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
+                String name, signature;
+                if(lv == null) {
+                    name = "local$"+index;
+                    if(types.containsKey(index)) {
+                        signature = types.get(index).signature;
+                        name = types.get(index).name;
+                    } else {
+                        signature = defSignature;
+                    }
+                } else {
+                    name = lv.getName();
+                    signature = lv.getSignature();
+                }
+                return new Value(name, vnaDataflow.getFactAfterLocation(new Location(ih, block)).getStackValue(0), signature);
+            }
+            return inst;
+        }
+
+        /**
+         * @param opcode
+         * @return opcode which returns the same result when arguments are placed in opposite order
+         */
+        private static short revertOpcode(short opcode) {
+            switch (opcode) {
+            case IF_ICMPGE:
+                return IF_ICMPLE;
+            case IF_ICMPGT:
+                return IF_ICMPLT;
+            case IF_ICMPLE:
+                return IF_ICMPGE;
+            case IF_ICMPLT:
+                return IF_ICMPGT;
+            case IFLE:
+                return IFGE;
+            case IFGE:
+                return IFLE;
+            case IFGT:
+                return IFLT;
+            case IFLT:
+                return IFGT;
+            default:
+                return opcode;
+            }
+        }
+
+        private Condition extractTwoArgCondition(BackIterator iterator, short cmpOpcode, String signature) throws DataflowAnalysisException {
+            Object val2 = extractValue(iterator, signature);
+            if(val2 instanceof Instruction) {
+                return null;
+            }
+            Object val1 = extractValue(iterator, signature);
+            if(val1 instanceof Instruction) {
+                return null;
+            }
+            if (!(val1 instanceof Value) && !(val2 instanceof Value)) {
+                return null;
+            }
+            if (!(val1 instanceof Value)) {
+                Object tmp = val1;
+                val1 = val2;
+                val2 = tmp;
+                cmpOpcode = revertOpcode(cmpOpcode);
+            }
+            if(!(val2 instanceof Number)) {
+                return null;
+            }
+            return new Condition(cmpOpcode, (Value)val1, (Number)val2);
         }
     }
 
@@ -470,26 +645,21 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             return null;
         }
         ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
-        JavaClass jClass = classContext.getJavaClass();
         Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
-        ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-        LocalVariableTable lvTable = method.getCode().getLocalVariableTable();
+        Context context = new Context(cfg.getMethodGen().getConstantPool().getConstantPool(), method.getCode().getLocalVariableTable(),
+                getParameterTypes(descriptor), classContext.getValueNumberDataflow(method));
         Map<ValueNumber, VariableData> analyzedArguments = new HashMap<>();
         Map<Edge, Branch> allEdges = new IdentityHashMap<>();
-        Map<Integer, String> types = getParameterTypes(descriptor);
         for (Iterator<Edge> edgeIterator = cfg.edgeIterator(); edgeIterator.hasNext();) {
             Edge edge = edgeIterator.next();
             if (edge.getType() == EdgeTypes.IFCMP_EDGE) {
                 BasicBlock source = edge.getSource();
-                Condition condition = extractCondition(new BackIterator(cfg, source), jClass.getConstantPool(), lvTable, types);
+                Condition condition = context.extractCondition(new BackIterator(cfg, source));
                 if(condition == null) {
                     continue;
                 }
-                int index = condition.value.index;
+                ValueNumber valueNumber = condition.value.vn;
                 String varName = condition.value.name;
-                Location location = new Location(source.getLastInstruction(), source);
-                ValueNumberFrame vnf = vnaDataflow.getFactAtLocation(location);
-                ValueNumber valueNumber = vnf.getValue(index);
                 VariableData data = analyzedArguments.get(valueNumber);
                 if (data == null) {
                     try {
@@ -635,156 +805,6 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return handle == null ? null : new Location(handle, block);
     }
 
-    private static Object extractValue(Iterator<InstructionHandle> iterator, String defSignature, ConstantPool cp, LocalVariableTable lvTable, Map<Integer, String> types) {
-        if(!iterator.hasNext()) {
-            return null;
-        }
-        InstructionHandle ih = iterator.next();
-        Instruction inst = ih.getInstruction();
-        if (inst instanceof ConstantPushInstruction) {
-            return ((ConstantPushInstruction) inst).getValue();
-        }
-        if (inst instanceof CPInstruction && inst instanceof PushInstruction) {
-            Constant constant = cp.getConstant(((CPInstruction) inst).getIndex());
-            if (constant instanceof ConstantObject) {
-                Object value = ((ConstantObject) constant).getConstantValue(cp);
-                if (value instanceof Number) {
-                    return value;
-                }
-            }
-            return inst;
-        }
-        if(inst instanceof ARRAYLENGTH) {
-            Object valueObj = extractValue(iterator, defSignature, cp, lvTable, types);
-            if(valueObj instanceof Value) {
-                Value value = (Value)valueObj;
-                value.name+=".length";
-                value.signature="I";
-                return value;
-            }
-            return null;
-        }
-        if(inst instanceof INVOKEVIRTUAL) {
-            ConstantCP desc = (ConstantCP)cp.getConstant(((INVOKEVIRTUAL)inst).getIndex());
-            ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
-            String className = cp.getConstantString(desc.getClassIndex(), CONSTANT_Class);
-            String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
-            String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-            if(className.equals("java/lang/Integer") && name.equals("intValue") && signature.equals("()I") ||
-                    className.equals("java/lang/Long") && name.equals("longValue") && signature.equals("()J") ||
-                    className.equals("java/lang/Short") && name.equals("shortValue") && signature.equals("()S") ||
-                    className.equals("java/lang/Byte") && name.equals("byteValue") && signature.equals("()B") ||
-                    className.equals("java/lang/Boolean") && name.equals("booleanValue") && signature.equals("()Z") ||
-                    className.equals("java/lang/Character") && name.equals("charValue") && signature.equals("()C")) {
-                Object valueObj = extractValue(iterator, defSignature, cp, lvTable, types);
-                if(valueObj instanceof Value) {
-                    Value value = (Value)valueObj;
-                    value.signature=String.valueOf(signature.charAt(signature.length()-1));
-                    return value;
-                }
-            }
-            if(className.equals("java/lang/String") && name.equals("length") && signature.equals("()I")) {
-                Object valueObj = extractValue(iterator, defSignature, cp, lvTable, types);
-                if(valueObj instanceof Value) {
-                    Value value = (Value)valueObj;
-                    value.name += ".length()";
-                    value.signature="I";
-                    return value;
-                }
-            }
-            return null;
-        }
-        if(inst instanceof LoadInstruction) {
-            int index = ((LoadInstruction)inst).getIndex();
-            LocalVariable lv = lvTable == null ? null : lvTable.getLocalVariable(index, ih.getPosition());
-            String name, signature;
-            if(lv == null) {
-                name = "local$"+index;
-                if(types.containsKey(index)) {
-                    signature = types.get(index);
-                } else {
-                    signature = defSignature;
-                }
-            } else {
-                name = lv.getName();
-                signature = lv.getSignature();
-            }
-            return new Value(name, index, signature);
-        }
-        return inst;
-    }
-
-    private static Condition extractCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, LocalVariableTable lvTable, Map<Integer, String> types) {
-        Instruction comparisonInstruction = iterator.next().getInstruction();
-        if (!(comparisonInstruction instanceof IfInstruction)) {
-            return null;
-        }
-        short cmpOpcode = comparisonInstruction.getOpcode();
-        int nargs = ((IfInstruction) comparisonInstruction).consumeStack(null);
-        if (nargs == 2) {
-            return extractTwoArgCondition(iterator, cp, cmpOpcode, "I", lvTable, types);
-        } else if (nargs == 1) {
-            Object val = extractValue(iterator, "I", cp, lvTable, types);
-            if(val instanceof Value) {
-                return new Condition(cmpOpcode, (Value) val, 0);
-            } else if(val instanceof LCMP) {
-                return extractTwoArgCondition(iterator, cp, cmpOpcode, "J", lvTable, types);
-            }
-        }
-        return null;
-    }
-
-    private static Condition extractTwoArgCondition(Iterator<InstructionHandle> iterator, ConstantPool cp, short cmpOpcode, String signature, LocalVariableTable lvTable, Map<Integer, String> types) {
-        Object val2 = extractValue(iterator, signature, cp, lvTable, types);
-        if(val2 instanceof Instruction) {
-            return null;
-        }
-        Object val1 = extractValue(iterator, signature, cp, lvTable, types);
-        if(val1 instanceof Instruction) {
-            return null;
-        }
-        if (!(val1 instanceof Value) && !(val2 instanceof Value)) {
-            return null;
-        }
-        if (!(val1 instanceof Value)) {
-            Object tmp = val1;
-            val1 = val2;
-            val2 = tmp;
-            cmpOpcode = revertOpcode(cmpOpcode);
-        }
-        if(!(val2 instanceof Number)) {
-            return null;
-        }
-        return new Condition(cmpOpcode, (Value)val1, (Number)val2);
-    }
-
-    /**
-     * @param opcode
-     * @return opcode which returns the same result when arguments are placed in opposite order
-     */
-    private static short revertOpcode(short opcode) {
-        switch (opcode) {
-        case IF_ICMPGE:
-            return IF_ICMPLE;
-        case IF_ICMPGT:
-            return IF_ICMPLT;
-        case IF_ICMPLE:
-            return IF_ICMPGE;
-        case IF_ICMPLT:
-            return IF_ICMPGT;
-        case IFLE:
-            return IFGE;
-        case IFGE:
-            return IFLE;
-        case IFGT:
-            return IFLT;
-        case IFLT:
-            return IFGT;
-        default:
-            return opcode;
-        }
-    }
-
     private static String convertNumber(String signature, Number number) {
         long val = number.longValue();
         switch (signature) {
@@ -825,12 +845,15 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return val + suffix;
     }
 
-    private static Map<Integer, String> getParameterTypes(MethodDescriptor descriptor) {
+    private static Map<Integer, Value> getParameterTypes(MethodDescriptor descriptor) {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor.getSignature());
-        int j = descriptor.isStatic() ? 0 : 1;
-        Map<Integer, String> result = new HashMap<>();
+        int j = 0;
+        Map<Integer, Value> result = new HashMap<>();
+        if(!descriptor.isStatic()) {
+            result.put(j++, new Value("this", null, "L"+descriptor.getSlashedClassName()+";"));
+        }
         for (int i = 0; i < argumentTypes.length; i++) {
-            result.put(j, argumentTypes[i].getSignature());
+            result.put(j, new Value("arg"+i, null, argumentTypes[i].getSignature()));
             j += argumentTypes[i].getSize();
         }
         return result;
@@ -898,7 +921,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                     }
                 } while(block.isExceptionThrower());
             }
-            next = (result == block.getFirstInstruction()) ? null : next.getPrev();
+            next = (block.isExceptionThrower() || result == block.getFirstInstruction()) ? null : next.getPrev();
             return result;
         }
 

@@ -1,5 +1,7 @@
 package sfBugsNew;
 
+import java.io.IOException;
+
 import com.google.common.base.Preconditions;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
@@ -447,4 +449,44 @@ public class Feature326 {
         }
         return 3;
     }
+    
+    public char cc;
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testField() {
+        if(cc > 'a' || cc < 'f')
+            return 1;
+        return 2;
+    }
+    
+    private int current;
+
+    @NoWarning("UC_USELESS_CONDITION")
+    public void testNextChar(int i) {
+        if (current != -1) {
+            while (current != ']' && current != -1) {
+                current = i;
+            }
+            if (current != -1) {
+                return;
+            }
+        }
+    }
+    
+    @NoWarning("UC_USELESS_CONDITION")
+    public void testNextChar2() throws IOException {
+        if (current != -1) {
+            while (current != ']' && current != -1) {
+                update();
+            }
+            if (current != -1) {
+                return;
+            }
+        }
+    }
+    
+    private void update() throws IOException {
+        current = System.in.read();
+    }
+    
 }

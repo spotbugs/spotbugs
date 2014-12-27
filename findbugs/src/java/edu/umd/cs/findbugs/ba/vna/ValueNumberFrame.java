@@ -197,6 +197,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      * really know what fields might be assigned.
      */
     public void killAllLoads() {
+        killAllLoads(false);
+    }
+
+    public void killAllLoads(boolean primitiveOnly) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return;
         }
@@ -204,8 +208,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
             XField field = availableLoad.getField();
-            if (field.isVolatile() || !field.isFinal()
-                    && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field))) {
+            if ((!primitiveOnly || !field.isReferenceType()) && (field.isVolatile() || !field.isFinal()
+                    && (!USE_WRITTEN_OUTSIDE_OF_CONSTRUCTOR || fieldSummary.isWrittenOutsideOfConstructor(field)))) {
                 if (RLE_DEBUG) {
                     System.out.println("KILLING load of " + availableLoad + " in " + this);
                 }
