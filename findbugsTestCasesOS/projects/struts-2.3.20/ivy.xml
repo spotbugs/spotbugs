@@ -32,5 +32,6 @@
         <dependency org="org.apache.struts" name="struts2-junit-plugin" rev="2.3.20" />
         <dependency org="org.apache.struts" name="struts2-convention-plugin" rev="2.3.20" />
         <dependency org="org.apache.struts" name="struts2-spring-plugin" rev="2.3.20" />
+        <exclude module="asm-tree"/>
     </dependencies>
 </ivy-module>
