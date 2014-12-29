@@ -712,15 +712,6 @@ public class FindPuzzlers extends OpcodeStackDetector {
             }
 
         }
-        if (seen == IRETURN && ("compareTo".equals(getMethod().getName()) || "compare".equals(getMethod().getName()))) {
-            OpcodeStack.Item top = stack.getStackItem(0);
-            Object o = top.getConstant();
-            if (o instanceof Integer && ((Integer)o).intValue() == Integer.MIN_VALUE) {
-                bugAccumulator.accumulateBug(new BugInstance(this, "CO_COMPARETO_RESULTS_MIN_VALUE", NORMAL_PRIORITY)
-                .addClassAndMethod(this), this);
-            }
-
-        }
         prevOpCode = seen;
 
     }
