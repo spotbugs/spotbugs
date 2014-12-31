@@ -1,0 +1,8 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.apache.cassandra" name="cassandra-all" rev="2.1.2" />
+        <dependency org="org.apache.cassandra" name="cassandra-thrift" rev="2.1.2" />
+        <exclude module="ST4"/>
+    </dependencies>
+</ivy-module>
