@@ -159,6 +159,15 @@
       </roles>
       <timezone>-5</timezone>
     </contributor>
+    <contributor>
+      <name>Tagir Valeev</name>
+      <email></email>
+      <url></url>
+      <roles>
+        <role></role>
+      </roles>
+      <timezone>+6</timezone>
+    </contributor>
   </contributors>
 
   <properties>
