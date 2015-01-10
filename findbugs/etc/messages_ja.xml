@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <!--
@@ -64,36 +63,31 @@
     <Details>このプラグインを使用すると、バグレビューは無効になります。</Details>
   </Cloud>
 
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMultithreaded">
     <Description>マルチスレッドの正確性問題を抑止する</Description>
     <Details>すべてのマルチスレッドの正確性問題を抑止します</Details>
-    </PluginComponent>
+  </PluginComponent>
 
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SuppressI18N">
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressI18N">
     <Description>国際化問題を抑止する</Description>
     <Details>すべての国際化問題を抑止します</Details>
-    </PluginComponent>
-  
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N">
+  </PluginComponent>
+
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SelectivelySuppressI18N">
     <Description>選択したパッケージ以外のすべての国際化問題を抑止する</Description>
     <Details>i18n.properties リソースで指定した以外のすべての国際化問題を抑止します</Details>
   </PluginComponent>
 
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.MaxRank14">
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.MaxRank14">
     <Description>ランク14を越えるすべての問題を抑止する</Description>
     <Details>ランク14を越えるすべての問題を抑止します</Details>
   </PluginComponent>
 
-  <PluginComponent
-    id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
+  <PluginComponent id="edu.umd.cs.findbugs.bugReporter.SuppressMalicious">
     <Description>悪意のあるコード脆弱性について警告を抑止する</Description>
     <Details>悪意のあるコード脆弱性について警告を抑止します</Details>
-    </PluginComponent>
-    
+  </PluginComponent>
+
   <!--
   **********************************************************************
   Categories (replacing the BugCategoryDescriptions.properties file)
@@ -1139,7 +1133,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization" >
+  <Detector class="edu.umd.cs.findbugs.detect.ExplicitSerialization">
     <Details>
 <![CDATA[
 <p>
@@ -1177,6 +1171,16 @@ null の参照解除のためのノイズが多いディテクタです。コー
 <p>
 低速ディテクタです。
 </p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.FindComparatorProblems">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは、Comparator.compare または Comparable.compareTo の実装における問題を探します。
+ </p>
 ]]>
     </Details>
   </Detector>
@@ -1648,7 +1652,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue">
     <Details>
 <![CDATA[
@@ -1658,7 +1662,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject">
     <Details>
 <![CDATA[
@@ -1975,7 +1979,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 
   <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
     <ShortDescription>既知の定数の雑な値を見つける</ShortDescription>
-    <LongDescription>{4} の雑な値を見つけました: {3}</LongDescription>
+    <LongDescription>{3} の雑な値を見つけました: {2}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2071,7 +2075,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 この部分的なメソッド呼び出しは、検査から明らかな理由で意味がありません。
 </p>
 ]]>
-    </Details> 
+    </Details>
   </BugPattern>
 
   <BugPattern type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD">
@@ -3558,7 +3562,21 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
 ]]>
     </Details>
   </BugPattern>
-  
+
+  <BugPattern type="CO_COMPARETO_INCORRECT_FLOATING">
+    <ShortDescription>compareTo()/compare() は間違って float または double 値を処理する</ShortDescription>
+    <LongDescription>{1} は、間違って float または double 値を処理します。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このメソッドはこのようなパターンを使って double または float 値を比較しています ： val1 &gt; val2 ? 1 : val1 &lt; val2 ? -1 : 0。
+このパターンは  -0.0 や NaN という値で正しくないソート結果または壊れたコレクションの原因になるかもしれません （もし比較された値がキーとして使われるなら）。
+すべての特殊なケースを正確に処理するために Double.compare または Float.compare メソッドの使用を検討してください。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>共変な compareTo メソッドの定義</ShortDescription>
     <LongDescription>{0} は、compareTo(Object) ではなく compareTo({0.givenClass}) メソッドを定義しています。</LongDescription>
@@ -4059,7 +4077,7 @@ class B extends A {
 <![CDATA[
 <p>
 このクラスには類似した名前の get メソッドと set メソッドがあり、set メソッドは同期化していて、get メソッドは同期化していません。
-get メソッドの呼び出し元がオブジェクトの一貫した状態を必ずしも見るというわけではないので、実行時に間違った振る舞いになるかもしれません。
+get メソッドの呼び出し元がオブジェクトの一貫した状態を必ずしも見るというわけではないので、実行時に間違った振る舞いの原因になるかもしれません。
 get メソッドは同期化するべきです。
 </p>
 ]]>
@@ -4346,7 +4364,7 @@ final でない public static フィールドは、悪意のあるコードや�
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="MS_SHOULD_BE_FINAL">
     <ShortDescription>final にすべきフィールド</ShortDescription>
     <LongDescription>{1} は、final ではありませんが、final にすべきです。</LongDescription>
@@ -4646,7 +4664,7 @@ public class B extends A {
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="NM_LCASE_HASHCODE">
     <ShortDescription>クラスは hashcode() を定義しています。hashCode() にすべきですか?</ShortDescription>
     <LongDescription>クラス {0} は、hashcode() を定義しています。hashCode() にすべきですか?</LongDescription>
@@ -4659,7 +4677,7 @@ public class B extends A {
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="NM_LCASE_TOSTRING">
     <ShortDescription>クラスは tostring() を定義しています。toString() にすべきですか?</ShortDescription>
     <LongDescription>クラス {0} は、tostring() を定義しています。toString() にすべきですか?</LongDescription>
@@ -5391,12 +5409,25 @@ static フィールドにすることを検討してください。
   </BugPattern>
 
   <BugPattern type="UC_USELESS_CONDITION">
-    <ShortDescription>効果のない条件</ShortDescription>
+    <ShortDescription>条件は効果がない</ShortDescription>
     <LongDescription>役に立たない条件: この時点 {2} で知られていました。</LongDescription>
     <Details>
 <![CDATA[
 <p>
 この条件は常に関係している変数の値が前に絞られたのと同じ結果を作り出します。
+おそらく何かほかの意味があったのかあるいは条件を除去できます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UC_USELESS_CONDITION_TYPE">
+    <ShortDescription>条件は変数型のために効果がない</ShortDescription>
+    <LongDescription>役に立たない条件: 変数型が {3} なので、常に {2} です。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+この条件は関係している変数の型範囲のために常に同じ結果を作り出します。
 おそらく何かほかの意味があったのかあるいは条件を除去できます。
 </p>
 ]]>
@@ -5586,7 +5617,7 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="RV_EXCEPTION_NOT_THROWN">
     <ShortDescription>作成した例外をスローするのではなく捨てている</ShortDescription>
     <LongDescription>{2.givenClass} をスローしていません。{1}</LongDescription>
@@ -5680,7 +5711,7 @@ switch 文の default が多くの場合実行不可能なので FindBugs が例
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>null 値を利用している可能性がある</ShortDescription>
     <LongDescription>{2.givenClass} の null 値を利用している可能性があります。{1}</LongDescription>
@@ -5877,7 +5908,7 @@ null ではなく空の文字列または、いくつかの他の適切な文字
 <![CDATA[
 <p>
 このメソッドは、入出力ストリームオブジェクトを作成していますが、どんなフィールドにも代入していないしクローズするかもしれない別のメソッドにも渡していなくて、戻り値にしてもいません。そして、メソッドからのすべての経路でクローズするように見えません。
-これはファイルディスクリプタリークになるかもしれません。
+これはファイルディスクリプタリークの原因になるかもしれません。
 ストリームがクローズされることを確実にするために <code>finally</code> ブロックを使うことは、一般的に良い考えです。
 </p>
 ]]>
@@ -5891,7 +5922,7 @@ null ではなく空の文字列または、いくつかの他の適切な文字
 <![CDATA[
 <p>
 このメソッドは、入出力ストリームオブジェクトを作成していますが、どんなフィールドにも代入していないしクローズするかもしれない別のメソッドにも渡していないくて、戻り値にしてもいません。そして、メソッドからのすべての可能性がある例外経路でクローズするように見えません。
-これはファイルディスクリプターリークになるかもしれません。
+これはファイルディスクリプターリークの原因になるかもしれません。
 ストリームがクローズされることを確実にするために <code>finally</code> ブロックを使うことは、一般的に良い考えです。
 </p>
 ]]>
@@ -6411,7 +6442,7 @@ public void foo() {
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="DMI_RANDOM_USED_ONLY_ONCE">
     <ShortDescription>Random オブジェクトが作成され1度しか使われない</ShortDescription>
     <LongDescription>Random オブジェクトが生成され、1度しか使われていません。{1}</LongDescription>
@@ -6531,7 +6562,7 @@ public void foo() {
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="INT_VACUOUS_BIT_OPERATION">
     <ShortDescription>整数値の無意味なビットマスク演算</ShortDescription>
     <LongDescription>{3} の無意味な {2} 演算です。{1}</LongDescription>
@@ -6635,12 +6666,12 @@ for(int i = 0; i &lt; 4; i++)
 
   <BugPattern type="BIT_AND">
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-    <LongDescription>(e &amp; {2} == {3}) の互換性のないビットマスクは、一定の結果をもたらします。{1}</LongDescription>
+    <LongDescription>(e &amp; {2} == {3}) の互換性のないビットマスクは、不変の結果をもたらします。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、<i>(e &amp; C)</i> 形式の式を <i>D</i> と比較しています。
-定数 <i>C</i> と <i>D</i> の特定の値と常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
+定数 <i>C</i> の特定の値と <i>D</i> ために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 ]]>
     </Details>
@@ -6696,12 +6727,12 @@ Boris Bokowski
 
   <BugPattern type="BIT_IOR">
     <ShortDescription>互換性のないビットマスク</ShortDescription>
-    <LongDescription>(e | {2} == {3}) の互換性のないビットマスクは、一定の結果をもたらします。{1}</LongDescription>
+    <LongDescription>(e | {2} == {3}) の互換性のないビットマスクは、不変の結果をもたらします。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは、<code>(e | C)</code> 形式の式を <code>D</code> と比較しています。
-定数 <i>C</i> と <i>D</i> の特定の値と常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
+定数 <i>C</i> の特定の値と <i>D</i> のために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 <p>
 典型的に、このバグは、ビットセットで帰属関係のテストを実行したいコードで発生します。
@@ -6781,7 +6812,7 @@ For more information, see the
   <BugPattern type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT">
     <ShortDescription>util.concurrent 抽象でモニタスタイルの wait メソッドを使用している</ShortDescription>
     <LongDescription>{3.name} ではなく {2.name} を呼び出しています。{1}</LongDescription>
-<Details>
+    <Details>
 <![CDATA[
 <p>
 このメソッドは、<code>await()</code> メソッド、<code>signal</code> メソッド、<code>signalAll</code> メソッドを提供するオブジェクト
@@ -6831,7 +6862,7 @@ For more information, see the
 この無名クラスは、直接呼び出されないスーパークラスのメソッドをオーバーライドしていないメソッドを定義しています。
 他のクラスのメソッドが無名クラスで宣言されたメソッドを直接呼び出せないので、このメソッドは呼び出し不可能であると思われます。
 メソッドは単にデッドコードであるかもしれません。しかし、メソッドがスーパークラスで宣言されるメソッドをオーバーライドすることを意図した可能性もあります。
-そして、タイプミスまたは他の誤りのために、メソッドは、実際、それが意図されるメソッドをオーバーライドしません。
+そして、タイプミスまたは他の誤りのためにメソッドは、実際には意図しているメソッドをオーバーライドしません。
 </p>
 ]]>
     </Details>
@@ -7296,7 +7327,7 @@ FindBugs は、バイトコードベースのツールなので誤検出をな�
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="DLS_DEAD_STORE_OF_CLASS_LITERAL">
     <ShortDescription>クラスリテラルの無効な代入</ShortDescription>
     <LongDescription>{3}.class の無効な代入です。{1}</LongDescription>
@@ -8059,7 +8090,7 @@ an indication of some misunderstanding or some other logic error.
     </Details>
   </BugPattern>
 
-   <BugPattern type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">
+  <BugPattern type="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">
     <ShortDescription>メソッドからの戻り値の未チェック/未確認のキャスト</ShortDescription>
     <LongDescription>{2} からの {3} 戻り値への未チェック/未確認のキャストです。{1}</LongDescription>
     <Details>
@@ -8321,7 +8352,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このメソッドは、ロックを保持して、<code>Thread.sleep()</code> を呼び出しています。
-他のスレッドがロックを獲得するために待機しているかもしれないので、ひどい性能とスケーラビリティ、またはデッドロックになるかもしれません。
+他のスレッドがロックを獲得するために待機しているかもしれないので、ひどい性能とスケーラビリティ、またはデッドロックの原因になるかもしれません。
 ロックで <code>wait</code> メソッドを呼び出すことはかなり良い考えで、ロックを解除して他のスレッドが実行するのを許可します。
 </p>
 ]]>
@@ -8545,7 +8576,7 @@ Java 1.6 の時点で、IdentityHashMap と EnumMap の両方がそうしまし�
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION">
     <ShortDescription>コレクションを消去するために removeAll メソッドを使用しない</ShortDescription>
     <LongDescription>コレクションを消去するために removeAll メソッドを使用しています。{1}</LongDescription>
@@ -8872,7 +8903,7 @@ Jason Mehrens によって寄贈されたバグパターン
 ]]>
       </Details>
   </BugPattern>
-  
+
   <BugPattern type="FB_UNEXPECTED_WARNING">
     <ShortDescription>FindBugs からの予期しない/望ましくない警告</ShortDescription>
     <LongDescription>予期しない/望ましくない {2} FindBugs 警告。{1}</LongDescription>
