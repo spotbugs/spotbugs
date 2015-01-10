@@ -15,10 +15,10 @@
 
     <xsd:complexType name="PluginType">
         <xsd:sequence>
-        	<xsd:element name="ShortDescription" type="xsd:string" />
-        	<xsd:element name="Details" type="xsd:string" />
-        	<xsd:element name="BugsUrl" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-        	<xsd:element name="AllBugsUrl" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+            <xsd:element name="ShortDescription" type="xsd:string" />
+            <xsd:element name="Details" type="xsd:string" />
+            <xsd:element name="BugsUrl" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+            <xsd:element name="AllBugsUrl" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
         </xsd:sequence>
     </xsd:complexType>
 
