@@ -107,7 +107,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 XMethod rvo2 = stack.getStackItem(1).getReturnValueOf();
                 if(rvo1 != null ^ rvo2 != null) {
                     XMethod rvo = rvo1 == null ? rvo2 : rvo1;
-                    if (lowerBound instanceof Comparable && upperBound instanceof Comparable
+                    if (lowerBound instanceof Comparable && upperBound != null && upperBound.getClass() == lowerBound.getClass()
                             && rvo.getClassDescriptor().getClassName().equals("java/lang/Math")
                             && (rvo.getName().equals("max") || rvo.getName().equals("min"))) {
                         @SuppressWarnings("unchecked")
