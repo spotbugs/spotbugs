@@ -2661,6 +2661,17 @@ want to multiple the random value by something else before coercing it to an int
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DM_INVALID_MIN_MAX">
+    <ShortDescription>Incorrect combination of Math.max and Math.min</ShortDescription>
+    <LongDescription>Incorrect combination of Math.max and Math.min: this code always returns {2}</LongDescription>
+    <Details>
+<![CDATA[
+  <p>This code tries to limit the value bounds using the construct like Math.min(0, Math.max(100, value)). However the order of
+  the constants is incorrect: it should be Math.min(100, Math.max(0, value)). As the result this code always produces the same result
+  (or NaN if the value is NaN).</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
     <ShortDescription>Use the nextInt method of Random rather than nextDouble to generate a random integer</ShortDescription>
     <LongDescription>{1} uses the nextDouble method of Random to generate a random integer; using nextInt is more efficient</LongDescription>

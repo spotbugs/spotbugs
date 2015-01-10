@@ -78,6 +78,52 @@ public class DumbMethods extends OpcodeStackDetector {
         abstract public void sawOpcode(int seen);
     }
 
+    private class InvalidMinMaxSubDetector extends SubDetector {
+        Number lowerBound, upperBound;
+
+        @Override
+        public void initMethod(Method method) {
+            lowerBound = upperBound = null;
+        }
+
+        @Override
+        public void sawOpcode(int seen) {
+            if(seen == INVOKESTATIC && getClassConstantOperand().equals("java/lang/Math") && (getMethodDescriptorOperand().getName().equals("max")
+                    || getMethodDescriptorOperand().getName().equals("min"))) {
+                Object const1 = stack.getStackItem(0).getConstant();
+                Object const2 = stack.getStackItem(1).getConstant();
+                Number n = null;
+                if(const1 != null ^ const2 != null) {
+                    n = (const1 instanceof Number) ? (Number)const1 : (Number)const2;
+                    if(getMethodDescriptorOperand().getName().equals("min")) {
+                        upperBound = n;
+                    } else {
+                        lowerBound = n;
+                    }
+                } else {
+                    upperBound = lowerBound = null;
+                }
+                XMethod rvo1 = stack.getStackItem(0).getReturnValueOf();
+                XMethod rvo2 = stack.getStackItem(1).getReturnValueOf();
+                if(rvo1 != null ^ rvo2 != null) {
+                    XMethod rvo = rvo1 == null ? rvo2 : rvo1;
+                    if (lowerBound instanceof Comparable && upperBound instanceof Comparable
+                            && rvo.getClassDescriptor().getClassName().equals("java/lang/Math")
+                            && (rvo.getName().equals("max") || rvo.getName().equals("min"))) {
+                        @SuppressWarnings("unchecked")
+                        int result = ((Comparable<Number>)lowerBound).compareTo(upperBound);
+                        if(result > 0) {
+                            accumulator.accumulateBug(
+                                    new BugInstance("DM_INVALID_MIN_MAX", HIGH_PRIORITY).addClassAndMethod(DumbMethods.this)
+                                    .addString(String.valueOf(n)),
+                                    DumbMethods.this);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private class NullMethodsSubDetector extends SubDetector {
 
         @Override
@@ -413,7 +459,8 @@ public class DumbMethods extends OpcodeStackDetector {
 
     private final SubDetector[] subDetectors = new SubDetector[] { new VacuousComparisonSubDetector(),
             new RangeCheckSubDetector(), new BadCastInEqualsSubDetector(), new FutilePoolSizeSubDetector(),
-            new UrlCollectionSubDetector(), new RandomOnceSubDetector(), new NullMethodsSubDetector() };
+            new UrlCollectionSubDetector(), new RandomOnceSubDetector(), new NullMethodsSubDetector(),
+            new InvalidMinMaxSubDetector()};
 
     private static final ObjectType CONDITION_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Condition");
 
