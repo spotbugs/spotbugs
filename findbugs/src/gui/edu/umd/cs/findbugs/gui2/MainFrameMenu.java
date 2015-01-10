@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.swing.ActionMap;
 import javax.swing.ButtonGroup;
@@ -35,6 +36,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.gui.AnnotatedString;
 import edu.umd.cs.findbugs.gui2.FilterListener.Action;
 import edu.umd.cs.findbugs.updates.UpdateChecker;
 
@@ -469,6 +471,7 @@ public class MainFrameMenu implements Serializable {
         ButtonGroup rankButtonGroup = new ButtonGroup();
         for (final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+            AnnotatedString.localiseButton(rbMenuItem, "menu.rankFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
             rankButtonGroup.add(rbMenuItem);
             if (r == ViewFilter.RankFilter.ALL) {
                 rbMenuItem.setSelected(true);
@@ -489,6 +492,7 @@ public class MainFrameMenu implements Serializable {
         ButtonGroup priorityButtonGroup = new ButtonGroup();
         for (final ViewFilter.PriorityFilter r : ViewFilter.PriorityFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+            AnnotatedString.localiseButton(rbMenuItem, "menu.priorityFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
             priorityButtonGroup.add(rbMenuItem);
             if (r == ViewFilter.PriorityFilter.ALL_BUGS) {
                 rbMenuItem.setSelected(true);
@@ -513,6 +517,7 @@ public class MainFrameMenu implements Serializable {
                     continue;
                 }
                 JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+                AnnotatedString.localiseButton(rbMenuItem, "menu.classificatonFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
                 overallClassificationButtonGroup.add(rbMenuItem);
                 if (r == ViewFilter.OverallClassificationFilter.ALL) {
                     rbMenuItem.setSelected(true);
@@ -536,6 +541,7 @@ public class MainFrameMenu implements Serializable {
                 continue;
             }
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+            AnnotatedString.localiseButton(rbMenuItem, "menu.cloudFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
             evalButtonGroup.add(rbMenuItem);
             if (r == ViewFilter.CloudFilter.ALL) {
                 rbMenuItem.setSelected(true);
@@ -554,6 +560,7 @@ public class MainFrameMenu implements Serializable {
         ButtonGroup ageButtonGroup = new ButtonGroup();
         for (final ViewFilter.FirstSeenFilter r : ViewFilter.FirstSeenFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
+            AnnotatedString.localiseButton(rbMenuItem, "menu.firstSeenFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
             ageButtonGroup.add(rbMenuItem);
             if (r == ViewFilter.FirstSeenFilter.ALL) {
                 rbMenuItem.setSelected(true);
