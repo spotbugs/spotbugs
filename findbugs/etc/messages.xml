@@ -16,6 +16,8 @@ This plugin contains all of the standard FindBugs detectors.
 </p>
 ]]>
     </Details>
+    <BugsUrl>http://findbugs.sourceforge.net/bugDescriptions.html</BugsUrl>
+    <AllBugsUrl>http://findbugs.sourceforge.net/allBugDescriptions.html</AllBugsUrl>
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
     <Description>Add msgs (e.g., textual descriptions of bugs) to analysis results</Description>

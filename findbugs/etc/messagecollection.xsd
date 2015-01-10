@@ -15,8 +15,10 @@
 
     <xsd:complexType name="PluginType">
         <xsd:sequence>
-            <xsd:element name="ShortDescription" type="xsd:string"/>
-            <xsd:element name="Details" type="xsd:string" />
+        	<xsd:element name="ShortDescription" type="xsd:string" />
+        	<xsd:element name="Details" type="xsd:string" />
+        	<xsd:element name="BugsUrl" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+        	<xsd:element name="AllBugsUrl" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
         </xsd:sequence>
     </xsd:complexType>
 
@@ -80,7 +82,7 @@
             <xsd:element name="Plugin" type="PluginType"/>
             <xsd:element name="FindBugsMain" type="FindBugsMainType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="Cloud" type="CloudType" minOccurs="0" maxOccurs="unbounded"/>
-                <xsd:element name="PluginComponent" type="PluginComponentType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="PluginComponent" type="PluginComponentType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="BugCategory" type="BugCategoryType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
             <xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>

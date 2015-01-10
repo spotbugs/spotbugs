@@ -10,6 +10,8 @@
 <p>Ce plugin contient tous les détecteurs standards de FindBugs.</p>
 ]]>
   </Details>
+    <BugsUrl>http://findbugs.sourceforge.net/bugDescriptions_fr.html</BugsUrl>
+    <AllBugsUrl>http://findbugs.sourceforge.net/bugDescriptions_fr.html</AllBugsUrl>
  </Plugin>
 
 

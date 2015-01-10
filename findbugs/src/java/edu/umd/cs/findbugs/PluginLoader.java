@@ -946,12 +946,15 @@ public class PluginLoader {
             String type = bugPatternNode.valueOf("@type");
             String abbrev = bugPatternNode.valueOf("@abbrev");
             String category = bugPatternNode.valueOf("@category");
-            String experimental = bugPatternNode.valueOf("@experimental");
+            boolean experimental = Boolean.parseBoolean(bugPatternNode.valueOf("@experimental"));
 
             // Find the matching element in messages.xml (or translations)
             String query = "/MessageCollection/BugPattern[@type='" + type + "']";
             Node messageNode = findMessageNode(messageCollectionList, query, "messages.xml missing BugPattern element for type "
                     + type);
+            Node bugsUrlNode = messageNode.getDocument().selectSingleNode("/MessageCollection/Plugin/"+(experimental?"AllBugsUrl":"BugsUrl"));
+
+            String bugsUrl = bugsUrlNode == null ? null : bugsUrlNode.getText();
 
             String shortDesc = getChildText(messageNode, "ShortDescription");
             String longDesc = getChildText(messageNode, "LongDescription");
@@ -966,8 +969,7 @@ public class PluginLoader {
                 assert true; // ignore
             }
 
-            BugPattern bugPattern = new BugPattern(type, abbrev, category, Boolean.valueOf(experimental).booleanValue(),
-                    shortDesc, longDesc, detailText, cweid);
+            BugPattern bugPattern = new BugPattern(type, abbrev, category, experimental, shortDesc, longDesc, detailText, bugsUrl, cweid);
 
             try {
                 String deprecatedStr = bugPatternNode.valueOf("@deprecated");

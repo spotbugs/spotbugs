@@ -47,6 +47,8 @@ public class BugPattern implements Comparable<BugPattern> {
 
     final private String detailText;
 
+    final private String url;
+
     final int cweid;
 
     int priorityAdjustment;
@@ -71,33 +73,11 @@ public class BugPattern implements Comparable<BugPattern> {
      *            by {@link FindBugsMessageFormat} to format BugAnnotations
      * @param detailText
      *            HTML text containing a full description of the bug species
+     * @param bugsUrl
+     *            URL of web-page containing bug descriptions or null if there's no such page.
      */
     public BugPattern(String type, String abbrev, String category, boolean experimental, String shortDescription,
-            String longDescription, String detailText) {
-        this(type, abbrev, category, experimental, shortDescription, longDescription, detailText, 0);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param type
-     *            the type (species) of BugInstance
-     * @param abbrev
-     *            the abbreviation or "bug code"; see {@link BugCode}
-     * @param category
-     *            the category
-     * @param experimental
-     *            true if the bug pattern is experimental
-     * @param shortDescription
-     *            short one-line description of the bug species
-     * @param longDescription
-     *            longer one-line description; may contain placeholders for use
-     *            by {@link FindBugsMessageFormat} to format BugAnnotations
-     * @param detailText
-     *            HTML text containing a full description of the bug species
-     */
-    public BugPattern(String type, String abbrev, String category, boolean experimental, String shortDescription,
-            String longDescription, String detailText, int cweid) {
+            String longDescription, String detailText, String bugsUrl, int cweid) {
 
         this.type = type;
         this.abbrev = abbrev.intern();
@@ -107,6 +87,7 @@ public class BugPattern implements Comparable<BugPattern> {
         this.longDescription = longDescription;
         this.detailText = detailText;
         this.cweid = cweid;
+        this.url = bugsUrl;
     }
 
     static final BugPattern REALLY_UNKNOWN = new BugPattern("REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
@@ -114,7 +95,7 @@ public class BugPattern implements Comparable<BugPattern> {
             "<p>A warning was recorded, but findbugs can't find the description of this bug pattern "
                     + "and so can't describe it. This should occur only in cases of a bug in FindBugs or its configuration, "
                     + "or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded. "
-                    + "</p>");
+                    + "</p>", null, 0);
 
     /**
      * Get the BugPattern
@@ -226,20 +207,13 @@ public class BugPattern implements Comparable<BugPattern> {
 
     }
 
-
     public String wrapInDescriptionLink(String text) {
-        if (isExperimental()) {
-            return
-                    "<a href=\"http://findbugs.sourceforge.net/allBugDescriptions.html#"
-                    + type  +"\">"
-                    + text + "</a>";
+        if(url == null) {
+            return text;
         }
-        return
-                "<a href=\"http://findbugs.sourceforge.net/bugDescriptions.html#"
-                + type  +"\">"
-                + text + "</a>";
-
+        return "<a href=\"" + url + "#" + type + "\">" + text + "</a>";
     }
+
     @Override
     public int compareTo(BugPattern other) {
         return type.compareTo(other.type);
