@@ -35,6 +35,14 @@ public class Feature329 {
         rawInput = Math.max(100, rawInput);
         return rawInput;
     }
+    
+    @ExpectWarning("DM_INVALID_MIN_MAX")
+    public int getScore(int totalCount, int failCount, double scaleFactor) {
+        // Based on https://github.com/marksinclair/junit-plugin/commit/c0dc11e08923edd23cee90962da638e4a7eb47d5
+        int score = (totalCount == 0) ? 100 : (int) (100.0 * Math.max(1.0,
+                Math.min(0.0, 1.0 - (scaleFactor * failCount) / totalCount)));
+        return score;
+    }
 
     @ExpectWarning("DM_INVALID_MIN_MAX")
     public long checkBounds(long rawInput) {
@@ -54,6 +62,18 @@ public class Feature329 {
     @NoWarning("DM_INVALID_MIN_MAX")
     public int checkBoundsCorrect(int rawInput) {
         return Math.min(100, Math.max(0, rawInput));
+    }
+
+    @NoWarning("DM_INVALID_MIN_MAX")
+    public int checkBoundsCorrect2(int rawInput) {
+        return Math.max(0, Math.min(100, rawInput));
+    }
+
+    @NoWarning("DM_INVALID_MIN_MAX")
+    public int checkBoundsCorrect3(int rawInput) {
+        rawInput = Math.min(100, rawInput);
+        rawInput = Math.max(0, rawInput);
+        return rawInput;
     }
 
     @NoWarning("DM_INVALID_MIN_MAX")
