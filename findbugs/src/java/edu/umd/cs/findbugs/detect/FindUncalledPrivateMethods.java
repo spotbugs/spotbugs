@@ -22,6 +22,12 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -30,6 +36,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Detector to find private methods that are never called.
@@ -83,8 +90,6 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                         seen == INVOKESTATIC);
                 calledMethods.add(called);
                 calledMethodNames.add(getNameConstantOperand().toLowerCase());
-                // System.out.println("Saw call to " + called);
-
             }
             break;
         default:
@@ -100,6 +105,26 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         className = classContext.getJavaClass().getClassName();
         String[] parts = className.split("[$+.]");
         String simpleClassName = parts[parts.length - 1];
+
+        ConstantPool cp = classContext.getJavaClass().getConstantPool();
+        for(Constant constant : cp.getConstantPool()) {
+            if(constant instanceof ConstantMethodHandle) {
+                int kind = ((ConstantMethodHandle) constant).getReferenceKind();
+                if(kind >= 5 && kind <= 9) {
+                    Constant ref = cp.getConstant(((ConstantMethodHandle)constant).getReferenceIndex());
+                    if(ref instanceof ConstantCP) {
+                        String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), CONSTANT_Class);
+                        ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
+                        String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
+                        String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(className), name, signature, kind==6 /* invokestatic */);
+                        calledMethods.add(called);
+                        calledMethodNames.add(name.toLowerCase());
+                    }
+                }
+            }
+        }
+
         super.visitClassContext(classContext);
 
         definedPrivateMethods.removeAll(calledMethods);

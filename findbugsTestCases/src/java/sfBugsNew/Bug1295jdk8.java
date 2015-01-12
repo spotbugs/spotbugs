@@ -3,7 +3,8 @@ package sfBugsNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1295jdk8 {
 
@@ -18,8 +19,13 @@ public class Bug1295jdk8 {
         return ancestorNodes;
     }
 
-    @DesireNoWarning("UPM_UNCALLED_PRIVATE_METHOD")
+    @NoWarning("UPM_UNCALLED_PRIVATE_METHOD")
     private AncestorNodeReference createAncestorNodeReference(final AncesterNodeReferenceDTO ancestorNodeRefDTO) {
+        return createAncestorNodeReference("");
+    }
+
+    @ExpectWarning("UPM_UNCALLED_PRIVATE_METHOD")
+    private AncestorNodeReference createAncestorNodeReference(final Bug1295jdk8 test) {
         return createAncestorNodeReference("");
     }
 
