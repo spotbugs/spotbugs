@@ -47,7 +47,8 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
     @Override
     protected void prologue() throws IOException {
         out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">" +
-                "\n<html><head><title>" + docTitle + "</title>");
+                "\n<html><head><META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" +
+                "\n<title>" + docTitle + "</title>");
         header();
         out.println("</head><body>");
         beginBody();
