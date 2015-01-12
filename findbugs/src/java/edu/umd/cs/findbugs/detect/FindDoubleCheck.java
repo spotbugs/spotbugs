@@ -22,15 +22,13 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class FindDoubleCheck extends BytecodeScanningDetector {
     static final boolean DEBUG = false;
@@ -159,11 +157,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                 }
                 if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
                         && !"Ljava/lang/String;".equals(getSigConstantOperand())) {
-                    Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
-                    /*
-                     * System.out.println(f); System.out.println(declaration);
-                     * System.out.println(getSigConstantOperand());
-                     */
+                    XField declaration = getXFieldOperand();
                     if (declaration == null || !declaration.isVolatile()) {
                         bugReporter.reportBug(new BugInstance(this, "DC_DOUBLECHECK", NORMAL_PRIORITY).addClassAndMethod(this)
                                 .addField(f).describe("FIELD_ON").addSourceLineRange(this, startPC, endPC));
@@ -176,28 +170,4 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
             break;
         }
     }
-
-    Field findField(String className, String fieldName) {
-        try {
-            // System.out.println("Looking for " + className);
-            JavaClass fieldDefinedIn = getThisClass();
-            if (!className.equals(getClassName())) {
-                // System.out.println("Using repository to look for " +
-                // className);
-
-                fieldDefinedIn = Repository.lookupClass(className);
-            }
-            Field[] f = fieldDefinedIn.getFields();
-            for (Field aF : f) {
-                if (aF.getName().equals(fieldName)) {
-                    // System.out.println("Found " + f[i]);
-                    return aF;
-                }
-            }
-            return null;
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
 }
