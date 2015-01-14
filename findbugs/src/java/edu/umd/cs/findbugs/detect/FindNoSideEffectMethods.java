@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -229,33 +231,57 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         }
     }
 
+    /**
+     * Public status of the method in NSE database
+     * TODO: implement CHECK
+     */
+    public static enum MethodSideEffectStatus {
+        NSE, // Non-void method has no side effect
+        NSE_EX, // No side effect method which result value might be ignored for some reason
+        CHECK, // (unimplemented yet) No side effect method which just checks the arguments, throws exceptions and returns one of arguments (or void) like assert or precondition
+        USELESS, // Void method which seems to be useless
+        SE_CLINIT, // Method has no side effect, but it's a constructor or static method of the class having side effect
+        OBJ, // Non-static method which changes only its object
+        SE // Method has side effect or side-effect status for the method is unknown
+    }
+
     public static class NoSideEffectMethodsDatabase {
-        private static final Set<MethodDescriptor> set = new HashSet<>();
-        private static final Set<MethodDescriptor> excluded = new HashSet<>();
-        private static final Set<MethodDescriptor> useless = new HashSet<>();
+        private final Map<MethodDescriptor, MethodSideEffectStatus> map = new HashMap<>();
 
-        void add(MethodDescriptor m) {
-            set.add(m);
+        void add(MethodDescriptor m, MethodSideEffectStatus s) {
+            map.put(m, s);
         }
 
-        void addUseless(MethodDescriptor m) {
-            useless.add(m);
+        public @Nonnull MethodSideEffectStatus status(MethodDescriptor m) {
+            MethodSideEffectStatus s = map.get(m);
+            return s == null ? MethodSideEffectStatus.SE : s;
         }
 
-        void addExcluded(MethodDescriptor m) {
-            excluded.add(m);
+        /**
+         * @param m method to check
+         * @param statuses allowed statuses
+         * @return true if method status is one of the statuses
+         */
+        public boolean is(MethodDescriptor m, MethodSideEffectStatus... statuses) {
+            MethodSideEffectStatus s = status(m);
+            for(MethodSideEffectStatus status : statuses) {
+                if(s == status) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public boolean hasNoSideEffect(MethodDescriptor m) {
-            return set.contains(m);
+            return status(m) == MethodSideEffectStatus.NSE;
         }
 
         public boolean useless(MethodDescriptor m) {
-            return useless.contains(m);
+            return status(m) == MethodSideEffectStatus.USELESS;
         }
 
         public boolean excluded(MethodDescriptor m) {
-            return excluded.contains(m);
+            return is(m, MethodSideEffectStatus.NSE_EX, MethodSideEffectStatus.SE_CLINIT);
         }
     }
 
@@ -875,14 +901,14 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                             /* Skip static methods and constructors for classes which have
                              * side-effect class initializer
                              */
-                            noSideEffectMethods.addExcluded(m);
+                            noSideEffectMethods.add(m, MethodSideEffectStatus.SE_CLINIT);
                             continue;
                         }
                     }
                     if(m.equals(CLASS_GET_NAME) // used sometimes to trigger class loading
                             || m.equals(HASH_CODE) // found intended hashCode call several times in different projects, need further research
                             ) {
-                        noSideEffectMethods.addExcluded(m);
+                        noSideEffectMethods.add(m, MethodSideEffectStatus.NSE_EX);
                         continue;
                     }
                     if (m.isStatic() && getStaticMethods.contains(m) && !m.getSlashedClassName().startsWith("java/")) {
@@ -893,21 +919,23 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                                 /* Skip methods which only retrieve static field from the same package
                                  * As they as often used to trigger class initialization
                                  */
-                                noSideEffectMethods.addExcluded(m);
+                                noSideEffectMethods.add(m, MethodSideEffectStatus.NSE_EX);
                                 continue;
                             }
                         }
                     }
-                    noSideEffectMethods.add(m);
+                    noSideEffectMethods.add(m, MethodSideEffectStatus.NSE);
                 } else {    // void methods
                     if(uselessVoidCandidates.contains(m)) {
                         if(m.getName().equals("maybeForceBuilderInitialization") && m.getSignature().equals("()V")) {
                             // Autogenerated by Google protocol buffer compiler
                             continue;
                         }
-                        noSideEffectMethods.addUseless(m);
+                        noSideEffectMethods.add(m, MethodSideEffectStatus.USELESS);
                     }
                 }
+            } else if(entry.getValue() == SideEffectStatus.OBJECT_ONLY) {
+                noSideEffectMethods.add(m, MethodSideEffectStatus.OBJ);
             }
         }
     }

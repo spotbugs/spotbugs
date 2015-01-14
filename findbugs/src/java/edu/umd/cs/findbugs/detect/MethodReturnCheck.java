@@ -99,7 +99,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     public void visitAfter(Code code) {
         if(bugAccumulator.getLastBugLocation() == null && !sawExcludedNSECall && noSideEffectMethods.useless(getMethodDescriptor())) {
             // Do not report UC_USELESS_VOID_METHOD if something was already reported inside the current method
-        	// it's likely that UC_USELESS_VOID_METHOD is just the consequence of the previous report
+            // it's likely that UC_USELESS_VOID_METHOD is just the consequence of the previous report
             bugAccumulator.accumulateBug(new BugInstance(this, "UC_USELESS_VOID_METHOD",
                     code.getCode().length > 20 ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(getMethodDescriptor()), this);
         }
@@ -256,6 +256,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                                         Subtypes2.instanceOf(ClassName.toDottedClassName(callReturnClass), ClassName.toDottedClassName(methodReturnClass))) {
                                     priority = HIGH_PRIORITY;
                                 }
+                    }
+                    int catchSize = getSizeOfSurroundingTryBlock(getPC());
+                    if(catchSize <= 2) {
+                        priority++;
                     }
                     BugInstance warning = new BugInstance(this, "RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", priority)
                     .addClassAndMethod(this).addMethod(callSeen).describe(MethodAnnotation.METHOD_CALLED);

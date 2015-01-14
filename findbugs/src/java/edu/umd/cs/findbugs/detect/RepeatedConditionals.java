@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.MethodSideEffectStatus;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
 
 public class RepeatedConditionals extends OpcodeStackDetector {
@@ -216,7 +217,7 @@ public class RepeatedConditionals extends OpcodeStackDetector {
 
     private boolean hasSideEffect(int seen) {
         if(seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE || seen == INVOKESTATIC) {
-            return !noSideEffectMethods.hasNoSideEffect(getMethodDescriptorOperand());
+            return noSideEffectMethods.is(getMethodDescriptorOperand(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ);
         }
         return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEDYNAMIC || seen == PUTFIELD
                 || seen == PUTSTATIC;

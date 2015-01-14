@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.MethodSideEffectStatus;
 import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
 
 /**
@@ -435,8 +436,8 @@ Debug, ValueNumberAnalysisFeatures {
 
             XMethod called = Hierarchy2.findExactMethod(ins, methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
             if (called != null
-                    && Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class)
-                    .hasNoSideEffect(called.getMethodDescriptor())) {
+                    && !Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class)
+                    .is(called.getMethodDescriptor(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ)) {
                 return;
             }
             FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
