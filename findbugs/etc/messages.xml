@@ -424,6 +424,13 @@ literals.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MutableEnum">
+    <Details>
+          <![CDATA[
+<p> Looks and warns about mutable enum fields.</p>
+          ]]>
+      </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
@@ -3952,6 +3959,28 @@ could be changed by malicious code or
         by accident from another package.
    Unfortunately, the way the field is used doesn't allow
    any easy fix to this problem.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="ME_MUTABLE_ENUM_FIELD">
+    <ShortDescription>Enum field is public and mutable</ShortDescription>
+    <LongDescription>{1} field is public and mutable</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A mutable public field is defined inside a public enum, thus can be changed by malicious code or by accident from another package.
+  Though mutable enum fields may be used for lazy initialization, it's a bad practice to expose them to the outer world.
+  Consider declaring this field final and/or package-private.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="ME_ENUM_FIELD_SETTER">
+    <ShortDescription>Public enum method unconditionally sets its field</ShortDescription>
+    <LongDescription>{1} unconditionally sets the field {2.name}</LongDescription>
+    <Details>
+<![CDATA[
+  <p>This public method declared in public enum unconditionally sets enum field, thus this field can be changed by malicious code 
+  or by accident from another package. Though mutable enum fields may be used for lazy initialization, it's a bad practice to expose them to the outer world.
+  Consider removing this method or declaring it package-private.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -8498,6 +8527,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="RS">Class's readObject() method is synchronized</BugCode>
   <BugCode abbrev="SC">Constructor invokes Thread.start()</BugCode>
   <BugCode abbrev="MS">Mutable static field</BugCode>
+  <BugCode abbrev="ME">Mutable enum field</BugCode>
   <BugCode abbrev="EI">Method returning array may expose internal representation</BugCode>
   <BugCode abbrev="Nm">Confusing method name</BugCode>
   <BugCode abbrev="SS">Unread field should be static</BugCode>

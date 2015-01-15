@@ -344,6 +344,8 @@
                     reports="HSC_HUGE_SHARED_STRING_CONSTANT"/>
           <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields" speed="fast"
                     reports="FI_FINALIZER_NULLS_FIELDS,FI_FINALIZER_ONLY_NULLS_FIELDS"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MutableEnum" speed="fast"
+                    reports="ME_MUTABLE_ENUM_FIELD,ME_ENUM_FIELD_SETTER"/>
           <Detector class="edu.umd.cs.findbugs.detect.InconsistentAnnotations" speed="fast"
                     reports="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE"/>
           <Detector class="edu.umd.cs.findbugs.detect.RepeatedConditionals" speed="fast"
@@ -868,6 +870,8 @@
           <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION_PKGPROTECT" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_CANNOT_BE_FINAL" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="ME" type="ME_MUTABLE_ENUM_FIELD" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="ME" type="ME_ENUM_FIELD_SETTER" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Nm" type="NM_METHOD_NAMING_CONVENTION" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Nm" type="NM_FIELD_NAMING_CONVENTION" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Nm" type="NM_SAME_SIMPLE_NAME_AS_INTERFACE" category="BAD_PRACTICE"/>
