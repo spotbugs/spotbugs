@@ -2744,6 +2744,20 @@ be used to make the prepared statement do something unexpected and undesirable.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DC_PARTIALLY_CONSTRUCTED">
+    <ShortDescription>Possible exposure of partially initialized object</ShortDescription>
+    <LongDescription>Possible exposure of partially initialized object in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p>Looks like this method uses lazy field initialization with double-checked locking.
+  While the field is correctly declared as volatile, it's possible that the internal structure of
+  the object is changed after the field assignment, thus another thread may see the partially initialized object.</p>
+  <p>To fix this problem consider storing the object into the local variable first
+  and save it to the volatile field only after it's fully constructed.
+  </p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="FI_FINALIZER_NULLS_FIELDS">
     <ShortDescription>Finalizer nulls fields</ShortDescription>
     <LongDescription>{3} is set to null inside finalize method in {1.class}</LongDescription>
@@ -8515,7 +8529,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="NN">Naked notify</BugCode>
   <BugCode abbrev="UW">Unconditional wait</BugCode>
   <BugCode abbrev="SP">Method spins on field</BugCode>
-  <BugCode abbrev="DC">Possible double check of field</BugCode>
+  <BugCode abbrev="DC">Double check pattern</BugCode>
   <BugCode abbrev="Wa">Wait not in loop</BugCode>
   <BugCode abbrev="No">Using notify() rather than notifyAll()</BugCode>
   <BugCode abbrev="DE">Dropped or ignored exception</BugCode>

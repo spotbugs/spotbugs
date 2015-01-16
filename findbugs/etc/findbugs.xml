@@ -179,6 +179,12 @@
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
                               <Later
+                                        class="edu.umd.cs.findbugs.detect.FindDoubleCheck"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
                                         class="edu.umd.cs.findbugs.detect.RepeatedConditionals"
                               />
                     </SplitPass>
@@ -408,7 +414,7 @@
                     reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE,SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
                     disabled="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" speed="fast"
-                    reports="DC_DOUBLECHECK"/>
+                    reports="DC_DOUBLECHECK,DC_PARTIALLY_CONSTRUCTED"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" speed="fast"
                     reports="FI_PUBLIC_SHOULD_BE_PROTECTED,FI_EMPTY,FI_NULLIFY_SUPER,FI_USELESS,FI_MISSING_SUPER_CALL,FI_EXPLICIT_INVOCATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" speed="fast"
@@ -781,6 +787,7 @@
           <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"
                     category="SECURITY" cweid="89"/>
           <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" cweid="609"/>
+          <BugPattern abbrev="DC" type="DC_PARTIALLY_CONSTRUCTED" category="MT_CORRECTNESS" cweid="609"/>
           <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
                     cweid="583"/>
           <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>

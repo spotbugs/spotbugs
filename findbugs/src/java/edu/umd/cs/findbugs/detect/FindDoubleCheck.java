@@ -26,16 +26,20 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.MethodSideEffectStatus;
+import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDatabase;
 
-public class FindDoubleCheck extends BytecodeScanningDetector {
+public class FindDoubleCheck extends OpcodeStackDetector {
     static final boolean DEBUG = false;
 
     int stage = 0;
 
-    int startPC, endPC;
+    int startPC, endPC, assignPC;
 
     int count;
 
@@ -47,14 +51,19 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 
     FieldAnnotation pendingFieldLoad;
 
+    XField currentDoubleCheckField;
+
     int countSinceGetReference;
 
     int countSinceGetBoolean;
 
     private final BugReporter bugReporter;
 
+    private final NoSideEffectMethodsDatabase nse;
+
     public FindDoubleCheck(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        this.nse = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
     }
 
     @Override
@@ -71,6 +80,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
         countSinceGetBoolean = 1000;
         sawMonitorEnter = false;
         pendingFieldLoad = null;
+        currentDoubleCheckField = null;
     }
 
     @Override
@@ -161,13 +171,57 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
                     if (declaration == null || !declaration.isVolatile()) {
                         bugReporter.reportBug(new BugInstance(this, "DC_DOUBLECHECK", NORMAL_PRIORITY).addClassAndMethod(this)
                                 .addField(f).describe("FIELD_ON").addSourceLineRange(this, startPC, endPC));
+                    } else {
+                        if(declaration.isReferenceType()) {
+                            currentDoubleCheckField = declaration;
+                            assignPC = getPC();
+                        }
                     }
                     stage++;
                 }
             }
             break;
+        case 4:
+            if(currentDoubleCheckField != null) {
+                switch(seen) {
+                case MONITOREXIT:
+                    stage++;
+                    break;
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                case INVOKEVIRTUAL:
+                    if(nse.is(getMethodDescriptorOperand(), MethodSideEffectStatus.OBJ, MethodSideEffectStatus.SE)) {
+                        checkStackValue(getNumberArguments(getMethodDescriptorOperand().getSignature()));
+                    }
+                    break;
+                case PUTFIELD:
+                    checkStackValue(1);
+                    break;
+                case DASTORE:
+                case FASTORE:
+                case SASTORE:
+                case LASTORE:
+                case BASTORE:
+                case CASTORE:
+                case AASTORE:
+                case IASTORE:
+                    checkStackValue(2);
+                    break;
+                }
+            }
+            break;
         default:
             break;
+        }
+    }
+
+    private void checkStackValue(int arg) {
+        Item item = getStack().getStackItem(arg);
+        if(item.getXField() == currentDoubleCheckField) {
+            bugReporter.reportBug(new BugInstance(this, "DC_PARTIALLY_CONSTRUCTED", NORMAL_PRIORITY).addClassAndMethod(this)
+                    .addField(currentDoubleCheckField).describe("FIELD_ON").addSourceLine(this).addSourceLine(this, assignPC)
+                    .describe("SOURCE_LINE_STORED"));
+            stage++;
         }
     }
 }
