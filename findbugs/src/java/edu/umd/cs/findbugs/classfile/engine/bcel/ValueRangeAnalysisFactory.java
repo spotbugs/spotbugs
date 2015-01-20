@@ -814,7 +814,25 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             }
             return "true";
         case "C":
-            if ((val >= 32 && val < 128) || val == '\n' || val == '\r' || val == '\b' || val == '\t') {
+            if (val == '\n') {
+                return "'\\n'";
+            }
+            if (val == '\r') {
+                return "'\\r'";
+            }
+            if (val == '\b') {
+                return "'\\b'";
+            }
+            if (val == '\t') {
+                return "'\\t'";
+            }
+            if (val == '\'') {
+                return "'\\''";
+            }
+            if (val == '\\') {
+                return "'\\\\'";
+            }
+            if (val >= 32 && val < 128) {
                 return "'" + ((char) val) + "'";
             }
             return convertNumber(val);

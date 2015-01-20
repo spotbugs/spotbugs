@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -72,7 +73,7 @@ public class RedundantConditions implements Detector {
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
                         condition.getLocation().getHandle().getPosition());
                 BugInstance bug = new BugInstance(condition.isByType()?"UC_USELESS_CONDITION_TYPE":"UC_USELESS_CONDITION", priority)
-                .addClassAndMethod(methodDescriptor).addString(normalize(condition.getTrueCondition()));
+                .addClassAndMethod(methodDescriptor).add(new StringAnnotation(normalize(condition.getTrueCondition())));
                 if(condition.isByType()) {
                     bug.addType(condition.getSignature());
                 }
