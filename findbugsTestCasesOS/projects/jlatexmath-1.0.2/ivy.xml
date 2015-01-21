@@ -1,0 +1,6 @@
+<ivy-module version="2.0">
+    <info organisation="findbugs" module="findbugsTestProject"/>
+    <dependencies>
+        <dependency org="org.scilab.forge" name="jlatexmath" rev="1.0.2" />
+    </dependencies>
+</ivy-module>
