@@ -674,4 +674,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         }
         return true;
     }
+
+    public boolean hasAvailableLoads() {
+        return !getAvailableLoadMap().isEmpty();
+    }
 }

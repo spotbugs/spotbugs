@@ -34,7 +34,6 @@ import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
-import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
@@ -399,20 +398,9 @@ Debug, ValueNumberAnalysisFeatures {
                             return;
                         }
                     }
-                } else {
-                    // Don't know what this method invocation is doing.
-                    // Kill all loads.
-                    killLoadsOfObjectsPassed(obj);
-                    getFrame().killAllLoadsOf(null);
                 }
-            } else {
-                // Don't know what this method invocation is doing.
-                // Kill all loads.
-                killLoadsOfObjectsPassed(obj);
-                getFrame().killAllLoadsOf(null);
             }
         }
-
         handleNormalInstruction(obj);
     }
 
@@ -479,32 +467,39 @@ Debug, ValueNumberAnalysisFeatures {
         handleNormalInstruction(obj);
     }
 
-    @Override
-    public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
-        // Don't know what this method invocation is doing.
-        // Kill all loads.
-        killLoadsOfObjectsPassed(obj);
-        handleNormalInstruction(obj);
-    }
-
-    @Override
-    public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
-        // Don't know what this method invocation is doing.
-        // Kill all loads.
-        killLoadsOfObjectsPassed(obj);
-        handleNormalInstruction(obj);
-    }
-
-    @Override
-    public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
-        // Don't know what this method invocation is doing.
-        // Kill all loads.
-        if ("lock".equals(obj.getMethodName(cpg))) {
-            getFrame().killAllLoads();
-        } else {
-            killLoadsOfObjectsPassed(obj);
+    public void visitInvokeOnException(Instruction obj) {
+        if(!REDUNDANT_LOAD_ELIMINATION || !getFrame().hasAvailableLoads()) {
+            return;
         }
-        handleNormalInstruction(obj);
+        if(obj instanceof INVOKEDYNAMIC) {
+            killLoadsOfObjectsPassed((INVOKEDYNAMIC) obj);
+            return;
+        }
+        InvokeInstruction inv = (InvokeInstruction) obj;
+        if ((inv instanceof INVOKEINTERFACE || inv instanceof INVOKEVIRTUAL)
+                && inv.getMethodName(cpg).toLowerCase().indexOf("lock") >= 0) {
+            // Don't know what this method invocation is doing.
+            // Kill all loads.
+            getFrame().killAllLoads();
+            return;
+        }
+        if(inv instanceof INVOKEVIRTUAL && "cast".equals(inv.getMethodName(cpg)) && "java.lang.Class".equals(inv.getClassName(cpg))) {
+            // No-op
+            return;
+        }
+        if(inv instanceof INVOKESTATIC) {
+            String methodName = inv.getName(cpg);
+            if (("forName".equals(methodName) && "java.lang.Class".equals(inv.getClassName(cpg)) || "class$".equals(methodName))
+                    && "(Ljava/lang/String;)Ljava/lang/Class;".equals(inv.getSignature(cpg))
+                    || (Hierarchy.isInnerClassAccess((INVOKESTATIC) inv, cpg) && loadedFieldSet.getField(handle) != null)) {
+                return;
+            }
+        }
+
+        killLoadsOfObjectsPassed(inv);
+        if(inv instanceof INVOKESTATIC) {
+            getFrame().killAllLoadsOf(null);
+        }
     }
 
     @Override
@@ -521,13 +516,6 @@ Debug, ValueNumberAnalysisFeatures {
                 AnalysisContext.logError("oops", e);
             }
             return;
-        }
-        // Don't know what this method invocation is doing.
-        // Kill all loads.
-        if (obj.getMethodName(cpg).toLowerCase().indexOf("lock") >= 0) {
-            getFrame().killAllLoads();
-        } else {
-            killLoadsOfObjectsPassed(obj);
         }
         handleNormalInstruction(obj);
     }

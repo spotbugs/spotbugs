@@ -25,7 +25,10 @@ import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -192,6 +195,27 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     @Override
+    public void transfer(BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result)
+            throws DataflowAnalysisException {
+        if(basicBlock.isExceptionThrower() && isFactValid(start)) {
+            /* If exceptionThrower is invoke instruction then it's possible that
+             * it was partially executed before an exception occurred
+             * So we have to kill available loads when control is transferred to the catch block
+             */
+            InstructionHandle handle = basicBlock.getExceptionThrower();
+            Instruction inst = handle.getInstruction();
+            if(inst instanceof InvokeInstruction || inst instanceof INVOKEDYNAMIC) {
+                copy(start, result);
+                visitor.setFrameAndLocation(result, new Location(handle, basicBlock));
+                visitor.setHandle(handle);
+                visitor.visitInvokeOnException(inst);
+                return;
+            }
+        }
+        super.transfer(basicBlock, end, start, result);
+    }
+
+    @Override
     public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
             throws DataflowAnalysisException {
 
@@ -200,7 +224,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         ValueNumberFrame atLocation = getFactAtLocation(location);
         copy(fact, atLocation);
 
-        visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
+        visitor.setFrameAndLocation(fact, location);
         visitor.setHandle(handle);
         visitor.analyzeInstruction(handle.getInstruction());
 
