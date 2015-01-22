@@ -40,6 +40,7 @@
 
   <target name="-run" depends="-requireProject,-uptodateCheck" unless="analysis.uptodate">
     <mkdir dir="projects/${prj}/build"/>
+    <echo message="Analyzing project ${prj}"/>
     <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
          jvm="${java.executable}"
          output="xml:withMessages" timestampNow="true" reportLevel="low" chooseVisitors="${enabledExtraVisitors}" outputFile="projects/${prj}/build/${findbugs.filename}.xml">
