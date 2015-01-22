@@ -61,6 +61,7 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -70,6 +71,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
@@ -229,44 +231,46 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
             if (ins instanceof InvokeInstruction) {
                 InvokeInstruction invoke = (InvokeInstruction) ins;
-                String className = invoke.getClassName(cpg);
-
                 if ("putIfAbsent".equals(invoke.getMethodName(cpg))) {
                     String signature = invoke.getSignature(cpg);
                     if ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(signature)
-                            && !(invoke instanceof INVOKESTATIC) && extendsConcurrentMap(className)) {
-                        InstructionHandle next = handle.getNext();
-                        boolean isIgnored = next != null && next.getInstruction() instanceof POP;
-                        //                        boolean isImmediateNullTest = next != null
-                        //                                && (next.getInstruction() instanceof IFNULL || next.getInstruction() instanceof IFNONNULL);
-                        if (countOtherCalls || isIgnored) {
-                            BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
-                            ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
-                            ValueNumber vn = vna.getTopValue();
+                            && !(invoke instanceof INVOKESTATIC)) {
+                        TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+                        Type objType = typeFrame.getStackValue(2);
+                        if(extendsConcurrentMap(ClassName.toDottedClassName(ClassName.fromFieldSignature(objType.getSignature())))) {
+                            InstructionHandle next = handle.getNext();
+                            boolean isIgnored = next != null && next.getInstruction() instanceof POP;
+                            //                        boolean isImmediateNullTest = next != null
+                            //                                && (next.getInstruction() instanceof IFNULL || next.getInstruction() instanceof IFNONNULL);
+                            if (countOtherCalls || isIgnored) {
+                                BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
+                                ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
+                                ValueNumber vn = vna.getTopValue();
 
-                            int locals = vna.getNumLocals();
-                            //                            boolean isRetained = false;
-                            for (int pos = 0; pos < locals; pos++) {
-                                if (vna.getValue(pos).equals(vn) && live.get(pos)) {
-                                    BugAnnotation ba = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, vn,
-                                            vnaDataflow.getFactAtLocation(location), "VALUE_OF");
-                                    if (ba == null) {
-                                        continue;
+                                int locals = vna.getNumLocals();
+                                //                            boolean isRetained = false;
+                                for (int pos = 0; pos < locals; pos++) {
+                                    if (vna.getValue(pos).equals(vn) && live.get(pos)) {
+                                        BugAnnotation ba = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, vn,
+                                                vnaDataflow.getFactAtLocation(location), "VALUE_OF");
+                                        if (ba == null) {
+                                            continue;
+                                        }
+                                        String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
+                                        if (!isIgnored) {
+                                            pattern = "UNKNOWN";
+                                        }
+                                        Type type = typeFrame.getTopValue();
+                                        int priority = getPriorityForBeingMutable(type);
+                                        BugInstance bugInstance = new BugInstance(this, pattern, priority)
+                                        .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke)
+                                        .add(new TypeAnnotation(type)).add(ba);
+                                        SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext,
+                                                method, location);
+                                        accumulator.accumulateBug(bugInstance, where);
+                                        //                                    isRetained = true;
+                                        break;
                                     }
-                                    String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
-                                    if (!isIgnored) {
-                                        pattern = "UNKNOWN";
-                                    }
-                                    Type type = typeDataflow.getAnalysis().getFactAtLocation(location).getTopValue();
-                                    int priority = getPriorityForBeingMutable(type);
-                                    BugInstance bugInstance = new BugInstance(this, pattern, priority)
-                                    .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke)
-                                    .add(new TypeAnnotation(type)).add(ba);
-                                    SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext,
-                                            method, location);
-                                    accumulator.accumulateBug(bugInstance, where);
-                                    //                                    isRetained = true;
-                                    break;
                                 }
                             }
                             /*
