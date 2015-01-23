@@ -194,6 +194,10 @@
                     </SplitPass>
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
+                              <Later class="edu.umd.cs.findbugs.detect.CrossSiteScripting"/>
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindSqlInjection"/>
                     </SplitPass>
                     <SplitPass>

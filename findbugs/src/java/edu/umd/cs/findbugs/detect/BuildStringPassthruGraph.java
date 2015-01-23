@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -104,6 +105,30 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
     }
 
     public static class StringPassthruDatabase {
+        private static final List<MethodDescriptor> FILENAME_STRING_METHODS = Arrays.asList(
+                new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
+                new MethodDescriptor("java/io/FileReader", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
+                new MethodDescriptor("java/io/FileInputStream", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
+                new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
+                new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;Z)V"),
+                new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
+                new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
+                );
+
         private final Map<MethodParameter, Set<MethodParameter>> graph = new HashMap<>();
 
         /**
@@ -161,6 +186,18 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
                 }
             }
             return result;
+        }
+
+        /**
+         * Returns methods which parameter is the file name
+         * @return Map where keys are methods and values are parameter indexes which are used as file names
+         */
+        public Map<MethodDescriptor, int[]> getFileNameStringMethods() {
+            Set<MethodParameter> fileNameStringMethods = new HashSet<>();
+            for(MethodDescriptor md : FILENAME_STRING_METHODS) {
+                fileNameStringMethods.add(new MethodParameter(md, 0));
+            }
+            return findLinkedMethods(fileNameStringMethods);
         }
     }
 

@@ -34,6 +34,9 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.StringPassthruDatabase;
 
 public class CrossSiteScripting extends OpcodeStackDetector {
 
@@ -41,9 +44,13 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
     final BugAccumulator accumulator;
 
+    private final Map<MethodDescriptor, int[]> allFileNameStringMethods;
+
     public CrossSiteScripting(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
+        StringPassthruDatabase database = Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class);
+        allFileNameStringMethods = database.getFileNameStringMethods();
     }
 
     Map<String, OpcodeStack.Item> map = new HashMap<String, OpcodeStack.Item>();
@@ -92,22 +99,25 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
         OpcodeStack.Item oldTop = top;
         top = null;
+        if (seen == INVOKESPECIAL || seen == INVOKESTATIC || seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) {
+            int[] params = allFileNameStringMethods.get(getMethodDescriptorOperand());
+            if(params != null) {
+                int numArgs = getNumberArguments(getSigConstantOperand());
+                for(int param : params) {
+                    OpcodeStack.Item path = stack.getStackItem(numArgs-1-param);
+                    if (isTainted(path)) {
+                        String bugPattern = taintPriority(path) == Priorities.HIGH_PRIORITY ? "PT_ABSOLUTE_PATH_TRAVERSAL"
+                                : "PT_RELATIVE_PATH_TRAVERSAL";
+                        annotateAndReport(new BugInstance(this, bugPattern, Priorities.NORMAL_PRIORITY).addClassAndMethod(this)
+                                .addCalledMethod(this), path);
+                    }
+                }
+            }
+        }
         if (seen == INVOKESPECIAL) {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
-
-            if (calledClassName.startsWith("java/io/File") && "(Ljava/lang/String;)V".equals(calledMethodSig)) {
-                OpcodeStack.Item path = stack.getStackItem(0);
-                if (isTainted(path)) {
-                    String bugPattern = taintPriority(path) == Priorities.HIGH_PRIORITY ? "PT_ABSOLUTE_PATH_TRAVERSAL"
-                            : "PT_RELATIVE_PATH_TRAVERSAL";
-                    annotateAndReport(new BugInstance(this, bugPattern, Priorities.NORMAL_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this), path);
-                }
-
-            }
-
 
             if ("javax/servlet/http/Cookie".equals(calledClassName) && "<init>".equals(calledMethodName)
                     && "(Ljava/lang/String;Ljava/lang/String;)V".equals(calledMethodSig)) {

@@ -1,13 +1,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -38,29 +34,6 @@ public class DumbMethodInvocations implements Detector {
     private static final MethodDescriptor STRING_SUBSTRING =
             new MethodDescriptor("java/lang/String", "substring", "(I)Ljava/lang/String;");
 
-    private static final List<MethodDescriptor> FILENAME_STRING_METHODS = Arrays.asList(
-            new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
-            new MethodDescriptor("java/io/FileReader", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
-            new MethodDescriptor("java/io/FileInputStream", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
-            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
-            new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;Z)V"),
-            new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
-            new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;)V"),
-            new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
-            );
 
     private final BugReporter bugReporter;
 
@@ -73,12 +46,8 @@ public class DumbMethodInvocations implements Detector {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
 
-        Set<MethodParameter> fileNameStringMethods = new HashSet<>();
-        for(MethodDescriptor md : FILENAME_STRING_METHODS) {
-            fileNameStringMethods.add(new MethodParameter(md, 0));
-        }
         StringPassthruDatabase database = Global.getAnalysisCache().getDatabase(StringPassthruDatabase.class);
-        allFileNameStringMethods = database.findLinkedMethods(fileNameStringMethods);
+        allFileNameStringMethods = database.getFileNameStringMethods();
         allDatabasePasswordMethods = database.findLinkedMethods(Collections.singleton(new MethodParameter(new MethodDescriptor(
                 "java/sql/DriverManager", "getConnection",
                 "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;", true), 2)));
