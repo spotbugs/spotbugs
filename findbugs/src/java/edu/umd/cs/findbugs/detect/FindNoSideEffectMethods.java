@@ -32,6 +32,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -296,6 +297,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private SideEffectStatus status;
     private ArrayList<MethodCall> calledMethods;
     private Set<ClassDescriptor> subtypes;
+    private Set<Integer> finallyTargets;
+    private Set<Integer> finallyExceptionRegisters;
 
     private boolean constructor;
     private boolean uselessVoidCandidate;
@@ -473,6 +476,13 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if (statusMap.containsKey(getMethodDescriptor())) {
             return;
         }
+        finallyTargets = new HashSet<>();
+        for(CodeException ex : getCode().getExceptionTable()) {
+            if(ex.getCatchType() == 0) {
+                finallyTargets.add(ex.getHandlerPC());
+            }
+        }
+        finallyExceptionRegisters = new HashSet<>();
         try {
             super.visit(obj);
         } catch (EarlyExitException e) {
@@ -506,17 +516,30 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             return;
         }
         switch (seen) {
-        case ATHROW:
-            uselessVoidCandidate = false;
-            try {
-                JavaClass javaClass = getStack().getStackItem(0).getJavaClass();
-                if (javaClass != null && ALLOWED_EXCEPTIONS.contains(javaClass.getClassName())) {
-                    break;
-                }
-            } catch (ClassNotFoundException e) {
+        case ASTORE:
+        case ASTORE_0:
+        case ASTORE_1:
+        case ASTORE_2:
+        case ASTORE_3:
+            if(finallyTargets.contains(getPC())) {
+                finallyExceptionRegisters.add(getRegisterOperand());
             }
-            status = SideEffectStatus.SIDE_EFFECT;
             break;
+        case ATHROW: {
+            Item exceptionItem = getStack().getStackItem(0);
+            if(!finallyExceptionRegisters.remove(exceptionItem.getRegisterNumber())) {
+                uselessVoidCandidate = false;
+                try {
+                    JavaClass javaClass = exceptionItem.getJavaClass();
+                    if (javaClass != null && ALLOWED_EXCEPTIONS.contains(javaClass.getClassName())) {
+                        break;
+                    }
+                } catch (ClassNotFoundException e) {
+                }
+                status = SideEffectStatus.SIDE_EFFECT;
+            }
+            break;
+        }
         case PUTSTATIC:
             if(classInit) {
                 if(getClassConstantOperand().equals(getClassName())) {

@@ -1,6 +1,8 @@
 package sfBugsNew;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -55,6 +57,17 @@ public class Feature322 {
     public void recursive(int a) {
         if(a > 0) {
             recursive(a-1);
+        }
+    }
+    
+    @ExpectWarning("UC_USELESS_VOID_METHOD")
+    public void testFinally(int a) {
+        List<Integer> x = new ArrayList<>();
+        try {
+            x.add(a);
+        }
+        finally {
+            x.add(2);
         }
     }
 }
