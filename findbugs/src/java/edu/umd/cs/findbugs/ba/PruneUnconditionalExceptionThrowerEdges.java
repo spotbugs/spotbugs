@@ -172,20 +172,20 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                         }
 
                         // Ignore abstract and native methods
-                        if (!(xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate())) {
-                            try {
-                                isExact = false;
-                                XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                                        xMethod.getClassDescriptor());
-                                if (xClass.isAbstract()) {
-                                    continue;
-                                }
-                            } catch (CheckedAnalysisException e) {
-                                AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
-                            }
-                        }
                         boolean isUnconditionalThrower = isUnconditionalThrower(xMethod);
                         if (isUnconditionalThrower) {
+                            if (!(xMethod.isFinal() || xMethod.isStatic() || xMethod.isPrivate())) {
+                                try {
+                                    isExact = false;
+                                    XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
+                                            xMethod.getClassDescriptor());
+                                    if (xClass.isAbstract()) {
+                                        continue;
+                                    }
+                                } catch (CheckedAnalysisException e) {
+                                    AnalysisContext.logError("Unable to resolve class for " + xMethod, e);
+                                }
+                            }
                             foundThrower = true;
                             if (DEBUG) {
                                 System.out.println("Found thrower");
