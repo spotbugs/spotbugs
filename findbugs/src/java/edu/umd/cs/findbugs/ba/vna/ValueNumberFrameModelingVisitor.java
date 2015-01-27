@@ -423,10 +423,11 @@ Debug, ValueNumberAnalysisFeatures {
         try {
 
             XMethod called = Hierarchy2.findExactMethod(ins, methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
-            if (called != null
-                    && !Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class)
-                    .is(called.getMethodDescriptor(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ)) {
-                return;
+            if (called != null ) {
+                NoSideEffectMethodsDatabase nse = Global.getAnalysisCache().getOptionalDatabase(NoSideEffectMethodsDatabase.class);
+                if(nse != null && !nse.is(called.getMethodDescriptor(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ)) {
+                    return;
+                }
             }
             FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
             Set<XField> touched = fieldSummary.getFieldsWritten(called);
