@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -116,8 +117,8 @@ public class MergeTree {
                 System.out.println("\tInput set is " + inputSet);
             }
             result.or(inputSet);
-            for (int i = 0; i < factory.getNumValuesAllocated(); ++i) {
-                if (inputSet.get(i) && !visited.get(i)) {
+            for (int i = inputSet.nextSetBit(0); i >= 0; i = inputSet.nextSetBit(i+1)) {
+                if (!visited.get(i)) {
                     if (DEBUG) {
                         System.out.println("\tExplore: " + i);
                     }
@@ -129,6 +130,36 @@ public class MergeTree {
             System.out.println("Result: " + result);
         }
 
+        return result;
+    }
+
+    public BitSet getTransitiveOutputSet(int input) {
+        BitSet visited = new BitSet();
+        BitSet result = new BitSet();
+
+        LinkedList<Integer> workList = new LinkedList<Integer>();
+        workList.addLast(input);
+        while (!workList.isEmpty()) {
+            Integer valueNumber = workList.removeFirst();
+            visited.set(valueNumber);
+            BitSet outputSet = getOutputSet(valueNumber);
+            result.or(outputSet);
+            for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
+                if (!visited.get(i)) {
+                    workList.addLast(i);
+                }
+            }
+        }
+        return result;
+    }
+
+    private BitSet getOutputSet(int valueNumber) {
+        BitSet result = new BitSet();
+        for(Entry<ValueNumber, BitSet> entry : outputToInputMap.entrySet()) {
+            if(entry.getValue().get(valueNumber)) {
+                result.set(entry.getKey().getNumber());
+            }
+        }
         return result;
     }
 }

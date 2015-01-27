@@ -424,6 +424,14 @@ literals.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindUselessObjects">
+    <Details>
+<![CDATA[
+<p> Looks for useless objects.</p>
+
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.MutableEnum">
     <Details>
           <![CDATA[
@@ -4887,6 +4895,31 @@ Probably something else was meant or condition can be removed.</p>
 <![CDATA[
 <p>This condition always produces the same result due to the type range of the involved variable. 
 Probably something else was meant or condition can be removed.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="UC_USELESS_OBJECT">
+    <ShortDescription>Useless object created</ShortDescription>
+    <LongDescription>Useless object stored in variable {2} of method {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>Our analysis shows that this object is useless. 
+It's created and modified, but its value never go outside of the method or produce any side-effect.
+Either there is a mistake and object was intended to be used or it can be removed.</p>
+<p>This analysis rarely produces false-positives. Common false-positive cases include:</p>
+<p>- This object used to implicitly throw some obscure exception.</p>
+<p>- This object used as a stub to generalize the code.</p>
+<p>- This object used to hold strong references to weak/soft-referenced objects.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="UC_USELESS_OBJECT_STACK">
+    <ShortDescription>Useless object created on stack</ShortDescription>
+    <LongDescription>Useless object created in method {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This object is created just to perform some modifications which don't have any side-effect.
+Probably something else was meant or the object can be removed.</p>
 ]]>
     </Details>
   </BugPattern>

@@ -179,6 +179,12 @@
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
                               <Later
+                                        class="edu.umd.cs.findbugs.detect.FindUselessObjects"
+                              />
+                    </SplitPass>
+                    <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods"/>
+                              <Later
                                         class="edu.umd.cs.findbugs.detect.FindDoubleCheck"
                               />
                     </SplitPass>
@@ -457,6 +463,8 @@
                     speed="fast" reports="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"/>
           <Detector class="edu.umd.cs.findbugs.detect.MutableLock" speed="fast"
                     reports="ML_SYNC_ON_UPDATED_FIELD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindUselessObjects" speed="fast"
+                    reports="UC_USELESS_OBJECT,UC_USELESS_OBJECT_STACK"/>
           <Detector class="edu.umd.cs.findbugs.detect.MutableStaticFields" speed="fast"
                     reports="MS_OOI_PKGPROTECT,MS_FINAL_PKGPROTECT,MS_SHOULD_BE_REFACTORED_TO_BE_FINAL,MS_SHOULD_BE_FINAL,MS_PKGPROTECT,MS_MUTABLE_HASHTABLE,MS_MUTABLE_ARRAY,MS_CANNOT_BE_FINAL,MS_MUTABLE_COLLECTION,MS_MUTABLE_COLLECTION_PKGPROTECT"/>
           <Detector class="edu.umd.cs.findbugs.detect.Naming" speed="fast"
@@ -954,6 +962,8 @@
           <BugPattern abbrev="UC" type="UC_USELESS_VOID_METHOD" category="STYLE"/>
           <BugPattern abbrev="UC" type="UC_USELESS_CONDITION" category="STYLE"/>
           <BugPattern abbrev="UC" type="UC_USELESS_CONDITION_TYPE" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_OBJECT" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_OBJECT_STACK" category="STYLE"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_INDEX" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_OFFSET" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_LENGTH" category="CORRECTNESS"/>
