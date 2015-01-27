@@ -2643,6 +2643,17 @@ to immediately undo the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
+    <BugPattern type="DM_BOXED_PRIMITIVE_FOR_COMPARE">
+    <ShortDescription>Boxing a primitive to compare</ShortDescription>
+    <LongDescription>Primitive is boxed to call {2}: use {3} instead</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A boxed primitive is created just to call compareTo method. It's more efficient to use static compare method 
+  (for double and float since Java 1.4, for other primitive types since Java 1.7) which works on primitives directly.
+  </p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_NEW_FOR_GETCLASS">
     <ShortDescription>Method allocates an object, only to get the class object</ShortDescription>
     <LongDescription>{1} allocates an object, only to get the class object</LongDescription>

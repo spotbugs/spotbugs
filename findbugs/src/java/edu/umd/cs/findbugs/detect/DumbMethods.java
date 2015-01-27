@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -641,6 +642,33 @@ public class DumbMethods extends OpcodeStackDetector {
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
+                } else if("compareTo".equals(called.getName())
+                        && "valueOf".equals(previousMethodCall.getName())
+                        && called.getClassDescriptor().equals(previousMethodCall.getClassDescriptor()) && !previousMethodCall.getSignature().startsWith("(Ljava/lang/String;")
+                        ) {
+                    String primitiveType = ClassName.getPrimitiveType(called.getClassDescriptor().getClassName());
+                    XMethod rvo = stack.getStackItem(1).getReturnValueOf();
+                    XField field = stack.getStackItem(1).getXField();
+                    String signature;
+                    if (rvo != null) {
+                        signature = new SignatureParser(rvo.getSignature()).getReturnTypeSignature();
+                    } else if (field != null) {
+                        signature = field.getSignature();
+                    } else {
+                        signature = "";
+                    }
+                    if (primitiveType != null
+                            && (previousMethodCall.equals(rvo) || signature.equals(primitiveType))
+                            && (getThisClass().getMajor() >= MAJOR_1_7 || getThisClass().getMajor() >= MAJOR_1_4
+                            && (primitiveType.equals("D") || primitiveType.equals("F")))) {
+                        MethodDescriptor shouldCall = new MethodDescriptor(called.getClassDescriptor().getClassName(), "compare",
+                                "(" + primitiveType + primitiveType + ")I", true);
+                        BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_COMPARE",
+                                primitiveType.equals("Z") ? LOW_PRIORITY : primitiveType.equals("B") ? NORMAL_PRIORITY
+                                        : HIGH_PRIORITY).addClassAndMethod(this).addCalledMethod(this).addMethod(shouldCall)
+                                        .describe(MethodAnnotation.SHOULD_CALL);
+                        accumulator.accumulateBug(bug, this);
+                    }
                 }
             }
             previousMethodCall = called;
