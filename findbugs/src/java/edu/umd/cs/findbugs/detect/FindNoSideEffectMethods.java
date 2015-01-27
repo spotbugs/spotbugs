@@ -91,7 +91,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private static final Set<String> OBJECT_ONLY_CLASSES = new HashSet<>(Arrays.asList("java/lang/StringBuffer",
             "java/lang/StringBuilder", "java/util/regex/Matcher", "java/io/ByteArrayOutputStream",
             "java/util/concurrent/atomic/AtomicBoolean", "java/util/concurrent/atomic/AtomicInteger",
-            "java/util/concurrent/atomic/AtomicLong"));
+            "java/util/concurrent/atomic/AtomicLong", "java/awt/Point"));
 
     // Usual implementation of stub methods which are expected to be more complex in derived classes
     private static final byte[][] STUB_METHODS = new byte[][] {
@@ -339,6 +339,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             handleStatus();
             return;
         }
+        if(isObjectOnlyMethod(getMethodDescriptor())) {
+            status = SideEffectStatus.OBJECT_ONLY;
+        }
         if (method.isNative() || changedArg(getMethodDescriptor()) != -1) {
             status = SideEffectStatus.SIDE_EFFECT;
             handleStatus();
@@ -377,7 +380,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                 }
             }
         }
-        if (status == SideEffectStatus.SIDE_EFFECT || method.isAbstract() || method.isInterface() || method.isNative()) {
+        if ((status == SideEffectStatus.SIDE_EFFECT || status == SideEffectStatus.OBJECT_ONLY) || method.isAbstract()
+                || method.isInterface() || method.isNative()) {
             handleStatus();
         }
     }
