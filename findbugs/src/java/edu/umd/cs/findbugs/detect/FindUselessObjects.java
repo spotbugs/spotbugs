@@ -103,6 +103,346 @@ public class FindUselessObjects implements Detector {
         }
     }
 
+    private class UselessValuesContext {
+        ValueNumberAnalysis vna;
+        TypeAnalysis ta;
+        CFG cfg;
+        int count;
+        Map<Integer, ValueInfo> observedValues = new HashMap<>();
+        ConstantPoolGen cpg;
+        Map<Integer, Set<ValueInfo>> values;
+        ValueNumber thisValue;
+        ClassContext classContext;
+        Method method;
+
+        UselessValuesContext(ClassContext classContext, Method method) throws CheckedAnalysisException {
+            this.classContext = classContext;
+            this.method = method;
+            cfg = classContext.getCFG(method);
+            cpg = cfg.getMethodGen().getConstantPool();
+            ta = classContext.getTypeDataflow(method).getAnalysis();
+            vna = classContext.getValueNumberDataflow(method).getAnalysis();
+        }
+
+        void initObservedValues() throws DataflowAnalysisException {
+            for(Iterator<Location> iterator = cfg.locationIterator(); iterator.hasNext(); ) {
+                Location location = iterator.next();
+                Instruction instruction = location.getHandle().getInstruction();
+                if(instruction instanceof ANEWARRAY || instruction instanceof NEWARRAY || instruction instanceof MULTIANEWARRAY) {
+                    int number = vna.getFactAfterLocation(location).getTopValue().getNumber();
+                    TypeFrame typeFrame = ta.getFactAfterLocation(location);
+                    if(typeFrame.isValid()) {
+                        Type type = typeFrame.getTopValue();
+                        observedValues.put(number, new ValueInfo(number, location, type));
+                    }
+                } else if(instruction instanceof INVOKESPECIAL) {
+                    InvokeInstruction inv = (InvokeInstruction) instruction;
+                    if (inv.getMethodName(cpg).equals("<init>")
+                            && noSideEffectMethods.hasNoSideEffect(new MethodDescriptor(inv, cpg))) {
+                        int number = vna.getFactAtLocation(location).getStackValue(inv.consumeStack(cpg)-1).getNumber();
+                        TypeFrame typeFrame = ta.getFactAtLocation(location);
+                        if(typeFrame.isValid()) {
+                            Type type = typeFrame.getStackValue(inv.consumeStack(cpg)-1);
+                            observedValues.put(number, new ValueInfo(number, location, type));
+                        }
+                    }
+                }
+            }
+            thisValue = vna.getThisValue();
+            if(thisValue != null) {
+                observedValues.remove(thisValue.getNumber());
+            }
+            count = observedValues.size();
+        }
+
+        void enhanceViaMergeTree() {
+            values = new HashMap<>();
+            for (Entry<Integer, ValueInfo> entry : observedValues.entrySet()) {
+                BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(entry.getKey());
+                outputSet.set(entry.getKey());
+                entry.getValue().origValues = outputSet;
+                for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
+                    Set<ValueInfo> list = values.get(i);
+                    if(list == null) {
+                        list = new HashSet<>();
+                        values.put(i, list);
+                    }
+                    list.add(entry.getValue());
+                }
+            }
+        }
+
+        boolean setEscape(Set<ValueInfo> vals) {
+            boolean result = false;
+            for(ValueInfo vi : vals) {
+                result |= !vi.escaped;
+                vi.escaped = true;
+                count--;
+            }
+            return result;
+        }
+
+        boolean setDerivedEscape(Set<ValueInfo> vals, ValueNumber vn) {
+            boolean result = false;
+            for(ValueInfo vi : vals) {
+                if(vi.origValues.get(vn.getNumber())) {
+                    result |= !vi.derivedEscaped;
+                    vi.derivedEscaped = true;
+                }
+            }
+            return result;
+        }
+
+        boolean setUsed(Set<ValueInfo> vals) {
+            boolean result = false;
+            for(ValueInfo vi : vals) {
+                result |= !vi.used;
+                vi.used = true;
+            }
+            return result;
+        }
+
+        boolean setObjectOnly(Set<ValueInfo> vals, ValueNumber vn) {
+            boolean result = false;
+            for(ValueInfo vi : vals) {
+                if(vi.origValues.get(vn.getNumber()) || (!vi.derivedEscaped && vi.derivedValues.get(vn.getNumber()))) {
+                    result |= !vi.hasObjectOnlyCall;
+                    vi.hasObjectOnlyCall = true;
+                } else {
+                    result |= !vi.escaped;
+                    vi.escaped = true;
+                    count--;
+                }
+            }
+            return result;
+        }
+
+        boolean propagateValues(Set<ValueInfo> vals, ValueNumber origNumber, ValueNumber vn) {
+            int number = vn.getNumber();
+            if(vals.size() == 1 && vals.iterator().next().origValue == number) {
+                return false;
+            }
+            boolean result = setUsed(vals);
+            if(origNumber != null) {
+                for(ValueInfo vi : vals) {
+                    if(vi.origValues.get(origNumber.getNumber()) && !vi.derivedValues.get(number)) {
+                        vi.derivedValues.set(number);
+                        result = true;
+                    }
+                }
+            }
+            Set<ValueInfo> list = values.get(number);
+            if(list == null) {
+                list = new HashSet<>();
+                values.put(number, list);
+            }
+            result |= list.addAll(vals);
+            BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(number);
+            for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
+                list = values.get(i);
+                if(list == null) {
+                    list = new HashSet<>();
+                    values.put(i, list);
+                }
+                result |= list.addAll(vals);
+            }
+            return result;
+        }
+
+        boolean propagateToReturnValue(Set<ValueInfo> vals, ValueNumber vn, GenLocation location, MethodDescriptor m)
+                throws DataflowAnalysisException {
+            for(ValueInfo vi : vals) {
+                if(vi.type.getSignature().startsWith("[") && vi.hasObjectOnlyCall && vi.var == null && vn.getNumber() == vi.origValue) {
+                    // Ignore initialized arrays passed to methods
+                    vi.escaped = true;
+                    count--;
+                }
+            }
+            if (Type.getReturnType(m.getSignature()) == Type.VOID || location instanceof ExceptionLocation) {
+                return false;
+            }
+            InstructionHandle nextHandle = location.getHandle().getNext();
+            if (nextHandle == null || (nextHandle.getInstruction() instanceof POP || nextHandle.getInstruction() instanceof POP2)) {
+                return false;
+            }
+            return propagateValues(vals, null, location.frameAfter().getTopValue());
+        }
+
+        boolean isEmpty() {
+            return count == 0;
+        }
+
+        Iterator<GenLocation> genIterator() {
+            return new Iterator<FindUselessObjects.GenLocation>() {
+                Iterator<Location> locIterator = cfg.locationIterator();
+                Iterator<BasicBlock> blockIterator = cfg.blockIterator();
+                GenLocation next = advance();
+
+                private GenLocation advance() {
+                    if(locIterator.hasNext()) {
+                        return new RegularLocation(ta, vna, locIterator.next());
+                    }
+                    while(blockIterator.hasNext()) {
+                        BasicBlock block = blockIterator.next();
+                        if(block.isExceptionThrower() && cfg.getOutgoingEdgeWithType(block, EdgeTypes.FALL_THROUGH_EDGE) == null) {
+                            return new ExceptionLocation(ta, vna, block);
+                        }
+                    }
+                    return null;
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return next != null;
+                }
+
+                @Override
+                public GenLocation next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
+                    GenLocation cur = next;
+                    next = advance();
+                    return cur;
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+
+        boolean escaped(ValueNumber vn) {
+            Set<ValueInfo> vals = values.get(vn.getNumber());
+            if(vals == null) {
+                return true;
+            }
+            for(ValueInfo vi : vals) {
+                if(vi.escaped) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        Set<ValueInfo> getLiveVals(ValueNumber vn) {
+            Set<ValueInfo> vals = this.values.get(vn.getNumber());
+            if(vals == null) {
+                return null;
+            }
+            if(vals.size() == 1) {
+                return vals.iterator().next().escaped ? null : vals;
+            }
+            Set<ValueInfo> result = new HashSet<>();
+            for(ValueInfo vi : vals) {
+                if(!vi.escaped) {
+                    result.add(vi);
+                }
+            }
+            return result.isEmpty() ? null : result;
+        }
+
+        void report() {
+            for(ValueInfo vi : observedValues.values()) {
+                if(!vi.escaped) {
+                    if(vi.hasObjectOnlyCall && vi.used && vi.var == null) {
+                        continue;
+                    }
+                    if(vi.hasObjectOnlyCall || (vi.used && vi.var != null)) {
+                        BugInstance bug = new BugInstance(vi.var == null ? "UC_USELESS_OBJECT_STACK" : "UC_USELESS_OBJECT",
+                                NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method);
+                        if(vi.var != null) {
+                            bug.add(new StringAnnotation(vi.var));
+                        }
+                        reporter.reportBug(bug.addType(vi.type).addSourceLine(classContext, method, vi.created));
+                    }
+                }
+            }
+        }
+    }
+
+    private static interface GenLocation {
+        InstructionHandle getHandle();
+        TypeFrame typeFrameBefore() throws DataflowAnalysisException;
+        ValueNumberFrame frameBefore();
+        ValueNumberFrame frameAfter();
+    }
+
+    private static class RegularLocation implements GenLocation {
+        Location loc;
+        ValueNumberAnalysis vna;
+        TypeAnalysis ta;
+
+        public RegularLocation(TypeAnalysis ta, ValueNumberAnalysis vna, Location loc) {
+            this.ta = ta;
+            this.vna = vna;
+            this.loc = loc;
+        }
+
+        @Override
+        public InstructionHandle getHandle() {
+            return loc.getHandle();
+        }
+
+        @Override
+        public ValueNumberFrame frameBefore() {
+            return vna.getFactAtLocation(loc);
+        }
+
+        @Override
+        public ValueNumberFrame frameAfter() {
+            return vna.getFactAfterLocation(loc);
+        }
+
+        @Override
+        public TypeFrame typeFrameBefore() throws DataflowAnalysisException {
+            return ta.getFactAtLocation(loc);
+        }
+
+        @Override
+        public String toString() {
+            return loc.toString();
+        }
+    }
+
+    private static class ExceptionLocation implements GenLocation {
+        BasicBlock b;
+        ValueNumberAnalysis vna;
+        TypeAnalysis ta;
+
+        public ExceptionLocation(TypeAnalysis ta, ValueNumberAnalysis vna, BasicBlock block) {
+            this.vna = vna;
+            this.ta = ta;
+            this.b = block;
+        }
+
+        @Override
+        public InstructionHandle getHandle() {
+            return b.getExceptionThrower();
+        }
+
+        @Override
+        public ValueNumberFrame frameBefore() {
+            return vna.getStartFact(b);
+        }
+
+        @Override
+        public ValueNumberFrame frameAfter() {
+            return vna.getResultFact(b);
+        }
+
+        @Override
+        public TypeFrame typeFrameBefore() {
+            return ta.getStartFact(b);
+        }
+
+        @Override
+        public String toString() {
+            return "ex: "+b.getExceptionThrower()+" at "+b;
+        }
+    }
+
     public FindUselessObjects(BugReporter reporter) {
         this.reporter = reporter;
         this.noSideEffectMethods = Global.getAnalysisCache().getDatabase(NoSideEffectMethodsDatabase.class);
@@ -123,78 +463,35 @@ public class FindUselessObjects implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CheckedAnalysisException {
-        CFG cfg = classContext.getCFG(method);
-        ValueNumberAnalysis vna = classContext.getValueNumberDataflow(method).getAnalysis();
-        ConstantPoolGen cpg = cfg.getMethodGen().getConstantPool();
         LocalVariableTable lvt = method.getLocalVariableTable();
-        TypeAnalysis ta = classContext.getTypeDataflow(method).getAnalysis();
-        Map<Integer, ValueInfo> observedValues = new HashMap<>();
-        for(Iterator<Location> iterator = cfg.locationIterator(); iterator.hasNext(); ) {
-            Location location = iterator.next();
-            Instruction instruction = location.getHandle().getInstruction();
-            if(instruction instanceof ANEWARRAY || instruction instanceof NEWARRAY || instruction instanceof MULTIANEWARRAY) {
-                int number = vna.getFactAfterLocation(location).getTopValue().getNumber();
-                TypeFrame typeFrame = ta.getFactAfterLocation(location);
-                if(typeFrame.isValid()) {
-                    Type type = typeFrame.getTopValue();
-                    observedValues.put(number, new ValueInfo(number, location, type));
-                }
-            } else if(instruction instanceof INVOKESPECIAL) {
-                InvokeInstruction inv = (InvokeInstruction) instruction;
-                if (inv.getMethodName(cpg).equals("<init>")
-                        && noSideEffectMethods.hasNoSideEffect(new MethodDescriptor(inv, cpg))) {
-                    int number = vna.getFactAtLocation(location).getStackValue(inv.consumeStack(cpg)-1).getNumber();
-                    TypeFrame typeFrame = ta.getFactAtLocation(location);
-                    if(typeFrame.isValid()) {
-                        Type type = typeFrame.getStackValue(inv.consumeStack(cpg)-1);
-                        observedValues.put(number, new ValueInfo(number, location, type));
-                    }
-                }
-            }
-        }
-        ValueNumber thisValue = vna.getThisValue();
-        if(thisValue != null) {
-            observedValues.remove(thisValue.getNumber());
-        }
-        if(observedValues.isEmpty()) {
+        UselessValuesContext context = new UselessValuesContext(classContext, method);
+        context.initObservedValues();
+        if(context.isEmpty()) {
             return;
         }
-        Map<Integer, Set<ValueInfo>> values = new HashMap<>();
-        for (Entry<Integer, ValueInfo> entry : observedValues.entrySet()) {
-            BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(entry.getKey());
-            outputSet.set(entry.getKey());
-            entry.getValue().origValues = outputSet;
-            for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
-                Set<ValueInfo> list = values.get(i);
-                if(list == null) {
-                    list = new HashSet<>();
-                    values.put(i, list);
-                }
-                list.add(entry.getValue());
-            }
-        }
+        context.enhanceViaMergeTree();
         boolean changed;
         do {
             changed = false;
-            for(Iterator<GenLocation> iterator = genIterator(cfg, vna, ta); iterator.hasNext(); ) {
+            for(Iterator<GenLocation> iterator = context.genIterator(); iterator.hasNext() && !context.isEmpty(); ) {
                 GenLocation location = iterator.next();
                 Instruction inst = location.getHandle().getInstruction();
                 ValueNumberFrame before = location.frameBefore();
                 if(inst instanceof IINC) {
                     int index = ((IINC)inst).getIndex();
-                    Set<ValueInfo> vals = getLiveVals(values.get(before.getValue(index).getNumber()));
+                    Set<ValueInfo> vals = context.getLiveVals(before.getValue(index));
                     if(vals != null) {
-                        changed |= propagateValues(values, vals, vna, null, location.frameAfter().getValue(index));
+                        changed |= context.propagateValues(vals, null, location.frameAfter().getValue(index));
                     }
                     continue;
                 }
-                int nconsumed = inst.consumeStack(cpg);
+                int nconsumed = inst.consumeStack(context.cpg);
                 if(nconsumed > 0) {
                     ValueNumber[] vns = new ValueNumber[nconsumed];
                     before.getTopStackWords(vns);
                     for(int i=0; i<nconsumed; i++) {
                         ValueNumber vn = vns[i];
-                        Set<ValueInfo> vals = getLiveVals(values.get(vn.getNumber()));
+                        Set<ValueInfo> vals = context.getLiveVals(vn);
                         if(vals != null) {
                             switch(inst.getOpcode()) {
                             case ASTORE:
@@ -301,7 +598,7 @@ public class FindUselessObjects implements Detector {
                             case DCMPL:
                             case DCMPG:
                             case ARRAYLENGTH:
-                                changed |= propagateValues(values, vals, vna, null, location.frameAfter().getTopValue());
+                                changed |= context.propagateValues(vals, null, location.frameAfter().getTopValue());
                                 break;
                             case GETFIELD:
                             case AALOAD:
@@ -311,7 +608,7 @@ public class FindUselessObjects implements Detector {
                             case LALOAD:
                             case SALOAD:
                             case IALOAD:
-                                changed |= propagateValues(values, vals, vna, vn, location.frameAfter().getTopValue());
+                                changed |= context.propagateValues(vals, vn, location.frameAfter().getTopValue());
                                 break;
                             case AASTORE:
                             case DASTORE:
@@ -324,15 +621,15 @@ public class FindUselessObjects implements Detector {
                                 if(i == 0) {
                                     ValueNumber value = vns[vns.length-1];
                                     if(!value.hasFlag(ValueNumber.CONSTANT_VALUE) && !value.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT) &&
-                                            !observedValues.containsKey(value.getNumber())) {
-                                        changed |= setDerivedEscape(vals, vn);
+                                            !context.observedValues.containsKey(value.getNumber())) {
+                                        changed |= context.setDerivedEscape(vals, vn);
                                     }
-                                    changed |= setObjectOnly(vals, vn);
+                                    changed |= context.setObjectOnly(vals, vn);
                                 } else {
-                                    if(escaped(values.get(vns[0].getNumber()))) {
-                                        changed |= setEscape(vals);
+                                    if(context.escaped(vns[0])) {
+                                        changed |= context.setEscape(vals);
                                     } else {
-                                        changed |= propagateValues(values, vals, vna, null, vns[0]);
+                                        changed |= context.propagateValues(vals, null, vns[0]);
                                     }
                                 }
                                 break;
@@ -340,7 +637,7 @@ public class FindUselessObjects implements Detector {
                             case INVOKESPECIAL:
                             case INVOKEINTERFACE:
                             case INVOKEVIRTUAL:
-                                MethodDescriptor m = new MethodDescriptor((InvokeInstruction) inst, cpg);
+                                MethodDescriptor m = new MethodDescriptor((InvokeInstruction) inst, context.cpg);
                                 XMethod xMethod = null;
                                 try {
                                     Type type = location.typeFrameBefore().getStackValue(nconsumed-1);
@@ -358,34 +655,34 @@ public class FindUselessObjects implements Detector {
                                 MethodSideEffectStatus status = noSideEffectMethods.status(m);
                                 if(status == MethodSideEffectStatus.NSE || status == MethodSideEffectStatus.SE_CLINIT) {
                                     if(m.getName().equals("<init>")) {
-                                        if(vns[0].equals(thisValue)) {
-                                            changed |= setEscape(vals);
+                                        if(vns[0].equals(context.thisValue)) {
+                                            changed |= context.setEscape(vals);
                                         } else {
-                                            changed |= propagateValues(values, vals, vna, null, vns[0]);
+                                            changed |= context.propagateValues(vals, null, vns[0]);
                                         }
                                     } else {
-                                        changed |= propagateToReturnValue(values, vals, vna, vn, location, m);
+                                        changed |= context.propagateToReturnValue(vals, vn, location, m);
                                     }
                                     break;
                                 }
                                 if(status == MethodSideEffectStatus.OBJ) {
                                     if(i == 0) {
-                                        changed |= setDerivedEscape(vals, vn);
-                                        changed |= propagateToReturnValue(values, vals, vna, vn, location, m);
-                                        changed |= setObjectOnly(vals, vn);
+                                        changed |= context.setDerivedEscape(vals, vn);
+                                        changed |= context.propagateToReturnValue(vals, vn, location, m);
+                                        changed |= context.setObjectOnly(vals, vn);
                                         break;
                                     } else {
-                                        if(!escaped(values.get(vns[0].getNumber()))) {
-                                            changed |= propagateValues(values, vals, vna, null, vns[0]);
-                                            changed |= propagateToReturnValue(values, vals, vna, vn, location, m);
+                                        if(!context.escaped(vns[0])) {
+                                            changed |= context.propagateValues(vals, null, vns[0]);
+                                            changed |= context.propagateToReturnValue(vals, vn, location, m);
                                             break;
                                         }
                                     }
                                 }
-                                changed |= setEscape(vals);
+                                changed |= context.setEscape(vals);
                                 break;
                             default:
-                                changed |= setEscape(vals);
+                                changed |= context.setEscape(vals);
                                 break;
                             }
                         }
@@ -393,264 +690,7 @@ public class FindUselessObjects implements Detector {
                 }
             }
         } while(changed);
-        for(ValueInfo vi : observedValues.values()) {
-            if(!vi.escaped) {
-                if(vi.hasObjectOnlyCall && vi.used && vi.var == null) {
-                    continue;
-                }
-                if(vi.hasObjectOnlyCall || (vi.used && vi.var != null)) {
-                    BugInstance bug = new BugInstance(vi.var == null ? "UC_USELESS_OBJECT_STACK" : "UC_USELESS_OBJECT",
-                            NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method);
-                    if(vi.var != null) {
-                        bug.add(new StringAnnotation(vi.var));
-                    }
-                    reporter.reportBug(bug.addType(vi.type).addSourceLine(classContext, method, vi.created));
-                }
-            }
-        }
-    }
-
-    private static interface GenLocation {
-        InstructionHandle getHandle();
-        TypeFrame typeFrameBefore() throws DataflowAnalysisException;
-        ValueNumberFrame frameBefore();
-        ValueNumberFrame frameAfter();
-    }
-
-    private static class RegularLocation implements GenLocation {
-        Location loc;
-        ValueNumberAnalysis vna;
-        TypeAnalysis ta;
-
-        public RegularLocation(TypeAnalysis ta, ValueNumberAnalysis vna, Location loc) {
-            this.ta = ta;
-            this.vna = vna;
-            this.loc = loc;
-        }
-
-        @Override
-        public InstructionHandle getHandle() {
-            return loc.getHandle();
-        }
-
-        @Override
-        public ValueNumberFrame frameBefore() {
-            return vna.getFactAtLocation(loc);
-        }
-
-        @Override
-        public ValueNumberFrame frameAfter() {
-            return vna.getFactAfterLocation(loc);
-        }
-
-        @Override
-        public TypeFrame typeFrameBefore() throws DataflowAnalysisException {
-            return ta.getFactAtLocation(loc);
-        }
-
-        @Override
-        public String toString() {
-            return loc.toString();
-        }
-    }
-
-    private static class ExceptionLocation implements GenLocation {
-        BasicBlock b;
-        ValueNumberAnalysis vna;
-        TypeAnalysis ta;
-
-        public ExceptionLocation(TypeAnalysis ta, ValueNumberAnalysis vna, BasicBlock block) {
-            this.vna = vna;
-            this.ta = ta;
-            this.b = block;
-        }
-
-        @Override
-        public InstructionHandle getHandle() {
-            return b.getExceptionThrower();
-        }
-
-        @Override
-        public ValueNumberFrame frameBefore() {
-            return vna.getStartFact(b);
-        }
-
-        @Override
-        public ValueNumberFrame frameAfter() {
-            return vna.getResultFact(b);
-        }
-
-        @Override
-        public TypeFrame typeFrameBefore() {
-            return ta.getStartFact(b);
-        }
-
-        @Override
-        public String toString() {
-            return "ex: "+b.getExceptionThrower()+" at "+b;
-        }
-    }
-
-    public Iterator<GenLocation> genIterator(final CFG cfg, final ValueNumberAnalysis vna, final TypeAnalysis ta) {
-        return new Iterator<FindUselessObjects.GenLocation>() {
-            Iterator<Location> locIterator = cfg.locationIterator();
-            Iterator<BasicBlock> blockIterator = cfg.blockIterator();
-            GenLocation next = advance();
-
-            private GenLocation advance() {
-                if(locIterator.hasNext()) {
-                    return new RegularLocation(ta, vna, locIterator.next());
-                }
-                while(blockIterator.hasNext()) {
-                    BasicBlock block = blockIterator.next();
-                    if(block.isExceptionThrower() && cfg.getOutgoingEdgeWithType(block, EdgeTypes.FALL_THROUGH_EDGE) == null) {
-                        return new ExceptionLocation(ta, vna, block);
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
-
-            @Override
-            public GenLocation next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-                GenLocation cur = next;
-                next = advance();
-                return cur;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
-    private boolean propagateToReturnValue(Map<Integer, Set<ValueInfo>> values, Set<ValueInfo> vals, ValueNumberAnalysis vna,
-            ValueNumber vn, GenLocation location, MethodDescriptor m) throws DataflowAnalysisException {
-        for(ValueInfo vi : vals) {
-            if(vi.type.getSignature().startsWith("[") && vi.hasObjectOnlyCall && vi.var == null && vn.getNumber() == vi.origValue) {
-                // Ignore initialized arrays passed to methods
-                vi.escaped = true;
-            }
-        }
-        if (Type.getReturnType(m.getSignature()) == Type.VOID || location instanceof ExceptionLocation) {
-            return false;
-        }
-        InstructionHandle nextHandle = location.getHandle().getNext();
-        if (nextHandle == null || (nextHandle.getInstruction() instanceof POP || nextHandle.getInstruction() instanceof POP2)) {
-            return false;
-        }
-        return propagateValues(values, vals, vna, null, location.frameAfter().getTopValue());
-    }
-
-    private boolean propagateValues(Map<Integer, Set<ValueInfo>> values, Set<ValueInfo> vals, ValueNumberAnalysis vna, ValueNumber origNumber, ValueNumber vn) {
-        int number = vn.getNumber();
-        if(vals.size() == 1 && vals.iterator().next().origValue == number) {
-            return false;
-        }
-        boolean result = setUsed(vals);
-        if(origNumber != null) {
-            for(ValueInfo vi : vals) {
-                if(vi.origValues.get(origNumber.getNumber()) && !vi.derivedValues.get(number)) {
-                    vi.derivedValues.set(number);
-                    result = true;
-                }
-            }
-        }
-        Set<ValueInfo> list = values.get(number);
-        if(list == null) {
-            list = new HashSet<>();
-            values.put(number, list);
-        }
-        result |= list.addAll(vals);
-        BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(number);
-        for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
-            list = values.get(i);
-            if(list == null) {
-                list = new HashSet<>();
-                values.put(i, list);
-            }
-            result |= list.addAll(vals);
-        }
-        return result;
-    }
-
-    private boolean escaped(Set<ValueInfo> vals) {
-        if(vals == null) {
-            return true;
-        }
-        for(ValueInfo vi : vals) {
-            if(vi.escaped) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean setEscape(Set<ValueInfo> vals) {
-        boolean result = false;
-        for(ValueInfo vi : vals) {
-            result |= !vi.escaped;
-            vi.escaped = true;
-        }
-        return result;
-    }
-
-    private boolean setDerivedEscape(Set<ValueInfo> vals, ValueNumber vn) {
-        boolean result = false;
-        for(ValueInfo vi : vals) {
-            if(vi.origValues.get(vn.getNumber())) {
-                result |= !vi.derivedEscaped;
-                vi.derivedEscaped = true;
-            }
-        }
-        return result;
-    }
-
-    private boolean setUsed(Set<ValueInfo> vals) {
-        boolean result = false;
-        for(ValueInfo vi : vals) {
-            result |= !vi.used;
-            vi.used = true;
-        }
-        return result;
-    }
-
-    private boolean setObjectOnly(Set<ValueInfo> vals, ValueNumber vn) {
-        boolean result = false;
-        for(ValueInfo vi : vals) {
-            if(vi.origValues.get(vn.getNumber()) || (!vi.derivedEscaped && vi.derivedValues.get(vn.getNumber()))) {
-                result |= !vi.hasObjectOnlyCall;
-                vi.hasObjectOnlyCall = true;
-            } else {
-                result |= !vi.escaped;
-                vi.escaped = true;
-            }
-        }
-        return result;
-    }
-
-    private Set<ValueInfo> getLiveVals(Set<ValueInfo> values) {
-        if(values == null) {
-            return null;
-        }
-        if(values.size() == 1) {
-            return values.iterator().next().escaped ? null : values;
-        }
-        Set<ValueInfo> result = new HashSet<>();
-        for(ValueInfo vi : values) {
-            if(!vi.escaped) {
-                result.add(vi);
-            }
-        }
-        return result.isEmpty() ? null : result;
+        context.report();
     }
 
     @Override
