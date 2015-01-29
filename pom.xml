@@ -185,12 +185,14 @@
         <artifactId>findbugs-annotations</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!--
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>findbugs-package</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
       </dependency>
+      -->
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>findbugsCommunalCloud</artifactId>
@@ -343,6 +345,7 @@
 <!--   </modules> -->
 
   <profiles>
+    <!--
     <profile>
       <id>assembly</id>
       <activation>
@@ -354,6 +357,7 @@
         <module>findbugs-package</module>
       </modules>
     </profile>
+    -->
     <profile>
       <id>smokeTest</id>
       <activation>
