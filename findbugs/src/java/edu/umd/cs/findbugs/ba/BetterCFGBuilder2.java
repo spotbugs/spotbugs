@@ -45,6 +45,7 @@ import org.apache.bcel.generic.ExceptionThrower;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.GOTO;
+import org.apache.bcel.generic.GotoInstruction;
 import org.apache.bcel.generic.ICONST;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
@@ -984,8 +985,9 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
      * @param handle
      *            the instruction
      * @return true if the instruction can throw an exception, false otherwise
+     * @throws CFGBuilderException
      */
-    private boolean isPEI(InstructionHandle handle) {
+    private boolean isPEI(InstructionHandle handle) throws CFGBuilderException {
         Instruction ins = handle.getInstruction();
 
         if (!(ins instanceof ExceptionThrower)) {
@@ -1013,6 +1015,47 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         }
         if (ins instanceof LDC) {
             return false;
+        }
+        if (ins instanceof GETFIELD && !methodGen.isStatic()) {
+            // Assume that GETFIELD on this object is not PEI
+            InstructionHandle prev = handle.getPrev();
+            while(prev != null && prev.getInstruction().getOpcode() == Constants.DUP) {
+            	// Some compilers generate DUP for field increment code like
+            	// ALOAD_0 / DUP / GETFIELD x / ICONST_1 / IADD / PUTFIELD x
+                prev = prev.getPrev();
+            }
+            if(prev != null && prev.getInstruction().getOpcode() == Constants.ALOAD_0) {
+                return false;
+            }
+        }
+        if (ins instanceof PUTFIELD && !methodGen.isStatic()) {
+        	// Assume that PUTFIELD on this object is not PEI
+            int depth = 2;
+            for(InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
+                Instruction prevInst = prev.getInstruction();
+                if(prevInst instanceof BranchInstruction) {
+                    if(prevInst instanceof GotoInstruction) {
+                        // Currently we support only jumps to the PUTFIELD itself
+                        // This will cover simple cases like this.a = flag ? foo : bar
+                        if(((BranchInstruction) prevInst).getTarget() == handle) {
+                            depth = 2;
+                        } else {
+                            return true;
+                        }
+                    } else if (!(prevInst instanceof IfInstruction)) {
+                        // As IF instructions may fall through then the stack depth remains unchanged
+                        // Actually we should not go here for normal Java bytecode: switch or jsr should not appear in this context
+                        return true;
+                    }
+                }
+                depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
+                if(depth < 0) {
+                    throw new CFGBuilderException("Invalid stack at "+prev+" when checking "+handle);
+                }
+                if(depth == 0) {
+                    return prevInst.getOpcode() != Constants.ALOAD_0;
+                }
+            }
         }
         return true;
 

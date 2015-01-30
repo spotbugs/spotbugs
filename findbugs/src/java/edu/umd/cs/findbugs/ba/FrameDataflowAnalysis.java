@@ -92,9 +92,13 @@ ForwardDataflowAnalysis<FrameType> {
         FrameType result = createFact();
         makeFactTop(result);
 
-        for (BasicBlock b : cfg.getBlocksContainingInstructionWithOffset(pc)) {
+        for (Location loc : cfg.getLocationsContainingInstructionWithOffset(pc)) {
+            BasicBlock b = loc.getBasicBlock();
+            BasicBlock b2 = null;
             if (b.getFirstInstruction() != null && b.getFirstInstruction().getPosition() == pc) {
-                BasicBlock b2 = cfg.getPredecessorWithEdgeType(b, EdgeTypes.FALL_THROUGH_EDGE);
+                b2 = cfg.getPredecessorWithEdgeType(b, EdgeTypes.FALL_THROUGH_EDGE);
+            }
+            if(b2 != null && b2.isExceptionThrower()) {
                 for (Iterator<Edge> i = cfg.incomingEdgeIterator(b2); i.hasNext();) {
                     Edge e = i.next();
                     FrameType fact = getFactOnEdge(e);
@@ -102,7 +106,11 @@ ForwardDataflowAnalysis<FrameType> {
                         mergeInto(fact, result);
                     }
                 }
-
+            } else {
+                FrameType fact = getFactAtLocation(loc);
+                if (isFactValid(fact)) {
+                    mergeInto(fact, result);
+                }
             }
         }
         return result;
