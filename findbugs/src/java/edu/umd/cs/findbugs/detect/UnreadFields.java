@@ -676,7 +676,7 @@ public class UnreadFields extends OpcodeStackDetector {
                         }
 
                     } catch (CheckedAnalysisException e) {
-                        AnalysisContext.logError("foo", e);
+                        AnalysisContext.logError("INV dataflow error when analyzing "+getMethodDescriptor(), e);
                     }
                     if (DEBUG) {
                         System.out.println("RRR: " + f + " " + data.nullTested.contains(f) + " "
