@@ -1018,19 +1018,11 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         }
         if (ins instanceof GETFIELD && !methodGen.isStatic()) {
             // Assume that GETFIELD on this object is not PEI
-            InstructionHandle prev = handle.getPrev();
-            while(prev != null && prev.getInstruction().getOpcode() == Constants.DUP) {
-            	// Some compilers generate DUP for field increment code like
-            	// ALOAD_0 / DUP / GETFIELD x / ICONST_1 / IADD / PUTFIELD x
-                prev = prev.getPrev();
-            }
-            if(prev != null && prev.getInstruction().getOpcode() == Constants.ALOAD_0) {
-                return false;
-            }
+            return !isSafeFieldSource(handle.getPrev());
         }
         if (ins instanceof PUTFIELD && !methodGen.isStatic()) {
-        	// Assume that PUTFIELD on this object is not PEI
-            int depth = 2;
+            // Assume that PUTFIELD on this object is not PEI
+            int depth = ins.consumeStack(cpg);
             for(InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
                 Instruction prevInst = prev.getInstruction();
                 if(prevInst instanceof BranchInstruction) {
@@ -1038,7 +1030,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                         // Currently we support only jumps to the PUTFIELD itself
                         // This will cover simple cases like this.a = flag ? foo : bar
                         if(((BranchInstruction) prevInst).getTarget() == handle) {
-                            depth = 2;
+                            depth = ins.consumeStack(cpg);
                         } else {
                             return true;
                         }
@@ -1049,16 +1041,42 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     }
                 }
                 depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
-                if(depth < 0) {
+                if(depth < 1) {
                     throw new CFGBuilderException("Invalid stack at "+prev+" when checking "+handle);
                 }
-                if(depth == 0) {
-                    return prevInst.getOpcode() != Constants.ALOAD_0;
+                if(depth == 1) {
+                    InstructionHandle prevPrev = prev.getPrev();
+                    if(prevPrev != null && prevPrev.getInstruction() instanceof BranchInstruction) {
+                        continue;
+                    }
+                    return !isSafeFieldSource(prevPrev);
                 }
             }
         }
         return true;
+    }
 
+    /**
+     * @param handle instruction handle which loads the object for further GETFIELD/PUTFIELD operation
+     * @return true if this object is known to be non-null
+     */
+    private boolean isSafeFieldSource(InstructionHandle handle) {
+        while(handle != null && handle.getInstruction().getOpcode() == Constants.DUP) {
+            // Some compilers generate DUP for field increment code like
+            // ALOAD_0 / DUP / GETFIELD x / ICONST_1 / IADD / PUTFIELD x
+            handle = handle.getPrev();
+        }
+        if(handle == null) {
+            return false;
+        }
+        Instruction inst = handle.getInstruction();
+        if(inst.getOpcode() == Constants.ALOAD_0) {
+            return true;
+        }
+        if(inst instanceof GETFIELD && ((GETFIELD)inst).getFieldName(cpg).startsWith("this$")) {
+            return true;
+        }
+        return false;
     }
 
     /**

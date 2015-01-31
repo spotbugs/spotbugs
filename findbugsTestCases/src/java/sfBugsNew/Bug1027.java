@@ -43,4 +43,21 @@ public class Bug1027 {
             activationLock.unlock();
         }
     }
+    
+    public Runnable getRunnable() {
+        return new Runnable() {
+            @Override
+            @NoWarning("UL_UNRELEASED_LOCK_EXCEPTION_PATH")
+            public void run() {
+                activationLock.lock();
+                active = !active;
+                try {
+                    System.out.println("testing the blocker: " + active);
+                } finally {
+                    active = !active;
+                    activationLock.unlock();
+                }
+            }
+        };
+    }
 }
