@@ -165,6 +165,7 @@
             <arg value="fb.zip"/>
     </exec>
     <delete file="${revision.directory}/fb.zip"/>
+    <replace file="${revision.directory}/findbugs/.project" token="&lt;name&gt;findbugs&lt;/name&gt;" value="&lt;name&gt;findbugs-${revision}&lt;/name&gt;"/>
   </target>
 
   <target name="-requireProject">
