@@ -7617,6 +7617,19 @@ a signed and unsigned right shift (depending upon the size of the shift).
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="BSHIFT_WRONG_ADD_PRIORITY">
+    <ShortDescription>Possible bad parsing of shift operation</ShortDescription>
+    <LongDescription>Possible bad parsing of shift operation in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code performs an operation like (x &lt;&lt; 8 + y). Although this might be correct, probably it was meant 
+to perform (x &lt;&lt; 8) + y, but shift operation has
+a lower precedence, so it's actually parsed as x &lt;&lt; (8 + y).
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="ICAST_BAD_SHIFT_AMOUNT">
     <ShortDescription>32 bit int shifted by an amount not in the range -31..31</ShortDescription>
     <LongDescription>32 bit int shifted by {2} bits in {1}</LongDescription>

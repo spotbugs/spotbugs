@@ -43,7 +43,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -359,12 +358,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
                         // commonly observed error is hashCode body like "return foo << 16 + bar;"
                         priority = HIGH_PRIORITY;
                     }
-                    bugAccumulator.accumulateBug(new BugInstance(this, "TESTING", priority)
+                    bugAccumulator.accumulateBug(new BugInstance(this, "BSHIFT_WRONG_ADD_PRIORITY", priority)
                     .addClassAndMethod(this)
-                    .addString("Possible bad parsing of shift operation; shift operator has lower precedence than +").describe(StringAnnotation.STRING_MESSAGE)
                     .addInt(c).describe(IntAnnotation.INT_SHIFT)
                     .addValueSource(stack.getStackItem(2), this)
-                    .addValueSource(stack.getStackItem(1), this)
                     .addValueSource(stack.getStackItem(0), this)
                     , this);
                 }
