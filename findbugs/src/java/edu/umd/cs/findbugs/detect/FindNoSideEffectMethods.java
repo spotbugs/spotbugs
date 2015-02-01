@@ -322,7 +322,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if (!obj.isFinal() && !obj.isEnum()) {
             try {
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-                subtypes = subtypes2.getSubtypes(getClassDescriptor());
+                subtypes = new HashSet<>(subtypes2.getSubtypes(getClassDescriptor()));
                 subtypes.remove(getClassDescriptor());
             } catch (ClassNotFoundException e) {
             }
