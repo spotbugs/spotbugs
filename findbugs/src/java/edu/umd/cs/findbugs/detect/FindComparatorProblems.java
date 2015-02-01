@@ -28,16 +28,21 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * @author Tagir Valeev
  */
 public class FindComparatorProblems extends OpcodeStackDetector {
+    private static final MethodDescriptor FLOAT_DESCRIPTOR = new MethodDescriptor("java/lang/Float", "compare", "(FF)I", true);
+    private static final MethodDescriptor DOUBLE_DESCRIPTOR = new MethodDescriptor("java/lang/Double", "compare", "(DD)I", true);
+
     private boolean isComparator;
     private int lastEmptyStackPC;
     private List<int[]> twoDoublesInStack;
@@ -86,6 +91,8 @@ public class FindComparatorProblems extends OpcodeStackDetector {
                     Item item2 = getStack().getStackItem(1);
                     accumulator.accumulateBug(
                             new BugInstance("CO_COMPARETO_INCORRECT_FLOATING", NORMAL_PRIORITY).addClassAndMethod(this)
+                            .addType(item1.getSignature())
+                            .addMethod(item1.getSignature().equals("D")?DOUBLE_DESCRIPTOR:FLOAT_DESCRIPTOR).describe(MethodAnnotation.SHOULD_CALL)
                             .addValueSource(item1, this)
                             .addValueSource(item2, this), this);
                     iterator.remove();

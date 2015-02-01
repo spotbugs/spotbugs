@@ -3127,7 +3127,7 @@ the  constant Integer.MIN_VALUE, which is an exceptionally bad practice.
   </BugPattern>
   <BugPattern type="CO_COMPARETO_INCORRECT_FLOATING">
     <ShortDescription>compareTo()/compare() incorrectly handles float or double value</ShortDescription>
-    <LongDescription>{1} incorrectly handles float or double value</LongDescription>
+    <LongDescription>{1} incorrectly handles {2} value</LongDescription>
     <Details>
 <![CDATA[
   <p>This method compares double or float values using pattern like this: val1 &gt; val2 ? 1 : val1 &lt; val2 ? -1 : 0.
