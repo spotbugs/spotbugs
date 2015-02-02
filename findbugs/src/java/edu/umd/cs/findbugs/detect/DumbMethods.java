@@ -992,6 +992,22 @@ public class DumbMethods extends OpcodeStackDetector {
             case IFGE:
             case IFLT:
                 if(stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE) {
+                    OpcodeStack.Item top = stack.getStackItem(0);
+                    if (top.getSignature().equals("C") && top.getRegisterNumber() != -1 && getMaxPC() > getNextPC() + 2) {
+                        //                        for(int i = -2; i <= 0; i++) {
+                        //                            int o = getPrevOpcode(-i);
+                        //                            System.out.printf("%2d %2x %s%n",  i, o, OPCODE_NAMES[o]);
+                        //                        }
+                        //                        for(int i = 0; i < 4; i++) {
+                        //                            int o = getNextCodeByte(i);
+                        //                            System.out.printf("%2d %2x %s%n",  i, o, OPCODE_NAMES[o]);
+                        //
+                        //                        }
+                        if (getNextCodeByte(0) == getPrevOpcode(1) && getNextCodeByte(1) == BIPUSH && getNextCodeByte(2) == 80
+                                && getNextCodeByte(3) == IF_ICMPGE ) {
+                            break;
+                        }
+                    }
                     accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE",
                             NORMAL_PRIORITY).addClassAndMethod(this).addInt(0).describe(IntAnnotation.INT_VALUE), this);
                 }
