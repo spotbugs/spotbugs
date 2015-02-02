@@ -484,6 +484,15 @@ null かもしれない値が null でない値だけが使われるべき文脈
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindUselessObjects">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは役に立たないオブジェクトを探します。
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.MutableEnum">
     <Details>
 <![CDATA[
@@ -3083,6 +3092,19 @@ static parseXXX メソッドを呼び出す方が効率的です。
     </Details>
   </BugPattern>
 
+  <BugPattern type="DM_BOXED_PRIMITIVE_FOR_COMPARE">
+    <ShortDescription>プリミティブが比較でボクシングされている</ShortDescription>
+    <LongDescription>プリミティブが　{2} を呼び出すためにボクシングされています: 代わりに {3} を使用してください。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+ボクシングされたプリミティブが単に compareTo メソッドを呼び出すために作られています。
+直接プリミティブで働く static な比較メソッド (double と　float は Java 1.4から、他のプリミティブ型は Java 1.7から) を使うほうがより効率的です。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DM_NEW_FOR_GETCLASS">
     <ShortDescription>クラスオブジェクトを得るためだけにインスタンスを作成しているメソッド</ShortDescription>
     <LongDescription>{1} は、クラスオブジェクトを得るためだけにインスタンスを作成しています。</LongDescription>
@@ -5512,6 +5534,39 @@ static フィールドにすることを検討してください。
 <p>
 この条件は関係している変数の型範囲のために常に同じ結果を作り出します。
 おそらく何かほかの意味があったのかあるいは条件を除去できます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UC_USELESS_OBJECT">
+    <ShortDescription>役に立たないオブジェクトを作成した</ShortDescription>
+    <LongDescription>役に立たないオブジェクトをメソッド {1} の変数 {2} で格納しました。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+我々の解析でオブジェクトが役に立たないことを示しています。
+作成され、変更されていますが、値はメソッドの外に出ないし、副作用をもたらしません。
+どちらかの間違いがあり、オブジェクトが使われるように意図されていたか、あるいは除去できます。
+</p>
+<p>
+この解析はめったに誤検出することはありません。よくある誤検出のケースです。
+</p>
+<p>- 暗黙のうちに曖昧な例外をスローした</p>
+<p>- コードを一般化してスタブとして使用された</p>
+<p>- 弱/ソフト参照オブジェクトへの強い参照を持っていた</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="UC_USELESS_OBJECT_STACK">
+    <ShortDescription>役に立たないオブジェクトをスタックで作成した</ShortDescription>
+    <LongDescription>役に立たないオブジェクトをメソッド {1} で作成しました。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このオブジェクトは副作用を持たない修正を行うために作成されています。
+おそらく何か他の意味があったのか、あるいはオブジェクトを除去できます。
 </p>
 ]]>
     </Details>
