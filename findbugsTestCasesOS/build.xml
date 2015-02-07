@@ -32,7 +32,7 @@
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.current.home}/lib/findbugs-ant.jar"/>
     <property name="java.executable" value="" />
     <property name="enabledExtraVisitors" value="+CheckExpectedWarnings,+InefficientMemberAccess,+EmptyZipFileEntry"/>
-    <property name="maxHeap" value="-Xmx900m"/>
+    <property name="maxHeap" value="-Xmx1200m"/>
   </target>
 
   <target name="run" depends="init,-run">
@@ -99,11 +99,7 @@
     - source: project source
     - dep: project dependencies
   -->
-  <target name="retrieve" depends="-requireProject">
-    <local name="ivyfile"/>
-    <property name="ivyfile" value="projects/${prj}/ivy.xml"/>
-    <available file="${ivyfile}" property="prj.available"/>
-    <fail unless="prj.available" message="unable to find ${ivyfile}"/>
+  <target name="retrieve" depends="-requireProject" if="ivyfile.exists">
     <echo message="Retrieving '${prj}'"/>
     <ivy:resolve file="${ivyfile}" transitive="true" conf="default" type="jar,bundle"/>
     <ivy:retrieve pattern="projects/${prj}/dep/[artifact]-[revision].[ext]" type="jar,bundle"/>
@@ -170,6 +166,10 @@
 
   <target name="-requireProject">
     <fail unless="prj" message="please specify -Dprj=&lt;test project&gt; (one of subfolders in projects folder)"/>
+    <property name="ivyfile" value="projects/${prj}/ivy.xml"/>
+    <available file="projects/${prj}" property="prj.available"/>
+    <fail unless="prj.available" message="unable to find projects/${prj}"/>
+    <available file="${ivyfile}" property="ivyfile.exists"/>
   </target>
 
   <target name="-requireRevision">
