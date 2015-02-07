@@ -115,7 +115,8 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                     if(getXMethod().bridgeFrom() == null) {
                         pattern = "CAA_COVARIANT_ARRAY_RETURN";
                         arraySignature = new SignatureParser(getMethodSig()).getReturnTypeSignature();
-                        if((getXMethod().isPublic() || getXMethod().isProtected()) && getXClass().isPublic()) {
+                        if (!arraySignature.equals("[Ljava/lang/Object;")
+                                && (getXMethod().isPublic() || getXMethod().isProtected()) && getXClass().isPublic()) {
                             priority = NORMAL_PRIORITY;
                         }
                     }
