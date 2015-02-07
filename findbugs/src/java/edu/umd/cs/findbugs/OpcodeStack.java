@@ -375,6 +375,12 @@ public class OpcodeStack implements Constants2 {
 
         }
 
+
+        public boolean sameValue(OpcodeStack.Item that) {
+
+            return this.equals(that) && (this.registerNumber != -1 && this.registerNumber == that.registerNumber || this.fieldLoadedFromRegister != -1);
+        }
+
         @Override
         public String toString() {
             StringBuilder buf = new StringBuilder("< ");

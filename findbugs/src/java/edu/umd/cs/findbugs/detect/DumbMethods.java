@@ -992,6 +992,35 @@ public class DumbMethods extends OpcodeStackDetector {
             case IFGE:
             case IFLT:
                 if(stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE) {
+                    OpcodeStack.Item top = stack.getStackItem(0);
+                    if (top.getSignature().equals("C") && top.getRegisterNumber() != -1 && getMaxPC() > getNextPC() + 2) {
+                        //                        for(int i = -2; i <= 0; i++) {
+                        //                            int o = getPrevOpcode(-i);
+                        //                            System.out.printf("%2d %3d  %2x %s%n",  i, o, o, OPCODE_NAMES[o]);
+                        //                        }
+                        //                        for(int i = 0; i < 5; i++) {
+                        //                            int o = getNextCodeByte(i);
+                        //                            System.out.printf("%2d %3d %2x %s%n",  i, o, o, OPCODE_NAMES[o]);
+                        //
+                        //                        }
+                        int jump = IF_ICMPGE;
+                        if (seen == IFGE) {
+                            jump = IF_ICMPLT;
+                        }
+                        int nextCodeByte0 = getNextCodeByte(0);
+                        int nextCodeByte1 = getNextCodeByte(1);
+                        int nextCodeByte2 = getNextCodeByte(2);
+                        int nextCodeByte3 = getNextCodeByte(3);
+                        int nextCodeByte4 = getNextCodeByte(4);
+                        if (nextCodeByte0 == getPrevOpcode(1)
+                                && (nextCodeByte1 == BIPUSH && nextCodeByte2 == 128
+                                && nextCodeByte3 == jump
+                                || nextCodeByte1 == SIPUSH && nextCodeByte2 == 0 && nextCodeByte3 == 128
+                                && nextCodeByte4 == jump)
+                                ) {
+                            break;
+                        }
+                    }
                     accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE",
                             NORMAL_PRIORITY).addClassAndMethod(this).addInt(0).describe(IntAnnotation.INT_VALUE), this);
                 }

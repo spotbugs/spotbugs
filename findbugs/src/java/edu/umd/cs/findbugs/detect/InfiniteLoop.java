@@ -154,7 +154,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 return false;
             }
             ForwardConditionalBranch that = (ForwardConditionalBranch) o;
-            return this.item0.equals(that.item0) && this.item1.equals(that.item1);
+            return this.item0.sameValue(that.item0) && this.item1.sameValue(that.item1);
         }
 
     }
