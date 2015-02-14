@@ -3099,7 +3099,7 @@ static parseXXX メソッドを呼び出す方が効率的です。
 <![CDATA[
 <p>
 ボクシングされたプリミティブが単に compareTo メソッドを呼び出すために作られています。
-直接プリミティブで働く static な比較メソッド (double と　float は Java 1.4から、他のプリミティブ型は Java 1.7から) を使うほうがより効率的です。
+直接プリミティブで働く static compare メソッド (double と　float は Java 1.4から、他のプリミティブ型は Java 1.7から) を使うほうがより効率的です。
 </p>
 ]]>
     </Details>
@@ -3640,7 +3640,7 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
 
   <BugPattern type="CO_COMPARETO_INCORRECT_FLOATING">
     <ShortDescription>compareTo()/compare() は間違って float または double 値を処理する</ShortDescription>
-    <LongDescription>{1} は、間違って float または double 値を処理します。</LongDescription>
+    <LongDescription>{1} は、間違って {2} 値を処理します。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -8325,6 +8325,20 @@ String 機能が呼び出されていて、"." または "|" が引数として�
 <p>
 このコードは、符号なしキャストの実行結果を short または byte にキャストしています。結果の上位ビットは捨てられます。
 上位ビットが捨てられるので、符号付きと符号なし右シフト (シフトのサイズによって) との違いがないかもしれません。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BSHIFT_WRONG_ADD_PRIORITY">
+    <ShortDescription>シフト演算の正しくない構文解析の可能性がある</ShortDescription>
+    <LongDescription>シフト演算の正しくない構文解析の可能性があります。{1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+コードは (x &lt;&lt; 8 + y) のような操作を行います。
+これは正しいかもしれませんが、おそらく (x &lt;&lt; 8) + y を行うことを意図していました。
+しかし、シフト演算は優先順位が低いので、実際には x &lt;&lt; (8 + y) として構文解析されます。
 </p>
 ]]>
     </Details>
