@@ -1,4 +1,4 @@
-package java.awt;
+package sfBugsNew;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

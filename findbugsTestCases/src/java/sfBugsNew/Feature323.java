@@ -33,10 +33,19 @@ public class Feature323 {
     @ExpectWarning("RANGE_ARRAY_LENGTH")
     public int[] copy() {
         int[] newArray = new int[4];
-        System.arraycopy(newArray, 0, array, 1, array.length);
+        System.arraycopy(array, 0, newArray, 1, array.length);
         return newArray;
     }
     
+    @NoWarning("RANGE_ARRAY_LENGTH")
+    public int[] copyCorrect() {
+        int[] newArray = new int[4];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        newArray = new int[5];
+        System.arraycopy(newArray, 1, array, 0, array.length);
+        System.arraycopy(array, 0, newArray, 1, array.length);
+        return newArray;
+    }
     @ExpectWarning("RANGE_ARRAY_LENGTH")
     public String str() {
         char[] chars = new char[] {'b','u','g'};
@@ -67,14 +76,25 @@ public class Feature323 {
     
     @NoWarning("RANGE_STRING_INDEX")
     public String substringCorrect() {
-        return TEST_STRING.substring(TEST_STRING.length());
+        return TEST_STRING.substring(TEST_STRING.length())
+                + TEST_STRING.substring(TEST_STRING.length()-1)
+                +  TEST_STRING.substring(1, TEST_STRING.length())
+                +  TEST_STRING.substring(1, 2);
     }
     
     @ExpectWarning("RANGE_STRING_INDEX")
     public String substringIncorrect() {
         return TEST_STRING.substring(TEST_STRING.length()+1);
     }
+    @ExpectWarning("RANGE_STRING_INDEX")
+    public String substringIncorrect2() {
+        return TEST_STRING.substring(1, TEST_STRING.length()+1);
+    }
     
+    @ExpectWarning("RANGE_STRING_INDEX")
+    public String substringIncorrect3() {
+        return TEST_STRING.substring(2, 1);
+    }
     @NoWarning("RANGE_STRING_INDEX")
     public char charAtCorrect() {
         return TEST_STRING.charAt(TEST_STRING.length()-1);
@@ -84,4 +104,6 @@ public class Feature323 {
     public char charAtIncorrect() {
         return TEST_STRING.charAt(TEST_STRING.length());
     }
+    
+   
 }
