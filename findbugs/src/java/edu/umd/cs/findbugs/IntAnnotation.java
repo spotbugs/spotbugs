@@ -50,6 +50,9 @@ public class IntAnnotation implements BugAnnotation {
 
     public static final String INT_VALUE = "INT_VALUE";
 
+    public static final String INT_MIN_VALUE = "INT_MIN_VALUE";
+    public static final String INT_MAX_VALUE = "INT_MAX_VALUE";
+
     public static final String INT_SHIFT = "INT_SHIFT";
 
     public static final String INT_EXPECTED_ARGUMENTS = "INT_EXPECTED_ARGUMENTS";
