@@ -8,6 +8,10 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Feature333 {
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
+    public int compareTo(long a, long b) {
+        return ((Long)a).compareTo(b);
+    }
+    @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(int a, int b) {
         return ((Integer)a).compareTo(b);
     }
