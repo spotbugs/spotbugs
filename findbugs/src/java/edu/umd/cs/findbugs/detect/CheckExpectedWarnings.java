@@ -318,6 +318,9 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         Collection<SourceLineAnnotation> bugs = countWarnings(warnings, bugCode, minPriority,
                 rank);
         if (expectWarnings && bugs.size() < num) {
+            if (DetectorFactoryCollection.instance().isDisabledByDefault(bugCode)) {
+                return;
+            }
             BugInstance bug = makeWarning("FB_MISSING_EXPECTED_WARNING", methodDescriptor, priority, cd).addString(bugCodeMessage);
             if (!bugs.isEmpty()) {
                 bug.addString(String.format("Expected %d bugs, saw %d", num, bugs.size()));
@@ -360,6 +363,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     private static Collection<SourceLineAnnotation> countWarnings( Collection<BugInstance> warnings,
             @CheckForNull String bugCode,
             int desiredPriority, int rank) {
+
         Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
         DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
         boolean matchPattern = false;

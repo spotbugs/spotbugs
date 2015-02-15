@@ -252,6 +252,33 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         return factoryList;
     }
 
+    public boolean isDisabledByDefault(String bugPatternOrCode) {
+        @CheckForNull BugPattern pattern = lookupBugPattern(bugPatternOrCode);
+        if (pattern != null) {
+            for(DetectorFactory fac : factoryList) {
+                if (fac.isDefaultEnabled()  && fac.getReportedBugPatterns().contains(pattern)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        @CheckForNull BugCode code = lookupBugCode(bugPatternOrCode);
+        if (code != null) {
+            for(DetectorFactory fac : factoryList) {
+                if (fac.isDefaultEnabled()) {
+                    for(BugPattern p : fac.getReportedBugPatterns()) {
+                        if (p.getBugCode().equals(code)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Look up a DetectorFactory by its short name.
      *
@@ -541,6 +568,9 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
      * @return the BugPattern, or null if it can't be found
      */
     public @CheckForNull BugPattern lookupBugPattern(String bugType) {
+        if (bugType == null) {
+            return null;
+        }
         return bugPatternMap.get(bugType);
     }
 
