@@ -21,15 +21,44 @@ public class Ideas_2015_02_02 {
     public boolean isASCII(char c) {
         return c >= 0 && c < 128;
     }
+    @NoWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
+    public int foo(char [] ca) {
+        int count = 0;
+        for(int i = 0; i < ca.length; i++) {
+            char c=ca[i];
+            if (c>=0&&c<=0x7f)
+               count++;
+        }
+        return count;
+    }
 
-    @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
+    @NoWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
+    public boolean isOneByte(char c) {
+        return c >= 0 && c <= 255;
+    }
+    
+    @NoWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public boolean isASCIIBroken(char c) {
         return c >= 0 && c < 80;
     }
-
+   
+    
     @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public boolean isNonNegative(char c, char b) {
         return c >= 0 && b >= 0;
     }
+   
+    @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
+    public int isASCII2(char c, char b) {
+        if (c >= 0 && b < 128)
+            return b+c;
+        else return 0;
+    }
+    @NoWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
+    public int bar(char c) {
+        if (c<0||c>0xff) return -1;
+        return c;
+    }
+  
 
 }
