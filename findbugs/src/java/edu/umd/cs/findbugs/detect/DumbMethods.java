@@ -1002,14 +1002,14 @@ public class DumbMethods extends OpcodeStackDetector {
                             }
 
                             accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
-                            .addClassAndMethod(this).addInt(v1).describe(IntAnnotation.INT_VALUE), this);
+                            .addClassAndMethod(this).addInt(v1).describe(IntAnnotation.INT_VALUE).addValueSource(item0, this), this);
 
                         }
                     } else if (item0.getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE && constant1 instanceof Number) {
                         int v1 = ((Number) constant1).intValue();
                         if (v1 < 0) {
                             accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE",
-                                    HIGH_PRIORITY).addClassAndMethod(this).addInt(v1).describe(IntAnnotation.INT_VALUE), this);
+                                    HIGH_PRIORITY).addClassAndMethod(this).addInt(v1).describe(IntAnnotation.INT_VALUE).addValueSource(item0, this), this);
                         }
 
                     }
@@ -1028,15 +1028,19 @@ public class DumbMethods extends OpcodeStackDetector {
                                 int o = getPrevOpcode(-i);
                                 System.out.printf("%2d %3d  %2x %s%n",  i, o, o, OPCODE_NAMES[o]);
                             }
-                            for(int i = 0; i < 6; i++) {
+                            for(int i = 0; i < 7; i++) {
                                 int o = getNextCodeByte(i);
                                 System.out.printf("%2d %3d %2x %s%n",  i, o, o, OPCODE_NAMES[o]);
 
                             }
                         }
-                        int jump = IF_ICMPGE;
+                        int jump1, jump2;
                         if (seen == IFGE) {
-                            jump = IF_ICMPLT;
+                            jump1 = IF_ICMPLT;
+                            jump2 = IF_ICMPLE;
+                        } else {
+                            jump1 = IF_ICMPGE;
+                            jump2 = IF_ICMPGT;
                         }
                         int nextCodeByte0 = getNextCodeByte(0);
                         int loadConstant = 1;
@@ -1045,19 +1049,21 @@ public class DumbMethods extends OpcodeStackDetector {
                         }
                         int nextCodeByte1 = getNextCodeByte(loadConstant);
                         int nextCodeByte2 = getNextCodeByte(loadConstant+1);
-                        int nextCodeByte3 = getNextCodeByte(loadConstant+2);
-                        int nextCodeByte4 = getNextCodeByte(loadConstant+3);
+                        int nextJumpOffset = loadConstant+2;
+                        if (nextCodeByte1 == SIPUSH) {
+                            nextJumpOffset++;
+                        }
+                        int nextCodeByteJump = getNextCodeByte(nextJumpOffset);
+
                         if (nextCodeByte0 == getPrevOpcode(1)
-                                && (nextCodeByte1 == BIPUSH && nextCodeByte2 == 128
-                                && nextCodeByte3 == jump
-                                || nextCodeByte1 == SIPUSH && nextCodeByte2 == 0 && nextCodeByte3 == 128
-                                && nextCodeByte4 == jump)
-                                ) {
+                                && (nextCodeByte1 == BIPUSH || nextCodeByte1 == SIPUSH)
+                                && (IF_ICMPLT <= nextCodeByteJump && nextCodeByteJump <= IF_ICMPLE))
+                        {
                             break;
                         }
                     }
                     accumulator.accumulateBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE",
-                            NORMAL_PRIORITY).addClassAndMethod(this).addInt(0).describe(IntAnnotation.INT_VALUE), this);
+                            NORMAL_PRIORITY).addClassAndMethod(this).addInt(0).describe(IntAnnotation.INT_VALUE).addValueSource(top, this), this);
                 }
                 break;
             case IAND:
