@@ -413,7 +413,7 @@
                     reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
           <Detector class="edu.umd.cs.findbugs.detect.URLProblems" speed="fast"
                     reports="DMI_BLOCKING_METHODS_ON_URL,DMI_COLLECTION_OF_URLS"/>
-          <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast"
+          <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast" disabled="true"
                     reports="CAA_COVARIANT_ARRAY_FIELD,CAA_COVARIANT_ARRAY_RETURN,CAA_COVARIANT_ARRAY_LOCAL,CAA_COVARIANT_ARRAY_ELEMENT_STORE"/>
           <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" speed="fast"
                     reports="NP_IMMEDIATE_DEREFERENCE_OF_READLINE,RV_01_TO_INT,DM_INVALID_MIN_MAX,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_BOXED_PRIMITIVE_FOR_PARSING,DM_BOXED_PRIMITIVE_FOR_COMPARE,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_MONITOR_WAIT_ON_CONDITION,DMI_CALLING_NEXT_FROM_HASNEXT,RV_REM_OF_HASHCODE,RV_REM_OF_RANDOM_INT,RV_ABSOLUTE_VALUE_OF_RANDOM_INT,RV_ABSOLUTE_VALUE_OF_HASHCODE,BIT_ADD_OF_SIGNED_BYTE,BIT_IOR_OF_SIGNED_BYTE,INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE,INT_BAD_COMPARISON_WITH_SIGNED_BYTE,INT_BAD_REM_BY_1,DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION,INT_VACUOUS_COMPARISON,BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS,DMI_RANDOM_USED_ONLY_ONCE,DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT,DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED,DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR,DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS,DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD,DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE,INT_VACUOUS_BIT_OPERATION,DMI_COLLECTION_OF_URLS,INT_BAD_COMPARISON_WITH_INT_VALUE,DMI_DOH,DMI_ARGUMENTS_WRONG_ORDER,RANGE_ARRAY_INDEX,RANGE_ARRAY_OFFSET,RANGE_ARRAY_LENGTH,RANGE_STRING_INDEX"/>
@@ -519,11 +519,11 @@
                     reports="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"/>
           <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" speed="fast"
                     reports="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
-          <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop" speed="fast"
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientInitializationInsideLoop" speed="fast" disabled="true"
                     reports="IIL_PREPARE_STATEMENT_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP,IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT,IIL_ELEMENTS_GET_LENGTH_IN_LOOP"/>
-          <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf" speed="fast"
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientIndexOf" speed="fast" disabled="true"
                     reports="IIO_INEFFICIENT_INDEX_OF,IIO_INEFFICIENT_LAST_INDEX_OF"/>
-          <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast"
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast" disabled="true"
                     reports="ITA_INEFFICIENT_TO_ARRAY"/>
           <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" speed="fast"
                     reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS,IJU_BAD_SUITE_METHOD"/>
@@ -730,10 +730,14 @@
                     category="MALICIOUS_CODE"/>
           <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS"/>
-          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_FIELD" category="STYLE"/>
-          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_RETURN" category="STYLE"/>
-          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_LOCAL" category="STYLE"/>
-          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_ELEMENT_STORE" category="CORRECTNESS"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_FIELD" category="STYLE"
+                    experimental="true"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_RETURN" category="STYLE"
+                    experimental="true"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_LOCAL" category="STYLE"
+                    experimental="true"/>
+          <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_ELEMENT_STORE" category="CORRECTNESS"
+                    experimental="true"/>
           <BugPattern abbrev="CN" type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="CN" type="CN_IDIOM" category="BAD_PRACTICE"/>
@@ -1087,13 +1091,20 @@
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION"
                     category="PERFORMANCE"/>
-          <BugPattern abbrev="IIL" type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP" category="PERFORMANCE"/>
-          <BugPattern abbrev="IIL" type="IIL_PREPARE_STATEMENT_IN_LOOP" category="PERFORMANCE"/>
-          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP" category="PERFORMANCE"/>
-          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT" category="PERFORMANCE"/>
-          <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_INDEX_OF" category="PERFORMANCE"/>
-          <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_LAST_INDEX_OF" category="PERFORMANCE"/>
-          <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"/>
+          <BugPattern abbrev="IIL" type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIL" type="IIL_PREPARE_STATEMENT_IN_LOOP" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIL" type="IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_INDEX_OF" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_LAST_INDEX_OF" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
+                    experimental="true"/>
           <BugPattern abbrev="IJU" type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="IJU" type="IJU_BAD_SUITE_METHOD" category="CORRECTNESS"/>
