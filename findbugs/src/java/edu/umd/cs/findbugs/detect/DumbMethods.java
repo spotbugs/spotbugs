@@ -239,21 +239,27 @@ public class DumbMethods extends OpcodeStackDetector {
 
                 }
             }
-            if (intMin > intMax) {
-                return;
-            }
+
             if(value < intMin || value > intMax) {
-                BugInstance bug = new BugInstance(pattern, NORMAL_PRIORITY).addClassAndMethod(DumbMethods.this).addSourceLine(DumbMethods.this)
+                BugInstance bug = new BugInstance(pattern, NORMAL_PRIORITY ).addClassAndMethod(DumbMethods.this).addSourceLine(DumbMethods.this)
                         .addInt(value).describe(IntAnnotation.INT_VALUE);
-                if (value < intMin) {
-                    bug.addInt(intMin).describe(IntAnnotation.INT_MIN_VALUE);
-                } else {
-                    bug.addInt(intMax).describe(IntAnnotation.INT_MAX_VALUE);
+
+                if (intMin <= intMax) {
+                    if (value < intMin) {
+                        bug.addInt(intMin).describe(IntAnnotation.INT_MIN_VALUE);
+                    }
+                    if (value > intMax) {
+                        bug.addInt(intMax) .describe(IntAnnotation.INT_MAX_VALUE);
+                    }
                 }
+
 
                 if (isMethodCall()) {
                     bug.addCalledMethod(DumbMethods.this);
                 }
+
+
+
                 accumulator.accumulateBug(bug, DumbMethods.this);
             }
         }
@@ -289,26 +295,35 @@ public class DumbMethods extends OpcodeStackDetector {
             case INVOKESTATIC: {
                 MethodDescriptor m = getMethodDescriptorOperand();
                 if(m.getSlashedClassName().equals("java/lang/System") && m.getName().equals("arraycopy")) {
+                    // void arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+                    Item length = stack.getStackItem(0);
+                    Object constantLength = length.getConstant();
+                    //                    if (constantLength instanceof Number && constantLength.equals(0)) {
+                    //                        break;
+                    //                    }
                     Item srcPos = stack.getStackItem(3);
-                    checkRange(srcPos, 0, stack.getStackItem(4), "RANGE_ARRAY_OFFSET");
-                    checkRange(stack.getStackItem(1), 0, stack.getStackItem(2), "RANGE_ARRAY_OFFSET");
-                    Object constantLength = stack.getStackItem(0).getConstant();
+                    Item src = stack.getStackItem(4);
+                    checkRange(srcPos, 0, src, "RANGE_ARRAY_OFFSET");
+                    Item dest =  stack.getStackItem(2);
+                    Item destPos = stack.getStackItem(1);
+                    checkRange(destPos, 0, dest, "RANGE_ARRAY_OFFSET");
+
                     if(constantLength instanceof Number) {
                         int length1 = Integer.MAX_VALUE;
-                        if(stack.getStackItem(4).getConstant() instanceof Integer) {
-                            length1 = (int) stack.getStackItem(4).getConstant();
+                        if(src.getConstant() instanceof Integer) {
+                            length1 = (int) src.getConstant();
                         }
                         if(srcPos.getConstant() instanceof Integer) {
                             length1 -= (int) srcPos.getConstant();
                         }
                         int length2 = Integer.MAX_VALUE;
-                        if(stack.getStackItem(2).getConstant() instanceof Integer) {
+                        if(dest.getConstant() instanceof Integer) {
                             length2 = (int) stack.getStackItem(2).getConstant();
                         }
-                        if(stack.getStackItem(1).getConstant() instanceof Integer) {
+                        if(destPos.getConstant() instanceof Integer) {
                             length2 -= (int) stack.getStackItem(1).getConstant();
                         }
-                        checkRange(stack.getStackItem(0), 0, Math.min(length1, length2), "RANGE_ARRAY_LENGTH");
+                        checkRange(length, 0, Math.min(length1, length2), "RANGE_ARRAY_LENGTH");
                     }
                 }
                 break;
