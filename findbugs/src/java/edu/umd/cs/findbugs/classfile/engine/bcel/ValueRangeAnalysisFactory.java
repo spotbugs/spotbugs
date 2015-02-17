@@ -95,6 +95,17 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.max = max;
             this.signature = signature;
         }
+
+        public void addBordersTo(Set<Long> borders) {
+            borders.add(min);
+            if(min > Long.MIN_VALUE) {
+                borders.add(min-1);
+            }
+            borders.add(max);
+            if(max < Long.MAX_VALUE) {
+                borders.add(max+1);
+            }
+        }
     }
 
     private static final Map<String, TypeLongRange> typeRanges;
@@ -179,6 +190,10 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 rangeSet.map.put(value + 1, range.max);
             }
             return rangeSet;
+        }
+
+        public void addBordersTo(Set<Long> borders) {
+            range.addBordersTo(borders);
         }
 
         public LongRangeSet empty() {
@@ -329,6 +344,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
             this.falseCondition = fixCondition(falseCondition);
             this.trueReachedSet = trueSet.empty();
             this.falseReachedSet = trueSet.empty();
+            trueSet.addBordersTo(numbers);
             this.number = number;
             this.varName = varName;
         }
