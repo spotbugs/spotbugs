@@ -157,6 +157,11 @@ public class OpcodeStack implements Constants2 {
 
     BitSet exceptionHandlers = new BitSet();
 
+    /**
+     * True if this OpcodeStack is used for JumpInfo computations
+     */
+    boolean jumpInfoComputationMode = false;
+
     private boolean jumpInfoChangedByBackwardsBranch;
 
     private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
@@ -1535,7 +1540,7 @@ public class OpcodeStack implements Constants2 {
                         handled = true;
                         takeJump = seen == IF_ACMPNE;
                     }
-                } else if (lConstant instanceof Integer && rConstant instanceof Integer) {
+                } else if (lConstant instanceof Integer && rConstant instanceof Integer && !jumpInfoComputationMode) {
                     int lC = ((Integer) lConstant).intValue();
                     int rC = ((Integer) rConstant).intValue();
                     switch (seen) {
@@ -2810,6 +2815,7 @@ public class OpcodeStack implements Constants2 {
             final MethodDescriptor descriptor;
             private JumpStackComputation(MethodDescriptor descriptor) {
                 this.descriptor = descriptor;
+                this.stack.jumpInfoComputationMode = true;
             }
 
             protected OpcodeStack stack = new OpcodeStack();
@@ -3489,31 +3495,32 @@ public class OpcodeStack implements Constants2 {
     private void pushByLocalStore(int register) {
         Item it = new Item(pop());
         if (it.getRegisterNumber() != register) {
-            for (Item i : lvValues) {
-                if (i != null) {
-                    if (i.registerNumber == register) {
-                        i.registerNumber = -1;
-                    }
-                    if (i.fieldLoadedFromRegister == register) {
-                        i.fieldLoadedFromRegister = -1;
-                    }
-                }
-            }
-            for (Item i : stack) {
-                if (i != null) {
-                    if (i.registerNumber == register) {
-                        i.registerNumber = -1;
-                    }
-                    if (i.fieldLoadedFromRegister == register) {
-                        i.fieldLoadedFromRegister = -1;
-                    }
-                }
-            }
+            clearRegisterLoad(lvValues, register);
+            clearRegisterLoad(stack, register);
         }
         if (it.registerNumber == -1) {
             it.registerNumber = register;
         }
         setLVValue(register, it);
+    }
+
+    private static void clearRegisterLoad(List<Item> list, int register) {
+        for (int pos=0; pos<list.size(); pos++) {
+            if(pos == register) {
+                continue;
+            }
+            Item i = list.get(pos);
+            if(i != null && (i.registerNumber == register || i.fieldLoadedFromRegister == register)) {
+                i = new Item(i);
+                if (i.registerNumber == register) {
+                    i.registerNumber = -1;
+                }
+                if (i.fieldLoadedFromRegister == register) {
+                    i.fieldLoadedFromRegister = -1;
+                }
+                list.set(pos, i);
+            }
+        }
     }
 
     private void pushByLocalLoad(String signature, int register) {
