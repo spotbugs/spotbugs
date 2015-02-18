@@ -3506,9 +3506,6 @@ public class OpcodeStack implements Constants2 {
 
     private static void clearRegisterLoad(List<Item> list, int register) {
         for (int pos=0; pos<list.size(); pos++) {
-            if(pos == register) {
-                continue;
-            }
             Item i = list.get(pos);
             if(i != null && (i.registerNumber == register || i.fieldLoadedFromRegister == register)) {
                 i = new Item(i);
