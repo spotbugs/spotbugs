@@ -5630,16 +5630,11 @@ different types.  The result of this comparison will always be false at runtime.
     <Details>
 <![CDATA[
 <p> This method calls equals(Object) on two references of different
-class types with no common subclasses.
-Therefore, the objects being compared
-are unlikely to be members of the same class at runtime
-(unless some application classes were not analyzed, or dynamic class
-loading can occur at runtime).
-According to the contract of equals(),
-objects of different
-classes should always compare as unequal; therefore, according to the
-contract defined by java.lang.Object.equals(Object),
-the result of this comparison will always be false at runtime.
+class types and analysis suggests they will be to objects of different classes 
+at runtime. Further, examination of the equals methods that would be invoked suggest that either
+this call will always return false, or else the equals method is not be symmetric (which is 
+a property required by the contract
+for equals in class Object). 
 </p>
 ]]>
     </Details>
