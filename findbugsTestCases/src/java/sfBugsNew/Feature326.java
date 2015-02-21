@@ -110,6 +110,24 @@ public class Feature326 {
         System.out.println(x);
     }
 
+    @NoWarning("UC_USELESS_CONDITION")
+    public void testAssert2(int x) {
+        if(x < 0) {
+            return;
+        }
+        Preconditions.checkArgument(x >= 0, "Value of "+x+" is negative");
+        System.out.println(x);
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public void testAssertFail(int x) {
+        if(x < 0) {
+            return;
+        }
+        Preconditions.checkArgument(x < 0, "Value of "+x+" is positive");
+        System.out.println(x);
+    }
+
     boolean c1, d1;
     
     @NoWarning("UC_USELESS_CONDITION")

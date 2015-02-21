@@ -19,10 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GOTO;
+import org.apache.bcel.generic.GotoInstruction;
 import org.apache.bcel.generic.ICONST;
+import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -149,35 +153,73 @@ public class RedundantConditions implements Detector {
                     if(!(middle.getInstruction() instanceof GOTO) || ((GOTO)middle.getInstruction()).getTarget() != after) {
                         return priority;
                     }
+                    MethodGen methodGen;
+                    try {
+                        methodGen = Global.getAnalysisCache().getMethodAnalysis(MethodGen.class, methodDescriptor);
+                    } catch (CheckedAnalysisException e) {
+                        return priority;
+                    }
+                    InstructionHandle consumer = getConsumer(methodGen, after);
+                    Instruction consumerInst = consumer == null ? null : consumer.getInstruction();
+                    if(consumerInst != null) {
+                        short opcode = consumerInst.getOpcode();
+                        if(opcode == Constants.IADD || opcode == Constants.ISUB || opcode == Constants.IMUL
+                                || opcode == Constants.ISHR || opcode == Constants.ISHL || opcode == Constants.IUSHR) {
+                            // It's actually integer expression with explicit ? 1 : 0 or ? 0 : 1 operation
+                            return priority;
+                        }
+                    }
                     if(condition.getSignature().equals("Z")) {
                         // Ignore !flag when flag value is known
                         return IGNORE_PRIORITY;
                     }
                     priority = condition.isBorder() ? LOW_PRIORITY : NORMAL_PRIORITY;
-                    if(after.getInstruction() instanceof InvokeInstruction) {
-                        MethodGen methodGen;
-                        try {
-                            methodGen = Global.getAnalysisCache().getMethodAnalysis(MethodGen.class, methodDescriptor);
-                        } catch (CheckedAnalysisException e) {
-                            return priority;
-                        }
+                    if(consumerInst instanceof InvokeInstruction) {
                         ConstantPoolGen constantPool = methodGen.getConstantPool();
-                        String methodName = ((InvokeInstruction)after.getInstruction()).getMethodName(constantPool);
+                        String methodName = ((InvokeInstruction)consumerInst).getMethodName(constantPool);
                         // Ignore values conditions used in assertion methods
                         if((methodName.equals("assertTrue") || methodName.equals("checkArgument") || methodName.equals("isLegal")
-                                || methodName.equals("isTrue"))
-                                && liveValue == 1) {
-                            return IGNORE_PRIORITY;
+                                || methodName.equals("isTrue"))) {
+                            return liveValue == 1 ? condition.isBorder() ? IGNORE_PRIORITY : LOW_PRIORITY : HIGH_PRIORITY;
                         }
-                        if((methodName.equals("assertFalse") || methodName.equals("isFalse"))
-                                && liveValue == 0) {
-                            return IGNORE_PRIORITY;
+                        if((methodName.equals("assertFalse") || methodName.equals("isFalse"))) {
+                            return liveValue == 0 ? condition.isBorder() ? IGNORE_PRIORITY : LOW_PRIORITY : HIGH_PRIORITY;
                         }
                     }
                 }
             }
         }
         return priority;
+    }
+
+    /**
+     * @param methodGen method
+     * @param start instruction to scan
+     * @return instruction which consumes value which was on top of stack before start instruction
+     * or null if cannot be determined
+     */
+    private InstructionHandle getConsumer(MethodGen methodGen, InstructionHandle start) {
+        int depth = 1;
+        InstructionHandle cur = start;
+        while(cur != null) {
+            Instruction inst = cur.getInstruction();
+            depth -= inst.consumeStack(methodGen.getConstantPool());
+            if(depth <= 0) {
+                return cur;
+            }
+            depth += inst.produceStack(methodGen.getConstantPool());
+            if(inst instanceof BranchInstruction) {
+                if(inst instanceof GotoInstruction) {
+                    cur = ((GotoInstruction)inst).getTarget();
+                    continue;
+                }
+                if(!(inst instanceof IfInstruction)) {
+                    return null;
+                }
+            }
+            cur = cur.getNext();
+        }
+        return null;
     }
 
     private int getIntValue(InstructionHandle handle) {
