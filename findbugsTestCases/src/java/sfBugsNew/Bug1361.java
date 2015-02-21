@@ -32,7 +32,15 @@ public class Bug1361 {
     @ExpectWarning("UC_USELESS_CONDITION")
     public int testInt3(boolean flag) {
         if(flag) {
-            return (flag ? 1 : 0) + Math.round(10.0f * 5) * 10;
+            return (flag ? 1 : 0) * (Math.round(10.0f * 5) * 10);
+        }
+        return 0;
+    }
+
+    @ExpectWarning("UC_USELESS_CONDITION")
+    public int testInt4(boolean flag, boolean flag2, boolean flag3) {
+        if(flag) {
+            return (flag ? 1 : 0) + (flag2 && flag3 ? 1 : flag3 ? 2 : 0);
         }
         return 0;
     }

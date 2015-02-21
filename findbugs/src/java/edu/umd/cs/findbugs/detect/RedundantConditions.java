@@ -211,12 +211,13 @@ public class RedundantConditions implements Detector {
             if(inst instanceof BranchInstruction) {
                 if(inst instanceof GotoInstruction) {
                     cur = ((GotoInstruction)inst).getTarget();
-                } else if(!(inst instanceof IfInstruction)) {
+                    continue;
+                }
+                if(!(inst instanceof IfInstruction)) {
                     return null;
                 }
-            } else {
-                cur = cur.getNext();
             }
+            cur = cur.getNext();
         }
         return null;
     }
