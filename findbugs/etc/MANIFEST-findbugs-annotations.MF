@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FindbugsAnnotations
 Bundle-SymbolicName: findbugsAnnotations
-Bundle-Version: 3.0.0
+Bundle-Version: 3.0.1
 Export-Package: edu.umd.cs.findbugs.annotations,
  javax.annotation,
  javax.annotation.concurrent,
