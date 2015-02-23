@@ -740,6 +740,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
         if (actualString.equals(objString) && expectedCat == TypeCategory.TYPE_VARIABLE) {
             return IncompatibleTypes.SEEMS_OK;
         }
+        if (expectedCat == TypeCategory.WILDCARD) {
+            return IncompatibleTypes.SEEMS_OK;
+        }
         if (ignoreBaseType) {
             if (expectedCat == TypeCategory.PARAMETERIZED && argCat == TypeCategory.PARAMETERIZED) {
                 GenericObjectType parmGeneric = (GenericObjectType) expectedType;
