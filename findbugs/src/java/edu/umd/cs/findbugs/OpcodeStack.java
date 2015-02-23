@@ -157,12 +157,9 @@ public class OpcodeStack implements Constants2 {
 
     BitSet exceptionHandlers = new BitSet();
 
-    /**
-     * True if this OpcodeStack is used for JumpInfo computations
-     */
-    boolean jumpInfoComputationMode = false;
-
     private boolean jumpInfoChangedByBackwardsBranch;
+
+    private boolean jumpInfoChangedByNewTarget;
 
     private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
 
@@ -1540,7 +1537,7 @@ public class OpcodeStack implements Constants2 {
                         handled = true;
                         takeJump = seen == IF_ACMPNE;
                     }
-                } else if (lConstant instanceof Integer && rConstant instanceof Integer && !jumpInfoComputationMode) {
+                } else if (lConstant instanceof Integer && rConstant instanceof Integer) {
                     int lC = ((Integer) lConstant).intValue();
                     int rC = ((Integer) rConstant).intValue();
                     switch (seen) {
@@ -2815,7 +2812,6 @@ public class OpcodeStack implements Constants2 {
             final MethodDescriptor descriptor;
             private JumpStackComputation(MethodDescriptor descriptor) {
                 this.descriptor = descriptor;
-                this.stack.jumpInfoComputationMode = true;
             }
 
             protected OpcodeStack stack = new OpcodeStack();
@@ -2883,6 +2879,12 @@ public class OpcodeStack implements Constants2 {
                             String.format("For %s, mismatch on existence of backedge: %s for precomputation, %s for bytecode analysis",
                                     xMethod, xMethod.hasBackBranch(), myStack.backwardsBranch));
                 }
+                if (myStack.isJumpInfoChangedByNewTarget()) {
+                    if (DEBUG) {
+                        System.out.println("new target found, resetting iteration count");
+                    }
+                    iteration = 1;
+                }
                 if (iteration++ > 40) {
                     AnalysisContext.logError("Iterative jump info didn't converge after " + iteration + " iterations in " + xMethod
                             + ", size " + method.getCode().getLength());
@@ -2912,6 +2914,7 @@ public class OpcodeStack implements Constants2 {
         List<Item> atTarget = jumpEntries.get(Integer.valueOf(target));
         if (atTarget == null) {
             setJumpInfoChangedByBackwardBranch("new target", from, target);
+            setJumpInfoChangedByNewTarget();
             jumpEntries.put(Integer.valueOf(target), new ArrayList<Item>(lvValues));
             jumpEntryLocations.set(target);
             if (stack.size() > 0) {
@@ -2928,9 +2931,7 @@ public class OpcodeStack implements Constants2 {
                 }
             }
         }
-        if (DEBUG) {
-            System.out.println("merge target for " + methodName + ":" + target + " pc is " + atTarget);
-        }
+
     }
 
     private String methodName;
@@ -3058,6 +3059,7 @@ public class OpcodeStack implements Constants2 {
         encountedTop = false;
         backwardsBranch = false;
         clearJumpInfoChangedByBackwardsBranch();
+        clearJumpInfoChangedByNewTarget();
 
         setReachOnlyByBranch(false);
         seenTransferOfControl = false;
@@ -3607,5 +3609,20 @@ public class OpcodeStack implements Constants2 {
 
     void setJumpInfoChangedByBackwardsBranch(int from, int to) {
         this.jumpInfoChangedByBackwardsBranch = true;
+    }
+
+    /**
+     * @return Returns the jumpInfoChangedByNewTarget.
+     */
+    protected boolean isJumpInfoChangedByNewTarget() {
+        return jumpInfoChangedByNewTarget;
+    }
+
+    void clearJumpInfoChangedByNewTarget() {
+        this.jumpInfoChangedByNewTarget = jumpInfoChangedByNewTarget;
+    }
+
+    protected void setJumpInfoChangedByNewTarget() {
+        this.jumpInfoChangedByNewTarget = true;
     }
 }
