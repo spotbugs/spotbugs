@@ -827,8 +827,8 @@
           <BugPattern abbrev="Eq" type="EQ_OTHER_NO_OBJECT" category="CORRECTNESS"/>
           <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="Co" type="CO_COMPARETO_RESULTS_MIN_VALUE" category="CORRECTNESS"/>
-          <BugPattern abbrev="Co" type="CO_COMPARETO_INCORRECT_FLOATING" category="CORRECTNESS"/>
+          <BugPattern abbrev="Co" type="CO_COMPARETO_RESULTS_MIN_VALUE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="Co" type="CO_COMPARETO_INCORRECT_FLOATING" category="BAD_PRACTICE"/>
           <BugPattern abbrev="RV" type="RV_NEGATING_RESULT_OF_COMPARETO" category="BAD_PRACTICE"/>
           <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE"/>
           <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
