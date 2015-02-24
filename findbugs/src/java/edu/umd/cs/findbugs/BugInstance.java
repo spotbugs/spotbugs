@@ -2465,6 +2465,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     public static @CheckForNull
     BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
+        if (stack.isTop()) {
+            return null;
+        }
         int pc = location.getHandle().getPosition();
 
         try {
