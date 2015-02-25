@@ -477,6 +477,9 @@ public class FindUselessObjects implements Detector {
                 GenLocation location = iterator.next();
                 Instruction inst = location.getHandle().getInstruction();
                 ValueNumberFrame before = location.frameBefore();
+                if (!before.isValid()) {
+                    continue;
+                }
                 if(inst instanceof IINC) {
                     int index = ((IINC)inst).getIndex();
                     Set<ValueInfo> vals = context.getLiveVals(before.getValue(index));
