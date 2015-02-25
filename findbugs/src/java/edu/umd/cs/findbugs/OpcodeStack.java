@@ -3619,7 +3619,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     void clearJumpInfoChangedByNewTarget() {
-        this.jumpInfoChangedByNewTarget = jumpInfoChangedByNewTarget;
+        this.jumpInfoChangedByNewTarget = false;
     }
 
     protected void setJumpInfoChangedByNewTarget() {
