@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  */
 public abstract class TypeReturnNull extends OpcodeStackDetector {
 
-    BugAccumulator bugAccumulator;
+    protected final BugAccumulator bugAccumulator;
 
     public TypeReturnNull(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
