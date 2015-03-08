@@ -55,6 +55,8 @@ public class TypeQualifierResolver {
 
     static final ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
 
+    static final ClassDescriptor intellijNotNull = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull");
+
     static final ClassDescriptor eclipseNullable = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable");
 
     static final ClassDescriptor eclipseNonNull = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull");
@@ -128,7 +130,8 @@ public class TypeQualifierResolver {
                     resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.CHECK_FOR_NULL), result, onStack);
                     return;
                 }
-                if (annotationClass.equals(eclipseNonNull) || annotationClass.equals(eclipseNonNullByDefault)) {
+                if (annotationClass.equals(eclipseNonNull) || annotationClass.equals(eclipseNonNullByDefault)
+                        || annotationClass.equals(intellijNotNull)) {
                     resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NONNULL), result, onStack);
                     return;
                 }

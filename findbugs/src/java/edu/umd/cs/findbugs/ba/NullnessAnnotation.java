@@ -48,7 +48,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
                 return CHECK_FOR_NULL;
             }
             // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
-            if (className.endsWith("Nonnull")) {
+            if (className.endsWith("Nonnull") || className.equals("org.jetbrains.annotations.NotNull")) {
                 return NONNULL;
             }
             for (NullnessAnnotation v : myValues) {
