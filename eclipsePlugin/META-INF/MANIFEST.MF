@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FindBugs Plug-in
 Bundle-SymbolicName: edu.umd.cs.findbugs.plugin.eclipse; singleton:=true
-Bundle-Version: 3.0.1.qualifier
+Bundle-Version: 3.0.2.qualifier
 Bundle-ClassPath: findbugs-plugin.jar,
  lib/jsr305.jar,
  lib/annotations.jar,
