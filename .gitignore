@@ -21,6 +21,7 @@ findbugs/classesEclipse/
 findbugs/doc/
 findbugs/jnlp/appengine.jnlp
 findbugs/lib/annotations.jar
+findbugs/lib/findbugs-annotations.jar
 findbugs/lib/findbugs-ant.jar
 findbugs/lib/findbugs.jar
 findbugs/lib/apache-ant-1.8.3-src.zip

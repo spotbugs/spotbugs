@@ -47,6 +47,7 @@
     <property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
     <property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
     <property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
+    <property name="findbugs-annotations.jar" value="${jar.dir}/findbugs-annotations.jar"/>
     <property name="test.jar" value="${test.dir}/dumb.jar"/>
     <property name="sampleoutput.dir" value="build/sampleoutput"/>
     <property name="junittests.jar" value="build/junittests.jar"/>
@@ -300,6 +301,16 @@
             </fileset>
             <zipfileset src="${jar.dir}/jcip-annotations.jar" excludes="META-INF/**,**/*.html"/>
             <zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**,**/*.html"/>
+        </jar>
+
+        <!-- FindBugs only annotations jar file. -->
+        <jar destfile="${findbugs-annotations.jar}" manifest="${etc.dir}/MANIFEST-findbugs-internal-annotations.MF">
+            <fileset dir="${classes.dir}">
+                <include name="**/annotations/*.class"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="**/annotations/*.java"/>
+            </fileset>
         </jar>
     </target>
 
