@@ -161,7 +161,7 @@
     </contributor>
     <contributor>
       <name>Tagir Valeev</name>
-      <email />
+      <email>lany@ngs.ru</email>
       <url />
       <roles>
         <role />
@@ -246,7 +246,7 @@
     </dependency>
   </dependencies>
   <build>
-    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <sourceDirectory>${basedir}/src/java</sourceDirectory>
     <testSourceDirectory>${basedir}/src/junit</testSourceDirectory>
     <resources>
       <resource>
@@ -262,16 +262,6 @@
         <directory>${basedir}/src/xsl</directory>
         <includes>
           <include>*.xsl</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/antTask</directory>
-        <includes>
-          <include>**/*.xsl</include>
-          <include>**/*.properties</include>
-          <include>**/*.db</include>
-          <include>**/*.png</include>
-          <include>**/*.html</include>
         </includes>
       </resource>
       <resource>
@@ -307,12 +297,27 @@
     </resources>
     <plugins>
       <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.9.1</version>
+          <executions>
+              <execution>
+                  <phase>generate-sources</phase>
+                  <goals><goal>add-source</goal></goals>
+                  <configuration>
+                      <sources>
+                          <source>src/antTask</source>
+                          <source>src/tools</source>
+                          <source>src/gui</source>
+                      </sources>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
-        <configuration>
-        <sourcepath>src/java</sourcepath>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -329,7 +334,6 @@
           <testExcludes>
             <exclude>**/architecture/**</exclude>
             <exclude>**/cloud/**</exclude>
-            <!-- -->
             <exclude>**/DetectorsTest.java</exclude>
           </testExcludes>
         </configuration>
