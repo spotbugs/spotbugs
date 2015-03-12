@@ -1,15 +1,15 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
-    <relativePath></relativePath>
+    <relativePath />
   </parent>
 
   <groupId>com.google.code.findbugs</groupId>
   <artifactId>findbugs</artifactId>
-  <version>3.0.1-SNAPSHOT</version>
+  <version>3.0.1</version>
   <packaging>jar</packaging>
 
   <url>http://findbugs.sourceforge.net/</url>
@@ -60,7 +60,7 @@
     <developer>
       <id>bp</id>
       <name>Keith Lea</name>
-      <email></email>
+      <email />
       <url>http://keithlea.com/</url>
       <roles>
         <role>web cloud</role>
@@ -89,26 +89,26 @@
     </contributor>
     <contributor>
       <name>Nay Ayewah</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>-5</timezone>
     </contributor>
     <contributor>
       <name>Ben Langmead</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>-5</timezone>
     </contributor>
     <contributor>
       <name>Tomas Pollak</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
         <role>Eclipse plugin tests</role>
       </roles>
@@ -116,17 +116,17 @@
     </contributor>
     <contributor>
       <name>Phil Crosby</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>-5</timezone>
     </contributor>
     <contributor>
       <name>Peter Friese</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
         <role>Eclipse plugin</role>
       </roles>
@@ -134,37 +134,37 @@
     </contributor>
     <contributor>
       <name>Dave Brosius</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>-5</timezone>
     </contributor>
     <contributor>
       <name>Brian Goetz</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>-5</timezone>
     </contributor>
     <contributor>
       <name>Rohan Lloyd</name>
-      <email></email>
-      <url></url>
+      <email />
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>-5</timezone>
     </contributor>
     <contributor>
       <name>Tagir Valeev</name>
-      <email></email>
-      <url></url>
+      <email>lany@ngs.ru</email>
+      <url />
       <roles>
-        <role></role>
+        <role />
       </roles>
       <timezone>+6</timezone>
     </contributor>
@@ -246,7 +246,7 @@
     </dependency>
   </dependencies>
   <build>
-    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <sourceDirectory>${basedir}/src/java</sourceDirectory>
     <testSourceDirectory>${basedir}/src/junit</testSourceDirectory>
     <resources>
       <resource>
@@ -262,16 +262,6 @@
         <directory>${basedir}/src/xsl</directory>
         <includes>
           <include>*.xsl</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/antTask</directory>
-        <includes>
-          <include>**/*.xsl</include>
-          <include>**/*.properties</include>
-          <include>**/*.db</include>
-          <include>**/*.png</include>
-          <include>**/*.html</include>
         </includes>
       </resource>
       <resource>
@@ -307,12 +297,27 @@
     </resources>
     <plugins>
       <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.9.1</version>
+          <executions>
+              <execution>
+                  <phase>generate-sources</phase>
+                  <goals><goal>add-source</goal></goals>
+                  <configuration>
+                      <sources>
+                          <source>src/antTask</source>
+                          <source>src/tools</source>
+                          <source>src/gui</source>
+                      </sources>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
-        <configuration>
-        <sourcepath>src/java</sourcepath>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -329,7 +334,6 @@
           <testExcludes>
             <exclude>**/architecture/**</exclude>
             <exclude>**/cloud/**</exclude>
-            <!-- -->
             <exclude>**/DetectorsTest.java</exclude>
           </testExcludes>
         </configuration>
