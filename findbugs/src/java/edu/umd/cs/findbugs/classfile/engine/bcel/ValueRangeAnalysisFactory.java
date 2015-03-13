@@ -21,10 +21,12 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import static org.apache.bcel.Constants.*;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -727,7 +729,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         for (VariableData data : analyzedArguments.values()) {
             for (LongRangeSet subRange : data.splitSet) {
                 BitSet reachedBlocks = new BitSet();
-                walkCFG(cfg, cfg.getEntry(), subRange, data.edges, reachedBlocks, new HashSet<Long>());
+                walkCFG(cfg, subRange, data.edges, reachedBlocks);
                 data.reachableBlocks.or(reachedBlocks);
             }
         }
@@ -893,28 +895,45 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         return result;
     }
 
-    private static void walkCFG(CFG cfg, BasicBlock basicBlock, LongRangeSet subRange, Map<Edge, Branch> edges, BitSet reachedBlocks, Set<Long> numbers) {
-        reachedBlocks.set(basicBlock.getLabel());
-        for (Iterator<Edge> iterator = cfg.outgoingEdgeIterator(basicBlock); iterator.hasNext();) {
-            Edge edge = iterator.next();
-            Branch branch = edges.get(edge);
-            if (branch != null) {
-                branch.numbers.addAll(numbers);
-                numbers = new HashSet<>(numbers);
-                numbers.add(branch.number.longValue());
-                if (branch.trueSet.intersects(subRange)) {
-                    branch.trueReachedSet.add(subRange);
-                } else {
-                    branch.falseReachedSet.add(subRange);
-                    continue;
+    private static void walkCFG(final CFG cfg, LongRangeSet subRange, Map<Edge, Branch> edges, final BitSet reachedBlocks) {
+        class WalkState {
+            Set<Long> numbers;
+            BasicBlock target;
+
+            WalkState(Set<Long> numbers, BasicBlock target) {
+                reachedBlocks.set(target.getLabel());
+                this.target = target;
+                this.numbers = numbers;
+            }
+        }
+
+        Deque<WalkState> walkStates = new ArrayDeque<>();
+        walkStates.push(new WalkState(new HashSet<Long>(), cfg.getEntry()));
+
+        while(!walkStates.isEmpty()) {
+            WalkState walkState = walkStates.removeLast();
+            Set<Long> numbers = walkState.numbers;
+            for(Iterator<Edge> iterator = cfg.outgoingEdgeIterator(walkState.target); iterator.hasNext(); ) {
+                Edge edge = iterator.next();
+                Branch branch = edges.get(edge);
+                if (branch != null) {
+                    branch.numbers.addAll(numbers);
+                    numbers = new HashSet<>(numbers);
+                    numbers.add(branch.number.longValue());
+                    if (branch.trueSet.intersects(subRange)) {
+                        branch.trueReachedSet.add(subRange);
+                    } else {
+                        branch.falseReachedSet.add(subRange);
+                        continue;
+                    }
                 }
-            }
-            BasicBlock target = edge.getTarget();
-            if (!reachedBlocks.get(target.getLabel())) {
-                walkCFG(cfg, target, subRange, edges, reachedBlocks, numbers);
-            }
-            if (branch != null) {
-                break;
+                BasicBlock target = edge.getTarget();
+                if (!reachedBlocks.get(target.getLabel())) {
+                    walkStates.push(new WalkState(numbers, target));
+                }
+                if (branch != null) {
+                    break;
+                }
             }
         }
     }
