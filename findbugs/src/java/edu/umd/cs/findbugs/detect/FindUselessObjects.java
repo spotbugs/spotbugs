@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StringAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -75,6 +76,7 @@ import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDat
  * @author Tagir Valeev
  */
 public class FindUselessObjects implements Detector {
+    private static final int MAX_ITERATIONS = 50;
     private final BugReporter reporter;
     private final NoSideEffectMethodsDatabase noSideEffectMethods;
 
@@ -471,8 +473,15 @@ public class FindUselessObjects implements Detector {
         }
         context.enhanceViaMergeTree();
         boolean changed;
+        int iteration = 0;
         do {
             changed = false;
+            if(++iteration > MAX_ITERATIONS) {
+                AnalysisContext.logError("FindUselessObjects: " + classContext.getClassDescriptor().getDottedClassName() + "."
+                        + method.getName() + method.getSignature() + ": cannot converge after " + MAX_ITERATIONS
+                        + " iterations; method is skipped");
+                return;
+            }
             for(Iterator<GenLocation> iterator = context.genIterator(); iterator.hasNext() && !context.isEmpty(); ) {
                 GenLocation location = iterator.next();
                 Instruction inst = location.getHandle().getInstruction();
