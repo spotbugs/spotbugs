@@ -4895,8 +4895,8 @@ Common false-positive cases include:</p>
     <LongDescription>Useless condition: it's known that {2} at this point</LongDescription>
     <Details>
 <![CDATA[
-<p>This condition always produces the same result as the value of the involved variable was narrowed before. 
-Probably something else was meant or condition can be removed.</p>
+<p>This condition always produces the same result as the value of the involved variable that was narrowed before.
+Probably something else was meant or the condition can be removed.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4906,7 +4906,7 @@ Probably something else was meant or condition can be removed.</p>
     <Details>
 <![CDATA[
 <p>This condition always produces the same result due to the type range of the involved variable. 
-Probably something else was meant or condition can be removed.</p>
+Probably something else was meant or the condition can be removed.</p>
 ]]>
     </Details>
   </BugPattern>
