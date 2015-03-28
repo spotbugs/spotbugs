@@ -628,7 +628,11 @@ public class ClassPathBuilder implements IClassPathBuilder {
             } catch (IOException e) {
                 if (item.isAppCodeBase() || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED) {
                     if (e instanceof FileNotFoundException) {
-                        errorLogger.logError("File not found: " + item.getCodeBaseLocator());
+                        if(item.isAppCodeBase()){
+                            errorLogger.logError("File from project not found: " + item.getCodeBaseLocator(), e);
+                        } else {
+                            errorLogger.logError("File from auxiliary classpath not found: " + item.getCodeBaseLocator(), e);
+                        }
                     } else {
                         errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
                     }
