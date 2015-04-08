@@ -4382,7 +4382,6 @@ javax.xml.soap.SOAPMessage,createAttachmentPart,(Ljava/lang/Object;Ljava/lang/St
 javax.xml.soap.SOAPMessage,createAttachmentPart,(Ljavax/activation/DataHandler;)Ljavax/xml/soap/AttachmentPart;,1|true
 javax.xml.soap.SOAPMessage,getProperty,(Ljava/lang/String;)Ljava/lang/Object;,1|true
 javax.xml.soap.SOAPMessage,getSOAPBody,()Ljavax/xml/soap/SOAPBody;,1|true
-javax.xml.soap.SOAPMessage,getSOAPHeader,()Ljavax/xml/soap/SOAPHeader;,1|true
 javax.xml.stream.XMLEventFactory,newFactory,()Ljavax/xml/stream/XMLEventFactory;,9|true
 javax.xml.stream.XMLEventFactory,newFactory,(Ljava/lang/String;Ljava/lang/ClassLoader;)Ljavax/xml/stream/XMLEventFactory;,9|true
 javax.xml.stream.XMLEventFactory,newInstance,()Ljavax/xml/stream/XMLEventFactory;,9|true
