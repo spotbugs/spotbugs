@@ -318,7 +318,10 @@ public abstract class CommandLine {
             if (!option.startsWith("-")) {
                 break;
             }
-
+            if (dryRun && option.startsWith("@")) {
+                ++arg;
+                continue;
+            }
             String optionExtraPart = "";
             int colon = option.indexOf(':');
             if (colon >= 0) {
