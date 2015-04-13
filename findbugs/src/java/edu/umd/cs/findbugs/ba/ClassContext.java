@@ -807,23 +807,26 @@ public class ClassContext {
                 if (newLine == lineNum || newLine == -1) {
                     continue;
                 }
+
                 if (prevStartPc >= 0) {
                     int nextPcInFinallyBlock = pcInFinallyBlock.nextSetBit(prevStartPc);
-                    if (nextPcInFinallyBlock < line.getStartPC()) {
+                    if ( prevStartPc < nextPcInFinallyBlock && nextPcInFinallyBlock < line.getStartPC()) {
                         lineMentionedMultipleTimes.set(lineNum);
                     }
                 }
+
                 if (line.getStartPC() >= firstHandler) {
                     afterHandler.set(lineNum);
+                    afterHandler.set(newLine);
                 }
-
                 lineNum = newLine;
-                prevStartPc = line.getStartPC();
+
                 if (foundOnce.get(lineNum)) {
                     lineMentionedMultipleTimes.set(lineNum);
                 } else {
                     foundOnce.set(lineNum);
                 }
+                prevStartPc = line.getStartPC();
             }
         }
         lineMentionedMultipleTimes.and(afterHandler);
