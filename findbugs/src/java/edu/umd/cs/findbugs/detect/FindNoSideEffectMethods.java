@@ -842,7 +842,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      * @return true if given method is known to change its object only
      */
     private static boolean isObjectOnlyMethod(MethodDescriptor m) {
-        if (m.isStatic() || m.getName().equals("<init>")) {
+        if (m.isStatic() || m.getName().equals("<init>") || m.getName().equals("forEach")) {
             return false;
         }
         String className = m.getSlashedClassName();
