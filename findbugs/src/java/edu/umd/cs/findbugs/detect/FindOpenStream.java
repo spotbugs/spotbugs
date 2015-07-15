@@ -61,6 +61,7 @@ import edu.umd.cs.findbugs.ba.ResourceValueFrame;
  * resources that aren't closed.
  *
  * @author David Hovemeyer
+ * @author Agustin Toribio atomo@arrakis.es
  */
 public final class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker> implements StatelessDetector {
     static final boolean DEBUG = SystemProperties.getBoolean("fos.debug");
@@ -104,6 +105,26 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new IOStreamFactory("java.util.zip.ZipFile", new String[0], "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.lang.Class", "getResourceAsStream",
                 "(Ljava/lang/String;)Ljava/io/InputStream;", "OS_OPEN_STREAM"));
+
+        // Added support for java.nio.file.Files (since 1.7)
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newInputStream",
+                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newOutputStream",
+                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/OutputStream;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
+                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
+                "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
+                "(Ljava/nio/file/Path;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
+                "(Ljava/nio/file/Path;Ljava/nio/file/DirectoryStream$Filter;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
+                "(Ljava/nio/file/Path;Ljava/lang/String;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedReader",
+                "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedWriter",
+                "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;", "OS_OPEN_STREAM"));
 
         // Ignore socket input and output streams
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket", "getInputStream",
@@ -254,7 +275,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     // class containing one of these words, then we don't run the
     // detector on the class.
     private static final String[] PRESCREEN_CLASS_LIST = { "Stream", "Reader", "Writer", "ZipFile", "JarFile", "DriverManager",
-        "Connection", "Statement" };
+            "Connection", "Statement", "Files" };
 
     /*
      * (non-Javadoc)
