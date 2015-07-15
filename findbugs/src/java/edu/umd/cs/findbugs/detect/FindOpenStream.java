@@ -126,6 +126,12 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedWriter",
                 "(Ljava/nio/file/Path;Ljava/nio/charset/Charset;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;", "OS_OPEN_STREAM"));
 
+        // java 8
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedReader",
+                "(Ljava/nio/file/Path;)Ljava/io/BufferedReader;", "OS_OPEN_STREAM"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newBufferedWriter",
+                "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;", "OS_OPEN_STREAM"));
+
         // Ignore socket input and output streams
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.net.Socket", "getInputStream",
                 "()Ljava/io/InputStream;"));
