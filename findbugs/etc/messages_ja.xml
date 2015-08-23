@@ -1998,8 +1998,8 @@ null の参照解除のためのノイズが多いディテクタです。コー
   -->
 
   <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
-    <ShortDescription>既知の定数の雑な値を見つける</ShortDescription>
-    <LongDescription>{3} の雑な値を見つけました: {2}</LongDescription>
+    <ShortDescription>既知の定数の大雑把な値を見つけた</ShortDescription>
+    <LongDescription>{3} の大雑把な値を見つけました: {2}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2075,7 +2075,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このコードは、10進数の数にうまく変換されない double 値から BigDecimal を作成しています。
+このコードは10進数の数にうまく変換されない double 値から BigDecimal を作成しています。
 たとえば、Java で <code>new BigDecimal(0.1)</code> と書くと、0.1と正確に等しい BigDecimal (スケールが1でスケールなしの値が1) が作成されると思うかもしれませんが、
 実際には0.1000000000000000055511151231257827021181583404541015625と等しくなります。
 </p>
@@ -2157,7 +2157,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このコードは、空白または空のパスワードを使用してデータベース接続を作成しています。
+このコードは空白または空のパスワードを使用してデータベース接続を作成しています。
 これはデータベースがパスワードによって保護されていないことを示しています。
 </p>
 ]]>
@@ -2169,7 +2169,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
     <Details>
 <![CDATA[
 <p>
-このコードは、ハードコードされた定数パスワードを使用してデータベース接続を作成しています。
+このコードはハードコードされた定数パスワードを使用してデータベース接続を作成しています。
 ソースコードかコンパイルされたコードへアクセスできる人なら誰でも簡単にパスワードを知ることができてしまいます。
 </p>
 ]]>
@@ -2188,7 +2188,7 @@ null の参照解除のためのノイズが多いディテクタです。コー
 </p>
 <p>
 FindBugs は、HRS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを派遣したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 HRS を心配するなら、商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2201,12 +2201,12 @@ HRS を心配するなら、商用の静的解析ツールかペネトレーシ�
     <Details>
 <![CDATA[
 <p>
-このコードは、HTTP ヘッダに HTTP パラメータを直接書き込んでいます。これは HRS(HTTP レスポンススプリッティング) 脆弱性を可能にします。<br>
+このコードはHTTP ヘッダに HTTP パラメータを直接書き込んでいます。これは HRS(HTTP レスポンススプリッティング) 脆弱性を可能にします。<br>
 詳細は、<a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a> を参照してください。
 </p>
 <p>
 FindBugs は、HRS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを見つけたならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 HRS を心配するなら、商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2223,7 +2223,7 @@ HRS を心配するなら、商用の静的解析ツールかペネトレーシ�
 </p>
 <p>
 FindBugs は、相対パストラバーサルの最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを見つけたならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 相対パストラバーサルを心配するなら、商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2240,7 +2240,7 @@ FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告�
 </p>
 <p>
 FindBugs は、相対パストラバーサルの最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを見つけたならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 相対パストラバーサルを心配するなら、商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2252,12 +2252,12 @@ FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告�
     <Details>
 <![CDATA[
 <p>
-このコードは、サーブレットの出力に HTTP パラメータを直接書き込んでいます。これは反射型 XSS(クロスサイトスクリプティング) 脆弱性を可能にします。<br>
+このコードはサーブレットの出力に HTTP パラメータを直接書き込んでいます。これは反射型 XSS(クロスサイトスクリプティング) 脆弱性を可能にします。<br>
 詳細は、<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> を参照してください。
 </p>
 <p>
 FindBugs は、XSS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを見つけたならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 XSS を心配するなら、商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2270,13 +2270,13 @@ XSS を心配するなら、商用の静的解析ツールかペネトレーシ�
     <Details>
 <![CDATA[
 <p>
-このコードは、サーブレットのエラーページに <code>HttpServletResponse.sendError</code> を使用して HTTP パラメータを直接書き込んでいます。
+このコードはサーブレットのエラーページに <code>HttpServletResponse.sendError</code> を使用して HTTP パラメータを直接書き込んでいます。
 信頼できない入力を返すことは反射型 XSS(クロスサイトスクリプティング) 脆弱性を可能にします。<br>
 詳細は、<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> を参照してください。
 </p>
 <p>
 FindBugs は、XSS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを見つけたならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 XSS を心配するなら、商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2289,12 +2289,12 @@ XSS を心配するなら、商用の静的解析ツールかペネトレーシ�
     <Details>
 <![CDATA[
 <p>
-このコードは、JSP の出力に HTTP パラメータを直接書き込んでいます。これは XSS(クロスサイトスクリプティング) 脆弱性を可能にします。<br>
+このコードはJSP の出力に HTTP パラメータを直接書き込んでいます。これは XSS(クロスサイトスクリプティング) 脆弱性を可能にします。<br>
 詳細は、<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> を参照してください。
 </p>
 <p>
 FindBugs は、XSS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
+FindBugs が何かを見つけたならほぼ間違いなく FindBugs が報告しないより多くの脆弱性があるでしょう。
 XSS に関して心配しているなら商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討するべきです。
 </p>
 ]]>
@@ -2374,7 +2374,7 @@ XSS に関して心配しているなら商用の静的解析ツールかペネ�
     <Details>
 <![CDATA[
 <p>
-このコードは、volatile フィールドをインクリメントしています。
+このコードはvolatile フィールドをインクリメントしています。
 volatile フィールドのインクリメントはアトミックではありません。
 複数のスレッドが同時にフィールドをインクリメントすると、インクリメントが失われる可能性があります。 
 </p>
@@ -2410,7 +2410,7 @@ null 値が返されるなら NullPointerException が発生することにな�
   </BugPattern>
 
   <BugPattern type="NP_OPTIONAL_RETURN_NULL">
-    <ShortDescription>Optional の戻り型を持つメソッドが明示的に null を返す</ShortDescription>
+    <ShortDescription>Optional の戻り型 ((java.util.Optional または com.google.common.base.Optiona)) を持つメソッドが明示的に null を返す</ShortDescription>
     <LongDescription>{1} は、Optional の戻り型を持っていて、 明示的に null　を返しています。</LongDescription>
     <Details>
 <![CDATA[
@@ -2531,7 +2531,7 @@ null のフィールドを同期化すると NullPointerException がスロー�
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>putNextEntry</code> メソッドを呼び出して、<code>closeEntry</code> メソッドをすぐにを呼び出しています。
+このコードは <code>putNextEntry</code> メソッドを呼び出して、<code>closeEntry</code> メソッドをすぐにを呼び出しています。
 これは空の ZIP ファイルエントリになります。
 エントリデータは <code>putNextEntry</code> メソッドと <code>closeEntry</code> メソッドの呼び出しの間で ZIP ファイルに書き込むべきです。
 </p>
@@ -2545,7 +2545,7 @@ null のフィールドを同期化すると NullPointerException がスロー�
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>putNextEntry</code> メソッドを呼び出して、 <code>closeEntry</code> メソッドをすぐに呼び出しています。
+このコードは <code>putNextEntry</code> メソッドを呼び出して、 <code>closeEntry</code> メソッドをすぐに呼び出しています。
 これは空の JAR ファイルエントリになります。
 エントリデータは <code>putNextEntry</code> メソッドと <code>closeEntry</code> メソッドの呼び出しの間で JAR ファイルに書き込むべきです。
 </p>
@@ -2750,7 +2750,7 @@ arr[0] = 1.0;
     <Details>
 <![CDATA[
 <p>
-このコードは、セキュリティ許可チェックが必要なメソッドを呼び出しています。
+このコードはセキュリティ許可チェックが必要なメソッドを呼び出しています。
 このコードにセキュリティ許可が与えられるとしても、セキュリティ許可を持たないコードによって呼び出されるなら doPrivileged ブロックの中で呼び出す必要があります。
 </p>
 ]]>
@@ -3150,7 +3150,7 @@ static parseXXX メソッドを呼び出す方が効率的です。
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>Math.min(0, Math.max(100, value))</code> のような構文を使用して境界値を制限しようとしています。
+このコードは <code>Math.min(0, Math.max(100, value))</code> のような構文を使用して境界値を制限しようとしています。
 しかしながら、定数の順序が間違っています。 <code>Math.min(100, Math.max(0, value))</code> とすべきです。
 結果としてこのコードは常に同じ結果 （もし値が NaN なら NaN） を作り出します。
 </p>
@@ -3205,7 +3205,7 @@ static parseXXX メソッドを呼び出す方が効率的です。
     <Details>
 <![CDATA[
 <p>
-このコードは、定数でない文字列から SQL の <code>PreparedStatement</code> を作成しています。
+このコードは定数でない文字列から SQL の <code>PreparedStatement</code> を作成しています。
 ユーザからのチェックされていない汚染されたデータがこの文字列を作る際に使われるなら、<code>PreparedStatement</code> で予想外で望ましくない何かをするために SQL インジェクションが使われる可能性があります。
 </p>
 ]]>
@@ -3615,7 +3615,7 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>compareTo</code> または <code>compare</code> メソッドの戻り値を無効にしています。
+このコードは <code>compareTo</code> または <code>compare</code> メソッドの戻り値を無効にしています。
 これは疑わしいかバッドプログラミングプラクティスです。戻り値が Integer.MIN_VALUE なので、戻り値を無効にすることは結果の符号を無効にしません。
 結果を無効にするのではなくオペランドの順序を逆にすることによって、同じ意図した結果を得ることができます。
 </p>
@@ -3820,7 +3820,7 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p>
-このコードは、参照等価性のために == や != を使用して <code>java.lang.String</code> オブジェクトを比較しています。
+このコードは参照等価性のために == や != を使用して <code>java.lang.String</code> オブジェクトを比較しています。
 両方の文字列がソースファイルの定数か、<code>String.intern()</code> を使用して正準化されていないかぎり、同じ文字列は2つの異なる String オブジェクトによって表されるかもしれません。
 その代わりに <code>equals(Object)</code> メソッドを使用することを検討してください。
 </p>
@@ -3834,7 +3834,7 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p>
-このコードは、参照等価性のために == や != を使用して <code>java.lang.String</code> パラメータを比較しています。
+このコードは参照等価性のために == や != を使用して <code>java.lang.String</code> パラメータを比較しています。
 文字列定数または正準化された文字列だけをメソッドに渡すことを呼び出し元に要求することは必要以上に脆弱で測定可能な性能の向上をもたらしません。
 その代わりに <code>equals(Object)</code> メソッドを使用することを検討してください。
 </p>
@@ -3963,7 +3963,7 @@ public static メソッドは、クラスの 静的な状態の一部である�
     <Details>
 <![CDATA[
 <p>
-このコードは、オブジェクトの内部表現に外部の可変オブジェクトの参照を格納しています。
+このコードはオブジェクトの内部表現に外部の可変オブジェクトの参照を格納しています。
 インスタンスが信頼できないコードによってアクセスされるなら、可変オブジェクトのチェックされていない変更がセキュリティや他の重要なプロパティを危うくするでしょう。
 何か違うことをする必要があります。オブジェクトの新しいコピーを返すことは、多くの状況でより良いアプローチです。
 </p>
@@ -3976,7 +3976,7 @@ public static メソッドは、クラスの 静的な状態の一部である�
     <Details>
 <![CDATA[
 <p>
-このコードは、static フィールドに外部の可変オブジェクトを格納しています。
+このコードはstatic フィールドに外部の可変オブジェクトを格納しています。
 可変オブジェクトのチェックされていない変更がセキュリティや他の重要なプロパティを危うくするでしょう。
 何か違うことをする必要があります。オブジェクトのコピーを保存することは、多くの状況でより良いアプローチです。
 </p>
@@ -4017,7 +4017,7 @@ public static メソッドは、クラスの 静的な状態の一部である�
     <Details>
 <![CDATA[
 <p>
-このコードは、短絡論理 (&amp;&amp; や ||) ではなく非短絡論理 (&amp; や |) を使用していると思われます。
+このコードは短絡論理 (&amp;&amp; や ||) ではなく非短絡論理 (&amp; や |) を使用していると思われます。
 さらに、左辺値によって右辺を評価したくない (例外のスローや演算が高くつく副作用があるため) と思っているのかもしれません。
 非短絡論理は、左辺を知ることによって結果を推論できたとしても両側の式が評価されます。
 これは効率が悪く、右辺の評価でエラーが発生するケースを左辺でガードしているなら、結果としてエラーになる可能性があります。
@@ -4034,7 +4034,7 @@ public static メソッドは、クラスの 静的な状態の一部である�
     <Details>
 <![CDATA[
 <p>
-このコードは、短絡論理 (&amp;&amp; や ||) ではなく非短絡論理 (&amp; や |) を使用していると思われます。
+このコードは短絡論理 (&amp;&amp; や ||) ではなく非短絡論理 (&amp; や |) を使用していると思われます。
 非短絡論理は、左辺を知ることによって結果を推論できたとしても両側の式が評価されます。
 これは効率が悪く、右辺の評価でエラーが発生するケースを左辺でガードしているなら、結果としてエラーになる可能性があります。
 </p>
@@ -4083,7 +4083,7 @@ public static メソッドは、クラスの 静的な状態の一部である�
 <![CDATA[
 <p>
 このメソッドには条件制御フローによってガードされない <code>java.lang.Object.wait()</code> の呼び出しがあります。
-このコードは、<code>wait</code> メソッドを呼び出す前に待機するつもりだった条件が既に満たされていないことを確かめるべきです。
+このコードは <code>wait</code> メソッドを呼び出す前に待機するつもりだった条件が既に満たされていないことを確かめるべきです。
 どんな前の通知も無視されます。
 </p>
 ]]>
@@ -4214,7 +4214,7 @@ public class CircularClassInitialization {
     <Details>
 <![CDATA[
 <p>
-このコードは、正準化した文字列で同期化しています。
+このコードは正準化した文字列で同期化しています。
 </p>
 <blockquote><pre>
 private static String LOCK = "LOCK";
@@ -4265,7 +4265,7 @@ synchronized(inited) {
     <Details>
 <![CDATA[
 <p>
-このコードは、明らかに共有されていない <code>Integer</code> のようなボクシングされたプリミティブ型で同期化しています。
+このコードは明らかに共有されていない <code>Integer</code> のようなボクシングされたプリミティブ型で同期化しています。
 </p>
 <blockquote><pre>
 private static final Integer fileLock = new Integer(1);
@@ -4275,7 +4275,7 @@ synchronized(fileLock) {
 }
 </pre></blockquote>
 <p>
-このコードは、 fileLock を以下のように宣言するとより良くなります。
+このコードは fileLock を以下のように宣言するとより良くなります。
 </p>
 <blockquote><pre>
 private static final Object fileLock = new Object();
@@ -4294,7 +4294,7 @@ private static final Object fileLock = new Object();
     <Details>
 <![CDATA[
 <p>
-このコードは、Integer のようなボクシングされたプリミティブ型の定数で同期化しています。
+このコードはInteger のようなボクシングされたプリミティブ型の定数で同期化しています。
 </p>
 <blockquote><pre>
 private static Integer count = 0;
@@ -4473,7 +4473,7 @@ final でない public static フィールドは悪意のあるコードや偶�
 <![CDATA[
 <p>
 この final static フィールドは Hashtable を参照しているので、悪意のあるコードや偶然別のパッケージによってアクセスできます。
-このコードは、Hashtable のコンテンツを自由に変更できます。
+このコードはHashtable のコンテンツを自由に変更できます。
 </p>
 ]]>
     </Details>
@@ -4515,7 +4515,7 @@ final でない public static フィールドは悪意のあるコードや偶�
 <![CDATA[
 <p>
 この final static フィールドは配列を参照しているので、悪意のあるコードや偶然別のパッケージによってアクセスできます。
-このコードは、配列のコンテンツを自由に変更できます。
+このコードは配列のコンテンツを自由に変更できます。
 </p>
 ]]>
     </Details>
@@ -4550,7 +4550,7 @@ final でない public static フィールドは悪意のあるコードや偶�
   </BugPattern>
 
   <BugPattern type="ME_ENUM_FIELD_SETTER">
-    <ShortDescription>public 列挙型メソッドが無条件にフィールドを設定するPublic enum method unconditionally sets its field</ShortDescription>
+    <ShortDescription>public 列挙型メソッドが無条件にフィールドを設定する</ShortDescription>
     <LongDescription>{1} は無条件にフィールド {2.name} を設定しています。</LongDescription>
     <Details>
 <![CDATA[
@@ -4628,7 +4628,7 @@ Java のセマンティックスでは、継承したメソッドを呼び出し
   </BugPattern>
 
   <BugPattern type="NM_METHOD_NAMING_CONVENTION">
-    <ShortDescription>メソッド名は小文字から始めるべきです</ShortDescription>
+    <ShortDescription>メソッド名は小文字から始めるべき</ShortDescription>
     <LongDescription>メソッド名 {1} は、小文字から始まっていません。</LongDescription>
     <Details>
 <![CDATA[
@@ -4989,8 +4989,8 @@ public class B extends A {
   </BugPattern>
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-    <ShortDescription>1つの case が次の case へと通り抜ける switch 文を発見した</ShortDescription>
-    <LongDescription>1つの case が次の case へと通り抜ける switch 文を発見しました。{1}</LongDescription>
+    <ShortDescription>1つの case が次の case へと通り抜ける switch 文を見つけた</ShortDescription>
+    <LongDescription>1つの case が次の case へと通り抜ける switch 文を見つけました。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5002,8 +5002,8 @@ public class B extends A {
   </BugPattern>
 
   <BugPattern type="SF_SWITCH_NO_DEFAULT">
-    <ShortDescription>default がない switch 文を発見した</ShortDescription>
-    <LongDescription>default がない switch 文を発見しました。{1}</LongDescription>
+    <ShortDescription>default がない switch 文を見つけた</ShortDescription>
+    <LongDescription>default がない switch 文を見つけました。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5519,7 +5519,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-この条件は常に関係している変数の値が前に絞られたのと同じ結果を作り出します。
+この条件は前に絞られた関係している変数の値と同じ結果を常に作り出します。
 おそらく何かほかのことを意味していたのか、あるいは条件を除去できます。
 </p>
 ]]>
@@ -5532,7 +5532,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-この条件は関係している変数の型範囲のために常に同じ結果を作り出します。
+この条件は関係している変数の型範囲のために同じ結果を常に作り出します。
 おそらく何かほかのことを意味していたのか、あるいは条件を除去できます。
 </p>
 ]]>
@@ -5656,7 +5656,7 @@ static フィールドにすることを検討してください。
     <Details>
 <![CDATA[
 <p>
-このコードは、メソッドを呼び出して戻り値を無視しています。
+このコードはメソッドを呼び出して戻り値を無視しています。
 しかしながら、解析はメソッド (もしあればサブクラスの実装も含む) が戻り値以外の効果をもたらさないことを示しています。
 この呼び出しは除去できます。
 </p>
@@ -5681,12 +5681,12 @@ static フィールドにすることを検討してください。
   </BugPattern>
 
   <BugPattern type="RV_RETURN_VALUE_IGNORED_INFERRED">
-    <ShortDescription>メソッドは戻り値を無視しています、これは間違いではないですか?</ShortDescription>
+    <ShortDescription>メソッドは戻り値を無視しています。これは間違いではないですか?</ShortDescription>
     <LongDescription>{2.givenClass} の戻り値を無視しています、これは間違いではないですか? {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このコードは、メソッドを呼び出して、戻り値を無視しています。
+このコードはメソッドを呼び出して、戻り値を無視しています。
 戻り値は、メソッドが呼び出される型と同じ型です。そして、我々の解析から戻り値が重要であるかもしれないように見えます （たとえば、<code>String.toLowerCase()</code> の戻り値を無視するような）。 
 </p>
 <p>
@@ -5717,7 +5717,7 @@ dateString.trim();
 <p>
 プログラマは、<code>trim</code> メソッドが <code>dateString</code> によって参照される String オブジェクトが更新されると思っています。
 しかし、String オブジェクトは不変で、<code>trim</code> メソッドが新しい String オブジェクトを返すのに無視しています。
-このコードは、以下のように修正するべきです。
+このコードは以下のように修正するべきです。
 </p>
 <blockquote><pre>
 String dateString = getHeaderField(name);
@@ -5748,7 +5748,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-このコードは、compareTo または compare メソッドを呼び出して、戻り値が特定の値（たとえば1または-1） なのか確かめています。
+このコードはcompareTo または compare メソッドを呼び出して、戻り値が特定の値（たとえば1または-1） なのか確かめています。
 これらのメソッドを呼び出すときは特定のゼロ以外の値ではなく、結果の符号だけをチェックするべきです。
 多数または大部分の compareTo と比較メソッドは-1、0または1を返しますが、いくつかは他の値を返します。
 </p>
@@ -5762,7 +5762,7 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p>
-このコードは、例外 (またはエラー) オブジェクトを作成していますが、何もしていません。<br>
+このコードは例外 (またはエラー) オブジェクトを作成していますが、何もしていません。<br>
 たとえば以下のようなコードです。
 </p>
 <blockquote><pre>
@@ -6586,7 +6586,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>java.util.Random</code> オブジェクトを作成して1つの乱数を生成するために使用して捨てています。
+このコードは <code>java.util.Random</code> オブジェクトを作成して1つの乱数を生成するために使用して捨てています。
 これはあまり良くない品質の乱数を作り出し、効率が悪いです。
 できれば、<code>Random</code> オブジェクトを1つだけ作成して保存されるようにコードを書き直してください。
 そして、毎回新しい乱数は既存の <code>Random</code> オブジェクトを呼び出して取得することが必要です。
@@ -6605,7 +6605,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-このコードは、符号付き整数の乱数を生成して絶対値を計算しています。
+このコードは符号付き整数の乱数を生成して絶対値を計算しています。
 乱数ジェネレータで返される数が <code>Integer.MIN_VALUE</code> なら結果は同様に負です (<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code> なので)。 
 (同じ問題は long 値でも同様に起きます)。
 </p>
@@ -6619,7 +6619,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-このコードは、ハッシュコードを生成して絶対値を計算しています。
+このコードはハッシュコードを生成して絶対値を計算しています。
 ハッシュコードが <code>Integer.MIN_VALUE</code> なら結果は同様に負です (<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code> なので)。
 </p>
 <p>
@@ -6649,7 +6649,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-このコードは、ハッシュコードを計算して別の値を法とする剰余を計算しています。
+このコードはハッシュコードを計算して別の値を法とする剰余を計算しています。
 ハッシュコードは負になり、剰余演算の結果も負なります。
 </p>
 <p>
@@ -6668,7 +6668,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-このコードは、負でないことが保証されている値と負の定数またはゼロとを比較しています。 
+このコードは負でないことが保証されている値と負の定数またはゼロとを比較しています。 
 </p>
 ]]>
     </Details>
@@ -6693,7 +6693,7 @@ public void foo() {
     <Details>
 <![CDATA[
 <p>
-このコードは、int 値と int 値として表される値の範囲外の long 定数を比較しています。
+このコードはint 値と int 値として表される値の範囲外の long 定数を比較しています。
 この比較は無意味で、おそらく間違っています。
 </p>
 ]]>
@@ -7128,7 +7128,7 @@ String s = buf.toString();
     <Details>
 <![CDATA[
 <p>
-このコードは、String.indexOf() に長さ1の文字列定数を渡しています。String.indexOf() の整数実装を使うほうが効率的です。
+このコードはString.indexOf() に長さ1の文字列定数を渡しています。String.indexOf() の整数実装を使うほうが効率的です。
 たとえば、<code>myString.indexOf(".")</code>　の代わりに <code>myString.indexOf('.')</code> を呼び出します。
 </p>
 ]]>
@@ -7141,7 +7141,7 @@ String s = buf.toString();
     <Details>
 <![CDATA[
 <p>
-このコードは、String.lastIndexOf() に長さ1の文字列定数を渡しています。String.lastIndexOf() の整数実装を使うほうが効率的です。
+このコードはString.lastIndexOf() に長さ1の文字列定数を渡しています。String.lastIndexOf() の整数実装を使うほうが効率的です。
 たとえば、<code>myString.lastIndexOf(".")</code>　の代わりに <code>myString.lastIndexOf('.')</code> を呼び出します。
 </p>
 ]]>
@@ -7581,7 +7581,7 @@ try {
     <Details>
 <![CDATA[
 <p>
-このコードは、浮動小数点が特別な非数値と等価であるか確かめています (たとえば <code>if (x == Double.NaN)</code>)。
+このコードは浮動小数点が特別な非数値と等価であるか確かめています (たとえば <code>if (x == Double.NaN)</code>)。
 しかしながら、<code>NaN</code> の特別な意味のため、値は <code>NaN</code> と等価ではありません。
 したがって、<code>x == Double.NaN</code> は常に false と評価します。
 <code>x</code> という値が特別な非数値であるかどうか確かめるためには <code>Double.isNaN(x)</code> を使用します (または <code>x</code> が浮動小数点精度であるなら <code>Float.isNaN(x)</code>)。
@@ -7774,7 +7774,7 @@ Servlet クラスの1つのインスタンスだけが Java EE フレームワ�
     <Details>
 <![CDATA[
 <p>
-このコードは、以下のように整数の乗算を実行してから結果を long に変換しています。
+このコードは以下のように整数の乗算を実行してから結果を long に変換しています。
 </p>
 <blockquote><pre>
 long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
@@ -7803,7 +7803,7 @@ long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
     <Details>
 <![CDATA[
 <p>
-このコードは、32ビット int 値を64ビット long 値に変換して、絶対時間値を必要とするメソッドパラメータに渡しています。
+このコードは32ビット int 値を64ビット long 値に変換して、絶対時間値を必要とするメソッドパラメータに渡しています。
 絶対時間値は、「エポック」（すなわち、1970年1月1日、00:00:00 GMT）としてわかっている標準的な基準時間からのミリ秒数です。<br>
 たとえば、次のメソッド （エポックからの秒を Date へ変換することを意図した） はひどく壊れています。
 </p>
@@ -7834,7 +7834,7 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
     <Details>
 <![CDATA[
 <p>
-このコードは、整数値を float 精度浮動小数点に変換してから、その結果を <code>Math.round()</code> に渡して引数に最も近い int/long を返します。
+このコードは整数値を float 精度浮動小数点に変換してから、その結果を <code>Math.round()</code> に渡して引数に最も近い int/long を返します。
 整数を float に変換すると小数部がない数値が得られるので、この演算は常にノーオペレーションになります。
 <code>Math.round()</code>に渡される値を生成した演算が浮動小数点演算を使用して実行することを意図した可能性が高いです。
 </p>
@@ -7848,7 +7848,7 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
     <Details>
 <![CDATA[
 <p>
-このコードは、整数値 (たとえば、int や long) を倍精度浮動小数点に変換してから、その結果を <code>Math.ceil()</code> に渡しています。
+このコードは整数値 (たとえば、int や long) を倍精度浮動小数点に変換してから、その結果を <code>Math.ceil()</code> に渡しています。
 整数を double に変換すると小数部がない数値が得られるので、この演算は常にノーオペレーションになります。
 <code>Math.ceil()</code>に渡される値を生成した演算が倍精度浮動小数点演算を使用して実行することを意図した可能性が高いです。
 </p>
@@ -7862,7 +7862,7 @@ Date getDate(long seconds) { return new Date(seconds * 1000); }
     <Details>
 <![CDATA[
 <p>
-このコードは 整数の除算の結果を double または float にキャストしています。
+このコードは整数の除算の結果を double または float にキャストしています。
 整数で除算をすることは、ゼロに最も近い整数値まで結果を切り捨てます。
 結果が double にキャストされたという事実は、この精度が維持されるべきだったことを示唆しています。
 おそらく意味されたことは、除算を実行する前にオペランドの1つまたは両方を double にキャストすることでした。<br>
@@ -7887,7 +7887,7 @@ double value2 =  x / (double) y;
     <Details>
 <![CDATA[
 <p>
-このコードは、HttpSession に非直列化可能オブジェクトを格納していると思われます。
+このコードは HttpSession に非直列化可能オブジェクトを格納していると思われます。
 このセッションが不活性化されるか移行したなら、エラーを招きます。
 </p>
 ]]>
@@ -7900,7 +7900,7 @@ double value2 =  x / (double) y;
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>ObjectOutput.writeObject</code> に非直列化可能オブジェクトを渡していると思われます。
+このコードは <code>ObjectOutput.writeObject</code> に非直列化可能オブジェクトを渡していると思われます。
 このオブジェクトが本当に非直列化可能なら、エラーを招きます。
 </p>
 ]]>
@@ -7913,7 +7913,7 @@ double value2 =  x / (double) y;
     <Details>
 <![CDATA[
 <p>
-この書式文字列は、前の書式指示子の引数が再利用されるようにするために「相対インデックス ("&lt;")」を指定しています。
+この書式文字列は前の書式指示子の引数が再利用されるようにするために「相対インデックス ("&lt;")」を指定しています。
 しかしながら、前の引数がありません。
 たとえば、<code>formatter.format("%&lt;s %s", "a", "b")</code> が実行されると MissingFormatArgumentException をスローします。
 </p>
@@ -7927,7 +7927,7 @@ double value2 =  x / (double) y;
     <Details>
 <![CDATA[
 <p>
-この書式文字列には改行文字 (\n) が含まれています。
+この書式文字列は改行文字 (\n) が含まれています。
 一般的に書式文字列には %n を使用することがより望ましいです。%n は、プラットホーム特有の行セパレータを作り出します。
 </p>
 ]]>
@@ -7935,12 +7935,12 @@ double value2 =  x / (double) y;
   </BugPattern>
 
   <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION">
-    <ShortDescription>与えられた引数の型は書式指示子に合致しません</ShortDescription>
+    <ShortDescription>与えられた引数の型は書式指示子に合致しない</ShortDescription>
     <LongDescription>引数の型 {3} は、書式指示子 {4} によって扱えません。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-引数の1つは、対応する書式指示子と互換性がありません。その結果、実行されるときに実行時例外を生成します。
+引数の1つは対応する書式指示子と互換性がありません。その結果、実行されるときに実行時例外を生成します。
 たとえば、<code>String.format("%d", "1")</code> は、文字列 "1" が書式指示子 "%d" と互換性がないので例外を生成します。
 </p>
 ]]>
@@ -8085,7 +8085,7 @@ printf スタイルの書式文字列が必要なときに、MessageFormat の�
     <Details>
 <![CDATA[
 <p>
-このコードは、Collection を抽象コレクションにキャストしています (たとえば <code>List</code>、<code>Set</code>、<code>Map</code>)。
+このコードはCollection を抽象コレクションにキャストしています (たとえば <code>List</code>、<code>Set</code>、<code>Map</code>)。
 オブジェクトがキャストする型であるということが保証されていることを確認してください。
 必要とするコレクションの反復処理ができるなら Set または List にキャストする必要はありません。
 </p>
@@ -8140,7 +8140,7 @@ FindBugs は、instanceof チェックから型情報を調査して、メソッ
     <Details>
 <![CDATA[
 <p>
-このコードは、以下のように、<code>Object[]</code> より特定の型のコレクションで <code>toArray</code> メソッドを呼び出す結果をキャストしています。
+このコードは以下のように、<code>Object[]</code> より特定の型のコレクションで <code>toArray</code> メソッドを呼び出す結果をキャストしています。
 </p>
 <blockquote><pre>
 String[] getAsArray(Collection&lt;String&gt; c) {
@@ -8233,7 +8233,7 @@ an indication of some misunderstanding or some other logic error.
     <Details>
 <![CDATA[
 <p>
-このコードは、メソッドの戻り値の未確認のキャストを実行しています。
+このコードはメソッドの戻り値の未確認のキャストを実行しています。
 コードは、キャストが安全であることが保証されるようにメソッドを呼び出しているかもしれませんが、FindBugs はキャストが安全であることを検証できません。
 プログラムのロジックがこのキャストが失敗しないことを確実に確認してください。 
 </p>
@@ -8281,7 +8281,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、正規表現の構文によると無効である正規表現を使用しています。
+このコードは正規表現の構文によると無効である正規表現を使用しています。
 この文が実行されるとき PatternSyntaxException をスローします。 
 </p>
 ]]>
@@ -8294,7 +8294,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、正規表現が必要な場所で、<code>File.separator</code> を使用しています。
+このコードは正規表現が必要な場所で、<code>File.separator</code> を使用しています。
 これは <code>File.separator</code> がバックスラッシュである Windows プラットホームでは失敗します。
 バックスラッシュは正規表現ではエスケープ文字として解釈されます。
 その他の選択肢としては、<code>File.separator</code> の代わりに <code>File.separatorChar=='\\' ? "\\\\" : File.separator</code> を使用できます。 
@@ -8309,7 +8309,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、インクリメント演算 (たとえば、<code>i++</code>) を実行してすぐに上書きしています。
+このコードはインクリメント演算 (たとえば、<code>i++</code>) を実行してすぐに上書きしています。
 たとえば、<code>i = i++</code> は元の値をインクリメントした値で上書きします。 
 </p>
 ]]>
@@ -8322,7 +8322,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、符号なしキャストの実行結果を short または byte にキャストしています。結果の上位ビットは捨てられます。
+このコードは符号なしキャストの実行結果を short または byte にキャストしています。結果の上位ビットは捨てられます。
 上位ビットが捨てられるので、符号付きと符号なし右シフト (シフトのサイズによって) との違いがないかもしれません。
 </p>
 ]]>
@@ -8349,7 +8349,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、32ビット int の-31から31の範囲を超えた量でシフトを実行しています。
+このコードは32ビット int の-31から31の範囲を超えた量でシフトを実行しています。
 これの効果は、どのくらいシフトするのかを決めるために整数値の下位5ビット (32で割った余り) を使用することです (たとえば、40ビットでシフトすることは8ビットでシフトすることと同じで、32ビットでシフトすることは0ビットでシフトすることと同じです)。
 これはおそらく期待されたことではなく、少なくとも紛らわしいです。
 </p>
@@ -8363,7 +8363,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、整数剰余の結果に整数定数を乗算しています。
+このコードは整数剰余の結果に整数定数を乗算しています。
 紛らわしい演算子の優先順位がないことを確実にしてください。
 たとえば、i % 60 * 1000 は、i % (60 * 1000) ではなく (i % 60) * 1000 となります。 
 </p>
@@ -8377,7 +8377,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、配列で <code>hashCode</code> メソッドを呼び出しています。
+このコードは配列で <code>hashCode</code> メソッドを呼び出しています。
 配列で <code>hashCode</code> メソッドを呼び出すことは、System.identityHashCode と同じ値を返すので、コンテンツと配列の長さを無視します。
 配列 <code>a</code> のコンテンツによるハッシュコードを必要とするなら、<code>java.util.Arrays.hashCode(a)</code> を使用してください。
 </p>
@@ -8391,7 +8391,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、配列で <code>toString</code> メソッドを呼び出しています。「[C@16f0472」のようなかなり役に立たない結果を生成します。
+このコードは配列で <code>toString</code> メソッドを呼び出しています。「[C@16f0472」のようなかなり役に立たない結果を生成します。
 配列のコンテンツを与え、読める文字列に変換するために <code>Arrays.toString()</code> を使用することを検討してください。<br>
 『Programming Puzzlers』の第3章、パズル12を参照してください。
 </p>
@@ -8405,7 +8405,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、無名の配列で <code>toString</code> メソッドを呼び出しています。「[C@16f0472」のようなかなり役に立たない結果を生成します。
+このコードは無名の配列で <code>toString</code> メソッドを呼び出しています。「[C@16f0472」のようなかなり役に立たない結果を生成します。
 配列のコンテンツを与え、読める文字列に変換するために <code>Arrays.toString()</code> を使用することを検討してください。<br>
 『Programming Puzzlers』の第3章、パズル12を参照してください。
 </p>
@@ -8419,7 +8419,7 @@ String 機能が呼び出されていて、"." または "|" が引数として�
     <Details>
 <![CDATA[
 <p>
-このコードは、除算か符号付き右シフトを使用して2つの整数の平均を計算して、結果を配列の添字として使用しています。
+このコードは除算か符号付き右シフトを使用して2つの整数の平均を計算して、結果を配列の添字として使用しています。
 平均値が非常に大きいならオーバーフローする可能性があります (結果として負の平均の計算になる)。
 結果が負でないことを意図していたなら、その代わりに符号なし右シフトを使用できます。
 つまり、<code>(low+high)/2</code> ではなく <code>(low+high) &gt;&gt;&gt; 1</code> を使用してください。
@@ -8439,7 +8439,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-このコードは、<code>x % 2 == 1</code> を使用して値が負数なのか確かめていますが、負数 (たとえば、<code>(-5) % 2 == -1</code>) なので機能しません。
+このコードは <code>x % 2 == 1</code> を使用して値が負数なのか確かめていますが、負数 (たとえば、<code>(-5) % 2 == -1</code>) なので機能しません。
 奇数チェックを意図しているなら、<code>x &amp; 1 == 1</code> または <code>x % 2 != 0</code> を使用することを検討してください。
 </p>
 ]]>
@@ -8452,7 +8452,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-このコードは、ハードコードされた絶対パス名を使用して File オブジェクトを構築しています (たとえば <code>new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");</code>)。
+このコードはハードコードされた絶対パス名を使用して File オブジェクトを構築しています (たとえば <code>new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");</code>)。
 </p>
 ]]>
     </Details>
@@ -8464,7 +8464,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-このコードは、メソッドに0から11の範囲外の月定数値を渡しています。 
+このコードはメソッドに0から11の範囲外の月定数値を渡しています。 
 </p>
 ]]>
     </Details>
@@ -8476,7 +8476,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
     <Details>
 <![CDATA[
 <p>
-このコードは、文字列で <code>substring(0)</code> を呼び出していますが、元の値を返します。
+このコードは文字列で <code>substring(0)</code> を呼び出していますが、元の値を返します。
 </p>
 ]]>
     </Details>
@@ -8773,7 +8773,7 @@ JDK 5.0に比べて JDK 1.4 のほうが問題が表面化するように思わ�
   </BugPattern>
 
   <BugPattern type="STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE">
-    <ShortDescription>static DateFormat</ShortDescription>
+    <ShortDescription>static DateFormat フィールド</ShortDescription>
     <LongDescription>{1} は、java.text.DateFormat 型の static フィールドです。それはスレッドセーフではありません。</LongDescription>
     <Details>
 <![CDATA[
@@ -8942,7 +8942,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
 <![CDATA[
 <p>
-このコードは、ファイルを追加モードで開いて、オブジェクト出力ストリームの中で結果をラップしています。
+このコードはファイルを追加モードで開いて、オブジェクト出力ストリームの中で結果をラップしています。
 これはファイルに格納された既存のオブジェクト出力ストリームに追加できないでしょう。
 オブジェクト出力ストリームに追加したいなら、オブジェクト出力ストリームを開いておく必要があります。
 </p>
@@ -8976,7 +8976,7 @@ String constructComponentName() {
 </pre></blockquote>
 <p>
 <code>Label</code> のサブクラスは同じサブクラスで同期化しません。データレースを生じさせます。
-代わりに、このコードは、<code>Label.class</code> で同期化するべきです。
+代わりに、このコードは <code>Label.class</code> で同期化するべきです。
 </p>
 <blockquote><pre>
 private static final String base = "label";
