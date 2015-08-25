@@ -21,7 +21,7 @@ Import the projects
 5) Choose [File | Import | Git | Projects from Git | Next]. The Git project import wizard opens.
 6) In the wizard, proceed as follows:
    a) Choose [Clone URI]. Click [Next]
-   b) Enter https://code.google.com/p/findbugs/ as url. Click [Next]
+   b) Enter https://github.com/findbugsproject/findbugs.git as uri. Click [Next]
    c) Select "master" branch (for latest code).
    d) Select local destination directory (default is /home/%username%/git/findbugs). Click [Next]
        Source code will be now checked out from Git, so about 150 MB will be transferred from remote.
