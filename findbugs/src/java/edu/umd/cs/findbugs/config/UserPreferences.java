@@ -198,6 +198,19 @@ public class UserPreferences implements Cloneable {
         if (props.size() == 0) {
             return;
         }
+
+        Properties prefixlessProperties = new Properties();
+        for (Map.Entry<?, ?> e : props.entrySet()) {
+            if(e.getKey() instanceof String) {
+                String key = e.getKey().toString();
+                String value = e.getValue().toString();
+                prefixlessProperties.setProperty(key.replace("/instance/edu.umd.cs.findbugs.plugin.eclipse/", ""), value);
+            } else {
+                prefixlessProperties.put(e.getKey(), e.getValue());
+            }
+        }
+        props = prefixlessProperties;
+
         for (int i = 0; i < MAX_RECENT_FILES; i++) {
             String key = "recent" + i;
             String projectName = (String) props.get(key);
@@ -205,6 +218,7 @@ public class UserPreferences implements Cloneable {
                 recentProjectsList.add(projectName);
             }
         }
+
 
         for (Map.Entry<?, ?> e : props.entrySet()) {
 
