@@ -84,14 +84,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
     }
 
     static int populationCount(long i) {
-        int result = 0;
-        while (i != 0) {
-            if ((i & 1) == 1) {
-                result++;
-            }
-            i >>>= 1;
-        }
-        return result;
+        return Long.bitCount(i);
     }
 
     @Override
