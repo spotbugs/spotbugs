@@ -656,7 +656,7 @@ The second invokes the Command Line Interface (Text UI):
   <varlistentry>
   <term><command>-userPrefs</command> <replaceable>edu.umd.cs.findbugs.core.prefs</replaceable></term>
   <listitem>
-    <para>ユーザー設定ファイルのパスを設定します。ユーザー設定ファイルの内容で、他のオプションの一部を上書きすることができます。 
+    <para>ユーザー設定ファイルのパスを設定します。ユーザー設定ファイルの内容で、他のオプションの一部を上書きすることができます。
     <literal>userPrefs</literal> を一番目の引数に指定した場合は、後続のオプションの方がユーザー設定ファイルの内容に優先します。
     <literal>userPrefs</literal> を最後の引数に指定した場合は、ユーザー設定ファイルの内容の方が前に指定したオプションに優先します。
     このオプションを設けた背景・理由は、 Eclipse プロジェクトの FindBugs の設定をコマンドライン実行で再利用するためです。</para>
@@ -1041,7 +1041,7 @@ Command Line Interface.
       <listitem>
           <para>
               任意指定の属性です。
-              ユーザー設定ファイルのパスを設定します。ユーザー設定ファイルの内容で、他のオプションの一部を上書きすることができます。 
+              ユーザー設定ファイルのパスを設定します。ユーザー設定ファイルの内容で、他のオプションの一部を上書きすることができます。
               <literal>userPreferencesFile</literal> を一番目の引数に指定した場合は、後続のオプションの方がユーザー設定ファイルの内容に優先します。
               <literal>userPreferencesFile</literal> を最後の引数に指定した場合は、ユーザー設定ファイルの内容の方が前に指定したオプションに優先します。
               このオプションを設けた背景・理由は、 Eclipse プロジェクトの FindBugs の設定をコマンドライン実行で再利用するためです。
@@ -1155,14 +1155,14 @@ Phil Crosby 氏 と Andrey Loskutov 氏は、プラグインの重要な改良�
 <para>
 Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加することができます。
 (詳しく知りたい方は、
-<ulink url="http://code.google.com/p/findbugs/source/browse/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
-もご覧ください)。 
+<ulink url="https://github.com/findbugsproject/findbugs/blob/master/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+もご覧ください)。
 独自のプラグインを Eclipse に追加するには以下の2通りの方法があります。
 </para>
 <itemizedlist>
   <listitem>
     <para>
-    既存の標準 &FindBugs; ディテクタパッケージは以下で設定できます。 
+    既存の標準 &FindBugs; ディテクタパッケージは以下で設定できます。
     <menuchoice>
         <guimenu>Window</guimenu>
         <guimenuitem>Preferences</guimenuitem>
@@ -1186,7 +1186,7 @@ Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加�
     </para>
 
     <para>
-    <ulink url="http://code.google.com/p/findbugs/source/browse/eclipsePlugin/schema/detectorPlugins.exsd">
+    <ulink url="https://github.com/findbugsproject/findbugs/blob/master/eclipsePlugin/schema/detectorPlugins.exsd">
     findBugsEclipsePlugin/schema/detectorPlugins.exsd</ulink> の documentation で plugin.xml の更新方法を確認してください。
     既存の &FindBugs; ディテクタプラグイン を簡単に「拡張」して強力な &FindBugs; Eclipse ディテクタプラグイン にすることができます。
     通常必要なのは、 META-INF/MANIFEST.MF および plugin.xml を jar に追加してかつ、 MANIFEST.MF がビルド時に上書きされないようにビルドスクリプトを更新するだけです。
@@ -1197,7 +1197,7 @@ Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加�
     前提条件は現在使用しているディテクタパッケージを Eclipse プラグインに変換しておくことです。
     これはサードパーティのディテクタパッケージも同様です。
     もうひとつの主な差別化要因は、 FindBugs のデフォルト実行時クラスパス に当該サードパーティライブラリーを追加することが必要なことです(くわしくは
-    <ulink url="http://code.google.com/p/findbugs/source/browse/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+    <ulink url="https://github.com/findbugsproject/findbugs/blob/master/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
     をご覧ください)。
     </para>
   </listitem>
@@ -1368,7 +1368,7 @@ Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加�
  <varlistentry>
    <term><literal>&lt;And&gt;</literal></term>
     <listitem><para>
-   この要素は、論理積として <literal>Match</literal> 条項を結合します。 
+   この要素は、論理積として <literal>Match</literal> 条項を結合します。
    すなわち、  <literal>Bug</literal> および <literal>Confidence</literal> 要素を <literal>And</literal> 条項内に指定することで
    特定の信頼度の特定のバグのみ照合することができます。
    </para></listitem>
@@ -1808,7 +1808,7 @@ Eclipse プラグインでは、 独自の &FindBugs; ディテクタを追加�
       <para>
 クラスまたはパッケージのすべてのメンバーが指定されたアノテーションクラスのデフォルト値でアノテートされることを指定することができます。
 この指定は @NonNull 、 @CheckForNull 、または @CheckReturnValueなどに使用する想定です。
-具体的には、 クラスまたはパッケージに @DefaultAnnotation(NonNull.class) を指定した上で、 
+具体的には、 クラスまたはパッケージに @DefaultAnnotation(NonNull.class) を指定した上で、
 null を許容したいパラメーター、メソッドまたはフィールドにのみ @Nullable を指定するという使用方法があります。
       </para>
     </listitem>

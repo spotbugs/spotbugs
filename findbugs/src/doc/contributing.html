@@ -21,18 +21,17 @@ we would be happy to consider it for inclusion.</p>
 
 <p>The preferred way to get the FindBugs source code and create the patch is to use Eclipse + Git.
 You can easily import FindBugs code into Eclipse by following the steps described
-here: <a href="https://code.google.com/p/findbugs/source/browse/eclipsePlugin/doc/building_findbugsplugin.txt">Import Eclipse projects</a>
+here: <a href="https://github.com/findbugsproject/findbugs/blob/master/eclipsePlugin/doc/building_findbugsplugin.txt">Import Eclipse projects</a>
 .
 </p>
 
 <h2>Preparing a patch</h2>
 
-<p> The best way to create a patch is to clone FindBugs Git repository here:
- <a href="http://code.google.com/p/findbugs/source/clones">http://code.google.com/p/findbugs/source/clones</a>,
+<p> The best way to create a patch is to fork FindBugs Git repository here:
+ <a href="https://github.com/findbugsproject/findbugs">https://github.com/findbugsproject/findbugs</a>,
  commit changes with descriptive commit messages (small commits are better) and
- create a new <a href="https://sourceforge.net/p/findbugs/bugs/">bug</a>
- or <a href="https://sourceforge.net/p/findbugs/feature-requests/">feature request</a>
- with the "[patch]" prefix in the title and link to your repository in the description.
+ create a new <a href="https://github.com/findbugsproject/findbugs/pulls">pull request</a>
+ with the appropriate title and description.
 </p>
 
 <p> Please follow these guidelines when preparing your patch:</p>
@@ -48,7 +47,7 @@ here: <a href="https://code.google.com/p/findbugs/source/browse/eclipsePlugin/do
 <li> If you are submitting a new bug detector, please submit a small
      standalone source file that contains an instance of the
      kind of bug the detector looks for. The file should be placed at
-     <a href="https://code.google.com/p/findbugs/source/browse/#git%2FfindbugsTestCases%2Fsrc%2Fjava%2FsfBugsNew">findbugsTestCases/src/java/sfBugsNew</a>
+     <a href="https://github.com/findbugsproject/findbugs/tree/master/findbugsTestCases/src/java/ghBugsNew">findbugsTestCases/src/java/ghBugsNew</a>
      package and named after the bug or feature you are addressing.
 </ul>
 
@@ -58,9 +57,8 @@ to incorporate new code.
 <h2>Where to submit a patch</h2>
 
 <p> Patches may be submitted through the
-<a href="https://sourceforge.net/p/findbugs/bugs/">bug</a>
- or <a href="https://sourceforge.net/p/findbugs/feature-requests/">feature request</a> trackers on the
-<a href="http://sourceforge.net/projects/findbugs/">sourceforge project page</a>.
+<a href="https://github.com/findbugsproject/findbugs/pulls">pull requests</a> on the
+<a href="https://github.com/findbugsproject/findbugs">GitHub project page</a>.
 
 @HTML_FOOTER@
 

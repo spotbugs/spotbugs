@@ -4,6 +4,7 @@ PDFS = $(TEX_SRCS:.tex=.pdf)
 %.pdf : %.tex
 	pdflatex $*
 	pdflatex $*
+	pdflatex $*
 
 all : $(PDFS)
 
