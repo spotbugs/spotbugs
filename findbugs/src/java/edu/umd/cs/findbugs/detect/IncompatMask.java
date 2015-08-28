@@ -19,68 +19,33 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
  * Find comparisons involving values computed with bitwise operations whose
  * outcomes are fixed at compile time.
  *
  * @author Tom Truscott <trt@unx.sas.com>
+ * @author Tagir Valeev
  */
-public class IncompatMask extends BytecodeScanningDetector implements StatelessDetector {
-    int state;
-
-    long arg0, arg1;
-
-    int bitop;
-
-    boolean isLong;
-
+public class IncompatMask extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
+    private int bitop = -1;
+
+    private boolean equality;
+
+    private Number arg1, arg2;
+
+    private Item bitresultItem;
+
     public IncompatMask(BugReporter bugReporter) {
-        this.state = 0;
         this.bugReporter = bugReporter;
-    }
-
-    @Override
-    public void visit(Method obj) {
-        super.visit(obj);
-        this.state = 0;
-    }
-
-    private void checkState(int expectedState) {
-        if (state == expectedState) {
-            state++;
-        } else {
-            state = 0;
-        }
-    }
-
-    private void noteVal(long val) {
-        if (state == 0) {
-            arg0 = val;
-        } else if (state == 2) {
-            arg1 = val;
-        } else {
-            state = -1;
-        }
-        state++;
-    }
-
-    @Override
-    public void sawInt(int val) {
-        noteVal(val);
-    }
-
-    @Override
-    public void sawLong(long val) {
-        noteVal(val);
     }
 
     static int populationCount(long i) {
@@ -88,142 +53,146 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
     }
 
     @Override
+    public void visit(Code obj) {
+        arg1 = arg2 = null;
+        super.visit(obj);
+    }
+
+    private Number getArg() {
+        Object constValue = stack.getStackItem(0).getConstant();
+        if (!(constValue instanceof Number)) {
+            constValue = stack.getStackItem(1).getConstant();
+        }
+        if (!(constValue instanceof Long) && !(constValue instanceof Integer)) {
+            return null;
+        }
+        return (Number) constValue;
+    }
+
+    @Override
     public void sawOpcode(int seen) {
-        // System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
-
         switch (seen) {
-        case ICONST_M1:
-            noteVal(-1);
-            return;
-        case ICONST_0:
-            noteVal(0);
-            return;
-        case ICONST_1:
-            noteVal(1);
-            return;
-        case ICONST_2:
-            noteVal(2);
-            return;
-        case ICONST_3:
-            noteVal(3);
-            return;
-        case ICONST_4:
-            noteVal(4);
-            return;
-        case ICONST_5:
-            noteVal(5);
-            return;
-        case LCONST_0:
-            noteVal(0);
-            return;
-        case LCONST_1:
-            noteVal(1);
-            return;
-
-        case BIPUSH:
-            return; /* will pick up value via sawInt */
-        case LDC2_W:
-            return; /* will pick up value via sawLong */
-
-        case SIPUSH:
-            return; /* will pick up value via sawInt */
-        case LDC:
-        case LDC_W:
-            return; /* will pick up value via sawInt */
-
         case IAND:
         case LAND:
+            arg1 = getArg();
             bitop = IAND;
-            isLong = seen == LAND;
-            checkState(1);
             return;
         case IOR:
         case LOR:
+            arg1 = getArg();
             bitop = IOR;
-            isLong = seen == LOR;
-            checkState(1);
             return;
-
         case LCMP:
-            if (state == 3) {
-                isLong = true;
-                return; /* Ignore. An 'if' opcode will follow */
+            if (checkItem(2)) {
+                arg2 = getArg();
             }
-            state = 0;
             return;
-
+        case IF_ICMPEQ:
+        case IF_ICMPNE:
+            if (checkItem(2)) {
+                arg2 = getArg();
+                equality = true;
+            }
+            break;
+        case IFEQ:
+        case IFNE:
+            if (arg1 instanceof Integer && checkItem(1)) {
+                arg2 = 0;
+            }
+            equality = true;
+            break;
         case IFLE:
         case IFLT:
         case IFGT:
         case IFGE:
-            if (state == 3 && isLong || state == 2 && !isLong) {
-                long bits = getFlagBits(isLong, arg0);
-                boolean highbit = !isLong && (bits & 0x80000000) != 0 || isLong && bits < 0 && bits << 1 == 0;
-                boolean onlyLowBits = bits >>> 12 == 0;
-                BugInstance bug;
-                if (highbit) {
-                    bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY
-                            : NORMAL_PRIORITY);
-                } else {
-                    bug = new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
-                }
-                bugReporter.reportBug(bug.addClassAndMethod(this).addSourceLine(this));
+            if (arg1 instanceof Integer && checkItem(1)) {
+                arg2 = 0;
             }
-            state = 0;
-            return;
-
-        case IFEQ:
-        case IFNE:
-            /* special case: if arg1 is 0 it will not be pushed */
-            if (state == 2) {
-                arg1 = 0;
-                state = 3;
-            }
-
-            //$FALL-THROUGH$
-        case IF_ICMPEQ:
-        case IF_ICMPNE:
-            checkState(3);
-            if (state != 4) {
-                return;
-            }
-            break; /* the only break in this switch! gross */
-
-        case GOTO:
-            state = -1;
-            return;
-
+            equality = false;
+            break;
         default:
-            state = 0;
             return;
         }
-
-        /* We have matched the instruction pattern, so check the args */
-        long dif;
-        String t;
-
-        if (bitop == IOR) {
-            dif = arg0 & ~arg1;
-            t = "BIT_IOR";
-        } else if (arg0 != 0 || arg1 != 0) {
-            dif = arg1 & ~arg0;
-            t = "BIT_AND";
-        } else {
-            dif = 1;
-            t = "BIT_AND_ZZ";
+        if (arg1 == null || arg2 == null) {
+            return;
         }
-
-        if (dif != 0) {
-            // System.out.println("Match at offset " + getPC());
-            BugInstance bug = new BugInstance(this, t, HIGH_PRIORITY).addClassAndMethod(this);
-            if (!"BIT_AND_ZZ".equals(t)) {
-                bug.addString("0x" + Long.toHexString(arg0)).addString("0x" + Long.toHexString(arg1));
+        boolean isLong = arg1 instanceof Long;
+        if (!equality && arg2.longValue() == 0) {
+            long bits = getFlagBits(isLong, arg1.longValue());
+            boolean highbit = !isLong && (bits & 0x80000000) != 0 || isLong && bits < 0 && bits << 1 == 0;
+            boolean onlyLowBits = bits >>> 12 == 0;
+            BugInstance bug;
+            if (highbit) {
+                bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY
+                        : NORMAL_PRIORITY);
+            } else {
+                bug = new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
             }
-
-            bug.addSourceLine(this);
+            bug.addClassAndMethod(this).addString(toHex(arg1)+" ("+arg1+")").addSourceLine(this);
             bugReporter.reportBug(bug);
         }
-        state = 0;
+        if (equality) {
+            long dif;
+            String t;
+
+            long val1 = arg1.longValue();
+            long val2 = arg2.longValue();
+
+            if (bitop == IOR) {
+                dif = val1 & ~val2;
+                t = "BIT_IOR";
+            } else if (val1 != 0 || val2 != 0) {
+                dif = val2 & ~val1;
+                t = "BIT_AND";
+            } else {
+                dif = 1;
+                t = "BIT_AND_ZZ";
+            }
+            if (dif != 0) {
+                BugInstance bug = new BugInstance(this, t, HIGH_PRIORITY).addClassAndMethod(this);
+                if (!"BIT_AND_ZZ".equals(t)) {
+                    bug.addString(toHex(arg1)).addString(toHex(arg2));
+                }
+                bug.addSourceLine(this);
+                bugReporter.reportBug(bug);
+            }
+        }
+        arg1 = arg2 = null;
+        bitresultItem = null;
+    }
+
+    private static String toHex(Number n) {
+        return "0x"+(n instanceof Long ? Long.toHexString(n.longValue()) : Integer.toHexString(n.intValue()));
+    }
+
+    private boolean checkItem(int n) {
+        if(bitresultItem != null) {
+            for (int i = 0; i < n; i++) {
+                if (stack.getStackItem(i) == bitresultItem) {
+                    return true;
+                }
+            }
+        }
+        arg1 = arg2 = null;
+        bitresultItem = null;
+        return false;
+    }
+
+    @Override
+    public void afterOpcode(int seen) {
+        super.afterOpcode(seen);
+        switch (seen) {
+        case IAND:
+        case LAND:
+        case IOR:
+        case LOR:
+            if(stack.getStackDepth() > 0) {
+                bitresultItem = stack.getStackItem(0);
+            }
+            break;
+        default:
+            break;
+        }
     }
 
     static long getFlagBits(boolean isLong, long arg0) {
@@ -238,4 +207,3 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
         return bits;
     }
 }
-

@@ -6114,35 +6114,27 @@ This may indicate a logic error or typo.</p>
     <LongDescription>Check for sign of bitwise operation in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression such as</p>
-<pre>((event.detail &amp; SWT.SELECTED) &gt; 0)</pre>.
-<p>Using bit arithmetic and then comparing with the greater than operator can
+<p> This method compares an expression such as
+<code>((event.detail &amp; SWT.SELECTED) &gt; 0)</code>.
+Using bit arithmetic and then comparing with the greater than operator can
 lead to unexpected results (of course depending on the value of
 SWT.SELECTED). If SWT.SELECTED is a negative number, this is a candidate
 for a bug. Even when SWT.SELECTED is not negative, it seems good practice
 to use '!= 0' instead of '&gt; 0'.
-</p>
-<p>
-<em>Boris Bokowski</em>
 </p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="BIT_SIGNED_CHECK_HIGH_BIT">
-    <ShortDescription>Check for sign of bitwise operation</ShortDescription>
-    <LongDescription>Check for sign of bitwise operation in {1}</LongDescription>
+    <ShortDescription>Check for sign of bitwise operation involving negative number</ShortDescription>
+    <LongDescription>Check for sign of bitwise operation involving {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression such as</p>
-<pre>((event.detail &amp; SWT.SELECTED) &gt; 0)</pre>.
-<p>Using bit arithmetic and then comparing with the greater than operator can
-lead to unexpected results (of course depending on the value of
-SWT.SELECTED). If SWT.SELECTED is a negative number, this is a candidate
-for a bug. Even when SWT.SELECTED is not negative, it seems good practice
+<p> This method compares a bitwise expression such as
+<code>((val &amp; CONSTANT) &gt; 0)</code> where CONSTANT is the negative number.
+Using bit arithmetic and then comparing with the greater than operator can
+lead to unexpected results. This comparison is unlikely to work as expected. The good practice is
 to use '!= 0' instead of '&gt; 0'.
-</p>
-<p>
-<em>Boris Bokowski</em>
 </p>
 ]]>
     </Details>
@@ -6152,7 +6144,7 @@ to use '!= 0' instead of '&gt; 0'.
     <LongDescription>Check to see if ((...) &amp; 0) == 0 in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (e &amp; 0) to 0,
+<p> This method compares an expression of the form <code>(e &amp; 0)</code> to 0,
 which will always compare equal.
 This may indicate a logic error or typo.</p>
 ]]>
@@ -6163,7 +6155,7 @@ This may indicate a logic error or typo.</p>
     <LongDescription>Incompatible bit masks in (e | {2} == {3}) yields constant result in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares an expression of the form (e | C) to D.
+<p> This method compares an expression of the form <code>(e | C)</code> to D.
 which will always compare unequal
 due to the specific values of constants C and D.
 This may indicate a logic error or typo.</p>
@@ -6171,6 +6163,9 @@ This may indicate a logic error or typo.</p>
 <p> Typically, this bug occurs because the code wants to perform
 a membership test in a bit set, but uses the bitwise OR
 operator ("|") instead of bitwise AND ("&amp;").</p>
+
+<p>Also such bug may appear in expressions like <code>(e &amp; A | B) == C</code>
+which is parsed like <code>((e &amp; A) | B) == C</code> while <code>(e &amp; (A | B)) == C</code> was intended.</p>
 ]]>
     </Details>
   </BugPattern>
