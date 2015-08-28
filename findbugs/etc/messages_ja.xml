@@ -3474,7 +3474,7 @@ public boolean equals(Object o) {
 
   <BugPattern type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">
     <ShortDescription>equals メソッドはスーパークラスの equals メソッドをオーバーライドしているが、対称的ではないかもしれない</ShortDescription>
-    <LongDescription>{1.class} は、{2.class.givenClass} で equals メソッドをオーバーラドしていますが、対称的ではないかもしれません。</LongDescription>
+    <LongDescription>{1.class} は、{2.class.givenClass} で equals メソッドをオーバーライドしていますが、対称的ではないかもしれません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
