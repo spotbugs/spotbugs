@@ -47,7 +47,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -189,12 +188,9 @@ public class FindSqlInjection implements Detector {
     final Map<MethodDescriptor, int[]> executeMethods;
     final Set<MethodDescriptor> allMethods = new HashSet<>();
 
-    private final boolean testingEnabled;
-
     public FindSqlInjection(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
         Set<MethodParameter> baseExecuteMethods = new HashSet<>();
         for(MethodDescriptor executeMethod : EXECUTE_METHODS) {
             baseExecuteMethods.add(new MethodParameter(executeMethod, 0));
@@ -465,7 +461,7 @@ public class FindSqlInjection implements Detector {
             }
         }
 
-        String description = "TESTING";
+        String description;
         if (isExecute) {
             description = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE";
         } else {
@@ -474,9 +470,6 @@ public class FindSqlInjection implements Detector {
 
         BugInstance bug = new BugInstance(this, description, priority);
         bug.addClassAndMethod(methodGen, javaClass.getSourceFileName());
-        if ("TESTING".equals(description)) {
-            bug.addString("Incomplete report invoking non-constant SQL string");
-        }
         if (sawSeriousTaint) {
             bug.addString("non-constant SQL string involving HTTP taint");
         }
@@ -539,10 +532,8 @@ public class FindSqlInjection implements Detector {
                 // returns by methods
                 Location prev = getPreviousLocation(cfg, location, true);
                 if (prev == null || !isSafeValue(prev, cpg)) {
-                    BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(), stringAppendState, executeMethod);
-                    if(!testingEnabled && "TESTING".equals(bug.getType())){
-                        continue;
-                    }
+                    BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(), stringAppendState,
+                            executeMethod);
                     bugAccumulator.accumulateBug(
                             bug,
                             SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
