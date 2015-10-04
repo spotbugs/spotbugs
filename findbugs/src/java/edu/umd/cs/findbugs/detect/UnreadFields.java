@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,10 +46,16 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProgramPoint;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -56,6 +64,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
@@ -103,6 +112,8 @@ public class UnreadFields extends OpcodeStackDetector {
     private final BugAccumulator bugAccumulator;
 
     boolean publicOrProtectedConstructor;
+
+    private final Map<String, List<BugAnnotation>> anonymousClassAnnotation = new HashMap<>();
 
     /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getReadFields()} instead
@@ -568,6 +579,32 @@ public class UnreadFields extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(new BugInstance(this, "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", priority)
                 .addClassAndMethod(this).addField(f), this);
 
+            }
+        }
+
+        // Store annotation for the anonymous class creation
+        if (seen == INVOKESPECIAL && getMethodDescriptorOperand().getName().equals("<init>") && ClassName.isAnonymous(getClassConstantOperand())) {
+            List<BugAnnotation> annotation = new ArrayList<>();
+            annotation.add(ClassAnnotation.fromClassDescriptor(getClassDescriptor()));
+            annotation.add(MethodAnnotation.fromVisitedMethod(this));
+            annotation.add(SourceLineAnnotation.fromVisitedInstruction(this));
+            anonymousClassAnnotation.put(getClassDescriptorOperand().getDottedClassName(), annotation);
+        }
+
+        if (seen == PUTFIELD || seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3) {
+            Item item = stack.getStackItem(0);
+            XMethod xMethod = item.getReturnValueOf();
+            if(xMethod != null && xMethod.getName().equals("<init>") && ClassName.isAnonymous(xMethod.getClassName())) {
+                List<BugAnnotation> annotations = anonymousClassAnnotation.get(xMethod.getClassName());
+                if(annotations == null) {
+                    annotations = new ArrayList<>();
+                }
+                if(seen == PUTFIELD) {
+                    annotations.add(FieldAnnotation.fromReferencedField(this));
+                } else {
+                    annotations.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getNextPC()));
+                }
+                anonymousClassAnnotation.put(xMethod.getClassName(), annotations);
             }
         }
 
@@ -1135,14 +1172,23 @@ public class UnreadFields extends OpcodeStackDetector {
                             priority = NORMAL_PRIORITY;
                         }
 
-                        String bug = "SIC_INNER_SHOULD_BE_STATIC";
+                        BugInstance bugInstance;
                         if (isAnonymousInnerClass) {
-                            bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
+                            bugInstance = new BugInstance(this, "SIC_INNER_SHOULD_BE_STATIC_ANON", priority);
+                            List<BugAnnotation> annotations = anonymousClassAnnotation.remove(f.getClassDescriptor().getDottedClassName());
+                            if(annotations != null) {
+                                bugInstance.addClass(className).describe(ClassAnnotation.ANONYMOUS_ROLE);
+                                bugInstance.addAnnotations(annotations);
+                            } else {
+                                bugInstance.addClass(className);
+                            }
                         } else if (!easyChange) {
-                            bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
+                            bugInstance = new BugInstance(this, "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS", priority).addClass(className);
+                        } else {
+                            bugInstance = new BugInstance(this, "SIC_INNER_SHOULD_BE_STATIC", priority).addClass(className);
                         }
 
-                        bugReporter.reportBug(new BugInstance(this, bug, priority).addClass(className));
+                        bugReporter.reportBug(bugInstance);
 
                     }
                 }
