@@ -47,7 +47,7 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
     @Override
     public void visit(JavaClass obj) {
 
-        if (Subtypes2.instanceOf(obj, "java.util.Comparator") && !ClassName.isAnonymous(getClassName())
+        if (Subtypes2.instanceOf(obj, "java.util.Comparator") && !ClassName.isLocalOrAnonymous(getClassName())
                 && !Subtypes2.instanceOf(obj, "java.io.Serializable")) {
             int priority = NORMAL_PRIORITY;
             if (obj.isInterface() || obj.isAbstract()) {

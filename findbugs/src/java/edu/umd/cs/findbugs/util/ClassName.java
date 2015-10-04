@@ -186,8 +186,25 @@ public abstract class ClassName {
     }
 
     /**
-     * Does a class name appear to designate an anonymous class? Only the name
-     * is analyzed. No classes are loaded or looked up.
+     * Does a class name appear to designate an anonymous or local (defined
+     * inside method) class? Only the name is analyzed. No classes are loaded or
+     * looked up.
+     *
+     * @param className
+     *            class name, slashed or dotted, fully qualified or unqualified
+     * @return true if className is the name of an anonymous or local class
+     */
+    public static boolean isLocalOrAnonymous(String className) {
+        int i = className.lastIndexOf('$');
+        if (i >= 0 && i + 1 < className.length()) {
+            return Character.isDigit(className.charAt(i + 1));
+        }
+        return false;
+    }
+
+    /**
+     * Does a class name appear to designate an anonymous class? Only
+     * the name is analyzed. No classes are loaded or looked up.
      *
      * @param className
      *            class name, slashed or dotted, fully qualified or unqualified
@@ -195,8 +212,13 @@ public abstract class ClassName {
      */
     public static boolean isAnonymous(String className) {
         int i = className.lastIndexOf('$');
-        if (i >= 0 && i + 1 < className.length()) {
-            return Character.isDigit(className.charAt(i + 1));
+        if (i >= 0 && ++i < className.length()) {
+            while(i < className.length()) {
+                if(!Character.isDigit(className.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
         }
         return false;
     }

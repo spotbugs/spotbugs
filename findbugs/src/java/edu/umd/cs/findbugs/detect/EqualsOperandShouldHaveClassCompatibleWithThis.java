@@ -116,7 +116,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
                 Type cType = Type.getType(c.getSignature());
                 IncompatibleTypes check = IncompatibleTypes.getPriorityForAssumingCompatible(thisType, cType, false);
                 int priority = check.getPriority();
-                if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isAnonymous(getClassName())) {
+                if ("java/lang/Object".equals(getSuperclassName()) && ClassName.isLocalOrAnonymous(getClassName())) {
                     priority++;
                 }
                 bugAccumulator.accumulateBug(new BugInstance(this, "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS", priority)
