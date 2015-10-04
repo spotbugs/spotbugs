@@ -217,6 +217,7 @@ public abstract class ClassName {
                 if(!Character.isDigit(className.charAt(i))) {
                     return false;
                 }
+                i++;
             }
             return true;
         }
