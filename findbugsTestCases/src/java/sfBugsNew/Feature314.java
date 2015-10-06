@@ -27,6 +27,16 @@ public class Feature314 {
         openFilePuzzling4("c:\\file.txt", "ok", "c:\\file.txt", "c:\\file.txt");
     }
     
+    @ExpectWarning("DMI_HARDCODED_ABSOLUTE_FILENAME")
+    public void testHardCodedLong() throws FileNotFoundException {
+        openFilePuzzlingLong(1L, "c:\\file.txt", "ok", 0.0);
+    }
+    
+    @NoWarning("DMI_HARDCODED_ABSOLUTE_FILENAME")
+    public void testHardCodedLongOk() throws FileNotFoundException {
+        openFilePuzzlingLong(1L, "ok", "c:\\file.txt", 0.0);
+    }
+    
     private FileOutputStream openFile(String name) throws FileNotFoundException {
         return new FileOutputStream(name);
     }
@@ -52,6 +62,10 @@ public class Feature314 {
         return openFilePuzzling3(name, arg1, arg2, arg3);
     }
 
+    private FileOutputStream openFilePuzzlingLong(long arg1, String name, String arg2, double arg3) throws FileNotFoundException {
+        return openFilePuzzling3(name, String.valueOf(arg1), arg2, String.valueOf(arg3));
+    }
+    
     @ExpectWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public boolean test(Connection c, String code) throws SQLException {
         return Sql.hasResult(c, "SELECT 1 FROM myTable WHERE code='"+code+"'");

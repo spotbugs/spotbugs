@@ -22,6 +22,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
@@ -95,6 +96,8 @@ public class DumbMethodInvocations implements Detector {
             }
             InvokeInstruction iins = (InvokeInstruction) ins;
 
+            SignatureParser parser = new SignatureParser(iins.getSignature(cpg));
+
             ConstantFrame frame = constantDataflow.getFactAtLocation(location);
             if (!frame.isValid()) {
                 // This basic block is probably dead
@@ -104,7 +107,7 @@ public class DumbMethodInvocations implements Detector {
             MethodDescriptor md = new MethodDescriptor(iins, cpg);
             if (allDatabasePasswordMethods.containsKey(md)) {
                 for(int paramNumber : allDatabasePasswordMethods.get(md)) {
-                    Constant operandValue = frame.getStackValue(iins.getArgumentTypes(cpg).length-1-paramNumber);
+                    Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
                     if (operandValue.isConstantString()) {
                         String password = operandValue.getConstantString();
                         if (password.length() == 0) {
@@ -134,7 +137,7 @@ public class DumbMethodInvocations implements Detector {
             } else if (allFileNameStringMethods.containsKey(md)) {
 
                 for(int paramNumber : allFileNameStringMethods.get(md)) {
-                    Constant operandValue = frame.getStackValue(iins.getArgumentTypes(cpg).length-1-paramNumber);
+                    Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
                     if (!operandValue.isConstantString()) {
                         continue;
                     }

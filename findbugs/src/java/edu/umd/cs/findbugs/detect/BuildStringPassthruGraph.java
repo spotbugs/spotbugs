@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -205,9 +206,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
 
     private int nArgs;
 
-    private int shift;
-
-    private boolean[] argEnabled;
+    private int[] argNums;
 
     private List<MethodParameter>[] passedParameters;
 
@@ -218,22 +217,28 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
     @SuppressWarnings("unchecked")
     @Override
     public void visitMethod(Method obj) {
-        argEnabled = null;
-        org.apache.bcel.generic.Type[] argumentTypes = obj.getArgumentTypes();
+        argNums = null;
+        Type[] argumentTypes = obj.getArgumentTypes();
         if(argumentTypes.length == 0) {
             return;
         }
+        int lvNum = obj.isStatic() ? 0 : 1;
         nArgs = argumentTypes.length;
+        int argCount = lvNum;
+        for(Type type : argumentTypes) {
+            argCount+=type.getSize();
+        }
         for(int i=0; i<nArgs; i++) {
             if(argumentTypes[i].getSignature().equals("Ljava/lang/String;")) {
-                if(argEnabled == null) {
-                    argEnabled = new boolean[nArgs];
+                if(argNums == null) {
+                    argNums = new int[argCount];
+                    Arrays.fill(argNums, -1);
                 }
-                argEnabled[i] = true;
+                argNums[lvNum] = i;
             }
+            lvNum+=argumentTypes[i].getSize();
         }
-        if(argEnabled != null) {
-            shift = obj.isStatic() ? 0 : -1;
+        if(argNums != null) {
             passedParameters = new List[nArgs];
         }
         super.visitMethod(obj);
@@ -241,7 +246,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
 
     @Override
     public boolean shouldVisitCode(Code obj) {
-        return argEnabled != null;
+        return argNums != null;
     }
 
     @Override
@@ -261,10 +266,13 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
     @Override
     public void sawOpcode(int seen) {
         if (isRegisterStore()) {
-            int param = getRegisterOperand() + shift;
-            if (param >= 0 && param < nArgs) {
-                argEnabled[param] = false;
-                passedParameters[param] = null;
+            int param = getRegisterOperand();
+            if (param < argNums.length) {
+                int argNum = argNums[param];
+                argNums[param] = -1;
+                if(argNum >= 0) {
+                    passedParameters[argNum] = null;
+                }
             }
         }
         switch (seen) {
@@ -276,11 +284,11 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
             int callArgs = getNumberArguments(md.getSignature());
             for (int i = 0; i < callArgs; i++) {
                 Item item = getStack().getStackItem(callArgs - 1 - i);
-                int param = item.getRegisterNumber() + shift;
-                if (param >= 0 && param < nArgs && argEnabled[param]) {
-                    List<MethodParameter> list = passedParameters[param];
+                int param = item.getRegisterNumber();
+                if (param >= 0 && param < argNums.length && argNums[param] != -1) {
+                    List<MethodParameter> list = passedParameters[argNums[param]];
                     if (list == null) {
-                        passedParameters[param] = list = new ArrayList<>();
+                        passedParameters[argNums[param]] = list = new ArrayList<>();
                     }
                     list.add(new MethodParameter(md, i));
                 }
