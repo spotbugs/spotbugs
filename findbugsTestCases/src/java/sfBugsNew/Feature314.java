@@ -1,7 +1,11 @@
 package sfBugsNew;
 
-import java.io.*;
-import java.sql.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -71,8 +75,25 @@ public class Feature314 {
         return Sql.hasResult(c, "SELECT 1 FROM myTable WHERE code='"+code+"'");
     }
 
+    @ExpectWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
+    public boolean testSqlLong(Connection c, String code) throws SQLException {
+        return Sql.hasResult(c, 1L, "SELECT 1 FROM myTable WHERE code='"+code+"'", 2L, "blahblah");
+    }
+    
+    @NoWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
+    public boolean testSqlLongOk(Connection c, String code) throws SQLException {
+        return Sql.hasResult(c, 1L, "SELECT COUNT(*) FROM myTable", 2L, "Code: "+code);
+    }
+    
     public static class Sql {
         public static boolean hasResult(Connection c, String query) throws SQLException {
+            try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(query)) {
+                return rs.next();
+            }
+        }
+
+        public static boolean hasResult(Connection c, long l1, String query, long l2, String somethingElse) throws SQLException {
+            System.out.println(somethingElse+": "+l1+":"+l2);
             try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(query)) {
                 return rs.next();
             }

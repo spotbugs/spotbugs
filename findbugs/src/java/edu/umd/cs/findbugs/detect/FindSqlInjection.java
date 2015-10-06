@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -54,12 +55,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -496,6 +501,7 @@ public class FindSqlInjection implements Detector {
         StringAppendState stringAppendState = getStringAppendState(cfg, cpg);
 
         ConstantDataflow dataflow = classContext.getConstantDataflow(method);
+        ValueNumberDataflow vnd = classContext.getValueNumberDataflow(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
@@ -522,15 +528,16 @@ public class FindSqlInjection implements Detector {
                 }
             }
             ConstantFrame frame = dataflow.getFactAtLocation(location);
-            int numArguments = frame.getNumArguments(invoke, cpg);
-            Constant value = frame.getStackValue(numArguments - 1 - paramNumber);
+            SignatureParser parser = new SignatureParser(invoke.getSignature(cpg));
+            Constant value = frame.getArgument(invoke, cpg, paramNumber, parser);
+            ValueNumber vn = vnd.getFactAtLocation(location).getArgument(invoke, cpg, paramNumber, parser);
 
             if (!value.isConstantString()) {
                 // TODO: verify it's the same string represented by
                 // stringAppendState
                 // FIXME: will false positive on const/static strings
                 // returns by methods
-                Location prev = getPreviousLocation(cfg, location, true);
+                Location prev = getValueNumberCreationLocation(vnd, vn);
                 if (prev == null || !isSafeValue(prev, cpg)) {
                     BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(), stringAppendState,
                             executeMethod);
@@ -542,6 +549,25 @@ public class FindSqlInjection implements Detector {
             }
         }
         bugAccumulator.reportAccumulatedBugs();
+    }
+
+    private Location getValueNumberCreationLocation(ValueNumberDataflow vnd, ValueNumber vn) {
+        ConstantPoolGen cpg = vnd.getCFG().getMethodGen().getConstantPool();
+        for(Iterator<Location> it = vnd.getCFG().locationIterator(); it.hasNext(); ) {
+            Location loc = it.next();
+            if(loc.getHandle().getInstruction().produceStack(cpg) != 1) {
+                continue;
+            }
+            try {
+                ValueNumberFrame vnf = vnd.getFactAfterLocation(loc);
+                if(vnf.getTopValue().equals(vn)) {
+                    return loc;
+                }
+            } catch (DataflowAnalysisException e) {
+                AnalysisContext.logError("While analyzing "+vnd.getCFG().getMethodGen()+" at "+loc, e);
+            }
+        }
+        return null;
     }
 
     @Override
