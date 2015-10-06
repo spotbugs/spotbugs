@@ -30,10 +30,14 @@ import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
 /**
- * * Denotes a class name or package name where the / character is used to
+ * Denotes a class name or package name where the / character is used to
  * separate package/class name components.
  *
+ * e.g. {@code java/util/Collection}, {@code foo/Bar$Baz}
+ *
  * @author pugh
+ * @see edu.umd.cs.findbugs.util.ClassName An utility class provides utility methods to handle this format
+ * @see DottedClassName Another format of class name
  */
 @Documented
 @TypeQualifier(applicableTo = CharSequence.class)
