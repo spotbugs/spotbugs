@@ -30,7 +30,7 @@ public class Bug1392 {
     
     @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public void notAllCovered(TrafficLight light) {
-        // default case is missing, but all cases are covered
+        // default case is missing, and not all the cases are covered
         switch (light) {
         case YELLOW:
             System.out.println("yellow");
