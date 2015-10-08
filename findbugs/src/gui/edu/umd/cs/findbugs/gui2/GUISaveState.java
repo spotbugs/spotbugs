@@ -67,7 +67,7 @@ public class GUISaveState {
     private static final String FRAME_BOUNDS = "Frame Bounds";
     private static final String EXTENDED_WINDOW_STATE = "ExtendedWindowState";
 
-    private static final int MAXNUMRECENTPROJECTS = 5;
+    static final int MAXNUMRECENTPROJECTS = 10;
 
     private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] { Sortables.CATEGORY, Sortables.BUGCODE,
         Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK, Sortables.FIRST_SEEN, Sortables.DESIGNATION };

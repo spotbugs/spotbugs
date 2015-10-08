@@ -30,7 +30,7 @@ import javax.swing.JMenu;
 public class RecentMenu {
 
     private static class LimitedArrayList<T> extends ArrayList<T> {
-        public static final int MAX_ENTRIES = 5;
+        public static final int MAX_ENTRIES = GUISaveState.MAXNUMRECENTPROJECTS;
 
         public LimitedArrayList() {
             super(MAX_ENTRIES);
