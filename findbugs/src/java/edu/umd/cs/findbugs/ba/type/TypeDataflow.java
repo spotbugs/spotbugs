@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba.type;
 
 import java.util.Collection;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -47,6 +49,7 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
         return getAnalysis().getEdgeExceptionSet(edge);
     }
 
+    @CheckForNull
     public LocationAndFactPair getLocationAndFactForInstruction(int pc) {
         Collection<Location> locations = getCFG().getLocationsContainingInstructionWithOffset(pc);
 
