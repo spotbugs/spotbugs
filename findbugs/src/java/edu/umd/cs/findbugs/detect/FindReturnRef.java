@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindReturnRef extends OpcodeStackDetector {
@@ -106,7 +107,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             return;
         }
 
-        if (staticMethod && seen == PUTSTATIC && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+        if (staticMethod && seen == PUTSTATIC && nonPublicFieldOperand()
+                && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (isPotentialCapture(top)) {
                 bugAccumulator.accumulateBug(
@@ -117,7 +119,8 @@ public class FindReturnRef extends OpcodeStackDetector {
                                 getPC(), getPC() - 1)), this);
             }
         }
-        if (!staticMethod && seen == PUTFIELD && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+        if (!staticMethod && seen == PUTFIELD && nonPublicFieldOperand()
+                && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
             if (isPotentialCapture(top) && target.getRegisterNumber() == 0) {
@@ -136,7 +139,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             return;
         }
 
-        if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())
+        if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
                 && !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
             fieldOnTOS = true;
             thisOnTOS = false;
@@ -146,7 +149,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             fieldIsStatic = false;
             return;
         }
-        if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())
+        if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
                 && !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
             fieldOnTOS = true;
             thisOnTOS = false;
@@ -170,6 +173,11 @@ public class FindReturnRef extends OpcodeStackDetector {
 
         fieldOnTOS = false;
         thisOnTOS = false;
+    }
+
+    private boolean nonPublicFieldOperand() {
+        XField xField = getXFieldOperand();
+        return xField == null || !xField.isPublic();
     }
 
     private boolean isPotentialCapture(OpcodeStack.Item top) {
