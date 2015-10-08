@@ -2410,12 +2410,12 @@ null 値が返されるなら NullPointerException が発生することにな�
   </BugPattern>
 
   <BugPattern type="NP_OPTIONAL_RETURN_NULL">
-    <ShortDescription>Optional の戻り型 ((java.util.Optional または com.google.common.base.Optiona)) を持つメソッドが明示的に null を返す</ShortDescription>
+    <ShortDescription>Optional の戻り型 ((java.util.Optional または com.google.common.base.Optional)) を持つメソッドが明示的に null を返す</ShortDescription>
     <LongDescription>{1} は、Optional の戻り型を持っていて、 明示的に null　を返しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-Optional の戻り型の使い方は、常に明示的に null を返すのは設計が望ましくないことを意味します。
+Optional の戻り型 ((java.util.Optional または com.google.common.base.Optional)) の使い方で明示的に null を返すのは設計が望ましくないことを意味します。
 null 値をこのようなケースで返すことは契約違反で、多分クライアントコードを破壊するでしょう。
 </p>
 ]]>
@@ -3897,7 +3897,7 @@ Web サーバは、一般的にサーブレットや JSP クラスのインス�
   <li>少なくとも1つのロックされたアクセスがクラス自身のメソッドの1つによって実行され、</li>
   <li>読み出しの2倍の重み付けをした書き込みで、非同期フィールドのアクセス (読み出しと書き込み) 数がすべてのアクセスのわずか1/3</li>
 </ul>
-<p
+<p>
 このバグパターンに合致する典型的なバグは、スレッドセーフを意図したクラスでメソッドを同期化させることを忘れていることです。
 </p>
 <p>
@@ -6820,31 +6820,24 @@ for(int i = 0; i &lt; 4; i++)
     <Details>
 <![CDATA[
 <p>
-このメソッドは、<code>((event.detail &amp; SWT.SELECTED) &gt; 0)</code> のような式を比較しています。
-ビット演算をより大きい演算子で比較することは、予想外の結果 (もちろん、<code>SWT.SELECTED</code> の値による) の原因になる可能性があります。
-<code>SWT.SELECTED</code> が負数であるなら、これはバグの候補です。
-<code>SWT.SELECTED</code> が負ではないとしても、'&gt; 0' の代わりに '!= 0' を使用することは良いプラクティスと思われます。
-</p>
-<p>
-Boris Bokowski
+このメソッドは、<code>((event.detail &amp; SWT.SELECTED) &gt; 0)</code> のような式で比較しています。
+ビット演算をより大きい演算子で比較することは、予想外の結果 (もちろん、SWT.SELECTED の値による) の原因になる可能性があります。
+SWT.SELECTED が負数であるなら、これはバグの候補です。
+SWT.SELECTED が負ではないとしても、'&gt; 0' の代わりに '!= 0' を使用することが良いプラクティスであると思われます。
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="BIT_SIGNED_CHECK_HIGH_BIT">
-    <ShortDescription>ビット演算の符号をチェックする</ShortDescription>
-    <LongDescription>ビット演算の符号をチェックしてください。{1}</LongDescription>
+    <ShortDescription>負数を含むビット演算の符号をチェックする</ShortDescription>
+    <LongDescription>{2} を含むビット演算の符号をチェックしてください。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このメソッドは、<code>((event.detail &amp; SWT.SELECTED) &gt; 0)</code> のような式を比較しています。
-ビット演算をより大きい演算子で比較することは、予想外の結果 (もちろん、<code>SWT.SELECTED</code> の値による) の原因になる可能性があります。
-<code>SWT.SELECTED</code> が負数であるなら、これはバグの候補です。
-<code>SWT.SELECTED</code> が負ではないとしても、'&gt; 0' の代わりに '!= 0' を使用することは良いプラクティスと思われます。
-</p>
-<p>
-Boris Bokowski
+このメソッドは、CONSTANT が負数のときに <code>((val &amp; CONSTANT) &gt; 0)</code> のようなビット演算式で比較しています。
+ビット演算をより大きい演算子で比較することは、予想外の結果の原因になる可能性があります。比較は期待したようになりません。
+'&gt; 0' の代わりに '!= 0' を使用することが良いプラクティスです。
 </p>
 ]]>
     </Details>
@@ -6856,7 +6849,7 @@ Boris Bokowski
     <Details>
 <![CDATA[
 <p>
-このメソッドは、<i>(e &amp; 0)</i> 形式の式を0と比較しています。それは、常に等価であることを比較します。論理エラーかタイプミスかもしれません。
+このメソッドは、<code>(e &amp; 0)</code> 形式の式を0と比較しています。それは、常に等価であることを比較します。論理エラーかタイプミスかもしれません。
 </p>
 ]]>
     </Details>
@@ -6868,12 +6861,15 @@ Boris Bokowski
     <Details>
 <![CDATA[
 <p>
-このメソッドは、<code>(e | C)</code> 形式の式を <code>D</code> と比較しています。
-定数 <i>C</i> の特定の値と <i>D</i> のために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
+このメソッドは、<code>(e | C)</code> 形式の式を D と比較しています。
+定数 C と　D の特定の値のために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 <p>
 典型的に、このバグは、ビットセットで帰属関係のテストを実行したいコードで発生します。
 しかし、ビット論理積演算子 ("&amp;") の代わりにビット論理和演算子 ("|") を使用しています。
+</p>
+<p>
+こうしたバグは <code>(e &amp; (A | B)) == C</code> が意図されている間に <code>((e &amp; A) | B) == C</code> のように解析される <code>(e &amp; A | B) == C</code> のような式で現れるかもしれません。
 </p>
 ]]>
     </Details>
