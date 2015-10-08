@@ -32,8 +32,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow.LocationAndFactPair;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -166,6 +169,10 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
     private static boolean implementsMap(ClassDescriptor d) {
         while (d != null) {
             try {
+                // Do not report this warning for EnumMap: EnumMap.keySet()/get() iteration is as fast as entrySet() iteration
+                if ("java.util.EnumMap".equals(d.getDottedClassName())) {
+                    return false;
+                }
                 // True if variable is itself declared as a Map
                 if ("java.util.Map".equals(d.getDottedClassName())) {
                     return true;
@@ -226,6 +233,16 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                         "keySet".equals(getNameConstantOperand()) && "()Ljava/util/Set;".equals(getSigConstantOperand())
                         // Following check solves sourceforge bug 1830576
                         && implementsMap(getClassDescriptorOperand())) {
+                    try {
+                        LocationAndFactPair lfp = getClassContext().getTypeDataflow(getMethod()).getLocationAndFactForInstruction(
+                                getPC());
+                        // Skip EnumMap if TypeAnalysis knows that the type is EnumMap
+                        if (lfp != null && lfp.frame.getTopValue().getSignature().equals("Ljava/util/EnumMap;")) {
+                            break;
+                        }
+                    } catch (DataflowAnalysisException | CFGBuilderException e) {
+                        // ignore
+                    }
                     mapVariable = loadedVariable;
                     removedFromStack(true);
                     keySetRegister = IN_STACK;
