@@ -28,7 +28,6 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class SwitchHandler {
@@ -46,10 +45,8 @@ public class SwitchHandler {
             return -1;
         }
         int total = 0;
-        String enumSignature = ClassName.toSignature(c.getClassDescriptor().getClassName());
         for(XField f : c.getXFields()) {
-            if (f.getSignature().equals(enumSignature)
-                    && f.isPublic() && f.isFinal()) {
+            if (f.isEnum()) {
                 total++;
             }
         }

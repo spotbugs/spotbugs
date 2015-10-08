@@ -41,6 +41,11 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
         return (getAccessFlags() & Constants.ACC_SYNTHETIC) != 0;
     }
 
+    @Override
+    public boolean isEnum() {
+        return (getAccessFlags() & Constants.ACC_ENUM) != 0;
+    }
+
     /*
      * (non-Javadoc)
      *

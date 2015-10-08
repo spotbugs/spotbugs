@@ -189,6 +189,11 @@ public class FieldInfo extends FieldDescriptor implements XField {
         return checkFlag(Constants.ACC_PRIVATE);
     }
 
+    @Override
+    public boolean isEnum() {
+        return checkFlag(Constants.ACC_ENUM);
+    }
+
     /*
      * (non-Javadoc)
      *

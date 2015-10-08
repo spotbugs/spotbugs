@@ -52,6 +52,11 @@ public interface XField extends ClassMember, AnnotatedObject, ComparableField {
     public boolean isVolatile();
 
     /**
+     * @return true if this is a enum constant
+     */
+    public boolean isEnum();
+
+    /**
      * @return FieldDescriptor referring to this field
      */
     public FieldDescriptor getFieldDescriptor();
