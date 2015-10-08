@@ -169,7 +169,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             if (p == param) {
                 return getEntryValue(slotOffset);
             }
-            param++;
+            p++;
             slotOffset += SignatureParser.getNumSlotsForType(paramSig);
         }
 
