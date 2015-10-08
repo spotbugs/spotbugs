@@ -56,6 +56,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
@@ -488,6 +490,10 @@ public class FindSqlInjection implements Detector {
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
         JavaClass javaClass = classContext.getJavaClass();
+        ValueNumberDataflow vnd = classContext.getValueNumberDataflow(method);
+
+        Set<ValueNumber> passthruParams = getPassthruParams(vnd, method, javaClass);
+
         this.method = method;
         this.classContext = classContext;
         MethodGen methodGen = classContext.getMethodGen(method);
@@ -501,7 +507,6 @@ public class FindSqlInjection implements Detector {
         StringAppendState stringAppendState = getStringAppendState(cfg, cpg);
 
         ConstantDataflow dataflow = classContext.getConstantDataflow(method);
-        ValueNumberDataflow vnd = classContext.getValueNumberDataflow(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
@@ -532,7 +537,7 @@ public class FindSqlInjection implements Detector {
             Constant value = frame.getArgument(invoke, cpg, paramNumber, parser);
             ValueNumber vn = vnd.getFactAtLocation(location).getArgument(invoke, cpg, paramNumber, parser);
 
-            if (!value.isConstantString()) {
+            if (!value.isConstantString() && !passthruParams.contains(vn)) {
                 // TODO: verify it's the same string represented by
                 // stringAppendState
                 // FIXME: will false positive on const/static strings
@@ -568,6 +573,25 @@ public class FindSqlInjection implements Detector {
             }
         }
         return null;
+    }
+
+    private Set<ValueNumber> getPassthruParams(ValueNumberDataflow vnd, Method method, JavaClass javaClass) {
+        XMethod xMethod = XFactory.createXMethod(javaClass, method);
+        Set<ValueNumber> passthruParams = new HashSet<>();
+
+        int[] p = preparedStatementMethods.get(xMethod);
+        if(p != null) {
+            for(int pNum : p) {
+                passthruParams.add(vnd.getAnalysis().getEntryValueForParameter(pNum));
+            }
+        }
+        p = executeMethods.get(xMethod);
+        if(p != null) {
+            for(int pNum : p) {
+                passthruParams.add(vnd.getAnalysis().getEntryValueForParameter(pNum));
+            }
+        }
+        return passthruParams;
     }
 
     @Override
