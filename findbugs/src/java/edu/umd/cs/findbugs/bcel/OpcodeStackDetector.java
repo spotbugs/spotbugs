@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.bcel;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -65,6 +67,7 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
     }
 
     @Override
+    @OverridingMethodsMustInvokeSuper
     public boolean beforeOpcode(int seen) {
         stack.precomputation(this);
         return !stack.isTop();
@@ -75,6 +78,7 @@ abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
      * @see #sawOpcode(int)
      */
     @Override
+    @OverridingMethodsMustInvokeSuper
     public void afterOpcode(int seen) {
         stack.sawOpcode(this, seen);
     }
