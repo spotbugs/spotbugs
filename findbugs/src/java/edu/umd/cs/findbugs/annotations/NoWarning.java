@@ -8,8 +8,6 @@ package edu.umd.cs.findbugs.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import edu.umd.cs.findbugs.BugRanker;
-
 /**
  * Annotation indicating that <em>no</em> FindBugs warning is expected.
  *
@@ -29,7 +27,7 @@ public @interface NoWarning {
     public Confidence confidence() default Confidence.LOW;
 
     /** Want no warning at this rank or scarier */
-    public int rank() default BugRanker.VISIBLE_RANK_MAX;
+    public int rank() default 20; // BugRanker.VISIBLE_RANK_MAX
 
     /** Tolerate up to this many warnings */
     public int num() default 0;

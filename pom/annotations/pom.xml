@@ -9,7 +9,7 @@
 
   <groupId>com.google.code.findbugs</groupId>
   <artifactId>annotations</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.1u1</version>
   <packaging>jar</packaging>
 
   <url>http://findbugs.sourceforge.net/</url>
@@ -113,12 +113,6 @@
           <includes>
               <include>edu/umd/cs/findbugs/annotations/*.java</include>
           </includes>
-          <excludes>
-              <exclude>edu/umd/cs/findbugs/annotations/DesireWarning.java</exclude>
-              <exclude>edu/umd/cs/findbugs/annotations/DesireNoWarning.java</exclude>
-              <exclude>edu/umd/cs/findbugs/annotations/ExpectWarning.java</exclude>
-              <exclude>edu/umd/cs/findbugs/annotations/NoWarning.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -138,12 +132,6 @@
               <include>edu/umd/cs/findbugs/annotations/*.java</include>
               <include>edu/umd/cs/findbugs/Priorities.java</include>
           </includes>
-          <excludes>
-              <exclude>edu/umd/cs/findbugs/annotations/DesireWarning.java</exclude>
-              <exclude>edu/umd/cs/findbugs/annotations/DesireNoWarning.java</exclude>
-              <exclude>edu/umd/cs/findbugs/annotations/ExpectWarning.java</exclude>
-              <exclude>edu/umd/cs/findbugs/annotations/NoWarning.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
