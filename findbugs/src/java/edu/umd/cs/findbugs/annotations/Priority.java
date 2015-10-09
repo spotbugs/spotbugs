@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import edu.umd.cs.findbugs.Priorities;
 
 /**
  * @author pugh
@@ -27,8 +26,10 @@ import edu.umd.cs.findbugs.Priorities;
  */
 @Deprecated
 public enum Priority {
-    HIGH(Priorities.HIGH_PRIORITY), MEDIUM(Priorities.NORMAL_PRIORITY), LOW(Priorities.LOW_PRIORITY), IGNORE(
-            Priorities.IGNORE_PRIORITY);
+    HIGH(1 /* Priorities.HIGH_PRIORITY */),
+    MEDIUM(2 /* Priorities.NORMAL_PRIORITY */ ),
+    LOW(3 /* Priorities.LOW_PRIORITY */),
+    IGNORE(5 /*Priorities.IGNORE_PRIORITY */);
 
     private final int priorityValue;
 

@@ -9,7 +9,7 @@
 
   <groupId>com.google.code.findbugs</groupId>
   <artifactId>annotations</artifactId>
-  <version>3.0.1u1</version>
+  <version>3.0.1u2</version>
   <packaging>jar</packaging>
 
   <url>http://findbugs.sourceforge.net/</url>
@@ -130,7 +130,6 @@
         <configuration>
           <includes>
               <include>edu/umd/cs/findbugs/annotations/*.java</include>
-              <include>edu/umd/cs/findbugs/Priorities.java</include>
           </includes>
         </configuration>
       </plugin>
@@ -151,6 +150,7 @@
        <configuration>
         <instructions>
          <Bundle-SymbolicName>findbugsAnnotations</Bundle-SymbolicName>
+         <Bundle-Version>3.0.1</Bundle-Version>
          <Bundle-Name>${project.name}</Bundle-Name>
          <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
          <Import-Package></Import-Package>

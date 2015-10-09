@@ -21,14 +21,14 @@ package edu.umd.cs.findbugs.annotations;
 
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.Priorities;
-
 /**
  * Describes the confidence with which FindBugs reports a bug instance.
  */
 public enum Confidence {
-    HIGH(Priorities.HIGH_PRIORITY), MEDIUM(Priorities.NORMAL_PRIORITY), LOW(Priorities.LOW_PRIORITY), IGNORE(
-            Priorities.IGNORE_PRIORITY);
+    HIGH(1 /* Priorities.HIGH_PRIORITY */),
+    MEDIUM(2 /* Priorities.NORMAL_PRIORITY */ ),
+    LOW(3 /* Priorities.LOW_PRIORITY */),
+    IGNORE(5 /*Priorities.IGNORE_PRIORITY */);
 
     private final int confidenceValue;
 
