@@ -2634,7 +2634,8 @@ public class OpcodeStack implements Constants2 {
                 i.setSpecialKind(Item.NON_NEGATIVE);
             }
             push(i);
-        } else if("java/lang/String".equals(clsName) && numberArguments == 0 && topItem.getConstant() instanceof String) {
+        } else if("java/lang/String".equals(clsName) && numberArguments == 0 && topItem != null &&
+                topItem.getConstant() instanceof String) {
             String input = (String) topItem.getConstant();
             Object result;
             switch(methodName) {
