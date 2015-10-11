@@ -71,11 +71,11 @@ public class SignatureUtil {
         if (type.endsWith("[]")) {
             return "[" + typeToSignature(type.substring(0, type.length() - 2));
         } else {
-            return scalarTypeToSiganture(type);
+            return scalarTypeToSignature(type);
         }
     }
 
-    private static String scalarTypeToSiganture(String type) {
+    private static String scalarTypeToSignature(String type) {
         if ("boolean".equals(type)) {
             return "Z";
         } else if ("byte".equals(type)) {
