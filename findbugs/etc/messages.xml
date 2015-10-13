@@ -1758,7 +1758,7 @@ This partical method invocation doesn't make sense, for reasons that should be a
     <LongDescription>Creation of ScheduledThreadPoolExecutor with zero core threads in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>(<a href="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html#ScheduledThreadPoolExecutor(int)">Javadoc</a>)
+    <p>(<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html#ScheduledThreadPoolExecutor%28int%29">Javadoc</a>)
 A ScheduledThreadPoolExecutor with zero core threads will never execute anything; changes to the max pool size are ignored.
 </p>
 
@@ -1770,7 +1770,7 @@ A ScheduledThreadPoolExecutor with zero core threads will never execute anything
     <LongDescription>Futile attempt to change max pool size of ScheduledThreadPoolExecutor in {1}</LongDescription>
     <Details>
       <![CDATA[
-    <p>(<a href="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
+    <p>(<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/ScheduledThreadPoolExecutor.html">Javadoc</a>)
 While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the inherited tuning methods are not useful for it. In particular, because it acts as a fixed-sized pool using corePoolSize threads and an unbounded queue, adjustments to maximumPoolSize have no useful effect.
     </p>
 
@@ -3064,7 +3064,7 @@ public boolean equals(Object o) { return this == o; }
     A large String constant is duplicated across multiple class files.
     This is likely because a final field is initialized to a String constant, and the Java language
     mandates that all references to a final field from other classes be inlined into
-that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6447475">JDK bug 6447475</a>
+that classfile. See <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6447475">JDK bug 6447475</a>
     for a description of an occurrence of this bug in the JDK and how resolving it reduced
     the size of the JDK by 1 megabyte.
 </p>
@@ -3509,7 +3509,7 @@ can result in errors if the left-hand side guards cases
 when evaluating the right-hand side can generate an error.
 </p>
 
-<p>See <a href="http://java.sun.com/docs/books/jls/third_edition/html/expressions.html#15.22.2">the Java
+<p>See <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.22.2">the Java
 Language Specification</a> for details
 
 </p>
@@ -3530,7 +3530,7 @@ knowing the left-hand side. This can be less efficient and
 can result in errors if the left-hand side guards cases
 when evaluating the right-hand side can generate an error.
 
-<p>See <a href="http://java.sun.com/docs/books/jls/third_edition/html/expressions.html#15.22.2">the Java
+<p>See <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.22.2">the Java
 Language Specification</a> for details
 
 </p>
@@ -6727,12 +6727,12 @@ Please verify that this statement does the right thing.
 <![CDATA[
 <p>
 This instruction assigns a class literal to a variable and then never uses it.
-<a href="//java.sun.com/j2se/1.5.0/compatibility.html#literal">The behavior of this differs in Java 1.4 and in Java 5.</a>
+<a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">The behavior of this differs in Java 1.4 and in Java 5.</a>
 In Java 1.4 and earlier, a reference to <code>Foo.class</code> would force the static initializer
 for <code>Foo</code> to be executed, if it has not been executed already.
 In Java 5 and later, it does not.
 </p>
-<p>See Sun's <a href="//java.sun.com/j2se/1.5.0/compatibility.html#literal">article on Java SE compatibility</a>
+<p>See Sun's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
 for more details and examples, and suggestions on how to force class initialization in Java 5.
 </p>
 ]]>
@@ -7705,7 +7705,7 @@ can use an unsigned right shift instead. In other words, rather that using <code
 use <code>(low+high) &gt;&gt;&gt; 1</code>
 </p>
 <p>This bug exists in many earlier implementations of binary search and merge sort.
-Martin Buchholz <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6412541">found and fixed it</a>
+Martin Buchholz <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6412541">found and fixed it</a>
 in the JDK libraries, and Joshua Bloch
 <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html">widely
 publicized the bug pattern</a>.
@@ -8038,8 +8038,8 @@ application. Under 1.4 problems seem to surface less often than under Java 5 whe
 random ArrayIndexOutOfBoundsExceptions or IndexOutOfBoundsExceptions in sun.util.calendar.BaseCalendar.getCalendarDateFromFixedDate().</p>
 <p>You may also experience serialization problems.</p>
 <p>Using an instance field is recommended.</p>
-<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
-and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+<p>For more information on this see <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579">JDK Bug #6231579</a>
+and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bug #6178997</a>.</p>
 ]]>
 </Details>
   </BugPattern>
@@ -8051,8 +8051,8 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 <p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use.
 The detector has found a call to an instance of Calendar that has been obtained via a static
 field. This looks suspicous.</p>
-<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
-and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+<p>For more information on this see <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579">JDK Bug #6231579</a>
+and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bug #6178997</a>.</p>
 ]]>
 </Details>
   </BugPattern>
@@ -8066,8 +8066,8 @@ Sharing a single instance across thread boundaries without proper synchronizatio
 application.</p>
 <p>You may also experience serialization problems.</p>
 <p>Using an instance field is recommended.</p>
-<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
-and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+<p>For more information on this see <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579">JDK Bug #6231579</a>
+and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bug #6178997</a>.</p>
 ]]>
 </Details>
   </BugPattern>
@@ -8079,8 +8079,8 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
 <p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
 The detector has found a call to an instance of DateFormat that has been obtained via a static
 field. This looks suspicous.</p>
-<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
-and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+<p>For more information on this see <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579">JDK Bug #6231579</a>
+and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bug #6178997</a>.</p>
 ]]>
 </Details>
   </BugPattern>
