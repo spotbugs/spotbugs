@@ -269,7 +269,7 @@
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+               icon="icons/delete_edit.png"
                id="de.tobject.findbugs.removeMarkers"
                label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
@@ -304,7 +304,7 @@
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+               icon="icons/delete_edit.png"
                id="de.tobject.findbugs.removeMarkersOnWorkingSet"
                label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
@@ -337,7 +337,7 @@
            <action
                  class="de.tobject.findbugs.actions.LoadXmlAction"
                  enablesFor="1"
-                 icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/import_wiz.gif"
+                 icon="icons/import_wiz.png"
                  id="de.tobject.findbugs.loadXml"
                  label="Load XML"
                  menubarPath="findbugs/save">
@@ -345,7 +345,7 @@
            <action
                  class="de.tobject.findbugs.actions.OpenXMLResultsAction"
                  enablesFor="1"
-                 icon="platform:/plugin/org.eclipse.ui/icons/full/obj16/file_obj.gif"
+                 icon="icons/file_obj.png"
                  id="de.tobject.findbugs.openXml"
                  label="Open Analysis Results in Editor"
                  menubarPath="findbugs/save">
@@ -353,13 +353,13 @@
            <action
                  class="de.tobject.findbugs.actions.SaveXmlAction"
                  enablesFor="1"
-                 icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/saveas_edit.gif"
+                 icon="icons/saveas_edit.png"
                  id="de.tobject.findbugs.saveXml"
                  label="Save XML"
                  menubarPath="findbugs/save"/>
             <action
                   class="de.tobject.findbugs.actions.ClearMarkersAction"
-                  icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+                  icon="icons/delete_edit.png"
                   id="de.tobject.findbugs.removeMarkers"
                   label="%menu.clearMarkers"
                   menubarPath="findbugs/doit"
@@ -420,7 +420,7 @@
                path="additions"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+               icon="icons/delete_edit.png"
                id="de.tobject.findbugs.removeMarkers"
                label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
@@ -453,7 +453,7 @@
       <action
             class="de.tobject.findbugs.actions.ClearMarkersAction"
             enablesFor="1"
-            icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+            icon="icons/delete_edit.png"
             id="de.tobject.findbugs.removeMarkers"
             label="%menu.clearMarkers"
             menubarPath="additions"
@@ -478,7 +478,7 @@
                class="de.tobject.findbugs.actions.CopyMarkerDetailsAction"
                definitionId="FindBugs.command.copy2"
                enablesFor="+"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
+               icon="icons/tasks_tsk.png"
                id="de.tobject.findbugs.copyBug"
                label="Copy to Clipboard"
                menubarPath="fb">
@@ -486,7 +486,7 @@
          <action
                class="de.tobject.findbugs.actions.OpenPropertiesAction"
                enablesFor="1"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+               icon="icons/prop_ps.png"
                id="de.tobject.findbugs.openBugProperties"
                label="Properties"
                menubarPath="group.properties">
@@ -506,7 +506,7 @@
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
                enablesFor="1"
-               icon="platform:/plugin/org.eclipse.jdt.ui/icons/full/eview16/package.gif"
+               icon="icons/package.png"
                id="de.tobject.findbugs.showInPackageExplorer2"
                label="Show In Package Explorer"
                menubarPath="fb">
@@ -555,7 +555,7 @@
                class="de.tobject.findbugs.actions.CopyMarkerDetailsAction"
                definitionId="FindBugs.command.copy"
                enablesFor="+"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/tasks_tsk.gif"
+               icon="icons/tasks_tsk.png"
                id="de.tobject.findbugs.copyBug"
                label="Copy to Clipboard"
                menubarPath="fb">
@@ -563,7 +563,7 @@
          <action
                class="de.tobject.findbugs.actions.OpenPropertiesAction"
                enablesFor="1"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+               icon="icons/prop_ps.png"
                id="de.tobject.findbugs.openBugProperties"
                label="Properties"
                menubarPath="group.properties">
@@ -571,7 +571,7 @@
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
                enablesFor="1"
-               icon="platform:/plugin/org.eclipse.jdt.ui/icons/full/eview16/package.gif"
+               icon="icons/package.png"
                id="de.tobject.findbugs.showInPackageExplorer"
                label="Show In Package Explorer"
                menubarPath="fb">
@@ -632,7 +632,7 @@
          </filter>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/etool16/delete_edit.gif"
+               icon="icons/delete_edit.png"
                id="de.tobject.findbugs.removeMarkers"
                label="%menu.clearMarkers"
                menubarPath="findbugs/doit"
@@ -1001,7 +1001,7 @@
            </menu>
            <action
                 class="de.tobject.findbugs.actions.GoUpAction"
-                icon="platform:/plugin/org.eclipse.ui/icons/full/elcl16/up_nav.gif"
+                icon="icons/up_nav.png"
                 id="findBugsEclipsePlugin.action3"
                 label="Go Up"
                 style="push"
@@ -1010,7 +1010,7 @@
            </action>
            <action
                  class="de.tobject.findbugs.actions.GoIntoAction"
-                 icon="platform:/plugin/org.eclipse.compare/icons/full/elcl16/next_nav_into.gif"
+                 icon="icons/next_nav_into.gif"
                  id="findBugsEclipsePlugin.action4"
                  label="Go Into"
                  style="push"
@@ -1081,7 +1081,7 @@
 
            <action
                  class="de.tobject.findbugs.actions.OpenGroupDialogAction"
-                 icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/edtsrclkup_co.gif"
+                 icon="icons/edtsrclkup_co.png"
                  id="findBugsEclipsePlugin.toggleGrouping.groupDialog"
                  label="Group By..."
                  menubarPath="bugExplorer.menu.group"
@@ -1090,7 +1090,7 @@
            </action>
          <action
                class="de.tobject.findbugs.actions.ExpandAllAction"
-               icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/collapseall.gif"
+               icon="icons/collapseall.png"
                id="findBugsEclipsePlugin.actionCollapse"
                label="Collapse All"
                style="push"
@@ -1099,7 +1099,7 @@
          </action>
          <action
                class="de.tobject.findbugs.actions.ExpandAllAction"
-               icon="platform:/plugin/org.eclipse.search/icons/full/elcl16/expandall.gif"
+               icon="icons/expandall.png"
                id="findBugsEclipsePlugin.actionExpand"
                label="Expand All"
                style="push"
@@ -1109,7 +1109,7 @@
 
          <action
                class="de.tobject.findbugs.actions.FilterBugsDialogAction"
-               icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/filter_ps.gif"
+               icon="icons/filter_ps.png"
                id="findBugsEclipsePlugin.filterBugs"
                label="Configure Filters..."
                menubarPath="filterActionGroupFilters-start"
@@ -1270,7 +1270,7 @@
           <propertyTab
                 category="advanced"
                 id="bug.tab.Advanced"
-                image="platform:/plugin/org.eclipse.ui/icons/full/eview16/prop_ps.gif"
+                image="icons/prop_ps.png"
                 indented="false"
                 label="&gt;"/>
 
@@ -1397,13 +1397,13 @@
         label="Use Boolean.valueOf(YYY) instead"
     />
     <quickFix
-    	arguments="isFloatingPoint=true,isDouble=false"
+        arguments="isFloatingPoint=true,isDouble=false"
         pattern="DM_FP_NUMBER_CTOR"
         class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Float.valueOf(YYY) instead"
     />
     <quickFix
-   	 	arguments="isFloatingPoint=true,isDouble=true"
+            arguments="isFloatingPoint=true,isDouble=true"
         pattern="DM_FP_NUMBER_CTOR"
         class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Double.valueOf(YYY) instead"
