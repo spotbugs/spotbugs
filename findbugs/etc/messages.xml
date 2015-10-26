@@ -217,7 +217,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant">
     <Details>
 <![CDATA[
-<p> This detector looks for synchronization on a shared builtin constant (such as a String).</p>
+<p> This detector looks for synchronization on a shared built-in constant (such as a String).</p>
 ]]>
      </Details>
   </Detector>
@@ -605,7 +605,7 @@ Normally, this detector does nothing.</p>
 <p> This detector generates a random signal: warnings that are just based on
 hash values of the operations performed by methods.
 These warnings are bogus random noise, intended to be useful
-        as a control in data mining experiments, not in finding actual bugs in software
+        as a control in data mining experiments, not in finding actual bugs in software.
 
  This detector is just a hook for testing new detectors.
 Normally, this detector does nothing.</p>
@@ -869,7 +869,7 @@ dependencies.  </p>
   <Detector class="edu.umd.cs.findbugs.detect.IteratorIdioms">
     <Details>
 <![CDATA[
-<p> This iterator looks for problems in how Iterator classes are defined.
+<p> This detector looks for problems in how Iterator classes are defined.
 </p>
 ]]>
     </Details>
@@ -1206,7 +1206,7 @@ before the init() method, these methods will fail in the constructor.
     <Details>
 <![CDATA[
 <p>
-This detector looks for calls to Thread.interrupted() from a non static context. If it is called from
+This detector looks for calls to Thread.interrupted() from a non-static context. If it is called from
 Thread.currentThread().interrupted(), then it is just a useless exercise, just use Thread.interrupted().
 However if it is called on an arbitrary thread object, it is most probably an error, as interrupted()
 is always called on the current thread.
@@ -1294,7 +1294,7 @@ accurate, to use the constant instead.</p>
   <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies">
     <Details>
 <![CDATA[
-<p>This detector looks circular dependencies among classes. </p>
+<p>This detector looks for circular dependencies among classes. </p>
 ]]>
     </Details>
   </Detector>
@@ -1320,7 +1320,7 @@ the subclass.</p>
 <![CDATA[
 <p>This detector looks for public classes that synchronize and use wait(), notify() or notifyAll()
 on <b>this</b>. This exposes a synchronization implementation as a public artifact of the class.
-Clients of the class may use an instance of the class as it's own synchronizing object, and cause
+Clients of the class may use an instance of the class as its own synchronizing object, and cause
 havoc to the base implementation.
 </p>
 ]]>
@@ -1368,7 +1368,7 @@ This detector looks for stores of non Serializable objects into HTTP sessions.
     <Details>
 <![CDATA[
 <p>
-This detector looks for uses of of non Serializable objects in contexts that require them to be serializable.
+This detector looks for uses of non Serializable objects in contexts that require them to be serializable.
 </p>
 ]]>
     </Details>
@@ -1398,7 +1398,7 @@ an ObjectOutput.
   <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers">
     <Details>
 <![CDATA[
-<p> This detector problems looks for miscellaneous small errors
+<p> This detector looks for miscellaneous small errors
 mentioned by Joshua Bloch and Neal Gafter in
 their work on Programming Puzzlers.
   </p>
@@ -1462,7 +1462,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
       <p>
-      This detector for final classes that declare protected members. As this
+      This detector looks for final classes that declare protected members. As this
       class can not be derived from, the use of protected access for members is
       incorrect. The access should be changed to public or private to represent
       the correct intention of the field. This was probably caused by a change in
@@ -1607,7 +1607,7 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream">
     <Details>
       <![CDATA[
-        <p>Looks for an attempt to append to an object output stream</p>
+        <p>Looks for an attempt to append to an object output stream.</p>
       ]]>
     </Details>
   </Detector>
@@ -2134,7 +2134,7 @@ bug detectors.</p>
     <LongDescription>Unknown bug pattern BUG_PATTERN in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>A warning was recorded, but findbugs can't find the description of this bug pattern
+<p>A warning was recorded, but FindBugs can't find the description of this bug pattern
 and so can't describe it. This should occur only in cases of a bug in FindBugs or its configuration,
 or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded.
 .</p>
@@ -2685,7 +2685,7 @@ to immediately undo the work of the boxing.
     <Details>
 <![CDATA[
   <p>A random value from 0 to 1 is being coerced to the integer value 0. You probably
-want to multiple the random value by something else before coercing it to an integer, or use the <code>Random.nextInt(n)</code> method.
+want to multiply the random value by something else before coercing it to an integer, or use the <code>Random.nextInt(n)</code> method.
 </p>
 ]]>
     </Details>
@@ -2889,7 +2889,7 @@ public boolean equals(Object o) {
 </pre>
 
 <p>This is considered bad practice, as it makes it very hard to implement an equals method that
-is symmetric and transitive. Without those properties, very unexpected behavoirs are possible.
+is symmetric and transitive. Without those properties, very unexpected behaviors are possible.
 </p>
 ]]>
     </Details>
@@ -3349,7 +3349,7 @@ but can be accessed in a way that seems to violate those annotations.</p>
     <LongDescription>{1} is a mutable servlet field</LongDescription>
     <Details>
 <![CDATA[
-<p>A web server generally only creates one instance of servlet or jsp class (i.e., treats
+<p>A web server generally only creates one instance of servlet or JSP class (i.e., treats
 the class as a Singleton),
 and will
 have multiple threads invoke methods on that instance to service multiple
@@ -3510,7 +3510,7 @@ when evaluating the right-hand side can generate an error.
 </p>
 
 <p>See <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.22.2">the Java
-Language Specification</a> for details
+Language Specification</a> for details.
 
 </p>
 ]]>
@@ -3531,7 +3531,7 @@ can result in errors if the left-hand side guards cases
 when evaluating the right-hand side can generate an error.
 
 <p>See <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.22.2">the Java
-Language Specification</a> for details
+Language Specification</a> for details.
 
 </p>
 ]]>
@@ -3599,7 +3599,7 @@ This not necessarily a bug, but is worth examining
     <LongDescription>{2.name} isn't initialized in {1} when invoked from constructor for superclass</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method is invoked in the constructor of of the superclass. At this point,
+  <p> This method is invoked in the constructor of the superclass. At this point,
     the fields of the class have not yet initialized.</p>
 <p>To make this more concrete, consider the following classes:</p>
 <pre>abstract class A {
@@ -3622,7 +3622,7 @@ class B extends A {
 the constructor for the <code>A</code> class is invoked
 <em>before</em> the constructor for <code>B</code> sets <code>value</code>.
 Thus, when the constructor for <code>A</code> invokes <code>getValue</code>,
-an uninitialized value is read for <code>value</code>
+an uninitialized value is read for <code>value</code>.
 </p>
 ]]>
     </Details>
@@ -3711,7 +3711,7 @@ blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forum
     <LongDescription>Synchronization on Boolean in {1}</LongDescription>
     <Details>
       <![CDATA[
-  <p> The code synchronizes on a boxed primitive constant, such as an Boolean.</p>
+  <p> The code synchronizes on a boxed primitive constant, such as a Boolean.</p>
 <pre>
 private static Boolean inited = Boolean.FALSE;
 ...
@@ -3724,7 +3724,7 @@ private static Boolean inited = Boolean.FALSE;
 ...
 </pre>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
-and possible deadlock</p>
+and possible deadlock.</p>
 <p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
@@ -3773,7 +3773,7 @@ private static Integer count = 0;
 </pre>
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
-and possible deadlock</p>
+and possible deadlock.</p>
 <p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
 ]]>
     </Details>
@@ -4027,7 +4027,7 @@ could be changed by malicious code or
 An inner class is invoking a method that could be resolved to either a inherited method or a method defined in an outer class.
 For example, you invoke <code>foo(17)</code>, which is defined in both a superclass and in an outer method.
 By the Java semantics,
-it will be resolved to invoke the inherited method, but this may not be want
+it will be resolved to invoke the inherited method, but this may not be what
 you intend.
 </p>
 <p>If you really intend to invoke the inherited method,
@@ -5609,7 +5609,7 @@ Normally, there are only two Boolean values (Boolean.TRUE and Boolean.FALSE),
 but it is possible to create other Boolean objects using the <code>new Boolean(b)</code>
 constructor. It is best to avoid such objects, but if they do exist,
 then checking Boolean objects for equality using == or != will give results
-than are different than you would get using <code>.equals(...)</code>
+than are different than you would get using <code>.equals(...)</code>.
 </p>
 ]]>
     </Details>
@@ -5859,7 +5859,7 @@ a logic error.  Make sure that you are comparing the right things.
     <Details>
 <![CDATA[
 <p> The Double.longBitsToDouble method is invoked, but a 32 bit int value is passed
-    as an argument. This almostly certainly is not intended and is unlikely
+    as an argument. This almost certainly is not intended and is unlikely
     to give the intended result.
 </p>
 ]]>
@@ -5903,7 +5903,7 @@ number; the values are too easily guessable. You should strongly consider using 
 <p> This code generates a random signed integer and then computes
 the absolute value of that random integer.  If the number returned by the random number
 generator is <code>Integer.MIN_VALUE</code>, then the result will be negative as well (since
-<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>). (Same problem arised for long values as well).
+<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>). (Same problem arises for long values as well).
 </p>
 ]]>
     </Details>
@@ -5951,11 +5951,11 @@ can also be negative. </p>
 you may need to change your code.
 If you know the divisor is a power of 2,
 you can use a bitwise and operator instead (i.e., instead of
-using <code>x.hashCode()%n</code>, use <code>x.hashCode()&amp;(n-1)</code>.
+using <code>x.hashCode()%n</code>, use <code>x.hashCode()&amp;(n-1)</code>).
 This is probably faster than computing the remainder as well.
 If you don't know that the divisor is a power of 2, take the absolute
 value of the result of the remainder operation (i.e., use
-<code>Math.abs(x.hashCode()%n)</code>
+<code>Math.abs(x.hashCode()%n)</code>).
 </p>
 ]]>
     </Details>
@@ -5979,7 +5979,7 @@ value of the result of the remainder operation (i.e., use
 <p> Signed bytes can only have a value in the range -128 to 127. Comparing
 a signed byte with a value outside that range is vacuous and likely to be incorrect.
 To convert a signed byte <code>b</code> to an unsigned value in the range 0..255,
-use <code>0xff &amp; b</code>
+use <code>0xff &amp; b</code>.
 </p>
 ]]>
     </Details>
@@ -5991,7 +5991,7 @@ use <code>0xff &amp; b</code>
 <![CDATA[
 <p> This code compares an int value with a long constant that is outside
 the range of values that can be represented as an int value.
-This comparison is vacuous and possibily to be incorrect.
+This comparison is vacuous and possibly to be incorrect.
 </p>
 ]]>
     </Details>
@@ -6040,7 +6040,7 @@ Did you mean (exp &amp; 1) or (exp % 2) instead?
 <p> Loads a byte value (e.g., a value loaded from a byte array or returned by a method
 with return type byte)  and performs a bitwise OR with
 that value. Byte values are sign extended to 32 bits
-before any any bitwise operations are performed on the value.
+before any bitwise operations are performed on the value.
 Thus, if <code>b[0]</code> contains the value <code>0xff</code>, and
 <code>x</code> is initially 0, then the code
 <code>((x &lt;&lt; 8) | b[0])</code>  will sign extend <code>0xff</code>
@@ -6072,7 +6072,7 @@ for(int i = 0; i &lt; 4; i++)
 <![CDATA[
 <p> Adds a byte value and a value which is known to have the 8 lower bits clear.
 Values loaded from a byte array are sign extended to 32 bits
-before any any bitwise operations are performed on the value.
+before any bitwise operations are performed on the value.
 Thus, if <code>b[0]</code> contains the value <code>0xff</code>, and
 <code>x</code> is initially 0, then the code
 <code>((x &lt;&lt; 8) + b[0])</code>  will sign extend <code>0xff</code>
@@ -6210,7 +6210,7 @@ For more information, see the
 <p> This method contains an unsynchronized lazy initialization of a static field.
 After the field is set, the object stored into that location is further updated or accessed.
 The setting of the field is visible to other threads as soon as it is set. If the
-futher accesses in the method that set the field serve to initialize the object, then
+further accesses in the method that set the field serve to initialize the object, then
 you have a <em>very serious</em> multithreading bug, unless something else prevents
 any other thread from accessing the stored object until it is fully initialized.
 </p>
@@ -6504,7 +6504,7 @@ or
     <LongDescription>TestCase {0} has no tests</LongDescription>
     <Details>
 <![CDATA[
-<p> Class is a JUnit TestCase but has not implemented any test methods</p>
+<p> Class is a JUnit TestCase but has not implemented any test methods.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7428,7 +7428,7 @@ since the Collection object has no reference to the declared generic type of the
 <p>The correct way to do get an array of a specific type from a collection is to use
   <code>c.toArray(new String[]);</code>
   or <code>c.toArray(new String[c.size()]);</code> (the latter is slightly more efficient).
-<p>There is one common/known exception exception to this. The <code>toArray()</code>
+<p>There is one common/known exception to this. The <code>toArray()</code>
 method of lists returned by <code>Arrays.asList(...)</code> will return a covariantly
 typed array. For example, <code>Arrays.asArray(new String[] { "a" }).toArray()</code>
 will return a <code>String []</code>. FindBugs attempts to detect and suppress
@@ -7573,7 +7573,7 @@ executed.
 The code here uses <code>File.separator</code>
 where a regular expression is required. This will fail on Windows
 platforms, where the <code>File.separator</code> is a backslash, which is interpreted in a
-regular expression as an escape character. Amoung other options, you can just use
+regular expression as an escape character. Among other options, you can just use
 <code>File.separatorChar=='\\' ? "\\\\" : File.separator</code> instead of
 <code>File.separator</code>
 
@@ -7657,7 +7657,7 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 <![CDATA[
 <p>
 The code invokes hashCode on an array. Calling hashCode on
-an array returns the same value as System.identityHashCode, and ingores
+an array returns the same value as System.identityHashCode, and ignores
 the contents and length of the array. If you need a hashCode that
 depends on the contents of an array <code>a</code>,
 use <code>java.util.Arrays.hashCode(a)</code>.
@@ -8032,7 +8032,7 @@ for some collections, might throw a <code>ConcurrentModificationException</code>
     <LongDescription>{1} is static field of type java.util.Calendar, which isn't thread safe</LongDescription>
     <Details>
 <![CDATA[
-<p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use.
+<p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multithreaded use.
 Sharing a single instance across thread boundaries without proper synchronization will result in erratic behavior of the
 application. Under 1.4 problems seem to surface less often than under Java 5 where you will probably see
 random ArrayIndexOutOfBoundsExceptions or IndexOutOfBoundsExceptions in sun.util.calendar.BaseCalendar.getCalendarDateFromFixedDate().</p>
@@ -8048,9 +8048,9 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
     <LongDescription>Call to method of static java.util.Calendar in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use.
+<p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multithreaded use.
 The detector has found a call to an instance of Calendar that has been obtained via a static
-field. This looks suspicous.</p>
+field. This looks suspicious.</p>
 <p>For more information on this see <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579">JDK Bug #6231579</a>
 and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bug #6178997</a>.</p>
 ]]>
@@ -8078,7 +8078,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
 <![CDATA[
 <p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use.
 The detector has found a call to an instance of DateFormat that has been obtained via a static
-field. This looks suspicous.</p>
+field. This looks suspicious.</p>
 <p>For more information on this see <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6231579">JDK Bug #6231579</a>
 and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bug #6178997</a>.</p>
 ]]>
@@ -8422,7 +8422,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
           <![CDATA[
           <p>FindBugs generated a warning that, according to a @NoWarning annotated,
-            is unexpected or undesired</p>
+            is unexpected or undesired.</p>
           ]]>
       </Details>
   </BugPattern>
@@ -8432,7 +8432,7 @@ public @NonNegative Integer example(@Negative Integer value) {
     <Details>
           <![CDATA[
           <p>FindBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
-            is expected or desired</p>
+            is expected or desired.</p>
           ]]>
       </Details>
   </BugPattern>
