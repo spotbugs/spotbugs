@@ -51,9 +51,11 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>debug (boolean default false)
  * <li>effort (enum min|default|max)</li>
  * <li>excludeFilter (filter filename)
+ * <li>excludePath (classpath or classpathRef to filters)
  * <li>failOnError (boolean - default false)
  * <li>home (findbugs install dir)
  * <li>includeFilter (filter filename)
+ * <li>includePath (classpath or classpathRef to filters)
  * <li>maxRank (maximum rank issue to be reported)
  * <li>jvm (Set the command used to start the VM)
  * <li>jvmargs (any additional jvm arguments)
@@ -136,7 +138,11 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     private File excludeFile;
 
+    private Path excludePath;
+
     private File includeFile;
+
+    private Path includePath;
 
     private Path auxClasspath;
 
@@ -535,6 +541,62 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     /**
+     * the sourcepath to use.
+     */
+    public void setExcludePath(Path src) {
+        if (excludePath == null) {
+            excludePath = src;
+        } else {
+            excludePath.append(src);
+        }
+    }
+
+    /**
+     * Path to use for sourcepath.
+     */
+    public Path createExcludePath() {
+        if (excludePath == null) {
+            excludePath = new Path(getProject());
+        }
+        return excludePath.createPath();
+    }
+
+    /**
+     * Adds a reference to a source path defined elsewhere.
+     */
+    public void setExcludePathRef(Reference r) {
+        createExcludePath().setRefid(r);
+    }
+
+    /**
+     * the sourcepath to use.
+     */
+    public void setIncludePath(Path src) {
+        if (includePath == null) {
+            includePath = src;
+        } else {
+            includePath.append(src);
+        }
+    }
+
+    /**
+     * Path to use for sourcepath.
+     */
+    public Path createIncludePath() {
+        if (includePath == null) {
+            includePath = new Path(getProject());
+        }
+        return includePath.createPath();
+    }
+
+    /**
+     * Adds a reference to a source path defined elsewhere.
+     */
+    public void setIncludePathRef(Reference r) {
+        createIncludePath().setRefid(r);
+    }
+
+    /**
      * Add a class location
      */
     public ClassLocation createClass() {
@@ -728,9 +790,23 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg("-exclude");
             addArg(excludeFile.getPath());
         }
+        if (excludePath != null) {
+            String[] result = excludePath.toString().split(java.io.File.pathSeparator);
+            for (int x = 0; x < result.length; x++) {
+                addArg("-exclude");
+                addArg(result[x]);
+            }
+        }
         if (includeFile != null) {
             addArg("-include");
             addArg(includeFile.getPath());
+        }
+        if (includePath != null) {
+            String[] result = includePath.toString().split(java.io.File.pathSeparator);
+            for (int x = 0; x < result.length; x++) {
+                addArg("-include");
+                addArg(result[x]);
+            }
         }
         if (visitors != null) {
             addArg("-visitors");
