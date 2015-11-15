@@ -1474,12 +1474,70 @@ using the &FindBugs; task.
   </varlistentry>
 
   <varlistentry>
+    <term><literal>excludePath</literal></term>
+    <listitem>
+       <para>
+       Since Findbugs 3.0.2.
+       </para>
+       <para>
+       An optional nested element which specifies a path
+       containing filters specifying bugs
+       to exclude from being reported.  See <xref linkend="filter" />.
+       </para>
+       <para>
+		Example:
+
+		<screen>
+		    &lt;findbugs home="${findbugs.home}">
+		      &lt;excludePath&gt;
+		              &lt;path&gt;
+		                      &lt;fileset dir="${findbugs-exclusion-filters.dir}" includes="findbugs-*-exclude-filter.xml" /&gt;
+		              &lt;/path&gt;
+		      &lt;/excludePath&gt;
+		    &lt;/findbugs&gt;
+		</screen>
+
+		See <ulink url="https://ant.apache.org/manual/using.html#path">Apache Ant's Path-like Structures documentation</ulink> for details.
+		</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term><literal>includeFilter</literal></term>
     <listitem>
        <para>
        Optional attribute.  It specifies the filename of a filter specifying
        which bugs are reported.  See <xref linkend="filter" />.
        </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>includePath</literal></term>
+    <listitem>
+       <para>
+       Since Findbugs 3.0.2.
+       </para>
+       <para>
+       An optional nested element which specifies a path
+       containing filters specifying which bugs
+       are reported.  See <xref linkend="filter" />.
+       </para>
+       <para>
+		Example:
+
+		<screen>
+		    &lt;findbugs home="${findbugs.home}">
+		      &lt;includePath&gt;
+		              &lt;path&gt;
+		                      &lt;fileset dir="${findbugs-inclusion-filters.dir}" includes="findbugs-*-include-filter.xml" /&gt;
+		              &lt;/path&gt;
+		      &lt;/includePath&gt;
+		    &lt;/findbugs&gt;
+		</screen>
+
+		See <ulink url="https://ant.apache.org/manual/using.html#path">Apache Ant's Path-like Structures documentation</ulink> for details.
+		</para>
     </listitem>
   </varlistentry>
 
