@@ -1647,7 +1647,7 @@
       <ClassStats class="edu.umd.cs.findbugs.detect.BuildNonNullAnnotationDatabase" sourceFile="BuildNonNullAnnotationDatabase.java" interface="false" size="71" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.BuildNonnullReturnDatabase" sourceFile="BuildNonnullReturnDatabase.java" interface="false" size="58" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" sourceFile="BuildObligationPolicyDatabase.java" interface="false" size="158" bugs="0"/>
-      <ClassStats class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase$AuxilaryObligationPropertyDatabase" sourceFile="BuildObligationPolicyDatabase.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase$AuxiliaryObligationPropertyDatabase" sourceFile="BuildObligationPolicyDatabase.java" interface="false" size="9" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.BuildUnconditionalParamDerefDatabase" sourceFile="BuildUnconditionalParamDerefDatabase.java" interface="false" size="113" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CallToUnconditionalThrower" sourceFile="CallToUnconditionalThrower.java" interface="false" size="75" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" sourceFile="CallToUnsupportedMethod.java" interface="false" size="72" bugs="0"/>

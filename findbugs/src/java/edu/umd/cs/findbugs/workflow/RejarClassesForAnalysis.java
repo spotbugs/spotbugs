@@ -147,7 +147,7 @@ public class RejarClassesForAnalysis {
             addOption("-prefix", "class name prefix",
                     "comma separated list of class name prefixes that should be analyzed (e.g., edu.umd.cs.)");
             addOption("-exclude", "class name prefix",
-                    "comma separated list of class name prefixes that should be  excluded from both analyze and auxilary jar files (e.g., java.)");
+                    "comma separated list of class name prefixes that should be  excluded from both analyze and auxiliary jar files (e.g., java.)");
             addOption("-excludePattern", "class name pattern(s)",
                     "comma separated list of regular expressions; all classes matching them are excluded");
 
@@ -256,16 +256,16 @@ public class RejarClassesForAnalysis {
 
     int analysisCount = 1;
 
-    int auxilaryCount = 1;
+    int auxiliaryCount = 1;
 
-    String getNextAuxilaryFileOutput() {
+    String getNextAuxiliaryFileOutput() {
         String result;
-        if (auxilaryCount == 1) {
-            result = "auxilary.jar";
+        if (auxiliaryCount == 1) {
+            result = "auxiliary.jar";
         } else {
-            result = "auxilary" + (auxilaryCount) + ".jar";
+            result = "auxiliary" + (auxiliaryCount) + ".jar";
         }
-        auxilaryCount++;
+        auxiliaryCount++;
         System.out.println("Starting " + result);
         return result;
     }
@@ -302,9 +302,9 @@ public class RejarClassesForAnalysis {
         doit.execute();
     }
 
-    int auxilaryClassCount = 0;
+    int auxiliaryClassCount = 0;
 
-    ZipOutputStream auxilaryOut;
+    ZipOutputStream auxiliaryOut;
 
     final byte buffer[] = new byte[8192];
 
@@ -457,7 +457,7 @@ public class RejarClassesForAnalysis {
         }
 
         if (numFilesToAnalyze < copied.size() || numFilesToAnalyze > commandLine.maxClasses) {
-            auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
+            auxiliaryOut = createZipFile(getNextAuxiliaryFileOutput());
         }
 
         int count = Integer.MAX_VALUE;
@@ -516,14 +516,14 @@ public class RejarClassesForAnalysis {
                     }
 
                     boolean writeToAnalyzeOut = false;
-                    boolean writeToAuxilaryOut = false;
+                    boolean writeToAuxiliaryOut = false;
                     if (commandLine.prefix.matches(dottedName)) {
                         writeToAnalyzeOut = true;
                         if (numFilesToAnalyze > commandLine.maxClasses) {
-                            writeToAuxilaryOut = true;
+                            writeToAuxiliaryOut = true;
                         }
                     } else {
-                        writeToAuxilaryOut = auxilaryOut != null;
+                        writeToAuxiliaryOut = auxiliaryOut != null;
                     }
                     ZipOutputStream out = null;
                     if (writeToAnalyzeOut) {
@@ -531,16 +531,16 @@ public class RejarClassesForAnalysis {
                         out.putNextEntry(newZipEntry(ze));
                     }
 
-                    if (writeToAuxilaryOut) {
-                        auxilaryClassCount++;
-                        if (auxilaryClassCount > 29999) {
-                            auxilaryClassCount = 0;
-                            advanceAuxilaryOut();
+                    if (writeToAuxiliaryOut) {
+                        auxiliaryClassCount++;
+                        if (auxiliaryClassCount > 29999) {
+                            auxiliaryClassCount = 0;
+                            advanceAuxiliaryOut();
                         }
-                        auxilaryOut.putNextEntry(newZipEntry(ze));
+                        auxiliaryOut.putNextEntry(newZipEntry(ze));
                     }
 
-                    copyEntry(zipInputFile, ze, writeToAnalyzeOut, out, writeToAuxilaryOut, auxilaryOut);
+                    copyEntry(zipInputFile, ze, writeToAnalyzeOut, out, writeToAuxiliaryOut, auxiliaryOut);
                 }
 
             });
@@ -567,21 +567,21 @@ public class RejarClassesForAnalysis {
                         return;
                     }
 
-                    auxilaryClassCount++;
-                    if (auxilaryClassCount > 29999) {
-                        auxilaryClassCount = 0;
-                        advanceAuxilaryOut();
+                    auxiliaryClassCount++;
+                    if (auxiliaryClassCount > 29999) {
+                        auxiliaryClassCount = 0;
+                        advanceAuxiliaryOut();
                     }
-                    auxilaryOut.putNextEntry(newZipEntry(ze));
+                    auxiliaryOut.putNextEntry(newZipEntry(ze));
 
-                    copyEntry(zipInputFile, ze, false, null, true, auxilaryOut);
+                    copyEntry(zipInputFile, ze, false, null, true, auxiliaryOut);
                 }
 
             });
         }
 
-        if (auxilaryOut != null) {
-            auxilaryOut.close();
+        if (auxiliaryOut != null) {
+            auxiliaryOut.close();
         }
         for (ZipOutputStream out : analysisOutputFiles.values()) {
             out.close();
@@ -615,7 +615,7 @@ public class RejarClassesForAnalysis {
     }
 
     private void copyEntry(ZipFile zipInputFile, ZipEntry ze, boolean writeToAnalyzeOut, ZipOutputStream analyzeOut1,
-            boolean writeToAuxilaryOut, ZipOutputStream auxilaryOut1) throws IOException {
+            boolean writeToAuxiliaryOut, ZipOutputStream auxiliaryOut1) throws IOException {
         InputStream zipIn = zipInputFile.getInputStream(ze);
 
         while (true) {
@@ -626,22 +626,22 @@ public class RejarClassesForAnalysis {
             if (writeToAnalyzeOut) {
                 analyzeOut1.write(buffer, 0, bytesRead);
             }
-            if (writeToAuxilaryOut) {
-                auxilaryOut1.write(buffer, 0, bytesRead);
+            if (writeToAuxiliaryOut) {
+                auxiliaryOut1.write(buffer, 0, bytesRead);
             }
         }
         if (writeToAnalyzeOut) {
             analyzeOut1.closeEntry();
         }
-        if (writeToAuxilaryOut) {
-            auxilaryOut1.closeEntry();
+        if (writeToAuxiliaryOut) {
+            auxiliaryOut1.closeEntry();
         }
         zipIn.close();
     }
 
-    private void advanceAuxilaryOut() throws IOException, FileNotFoundException {
-        auxilaryOut.close();
-        auxilaryOut = createZipFile(getNextAuxilaryFileOutput());
+    private void advanceAuxiliaryOut() throws IOException, FileNotFoundException {
+        auxiliaryOut.close();
+        auxiliaryOut = createZipFile(getNextAuxiliaryFileOutput());
     }
 
     boolean processZipEntries(File f, ZipElementHandler handler) {
