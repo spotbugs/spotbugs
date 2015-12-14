@@ -342,7 +342,7 @@ public class WorkItem {
     /**
      *
      * @return full absolute path corresponding to the work item (file or
-     *         directory). If the work item is a part of an achive, it's the
+     *         directory). If the work item is a part of an archive, it's the
      *         path to the archive file. If the work item is a project, it's the
      *         path to the project root. TODO If the work item is an internal
      *         java element (method, inner class etc), results are undefined

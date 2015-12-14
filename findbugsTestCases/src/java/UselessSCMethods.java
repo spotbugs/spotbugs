@@ -34,7 +34,7 @@ public class UselessSCMethods extends Super {
     }
 
     @Override
-    public void test4(String s) { // don't report this, altho suspect, access
+    public void test4(String s) { // don't report this, although suspect, access
                                   // has been widened
         // perhaps this should be reported as another bug type, dunno
         super.test4(s);

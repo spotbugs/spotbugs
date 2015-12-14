@@ -1335,7 +1335,7 @@ using the &FindBugs; task.
        <para>
        An optional attribute.  It specifies
        the confidence/priority threshold for reporting issues.  If set to "low", confidence is not used to filter bugs.
-       If set to "medium" (the default), low confidence issues are supressed.
+       If set to "medium" (the default), low confidence issues are suppressed.
        If set to "high", only high confidence bugs are reported.
        </para>
     </listitem>
@@ -2058,7 +2058,7 @@ In other words, each of the children must be true for the predicate to be true.
             If the <literal>Match</literal> element contains neither a <literal>Class</literal> element,
             nor a <literal>class</literal> / <literal>classregex</literal> attribute, the predicate will apply
             to all classes. Such predicate is likely to match more bug instances than you want, unless it is
-            refined further down with apropriate method or field predicates.
+            refined further down with appropriate method or field predicates.
         </para>
     </listitem>
  </varlistentry>
@@ -2096,7 +2096,7 @@ In other words, each of the children must be true for the predicate to be true.
 
    <listitem><para>This element specifies a field. The <literal>name</literal> attribute is is used to specify
    the exact or regex match pattern for the field name. You can also filter fields according to their signature -
-   use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify eiter or both
+   use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify either or both
    of these attributes in order to perform name / signature based matches. The <literal>role</literal> attribute is
    the field role.
    </para></listitem>
@@ -2191,7 +2191,7 @@ two <literal>Match</literal> clauses:
 By explicitly matching both classes, you ensure that the IC bug instance will be
 matched regardless of which class involved in the circularity happens to be
 listed first in the bug instance.  (Of course, this approach might accidentally
-supress circularities involving "com.foobar.A" or "com.foobar.B" and a third
+suppress circularities involving "com.foobar.A" or "com.foobar.B" and a third
 class.)
 </para>
 
@@ -2632,7 +2632,7 @@ When this annotation is applied to a method it applies to the method return valu
           </listitem>
           <listitem>
             <para>
-              <command>explanation:</command>A textual explaination of why the return value should be checked. Default value:"".
+              <command>explanation:</command>A textual explanation of why the return value should be checked. Default value:"".
             </para>
           </listitem>
         </varlistentry>
@@ -2799,7 +2799,7 @@ Annotated fields must not be null after construction has completed. Annotated me
       <para>
 The annotated element could be null under some circumstances. In general, this means
 developers will have to read the documentation to determine when a null value is
-acceptable and whether it is neccessary to check for a null value.  FindBugs will
+acceptable and whether it is necessary to check for a null value.  FindBugs will
 treat the annotated items as though they had no annotation.
       </para>
       <para>
@@ -3207,7 +3207,7 @@ To specify input files, nest them inside with a
                   <tbody>
 <row><entry>-output &lt;file&gt;</entry>           <entry>output="&lt;file&gt;"</entry>           <entry>save output in the named file (may also be an input file)</entry></row>
 <row><entry>-overrideRevisionNames[:truth]</entry> <entry>overrideRevisionNames="[true|false]"</entry><entry>override revision names for each version with names computed from the filenames</entry></row>
-<row><entry>-noPackageMoves[:truth]</entry>        <entry>noPackageMoves="[true|false]"</entry><entry>if a class has moved to another package, treat warnings in that class as seperate</entry></row>
+<row><entry>-noPackageMoves[:truth]</entry>        <entry>noPackageMoves="[true|false]"</entry><entry>if a class has moved to another package, treat warnings in that class as separate</entry></row>
 <row><entry>-preciseMatch[:truth]</entry>          <entry>preciseMatch="[true|false]"</entry><entry>require bug patterns to match precisely</entry></row>
 <row><entry>-precisePriorityMatch[:truth]</entry>  <entry>precisePriorityMatch="[true|false]"</entry><entry>consider two warnings as the same only if priorities match exactly</entry></row>
 <row><entry>-quiet[:truth]</entry>                 <entry>quiet="[true|false]"</entry><entry>don't generate any output to standard out unless there is an error</entry></row>
@@ -3383,7 +3383,7 @@ attribute or nest it inside the ant call with a
                       <row><entry>fixed</entry><entry>Count of warnings removed from a class that remains in the current version</entry></row>
                       <row><entry>removed</entry><entry>Count of warnings in the previous version for a class that is not present in the current version</entry></row>
                       <row><entry>retained</entry><entry>Count of warnings that were in both the previous and current version</entry></row>
-                      <row><entry>dead</entry><entry>Warnings that were present in earlier versions but in neither the current version or the immediately preceeding version</entry></row>
+                      <row><entry>dead</entry><entry>Warnings that were present in earlier versions but in neither the current version or the immediately preceding version</entry></row>
                       <row><entry>active</entry><entry>Total warnings present in the current version</entry></row>
                 </tbody>
                 </tgroup>

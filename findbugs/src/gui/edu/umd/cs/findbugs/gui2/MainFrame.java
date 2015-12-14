@@ -544,7 +544,7 @@ public class MainFrame extends FBFrame implements LogSync {
         if (bugCollection != null) {
             displayer.clearCache();
             BugSet bs = new BugSet(bugCollection);
-            // Dont clear data, the data's correct, just get the tree off the
+            // Don't clear data, the data's correct, just get the tree off the
             // listener lists.
             BugTreeModel model = (BugTreeModel) mainFrameTree.getTree().getModel();
             model.getOffListenerList();

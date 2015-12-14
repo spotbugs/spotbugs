@@ -69,7 +69,7 @@ public class RepositoryClassParser {
     }
 
     /**
-     * Parse the class file into a JavaClass object. If succesful, the new
+     * Parse the class file into a JavaClass object. If successful, the new
      * JavaClass is entered into the Repository.
      *
      * @return the parsed JavaClass

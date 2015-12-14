@@ -633,7 +633,7 @@ public class MainFrameTree implements Serializable {
                     if (!(path.getParentPath() == null)) {
                         // path is null, the
                         // root was selected,
-                        // dont allow them to
+                        // don't allow them to
                         // filter out the root.
                         branchPopupMenu.show(tree, e.getX(), e.getY());
                     }

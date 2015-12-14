@@ -60,13 +60,13 @@ already moved to findbugs/plugin, and the webCloudClient.jar plug in the optiona
 <li>You can also redirect all update checks to a local server. This allows you to collect information about who is using
 what versions of FindBugs in your organization, and keep all of that information private.
 <li>All of the plugins from the FindBugs project use <pre>http://update.findbugs.org/update-check</pre> as the 
-host we use for update checks. If you wish to ensure that no one from your organization accidently reports any usage
+host we use for update checks. If you wish to ensure that no one from your organization accidentally reports any usage
 information to the FindBugs project, you can blacklist that URL in your firewall 
 <ul>
 <li>You can also block <pre>http://findbugs-cloud.appspot.com</pre>, the host we use for our publicly hosted
 repository of bug evaluations (e.g., evaluations in open source projects such as the JDK, Eclipse and GlassFish).
 While people have to explicitly request that their evaluations be stored into the FindBugs cloud, you 
-can block it to ensure that no one accidently shares evaluations of your own code to the FindBugs cloud. You can also
+can block it to ensure that no one accidentally shares evaluations of your own code to the FindBugs cloud. You can also
 remove the WebCloudClient 
 
 </ul>

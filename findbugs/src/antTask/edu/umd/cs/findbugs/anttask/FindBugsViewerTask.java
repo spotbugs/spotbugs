@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.ExitCodes;
 /**
  * FindBugsViewerTask.java -- Ant Task to launch the FindBugsFrame
  *
- * To use, create a new task that refrences the ant task (such as
+ * To use, create a new task that references the ant task (such as
  * "findbugs-viewer"). Then call this task while passing in parameters to modify
  * it's behaviour. It supports several options that are the same as the findbugs
  * task:

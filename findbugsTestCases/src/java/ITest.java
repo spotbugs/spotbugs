@@ -9,7 +9,7 @@ public class ITest {
     public boolean compareDoNotReport(A first, B second) {
         // It is possible that "first" is an instance of
         // a class that implements B. Therefore, it
-        // is possible that the comparision can be true,
+        // is possible that the comparison can be true,
         // so we shouldn't report.
         return first.equals(second);
     }

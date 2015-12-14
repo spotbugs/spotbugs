@@ -57,7 +57,7 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
 
     /**
      * Determine whether or not this ConstraintEdge resulted from an ordering
-     * constraint having a single detector as its source (ealier detector). Such
+     * constraint having a single detector as its source (earlier detector). Such
      * constraints automatically enable the source (earlier) detector if the
      * target (later) detector is enabled.
      *

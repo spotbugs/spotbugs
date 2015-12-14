@@ -55,7 +55,7 @@ public class JAIFScanner {
     }
 
     // See http://java.sun.com/docs/books/jls/third_edition/html/lexical.html
-    // Hexidecimal floating-point literals are not implemented.
+    // Hexadecimal floating-point literals are not implemented.
     // Unicode escapes are not implemented (but could be implemented in the
     // fillLineBuf() method).
 

@@ -41,7 +41,7 @@ public class DetectorOrderingConstraint {
 
     /**
      * Set whether or not this ordering constraint resulted from an ordering
-     * constraint having a single detector as its source (ealier detector). Such
+     * constraint having a single detector as its source (earlier detector). Such
      * constraints automatically enable the source (earlier) detector if the
      * target (later) detector is enabled.
      */
@@ -51,7 +51,7 @@ public class DetectorOrderingConstraint {
 
     /**
      * Determine whether or not this ordering constraint resulted from an
-     * ordering constraint having a single detector as its source (ealier
+     * ordering constraint having a single detector as its source (earlier
      * detector). Such constraints automatically enable the source (earlier)
      * detector if the target (later) detector is enabled.
      *

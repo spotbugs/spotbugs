@@ -134,7 +134,7 @@ public class DetectorConfigurationTab extends Composite {
             }
             result = s1.compareTo(s2);
 
-            // second sort if elements are equals - on only 2 criterias
+            // second sort if elements are equals - on only 2 criteria
             if (result == 0) {
                 switch (getSortColumnId()) {
                 case DETECTOR_NAME:
@@ -422,7 +422,7 @@ public class DetectorConfigurationTab extends Composite {
         String detailHTML = factory.getDetailHTML();
         // cut beginning and the end of the html document
         detailHTML = trimHtml(detailHTML, "<BODY>", "</BODY>");
-        // replace any amount of white space with newline inbetween through one
+        // replace any amount of white space with newline between through one
         // space
         detailHTML = detailHTML.replaceAll("\\s*[\\n]+\\s*", " ");
         // remove all valid html tags

@@ -61,7 +61,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
     }
 
     /**
-     * A momento to remind us of how we classified a particular exception edge.
+     * A memento to remind us of how we classified a particular exception edge.
      * If pruning and classifying succeeds, then these momentos can be applied
      * to actually change the state of the edges. The issue is that the entire
      * pruning/classifying operation must either fail or succeed as a whole.

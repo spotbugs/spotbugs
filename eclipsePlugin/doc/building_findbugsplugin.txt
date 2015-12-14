@@ -7,7 +7,7 @@ Make sure you are using Java 7 or greater (since version 3.0 FindBugs requires J
 
 Install Eclipse
 ================
-1) Download and install Eclipse 3.6.+ (minumum supported version).
+1) Download and install Eclipse 3.6.+ (minimum supported version).
 2) Download and install EGit plugin for Git.
     Chose [Help | Software Updates... | Available Software | Add Site...] and use
     http://download.eclipse.org/egit/updates as update site url. Select both checkboxes

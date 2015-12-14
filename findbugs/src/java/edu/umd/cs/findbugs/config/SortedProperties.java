@@ -32,7 +32,7 @@ public final class SortedProperties extends Properties {
      *
      * @param keySet
      *            non null set instance to sort
-     * @return non null list wich contains all given keys, sorted
+     * @return non null list which contains all given keys, sorted
      *         lexicographically. The list may be empty if given set was empty
      */
     static public Enumeration<?> sortKeys(Set<String> keySet) {

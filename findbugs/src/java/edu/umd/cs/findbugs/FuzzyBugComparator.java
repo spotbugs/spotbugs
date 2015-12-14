@@ -277,7 +277,7 @@ public class FuzzyBugComparator implements WarningComparator {
     }
 
     /**
-     * For now, just look at the 2 preceeding and succeeding opcodes for fuzzy
+     * For now, just look at the 2 preceding and succeeding opcodes for fuzzy
      * source line matching.
      */
     //    private static final int NUM_CONTEXT_OPCODES = 2;

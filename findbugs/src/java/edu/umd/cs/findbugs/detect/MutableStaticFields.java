@@ -122,7 +122,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
     /**
      * Eclipse uses reflection to initialize NLS message bundles. Classes which
-     * using this mechanism are usualy extending org.eclipse.osgi.util.NLS class
+     * using this mechanism are usually extending org.eclipse.osgi.util.NLS class
      * and contains lots of public static String fields which are used as
      * message constants. Unfortunately these fields cannot be final, so FB
      * reports tons of warnings for such Eclipse classes.

@@ -68,7 +68,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.StatementNotFoundEx
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.TypeDeclarationNotFoundException;
 
 /**
- * The <CODE>ASTUtil</CODE> provides some usefull methods to transform
+ * The <CODE>ASTUtil</CODE> provides some useful methods to transform
  * <CODE>PackageMemberAnnotations</CODE> into <CODE>BodyDeclarations</CODE>.
  * Normally this methods should be used to get a type, field or method
  * declaration for a class, field or method annotation.

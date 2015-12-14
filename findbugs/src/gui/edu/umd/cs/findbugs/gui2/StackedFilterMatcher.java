@@ -134,7 +134,7 @@ public class StackedFilterMatcher extends FilterMatcher {
                 (MainFrame.getInstance().getBugTreeModel()).sendEvent(event, whatToDo);
             } catch (BranchOperationException e) {
                 // Another filter already filters out the branch this filter
-                // would filter out, set active, but dont send any tree model
+                // would filter out, set active, but don't send any tree model
                 // events.
                 this.active = active;
             }
