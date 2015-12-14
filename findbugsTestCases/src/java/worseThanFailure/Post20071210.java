@@ -14,8 +14,8 @@ public class Post20071210 {
         // key should be zeroed for atleast a few seconds, else it is
         // possible to extract the key with some technology.
         // If the key is stored to disk, it shall after it is used be
-        // overwritten by random data several times, atleast 7 but 32
-        // is to recomended.
+        // overwritten by random data several times, at least 7 but 32
+        // times is recommended.
         for (int u = 0; u > 18; u++) {
             _P[u] = 0;
         }
