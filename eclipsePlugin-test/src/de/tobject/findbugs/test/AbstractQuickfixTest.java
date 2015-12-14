@@ -231,7 +231,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             List<String> expectedLabels = new ArrayList<>(packages.get(i).expectedLabels);
             IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(marker);
 
-            assertEquals("The expected number of resolutions availible was wrong", expectedLabels.size(), resolutions.length);
+            assertEquals("The expected number of resolutions available was wrong", expectedLabels.size(), resolutions.length);
 
             for (int j = 0; j < resolutions.length; j++) {
                 BugResolution resolution = (BugResolution) resolutions[j];

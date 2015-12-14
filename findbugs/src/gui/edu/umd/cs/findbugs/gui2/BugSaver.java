@@ -54,7 +54,7 @@ public class BugSaver {
             saveBugs(UTF8.fileWriter(out), data, p);
             lastPlaceSaved = out.getAbsolutePath();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An error has occured in saving your file");
+            JOptionPane.showMessageDialog(null, "An error has occurred in saving your file");
         }
     }
 

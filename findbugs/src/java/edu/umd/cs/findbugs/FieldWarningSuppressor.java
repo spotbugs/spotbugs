@@ -12,7 +12,7 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
 
     @Override
     public String toString() {
-        return String.format("Supress %s in %s.%s", bugPattern, clazz, field);
+        return String.format("Suppress %s in %s.%s", bugPattern, clazz, field);
     }
     @Override
     public boolean match(BugInstance bugInstance) {

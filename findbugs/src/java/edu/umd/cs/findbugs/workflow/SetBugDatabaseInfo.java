@@ -91,7 +91,7 @@ public class SetBugDatabaseInfo {
             addOption("-projectName", "name", "set name for project");
             addOption("-timestamp", "when", "set timestamp for (last) revision");
             addSwitch("-resetSource", "remove all source search paths");
-            addSwitch("-resetProject", "remove all source search paths, analysis and auxilary classpath entries");
+            addSwitch("-resetProject", "remove all source search paths, analysis and auxiliary classpath entries");
             addOption("-source", "directory", "Add this directory to the source search path");
             addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
             addSwitch("-uploadDesignations", "upload all designations to cloud");

@@ -222,7 +222,7 @@ public class TestDesktopIntegration extends JPanel {
                     if (retvel == JFileChooser.APPROVE_OPTION) {
                         File file = fc.getSelectedFile();
                         try {
-                            writer.println("File choosen:");
+                            writer.println("File chosen:");
                             writer.println("File path: " + file.getAbsolutePath());
                             writer.println("File canonical path: " + file.getCanonicalPath());
 

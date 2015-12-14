@@ -48,7 +48,7 @@ public class MemberMatcher {
 
         if (name == null) {
             if (signature == null) {
-                throw new FilterException(this.getClass().getName() + " must have eiter name or signature attributes");
+                throw new FilterException(this.getClass().getName() + " must have either name or signature attributes");
             }
             else {
                 name = "~.*"; // any name

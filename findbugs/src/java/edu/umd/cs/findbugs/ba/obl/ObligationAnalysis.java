@@ -211,7 +211,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
              * possiblyLeakedObligation)
              */) {
                 if (DEBUG_NULL_CHECK) {
-                    System.out.println("Deleting " + comparedObligation.toString() + " on edge from comparision "
+                    System.out.println("Deleting " + comparedObligation.toString() + " on edge from comparison "
                             + edge.getSource().getLastInstruction());
                 }
                 fact.deleteObligation(comparedObligation, edge.getTarget().getLabel());

@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  * Our TreeModel.  Once upon a time it was a simple model, that queried data, its BugSet, for what to show under each branch
  * Then it got more and more complicated, no one knows why it still seems to work... or why it doesn't if it in fact doesn't.
  *
- * Here's a tip, Dont even attempt to deal with suppressions or filtering and their related tree model events without the API
+ * Here's a tip, Don't even attempt to deal with suppressions or filtering and their related tree model events without the API
  * for TreeModelEvents open.  And read it three times first.  Ignore the fact that its inconsistent for sending events about the root, just pick one of the things it says and go with it
  *
  * Heres the order things MUST be done when dealing with suppressions, filtering, unsuppressions... unfiltering... all that fun stuff
@@ -354,8 +354,8 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
         // If this thread is not interrupting a previous thread, set the paths
         // to be opened when the new tree is complete
-        // If the thread is interrupting another thread, dont do this, because
-        // you dont have the tree with the correct paths selected
+        // If the thread is interrupting another thread, don't do this, because
+        // you don't have the tree with the correct paths selected
 
         // As of now, it should be impossible to interrupt a rebuilding thread,
         // in another version this may change, so this if statement check is
@@ -754,7 +754,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     void sendEvent(TreeModelEvent event, TreeModification whatToDo) {
         Debug.println("Sending An Event!");
         if (event == null) {
-            throw new IllegalStateException("Dont throw null events.");
+            throw new IllegalStateException("Don't throw null events.");
         }
         resetData();
         for (TreeModelListener l : listeners) {

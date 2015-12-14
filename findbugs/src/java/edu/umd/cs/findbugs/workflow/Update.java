@@ -93,7 +93,7 @@ public class Update {
         UpdateCommandLine() {
             addSwitch("-overrideRevisionNames", "override revision names for each version with names computed filenames");
             addSwitch("-noPackageMoves",
-                    "if a class seems to have moved from one package to another, treat warnings in that class as two seperate warnings");
+                    "if a class seems to have moved from one package to another, treat warnings in that class as two separate warnings");
             addSwitch("-noResurrections",
                     "if an issue had been detected in two versions but not in an intermediate version, record as two separate issues");
             addSwitch("-preciseMatch", "require bug patterns to match precisely");

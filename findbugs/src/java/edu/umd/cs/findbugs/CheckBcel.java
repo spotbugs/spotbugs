@@ -78,7 +78,7 @@ public class CheckBcel {
      *            name of the BCEL class
      */
     private static void error(String cname) {
-        System.err.println("BCEL class compatability error.");
+        System.err.println("BCEL class compatibility error.");
         System.err.println("The version of class " + cname + " found was not compatible with\n"
                 + "FindBugs.  Please remove any BCEL libraries that may be interfering.  This may happen\n"
                 + "if you have an old version of BCEL or a library that includes an old version of BCEL\n"
