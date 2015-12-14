@@ -187,7 +187,7 @@ public class NewProjectWizard extends FBDialog {
 
         wizardComponents[1] = createFilePanel(
                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), auxList, auxModel,
-                JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxilliary Class Archives and Directories", false,
+                JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive, "Choose Auxiliary Class Archives and Directories", false,
                 "http://findbugs.sourceforge.net/FAQ.html#q4");
 
         wizardComponents[2] = createFilePanel(

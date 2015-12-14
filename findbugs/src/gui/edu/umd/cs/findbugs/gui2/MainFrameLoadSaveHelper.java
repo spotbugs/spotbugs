@@ -118,7 +118,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
             final File f = saveOpenFileChooser.getSelectedFile();
 
             if (!fileType.isValid(f)) {
-                JOptionPane.showMessageDialog(saveOpenFileChooser, "That file is not compatible with the choosen file type",
+                JOptionPane.showMessageDialog(saveOpenFileChooser, "That file is not compatible with the chosen file type",
                         "Invalid File", JOptionPane.WARNING_MESSAGE);
                 loading = true;
                 continue;

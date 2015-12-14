@@ -287,7 +287,7 @@ public class SorterTableColumnModel implements TableColumnModel {
     public int getColumnIndex(Object columnIdentifier) {
 
         if (columnIdentifier == null) {
-            throw new IllegalArgumentException("Dont send null to getColumnIndex, null shouldn't be in the sorting table.");
+            throw new IllegalArgumentException("Don't send null to getColumnIndex, null shouldn't be in the sorting table.");
         }
 
         for (int x = 0; x < columnList.size(); x++) {

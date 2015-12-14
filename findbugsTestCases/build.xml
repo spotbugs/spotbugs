@@ -379,7 +379,7 @@
 
     <target name="historyNormal" depends="mergeNormal,copyNormal"/>
 
-    <target name="mergeNormal" depends="runNormal,existance" if="exists.normal">
+    <target name="mergeNormal" depends="runNormal,existence" if="exists.normal">
         <exec dir="." executable="${findbugs.home}/bin/computeBugHistory">
             <arg value="-output" />
             <arg file="${history.dir}/normal.xml" />
@@ -389,11 +389,11 @@
     </target>
 
 
-    <target name="existance">
+    <target name="existence">
         <available property="exists.normal" file="${history.dir}/normal.xml"/>
     </target>
 
-    <target name="copyNormal" depends="runNormal,existance" unless="exists.normal">
+    <target name="copyNormal" depends="runNormal,existence" unless="exists.normal">
         <copy file="build/normal.xml" todir="${history.dir}"/>
     </target>
 

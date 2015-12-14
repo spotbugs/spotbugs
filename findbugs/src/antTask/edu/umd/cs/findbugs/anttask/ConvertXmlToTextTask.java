@@ -160,7 +160,7 @@ public class ConvertXmlToTextTask extends AbstractFindBugsTask {
                 getProject().setProperty(errorProperty, "true");
             }
             if ((rc & ExitCodes.ERROR_FLAG) != 0) {
-                String message = "At least one error occured!";
+                String message = "At least one error occurred!";
                 if (failIfBugFound) {
                     throw new BuildException(message);
                 } else {

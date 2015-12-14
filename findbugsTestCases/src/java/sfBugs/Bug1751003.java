@@ -17,7 +17,7 @@ import java.util.TreeMap;
  * 
  * 2) In one case I have to do something with the key (it is passed to another
  * method as parameter) and just in a log statement if have: log("Handled " +
- * key + " desription = " + map.get(key)); So if the key is used for more than
+ * key + " description = " + map.get(key)); So if the key is used for more than
  * just get the value is is legal to do so even for unsorted maps.
  */
 public class Bug1751003 {

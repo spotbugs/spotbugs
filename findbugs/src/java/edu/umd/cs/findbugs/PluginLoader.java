@@ -213,7 +213,7 @@ public class PluginLoader {
             classLoader = new URLClassLoader(loaderURLs, parent);
         } else {
             if (parent != PluginLoader.class.getClassLoader()) {
-                throw new IllegalArgumentException("Can't specify parentid " + parentId + " and provide a seperate class loader");
+                throw new IllegalArgumentException("Can't specify parentid " + parentId + " and provide a separate class loader");
             }
             Plugin parentPlugin = Plugin.getByPluginId(parentId);
             if (parentPlugin != null) {

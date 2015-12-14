@@ -578,7 +578,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
             boolean result = ifNullTests > 2;
 
-            // System.out.println("Preceeding null tests " + ifNullTests + " " +
+            // System.out.println("Preceding null tests " + ifNullTests + " " +
             // ifNonnullTests + " " + result);
             return result;
         } catch (CFGBuilderException e) {
