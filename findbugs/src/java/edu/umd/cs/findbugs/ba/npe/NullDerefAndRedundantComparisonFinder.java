@@ -69,7 +69,7 @@ import edu.umd.cs.findbugs.log.Profiler;
 
 /**
  * A user-friendly front end for finding null pointer dereferences and redundant
- * null comparisions.
+ * null comparisons.
  *
  * @see IsNullValueAnalysis
  * @author David Hovemeyer

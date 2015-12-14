@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  *
  */
 /*
- * GUISaveState uses the Preferences API, dont look for a file anywhere, there
+ * GUISaveState uses the Preferences API, don't look for a file anywhere, there
  * isn't one, well... there might be, but its all system dependent where it is
  * and how its stored
  */

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.util.Util;
  * String and null)
  *
  * If matchSpec starts with ~ character it will be treated as
- * java.util.regex.Pattern, with the ~ character omited. The pattern will be
+ * java.util.regex.Pattern, with the ~ character omitted. The pattern will be
  * matched against whole value (ie Matcher.match(), not Matcher.find())
  *
  * If matchSpec is a non-null String with any other initial charcter, exact

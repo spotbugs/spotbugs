@@ -378,7 +378,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     /**
      * Eclipse uses reflection to initialize NLS message bundles. Classes which
-     * using this mechanism are usualy extending org.eclipse.osgi.util.NLS class
+     * using this mechanism are usually extending org.eclipse.osgi.util.NLS class
      * and contains lots of public static String fields which are used as
      * message constants. Unfortunately these fields often has bad names which
      * does not follow Java code convention, so FB reports tons of warnings for

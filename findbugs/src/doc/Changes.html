@@ -706,7 +706,7 @@
                 <p>Changes since version 1.3.5</p>
                 <ul>
                     <li>Added fairly exhaustive static analysis of uses of format
-                        strings, checking for missing or extra arguements, invalid format
+                        strings, checking for missing or extra arguments, invalid format
                         specifiers, or mismatched format specifiers and arguments (e.g,
                         passing a String value for a %d format specifier). The logic for
                         doing so is derived from Sun's java.util.Formatter class, and
@@ -1304,7 +1304,7 @@
                                         extends <code>beta.Foo</code>). This can be exceptionally
                                         confusing, create lots of situations in which you have to look
                                         at import statements to resolve references and creates many
-                                        opportunities to accidently define methods that do not
+                                        opportunities to accidentally define methods that do not
                                         override methods in their superclasses.
                                     </li>
                                     <li>NM_SAME_SIMPLE_NAME_AS_INTERFACE: This class/interface
@@ -1313,7 +1313,7 @@
                                         in a different package (e.g., <code>alpha.Foo</code> extends <code>beta.Foo</code>).
                                         This can be exceptionally confusing, create lots of situations
                                         in which you have to look at import statements to resolve
-                                        references and creates many opportunities to accidently define
+                                        references and creates many opportunities to accidentally define
                                         methods that do not override methods in their superclasses.
                                     </li>
                                 </ul>
@@ -2130,10 +2130,10 @@
                     </li>
                     <li>Updated detectors
                         <ul>
-                            <li>SwitchFallthrough.java: surpress some false positives</li>
-                            <li>DuplicateBranches.java: surpress some false positives</li>
-                            <li>IteratorIdioms.java: surpress some false positives</li>
-                            <li>FindHEmismatch.java: surpress some false positives</li>
+                            <li>SwitchFallthrough.java: suppress some false positives</li>
+                            <li>DuplicateBranches.java: suppress some false positives</li>
+                            <li>IteratorIdioms.java: suppress some false positives</li>
+                            <li>FindHEmismatch.java: suppress some false positives</li>
                             <li>QuestionableBooleanAssignment.java: finds more cases of
                                 <tt>if (b=true)</tt> ilk
                             </li>
@@ -2444,7 +2444,7 @@
                     <li>New detector to find calls to equals() methods that use
                         Object's version. (Dave Brosius)</li>
                     <li>New detector to find Applets that call methods in the
-                        constructor refering to the AppletStub (Dave Brosius)</li>
+                        constructor referring to the AppletStub (Dave Brosius)</li>
                     <li>New detector to find some cases of infinite recursion
                         (Bill Pugh)</li>
                     <li>New detector to find dead stores to local variables (David
@@ -2498,7 +2498,7 @@
                     <li>Allow Swing GUI to show source code in jar files on
                         Windows systems (Dave Brosius) <!-- Bug fixes -->
                     </li>
-                    <li>Fix the Switch Fall Thru detector (Dave Brosius, David
+                    <li>Fix the Switch Fall Through detector (Dave Brosius, David
                         Hovemeyer, Bill Pugh)</li>
                     <li>MacOS GUI fixes (Rohan Lloyd)</li>
                     <li>Fix false positive in BOA in case where method is

@@ -404,7 +404,7 @@ public class MineBugHistory {
     }
 
     /**
-     * Get key used to classify the presence and/or abscence of a BugInstance in
+     * Get key used to classify the presence and/or absence of a BugInstance in
      * successive versions in the history.
      *
      * @param activePrevious

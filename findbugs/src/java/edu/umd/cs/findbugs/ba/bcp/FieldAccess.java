@@ -65,7 +65,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
      * @param bindingSet
      *            previous definitions
      * @return a MatchResult containing an updated BindingSet if successful, or
-     *         null if unsucessful
+     *         null if unsuccessful
      */
     protected MatchResult checkConsistent(Variable field, Variable value, BindingSet bindingSet) {
         // Ensure that the field and value variables are consistent with

@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.util.Util;
  *
  * A bug ranker is comprised of a list of bug patterns, bug kinds and bug
  * categories. For each, either an absolute or relative bug rank is provided. A
- * relative rank is one preceeded by a + or -.
+ * relative rank is one preceded by a + or -.
  *
  * For core bug detectors, the bug ranker search order is:
  * <ul>

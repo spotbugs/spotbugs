@@ -59,7 +59,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>maxRank (maximum rank issue to be reported)
  * <li>jvm (Set the command used to start the VM)
  * <li>jvmargs (any additional jvm arguments)
- * <li>omitVisitors (collection - comma seperated)
+ * <li>omitVisitors (collection - comma separated)
  * <li>onlyAnalyze (restrict analysis to find bugs to given comma-separated list
  * of classes and packages - See the textui argument description for details)
  * <li>output (enum text|xml|xml:withMessages|html - default xml)
@@ -78,7 +78,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * "default.xsl")
  * <li>systemProperty (a system property to set)
  * <li>timestampNow (boolean - default false)
- * <li>visitors (collection - comma seperated)
+ * <li>visitors (collection - comma separated)
  * <li>chooseVisitors (selectively enable/disable visitors)
  * <li>workHard (boolean default false)
  * <li>setSetExitCode (boolean default true)

@@ -2,7 +2,7 @@
 Simple OpenID Plugin
 http://code.google.com/p/openid-selector/
 
-This code is licenced under the New BSD License.
+This code is licensed under the New BSD License.
 */
 
 var providers_large = {
