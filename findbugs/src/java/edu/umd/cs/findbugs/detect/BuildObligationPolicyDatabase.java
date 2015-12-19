@@ -72,7 +72,7 @@ import edu.umd.cs.findbugs.util.SubtypeTypeMatcher;
  */
 public class BuildObligationPolicyDatabase implements Detector2, NonReportingDetector {
 
-    static class AuxilaryObligationPropertyDatabase extends MethodPropertyDatabase<String> {
+    static class AuxiliaryObligationPropertyDatabase extends MethodPropertyDatabase<String> {
 
         /*
          * (non-Javadoc)
@@ -143,7 +143,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         URL u = DetectorFactoryCollection.getCoreResource("obligationPolicy.db");
         try {
             if (u != null) {
-                AuxilaryObligationPropertyDatabase db = new AuxilaryObligationPropertyDatabase();
+                AuxiliaryObligationPropertyDatabase db = new AuxiliaryObligationPropertyDatabase();
                 db.read(u.openStream());
                 for (Map.Entry<MethodDescriptor, String> e : db.entrySet()) {
                     String[] v = e.getValue().split(",");
