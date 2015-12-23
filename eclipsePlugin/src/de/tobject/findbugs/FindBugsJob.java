@@ -19,6 +19,7 @@
 package de.tobject.findbugs;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -123,12 +124,14 @@ public abstract class FindBugsJob extends Job {
                 if (DEBUG) {
                     FindbugsPlugin.log("Acquiring analysisSem");
                 }
-                analysisSem.acquire();
-                acquired = true;
-                if (DEBUG) {
-                    FindbugsPlugin.log("Acquired analysisSem");
+
+                acquired = acquireAnalysisPermitUnlessCancelled(monitor);
+                if (acquired) {
+                    if (DEBUG) {
+                        FindbugsPlugin.log("Acquired analysisSem");
+                    }
                 }
-                if(monitor.isCanceled()){
+                if (monitor.isCanceled()) {
                     return Status.CANCEL_STATUS;
                 }
             }
@@ -154,5 +157,21 @@ public abstract class FindBugsJob extends Job {
             monitor.done();
         }
         return Status.OK_STATUS;
+    }
+
+    /**
+     * Acquires an analysis permit unless first cancelled.
+     *
+     * @return {@code true} if permit has been acquired, {@code false} if
+     *         cancellation was observed and permit has not been acquired
+     */
+    private static boolean acquireAnalysisPermitUnlessCancelled(IProgressMonitor monitor) throws InterruptedException {
+        do {
+            if (analysisSem.tryAcquire(1, TimeUnit.SECONDS)) {
+                return true;
+            }
+        } while (!monitor.isCanceled());
+
+        return false;
     }
 }
