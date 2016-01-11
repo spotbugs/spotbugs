@@ -190,7 +190,9 @@ public class DefaultNullnessAnnotations {
         database.addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap", "setEntryAt",
                 "([Ljava/util/concurrent/ConcurrentHashMap$HashEntry;ILjava/util/concurrent/ConcurrentHashMap$HashEntry;)V", false, 1, NullnessAnnotation.NULLABLE);
         database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinPool", "<init>",
-                "(ILjava/util/concurrent/ForkJoinPool$ForkJoinWorkerThreadFactory;Ljava/lang/Thread$UncaughtExceptionHandler;Z)V", false, 1, NullnessAnnotation.NULLABLE);
+                "(ILjava/util/concurrent/ForkJoinPool$ForkJoinWorkerThreadFactory;Ljava/lang/Thread$UncaughtExceptionHandler;Z)V", false, 1, NullnessAnnotation.NONNULL);
+        database.addMethodParameterAnnotation("java.util.concurrent.ForkJoinPool", "<init>",
+                "(ILjava/util/concurrent/ForkJoinPool$ForkJoinWorkerThreadFactory;Ljava/lang/Thread$UncaughtExceptionHandler;Z)V", false, 2, NullnessAnnotation.NULLABLE);
         database.addMethodParameterAnnotation("java.util.concurrent.PriorityBlockingQueue", "<init>",
                 "(ILjava/util/Comparator;)V", false, 1, NullnessAnnotation.NULLABLE);
 
