@@ -569,7 +569,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 if (field != null) {
                     // If the field is final, we'll assume that the String value
                     // is static.
-                    if (field.isFinal() && field.isFinal()) {
+                    if (field.isFinal()) {
                         pushValue(staticStringTypeInstance);
                     } else {
                         pushValue(type);
