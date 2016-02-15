@@ -1659,6 +1659,18 @@ using the &FindBugs; task.
     </listitem>
   </varlistentry>
 
+  <varlistentry>
+    <term><literal>pluginList</literal></term>
+    <listitem>
+       <para>
+       A optional String attribute or optional nested element specifying which BugDetector Jar files to add..  The <literal>pluginList</literal>
+       element must specify a <literal>location</literal> attribute which names the
+       archive file (jar, zip, etc.), directory, or class file to be analyzed.  Multiple <literal>pluginList</literal>
+       elements may be specified as children of a single <literal>findbugs</literal> element.
+       </para>
+    </listitem>
+  </varlistentry>
+
 </variablelist>
 
 
