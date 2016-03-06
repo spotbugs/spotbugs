@@ -27,6 +27,11 @@ findbugs/lib/findbugs.jar
 findbugs/lib/apache-ant-1.8.3-src.zip
 findbugs/local.properties
 findbugs/optionalPlugin/
+findbugs/design/architecture/architecture.aux
+findbugs/design/architecture/architecture.out
+findbugs/design/architecture/architecture.pdf
+findbugs/design/architecture/architecture.toc
+findbugs/design/architecture/depend.mak
 findbugs/plugin/findbugsCommunalCloud.jar
 findbugs/plugin/webCloudClient.jar
 findbugs/plugin/googlecode.jar
