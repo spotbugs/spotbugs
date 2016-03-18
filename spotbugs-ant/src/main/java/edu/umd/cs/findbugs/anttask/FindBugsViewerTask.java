@@ -65,7 +65,7 @@ public class FindBugsViewerTask extends AbstractFindBugsTask {
 
     private File loadbugs;
 
-    private String look = "native";
+    private String look;
 
     /** Creates a new instance of FindBugsViewerTask */
     public FindBugsViewerTask() {
