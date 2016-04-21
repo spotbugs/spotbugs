@@ -47,6 +47,7 @@ public abstract class FindBugsJob extends Job {
         // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
         // we must run this stupid code in the UI thread
         Display.getDefault().asyncExec(new Runnable() {
+            @Override
             public void run() {
                 PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
                         FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
@@ -89,6 +90,7 @@ public abstract class FindBugsJob extends Job {
 
     public void scheduleInteractive() {
         setUser(true);
+        setSystem(false);
         setPriority(Job.INTERACTIVE);
 
         // paranoia
@@ -102,6 +104,7 @@ public abstract class FindBugsJob extends Job {
 
     public void scheduleAsSystem() {
         setUser(false);
+        setSystem(true);
         setPriority(Job.BUILD);
         schedule();
     }
@@ -135,6 +138,7 @@ public abstract class FindBugsJob extends Job {
                     return Status.CANCEL_STATUS;
                 }
             }
+
             runWithProgress(monitor);
         } catch (OperationCanceledException e) {
             // Do nothing when operation cancelled.
