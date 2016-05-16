@@ -3308,7 +3308,7 @@ double value2 =  x / (double) y;
   </Details>
  </BugPattern>
  <BugPattern type="DB_DUPLICATE_BRANCHES">
-  <ShortDescription>Méthode utilsant le même code pour deux branches</ShortDescription>
+  <ShortDescription>Méthode utilisant le même code pour deux branches</ShortDescription>
   <LongDescription>La méthode {1} utilise le même code pour deux branches</LongDescription>
   <Details>
 <![CDATA[
