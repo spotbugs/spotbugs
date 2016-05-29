@@ -108,8 +108,8 @@
     <target name="errorprone" depends="clean,init">
         <javac
                         destdir="${classes.dir}"
-                        source="1.7"
-                        target="1.7"
+                        source="1.8"
+                        target="1.8"
                         includeantruntime="false"
                         encoding="ISO-8859-1"
                         deprecation="off"
@@ -123,10 +123,13 @@
                 </javac>
     </target>
     <target name="classes" depends="init">
-        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
-        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+        <echo>Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}">
              <condition>
-                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+                 <or>
+                   <equals arg1="1.7" arg2="${ant.java.version}"/>
+                   <equals arg1="1.9" arg2="${ant.java.version}"/>
+                 </or>
              </condition>
          </fail>
 
@@ -134,8 +137,8 @@
         <echo level="info" message="compiling findbugs"/>
         <javac
                         destdir="${classes.dir}"
-                        source="1.7"
-                        target="1.7"
+                        source="1.8"
+                        target="1.8"
                         includeantruntime="false"
                         encoding="ISO-8859-1"
                         deprecation="off"
@@ -167,8 +170,8 @@
         <echo level="info" message="compiling junit test cases"/>
         <javac srcdir="${junitsrc.dir}"
                 destdir="${junitclasses.dir}"
-                source="1.7"
-                target="1.7"
+                source="1.8"
+                target="1.8"
                                 includeantruntime="false"
                                 encoding="ISO-8859-1"
                 deprecation="off"
@@ -179,8 +182,8 @@
         <echo level="info" message="compiling tools"/>
         <javac srcdir="${toolsrc.dir}"
                 destdir="${classes.dir}"
-                source="1.7"
-                target="1.7"
+                source="1.8"
+                target="1.8"
                                 includeantruntime="false"
                                 encoding="ISO-8859-1"
                 debug="on"
@@ -193,8 +196,8 @@
         <echo level="info" message="compiling ant task"/>
         <javac srcdir="${anttasksrc.dir}"
             destdir="${classes.dir}"
-            source="1.7"
-            target="1.7"
+            source="1.8"
+            target="1.8"
                         includeantruntime="false"
             encoding="ISO-8859-1"
             deprecation="off"

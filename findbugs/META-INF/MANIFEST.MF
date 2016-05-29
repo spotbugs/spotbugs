@@ -96,4 +96,4 @@ Export-Package: edu.umd.cs.findbugs,
  org.objectweb.asm.tree.analysis,
  org.objectweb.asm.util,
  org.objectweb.asm.xml
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

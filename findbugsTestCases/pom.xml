@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.google.code.findbugs</groupId>
     <artifactId>findbugs-project</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -91,7 +91,7 @@
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-servlet</artifactId>
       <version>3.0</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -187,7 +187,7 @@
                   <!-- <auxClasspath location="${compile_classpath}" /> -->
                 </java>
 
-<!-- 
+<!--
                 <copy file="${com.google.code.findbugs:findbugs:jar}"
                   tofile="${findbugs.home}/lib/findbugs.jar" />
 
