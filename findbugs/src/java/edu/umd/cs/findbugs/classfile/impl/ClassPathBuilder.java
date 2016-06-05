@@ -41,6 +41,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -403,8 +404,8 @@ public class ClassPathBuilder implements IClassPathBuilder {
     }
 
     private static boolean isJava9orLater() {
-        String jvmSpec = System.getProperty("java.vm.specification.version", "8");
-        return Integer.parseInt(jvmSpec) >= 9;
+        JavaVersion javaVersion = JavaVersion.getRuntimeVersion();
+        return javaVersion.getMinor() >= 9;
     }
 
     /**
