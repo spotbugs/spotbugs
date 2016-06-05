@@ -106,7 +106,8 @@ public class PDEClassPathGenerator {
                             for (IClasspathEntry iClasspathEntry : classpathEntries) {
                                 IPath path = iClasspathEntry.getPath();
                                 // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
-                                if (isValidPath(path) && "rt.jar".equals(path.lastSegment())) {
+                                if (isValidPath(path) && ("rt.jar".equals(path.lastSegment())
+                                        || "jrt-fs.jar".equals(path.lastSegment()))) {
                                     classPath.add(path.toOSString());
                                     break;
                                 }

@@ -25,6 +25,9 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -390,7 +393,18 @@ public class ClassPathBuilder implements IClassPathBuilder {
             }
         }
 
+        if(isJava9orLater()){
+            Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "jrt-fs.jar");
+            if(Files.isRegularFile(jrtFsJar)){
+                addWorkListItemsForClasspath(workList, jrtFsJar.toString());
+            }
+        }
         return workList;
+    }
+
+    private static boolean isJava9orLater() {
+        String jvmSpec = System.getProperty("java.vm.specification.version", "8");
+        return Integer.parseInt(jvmSpec) >= 9;
     }
 
     /**
