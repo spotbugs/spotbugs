@@ -35,9 +35,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -59,7 +62,14 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     private FileSystem fs;
     private final String fileName;
     private Path root;
-    private Map<String, String> packageToModuleMap;
+
+    /**
+     * Key is package name in bytecode notation (e.g. 'java/lang').
+     * <p>
+     * Values are either plain Strings for single-module packages, or sets of
+     * Strings for packages spread over multiple modules
+     */
+    private Map<String, Object> packageToModuleMap;
 
     public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @Nonnull String fileName) {
         super(codeBaseLocator);
@@ -76,12 +86,28 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         }
     }
 
-    public Map<String, String> createPackageToModuleMap(FileSystem fs) throws IOException{
-        HashMap<String, String> packageToModule = new LinkedHashMap<>();
+    public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException{
+        HashMap<String, Object> packageToModule = new LinkedHashMap<>();
         Path path = fs.getPath("packages");
         Files.list(path).forEach(p -> {
             try {
-                Files.list(p).findFirst().ifPresent(c -> packageToModule.put(fileName(p).replace('.', '/') , fileName(c)));
+                Iterator<Path> modIter = Files.list(p).iterator();
+                while (modIter.hasNext()) {
+                    Path module = modIter.next();
+                    String packageKey = fileName(p).replace('.', '/');
+                    String modulePath = fileName(module);
+                    if(!modIter.hasNext() && !packageToModule.containsKey(packageKey)){
+                        packageToModule.put(packageKey, modulePath);
+                    } else {
+                        @SuppressWarnings("unchecked")
+                        Set<Object> modules = (Set<Object>) packageToModule.get(packageKey);
+                        if(modules == null){
+                            modules = new LinkedHashSet<>();
+                            packageToModule.put(packageKey, modules);
+                        }
+                        modules.add(modulePath);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -90,13 +116,31 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     }
 
     @Override
+    @CheckForNull
     public ICodeBaseEntry lookupResource(String resourceName) {
         resourceName = translateResourceName(resourceName);
         String packageName = getPackage(resourceName);
-        String moduleName = packageToModuleMap.get(packageName);
-        if(moduleName == null){
+        Object moduleNameOrSet = packageToModuleMap.get(packageName);
+        if(moduleNameOrSet == null){
             return null;
         }
+        if(moduleNameOrSet instanceof String){
+            return createEntry(resourceName, (String) moduleNameOrSet);
+        } else {
+            @SuppressWarnings("unchecked")
+            Set<String> modules = (Set<String>) moduleNameOrSet;
+            for (String moduleName : modules) {
+                ICodeBaseEntry entry = createEntry(resourceName, moduleName);
+                if(entry != null){
+                    return entry;
+                }
+            }
+        }
+        return null;
+    }
+
+    @CheckForNull
+    private ICodeBaseEntry createEntry(String resourceName, String moduleName) {
         Path resolved = root.resolve(moduleName + "/" + resourceName);
         if(Files.exists(resolved)){
             return new JrtfsCodebaseEntry(resolved, root, this);
@@ -162,6 +206,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         return new JrtfsCodeBaseIterator();
     }
 
+    @Nonnull
     static String fileName(Path p){
         Path name = p.getFileName();
         return name != null? name.toString() : "";
@@ -177,7 +222,6 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
 
         public JrtfsCodeBaseIterator() {
             try {
-
                 iterator = Files.walk(root).filter(p -> isClassFile(p)).iterator();
             } catch (IOException e) {
                 e.printStackTrace();
