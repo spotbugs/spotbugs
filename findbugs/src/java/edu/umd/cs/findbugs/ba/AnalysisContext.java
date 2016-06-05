@@ -34,8 +34,6 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import net.jcip.annotations.NotThreadSafe;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -70,6 +68,7 @@ import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import net.jcip.annotations.NotThreadSafe;
 
 /**
  * A context for analysis of a complete project. This serves as the repository
@@ -542,7 +541,12 @@ public class AnalysisContext {
         }
 
         JavaClass clazz = originalRepository.findClass(className);
-        return (clazz == null ? originalRepository.loadClass(className) : clazz);
+        if(clazz != null){
+            return clazz;
+        }
+        // XXX workaround for system classes missing on Java 9
+        // Not sure if we BCEL update, but this seem to work in simple cases
+        return AnalysisContext.currentAnalysisContext().lookupClass(className);
     }
 
     /**
