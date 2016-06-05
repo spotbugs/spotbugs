@@ -65,7 +65,14 @@ public class JavaVersion {
     public JavaVersion(String versionString) throws JavaVersionException {
         Matcher matcher = PATTERN.matcher(versionString);
         if (!matcher.matches()) {
-            throw new JavaVersionException("Could not parse Java version string: " + versionString);
+            if(versionString.startsWith("9")) {
+                major = 1;
+                minor = 9;
+                rest = "";
+                return;
+            } else {
+                throw new JavaVersionException("Could not parse Java version string: " + versionString);
+            }
         }
         try {
             major = Integer.parseInt(matcher.group(1));
