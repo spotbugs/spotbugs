@@ -1180,7 +1180,7 @@
         </delete>
     </target>
 
-    <target name="init" depends="properties">
+    <target name="init" depends="properties,getasm6">
         <mkdir dir="${scripts.dir}"/>
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${doc.dir}"/>
@@ -1207,6 +1207,9 @@
       <condition property="apidoc.uptodate">
           <isset property="docs.uptodate"/>
        </condition>
+      <condition property="asm6.exists">
+          <available file="${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar" />
+      </condition>
     </target>
 
     <target name="apiJavadoc" depends="version" unless="apidoc.uptodate">
@@ -1233,6 +1236,14 @@
         nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
         sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true"/>
         </target>
+
+    <!-- Download snapshot of asm 6.0 with Java 9 support, built from SVN version 1818 from ASM_6_FUTURE branch,
+        install resulting jar in lib. -->
+    <target name="getasm6" unless="asm6.exists">
+        <get src="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview1/asm-debug-all-6.0-SNAPSHOT.jar"
+             dest="${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
+         verbose="on"/>
+    </target>
 
     <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib. -->
     <target name="patchbcel">

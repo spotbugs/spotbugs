@@ -1,5 +1,5 @@
 #! /bin/sh
 mvn install:install-file -Dfile=lib/bcel-6.0-SNAPSHOT.jar -DgroupId=com.google.code.findbugs -DartifactId=bcel -Dversion=6.0-SNAPSHOT -Dpackaging=jar
-mvn install:install-file -Dfile=lib/asm-debug-all-5.0.2.jar -DgroupId=org.ow2.asm -DartifactId=asm-debug-all -Dversion=5.0.2 -Dpackaging=jar
+mvn install:install-file -Dfile=lib/asm-debug-all-6.0-SNAPSHOT.jar -DgroupId=org.ow2.asm -DartifactId=asm-debug-all -Dversion=6.0-SNAPSHOT -Dpackaging=jar
 mvn clean
 mvn package

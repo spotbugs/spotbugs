@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/jFormatString.jar"/>
 	<classpathentry kind="lib" path="lib/bcel-6.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/asm-debug-all-6.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305.jar"/>

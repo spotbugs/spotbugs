@@ -68,7 +68,7 @@
         annotations.jar,
         jFormatString.jar,
         commons-lang-2.6.jar,
-        asm-debug-all-5.0.2.jar,
+        asm-debug-all-6.0-SNAPSHOT.jar,
         dom4j-1.6.1.jar,
         jaxen-1.1.6.jar" />
 
