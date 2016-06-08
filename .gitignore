@@ -26,6 +26,7 @@ findbugs/lib/findbugs-ant.jar
 findbugs/lib/findbugs.jar
 findbugs/lib/apache-ant-1.8.3-src.zip
 findbugs/lib/asm-debug-all-6.0-SNAPSHOT.jar
+findbugs/lib/bcel-6.0-SNAPSHOT_452b5e6.jar
 findbugs/local.properties
 findbugs/optionalPlugin/
 findbugs/design/architecture/architecture.aux

@@ -29,12 +29,16 @@ import org.apache.bcel.classfile.AnnotationDefault;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantMethodType;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
@@ -49,7 +53,11 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.MethodParameters;
+import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
+import org.apache.bcel.classfile.StackMap;
+import org.apache.bcel.classfile.StackMapEntry;
 import org.apache.bcel.classfile.StackMapTable;
 import org.apache.bcel.classfile.StackMapTableEntry;
 
@@ -821,14 +829,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     public void visitParameterAnnotation(ParameterAnnotations arg0) {
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.
-     * classfile.StackMapTable)
-     */
-    @Override
+    @Deprecated
     public void visitStackMapTable(StackMapTable arg0) {
         // TODO Auto-generated method stub
 
@@ -841,8 +842,70 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
      * org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.
      * bcel.classfile.StackMapTableEntry)
      */
-    @Override
+    @Deprecated
     public void visitStackMapTableEntry(StackMapTableEntry arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.
+     * classfile.StackMapTable)
+     */
+    @Override
+    public void visitStackMap(StackMap arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.
+     * bcel.classfile.StackMapTableEntry)
+     */
+    @Override
+    public void visitStackMapEntry(StackMapEntry arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitConstantInvokeDynamic(ConstantInvokeDynamic obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitBootstrapMethods(BootstrapMethods obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitMethodParameters(MethodParameters obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitConstantMethodType(ConstantMethodType obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitConstantMethodHandle(ConstantMethodHandle obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitParameterAnnotationEntry(ParameterAnnotationEntry obj) {
         // TODO Auto-generated method stub
 
     }

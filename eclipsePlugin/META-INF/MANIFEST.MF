@@ -6,7 +6,7 @@ Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: findbugs-plugin.jar,
  lib/jsr305.jar,
  lib/annotations.jar,
- lib/bcel-6.0-SNAPSHOT.jar,
+ lib/bcel-6.0-SNAPSHOT_452b5e6.jar,
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1.6.jar,
  lib/jFormatString.jar,

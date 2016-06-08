@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -60,12 +60,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     private static final BitSet RETURN_OPCODE_SET = new BitSet();
     static {
-        RETURN_OPCODE_SET.set(Constants.ARETURN);
-        RETURN_OPCODE_SET.set(Constants.IRETURN);
-        RETURN_OPCODE_SET.set(Constants.LRETURN);
-        RETURN_OPCODE_SET.set(Constants.DRETURN);
-        RETURN_OPCODE_SET.set(Constants.FRETURN);
-        RETURN_OPCODE_SET.set(Constants.RETURN);
+        RETURN_OPCODE_SET.set(Const.ARETURN);
+        RETURN_OPCODE_SET.set(Const.IRETURN);
+        RETURN_OPCODE_SET.set(Const.LRETURN);
+        RETURN_OPCODE_SET.set(Const.DRETURN);
+        RETURN_OPCODE_SET.set(Const.FRETURN);
+        RETURN_OPCODE_SET.set(Const.RETURN);
     }
 
     private final ClassReader classReader;
@@ -207,23 +207,23 @@ public class ClassParserUsingASM implements ClassParserInterface {
         @Override
         public void visitInsn(int opcode) {
             switch (opcode) {
-            case Constants.MONITORENTER:
+            case Const.MONITORENTER:
                 mBuilder.setUsesConcurrency();
                 break;
-            case Constants.ARETURN:
-            case Constants.IRETURN:
-            case Constants.LRETURN:
-            case Constants.DRETURN:
-            case Constants.FRETURN:
+            case Const.ARETURN:
+            case Const.IRETURN:
+            case Const.LRETURN:
+            case Const.DRETURN:
+            case Const.FRETURN:
                 if (identityState == IdentityMethodState.LOADED_PARAMETER) {
                     mBuilder.setIsIdentity();
                 }
                 sawReturn = true;
                 break;
-            case Constants.RETURN:
+            case Const.RETURN:
                 sawReturn = true;
                 break;
-            case Constants.ATHROW:
+            case Const.ATHROW:
                 if (stubState == StubState.INITIALIZE_RUNTIME) {
                     sawStubThrow = true;
                 } else if (justSawInitializationOfUnsupportedOperationException) {
@@ -457,7 +457,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         mBuilder.setUnsupported();
                     }
                     if (sawStubThrow) {
-                        mBuilder.addAccessFlags(Constants.ACC_SYNTHETIC);
+                        mBuilder.addAccessFlags(Const.ACC_SYNTHETIC);
                         mBuilder.setIsStub();
 
                     }
@@ -647,24 +647,24 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             int size;
             switch (tag) {
-            case Constants.CONSTANT_Methodref:
-            case Constants.CONSTANT_InterfaceMethodref:
-            case Constants.CONSTANT_Fieldref:
-            case Constants.CONSTANT_Integer:
-            case Constants.CONSTANT_Float:
-            case Constants.CONSTANT_NameAndType:
-            case Constants.CONSTANT_InvokeDynamic:
+            case Const.CONSTANT_Methodref:
+            case Const.CONSTANT_InterfaceMethodref:
+            case Const.CONSTANT_Fieldref:
+            case Const.CONSTANT_Integer:
+            case Const.CONSTANT_Float:
+            case Const.CONSTANT_NameAndType:
+            case Const.CONSTANT_InvokeDynamic:
                 size = 5;
                 break;
-            case Constants.CONSTANT_Long:
-            case Constants.CONSTANT_Double:
+            case Const.CONSTANT_Long:
+            case Const.CONSTANT_Double:
                 size = 9;
                 count++;
                 break;
-            case Constants.CONSTANT_Utf8:
+            case Const.CONSTANT_Utf8:
                 size = 3 + classReader.readUnsignedShort(offset + 1);
                 break;
-            case Constants.CONSTANT_Class:
+            case Const.CONSTANT_Class:
                 @SlashedClassName
                 String className = classReader.readUTF8(offset + 1, buf);
                 if (className.indexOf('[') >= 0) {
@@ -675,11 +675,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 }
                 size = 3;
                 break;
-            case Constants.CONSTANT_String:
-            case Constants.CONSTANT_MethodType:
+            case Const.CONSTANT_String:
+            case Const.CONSTANT_MethodType:
                 size = 3;
                 break;
-            case Constants.CONSTANT_MethodHandle:
+            case Const.CONSTANT_MethodHandle:
                 size = 4;
                 break;
             default:

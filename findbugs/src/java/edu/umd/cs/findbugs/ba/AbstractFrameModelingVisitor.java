@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
  * @see Frame
  * @see DataflowAnalysis
  */
-public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements VisitorSupportsInvokeDynamic {
+public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Frame<Value>> implements Visitor {
     private FrameType frame;
 
     private Location location;
