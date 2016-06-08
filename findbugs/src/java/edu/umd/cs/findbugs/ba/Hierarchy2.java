@@ -312,6 +312,11 @@ public class Hierarchy2 {
             return Collections.<XMethod> emptySet();
         }
 
+        // XXX handle INVOKEDYNAMIC
+        if (opcode == Constants.INVOKEDYNAMIC) {
+            return Collections.<XMethod> emptySet();
+        }
+
         Type receiverType;
         boolean receiverTypeIsExact;
 

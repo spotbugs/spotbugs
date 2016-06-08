@@ -27,6 +27,7 @@ import java.util.Iterator;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 
@@ -105,8 +106,12 @@ public class Analysis {
                 Location location = i.next();
                 Instruction ins = location.getHandle().getInstruction();
                 if (ins instanceof InvokeInstruction) {
-                    XMethod called = XFactory.createXMethod((InvokeInstruction) ins, cpg);
-                    addEffectiveRelevantQualifiers(result, called);
+                    if (ins instanceof INVOKEDYNAMIC) {
+                        // TODO handle INVOKEDYNAMIC
+                    } else {
+                        XMethod called = XFactory.createXMethod((InvokeInstruction) ins, cpg);
+                        addEffectiveRelevantQualifiers(result, called);
+                    }
                 }
 
                 if (DEBUG_FIND_EFFECTIVE_RELEVANT_QUALIFIERS) {
