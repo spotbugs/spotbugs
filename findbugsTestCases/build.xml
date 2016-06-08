@@ -45,6 +45,7 @@
     <target name="build" depends="classes,runfindbugs,runEffort" />
 
     <target name="init">
+        <echo>findbugs.home is ${findbugs.home}</echo>
         <!-- true to recompile FB core (if findbugs.jar is not there) -->
         <condition property="fb.recompile" >
           <not><available file="${fb-ant.jar}" /></not>
@@ -142,7 +143,7 @@
             <compilerarg value="-Xlint:none"/>
         </javac>
     </target>
-    <target name="classes" depends="classes0,classes1"/>
+    <target name="classes" depends="init,fbcompile,classes0,classes1"/>
 
     <target name="jarFile" depends ="classes">
         <delete quiet="true">
@@ -162,7 +163,7 @@
         </delete>
     </target>
 
-    <target name="runfindbugs" depends="init,fbcompile,classes">
+    <target name="runfindbugs" depends="classes">
         <echo>Home is ${fb-ant.jar}</echo>
         <parallel threadsPerProcessor="1">
             <antcall target="historyNormal"/>

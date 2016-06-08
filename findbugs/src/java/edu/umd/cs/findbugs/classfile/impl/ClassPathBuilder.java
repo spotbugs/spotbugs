@@ -277,6 +277,12 @@ public class ClassPathBuilder implements IClassPathBuilder {
             dumpCodeBaseList(classPath.appCodeBaseIterator(), "Application codebases");
             dumpCodeBaseList(classPath.auxCodeBaseIterator(), "Auxiliary codebases");
         }
+
+        // Make sure we always know if we can't find system classes
+        ICodeBaseEntry resource = classPath.lookupResource("java/lang/Object.class");
+        if(resource == null){
+            throw new ResourceNotFoundException("java/lang/Object.class");
+        }
     }
 
     /**
@@ -405,7 +411,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
     private static boolean isJava9orLater() {
         JavaVersion javaVersion = JavaVersion.getRuntimeVersion();
-        return javaVersion.getMinor() >= 9;
+        return javaVersion.getMajor() >= 9;
     }
 
     /**
