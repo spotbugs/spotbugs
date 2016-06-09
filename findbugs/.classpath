@@ -32,7 +32,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdepend-2.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant.jar" sourcepath="lib/apache-ant-1.8.3-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/asm-debug-all-6.0-SNAPSHOT.jar" sourcepath="/asm3"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcel-6.0-SNAPSHOT_452b5e6.jar">
+	<classpathentry exported="true" kind="lib" path="lib/bcel-6.0-SNAPSHOT.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://commons.apache.org/proper/commons-bcel/apidocs/"/>
 		</attributes>

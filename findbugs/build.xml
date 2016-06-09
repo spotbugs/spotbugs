@@ -447,7 +447,7 @@
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml"
             >
-      <class location="${jar.dir}/bcel-6.0-SNAPSHOT_452b5e6.jar" />
+      <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
     </findbugs>
     <findbugs home="${basedir}"
               output="xml:withMessages"
@@ -455,7 +455,7 @@
               jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud-appengine.xml" >
-      <class location="${jar.dir}/bcel-6.0-SNAPSHOT_452b5e6.jar" />
+      <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
     </findbugs>
 
 
@@ -1207,12 +1207,6 @@
       <condition property="apidoc.uptodate">
           <isset property="docs.uptodate"/>
        </condition>
-      <condition property="asm6.exists">
-          <available file="${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar" />
-      </condition>
-      <condition property="bcel6.exists">
-          <available file="${jar.dir}/bcel-6.0-SNAPSHOT_452b5e6.jar" />
-      </condition>
     </target>
 
     <target name="apiJavadoc" depends="version" unless="apidoc.uptodate">
@@ -1241,17 +1235,72 @@
         </target>
 
     <!-- Download snapshot of asm 6.0 with Java 9 support, built from SVN version 1818 from ASM_6_FUTURE branch,
-        install resulting jar in lib. -->
-    <target name="getasm6" unless="asm6.exists">
-        <get src="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview1/asm-debug-all-6.0-SNAPSHOT.jar"
-             dest="${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
-         verbose="on"/>
+        install resulting jar in lib.
+
+        unless="asm6.exists"
+        -->
+
+    <scriptdef name="getAndCheckLibrary" language="javascript">
+        <attribute name="url"/>
+        <attribute name="path"/>
+        <attribute name="checksum"/>
+        <![CDATA[
+           var URL = Java.type("java.net.URL");
+           var File = Java.type("java.io.File");
+
+           var path = attributes.get("path");
+           var url = attributes.get("url");
+           var checksum = attributes.get("checksum");
+           print(path + " / " + url + " : " + checksum);
+
+           var file = new File(path);
+
+           check = project.createTask("checksum");
+           check.setFile(file);
+           check.setProperty(checksum);
+           check.setVerifyproperty("check.result");
+
+           result = false;
+           if(file.exists()){
+               print("File exists, verifying checksum...")
+               result = check.eval();
+               if(!result){
+                  print("Checksum check failed, deleting!")
+                  file.delete();
+               } else {
+                  print("Checksum check succeeded!")
+               }
+           }
+           if(result == false){
+               print("Downloading file...")
+               get = project.createTask("get");
+               get.setSrc(new URL(url));
+               get.setDest(file)
+               get.perform();
+               result = check.eval();
+               if(!result ){
+                   fail = project.createTask("fail");
+                   fail.setMessage("Download and checksum check failed for: " + path);
+                   fail.perform();
+               }
+           }
+        ]]>
+    </scriptdef>
+
+    <target name="getasm6" >
+        <getAndCheckLibrary
+            url="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview1/asm-debug-all-6.0-SNAPSHOT.jar"
+            path="${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
+            checksum="6e823866918153a46337151f19b67300"
+        />
     </target>
 
-    <target name="getbcel6" unless="bcel6.exists">
-        <get src="https://github.com/findbugsproject/findbugs/files/304635/bcel-6.0-SNAPSHOT.zip"
-             dest="${jar.dir}/bcel-6.0-SNAPSHOT_452b5e6.jar"
-         verbose="on"/>
+    <target name="getbcel6">
+        <getAndCheckLibrary
+            url="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview1/bcel-6.0-SNAPSHOT-25dfa20.jar"
+            path="${jar.dir}/bcel-6.0-SNAPSHOT.jar"
+            checksum="64687b3e6e1e0537d6df8f8065f7aee6"
+        />
     </target>
 
     <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib. -->
