@@ -42,7 +42,7 @@
         <taskdef name="printBugs" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask" classpath="${fb-ant.jar}"/>
     </target>
 
-    <target name="build" depends="classes,runfindbugs,runEffort" />
+    <target name="build" depends="clean,runfindbugs,runEffort" />
 
     <target name="init">
         <echo>findbugs.home is ${findbugs.home}</echo>
@@ -91,29 +91,35 @@
     <target name="classes0" if="javac.executable">
   <echo message="Compiling with ${javac.executable}"/>
         <mkdir dir="build/classes"/>
-        <javac destdir="build/classes" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false"
-        >
-            <src path="src/java"/>
-            <include name="jsr305/validation/*.java"/>
-            <classpath>
-                <path refid="build.classpath"/>
-            </classpath>
-            <compilerarg value="-Xlint:none"/>
-        </javac>
-        <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
+        <echo>Compiling with 1.9, 'javac.executable' should be specified in local.properties</echo>
+        <javac destdir="build/classes" source="1.9" target="1.9" debug="on" encoding="UTF-8" includeantruntime="false"
+          failonerror="false"
             fork="yes"
             executable="${javac.executable}"
         >
-            <src path="src/java"/>
             <src path="src/fakeAnnotations"/>
             <src path="src/fakeLibraries"/>
+            <src path="src/java"/>
             <exclude name="jsr305/validation/*.java"/>
             <classpath>
                 <path refid="build.classpath"/>
             </classpath>
             <compilerarg value="-Xlint:none"/>
         </javac>
+      <echo message="Compiling with ant default javac and 1.8 target"/>
+          <javac destdir="build/classes" source="1.8" target="1.8" debug="on" encoding="UTF-8" includeantruntime="false"
+          >
+            <src path="src/fakeAnnotations"/>
+            <src path="src/fakeLibraries"/>
+              <src path="src/java"/>
+              <include name="jsr305/validation/*.java"/>
+              <classpath>
+                  <path refid="build.classpath"/>
+              </classpath>
+              <compilerarg value="-Xlint:none"/>
+          </javac>
         <mkdir dir="build/classes-jdk7"/>
+      <echo message="Compiling with ant default javac and 1.7 target"/>
         <javac destdir="build/classes-jdk7" source="1.7" target="1.7" debug="on" encoding="UTF-8" includeantruntime="false"
         >
             <src path="src/java"/>
@@ -156,7 +162,9 @@
 
     <target name="clean">
         <delete dir="build/classes"/>
+        <delete dir="build/classes-jdk7"/>
         <mkdir dir="build/classes" />
+        <mkdir dir="build/classes-jdk7" />
         <delete file="build/all.jar"/>
         <delete failonerror="false">
             <fileset dir="build" includes="*.xml"/>
@@ -185,7 +193,7 @@
         </findbugs>
     </target>
 
-    <target name="runEffort" depends="classes,defineTasks">
+    <target name="runEffort" depends="defineTasks">
         <echo>Test expected warnings with *min* effort</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap}"
              jvm="${java.executable}"
@@ -275,7 +283,7 @@
     </target>
 
 
-    <target name="runNormal" depends="classes,defineTasks">
+    <target name="runNormal" depends="defineTasks">
         <echo>Test expected warnings with ${ant.java.version} javac bytecode</echo>
         <findbugs home="${findbugs.home}"  jvmargs="-ea ${maxHeap} -Dfindbugs.sf.comment=false"
                output="xml:withMessages" timestampNow="true" reportLevel="low"
