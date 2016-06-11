@@ -30,7 +30,6 @@ import java.util.TreeSet;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -263,8 +262,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
     @SuppressWarnings("rawtypes")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
         if (adapterType == IPropertySheetPage.class) {
-            if (adaptableObject instanceof BugExplorerView || adaptableObject instanceof JavaEditor
-                    || adaptableObject instanceof AbstractFindbugsView) {
+            if (adaptableObject instanceof BugExplorerView || adaptableObject instanceof AbstractFindbugsView) {
                 return new BugPropertySheetPage();
             }
         }
