@@ -1290,7 +1290,7 @@
     <target name="getasm6" >
         <getAndCheckLibrary
             url="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview1/asm-debug-all-6.0-SNAPSHOT.jar"
-            path="${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
+            path="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
             checksum="6e823866918153a46337151f19b67300"
         />
     </target>
@@ -1301,7 +1301,7 @@
          -->
         <getAndCheckLibrary
             url="https://repository.apache.org/content/repositories/orgapachecommons-1177/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
-            path="${jar.dir}/bcel-6.0-SNAPSHOT.jar"
+            path="${basedir}/${jar.dir}/bcel-6.0-SNAPSHOT.jar"
             checksum="c5581905c94bb3e81e09b444229bf63e"
         />
     </target>
