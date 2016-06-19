@@ -1289,7 +1289,7 @@
 
     <target name="getasm6" >
         <getAndCheckLibrary
-            url="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview2/asm-debug-all-6.0_ALPHA.zip"
+            url="http://repository.ow2.org/nexus/service/local/repositories/releases/content/org/ow2/asm/asm-debug-all/6.0_ALPHA/asm-debug-all-6.0_ALPHA.jar"
             path="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
             checksum="7df23eb7d67e31b18c2df741d1656f7b"
         />
