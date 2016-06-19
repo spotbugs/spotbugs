@@ -196,4 +196,12 @@
         <fileset dir="projects" includes="*/jar/**"/>
     </delete>
   </target>
+
+  <!-- remove previous results
+  -->
+  <target name="cleanResults">
+    <delete includeemptydirs="true">
+    	<fileset dir="projects" includes="*/build/**"/>
+    </delete>
+  </target>
 </project>
