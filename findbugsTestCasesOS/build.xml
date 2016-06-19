@@ -32,7 +32,7 @@
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.current.home}/lib/findbugs-ant.jar"/>
     <property name="java.executable" value="" />
     <property name="enabledExtraVisitors" value="+CheckExpectedWarnings,+InefficientMemberAccess,+EmptyZipFileEntry"/>
-    <property name="maxHeap" value="-Xmx1200m"/>
+    <property name="maxHeap" value="-Xmx3G"/>
   </target>
 
   <target name="run" depends="init,-run">
@@ -89,7 +89,7 @@
     <filterbugs home="${findbugs.current.home}" inputFile="projects/${prj}/build/${prj}-disappeared-since-${revision}.xml" outputFile="projects/${prj}/build/${prj}-disappeared-since-${revision}.xml" first="last"/>
   </target>
 
-  <!-- property prj must be set 
+  <!-- property prj must be set
     if -Dretrieve-debug=true is specified then ivy-fixed.xml will be created in the current directory which contains all the dependencies
     usage examples:
     $ ant retrieve -Dprj=commons-lang-2.0
@@ -121,7 +121,7 @@
     usage examples:
     $ ant buildBaseline -Drevision=3.0.0
     $ ant buildBaseline -Drevision=master
-    $ ant buildBaseline -Drevision=d4c94995d235 
+    $ ant buildBaseline -Drevision=d4c94995d235
   -->
   <target name="buildBaseline" depends="-requireRevision,-buildBaseline"/>
 
@@ -139,7 +139,7 @@
     usage examples:
     $ ant build-revision -Drevision=3.0.0
     $ ant build-revision -Drevision=master
-    $ ant build-revision -Drevision=d4c94995d235 
+    $ ant build-revision -Drevision=d4c94995d235
   -->
   <target name="export" depends="-requireRevision,-export"/>
 
