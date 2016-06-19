@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FindBugs Plug-in
 Bundle-SymbolicName: edu.umd.cs.findbugs.plugin.eclipse; singleton:=true
-Bundle-Version: 3.0.2.qualifier
+Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: findbugs-plugin.jar,
  lib/jsr305.jar,
  lib/annotations.jar,
@@ -11,7 +11,7 @@ Bundle-ClassPath: findbugs-plugin.jar,
  lib/jaxen-1.1.6.jar,
  lib/jFormatString.jar,
  lib/commons-lang-2.6.jar,
- lib/asm-debug-all-5.0.2.jar
+ lib/asm-debug-all-6.0-SNAPSHOT.jar
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: FindBugs Project
 Bundle-Localization: plugin
@@ -41,7 +41,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  findbugs;resolution:=optional;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: registered
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tobject.findbugs,
  de.tobject.findbugs.actions,
  de.tobject.findbugs.adapters,

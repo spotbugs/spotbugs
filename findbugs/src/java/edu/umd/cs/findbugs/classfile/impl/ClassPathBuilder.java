@@ -25,6 +25,9 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +41,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -273,6 +277,12 @@ public class ClassPathBuilder implements IClassPathBuilder {
             dumpCodeBaseList(classPath.appCodeBaseIterator(), "Application codebases");
             dumpCodeBaseList(classPath.auxCodeBaseIterator(), "Auxiliary codebases");
         }
+
+        // Make sure we always know if we can't find system classes
+        ICodeBaseEntry resource = classPath.lookupResource("java/lang/Object.class");
+        if(resource == null){
+            throw new ResourceNotFoundException("java/lang/Object.class");
+        }
     }
 
     /**
@@ -390,7 +400,18 @@ public class ClassPathBuilder implements IClassPathBuilder {
             }
         }
 
+        if(isJava9orLater()){
+            Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "jrt-fs.jar");
+            if(Files.isRegularFile(jrtFsJar)){
+                addWorkListItemsForClasspath(workList, jrtFsJar.toString());
+            }
+        }
         return workList;
+    }
+
+    private static boolean isJava9orLater() {
+        JavaVersion javaVersion = JavaVersion.getRuntimeVersion();
+        return javaVersion.getMajor() >= 9;
     }
 
     /**

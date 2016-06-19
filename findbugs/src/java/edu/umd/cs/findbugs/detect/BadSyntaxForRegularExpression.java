@@ -21,7 +21,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -86,7 +85,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         if (it.getSpecialKind() == OpcodeStack.Item.FILE_SEPARATOR_STRING && (flags & Pattern.LITERAL) == 0) {
             bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", HIGH_PRIORITY)
-            .addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
+                    .addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
             return;
         }
         Object value = it.getConstant();
@@ -96,15 +95,15 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         String regex = (String) value;
         try {
             Pattern.compile(regex, flags);
-        } catch (PatternSyntaxException e) {
+        } catch (IllegalArgumentException e) {
             String message = e.getMessage();
             int eol = message.indexOf('\n');
             if (eol > 0) {
                 message = message.substring(0, eol);
             }
             BugInstance bug = new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", HIGH_PRIORITY)
-            .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
-            .addString(regex).describe(StringAnnotation.REGEX_ROLE);
+                    .addClassAndMethod(this).addCalledMethod(this).addString(message).describe(StringAnnotation.ERROR_MSG_ROLE)
+                    .addString(regex).describe(StringAnnotation.REGEX_ROLE);
             String options = getOptions(flags);
             if (options.length() > 0) {
                 bug.addString("Regex flags: " + options).describe(StringAnnotation.STRING_MESSAGE);

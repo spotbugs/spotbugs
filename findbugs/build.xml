@@ -108,8 +108,8 @@
     <target name="errorprone" depends="clean,init">
         <javac
                         destdir="${classes.dir}"
-                        source="1.7"
-                        target="1.7"
+                        source="1.8"
+                        target="1.8"
                         includeantruntime="false"
                         encoding="ISO-8859-1"
                         deprecation="off"
@@ -123,10 +123,13 @@
                 </javac>
     </target>
     <target name="classes" depends="init">
-        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
-        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+        <echo>Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}">
              <condition>
-                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+                 <or>
+                   <equals arg1="1.7" arg2="${ant.java.version}"/>
+                   <equals arg1="1.9" arg2="${ant.java.version}"/>
+                 </or>
              </condition>
          </fail>
 
@@ -134,8 +137,8 @@
         <echo level="info" message="compiling findbugs"/>
         <javac
                         destdir="${classes.dir}"
-                        source="1.7"
-                        target="1.7"
+                        source="1.8"
+                        target="1.8"
                         includeantruntime="false"
                         encoding="ISO-8859-1"
                         deprecation="off"
@@ -167,8 +170,8 @@
         <echo level="info" message="compiling junit test cases"/>
         <javac srcdir="${junitsrc.dir}"
                 destdir="${junitclasses.dir}"
-                source="1.7"
-                target="1.7"
+                source="1.8"
+                target="1.8"
                                 includeantruntime="false"
                                 encoding="ISO-8859-1"
                 deprecation="off"
@@ -179,8 +182,8 @@
         <echo level="info" message="compiling tools"/>
         <javac srcdir="${toolsrc.dir}"
                 destdir="${classes.dir}"
-                source="1.7"
-                target="1.7"
+                source="1.8"
+                target="1.8"
                                 includeantruntime="false"
                                 encoding="ISO-8859-1"
                 debug="on"
@@ -193,8 +196,8 @@
         <echo level="info" message="compiling ant task"/>
         <javac srcdir="${anttasksrc.dir}"
             destdir="${classes.dir}"
-            source="1.7"
-            target="1.7"
+            source="1.8"
+            target="1.8"
                         includeantruntime="false"
             encoding="ISO-8859-1"
             deprecation="off"
@@ -1177,7 +1180,7 @@
         </delete>
     </target>
 
-    <target name="init" depends="properties">
+    <target name="init" depends="properties,getasm6,getbcel6">
         <mkdir dir="${scripts.dir}"/>
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${doc.dir}"/>
@@ -1230,6 +1233,78 @@
         nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
         sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true"/>
         </target>
+
+    <!-- Download snapshot of asm 6.0 with Java 9 support, built from SVN version 1818 from ASM_6_FUTURE branch,
+        install resulting jar in lib.
+
+        unless="asm6.exists"
+        -->
+
+    <scriptdef name="getAndCheckLibrary" language="javascript">
+        <attribute name="url"/>
+        <attribute name="path"/>
+        <attribute name="checksum"/>
+        <![CDATA[
+           var URL = Java.type("java.net.URL");
+           var File = Java.type("java.io.File");
+
+           var path = attributes.get("path");
+           var url = attributes.get("url");
+           var checksum = attributes.get("checksum");
+           print(path + " / " + url + " : " + checksum);
+
+           var file = new File(path);
+
+           check = project.createTask("checksum");
+           check.setFile(file);
+           check.setProperty(checksum);
+           check.setVerifyproperty("check.result");
+
+           result = false;
+           if(file.exists()){
+               print("File exists, verifying checksum...")
+               result = check.eval();
+               if(!result){
+                  print("Checksum check failed, deleting!")
+                  file.delete();
+               } else {
+                  print("Checksum check succeeded!")
+               }
+           }
+           if(result == false){
+               print("Downloading file...")
+               get = project.createTask("get");
+               get.setSrc(new URL(url));
+               get.setDest(file)
+               get.perform();
+               result = check.eval();
+               if(!result ){
+                   fail = project.createTask("fail");
+                   fail.setMessage("Download and checksum check failed for: " + path);
+                   fail.perform();
+               }
+           }
+        ]]>
+    </scriptdef>
+
+    <target name="getasm6" >
+        <getAndCheckLibrary
+            url="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview2/asm-debug-all-6.0_ALPHA.zip"
+            path="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
+            checksum="7df23eb7d67e31b18c2df741d1656f7b"
+        />
+    </target>
+
+    <target name="getbcel6">
+        <!-- BCEL 6.0 RC1, svn 14039 see
+        http://mail-archives.apache.org/mod_mbox/commons-dev/201606.mbox/%3CCAB917R%2BmcbEarP5-ZBTDUTkt-xAwQCYagtmAbMqm3ub1KB5xDw%40mail.gmail.com%3E
+         -->
+        <getAndCheckLibrary
+            url="https://repository.apache.org/content/repositories/orgapachecommons-1177/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
+            path="${basedir}/${jar.dir}/bcel-6.0-SNAPSHOT.jar"
+            checksum="c5581905c94bb3e81e09b444229bf63e"
+        />
+    </target>
 
     <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib. -->
     <target name="patchbcel">

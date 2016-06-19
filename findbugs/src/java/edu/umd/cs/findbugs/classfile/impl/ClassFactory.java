@@ -117,6 +117,8 @@ public class ClassFactory implements IClassFactory {
             throw new IOException("File " + file.getAbsolutePath() + " is not a normal file");
         } else if (fileName.endsWith(".class")) {
             return new SingleFileCodeBase(codeBaseLocator, fileName);
+        } else if (fileName.endsWith(File.separator + "jrt-fs.jar")) {
+            return new JrtfsCodeBase(codeBaseLocator, fileName);
         } else {
             return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
         }

@@ -5,10 +5,13 @@
     <target name="build" depends="compile"/>
 
     <target name="compile" depends="clean">
-    	<echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
-        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+        <echo>Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}">
              <condition>
-                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+                 <or>
+                   <equals arg1="1.7" arg2="${ant.java.version}"/>
+                   <equals arg1="1.9" arg2="${ant.java.version}"/>
+                 </or>
              </condition>
          </fail>
 
@@ -30,7 +33,7 @@
     </target>
 
     <target name="test">
-    	<echo>Requires 1.8.0+ ant, using: ${ant.version},</echo>
+      <echo>Requires 1.8.0+ ant, using: ${ant.version},</echo>
         <ant dir="findbugs"  target="smoketest" inheritall="false" useNativeBasedir="true" />
         <!--<ant dir="plugins/bugCollectionCloud" />-->
         <!--<ant dir="plugins/noUpdateChecks" />-->

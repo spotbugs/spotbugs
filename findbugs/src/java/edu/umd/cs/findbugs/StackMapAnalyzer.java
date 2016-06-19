@@ -30,14 +30,14 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.StackMapTable;
-import org.apache.bcel.classfile.StackMapTableEntry;
+import org.apache.bcel.classfile.StackMap;
+import org.apache.bcel.classfile.StackMapEntry;
 import org.apache.bcel.classfile.StackMapType;
 import org.apache.bcel.generic.Type;
 
@@ -84,20 +84,20 @@ public  class StackMapAnalyzer {
         SAME_FRAME, SAME_LOCALS_1_STACK_ITEM_FRAME, CHOP_FRAME, APPEND_FRAME, FULL_FRAME;
 
         static StackFrameType get(int frame_type) {
-            if (frame_type >= Constants.SAME_FRAME && frame_type <= Constants.SAME_FRAME_MAX) {
+            if (frame_type >= Const.SAME_FRAME && frame_type <= Const.SAME_FRAME_MAX) {
                 return SAME_FRAME;
-            } else if (frame_type >= Constants.SAME_LOCALS_1_STACK_ITEM_FRAME
-                    && frame_type <= Constants.SAME_LOCALS_1_STACK_ITEM_FRAME_MAX) {
+            } else if (frame_type >= Const.SAME_LOCALS_1_STACK_ITEM_FRAME
+                    && frame_type <= Const.SAME_LOCALS_1_STACK_ITEM_FRAME_MAX) {
                 return SAME_LOCALS_1_STACK_ITEM_FRAME;
-            } else if (frame_type == Constants.SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED) {
+            } else if (frame_type == Const.SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED) {
                 return SAME_LOCALS_1_STACK_ITEM_FRAME;
-            } else if (frame_type >= Constants.CHOP_FRAME && frame_type <= Constants.CHOP_FRAME_MAX) {
+            } else if (frame_type >= Const.CHOP_FRAME && frame_type <= Const.CHOP_FRAME_MAX) {
                 return CHOP_FRAME;
-            } else if (frame_type == Constants.SAME_FRAME_EXTENDED) {
+            } else if (frame_type == Const.SAME_FRAME_EXTENDED) {
                 return SAME_FRAME;
-            } else if (frame_type >= Constants.APPEND_FRAME && frame_type <= Constants.APPEND_FRAME_MAX) {
+            } else if (frame_type >= Const.APPEND_FRAME && frame_type <= Const.APPEND_FRAME_MAX) {
                 return APPEND_FRAME;
-            } else if (frame_type == Constants.FULL_FRAME) {
+            } else if (frame_type == Const.FULL_FRAME) {
                 return FULL_FRAME;
             } else {
                 /* Can't happen */
@@ -106,10 +106,10 @@ public  class StackMapAnalyzer {
         }
     }
 
-    static @CheckForNull StackMapTable getStackMapTable(Code code) {
+    static @CheckForNull StackMap getStackMapTable(Code code) {
         for(Attribute a : code.getAttributes()) {
-            if (a instanceof StackMapTable) {
-                return (StackMapTable) a;
+            if (a instanceof StackMap) {
+                return (StackMap) a;
             }
         }
         return null;
@@ -143,7 +143,7 @@ public  class StackMapAnalyzer {
 
                 @Override
                 public Field run() {
-                    Class<StackMapTableEntry> c = StackMapTableEntry.class;
+                    Class<StackMapEntry> c = StackMapEntry.class;
                     Field result;
                     try {
                         result = c.getDeclaredField("frame_type");
@@ -168,7 +168,7 @@ public  class StackMapAnalyzer {
         frame_type_field = f;
     }
 
-    static int getFrameType(StackMapTableEntry e) {
+    static int getFrameType(StackMapEntry e) {
         if (frame_type_field == null) {
             return -1;
         }
@@ -197,7 +197,7 @@ public  class StackMapAnalyzer {
         if (code == null) {
             return null;
         }
-        StackMapTable stackMapTable = getStackMapTable(code);
+        StackMap stackMapTable = getStackMapTable(code);
         if (stackMapTable == null) {
             return null;
         }
@@ -213,8 +213,8 @@ public  class StackMapAnalyzer {
             System.out.println(locals);
         }
         int pc = 0;
-        for(StackMapTableEntry e : stackMapTable.getStackMapTable()) {
-            pc += e.getByteCodeOffsetDelta();
+        for(StackMapEntry e : stackMapTable.getStackMap()) {
+            pc += e.getByteCodeOffset();
             int rawFrameType = getFrameType(e);
             StackFrameType stackFrameType = StackFrameType.get(rawFrameType);
             switch (stackFrameType) {
@@ -227,7 +227,7 @@ public  class StackMapAnalyzer {
                 break;
             case CHOP_FRAME :
                 stack.clear();
-                int n = Constants.CHOP_FRAME_MAX+1-rawFrameType;
+                int n = Const.CHOP_FRAME_MAX+1-rawFrameType;
                 for(int i = 0; i < n; i++) {
                     Item it = locals.remove(locals.size()-1);
                     if (it == null) {
@@ -277,24 +277,24 @@ public  class StackMapAnalyzer {
 
         switch (t.getType()) {
 
-        case Constants.ITEM_Double:
+        case Const.ITEM_Double:
             return Item.typeOnly("D");
-        case Constants.ITEM_Float:
+        case Const.ITEM_Float:
             return  Item.typeOnly("F");
-        case Constants.ITEM_Integer:
+        case Const.ITEM_Integer:
             return  Item.typeOnly("I");
-        case Constants.ITEM_Long:
+        case Const.ITEM_Long:
             return  Item.typeOnly("J");
-        case Constants.ITEM_Bogus:
-        case Constants.ITEM_NewObject:
+        case Const.ITEM_Bogus:
+        case Const.ITEM_NewObject:
             return Item.typeOnly("Ljava/lang/Object;");
-        case Constants.ITEM_Null:
+        case Const.ITEM_Null:
             Item it = new Item();
             it.setSpecialKind(Item.TYPE_ONLY);
             return it;
-        case Constants.ITEM_InitObject:
+        case Const.ITEM_InitObject:
             return Item.typeOnly("Ljava/lang/Object;");
-        case Constants.ITEM_Object:
+        case Const.ITEM_Object:
             int index = t.getIndex();
             ConstantClass c = (ConstantClass) t.getConstantPool().getConstant(index);
             String name = c.getBytes(t.getConstantPool());

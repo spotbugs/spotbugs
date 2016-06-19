@@ -68,7 +68,7 @@
         annotations.jar,
         jFormatString.jar,
         commons-lang-2.6.jar,
-        asm-debug-all-5.0.2.jar,
+        asm-debug-all-6.0-SNAPSHOT.jar,
         dom4j-1.6.1.jar,
         jaxen-1.1.6.jar" />
 
@@ -114,20 +114,23 @@
 
     <target name="classes" depends="init,fbjars" description="Compile java source files">
         <echo message="Compiling FindBugs Eclipse plugin"/>
-        <echo>Requires JDK 7.x (not 8!), using: ${ant.java.version}</echo>
-        <fail message="Requires JDK 7.x (not 8!), using: ${ant.java.version}">
+        <echo>Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}</echo>
+        <fail message="Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}">
              <condition>
-                 <equals arg1="1.8" arg2="${ant.java.version}"/>
+                 <or>
+                   <equals arg1="1.7" arg2="${ant.java.version}"/>
+                   <equals arg1="1.9" arg2="${ant.java.version}"/>
+                 </or>
              </condition>
-         </fail>
+        </fail>
         <fail unless="eclipsePlugin.dir"
             message="Please specify path to the Eclipse 3.6+ plugins folder in local.properties file, like: eclipsePlugin.dir=F:\\java\\eclipse33\\plugins"/>
         <!-- Compile Java source files. -->
         <javac srcdir="${src.dir}"
                   includeantruntime="false"
           destdir="${bin.dir}"
-                source="1.7"
-                target="1.7"
+                source="1.8"
+                target="1.8"
                 debug="on">
             <classpath refid="plugin.classpath"/>
             <compilerarg value="-Xlint:all,-path,-unchecked"/>

@@ -710,6 +710,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                 int s = ((ConstantString) constantRefOperand).getStringIndex();
 
                                 stringConstantOperand = getStringFromIndex(s);
+                            } else if (constantRefOperand instanceof ConstantInvokeDynamic) {
+                                ConstantInvokeDynamic id = (ConstantInvokeDynamic) constantRefOperand;
+                                ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
+                                        id.getNameAndTypeIndex());
+                                nameConstantOperand = getStringFromIndex(sig.getNameIndex());
+                                sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
                             } else if (constantRefOperand instanceof ConstantCP) {
                                 ConstantCP cp = (ConstantCP) constantRefOperand;
                                 ConstantClass clazz = (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
@@ -721,14 +727,6 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                                 nameConstantOperand = getStringFromIndex(sig.getNameIndex());
                                 sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
                                 refConstantOperand = null;
-                            } else if (constantRefOperand instanceof ConstantInvokeDynamic) {
-                                ConstantInvokeDynamic id = (ConstantInvokeDynamic) constantRefOperand;
-                                ConstantNameAndType sig = (ConstantNameAndType) getConstantPool().getConstant(
-                                        id.getNameAndTypeIndex());
-                                nameConstantOperand = getStringFromIndex(sig.getNameIndex());
-                                sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
-
-
                             }
                             break;
                         case M_R:

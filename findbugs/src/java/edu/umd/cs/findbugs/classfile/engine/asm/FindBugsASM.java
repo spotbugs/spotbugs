@@ -26,6 +26,6 @@ import org.objectweb.asm.Opcodes;
  */
 public class FindBugsASM {
 
-    public static final int ASM_VERSION = Opcodes.ASM5;
+    public static final int ASM_VERSION = Opcodes.ASM6;
 
 }

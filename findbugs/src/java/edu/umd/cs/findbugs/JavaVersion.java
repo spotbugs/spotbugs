@@ -19,14 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Support for finding out what version of Java we're running on.
  */
 public class JavaVersion {
-    private static final Pattern PATTERN = Pattern.compile("^(\\d+)\\.(\\d+)(\\..*)?$");
 
     private final int major;
 
@@ -43,9 +39,8 @@ public class JavaVersion {
         try {
             runtimeVersion = new JavaVersion(SystemProperties.getProperty("java.version"));
         } catch (JavaVersionException e) {
-            System.err.println("Warning: Unknown version of Java");
-            // Assume Java 1.0.
-            runtimeVersion = new JavaVersion(1, 0);
+            // Assume Java 1.8.
+            runtimeVersion = new JavaVersion(1, 8);
             e.printStackTrace();
         }
     }
@@ -63,17 +58,31 @@ public class JavaVersion {
      *            <code>java.version</code> system property: e.g., "1.4.2_04"
      */
     public JavaVersion(String versionString) throws JavaVersionException {
-        Matcher matcher = PATTERN.matcher(versionString);
-        if (!matcher.matches()) {
-            throw new JavaVersionException("Could not parse Java version string: " + versionString);
-        }
+        // See https://bugs.openjdk.java.net/browse/JDK-8061493 for http://openjdk.java.net/jeps/223
+        // The only common between pre-9 and 9+ are the dots as separators...
+        String[] strings = versionString.split("\\.", 3);
         try {
-            major = Integer.parseInt(matcher.group(1));
-            minor = Integer.parseInt(matcher.group(2));
-            if (matcher.group(3) != null) {
-                rest = matcher.group(3);
+            // We need only care about 9+ early access in first segment
+            int earlyAccess = strings[0].indexOf('-');
+            if(earlyAccess > 0){
+                // 9+ early access versions do not follow common scheme above (it would be too easy)
+                // they look like 9-ea+73 and have only one meaningful (major) part for us.
+                major = Integer.parseInt(strings[0].substring(0, earlyAccess));
+                minor = 0;
+                rest = strings[0].substring(earlyAccess);
             } else {
-                rest = "";
+                major = Integer.parseInt(strings[0]);
+                if(strings.length > 1){
+                    minor = Integer.parseInt(strings[1]);
+                    if (strings.length > 2) {
+                        rest = strings[2];
+                    } else {
+                        rest = "";
+                    }
+                } else {
+                    minor = 0;
+                    rest = "";
+                }
             }
         } catch (NumberFormatException e) {
             throw new JavaVersionException("Could not parse Java Version string: " + versionString, e);
