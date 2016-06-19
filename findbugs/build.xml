@@ -1296,10 +1296,13 @@
     </target>
 
     <target name="getbcel6">
+        <!-- BCEL 6.0 RC1, svn 14039 see
+        http://mail-archives.apache.org/mod_mbox/commons-dev/201606.mbox/%3CCAB917R%2BmcbEarP5-ZBTDUTkt-xAwQCYagtmAbMqm3ub1KB5xDw%40mail.gmail.com%3E
+         -->
         <getAndCheckLibrary
-            url="https://github.com/findbugsproject/findbugs/releases/download/3.1.0_preview1/bcel-6.0-SNAPSHOT-25dfa20.jar"
+            url="https://repository.apache.org/content/repositories/orgapachecommons-1177/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
             path="${jar.dir}/bcel-6.0-SNAPSHOT.jar"
-            checksum="64687b3e6e1e0537d6df8f8065f7aee6"
+            checksum="c5581905c94bb3e81e09b444229bf63e"
         />
     </target>
 
