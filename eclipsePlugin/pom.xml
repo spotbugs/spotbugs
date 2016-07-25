@@ -32,7 +32,7 @@
       <artifactId>noUpdateChecks</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.code.findbugs</groupId>
+      <groupId>org.apache.bcel</groupId>
       <artifactId>bcel</artifactId>
     </dependency>
     <dependency>

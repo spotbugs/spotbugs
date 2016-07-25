@@ -213,9 +213,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.code.findbugs</groupId>
+        <groupId>org.apache.bcel</groupId>
         <artifactId>bcel</artifactId>
-        <version>2.0.1</version>
+        <version>6.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>

@@ -447,7 +447,7 @@
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml"
             >
-      <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
+      <class location="${jar.dir}/bcel.jar" />
     </findbugs>
     <findbugs home="${basedir}"
               output="xml:withMessages"
@@ -455,7 +455,7 @@
               jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud-appengine.xml" >
-      <class location="${jar.dir}/bcel-6.0-SNAPSHOT.jar" />
+      <class location="${jar.dir}/bcel.jar" />
     </findbugs>
 
 
@@ -1296,17 +1296,15 @@
     </target>
 
     <target name="getbcel6">
-        <!-- BCEL 6.0 RC1, svn 14039 see
-        http://mail-archives.apache.org/mod_mbox/commons-dev/201606.mbox/%3CCAB917R%2BmcbEarP5-ZBTDUTkt-xAwQCYagtmAbMqm3ub1KB5xDw%40mail.gmail.com%3E
-         -->
+        <!-- BCEL 6.0 final -->
         <getAndCheckLibrary
-            url="https://repository.apache.org/content/repositories/orgapachecommons-1177/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
-            path="${basedir}/${jar.dir}/bcel-6.0-SNAPSHOT.jar"
-            checksum="c5581905c94bb3e81e09b444229bf63e"
+            url="https://jcenter.bintray.com/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
+            path="${basedir}/${jar.dir}/bcel.jar"
+            checksum="eadbb5532261c2ceaa53feb339681a60"
         />
     </target>
 
-    <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib. -->
+    <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib.
     <target name="patchbcel">
         <delete dir="${build.dir}/bcel-5.2-src"/>
         <delete file="${build.dir}/bcel-5.2-src.zip"/>
@@ -1319,6 +1317,8 @@
         <ant dir="${build.dir}/bcel-5.2-src/bcel-5.2" inheritAll="false"/>
         <copy file="${build.dir}/bcel-5.2-src/bcel-5.2/bcel.jar" tofile="${jar.dir}/bcel.jar"/>
     </target>
+   -->
+
 
     <!--
         Rebuild jar305.jar.

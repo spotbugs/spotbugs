@@ -64,7 +64,7 @@
 
     <!-- list of required libraries, copied from FB core project -->
     <property name="jars.required" value="jsr305.jar,
-        bcel-6.0-SNAPSHOT.jar,
+        bcel.jar,
         annotations.jar,
         jFormatString.jar,
         commons-lang-2.6.jar,
