@@ -1275,10 +1275,12 @@ using the &FindBugs; task.
        elements may be specified as children of a single <literal>findbugs</literal> element.
        </para>
        <para>In addition to or instead of specifying a <literal>class</literal> element,
-       the  &FindBugs; task can contain one or more <literal>fileset</literal> element(s) that
-       specify files to be analyzed.
+       the  &FindBugs; task can contain one or more <literal>fileset</literal> or <literal>dirset</literal> element(s) that
+       specify files or class folders to be analyzed.
        For example, you might use a fileset to specify that all of the jar files in a directory
        should be analyzed.
+       Using a dirset, you can have ANT dynamically collect the class folders of multiple sub-projects to be 
+       analyzed in a single run.
        </para>
     </listitem>
   </varlistentry>
