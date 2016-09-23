@@ -389,28 +389,40 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (filterFile != null && filterFile.length() > 0) {
             this.excludeFile = filterFile;
         } else {
+            if (filterFile != null) {
+                log("Warning: exclude filter file " + filterFile
+                        + (filterFile.exists() ? " is empty" : " does not exist"));
+            }
             this.excludeFile = null;
         }
     }
 
     /**
-     * Set the exclude filter file
+     * Set the include filter file
      */
     public void setIncludeFilter(File filterFile) {
         if (filterFile != null && filterFile.length() > 0) {
             this.includeFile = filterFile;
         } else {
+            if (filterFile != null) {
+                log("Warning: include filter file " + filterFile
+                        + (filterFile.exists() ? " is empty" : " does not exist"));
+            }
             this.includeFile = null;
         }
     }
 
     /**
-     * Set the exclude filter file
+     * Set the baseline bugs file
      */
     public void setBaselineBugs(File baselineBugs) {
         if (baselineBugs != null && baselineBugs.length() > 0) {
             this.baselineBugs = baselineBugs;
         } else {
+            if (baselineBugs != null) {
+                log("Warning: baseline bugs file " + baselineBugs
+                        + (baselineBugs.exists() ? " is empty" : " does not exist"));
+            }
             this.baselineBugs = null;
         }
     }
