@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.DirSet;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
@@ -175,6 +176,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
     private boolean setExitCode = true;
 
     private final List<FileSet> filesets = new ArrayList<FileSet>();
+
+    private final List<DirSet> dirsets = new ArrayList<DirSet>();
 
     public FindBugsTask() {
         super("edu.umd.cs.findbugs.FindBugs2");
@@ -641,13 +644,20 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     /**
+     * Add a nested dirset of classes dirs.
+     */
+    public void addDirset(DirSet fs) {
+        dirsets.add(fs);
+    }
+
+    /**
      * Check that all required attributes have been set
      */
     @Override
     protected void checkParameters() {
         super.checkParameters();
 
-        if (projectFile == null && classLocations.size() == 0 && filesets.size() == 0 && auxAnalyzepath == null) {
+        if (projectFile == null && classLocations.size() == 0 && filesets.size() == 0 && dirsets.size() == 0 && auxAnalyzepath == null) {
             throw new BuildException("either projectfile, <class/>, <fileset/> or <auxAnalyzepath/> child "
                     + "elements must be defined for task <" + getTaskName() + "/>", getLocation());
         }
@@ -889,6 +899,14 @@ public class FindBugsTask extends AbstractFindBugsTask {
         for (FileSet fs : filesets) {
             DirectoryScanner ds = fs.getDirectoryScanner();
             for (String fileName : ds.getIncludedFiles()) {
+                File file = new File(ds.getBasedir(), fileName);
+                addArg(file.toString());
+            }
+        }
+
+        for (DirSet fs : dirsets) {
+            DirectoryScanner ds = fs.getDirectoryScanner();
+            for (String fileName : ds.getIncludedDirectories()) {
                 File file = new File(ds.getBasedir(), fileName);
                 addArg(file.toString());
             }
