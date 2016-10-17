@@ -58,12 +58,24 @@ public class PackageDependenciesTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        engine = new JDepend();
+
         // Get the classes root directory
-        String rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
+        String classpath = System.getProperty("java.class.path");
+        if (classpath == null) {
+            String rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
+            engine.addDirectory(rootDirectory);
+        } else {
+        	String[] cpParts = classpath.split(File.pathSeparator);
+        	for (String cpStr : cpParts) {
+        		File file = new File(cpStr);
+				if (file.isDirectory()) {
+        			engine.addDirectory(file.getCanonicalPath());
+        		}
+        	}
+        }
 
         // Setup the JDepend analysis
-        engine = new JDepend();
-        engine.addDirectory(rootDirectory);
         engine.analyze();
     }
 
