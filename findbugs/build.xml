@@ -1245,8 +1245,8 @@
         <attribute name="path"/>
         <attribute name="checksum"/>
         <![CDATA[
-           var URL = Java.type("java.net.URL");
-           var File = Java.type("java.io.File");
+           var URL = java.net.URL;
+           var File = java.io.File;
 
            var path = attributes.get("path");
            var url = attributes.get("url");
