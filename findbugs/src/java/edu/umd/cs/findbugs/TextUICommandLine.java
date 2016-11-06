@@ -284,7 +284,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 ++count;
             }
             if (count == 0) {
-                System.out.println("  No plugins are available (FindBugs installed incorrectly?)");
+                System.out.println("  No plugins are available (SpotBugs installed incorrectly?)");
             }
             System.exit(0);
         } else if ("-experimental".equals(option)) {

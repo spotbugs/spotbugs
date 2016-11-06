@@ -29,7 +29,7 @@ public class ShowHelp {
 
     public static void main(String[] args) {
 
-        System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
+        System.out.println("SpotBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
 
         DetectorFactoryCollection.instance();
         System.out.println("Command line options");

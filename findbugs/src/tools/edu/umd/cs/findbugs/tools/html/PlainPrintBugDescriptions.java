@@ -80,7 +80,7 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
     }
 
     public static void main(String[] args) throws Exception {
-        String docTitle = "FindBugs Bug Descriptions";
+        String docTitle = "SpotBugs Bug Descriptions";
         if (args.length > 0) {
             docTitle = args[0];
         }

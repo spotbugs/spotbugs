@@ -85,7 +85,7 @@ public class PropertiesDialog extends FBDialog {
                 if (Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()) {
                     GUISaveState.getInstance().setFontSize(Float.parseFloat(fontTextField.getText()));
                     JOptionPane.showMessageDialog(PropertiesDialog.getInstance(),
-                            "To implement the new font size, please restart FindBugs.", "Changing Font",
+                            "To implement the new font size, please restart SpotBugs.", "Changing Font",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }

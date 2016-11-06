@@ -92,8 +92,8 @@ public class BugPattern implements Comparable<BugPattern> {
 
     static final BugPattern REALLY_UNKNOWN = new BugPattern("REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
             "Unknown warning; core bug patterns not found", "Unknown warning BUG_PATTERN in {1}; core bug patterns not found",
-            "<p>A warning was recorded, but findbugs can't find the description of this bug pattern "
-                    + "and so can't describe it. This should occur only in cases of a bug in FindBugs or its configuration, "
+            "<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern "
+                    + "and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration, "
                     + "or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded. "
                     + "</p>", null, 0);
 

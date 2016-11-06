@@ -703,7 +703,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
      */
     @Override
     protected void beforeExecuteJavaProcess() {
-        log("Running FindBugs...");
+        log("Running SpotBugs...");
     }
 
     /*
@@ -716,7 +716,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
     @Override
     protected void afterExecuteJavaProcess(int rc) {
         if ((rc & ExitCodes.ERROR_FLAG) != 0) {
-            throw new BuildException("Execution of findbugs failed.");
+            throw new BuildException("Execution of SpotBugs failed.");
         }
         if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
             log("Classes needed for analysis were missing");

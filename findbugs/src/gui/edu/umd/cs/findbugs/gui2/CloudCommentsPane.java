@@ -391,7 +391,7 @@ public abstract class CloudCommentsPane extends JPanel {
                             .getProject()
                             .getGuiCallback()
                             .showMessageDialog(
-                                    "The FindBugs Cloud could not be contacted at this time.\n\n"
+                                    "The SpotBugs Cloud could not be contacted at this time.\n\n"
                                             + Util.getNetworkErrorMessage(e));
                         }
                         refresh();
@@ -535,7 +535,7 @@ public abstract class CloudCommentsPane extends JPanel {
     private void setLastSaved(long date) {
         if (date > 0) {
             lastSavedLabel.setText("saved " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-                    .format(new Date(date)));
+            .format(new Date(date)));
         } else {
             lastSavedLabel.setText("");
         }
@@ -884,7 +884,7 @@ public abstract class CloudCommentsPane extends JPanel {
         titleLabel = new JLabel();
         titleLabel.setFont(new Font(titleLabel.getFont().getName(), Font.BOLD, 14));
         titleLabel.setForeground(new Color(-16777216));
-        titleLabel.setText("FindBugs Cloud - signed in");
+        titleLabel.setText("SpotBugs Cloud - signed in");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;

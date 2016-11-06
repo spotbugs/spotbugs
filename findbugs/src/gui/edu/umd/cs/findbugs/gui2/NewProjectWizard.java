@@ -293,8 +293,8 @@ public class NewProjectWizard extends FBDialog {
                         || JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N
                                 .getLocalString("dlg.project_settings_changed_lbl",
                                         "Project settings have been changed.  Perform a new analysis with the changed files?"),
-                                        edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
-                                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
+                                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
                     AnalyzingDialog.show(p);
                 } else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
                     BugCollection bugs = mainFrame.getBugCollection();
@@ -304,7 +304,7 @@ public class NewProjectWizard extends FBDialog {
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(NewProjectWizard.this, "Error loading " + newCloudId + "\n\n"
                                 + e.getClass().getSimpleName() + ": " + e.getMessage(),
-                                "FindBugs Cloud Error", JOptionPane.ERROR_MESSAGE);
+                                "SpotBugs Cloud Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     mainFrame.getComments().updateCommentsFromLeafInformation(mainFrame.getCurrentSelectedBugLeaf());

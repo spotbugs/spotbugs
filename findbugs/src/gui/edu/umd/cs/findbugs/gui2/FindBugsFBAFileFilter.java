@@ -35,7 +35,7 @@ public final class FindBugsFBAFileFilter extends FindBugsFileFilter {
 
     @Override
     public String getDescription() {
-        return "FindBugs analysis file (.fba)";
+        return "SpotBugs analysis file (.fba)";
     }
 
     @Override

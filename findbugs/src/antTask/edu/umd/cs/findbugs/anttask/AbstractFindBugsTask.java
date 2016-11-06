@@ -262,7 +262,7 @@ public abstract class AbstractFindBugsTask extends Task {
             for (String pluginFile : pluginFileList) {
                 if (!pluginFile.endsWith(".jar")) {
                     throw new BuildException("plugin file " + pluginFile + " is not a Jar file " + "in task <" + getTaskName()
-                            + "/>", getLocation());
+                    + "/>", getLocation());
                 }
             }
         }
@@ -364,7 +364,7 @@ public abstract class AbstractFindBugsTask extends Task {
      */
     private void execFindbugs() throws BuildException {
 
-        System.out.println("Executing findbugs " + this.getClass().getSimpleName() + " from ant task");
+        System.out.println("Executing SpotBugs " + this.getClass().getSimpleName() + " from ant task");
         createFindbugsEngine();
         configureFindbugsEngine();
 

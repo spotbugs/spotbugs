@@ -109,7 +109,7 @@ public class ClassDataAnalysisEngine extends RecomputableClassAnalysisEngine<Cla
         public InputStream openResource() throws IOException {
             InputStream stream = getClass().getClassLoader().getResourceAsStream(descriptor.toResourceName());
             if(stream == null){
-                throw new IOException("Can not load '" + descriptor.toResourceName() + "' from FindBugs classpath.");
+                throw new IOException("Can not load '" + descriptor.toResourceName() + "' from SpotBugs classpath.");
             }
             return stream;
         }

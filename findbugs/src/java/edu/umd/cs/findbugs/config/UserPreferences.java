@@ -327,7 +327,7 @@ public class UserPreferences implements Cloneable {
         OutputStream prefStream = null;
         try {
             prefStream = new BufferedOutputStream(out);
-            props.store(prefStream, "FindBugs User Preferences");
+            props.store(prefStream, "SpotBugs User Preferences");
             prefStream.flush();
         } finally {
             try {
@@ -522,8 +522,8 @@ public class UserPreferences implements Cloneable {
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0)
-                + Util.nullSafeHashcode(cloudId);
+        + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0)
+        + Util.nullSafeHashcode(cloudId);
     }
 
     @Override

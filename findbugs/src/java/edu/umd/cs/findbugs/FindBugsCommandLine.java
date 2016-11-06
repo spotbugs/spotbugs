@@ -59,7 +59,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
         project = new Project();
         startOptionGroup("General FindBugs options:");
         addOption("-project", "project", "analyze given project");
-        addOption("-home", "home directory", "specify FindBugs home directory");
+        addOption("-home", "home directory", "specify SpotBugs home directory");
         addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
         addSwitchWithOptionalExtraPart("-effort", "min|less|default|more|max", "set analysis effort level");
         addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");

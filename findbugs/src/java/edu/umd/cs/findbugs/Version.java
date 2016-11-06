@@ -287,7 +287,7 @@ public class Version {
      * @throws InterruptedException
      */
     public static void printVersion(boolean justPrintConfiguration) throws InterruptedException {
-        System.out.println("FindBugs " + Version.COMPUTED_RELEASE);
+        System.out.println("SpotBugs " + Version.COMPUTED_RELEASE);
         if (justPrintConfiguration) {
             for (Plugin plugin : Plugin.getAllPlugins()) {
                 System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
