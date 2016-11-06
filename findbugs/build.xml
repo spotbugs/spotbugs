@@ -1234,91 +1234,17 @@
         sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true"/>
         </target>
 
-    <!-- Download snapshot of asm 6.0 with Java 9 support, built from SVN version 1818 from ASM_6_FUTURE branch,
-        install resulting jar in lib.
-
-        unless="asm6.exists"
-        -->
-
-    <scriptdef name="getAndCheckLibrary" language="javascript">
-        <attribute name="url"/>
-        <attribute name="path"/>
-        <attribute name="checksum"/>
-        <![CDATA[
-           var URL = java.net.URL;
-           var File = java.io.File;
-
-           var path = attributes.get("path");
-           var url = attributes.get("url");
-           var checksum = attributes.get("checksum");
-           print(path + " / " + url + " : " + checksum);
-
-           var file = new File(path);
-
-           check = project.createTask("checksum");
-           check.setFile(file);
-           check.setProperty(checksum);
-           check.setVerifyproperty("check.result");
-
-           result = false;
-           if(file.exists()){
-               print("File exists, verifying checksum...")
-               result = check.eval();
-               if(!result){
-                  print("Checksum check failed, deleting!")
-                  file.delete();
-               } else {
-                  print("Checksum check succeeded!")
-               }
-           }
-           if(result == false){
-               print("Downloading file...")
-               get = project.createTask("get");
-               get.setSrc(new URL(url));
-               get.setDest(file)
-               get.perform();
-               result = check.eval();
-               if(!result ){
-                   fail = project.createTask("fail");
-                   fail.setMessage("Download and checksum check failed for: " + path);
-                   fail.perform();
-               }
-           }
-        ]]>
-    </scriptdef>
 
     <target name="getasm6" >
-        <getAndCheckLibrary
-            url="http://repository.ow2.org/nexus/service/local/repositories/releases/content/org/ow2/asm/asm-debug-all/6.0_ALPHA/asm-debug-all-6.0_ALPHA.jar"
-            path="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
-            checksum="7df23eb7d67e31b18c2df741d1656f7b"
-        />
+    	<get src="http://repo1.maven.org/maven2/org/ow2/asm/asm-debug-all/6.0_ALPHA/asm-debug-all-6.0_ALPHA.jar"
+    	     dest="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"/>
     </target>
 
     <target name="getbcel6">
         <!-- BCEL 6.0 final -->
-        <getAndCheckLibrary
-            url="https://jcenter.bintray.com/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
-            path="${basedir}/${jar.dir}/bcel.jar"
-            checksum="eadbb5532261c2ceaa53feb339681a60"
-        />
+    	<get src="http://repo1.maven.org/maven2/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
+    	     dest="${basedir}/${jar.dir}/bcel.jar"/>
     </target>
-
-    <!-- Download, patch, and build a modified BCEL 5.2.  Install resulting bcel.jar in lib.
-    <target name="patchbcel">
-        <delete dir="${build.dir}/bcel-5.2-src"/>
-        <delete file="${build.dir}/bcel-5.2-src.zip"/>
-        <get src="http://www.apache.org/dist/jakarta/bcel/source/bcel-5.2-src.zip"
-             dest="${build.dir}/bcel-5.2-src.zip"
-         verbose="on"/>
-        <unzip src="${build.dir}/bcel-5.2-src.zip" dest="${build.dir}/bcel-5.2-src"/>
-        <delete file="${build.dir}/bcel-5.2-src/bcel-5.2/build.xml"/>
-        <patch patchfile="${patch.dir}/bcel.diff" dir="${build.dir}/bcel-5.2-src/bcel-5.2" strip="7"/>
-        <ant dir="${build.dir}/bcel-5.2-src/bcel-5.2" inheritAll="false"/>
-        <copy file="${build.dir}/bcel-5.2-src/bcel-5.2/bcel.jar" tofile="${jar.dir}/bcel.jar"/>
-    </target>
-   -->
-
 
     <!--
         Rebuild jar305.jar.
