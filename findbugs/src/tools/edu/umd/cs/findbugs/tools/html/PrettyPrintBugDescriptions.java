@@ -175,7 +175,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
             unabridged = true;
         }
 
-        String docTitle = "FindBugs Bug Descriptions";
+        String docTitle = "SpotBugs Bug Descriptions";
         if (argCount < args.length) {
             docTitle = args[argCount++];
         }

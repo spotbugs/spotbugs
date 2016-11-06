@@ -63,7 +63,7 @@ public class SystemProperties {
             try {
                 out = new FileOutputStream("/tmp/outProperties.txt");
                 System.getProperties().store(out, "System properties dump");
-                properties.store(out, "FindBugs properties dump");
+                properties.store(out, "SpotBugs properties dump");
             } catch (IOException e) {
                 assert true;
             } finally {

@@ -65,7 +65,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
         OutputStream outputStream = null;
         try {
             // Create a temp file
-            this.tempFile = File.createTempFile("findbugs", ".zip");
+            this.tempFile = File.createTempFile("spotbugs", ".zip");
             tempFile.deleteOnExit(); // just in case we crash before the
             // codebase is closed
 

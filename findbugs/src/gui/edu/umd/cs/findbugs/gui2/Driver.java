@@ -51,15 +51,15 @@ public class Driver {
     public static void main(String[] args) throws Exception {
         try {
 
-            String name = "FindBugs GUI";
+            String name = "SpotBugs GUI";
             if (JavaWebStart.isRunningViaJavaWebstart()) {
-                name = "FindBugs webstart GUI";
+                name = "SpotBugs webstart GUI";
             }
             Version.registerApplication(name, Version.RELEASE);
 
             if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "SpotBugs");
                 Debug.println("Mac OS detected");
             }
             splash = new SplashFrame();
@@ -134,7 +134,7 @@ public class Driver {
             splash.setVisible(false);
             splash.dispose();
         } catch (Throwable t) {
-            JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during FindBugs startup", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, t.toString(), "Fatal Error during SpotBugs startup", JOptionPane.ERROR_MESSAGE);
             t.printStackTrace(System.err);
             System.exit(1);
         }

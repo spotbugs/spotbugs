@@ -262,7 +262,7 @@ public class PreferencesFrame extends FBDialog {
 
                     @Override
                     public String getDescription() {
-                        return "FindBugs Plugin (*.jar)";
+                        return "SpotBugs Plugin (*.jar)";
                     }
 
                     @Override
@@ -279,7 +279,7 @@ public class PreferencesFrame extends FBDialog {
                         return false;
                     }
                 });
-                chooser.setDialogTitle("Select a FindBugs plugin jar");
+                chooser.setDialogTitle("Select a SpotBugs plugin jar");
                 int retvalue = chooser.showDialog(PreferencesFrame.this, "Install");
 
                 if (retvalue == JFileChooser.APPROVE_OPTION) {
@@ -302,9 +302,9 @@ public class PreferencesFrame extends FBDialog {
                     } catch (PluginException | MalformedURLException e1) {
                         LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
                         JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
-                                + "\n\n"
-                                + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
-                                "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
+                        + "\n\n"
+                        + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
+                        "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -592,7 +592,7 @@ public class PreferencesFrame extends FBDialog {
 
         if (fontSize != GUISaveState.getInstance().getFontSize()) {
             GUISaveState.getInstance().setFontSize(fontSize);
-            JOptionPane.showMessageDialog(instance, "To implement the new font size please restart FindBugs.",
+            JOptionPane.showMessageDialog(instance, "To implement the new font size please restart SpotBugs.",
                     "Changing Font",
                     JOptionPane.INFORMATION_MESSAGE);
         }
@@ -814,7 +814,7 @@ public class PreferencesFrame extends FBDialog {
                     }
                 } else {
                     JOptionPane.showMessageDialog(PreferencesFrame.this,
-                            "Changes will take effect after you restart FindBugs.");
+                            "Changes will take effect after you restart SpotBugs.");
                 }
             }
         }

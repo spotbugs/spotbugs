@@ -66,7 +66,7 @@ public class BugFilingCommentHelper {
 
     public String getBugReportText(BugInstance b) {
         return getBugReportHead(b) + getBugReportSourceCode(b) + getLineTerminatedUserEvaluation(b) + getBugPatternExplanation(b)
-                + getBugReportTail(b);
+        + getBugReportTail(b);
     }
 
     @SuppressWarnings("boxing")
@@ -146,7 +146,7 @@ public class BugFilingCommentHelper {
     public String getBugReportHead(BugInstance b) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter out = new PrintWriter(stringWriter);
-        out.println("Bug report generated from FindBugs");
+        out.println("Bug report generated from SpotBugs");
         out.println(b.getMessageWithoutPrefix());
         out.println();
         ClassAnnotation primaryClass = b.getPrimaryClass();

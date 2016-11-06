@@ -34,7 +34,7 @@ public final class FindBugsFilterFileFilter extends FileFilter {
 
     @Override
     public String getDescription() {
-        return "FindBugs Filter Files (*.xml)";
+        return "SpotBugs Filter Files (*.xml)";
     }
 
 }

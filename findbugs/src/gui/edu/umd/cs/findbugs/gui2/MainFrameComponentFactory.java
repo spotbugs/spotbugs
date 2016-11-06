@@ -409,7 +409,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         @Override
         public void run() {
-            mainFrame.setTitle("FindBugs");
+            mainFrame.setTitle("SpotBugs");
             // noinspection ConstantConditions
             if (MainFrame.USE_WINDOWS_LAF && System.getProperty("os.name").toLowerCase().contains("windows")) {
                 try {

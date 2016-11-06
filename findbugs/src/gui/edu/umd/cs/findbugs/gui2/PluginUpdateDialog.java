@@ -47,11 +47,11 @@ public class PluginUpdateDialog implements Serializable {
 
         String headline;
         if (core != null && updates.size() >= 2) {
-            headline = "FindBugs and some plugins have updates";
+            headline = "SpotBugs and some plugins have updates";
         } else if (updates.isEmpty()) {
-            headline = "FindBugs and all plugins are up to date!";
+            headline = "SpotBugs and all plugins are up to date!";
         } else if (core == null) {
-            headline = "Some FindBugs plugins have updates";
+            headline = "Some SpotBugs plugins have updates";
         } else {
             headline = null;
         }
@@ -109,7 +109,7 @@ public class PluginUpdateDialog implements Serializable {
     private JLabel createPluginLabel(UpdateChecker.PluginUpdate update) {
         String name;
         if (update.getPlugin().isCorePlugin()) {
-            name = "FindBugs";
+            name = "SpotBugs";
         } else {
             name = update.getPlugin().getShortDescription();
         }

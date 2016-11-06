@@ -101,7 +101,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         Dimension d = new Dimension(600, 425);
         this.setPreferredSize(d);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("FindBugs Source Directory Configuration Wizard");
+        setTitle("SpotBugs Source Directory Configuration Wizard");
         getContentPane().setLayout(null);
 
         jList2.setModel(progressModel);

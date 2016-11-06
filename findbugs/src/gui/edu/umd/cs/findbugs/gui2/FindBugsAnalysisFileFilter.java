@@ -32,7 +32,7 @@ public final class FindBugsAnalysisFileFilter extends FindBugsFileFilter {
 
     @Override
     public String getDescription() {
-        return "FindBugs analysis results (.xml, *.xml.gz)";
+        return "SpotBugs analysis results (.xml, *.xml.gz)";
     }
 
     @Override

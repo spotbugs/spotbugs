@@ -32,7 +32,7 @@ public final class FindBugsHtmlFileFilter extends FindBugsFileFilter {
 
     @Override
     public String getDescription() {
-        return "FindBugs html output (.html)";
+        return "SpotBugs html output (.html)";
     }
 
     @Override

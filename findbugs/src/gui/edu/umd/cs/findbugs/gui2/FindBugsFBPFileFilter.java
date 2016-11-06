@@ -35,7 +35,7 @@ public final class FindBugsFBPFileFilter extends FindBugsFileFilter {
 
     @Override
     public String getDescription() {
-        return "FindBugs project file (.fbp)";
+        return "SpotBugs project file (.fbp)";
     }
 
     @Override

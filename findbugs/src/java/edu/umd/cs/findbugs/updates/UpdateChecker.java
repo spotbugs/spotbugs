@@ -78,7 +78,7 @@ public class UpdateChecker {
                 URI uri = plugin.getUpdateUrl();
                 if (uri == null) {
                     logError(Level.FINE, "Not checking for updates for " + plugin.getShortDescription()
-                            + " - no update-url attribute in plugin XML file");
+                    + " - no update-url attribute in plugin XML file");
                     continue;
                 }
                 pluginsByUrl.add(uri, plugin);
@@ -479,7 +479,7 @@ public class UpdateChecker {
         public String toString() {
             SimpleDateFormat format = new SimpleDateFormat(PLUGIN_RELEASE_DATE_FMT);
             StringBuilder buf = new StringBuilder();
-            String name = getPlugin().isCorePlugin() ? "FindBugs" : "FindBugs plugin " + getPlugin().getShortDescription();
+            String name = getPlugin().isCorePlugin() ? "SpotBugs" : "SpotBugs plugin " + getPlugin().getShortDescription();
             buf.append( name + " " + getVersion() );
             if (date == null) {
                 buf.append(" has been released");

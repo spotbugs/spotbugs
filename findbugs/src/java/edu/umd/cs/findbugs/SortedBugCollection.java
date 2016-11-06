@@ -196,7 +196,7 @@ public class SortedBugCollection implements BugCollection {
                 LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ result.getCloudName(), e);
                 callback.showMessageDialog("Unable to connect to " + result.getCloudName() + ": " + Util.getNetworkErrorMessage(e));
                 if (CloudFactory.FAIL_ON_CLOUD_ERROR) {
-                    throw new IllegalStateException("Could not load FindBugs Cloud plugin - to avoid this message, " +
+                    throw new IllegalStateException("Could not load SpotBugs Cloud plugin - to avoid this message, " +
                             "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
                 }
                 result = cloud = CloudFactory.getPlainCloud(this);

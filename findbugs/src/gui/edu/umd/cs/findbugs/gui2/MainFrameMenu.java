@@ -109,7 +109,7 @@ public class MainFrameMenu implements Serializable {
                         int response = JOptionPane.showConfirmDialog(mainFrame, L10N.getLocalString("dlg.save_current_changes",
                                 "The current project has been changed, Save current changes?"), L10N.getLocalString(
                                         "dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION,
-                                        JOptionPane.WARNING_MESSAGE);
+                                JOptionPane.WARNING_MESSAGE);
 
                         if (response == JOptionPane.YES_OPTION) {
                             if (mainFrame.getSaveFile() != null) {
@@ -404,7 +404,7 @@ public class MainFrameMenu implements Serializable {
             // On Mac, 'About' appears under Findbugs menu, so no need for it
             // here
             JMenu helpMenu = newJMenu("menu.help_menu", "Help");
-            JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
+            JMenuItem aboutItem = newJMenuItem("menu.about_item", "About SpotBugs");
             helpMenu.add(aboutItem);
 
             aboutItem.addActionListener(new ActionListener() {

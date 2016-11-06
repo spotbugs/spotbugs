@@ -91,7 +91,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private static final int SEARCH_TEXT_FIELD_SIZE = 32;
 
-    public static final String TITLE_START_TXT = "FindBugs";
+    public static final String TITLE_START_TXT = "SpotBugs";
 
     private final static String WINDOW_MODIFIED = "windowModified";
 
