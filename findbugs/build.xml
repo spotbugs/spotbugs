@@ -123,12 +123,12 @@
                 </javac>
     </target>
     <target name="classes" depends="init">
-        <echo>Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}</echo>
-        <fail message="Requires JDK 8.x (not 7, not 9!), using: ${ant.java.version}">
+        <echo>Requires JDK 8.x (not 7, not 9!), using: ${java.specification.version}</echo>
+        <fail message="Requires JDK 8.x (not 7, not 9!), using: ${java.specification.version}">
              <condition>
                  <or>
-                   <equals arg1="1.7" arg2="${ant.java.version}"/>
-                   <equals arg1="1.9" arg2="${ant.java.version}"/>
+                   <equals arg1="1.7" arg2="${java.specification.version}"/>
+                   <equals arg1="1.9" arg2="${java.specification.version}"/>
                  </or>
              </condition>
          </fail>
