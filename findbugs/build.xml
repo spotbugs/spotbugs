@@ -9,7 +9,7 @@
     <!--
             The local.properties properties file contains the location of eclipsePlugin.dir
 
-            This value is likely to be different for each checkout of the plugin,
+            This valueg is likely to be different for each checkout of the plugin,
             so the local.properties file is not managed by cvs
 
     -->
@@ -1237,13 +1237,15 @@
 
     <target name="getasm6" >
     	<get src="http://repo1.maven.org/maven2/org/ow2/asm/asm-debug-all/6.0_ALPHA/asm-debug-all-6.0_ALPHA.jar"
-    	     dest="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"/>
+    	     dest="${basedir}/${jar.dir}/asm-debug-all-6.0-SNAPSHOT.jar"
+    	     usetimestamp="true"/>
     </target>
 
     <target name="getbcel6">
         <!-- BCEL 6.0 final -->
     	<get src="http://repo1.maven.org/maven2/org/apache/bcel/bcel/6.0/bcel-6.0.jar"
-    	     dest="${basedir}/${jar.dir}/bcel.jar"/>
+    	     dest="${basedir}/${jar.dir}/bcel.jar"
+	         usetimestamp="true"/>
     </target>
 
     <!--
