@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -214,7 +215,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     }
 
     public static DateFormat firstSeenXMLFormat() {
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
+        return new SimpleDateFormat("M/d/yy h:mm a", Locale.ENGLISH);
     }
 
     /*
