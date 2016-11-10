@@ -1,18 +1,28 @@
 language: java
 sudo: false
-jdk:
-  - oraclejdk8
+jdk: oraclejdk8
 
-# Java 9 is nt supported by Travis yet... add manual install?
-#env:
-#  matrix:
-#    - JDK_FOR_TEST=oraclejdk8
+env:
+  matrix:
+    - JDK_FOR_TEST=oraclejdk8
 #    - JDK_FOR_TEST=oraclejdk9
+
+# Java 9 is not currently officially supported, so install it manually
+matrix:
+  include:
+     env: JDK_FOR_TEST=oraclejdk9
+     addons:
+       apt:
+         packages:
+           - oracle-java9-installer
+     
 install:
   - wget http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz -O eclipse-3.6.2-linux64.tar.gz
   - tar xzvf eclipse-3.6.2-linux64.tar.gz eclipse
   - echo eclipsePlugin.dir=$(pwd)/eclipse/plugins > eclipsePlugin/local.properties
+
 script:
   - ant build
-#  - jdk_switcher use $JDK_FOR_TEST
+  # Manually switch to JDK9 for tests if needed
+  - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then remove_dir_from_path $JAVA_HOME/bin; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; fi
   - ant test
