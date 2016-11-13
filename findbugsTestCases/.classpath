@@ -24,6 +24,6 @@
 	<classpathentry kind="lib" path="lib/joda-time-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/guava.jar"/>
 	<classpathentry kind="lib" path="/findbugs/lib/annotations.jar"/>
-	<classpathentry kind="lib" path="/findbugs/lib/findbugs.jar" sourcepath="/findbugs/src"/>
+	<classpathentry kind="lib" path="/findbugs/lib/spotbugs.jar" sourcepath="/findbugs/src"/>
 	<classpathentry kind="output" path="classesEclipse"/>
 </classpath>

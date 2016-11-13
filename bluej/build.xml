@@ -62,9 +62,9 @@
 
     <!-- Build the extension .jar file -->
     <target name="dist" depends="clean,classes" description="Build a plugin distributable">
-        <jar destfile="${dist.dir}/FindBugs.jar">
+        <jar destfile="${dist.dir}/SoitBugs.jar">
             <fileset dir="${bin.dir}"/>
-            <zipfileset src="lib/findbugs.jar"/>
+            <zipfileset src="lib/spotbugs.jar"/>
             <zipfileset src="lib/bcel.jar"/>
             <zipfileset src="lib/asm-debug-all-6.0-SNAPSHOT.jar"/>
             <zipfileset src="lib/dom4j-1.6.1.jar"/>

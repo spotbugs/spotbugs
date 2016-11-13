@@ -28,7 +28,7 @@
 
     <path id="build.classpath">
         <pathelement location="${findbugs.home}/lib/annotations.jar" />
-        <pathelement location="${findbugs.home}/lib/findbugs.jar" />
+        <pathelement location="${findbugs.home}/lib/spotbugs.jar" />
         <pathelement location="${findbugs.home}/lib/jsr305.jar"/>
         <pathelement location="${junit.home}/junit.jar"/>
         <fileset dir="lib">
@@ -46,7 +46,7 @@
 
     <target name="init">
         <echo>findbugs.home is ${findbugs.home}</echo>
-        <!-- true to recompile FB core (if findbugs.jar is not there) -->
+        <!-- true to recompile FB core (if spotbugs.jar is not there) -->
         <condition property="fb.recompile" >
           <not><available file="${fb-ant.jar}" /></not>
         </condition>

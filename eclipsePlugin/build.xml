@@ -54,7 +54,7 @@
     <property name="fbpackage" value="edu/umd/cs/findbugs" />
 
     <!-- FB core jar created by FB core ant build -->
-    <property name="fb.jar" value="${findbugs.dir}/lib/findbugs.jar" />
+    <property name="fb.jar" value="${findbugs.dir}/lib/spotbugs.jar" />
 
     <!-- FB optional noUpdateChecks jar (we need it) -->
     <property name="fb.noUpdateChecks.jar" value="${findbugs.dir}/optionalPlugin/noUpdateChecks.jar" />
@@ -74,8 +74,8 @@
 
     <!-- list of all libraries, copied from FB core project, plus old libraries not more used -->
     <property name="jars.cleanup" value="${jars.required},
-        findbugs.jar,
-        findbugs-ant.jar" />
+        spotbugs.jar,
+        spotbugs-ant.jar" />
 
     <path id="plugin.classpath">
         <fileset dir="${lib.dir}" includes="${jars.required}"/>
@@ -87,7 +87,7 @@
     </path>
 
     <target name="init">
-        <!-- true to recompile FB core (if findbugs.jar is not there) -->
+        <!-- true to recompile FB core (if spotbugs.jar is not there) -->
         <condition property="fb.recompile" >
             <not><available file="${fb.jar}" /></not>
         </condition>
@@ -412,7 +412,7 @@
         <ant dir="${findbugs.dir}" inheritall="false" target="clean" />
     </target>
 
-    <!-- Trigger (re-)compilation of FB core, if findbugs.jar is not available -->
+    <!-- Trigger (re-)compilation of FB core, if spotbugs.jar is not available -->
     <target name="fbcompile" if="fb.recompile" >
         <echo message="Building Findbugs core libraries"/>
         <ant dir="${findbugs.dir}" inheritall="false" target="build" />
