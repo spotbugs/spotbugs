@@ -37,7 +37,7 @@ import org.apache.tools.ant.types.Reference;
  * @author David Hovemeyer
  */
 public abstract class AbstractFindBugsTask extends Task {
-    public static final String FINDBUGS_JAR = "findbugs.jar";
+    public static final String FINDBUGS_JAR = "spotbugs.jar";
 
     public static final long DEFAULT_TIMEOUT = 1200000; // twenty minutes
 
@@ -308,14 +308,14 @@ public abstract class AbstractFindBugsTask extends Task {
                 findbugsLib = homeDir;
                 homeDir = homeDir.getParentFile();
             }
-            File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
+            File findbugsLibFindBugs = new File(findbugsLib, "spotbugs.jar");
             // log("executing using home dir [" + homeDir + "]");
             if (findbugsLibFindBugs.exists()) {
                 findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
             } else {
-                throw new IllegalArgumentException("Can't find findbugs.jar in " + findbugsLib);
+                throw new IllegalArgumentException("Can't find spotbugs.jar in " + findbugsLib);
             }
-            findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
+            findbugsEngine.createJvmarg().setValue("-Dspotbugs.home=" + homeDir.getPath());
         } else {
             // Use an explicitly specified classpath and list of plugin Jars
             // to initialize. This is useful for other tools which may have

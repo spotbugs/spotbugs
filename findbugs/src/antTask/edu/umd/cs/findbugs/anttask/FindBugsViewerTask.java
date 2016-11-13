@@ -223,19 +223,19 @@ public class FindBugsViewerTask extends Task {
             // plugins. This is the usual means of initialization.
             File findbugsLib = new File(homeDir, "lib");
 
-            File findbugsLibFindBugs = new File(findbugsLib, "findbugs.jar");
-            File findBugsFindBugs = new File(homeDir, "findbugs.jar");
+            File findbugsLibFindBugs = new File(findbugsLib, "spotbugs.jar");
+            File findBugsFindBugs = new File(homeDir, "spotbugs.jar");
             // log("executing using home dir [" + homeDir + "]");
             if (findbugsLibFindBugs.exists()) {
                 findbugsEngine.setClasspath(new Path(getProject(), findbugsLibFindBugs.getPath()));
             } else if (findBugsFindBugs.exists()) {
                 findbugsEngine.setClasspath(new Path(getProject(), findBugsFindBugs.getPath()));
             } else {
-                throw new IllegalArgumentException("Can't find findbugs.jar in " + homeDir);
+                throw new IllegalArgumentException("Can't find spotbugs.jar in " + homeDir);
             }
 
             findbugsEngine.setClassname("edu.umd.cs.findbugs.LaunchAppropriateUI");
-            findbugsEngine.createJvmarg().setValue("-Dfindbugs.home=" + homeDir.getPath());
+            findbugsEngine.createJvmarg().setValue("-Dspotbugs.home=" + homeDir.getPath());
         } else {
             // Use an explicitly specified classpath and list of plugin Jars
             // to initialize. This is useful for other tools which may have
