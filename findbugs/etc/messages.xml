@@ -8,16 +8,16 @@
   **********************************************************************
   -->
   <Plugin>
-    <ShortDescription>Core FindBugs plugin</ShortDescription>
+    <ShortDescription>Core SpotBugs plugin</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-This plugin contains all of the standard FindBugs detectors.
+This plugin contains all of the standard SpotBugs detectors.
 </p>
 ]]>
     </Details>
-    <BugsUrl>http://findbugs.sourceforge.net/bugDescriptions.html</BugsUrl>
-    <AllBugsUrl>http://findbugs.sourceforge.net/allBugDescriptions.html</AllBugsUrl>
+    <BugsUrl>https://github.com/spotbugs/bugDescriptions.html</BugsUrl>
+    <AllBugsUrl>https://github.com/spotbugs/allBugDescriptions.html</AllBugsUrl>
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
     <Description>Add msgs (e.g., textual descriptions of bugs) to analysis results</Description>
@@ -8334,7 +8334,7 @@ public @NonNegative Integer example(@Negative Integer value) {
           </p>
           <ul>
             <li>send email to findbugs@cs.umd.edu</li>
-            <li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
+            <li>file a bug report: <a href="https://github.com/spotbugs/reportingBugs.html">https://github.com/spotbugs/reportingBugs.html</a></li>
           </ul>
 
           <p>

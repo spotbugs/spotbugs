@@ -7,14 +7,14 @@
     <relativePath />
   </parent>
 
-  <groupId>com.google.code.findbugs</groupId>
-  <artifactId>findbugs</artifactId>
+  <groupId>com.github.spotbugs</groupId>
+  <artifactId>spotbugs</artifactId>
   <version>3.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <url>http://findbugs.sourceforge.net/</url>
-  <name>FindBugs-Project</name>
-  <description>Findbugs: Because it's easy!</description>
+  <url>https://github.com/spotbugs/</url>
+  <name>SpotBugs-Project</name>
+  <description>SpotBugs: Because it's easy!</description>
   <inceptionYear>2003</inceptionYear>
   <licenses>
     <license>
@@ -30,9 +30,9 @@
 
 
   <scm>
-    <connection>scm:git:http://code.google.com/p/findbugs/</connection>
-    <developerConnection>scm:git:https://code.google.com/p/findbugs/</developerConnection>
-    <url>https://code.google.com/p/findbugs/</url>
+    <connection>scm:git@github.com:spotbugs/spotbugs.git</connection>
+    <developerConnection>scm:git@github.com:spotbugs/spotbugs.git</developerConnection>
+    <url>https://github.com/spotbugs</url>
   </scm>
 
   <developers>

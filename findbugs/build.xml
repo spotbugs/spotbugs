@@ -1,10 +1,10 @@
 <!--
-    FindBugs Ant build script.
+    SpotBugs Ant build script.
     Based on original FindBugs Ant Script by Mike Fagan.
     Rewritten 1/5/2005 by David Hovemeyer.
 -->
 
-<project name="findbugs" default="build">
+<project name="spotbugs" default="build">
 
     <!--
             The local.properties properties file contains the location of eclipsePlugin.dir
@@ -44,30 +44,30 @@
     <property name="jnlp.dir" value="jnlp"/>
     <property name="jsr305.dir" value="../JSR305-ri"/>
     <property name="pkg.base" value="edu/umd/cs/findbugs"/>
-    <property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
+    <property name="engine.jar" value="${jar.dir}/spotbugs.jar"/>
     <property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
     <property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
-    <property name="findbugs-annotations.jar" value="${jar.dir}/findbugs-annotations.jar"/>
+    <property name="spotbugs-annotations.jar" value="${jar.dir}/spotbugs-annotations.jar"/>
     <property name="test.jar" value="${test.dir}/dumb.jar"/>
     <property name="sampleoutput.dir" value="build/sampleoutput"/>
     <property name="junittests.jar" value="build/junittests.jar"/>
-    <property name="baseline-anttask.jar" value="${findbugs-baseline.home}/lib/findbugs-ant.jar"/>
-    <property name="anttask.jar" value="${jar.dir}/findbugs-ant.jar"/>
+    <property name="baseline-anttask.jar" value="${spotbugs-baseline.home}/lib/spotbugs-ant.jar"/>
+    <property name="anttask.jar" value="${jar.dir}/spotbugs-ant.jar"/>
     <property name="scripts.props" value="etc/script.properties"/>
     <property name="scripts.stamp" value="${build.dir}/scripts.stamp"/>
     <property name="allClassFiles.jar" value="${build.dir}/allClassFiles.jar"/>
     <property name="doc.props.file" value="${etc.dir}/doc.properties"/>
     <property name="version.props.file" value="${build.dir}/classes/edu/umd/cs/findbugs/version.properties"/>
 
-    <path id="findbugs.classpath">
+    <path id="spotbugs.classpath">
         <fileset dir="${jar.dir}" includes="*.jar"/>
     </path>
 
     <path id="tools.classpath">
         <pathelement location="${classes.dir}"/>
-        <pathelement location="${jar.dir}/findbugs.jar"/>
+        <pathelement location="${jar.dir}/spotbugs.jar"/>
         <pathelement location="${jar.dir}/jdepend-2.9.jar"/>
-        <path refid="findbugs.classpath"/>
+        <path refid="spotbugs.classpath"/>
     </path>
 
 
@@ -97,7 +97,7 @@
 
 
     <!-- Default target builds scripts and jars, allowing execution using
-        the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
+        the working directory as SPOTBUGS_HOME.  Also build test case jarfile. -->
     <target name="build" depends="jars,scripts,anttask"/>
 
     <!-- Rebuild from scratch. -->
@@ -119,7 +119,7 @@
                     <compilerarg value="-Xlint:unchecked"/>
                     <src path="${src.dir}"/>
                     <src path="${src5.dir}"/>
-                    <classpath refid="findbugs.classpath"/>
+                    <classpath refid="spotbugs.classpath"/>
                 </javac>
     </target>
     <target name="classes" depends="init">
@@ -134,7 +134,7 @@
          </fail>
 
         <!-- Compile Java source files. -->
-        <echo level="info" message="compiling findbugs"/>
+        <echo level="info" message="compiling spotbugs"/>
         <javac
                         destdir="${classes.dir}"
                         source="1.8"
@@ -146,7 +146,7 @@
                     <compilerarg value="-Xlint:unchecked"/>
                     <src path="${src.dir}"/>
                     <src path="${src5.dir}"/>
-                    <classpath refid="findbugs.classpath"/>
+                    <classpath refid="spotbugs.classpath"/>
                 </javac>
         <native2ascii   encoding="Cp1252"
                 dest = "${classes.dir}"
@@ -209,7 +209,7 @@
         </javac>
     </target>
 
-    <!-- Validate findbugs.xml and messagesXXX.xml files. -->
+    <!-- Validate spotbugs.xml and messagesXXX.xml files. -->
     <target name="validate">
         <xmlvalidate lenient="false" failonerror="yes">
             <attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
@@ -306,8 +306,8 @@
             <zipfileset src="${jar.dir}/jsr305.jar" excludes="META-INF/**,**/*.html"/>
         </jar>
 
-        <!-- FindBugs only annotations jar file. -->
-        <jar destfile="${findbugs-annotations.jar}" manifest="${etc.dir}/MANIFEST-findbugs-internal-annotations.MF">
+        <!-- SpotBugs only annotations jar file. -->
+        <jar destfile="${spotbugs-annotations.jar}" manifest="${etc.dir}/MANIFEST-findbugs-internal-annotations.MF">
             <fileset dir="${classes.dir}">
                 <include name="**/annotations/*.class"/>
             </fileset>
@@ -383,17 +383,17 @@
 
 
   <target name="applystylesheets" depends="jars,runanttask">
-   <property name="findbugs.home" value="${basedir}" />
+   <property name="spotbugs.home" value="${basedir}" />
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
            failonerror="true"
            output="${sampleoutput.dir}/fancy.html"
            maxmemory="400m">
         <classpath>
-           <pathelement location="${jar.dir}/findbugs.jar"/>
+           <pathelement location="${jar.dir}/spotbugs.jar"/>
         </classpath>
         <jvmarg value="-ea"/>
-        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-Dspotbugs.home=${spotbugs.home}"/>
         <arg value="-html:fancy.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
@@ -403,10 +403,10 @@
            output="${sampleoutput.dir}/default.html"
            maxmemory="400m">
         <classpath>
-           <pathelement location="${jar.dir}/findbugs.jar"/>
+           <pathelement location="${jar.dir}/spotbugs.jar"/>
         </classpath>
         <jvmarg value="-ea"/>
-        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-Dspotbugs.home=${spotbugs.home}"/>
         <arg value="-html:default.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
@@ -416,10 +416,10 @@
            output="${sampleoutput.dir}/plain.html"
            maxmemory="400m">
         <classpath>
-           <pathelement location="${jar.dir}/findbugs.jar"/>
+           <pathelement location="${jar.dir}/spotbugs.jar"/>
         </classpath>
         <jvmarg value="-ea"/>
-        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-Dspotbugs.home=${spotbugs.home}"/>
         <arg value="-html:plain.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
@@ -429,34 +429,34 @@
            output="${sampleoutput.dir}/summary.html"
            maxmemory="400m">
         <classpath>
-           <pathelement location="${jar.dir}/findbugs.jar"/>
+           <pathelement location="${jar.dir}/spotbugs.jar"/>
         </classpath>
         <jvmarg value="-ea"/>
-        <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+        <jvmarg value="-Dspotbugs.home=${spotbugs.home}"/>
         <arg value="-html:summary.xsl"/>
         <arg value="${sampleoutput.dir}/bcel.xml"/>
     </java>
   </target>
 
   <target name="runanttask" depends="anttask,jars">
-   <property name="findbugs.home" value="${basedir}" />
+   <property name="spotbugs.home" value="${basedir}" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="${basedir}"
+    <spotbugs home="${basedir}"
               output="xml:withMessages"
               jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml"
             >
       <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
-    <findbugs home="${basedir}"
+    </spotbugs>
+    <spotbugs home="${basedir}"
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
               jvmargs="-ea -Xmx1200m"
               projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel-cloud-appengine.xml" >
       <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
+    </spotbugs>
 
 
 <setBugDatabaseInfo home="${basedir}"
@@ -467,13 +467,13 @@
     />
   </target>
 
-  <target name="baseline-findbugscheck" depends="jars">
+  <target name="baseline-spotbugscheck" depends="jars">
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${baseline-anttask.jar}"/>
-    <findbugs home="${findbugs-baseline.home}"
+    <spotbugs home="${spotbugs-baseline.home}"
               output="xml:withMessages"
               jvmargs="-ea -Xmx1200m  "
               excludeFilter="findbugsExclude.xml"
-              projectName="FindBugs"
+              projectName="spotbugs"
               maxRank="20"
               timeout="1800000"
               outputFile="${build.dir}/findbugs-Baseline.xml" >
@@ -481,20 +481,20 @@
       <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
-    </findbugs>
+    </spotbugs>
    </target>
 
 
-  <target name="findbugscheck" depends="anttask,junittests,jars">
-    <property name="findbugs.home" value="${basedir}" />
+  <target name="spotbugscheck" depends="anttask,junittests,jars">
+    <property name="spotbugs.home" value="${basedir}" />
     <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="${basedir}"
+    <spotbugs home="${basedir}"
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dfindbugs.cloud.token=238b6fc80cec17ec"
+              jvmargs="-ea -Xmx1200m -Dspotbugs.failOnCloudError=true -Dspotbugs.cloud.token=238b6fc80cec17ec"
               excludeFilter="findbugsExclude.xml"
-              projectName="FindBugs"
+              projectName="spotbugs"
               maxRank="20"
               timeout="1800000"
               outputFile="${build.dir}/findbugscheckAll.xml" >
@@ -502,7 +502,7 @@
       <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
       <auxClasspath path="lib/ant.jar"/>
-    </findbugs>
+    </spotbugs>
     <filterBugs home="${basedir}"
               withMessages="true"
               notAProblem="false"
@@ -512,50 +512,50 @@
     </filterBugs>
   </target>
 
-  <target name="findbugscheck-cloud-fails" depends="anttask,junittests,jars">
-    <property name="findbugs.home" value="${basedir}" />
+  <target name="spotbugscheck-cloud-fails" depends="anttask,junittests,jars">
+    <property name="spotbugs.home" value="${basedir}" />
     <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="${basedir}"
+    <spotbugs home="${basedir}"
               output="xml:withMessages"
               cloud="edu.umd.cs.findbugs.cloud.appengine.findbugs-cloud"
-              jvmargs="-ea -Xmx1200m -Dfindbugs.failOnCloudError=true -Dwebcloud.host=example.com"
+              jvmargs="-ea -Xmx1200m -Dspotbugs.failOnCloudError=true -Dwebcloud.host=example.com"
               excludeFilter="findbugsExclude.xml"
-              projectName="FindBugs"
+              projectName="spotbugs"
               maxRank="20"
               timeout="1800000"
               outputFile="${build.dir}/findbugscheck.xml" >
       <class location="${classes.dir}" />
       <sourcePath path="src/java:src/gui:src/junit:src/tools:src/antTask"/>
       <auxClasspath refid="tools.classpath"/>
-    </findbugs>
+    </spotbugs>
   </target>
 
-   <target name="findbugsTestCases.check">
-    <condition property="findbugsTestCases.exists">
-      <available file="${findbugsTestCases.dir}" type="dir"/>
+   <target name="spotbugsTestCases.check">
+    <condition property="spotbugsTestCases.exists">
+      <available file="${spotbugsTestCases.dir}" type="dir"/>
     </condition>
   </target>
 
-  <target name="findbugsTestCases" depends="anttask,junittests,jars,findbugsTestCases.check" if="findbugsTestCases.exists">
-   <property name="findbugs.home" value="${basedir}" />
+  <target name="spotbugsTestCases" depends="anttask,junittests,jars,spotbugsTestCases.check" if="spotbugsTestCases.exists">
+   <property name="spotbugs.home" value="${basedir}" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
-    <findbugs home="${basedir}"
+    <spotbugs home="${basedir}"
               output="xml"
               jvmargs="-ea -Xmx1200m"
-              projectName="FindBugsTestCases"
+              projectName="spotbugsTestCases"
               timeout="1800000"
               outputFile="${sampleoutput.dir}/findbugsTestCases.xml" >
-      <class location="${findbugsTestCases.dir}/build/classes" />
-    </findbugs>
+      <class location="${spotbugsTestCases.dir}/build/classes" />
+    </spotbugs>
   </target>
 
     <!-- Download, install a plugin and run it on BCEL.  This is useful
-         as a check for whether changes to FindBugs have broken its
+         as a check for whether changes to spotbugs have broken its
          interface with plugins.  Note that the generated .xml file is
          kept in the ${sampleoutput.dir} for later perusal. -->
     <target name="plugincheck" depends="anttask">
-        <property name="findbugs.home" value="${basedir}" />
+        <property name="spotbugs.home" value="${basedir}" />
         <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
         <!-- download the plugin -->
         <echo message="curl ${plugincheck.jar} -o ${plugin.dir}/${plugincheck.jar}"/>
@@ -565,7 +565,7 @@
             <arg value="-o"/>
             <arg value="${plugin.dir}/${plugincheck.jar}"/>
         </exec>
-        <!-- run FindBugs w/ plugin on BCEL -->
+        <!-- run spotbugs w/ plugin on BCEL -->
         <antcall target="runanttask"/>
         <delete file="${plugin.dir}/${plugincheck.jar}"/>
         <!-- keep warning file -->
@@ -583,27 +583,27 @@
         </antcall>
     </target>
 
-    <target name="foundFindbugsTestCases" depends="findbugsTestCases.check" unless="findbugsTestCases.exists">
-    <echo>FindBugs test cases not found at ${findbugsTestCases.dir}</echo>
+    <target name="foundspotbugsTestCases" depends="spotbugsTestCases.check" unless="spotbugsTestCases.exists">
+    <echo>spotbugs test cases not found at ${spotbugsTestCases.dir}</echo>
         <echo>Skipping test cases that depend on them</echo>
     </target>
 
-    <target name="compileFindbugsTestCases" depends="findbugsTestCases.check" if="findbugsTestCases.exists">
-            <ant dir="${findbugsTestCases.dir}" target="classes" inheritAll="false" />
+    <target name="compilespotbugsTestCases" depends="spotbugsTestCases.check" if="spotbugsTestCases.exists">
+            <ant dir="${spotbugsTestCases.dir}" target="classes" inheritAll="false" />
     </target>
 
     <!-- Run JUnit test cases -->
-    <target name="test" depends="runjunit,foundFindbugsTestCases" description="Run tests"/>
+    <target name="test" depends="runjunit,foundspotbugsTestCases" description="Run tests"/>
 
-    <target name="runjunit" depends="junittests,jars,compileFindbugsTestCases">
-        <echo>Running JUnit test cases for FindBugs, results will be in: ${junit.dir}</echo>
+    <target name="runjunit" depends="junittests,jars,compilespotbugsTestCases">
+        <echo>Running JUnit test cases for spotbugs, results will be in: ${junit.dir}</echo>
         <delete dir="${junit.dir}"/>
         <mkdir dir="${junit.dir}"/>
         <junit fork="yes" printsummary="true" haltonfailure="true" haltonerror="true" dir="${basedir}">
             <jvmarg value="-ea"/>
             <jvmarg value="-Xmx1200m"/>
-            <jvmarg value="-Dfindbugs.home=${basedir}"/>
-            <jvmarg value="-DfindbugsTestCases.home=${findbugsTestCases.dir}"/>
+            <jvmarg value="-Dspotbugs.home=${basedir}"/>
+            <jvmarg value="-DspotbugsTestCases.home=${spotbugsTestCases.dir}"/>
             <formatter type="xml"/>   <!-- Hudson reads generated xml -->
             <classpath refid="tools.classpath"/>
             <classpath>
@@ -628,7 +628,7 @@
             <fileset dir="src/java"/>
             <fileset dir="src/gui"/>
             <fileset dir="src/junit"/>
-            <fileset dir="${findbugsTestCases.dir}/src"/>
+            <fileset dir="${spotbugsTestCases.dir}/src"/>
 
             <fileset dir="${pluginsSrc.dir}/webCloudClient/src"/>
             <fileset dir="${pluginsSrc.dir}/jira/src"/>
@@ -643,7 +643,7 @@
         </checkstyle>
     </target>
 
-    <target name="smoketest" depends="scripts,findbugscheck,runjunit,validate,validatesampleoutput"/>
+    <target name="smoketest" depends="scripts,spotbugscheck,runjunit,validate,validatesampleoutput"/>
 
 
     <!-- Get version properties.  -->
@@ -745,27 +745,27 @@
         <!-- Generate bug descriptions. -->
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions.html"/>
-            <param name="bugdesc.title" value="FindBugs Bug Descriptions"/>
+            <param name="bugdesc.title" value="spotbugs Bug Descriptions"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="false"/>
         </antcall>
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/allBugDescriptions.html"/>
-            <param name="bugdesc.title" value="FindBugs Bug Descriptions (Unabridged)"/>
+            <param name="bugdesc.title" value="spotbugs Bug Descriptions (Unabridged)"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.allBugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="true"/>
             <param name="bugdesc.user.language" value="en"/>
         </antcall>
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions_ja.html"/>
-            <param name="bugdesc.title" value="FindBugs Bug Descriptions"/>
+            <param name="bugdesc.title" value="spotbugs Bug Descriptions"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="false"/>
             <param name="bugdesc.user.language" value="ja"/>
         </antcall>
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions_fr.html"/>
-            <param name="bugdesc.title" value="FindBugs Bug Descriptions"/>
+            <param name="bugdesc.title" value="spotbugs Bug Descriptions"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="false"/>
             <param name="bugdesc.user.language" value="fr"/>
@@ -789,8 +789,8 @@
             output="${bugdesc.output}">
             <jvmarg value="-ea"/>
             <jvmarg value="-Duser.language=${bugdesc.user.language}"/>
-            <jvmarg value="-Dfindbugs.home=${basedir}"/>
-            <jvmarg value="-Dfindbugs.bugdesc.unabridged=${bugdesc.unabridged}"/>
+            <jvmarg value="-Dspotbugs.home=${basedir}"/>
+            <jvmarg value="-Dspotbugs.bugdesc.unabridged=${bugdesc.unabridged}"/>
             <classpath refid="tools.classpath"/>
             <arg value="${bugdesc.title}"/>
             <arg value="${doc.html.gen.header}"/>
@@ -822,10 +822,10 @@
             <filter token="VERSION_BASE" value="${release.base}" />
             <filter token="VERSION" value="${release.number}" />
             <filter token="RELEASE_DATE" value="${release.date}" />
-            <filter token="FINDBUGS_GIT_REVISION" value="${findbugs.git.revision}" />
+            <filter token="SPOTBUGS_GIT_REVISION" value="${spotbugs.git.revision}" />
             <filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
-            <filter token="WEBSITE" value="${findbugs.website}"/>
-            <filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
+            <filter token="WEBSITE" value="${spotbugs.website}"/>
+            <filter token="DOWNLOADS_WEBSITE" value="${spotbugs.downloads.website}"/>
             <filter token="HTML_XSL_STYLESHEET" value="${xsl.stylesheet.home}/html/chunk.xsl" />
             <filter token="FO_XSL_STYLESHEET" value="${xsl.stylesheet.home}/fo/docbook.xsl"/>
 <!--
@@ -977,7 +977,7 @@
             </fileset>
         </copy>
         <echo file="${plugin.dir}/pluginlist.properties">${prop.plugin.jars}</echo>
-        <jar destfile="${jnlp.dir}/findbugs.jar" update="yes">
+        <jar destfile="${jnlp.dir}/spotbugs.jar" update="yes">
                     <fileset dir="${etc.dir}">
                         <include name="systemProperties.properties"/>
                         <include name="my.java.policy"/>
@@ -988,7 +988,7 @@
                     </fileset>
             </jar>
         <input message="Enter keystore password:"  addproperty="password"/>
-        <signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
+        <signjar keystore="spotbugs.keystore" alias="spotbugs" storepass="${password}" keypass="${password}">
             <fileset dir="${jnlp.dir}">
                 <include name="**/*.jar"/>
             </fileset>
@@ -1002,7 +1002,7 @@
 
     <target name="sign" depends="jars">
         <input message="Enter keystore password:"  addproperty="password"/>
-        <signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
+        <signjar keystore="spotbugs.keystore" alias="spotbugs" storepass="${password}" keypass="${password}">
             <fileset dir="${jnlp.dir}">
                 <include name="**/*.jar"/>
             </fileset>
@@ -1041,7 +1041,7 @@
         <patternset id="bindist.jar.pats">
             <include name="lib/*.jar"/>
             <include name="plugin/webCloudClient.jar"/>
-            <include name="plugin/findbugsCommunalCloud.jar"/>
+            <include name="plugin/spotbugsCommunalCloud.jar"/>
             <include name="plugin/README"/>
             <include name="plugin"/>
             <include name="optionalPlugin/poweruser.jar"/>
@@ -1060,7 +1060,7 @@
             <include name="plugin/README"/>
             <include name="plugin"/>
             <include name="optionalPlugin/webCloudClient.jar"/>
-            <include name="optionalPlugin/findbugsCommunalCloud.jar"/>
+            <include name="optionalPlugin/spotbugsCommunalCloud.jar"/>
             <include name="optionalPlugin/poweruser.jar"/>
             <include name="optionalPlugin/bugCollectionCloud.jar"/>
             <include name="optionalPlugin/README"/>
@@ -1077,33 +1077,33 @@
             <exclude name="bin/*.bat"/>
         </patternset>
 
-        <zip destfile="${build.dir}/findbugs-${release.number}.zip" compress="true">
-            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
+        <zip destfile="${build.dir}/spotbugs-${release.number}.zip" compress="true">
+            <zipfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}" filemode="555">
+            <zipfileset prefix="spotbugs-${release.number}" dir="${basedir}" filemode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
+            <zipfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.jar.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+            <zipfileset prefix="spotbugs-${release.number}/doc" dir="${doc.dir}">
                 <patternset refid="doc.src.pats"/>
                 <patternset refid="doc.img.pats"/>
             </zipfileset>
         </zip>
 
-        <tar destfile="${build.dir}/findbugs-${release.number}.tar.gz" compression="gzip">
-            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
+        <tar destfile="${build.dir}/spotbugs-${release.number}.tar.gz" compression="gzip">
+            <tarfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}" mode="555">
+            <tarfileset prefix="spotbugs-${release.number}" dir="${basedir}" mode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
+            <tarfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.jar.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+            <tarfileset prefix="spotbugs-${release.number}/doc" dir="${doc.dir}">
                 <patternset refid="doc.src.pats"/>
                 <patternset refid="doc.img.pats"/>
             </tarfileset>
@@ -1111,33 +1111,33 @@
 
         <move file="optionalPlugin/noUpdateChecks.jar" todir="plugin"/>
 
-        <zip destfile="${build.dir}/findbugs-noUpdateChecks-${release.number}.zip" compress="true">
-            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
+        <zip destfile="${build.dir}/spotbugs-noUpdateChecks-${release.number}.zip" compress="true">
+            <zipfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}" filemode="555">
+            <zipfileset prefix="spotbugs-${release.number}" dir="${basedir}" filemode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}" dir="${basedir}">
+            <zipfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist2.jar.pats"/>
             </zipfileset>
-            <zipfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+            <zipfileset prefix="spotbugs-${release.number}/doc" dir="${doc.dir}">
                 <patternset refid="doc.src.pats"/>
                 <patternset refid="doc.img.pats"/>
             </zipfileset>
         </zip>
 
-        <tar destfile="${build.dir}/findbugs-noUpdateChecks-${release.number}.tar.gz" compression="gzip">
-            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
+        <tar destfile="${build.dir}/spotbugs-noUpdateChecks-${release.number}.tar.gz" compression="gzip">
+            <tarfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist.miscfile.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}" mode="555">
+            <tarfileset prefix="spotbugs-${release.number}" dir="${basedir}" mode="555">
                 <patternset refid="bindist.unixscript.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}" dir="${basedir}">
+            <tarfileset prefix="spotbugs-${release.number}" dir="${basedir}">
                 <patternset refid="bindist2.jar.pats"/>
             </tarfileset>
-            <tarfileset prefix="findbugs-${release.number}/doc" dir="${doc.dir}">
+            <tarfileset prefix="spotbugs-${release.number}/doc" dir="${doc.dir}">
                 <patternset refid="doc.src.pats"/>
                 <patternset refid="doc.img.pats"/>
             </tarfileset>
@@ -1154,9 +1154,9 @@
     <exec executable="git" spawn="true">
             <arg value="archive"/>
             <arg value="-o"/>
-            <arg value="${build.dir}/src/findbugs-${release.number}-source.zip"/>
+            <arg value="${build.dir}/src/spotbugs-${release.number}-source.zip"/>
             <arg value="--prefix"/>
-            <arg value="findbugs-${release.number}/"/>
+            <arg value="spotbugs-${release.number}/"/>
             <arg value="HEAD"/>
     </exec>
     </target>
@@ -1214,13 +1214,13 @@
        author="true"
         packagenames="*"
         destdir="${apiDoc.dir}"
-        doctitle="FindBugs API Documentation"
-        Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
-        Windowtitle="FindBugs ${release.number} API"
-        bottom="&lt;font size='-1'&gt;&lt;a href='http://findbugs.sourceforge.net/' target='_parent'&gt;FindBugs&lt;/a&gt;&amp;trade; is licensed under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
+        doctitle="SpotBugs API Documentation"
+        Header="&lt;b&gt;SpotBugs&amp;trade; ${release.number}&lt;/b&gt;"
+        Windowtitle="SpotBugs ${release.number} API"
+        bottom="&lt;font size='-1'&gt;&lt;a href='http://github.com/spotbugs/' target='_parent'&gt;SpotBugs&lt;/a&gt;&amp;trade; is licensed under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
         nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
         sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true">
-    <classpath refid="findbugs.classpath"/>
+    <classpath refid="spotbugs.classpath"/>
     </javadoc>
         </target>
 
@@ -1229,7 +1229,7 @@
        classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-1.6.1.jar:lib/jsr305.jar:lib/AppleJavaExtensions.jar"
         destdir="${annotationDoc.dir}"
         packagenames="edu.umd.cs.findbugs.annotations"
-        doctitle="FindBugs Annotation Documentation"
+        doctitle="SpotBugs Annotation Documentation"
         nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false"
         sourcepath="src/java:src/gui:src/antTask" splitindex="true" use="true" version="true"/>
         </target>
@@ -1250,7 +1250,7 @@
 
     <!--
         Rebuild jar305.jar.
-        JSR305-ri must be checked out "next to" findbugs,
+        JSR305-ri must be checked out "next to" spotbugs,
         and must have its classes built.
     -->
     <target name="jsr305.jar">
@@ -1265,7 +1265,7 @@
     </target>
 
   <target name="srcJar" description="build source jar file">
-   <jar jarfile="findbugs-src.jar" compress="true">
+   <jar jarfile="spotbugs-src.jar" compress="true">
     <fileset dir="${src.dir}"/>
     <fileset dir="${src5.dir}"/>
     <fileset dir="${toolsrc.dir}"/>

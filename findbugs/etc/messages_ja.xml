@@ -15,8 +15,8 @@
 </p>
 ]]>
     </Details>
-    <BugsUrl>http://findbugs.sourceforge.net/bugDescriptions_ja.html</BugsUrl>
-    <AllBugsUrl>http://findbugs.sourceforge.net/bugDescriptions_ja.html</AllBugsUrl>
+    <BugsUrl>https://github.com/spotbugs/bugDescriptions_ja.html</BugsUrl>
+    <AllBugsUrl>https://github.com/spotbugs/bugDescriptions_ja.html</AllBugsUrl>
   </Plugin>
 
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
@@ -9009,7 +9009,7 @@ Jason Mehrens によって寄贈されたバグパターン
 </p>
 <ul>
   <li>send email to findbugs@cs.umd.edu</li>
-  <li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
+  <li>file a bug report: <a href="https://github.com/spotbugs/reportingBugs.html">https://github.com/spotbugs/reportingBugs.html</a></li>
 </ul>
 <p>
 特に、このバグパターンの誤検出抑制探索法は詳細にわたって調整されていないので、誤検出についてのレポートは我々の助けになります。 
