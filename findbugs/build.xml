@@ -485,7 +485,7 @@
    </target>
 
 
-  <target name="spotbugscheck" depends="anttask,junittests,jars">
+  <target name="spotbugscheck" depends="anttask,junittests,jars" if="support.cloud">
     <property name="spotbugs.home" value="${basedir}" />
     <ant dir="${pluginsSrc.dir}/findbugsCommunalCloud" target="install" inheritAll="false" />
     <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${anttask.jar}"/>
