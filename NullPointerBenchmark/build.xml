@@ -10,7 +10,7 @@
     <property name="src.dir" value="src/java"/>
     <property name="junitsrc.dir" value="src/junit"/>
     <property name="junit.dir" value="build/junit"/>
-    <property name="fb-ant.jar" value="${findbugs.home}/lib/findbugs-ant.jar" />
+    <property name="fb-ant.jar" value="${spotbugs.home}/lib/spotbugs-ant.jar" />
 
 
     <target name="classes" >
