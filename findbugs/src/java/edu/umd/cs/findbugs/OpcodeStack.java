@@ -31,6 +31,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -183,6 +186,9 @@ public class OpcodeStack implements Constants2 {
 
     public static class Item {
 
+        /**
+         * A type qualifier to mark {@code int} value as SpecialKind type.
+         */
         @Documented
         @TypeQualifier(applicableTo = Integer.class)
         @Retention(RetentionPolicy.RUNTIME)
@@ -269,15 +275,21 @@ public class OpcodeStack implements Constants2 {
         int TYPE_ONLY = 24;
 
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-        public static final HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
+        public static final ConcurrentMap<Integer, String> specialKindNames = new ConcurrentHashMap<Integer, String>();
 
-        private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
+        private static AtomicInteger nextSpecialKind = new AtomicInteger(TYPE_ONLY + 1);
 
+        /**
+         * Define new SpecialKind with given name, and return its {@code int} value
+         * @param name
+         *      the name of new SpecialKind, can be null
+         * @return
+         *      {@code int} value which expresses new SpecialKind
+         */
         public static @SpecialKind
         int defineNewSpecialKind(String name) {
-            specialKindNames.put(nextSpecialKind, name);
-            @SpecialKind int result = asSpecialKind( nextSpecialKind+1);
-            nextSpecialKind = result;
+            @SpecialKind int result = asSpecialKind(nextSpecialKind.getAndIncrement());
+            specialKindNames.put(Integer.valueOf(result), name);
             return result;
         }
 
