@@ -105,7 +105,7 @@ done
 # Extra JVM args for MacOSX.
 if [ $fb_osname = "Darwin" ]; then
 	fb_jvmargs="$fb_jvmargs \
-		-Xdock:name=FindBugs -Xdock:icon=${findbugs_home}/lib/buggy.icns \
+		-Xdock:name=SpotBugs -Xdock:icon=${spotbugs_home}/lib/buggy.icns \
 		-Dapple.laf.useScreenMenuBar=true"
 fi
 
@@ -114,8 +114,8 @@ fi
 #
 exec "$fb_javacmd" \
 	-classpath "$fb_appjar$fb_pathsep$CLASSPATH" \
-	-Dfindbugs.home="$findbugs_home" \
+	-Dspotbugs.home="$spotbugs_home" \
 	$jvm_debug $jvm_maxheap $jvm_ea $jvm_conservespace $jvm_user_props \
 	-Dfindbugs.launchUI=$fb_launchui \
-	-jar $findbugs_home/lib/findbugs.jar \
+	-jar $findbugs_home/lib/spotbugs.jar \
 	${@:+"$@"}

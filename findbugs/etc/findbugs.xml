@@ -2,7 +2,7 @@
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
           pluginid="edu.umd.cs.findbugs.plugins.core"
           version="USE_FINDBUGS_VERSION"
-          provider="FindBugs project" website="http://findbugs.sourceforge.net"
+          provider="FindBugs project" website="https://github.com/spotbugs"
           update-url="http://update.findbugs.org/update-check">
 
           <!--

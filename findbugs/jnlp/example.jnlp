@@ -5,9 +5,9 @@
   >
  <information>
     <title>FindBugs</title>
-    <vendor>University of Maryland</vendor>
-    <homepage href="http://findbugs.sourceforge.net"/>
-    <description>Findbugs: Static Bug Finder</description>
+    <vendor>https://github.com/spotbugs</vendor>
+    <homepage href="https://github.com/spotbugs"/>
+    <description>SpotBugs: Static Bug Finder</description>
     <description kind="short">Static analysis tool for defect detection</description>
     <icon href="buggy-sm.png"/>
     <offline-allowed/>
@@ -18,8 +18,8 @@
 
   <resources>
     <jar href="findbugs.jar"/>
-    <extension href="core.jnlp" name="FindBugs"/>
-    <extension href="appengine.jnlp" name="AppEngine cloud for FindBugs"/>
+    <extension href="core.jnlp" name="SpotBugs"/>
+    <extension href="appengine.jnlp" name="AppEngine cloud for SpotBugs"/>
 
     <property name="findbugs.loadBugsFromURL" value="http://findbugs.cs.umd.edu/cloud/XXX/index.xml.gz"/>
   </resources>

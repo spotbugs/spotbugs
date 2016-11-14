@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <jnlp spec="1.0+" >
   <information> 
-    <title>FindBugs</title>
-    <vendor>University of Maryland</vendor> 
-    <homepage href="http://findbugs.sourceforge.net"/> 
-    <description>Findbugs: Static Bug Finder</description> 
+    <title>SpotBugs</title>
+    <vendor>https://github.com/spotbugs</vendor> 
+    <homepage href="https://github.com/spotbugs"/> 
+    <description>SpotBugs: Static Bug Finder</description> 
     <description kind="short">Static analysis tool for defect detection</description> 
     <icon href="buggy-sm.png"/> 
     <offline-allowed/> 

@@ -9,10 +9,10 @@ setlocal
 :: ----------------------------------------------------------------------
 :: Set up default values
 :: ----------------------------------------------------------------------
-set appjar=findbugs.jar
+set appjar=spotbugs.jar
 set javahome=
 set launcher=java.exe
-set start=start "FindBugs"
+set start=start "SpotBugs"
 set jvmargs=
 set debugArg=
 set conserveSpaceArg=
@@ -26,7 +26,7 @@ set launchUI=2
 
 :: Try finding the default FINDBUGS_HOME directory
 :: from the directory path of this script
-set default_findbugs_home=%~dp0..
+set default_spotbugs_home=%~dp0..
 
 :: Honor JAVA_HOME environment variable if it is set
 if "%JAVA_HOME%"=="" goto nojavahome
@@ -178,7 +178,7 @@ set start=
 goto shift1
 :notVersion
 
-if "%firstArg%"=="-home" set FINDBUGS_HOME=%secondArg%
+if "%firstArg%"=="-home" set SPOTBUGS_HOME=%secondArg%
 if "%firstArg%"=="-home" goto shift2
 
 if "%firstArg%"=="-jvmArgs" set jvmargs=%secondArg%
@@ -213,19 +213,19 @@ goto shift1
 :: directory path of the invoked script.
 :: Note that this will fail miserably if the value of FINDBUGS_HOME
 :: has quote characters in it.
-if not "%FINDBUGS_HOME%"=="" goto checkHomeValid
-set FINDBUGS_HOME=%default_findbugs_home%
+if not "%SPOTBUGS_HOME%"=="" goto checkHomeValid
+set SPOTBUGS_HOME=%default_spotbugs_home%
 
 :checkHomeValid
-if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
+if not exist "%SPOTBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
 :: Launch FindBugs!
 if "%fb_mainclass%"=="" goto runJar
-"%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -cp "%FINDBUGS_HOME%\lib\%appjar%" %fb_mainclass% %args%
+"%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dspotbugs.home=%SPOTBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -cp "%SPOTBUGS_HOME%\lib\%appjar%" %fb_mainclass% %args%
 goto end
 :runjar
-%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
+%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dspotbugs.home=%SPOTBUGS_HOME%" -Xmx%maxheap%m %jvmargs% "-Dfindbugs.launchUI=%launchUI%" -jar "%SPOTBUGS_HOME%\lib\%appjar%" %args%
 goto end
 
 :: ----------------------------------------------------------------------

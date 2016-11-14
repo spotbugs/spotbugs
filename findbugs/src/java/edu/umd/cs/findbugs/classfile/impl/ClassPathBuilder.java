@@ -475,13 +475,13 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
                 if (matchesJarFile(entry, jarFileName)) {
                     found = true;
-                } else if (matchesJarFile(entry, "findbugs.jar")) {
+                } else if (matchesJarFile(entry, "spotbugs.jar")) {
                     // See if the searched-for jar file can be found
-                    // alongside findbugs.jar.
+                    // alongside spotbugs.jar.
                     File findbugsJar = new File(entry);
                     File loc = new File(findbugsJar.getParent() + File.separator + jarFileName);
                     if (DEBUG) {
-                        System.out.print(" [findbugs.jar, checking " + loc.getPath() + "] ");
+                        System.out.print(" [spotbugs.jar, checking " + loc.getPath() + "] ");
                     }
                     if (loc.exists()) {
                         entry = loc.getPath();

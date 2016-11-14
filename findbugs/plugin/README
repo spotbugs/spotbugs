@@ -1,8 +1,8 @@
 
-Put the jar files for FindBugs plugins in this directory. 
+Put the jar files for SpotBugs plugins in this directory. 
 For example, you can download the fb-contrib plugin from:
-	http://fb-contrib.sourceforge.net/
+	https://github.com/mebigfatguy/fb-contrib
 
-You should carefully evaluate any FindBugs plugins to determine whether 
+You should carefully evaluate any Spotbugs plugins to determine whether 
 the issues they report are suitable and appropriate for your project.
 

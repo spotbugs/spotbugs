@@ -4,9 +4,9 @@
   codebase="file:/Users/pugh/findbugs/jnlp"
   href="desktop.jnlp">
   <information> 
-    <title>FindBugs</title>
-    <vendor>University of Maryland</vendor> 
-    <homepage href="http://findbugs.sourceforge.net"/> 
+    <title>SpotBugs</title>
+    <vendor>https://github.com/spotbugs</vendor> 
+    <homepage href="https://github.com/spotbugs"/> 
     <description>Findbugs: Static Bug Finder</description> 
     <description kind="short">Static analysis tool for defect detection</description> 
     <icon href="buggy-sm.png"/> 

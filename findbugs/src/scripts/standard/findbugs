@@ -8,7 +8,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_appjar="$findbugs_home/lib/findbugs.jar"
+fb_appjar="$findbugs_home/lib/spotbugs.jar"
 
 ShowHelpAndExit() {
 	fb_mainclass="edu.umd.cs.findbugs.ShowHelp"

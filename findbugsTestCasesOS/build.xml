@@ -8,7 +8,7 @@
   build -Dprj=<prjname> [-Drevision=<rev/tag/branch>] - test given OS project with current or specified FindBugs version
 
   export -Drevision=<rev/tag/branch> - export given FB revision from Git repository
-  buildBaseline -Drevision=<rev/tag/branch> - export given FB revision from Git repository and build findbugs.jar
+  buildBaseline -Drevision=<rev/tag/branch> - export given FB revision from Git repository and build spotbugs.jar
   retrieve -Dprj=<prjname> - retrieve given OS project from maven central
   clean - remove temporary files
 -->
@@ -132,7 +132,7 @@
   <target name="-prepareExport" if="revision">
     <property name="revision.directory" value="fb-rev-${revision}"/>
     <available file="${revision.directory}/findbugs/build.xml" property="revision.exists"/>
-    <available file="${revision.directory}/findbugs/lib/findbugs.jar" property="revision.target.exists"/>
+    <available file="${revision.directory}/findbugs/lib/spotbugs.jar" property="revision.target.exists"/>
   </target>
 
   <!-- export some specific revision of findbugs.
@@ -177,7 +177,7 @@
   </target>
 
   <target name="-uptodateCheck" depends="-emptyCheck" unless="analysis.empty">
-    <uptodate property="analysis.uptodate" srcfile="${findbugs.home}/lib/findbugs.jar" targetfile="projects/${prj}/build/${findbugs.filename}.xml"/>
+    <uptodate property="analysis.uptodate" srcfile="${findbugs.home}/lib/spotbugs.jar" targetfile="projects/${prj}/build/${findbugs.filename}.xml"/>
   </target>
 
   <target name="-emptyCheck">
