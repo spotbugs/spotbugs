@@ -273,7 +273,7 @@ public class OpcodeStack implements Constants2 {
         int TYPE_ONLY = 24;
 
         /**
-         * @deprecated will be deleted at v4 release. use @{link {@link #getSpecialKindName(int)}} instead.
+         * @deprecated will be deleted at v4 release. use {@link #getSpecialKindName(int)} instead.
          */
         @Deprecated
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
