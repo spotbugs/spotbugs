@@ -10,8 +10,8 @@
 <p>Ce plugin contient tous les détecteurs standards de FindBugs.</p>
 ]]>
   </Details>
-    <BugsUrl>https://github.com/spotbugs/bugDescriptions_fr.html</BugsUrl>
-    <AllBugsUrl>https://github.com/spotbugs/bugDescriptions_fr.html</AllBugsUrl>
+    <BugsUrl>https://spotbugs.github.io/bugDescriptions_fr.html</BugsUrl>
+    <AllBugsUrl>https://spotbugs.github.io/bugDescriptions_fr.html</AllBugsUrl>
  </Plugin>
 
 
