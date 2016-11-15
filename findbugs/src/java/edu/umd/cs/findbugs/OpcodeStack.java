@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -183,6 +184,9 @@ public class OpcodeStack implements Constants2 {
 
     public static class Item {
 
+        /**
+         * A type qualifier to mark {@code int} value as SpecialKind type.
+         */
         @Documented
         @TypeQualifier(applicableTo = Integer.class)
         @Retention(RetentionPolicy.RUNTIME)
@@ -268,11 +272,25 @@ public class OpcodeStack implements Constants2 {
         public static final @SpecialKind
         int TYPE_ONLY = 24;
 
+        /**
+         * @deprecated will be deleted at v4 release. use @{link {@link #getSpecialKindName(int)}} instead.
+         */
+        @Deprecated
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
         public static final HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
 
         private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
 
+        /**
+         * Define new SpecialKind with given name, and return its {@code int} value
+         * @param name
+         *      the name of new SpecialKind, can be null
+         * @return
+         *      {@code int} value which expresses new SpecialKind
+         * @see <a href="https://github.com/spotbugs/spotbugs/pull/23">Known bug</a>
+         * @deprecated use {@link #defineSpecialKind(String)} instead.
+         */
+        @Deprecated
         public static @SpecialKind
         int defineNewSpecialKind(String name) {
             specialKindNames.put(nextSpecialKind, name);
@@ -1067,6 +1085,26 @@ public class OpcodeStack implements Constants2 {
                 return ((Number) constValue).longValue() == value;
             }
             return false;
+        }
+
+        /**
+         * Define a new special kind and name it as specified.
+         * @param name Name of new special kind
+         * @return int value to represent new special kind
+         * @since 3.1.0
+         */
+        public static @SpecialKind
+        int defineSpecialKind(String name) {
+            return defineNewSpecialKind(name) - 1;
+        }
+
+        /**
+         * @param specialKind special kind to get name
+         * @return just a name of specified @{link SpecialKind}, or empty {@link Optional}.
+         * @since 3.1.0
+         */
+        public static Optional<String> getSpecialKindName(@SpecialKind int specialKind) {
+            return Optional.ofNullable(specialKindNames.get(Integer.valueOf(specialKind)));
         }
     }
 
