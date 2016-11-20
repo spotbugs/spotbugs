@@ -41,4 +41,19 @@ public class OpcodeStackItemTest extends TestCase {
         assertEquals(0,m2.getConstant());
     }
 
+    private static final String NEW_ITEM_KIND_NAME = "newItemKindName";
+    public void testDefineNewItemKind() {
+        int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);
+        assertEquals(NEW_ITEM_KIND_NAME,
+                OpcodeStack.Item.getSpecialKindName(defined).get());
+    }
+
+    public void testDefinedItemKindIsUsedInToStringMethod() {
+        int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);
+        OpcodeStack.Item intItem = new OpcodeStack.Item("I");
+        intItem.setSpecialKind(defined);
+        String result = intItem.toString();
+        assertTrue("Item.toString() does not use proper name of special kind:" + result,
+                result.contains(NEW_ITEM_KIND_NAME));
+    }
 }

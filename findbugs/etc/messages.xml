@@ -16,8 +16,8 @@ This plugin contains all of the standard SpotBugs detectors.
 </p>
 ]]>
     </Details>
-    <BugsUrl>https://github.com/spotbugs/bugDescriptions.html</BugsUrl>
-    <AllBugsUrl>https://github.com/spotbugs/allBugDescriptions.html</AllBugsUrl>
+    <BugsUrl>https://spotbugs.github.io/bugDescriptions.html</BugsUrl>
+    <AllBugsUrl>https://spotbugs.github.io/bugDescriptions.html</AllBugsUrl>
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
     <Description>Add msgs (e.g., textual descriptions of bugs) to analysis results</Description>
@@ -8330,11 +8330,10 @@ public @NonNegative Integer example(@Negative Integer value) {
           (and hopefully better) static analysis technique.
           We are interested is getting feedback about the
           usefulness of this bug pattern.
-          To send feedback, either:
+          To send feedback:
           </p>
           <ul>
-            <li>send email to findbugs@cs.umd.edu</li>
-            <li>file a bug report: <a href="https://github.com/spotbugs/reportingBugs.html">https://github.com/spotbugs/reportingBugs.html</a></li>
+            <li>file an issue: <a href="https://github.com/spotbugs/spotbugs/issues">https://github.com/spotbugs/spotbugs/issues</a></li>
           </ul>
 
           <p>

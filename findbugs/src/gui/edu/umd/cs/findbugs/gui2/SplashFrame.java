@@ -52,7 +52,7 @@ public class SplashFrame extends JWindow {
         Image imageReverse = toolkit.getImage(MainFrame.class.getResource("SplashBug1reverse.png"));
         Image image2Reverse = toolkit.getImage(MainFrame.class.getResource("SplashBug2reverseB.png"));
 
-        JLabel l = new JLabel(new ImageIcon(MainFrame.class.getResource("umdFindbugs.png")));
+        JLabel l = new JLabel(new ImageIcon(MainFrame.class.getResource("spotbugs.png")));
         JPanel p = new JPanel();
         Viewer viewer = new Viewer(image, image2, imageReverse, image2Reverse);
         final JPanel bottom = viewer;

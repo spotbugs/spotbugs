@@ -745,27 +745,27 @@
         <!-- Generate bug descriptions. -->
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions.html"/>
-            <param name="bugdesc.title" value="spotbugs Bug Descriptions"/>
+            <param name="bugdesc.title" value="SpotBugs Bug Descriptions"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="false"/>
         </antcall>
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/allBugDescriptions.html"/>
-            <param name="bugdesc.title" value="spotbugs Bug Descriptions (Unabridged)"/>
+            <param name="bugdesc.title" value="SpotBugs Bug Descriptions (Unabridged)"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.allBugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="true"/>
             <param name="bugdesc.user.language" value="en"/>
         </antcall>
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions_ja.html"/>
-            <param name="bugdesc.title" value="spotbugs Bug Descriptions"/>
+            <param name="bugdesc.title" value="SpotBugs Bug Descriptions"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="false"/>
             <param name="bugdesc.user.language" value="ja"/>
         </antcall>
         <antcall target="generatebugdesc">
             <param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions_fr.html"/>
-            <param name="bugdesc.title" value="spotbugs Bug Descriptions"/>
+            <param name="bugdesc.title" value="SpotBugs Bug Descriptions"/>
             <param name="bugdesc.prologue" value="${doc.html.gen.bugDescriptions.prologue}"/>
             <param name="bugdesc.unabridged" value="false"/>
             <param name="bugdesc.user.language" value="fr"/>
