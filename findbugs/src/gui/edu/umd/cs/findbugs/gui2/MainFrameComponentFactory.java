@@ -86,21 +86,6 @@ public class MainFrameComponentFactory implements Serializable {
         constraints.weightx = 1;
         statusBar.add(mainFrame.getStatusBarLabel(), constraints.clone());
 
-        constraints.weightx = 0;
-        constraints.fill = GridBagConstraints.NONE;
-
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.insets = new Insets(0, 5, 0, 5);
-
-        JLabel logoLabel = new JLabel();
-
-        constraints.insets = new Insets(0, 0, 0, 0);
-        ImageIcon logoIcon = new ImageIcon(MainFrame.class.getResource("logo_umd.png"));
-        logoLabel.setIcon(logoIcon);
-        logoLabel.setPreferredSize(new Dimension(logoIcon.getIconWidth(), logoIcon.getIconHeight()));
-        constraints.anchor = GridBagConstraints.WEST;
-        statusBar.add(logoLabel, constraints.clone());
-
         return statusBar;
     }
 
