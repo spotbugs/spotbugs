@@ -31,6 +31,8 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.h3xstream.findbugs.test.matcher.BugInstanceMatcher;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -45,8 +47,11 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @see ExpectWarning
  * @see NoWarning
  * @author Tom\u00e1s Pollak
+ * @deprecated The annotation based approach is useless for lambdas. Write expectations using {@link BugInstanceMatcher} matchers
  */
 
+// TODO : Rewrite tests using matchers
+@Deprecated
 public class DetectorsTest {
 
     private static final String FB_UNEXPECTED_WARNING = "FB_UNEXPECTED_WARNING";

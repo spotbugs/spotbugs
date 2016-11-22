@@ -69,7 +69,9 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
  * internal testing of FindBugs (against findbugsTestCases).
  *
  * @author David Hovemeyer
+ * @deprecated The annotation based approach is useless for lambdas. Write expectations using {@link com.h3xstream.findbugs.test.matcher.BugInstanceMatcher} matchers
  */
+@Deprecated
 public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("cew.debug");
 
