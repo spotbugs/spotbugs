@@ -347,7 +347,7 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
             if (findbugsJarCodeBase != null) {
                 File findbugsJar = new File(findbugsJarCodeBase);
                 File libDir = findbugsJar.getParentFile();
-                if ("lib".equals(libDir.getName())) {
+                if (libDir != null && "lib".equals(libDir.getName())) {
                     String fbHome = libDir.getParent();
                     FindBugs.setHome(fbHome);
                     return fbHome;
