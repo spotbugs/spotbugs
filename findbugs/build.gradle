@@ -1,0 +1,69 @@
+sourceSets {
+  main {
+    java {
+      srcDirs = ['src/java', 'src/gui']
+    }
+    resources {
+      /*
+       * Becuase why put everything in a single folder when you can split it
+       * and mix it with other files you don't actually need together
+      */
+      srcDirs = ['src/xsl', 'etc', 'src/java', 'src/gui']
+      include '*.xsd'
+      include 'bugrank.txt'
+      include 'findbugs.xml'
+      include 'messages*.xml'
+      include '**/*.properties'
+      exclude 'doc.properties'
+      exclude 'script.properties'
+      include '*.xsl'
+      include '**/*.db'
+      include '**/*.html'
+      include '**/*.png'
+    }
+  }
+
+  test {
+    java {
+      srcDirs = ['src/junit']
+    }
+  }
+
+  anttask {
+    java {
+      srcDirs = ['src/antTask']
+    }
+    compileClasspath = project.configurations.compile
+  }
+}
+
+dependencies {
+  compile 'org.apache.bcel:bcel:6.0'
+  compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+
+  // TODO : Some of these can be extracted to actual dependencies
+  compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+
+// Manually define what goes into the default jar, since it's not only main sourceset
+jar {
+  from sourceSets.main.output
+  from sourceSets.anttask.output
+
+  baseName 'spotbugs' // Needed until we rename the directory
+
+  manifest {
+    attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
+               'Class-Path': 'bcel.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0 jsr305.jar jFormatString.jar commons-lang-2.6.jar'
+  }
+}
+
+// Make the anttask jar as part of the build process
+task anttaskJar(type:Jar) {
+  from sourceSets.anttask.output
+  baseName 'spotbugs-ant'
+}
+
+tasks['jar'].dependsOn 'anttaskJar'
+

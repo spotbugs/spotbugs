@@ -1,3 +1,6 @@
+.gradle
+
+# TODO : Clean up
 **/local.properties
 **/*.class
 **/.DS_Store
