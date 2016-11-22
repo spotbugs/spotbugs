@@ -1,5 +1,5 @@
 @echo off
-:: Launch FindBugs on a Windows system.
+:: Launch SpotBugs on a Windows system.
 :: Adapted from scripts found at http://www.ericphelps.com/batch/
 :: This will only work on Windows NT or later!
 
@@ -24,7 +24,7 @@ set maxheap=768
 REM default UI is gui2
 set launchUI=2
 
-:: Try finding the default FINDBUGS_HOME directory
+:: Try finding the default SPOTBUGS_HOME directory
 :: from the directory path of this script
 set default_spotbugs_home=%~dp0..
 
@@ -208,7 +208,7 @@ goto shift1
 :: Launch FindBugs
 :: ----------------------------------------------------------------------
 :launch
-:: Make sure FINDBUGS_HOME is set.
+:: Make sure SPOTBUGS_HOME is set.
 :: If it isn't, try using the default value based on the
 :: directory path of the invoked script.
 :: Note that this will fail miserably if the value of FINDBUGS_HOME
@@ -229,11 +229,11 @@ goto end
 goto end
 
 :: ----------------------------------------------------------------------
-:: Report that FINDBUGS_HOME is not set (and was not specified)
+:: Report that SPOTBUGS_HOME is not set (and was not specified)
 :: ----------------------------------------------------------------------
 :homeNotSet
-echo Could not find FindBugs home directory.  There may be a problem
-echo with the FindBugs installation.  Try setting FINDBUGS_HOME, or
+echo Could not find SpotBugs home directory.  There may be a problem
+echo with the FindBugs installation.  Try setting SPOTBUGS_HOME, or
 echo re-installing.
 goto end
 
