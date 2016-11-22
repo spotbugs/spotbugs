@@ -333,13 +333,13 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
 
     /**
-     * See if the location of ${findbugs.home} can be inferred from the location
+     * See if the location of ${spotbugs.home} can be inferred from the location
      * of findbugs.jar in the classpath.
      *
-     * @return inferred ${findbugs.home}, or null if we can't figure it out
+     * @return inferred ${spotbugs.home}, or null if we can't figure it out
      */
-    private static String inferFindBugsHome() {
-        Pattern[] findbugsJarNames = { Pattern.compile("findbugs\\.jar$"), };
+    private static String inferSpotBugsHome() {
+        Pattern[] findbugsJarNames = { Pattern.compile("spotbugs\\.jar$"), };
 
         for (Pattern jarNamePattern : findbugsJarNames) {
             String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(jarNamePattern,
@@ -380,8 +380,8 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
         if (homeDir == null) {
             // Attempt to infer findbugs.home from the observed
-            // location of findbugs.jar.
-            homeDir = inferFindBugsHome();
+            // location of spotbugs.jar.
+            homeDir = inferSpotBugsHome();
         }
         return homeDir;
 
