@@ -108,3 +108,33 @@ task annotationsJar(type:Jar) {
 
 tasks['jar'].dependsOn 'anttaskJar', 'spotbugsAnnotationsJar', 'annotationsJar'
 
+// Populte bin folder with scripts
+task scripts(type:Copy) {
+  def props = new Properties()
+  doFirst {
+    props.load(new FileInputStream("$projectDir/etc/script.properties"))
+
+    filesNotMatching('**/*.ico') {
+      filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+        'GET_FBHOME': props.getProperty('script.get.fbhome'),
+        'SET_DEFAULT_JAVA': props.getProperty('script.set.default.java'),
+        'WRAP_JAVA': props.getProperty('script.wrap.java'),
+        'WRAP_JAR': props.getProperty('script.wrap.jar'),
+        'DEFINE_ESCAPE_ARG': props.getProperty('script.define.escape_arg')])
+      fileMode 0755
+    }
+  }
+
+  from 'src/scripts/standard'
+  from 'src/scripts/windows'
+  from('src/scripts/deprecated') {
+    into 'deprecated'
+  }
+  from('src/scripts/experimental') {
+    into 'experimental'
+  }
+
+  destinationDir file('bin')
+  duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
