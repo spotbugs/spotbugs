@@ -138,3 +138,33 @@ task scripts(type:Copy) {
   duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
+// Setup checkstyle
+apply plugin: 'checkstyle'
+
+checkstyle {
+  toolVersion '7.2'
+  ignoreFailures true
+  configFile file('etc/checkstyle.xml') // TODO : This config file is lame...
+}
+
+// TODO : There are plenty of errors to fix
+javadoc {
+  failOnError false
+  options.with {
+     memberLevel = JavadocMemberLevel.PROTECTED
+     author = true
+     docTitle = 'SpotBugs API Documentation'
+     header = "<b>SpotBugs ${project.version}</b>"
+     windowTitle = "SpotBugs ${project.version} API"
+     bottom = '<font size="-1"><a href="http://github.com/spotbugs/" target="_parent">SpotBugs</a> is licensed under the LGPL.</font>'
+     noDeprecated = false
+     noDeprecatedList = false
+     noIndex = false
+     noNavBar = false
+     noTree = false
+     splitIndex = true
+     use = true
+     version = true
+  }
+}
+
