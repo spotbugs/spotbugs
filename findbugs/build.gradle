@@ -147,8 +147,9 @@ checkstyle {
   configFile file('etc/checkstyle.xml') // TODO : This config file is lame...
 }
 
-// TODO : There are plenty of errors to fix
-javadoc {
+// Setup javadoc tasks
+tasks.withType(Javadoc).all {
+  // TODO : There are plenty of errors to fix
   failOnError false
   options.with {
      memberLevel = JavadocMemberLevel.PROTECTED
@@ -166,5 +167,17 @@ javadoc {
      use = true
      version = true
   }
+}
+
+// annotations javadoc
+task annotationJavadoc(type:Javadoc) {
+  options.with {
+    memberLevel = JavadocMemberLevel.PUBLIC
+    docTitle = 'SpotBugs Annotation Documentation'
+  }
+
+  classpath = sourceSets.main.compileClasspath
+  source sourceSets.main.java.srcDirs
+  include 'edu/umd/cs/findbugs/annotations/*'
 }
 
