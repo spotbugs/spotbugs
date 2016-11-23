@@ -1,7 +1,7 @@
 sourceSets {
   main {
     java {
-      srcDirs = ['src/java', 'src/gui']
+      srcDirs = ['src/java', 'src/gui', 'src/antTask']
     }
     resources {
       /*
@@ -28,13 +28,6 @@ sourceSets {
       srcDirs = ['src/junit']
     }
   }
-
-  anttask {
-    java {
-      srcDirs = ['src/antTask']
-    }
-    compileClasspath = project.configurations.compile
-  }
 }
 
 dependencies {
@@ -45,25 +38,73 @@ dependencies {
   compile fileTree(dir: 'lib', include: '*.jar')
 }
 
+tasks.withType(Jar).all {
+  includeEmptyDirs = false
+  // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
+  //destinationDir = file("$projectDir/lib")
+}
 
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   from sourceSets.main.output
-  from sourceSets.anttask.output
 
   baseName 'spotbugs' // Needed until we rename the directory
 
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
-               'Class-Path': 'bcel.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0 jsr305.jar jFormatString.jar commons-lang-2.6.jar'
+               'Class-Path': 'bcel.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA jsr305.jar jFormatString.jar commons-lang-2.6.jar'
   }
 }
 
 // Make the anttask jar as part of the build process
 task anttaskJar(type:Jar) {
-  from sourceSets.anttask.output
+  from sourceSets.main.output
+  include '**/anttask/*'
   baseName 'spotbugs-ant'
 }
 
-tasks['jar'].dependsOn 'anttaskJar'
+// Build spotbugs annotations jar
+task spotbugsAnnotationsJar(type:Jar) {
+  from sourceSets.main.output
+  include '**/annotations/*'
+  baseName 'spotbugs-annotations'
+
+  manifest {
+    attributes 'Bundle-Name': 'SpotbugsInternalAnnotations',
+               'Bundle-SymbolicName': 'spotbugsInternalAnnotations',
+               'Bundle-Version': project.version,
+               'Export-Package': 'edu.umd.cs.findbugs.annotations',
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5'
+  }
+}
+
+// TODO : This jar should probably be dropped. Just use the one above, and add transitive dependencies
+// Build ALL annotations jar
+task annotationsJar(type:Jar) {
+  from(sourceSets.main.output) {
+    include '**/annotations/*'
+  }
+  // TODO : These includes source java files.. exclude them and put them in a separate sources jar?
+  from zipTree("$projectDir/lib/jcip-annotations.jar").matching {
+    exclude 'META-INF/**'
+    exclude '**/*.html'
+  }
+  from zipTree("$projectDir/lib/jsr305.jar").matching { // TODO : to be dropped
+    exclude 'META-INF/**'
+    exclude '**/*.html'
+  }
+  baseName 'annotations'
+
+  manifest {
+    attributes 'Bundle-ManifestVersion': 2,
+               'Bundle-Name': 'SpotbugsAnnotations',
+               'Bundle-SymbolicName': 'spotbugsAnnotations',
+               'Bundle-Version': project.version,
+               'Export-Package': 'edu.umd.cs.findbugs.annotations, javax.annotation, ' +
+                 'javax.annotation.concurrent, javax.annotation.meta, net.jcip.annotations',
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5'
+  }
+}
+
+tasks['jar'].dependsOn 'anttaskJar', 'spotbugsAnnotationsJar', 'annotationsJar'
 
