@@ -23,7 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import com.h3xstream.findbugs.test.jsp.SMAPSourceDebugExtension;
+import org.sonar.plugins.findbugs.resource.SmapParser;
+
 import com.h3xstream.findbugs.test.service.ClassFileLocator;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
@@ -108,7 +109,7 @@ public class BugInstanceMatcherBuilder {
         if (jspLine != null) {
             if (jspFile != null) {
                 //Map JSP lines to Java base on the smap file if available
-                multipleChoicesLine = mapJspToJavaLine(jspFile,jspLine);
+                multipleChoicesLine = mapJspToJavaLine(jspFile, jspLine);
             } else {
                 throw new RuntimeException("JSP file not set.");
             }
@@ -118,27 +119,26 @@ public class BugInstanceMatcherBuilder {
                 lineNumberApprox, confidence, jspFile, multipleChoicesLine);
     }
 
-    private static List<Integer> mapJspToJavaLine(String jspFile, Integer jspLine) {
-        List<Integer> outJavaLines = null;
-
-        ClassFileLocator locator = new ClassFileLocator();
-        File smapFile = new File(locator.getJspFilePath(jspFile) + ".smap");
-        if(!smapFile.exists()) {
+    private static List<Integer> mapJspToJavaLine(final String jspFile, final Integer jspLine) {
+        final ClassFileLocator locator = new ClassFileLocator();
+        final File smapFile = new File(locator.getJspFilePath(jspFile) + ".smap");
+        if (!smapFile.exists()) {
             throw new RuntimeException("SMAP File are missing. ("+smapFile+")");
         }
         try {
             //Convert
             final String contents = new String(Files.readAllBytes(smapFile.toPath()), StandardCharsets.UTF_8);
-            SMAPSourceDebugExtension smapDebug = new SMAPSourceDebugExtension(contents);
-            outJavaLines = smapDebug.getOriginalLine(jspLine);
-            if(outJavaLines.isEmpty()) {
+            final SmapParser smapParser = new SmapParser(contents);
+            final List<Integer> javaLineNumbers = smapParser.getJavaLineNumbers(jspLine);
+            if (javaLineNumbers.isEmpty()) {
                 throw new RuntimeException("Unable to find the mapping for the JSP line "+jspLine);
             }
+
+            return javaLineNumbers;
         }
         catch (IOException e) {
             throw new RuntimeException("Unable to open the smap file.",e);
         }
-        return outJavaLines;
     }
 
 }
