@@ -231,6 +231,10 @@ task distSrcZip(type:Exec) {
 }
 tasks['assembleDist'].dependsOn distSrcZip
 
+test {
+  dependsOn ':findbugsTestCases:build'
+}
+
 // TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
@@ -238,7 +242,7 @@ tasks['assembleDist'].dependsOn distSrcZip
 
 // Smoke testing
 // TODO : plugincheck_fbcontrib
-// TODO : spotbugsTestCases
+// TODO : spotbugsTestCases (already analyzed by unit tests... not particularly useful, is it?)
 // TODO : spotbugscheck (really? I believe it does nothing but run and check it doesn't blow up)
 
 // Integration testing

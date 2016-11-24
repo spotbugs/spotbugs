@@ -1,0 +1,27 @@
+sourceSets {
+  main {
+    java {
+      // TODO : Ant currently ignores src/java7... we can probably move all files directly to src/java
+      srcDirs = ['src/java', 'src/java7', 'src/fakeAnnotations', 'src/fakeLibraries']
+    }
+  }
+}
+
+dependencies {
+  // TODO : Some of these can be extracted to actual dependencies
+  compile fileTree(dir: 'lib', include: '*.jar')
+  compile project(':findbugs')
+}
+
+tasks.withType(JavaCompile).all {
+  options.compilerArgs << '-Xlint:none'
+}
+
+task classesJava7(type:JavaCompile) {
+  exclude '**/*jdk8.java'
+  sourceCompatibility = '1.7'
+  targetCompatibility = '1.7'
+  destinationDir = file("$buildDir/classes-jdk7")
+}
+
+tasks['build'].dependsOn classesJava7

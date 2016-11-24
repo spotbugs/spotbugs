@@ -1,1 +1,1 @@
-include ':findbugs'
+include ':findbugsTestCases', ':findbugs'
