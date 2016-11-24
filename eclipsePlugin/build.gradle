@@ -1,0 +1,101 @@
+sourceSets {
+  main {
+    java {
+      srcDirs = ['src']
+    }
+    resources {
+      srcDirs = ['src']
+      include '**/*.properties'
+      include '**/*.xml'
+    }
+  }
+}
+
+configurations {
+  embeddedLibs
+  compile.extendsFrom embeddedLibs
+}
+
+def localProps = new Properties()
+localProps.load(new FileInputStream("$projectDir/local.properties"))
+
+def requiredLibs = fileTree(dir:'lib', include:['jsr305.jar',
+  'bcel.jar',
+  'annotations.jar',
+  'jFormatString.jar',
+  'commons-lang-2.6.jar',
+  'asm-debug-all-6.0-SNAPSHOT.jar',
+  'dom4j-1.6.1.jar',
+  'jaxen-1.1.6.jar'
+])
+
+dependencies {
+  compile requiredLibs
+
+  compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
+    exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar'])
+
+  embeddedLibs(project(':findbugs')) {
+    transitive = false
+  }
+}
+
+task distSrcZip(type:Exec) {
+  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/edu.umd.cs.findbugs.plugin.eclipse_${project.version}-source.zip", 'HEAD'
+}
+
+jar {
+  includeEmptyDirs = false
+  from(configurations.embeddedLibs.collect { zipTree(it) }) {
+    exclude 'edu/umd/cs/findbugs/gui/**/*.*'
+    exclude 'edu/umd/cs/findbugs/gui2/**/*.*'
+    exclude 'edu/umd/cs/findbugs/userAnnotations/ri/**/*.*'
+    exclude 'edu/umd/cs/findbugs/sourceViewer/**/*.*'
+    exclude 'edu/umd/cs/findbugs/anttask/**/*.*'
+    exclude 'edu/umd/cs/findbugs/tools/**/*.*'
+    exclude 'edu/umd/cs/findbugs/annotations/**/*.*'
+    exclude 'net/jcip/annotations/**/*.*'
+    exclude 'META-INF/**.*'
+  }
+  exclude 'de/tobject/findbugs/tools/**'
+  archiveName 'findbugs-plugin.jar' // TODO : Change this
+}
+
+task distZip(type:Zip) {
+  dependsOn jar
+
+  from jar.outputs.files
+  from(project.projectDir) {
+    include 'RELEASENOTES'
+    include 'plugin.xml'
+    include '.options'
+    include 'plugin*.properties' // match plugin.properties and plugin_ja.properties
+    include '*.png'
+    include 'about.*'
+    include 'doc/*.*'
+    include 'plugin/*.*'
+    include 'icons/*.*'
+  }
+  from('../findbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
+    include 'plugin/**'
+  }
+  from('../findbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
+    into 'plugin/'
+  }
+  from(requiredLibs) {
+    into 'lib/'
+  }
+  from('META-INF/MANIFEST.MF') {
+    filter { line ->
+      if (line.startsWith('Bundle-Version:')) {
+        return "Bundle-Version: ${project.version}"
+      }
+
+      line
+    }
+    into 'META-INF/'
+  }
+  into "edu.umd.cs.findbugs.plugin.eclipse_${project.version}"
+  archiveName "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.zip"
+}
+

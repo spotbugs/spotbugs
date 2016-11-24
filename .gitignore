@@ -1,4 +1,5 @@
 .gradle
+build
 
 # TODO : Clean up
 **/local.properties
