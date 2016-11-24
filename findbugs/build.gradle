@@ -138,36 +138,10 @@ task scripts(type:Copy) {
   duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
-// Setup checkstyle
-apply plugin: 'checkstyle'
-
-checkstyle {
-  toolVersion '7.2'
-  ignoreFailures true
-  configFile file('etc/checkstyle.xml') // TODO : This config file is lame...
-}
+apply from: "$rootDir/gradle/checkstyle.gradle"
 
 // Setup javadoc tasks
-tasks.withType(Javadoc).all {
-  // TODO : There are plenty of errors to fix
-  failOnError false
-  options.with {
-     memberLevel = JavadocMemberLevel.PROTECTED
-     author = true
-     docTitle = 'SpotBugs API Documentation'
-     header = "<b>SpotBugs ${project.version}</b>"
-     windowTitle = "SpotBugs ${project.version} API"
-     bottom = '<font size="-1"><a href="http://github.com/spotbugs/" target="_parent">SpotBugs</a> is licensed under the LGPL.</font>'
-     noDeprecated = false
-     noDeprecatedList = false
-     noIndex = false
-     noNavBar = false
-     noTree = false
-     splitIndex = true
-     use = true
-     version = true
-  }
-}
+apply from: "$rootDir/gradle/javadoc.gradle"
 
 // annotations javadoc
 task annotationJavadoc(type:Javadoc) {
@@ -180,6 +154,23 @@ task annotationJavadoc(type:Javadoc) {
   source sourceSets.main.java.srcDirs
   include 'edu/umd/cs/findbugs/annotations/*'
   destinationDir = file("${project.docsDir}/annotations-javadoc")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier 'javadoc'
+  baseName 'spotbugs' // TODO : This is undeeded once we change the dir / project name
+  from javadoc.destinationDir
+}
+
+task annotationJavadocJar(type: Jar, dependsOn: annotationJavadoc) {
+  classifier 'javadoc'
+  baseName 'spotbugs-annotations'
+  from annotationJavadoc.destinationDir
+}
+
+artifacts {
+  archives javadocJar
+  archives annotationJavadocJar
 }
 
 // TODO : srcJar

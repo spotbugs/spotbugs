@@ -1,0 +1,9 @@
+// Setup checkstyle
+apply plugin: 'checkstyle'
+
+checkstyle {
+  toolVersion '7.2'
+  ignoreFailures true
+  configFile file("$rootDir/findbugs/etc/checkstyle.xml") // TODO : This config file is lame and should be moved out...
+}
+
