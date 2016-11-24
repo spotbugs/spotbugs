@@ -235,6 +235,25 @@ test {
   dependsOn ':findbugsTestCases:build'
 }
 
+// TODO : actually check the output beyond it not blowing up in pieces?
+task smokeTest {
+  dependsOn anttaskJar, compileJava
+  doLast {
+    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:anttaskJar.outputs.files.asPath)
+    ant.spotbugs(home:'./', output:'xml:withMessages',
+              jvmargs:'-ea -Xmx1200m',
+              excludeFilter:'findbugsExclude.xml',
+              projectName:'spotbugs',
+              maxRank:'20',
+              timeout:'1800000',
+              outputFile:"${buildDir}/findbugscheckAll.xml") {
+      sourcePath(path:'src/java:src/gui:src/junit:src/tools:src/antTask')
+      'class'(location:project.tasks['compileJava'].destinationDir)
+      auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
+    }
+  }
+}
+
 // TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
@@ -243,7 +262,6 @@ test {
 // Smoke testing
 // TODO : plugincheck_fbcontrib
 // TODO : spotbugsTestCases (already analyzed by unit tests... not particularly useful, is it?)
-// TODO : spotbugscheck (really? I believe it does nothing but run and check it doesn't blow up)
 
 // Integration testing
 // TODO : validatesamplehtmloutput (really?)
