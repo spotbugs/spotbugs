@@ -108,7 +108,7 @@ task annotationsJar(type:Jar) {
 
 tasks['jar'].dependsOn 'anttaskJar', 'spotbugsAnnotationsJar', 'annotationsJar'
 
-// Populte bin folder with scripts
+// Populate bin folder with scripts
 task scripts(type:Copy) {
   def props = new Properties()
   doFirst {
@@ -179,5 +179,28 @@ task annotationJavadoc(type:Javadoc) {
   classpath = sourceSets.main.compileClasspath
   source sourceSets.main.java.srcDirs
   include 'edu/umd/cs/findbugs/annotations/*'
+  destinationDir = file("${project.docsDir}/annotations-javadoc")
 }
 
+// TODO : srcJar
+// TODO : jsr305.jar (really?)
+// TODO : bindist
+// TODO : srcdist
+// TODO : sign
+// TODO : jnlp (needed?)
+// TODO : generatemanual
+// TODO : generatepdfmanual
+// TODO : generatedocs (needed?)
+// TODO : bugdesc
+
+// Smoke testing
+// TODO : plugincheck_fbcontrib
+// TODO : spotbugsTestCases
+// TODO : spotbugscheck (really? I believe it does nothing but run and check it doesn't blow up)
+
+// Integration testing
+// TODO : validatesamplehtmloutput (really?)
+// TODO : validatesamplexmloutput
+
+// XML validation
+// TODO : validate
