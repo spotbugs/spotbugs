@@ -223,10 +223,15 @@ distributions {
 }
 
 distTar.compression = Compression.GZIP
+tasks['build'].dependsOn tasks['assembleDist']
+
+task distSrcZip(type:Exec) {
+  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
+    '--prefix', "spotbugs-${project.version}/", 'HEAD'
+}
+tasks['assembleDist'].dependsOn distSrcZip
 
 // TODO : jsr305.jar (really?)
-// TODO : bindist
-// TODO : srcdist
 // TODO : sign
 // TODO : jnlp (needed?)
 // TODO : generatemanual
