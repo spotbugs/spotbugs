@@ -232,11 +232,8 @@ task distSrcZip(type:Exec) {
 tasks['assembleDist'].dependsOn distSrcZip
 
 // TODO : jsr305.jar (really?)
-// TODO : sign
-// TODO : jnlp (needed?)
-// TODO : generatemanual
+// TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
-// TODO : generatedocs (needed?)
 // TODO : bugdesc
 
 // Smoke testing
