@@ -139,8 +139,6 @@ task scripts(type:Copy) {
 }
 
 apply from: "$rootDir/gradle/checkstyle.gradle"
-
-// Setup javadoc tasks
 apply from: "$rootDir/gradle/javadoc.gradle"
 
 // annotations javadoc
@@ -168,12 +166,26 @@ task annotationJavadocJar(type: Jar, dependsOn: annotationJavadoc) {
   from annotationJavadoc.destinationDir
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  baseName 'spotbugs' // TODO : This is undeeded once we change the dir / project name
+  from sourceSets.main.allSource
+}
+
+task annotationSourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  baseName 'spotbugs-annotations'
+  from sourceSets.main.allSource
+  include '**/annotations/*'
+}
+
 artifacts {
   archives javadocJar
   archives annotationJavadocJar
+  archives sourcesJar
+  archives annotationSourcesJar
 }
 
-// TODO : srcJar
 // TODO : jsr305.jar (really?)
 // TODO : bindist
 // TODO : srcdist
