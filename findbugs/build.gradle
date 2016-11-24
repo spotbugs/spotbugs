@@ -110,6 +110,9 @@ tasks['jar'].dependsOn 'anttaskJar', 'spotbugsAnnotationsJar', 'annotationsJar'
 
 // Populate bin folder with scripts
 task scripts(type:Copy) {
+  // Take the properties into account for up-to-date checking
+  inputs.file "$projectDir/etc/script.properties"
+
   def props = new Properties()
   doFirst {
     props.load(new FileInputStream("$projectDir/etc/script.properties"))
@@ -185,6 +188,41 @@ artifacts {
   archives sourcesJar
   archives annotationSourcesJar
 }
+
+apply plugin: 'distribution'
+distributions {
+  main {
+    baseName = 'spotbugs' // TODO : This is undeeded once we change the dir / project name
+    contents {
+      from(scripts) {
+        into 'bin'
+      }
+      from 'README.txt'
+      from 'licenses'
+      from('lib') {
+        into 'lib'
+
+        // TODO : These exclusions can be removed when we move dependencies from lib to dependency management
+        exclude 'AppleJavaExtensions.jar'
+        exclude 'junit.jar'
+
+        // TODO : These exclusions can be removed when we delete ourselves from lib
+        exclude 'spotbugs*.jar'
+
+        include '**/*.jar'
+      }
+      from([jar, spotbugsAnnotationsJar, anttaskJar]) {
+        into 'lib'
+      }
+      from('src/xsl') {
+        into 'src/xsl'
+        include '**/*.xsl'
+      }
+    }
+  }
+}
+
+distTar.compression = Compression.GZIP
 
 // TODO : jsr305.jar (really?)
 // TODO : bindist
