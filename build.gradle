@@ -1,5 +1,7 @@
 subprojects {
   apply plugin: 'java'
+  apply from: "$rootDir/gradle/eclipse.gradle"
+  apply from: "$rootDir/gradle/idea.gradle"
 
   group = 'com.github.spotbugs'
   version = '3.1.0-SNAPSHOT'

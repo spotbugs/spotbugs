@@ -1,0 +1,21 @@
+import org.gradle.plugins.ide.eclipse.model.AccessRule
+
+apply plugin: 'eclipse'
+
+eclipse {
+  classpath {
+    defaultOutputDir = file('classesEclipse')
+    downloadSources = true
+    downloadJavadoc = true
+
+    file {
+      whenMerged {
+        def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+        jre.accessRules.add(new AccessRule('accessible', 'com/sun/management/*'))
+        jre.accessRules.add(new AccessRule('nonaccessible', 'com/sun/**'))
+        jre.accessRules.add(new AccessRule('accessible', 'com/apple/eawt/*'))
+        jre.accessRules.add(new AccessRule('nonaccessible', 'com/apple/**'))
+      }
+    }
+  }
+}
