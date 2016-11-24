@@ -1,0 +1,21 @@
+subprojects {
+  apply plugin: 'java'
+  apply from: "$rootDir/gradle/eclipse.gradle"
+  apply from: "$rootDir/gradle/idea.gradle"
+
+  group = 'com.github.spotbugs'
+  version = '3.1.0-SNAPSHOT'
+
+  // Java versions
+  project.sourceCompatibility = 1.8
+  project.targetCompatibility = 1.8
+
+  repositories {
+    jcenter()
+  }
+}
+
+wrapper {
+  gradleVersion = '3.2.1'
+  distributionType = Wrapper.DistributionType.ALL
+}

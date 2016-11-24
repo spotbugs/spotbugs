@@ -1,0 +1,271 @@
+sourceSets {
+  main {
+    java {
+      srcDirs = ['src/java', 'src/gui', 'src/antTask']
+    }
+    resources {
+      /*
+       * Becuase why put everything in a single folder when you can split it
+       * and mix it with other files you don't actually need together
+      */
+      srcDirs = ['src/xsl', 'etc', 'src/java', 'src/gui']
+      include '*.xsd'
+      include 'bugrank.txt'
+      include 'findbugs.xml'
+      include 'messages*.xml'
+      include '**/*.properties'
+      exclude 'doc.properties'
+      exclude 'script.properties'
+      include '*.xsl'
+      include '**/*.db'
+      include '**/*.html'
+      include '**/*.png'
+    }
+  }
+
+  test {
+    java {
+      srcDirs = ['src/junit']
+    }
+  }
+}
+
+dependencies {
+  compile 'org.apache.bcel:bcel:6.0'
+  compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+
+  // TODO : Some of these can be extracted to actual dependencies
+  compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+tasks.withType(Jar).all {
+  includeEmptyDirs = false
+  // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
+  //destinationDir = file("$projectDir/lib")
+}
+
+// Manually define what goes into the default jar, since it's not only main sourceset
+jar {
+  from sourceSets.main.output
+
+  baseName 'spotbugs' // Needed until we rename the directory
+
+  manifest {
+    attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
+               'Class-Path': 'bcel.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA jsr305.jar jFormatString.jar commons-lang-2.6.jar'
+  }
+}
+
+// Make the anttask jar as part of the build process
+task anttaskJar(type:Jar) {
+  from sourceSets.main.output
+  include '**/anttask/*'
+  baseName 'spotbugs-ant'
+}
+
+// Build spotbugs annotations jar
+task spotbugsAnnotationsJar(type:Jar) {
+  from sourceSets.main.output
+  include '**/annotations/*'
+  baseName 'spotbugs-annotations'
+
+  manifest {
+    attributes 'Bundle-Name': 'SpotbugsInternalAnnotations',
+               'Bundle-SymbolicName': 'spotbugsInternalAnnotations',
+               'Bundle-Version': project.version,
+               'Export-Package': 'edu.umd.cs.findbugs.annotations',
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5'
+  }
+}
+
+// TODO : This jar should probably be dropped. Just use the one above, and add transitive dependencies
+// Build ALL annotations jar
+task annotationsJar(type:Jar) {
+  from(sourceSets.main.output) {
+    include '**/annotations/*'
+  }
+  // TODO : These includes source java files.. exclude them and put them in a separate sources jar?
+  from zipTree("$projectDir/lib/jcip-annotations.jar").matching {
+    exclude 'META-INF/**'
+    exclude '**/*.html'
+  }
+  from zipTree("$projectDir/lib/jsr305.jar").matching { // TODO : to be dropped
+    exclude 'META-INF/**'
+    exclude '**/*.html'
+  }
+  baseName 'annotations'
+
+  manifest {
+    attributes 'Bundle-ManifestVersion': 2,
+               'Bundle-Name': 'SpotbugsAnnotations',
+               'Bundle-SymbolicName': 'spotbugsAnnotations',
+               'Bundle-Version': project.version,
+               'Export-Package': 'edu.umd.cs.findbugs.annotations, javax.annotation, ' +
+                 'javax.annotation.concurrent, javax.annotation.meta, net.jcip.annotations',
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5'
+  }
+}
+
+tasks['jar'].dependsOn 'anttaskJar', 'spotbugsAnnotationsJar', 'annotationsJar'
+
+// Populate bin folder with scripts
+task scripts(type:Copy) {
+  // Take the properties into account for up-to-date checking
+  inputs.file "$projectDir/etc/script.properties"
+
+  def props = new Properties()
+  doFirst {
+    props.load(new FileInputStream("$projectDir/etc/script.properties"))
+
+    filesNotMatching('**/*.ico') {
+      filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+        'GET_FBHOME': props.getProperty('script.get.fbhome'),
+        'SET_DEFAULT_JAVA': props.getProperty('script.set.default.java'),
+        'WRAP_JAVA': props.getProperty('script.wrap.java'),
+        'WRAP_JAR': props.getProperty('script.wrap.jar'),
+        'DEFINE_ESCAPE_ARG': props.getProperty('script.define.escape_arg')])
+      fileMode 0755
+    }
+  }
+
+  from 'src/scripts/standard'
+  from 'src/scripts/windows'
+  from('src/scripts/deprecated') {
+    into 'deprecated'
+  }
+  from('src/scripts/experimental') {
+    into 'experimental'
+  }
+
+  destinationDir file('bin')
+  duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/javadoc.gradle"
+
+// annotations javadoc
+task annotationJavadoc(type:Javadoc) {
+  options.with {
+    memberLevel = JavadocMemberLevel.PUBLIC
+    docTitle = 'SpotBugs Annotation Documentation'
+  }
+
+  classpath = sourceSets.main.compileClasspath
+  source sourceSets.main.java.srcDirs
+  include 'edu/umd/cs/findbugs/annotations/*'
+  destinationDir = file("${project.docsDir}/annotations-javadoc")
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier 'javadoc'
+  baseName 'spotbugs' // TODO : This is undeeded once we change the dir / project name
+  from javadoc.destinationDir
+}
+
+task annotationJavadocJar(type: Jar, dependsOn: annotationJavadoc) {
+  classifier 'javadoc'
+  baseName 'spotbugs-annotations'
+  from annotationJavadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  baseName 'spotbugs' // TODO : This is undeeded once we change the dir / project name
+  from sourceSets.main.allSource
+}
+
+task annotationSourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  baseName 'spotbugs-annotations'
+  from sourceSets.main.allSource
+  include '**/annotations/*'
+}
+
+artifacts {
+  archives javadocJar
+  archives annotationJavadocJar
+  archives sourcesJar
+  archives annotationSourcesJar
+}
+
+apply plugin: 'distribution'
+distributions {
+  main {
+    baseName = 'spotbugs' // TODO : This is undeeded once we change the dir / project name
+    contents {
+      from(scripts) {
+        into 'bin'
+      }
+      from 'README.txt'
+      from 'licenses'
+      from('lib') {
+        into 'lib'
+
+        // TODO : These exclusions can be removed when we move dependencies from lib to dependency management
+        exclude 'AppleJavaExtensions.jar'
+        exclude 'junit.jar'
+
+        // TODO : These exclusions can be removed when we delete ourselves from lib
+        exclude 'spotbugs*.jar'
+
+        include '**/*.jar'
+      }
+      from([jar, spotbugsAnnotationsJar, anttaskJar]) {
+        into 'lib'
+      }
+      from('src/xsl') {
+        into 'src/xsl'
+        include '**/*.xsl'
+      }
+    }
+  }
+}
+
+distTar.compression = Compression.GZIP
+tasks['build'].dependsOn tasks['assembleDist']
+
+task distSrcZip(type:Exec) {
+  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
+    '--prefix', "spotbugs-${project.version}/", 'HEAD'
+}
+tasks['assembleDist'].dependsOn distSrcZip
+
+test {
+  dependsOn ':findbugsTestCases:build'
+}
+
+// TODO : actually check the output beyond it not blowing up in pieces?
+task smokeTest {
+  dependsOn anttaskJar, compileJava
+  doLast {
+    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:anttaskJar.outputs.files.asPath)
+    ant.spotbugs(home:'./', output:'xml:withMessages',
+              jvmargs:'-ea -Xmx1200m',
+              excludeFilter:'findbugsExclude.xml',
+              projectName:'spotbugs',
+              maxRank:'20',
+              timeout:'1800000',
+              outputFile:"${buildDir}/findbugscheckAll.xml") {
+      sourcePath(path:'src/java:src/gui:src/junit:src/tools:src/antTask')
+      'class'(location:project.tasks['compileJava'].destinationDir)
+      auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
+    }
+  }
+}
+
+// TODO : jsr305.jar (really?)
+// TODO : generatemanual (we should decide what to do with the manual)
+// TODO : generatepdfmanual
+// TODO : bugdesc
+
+// Smoke testing
+// TODO : plugincheck_fbcontrib
+// TODO : spotbugsTestCases (already analyzed by unit tests... not particularly useful, is it?)
+
+// Integration testing
+// TODO : validatesamplehtmloutput (really?)
+// TODO : validatesamplexmloutput
+
+// XML validation
+// TODO : validate
