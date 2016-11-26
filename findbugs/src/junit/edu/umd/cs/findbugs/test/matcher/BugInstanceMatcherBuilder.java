@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.
  */
-package com.h3xstream.findbugs.test.matcher;
+package edu.umd.cs.findbugs.test.matcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,9 +25,8 @@ import java.util.List;
 
 import org.sonar.plugins.findbugs.resource.SmapParser;
 
-import com.h3xstream.findbugs.test.service.ClassFileLocator;
-
 import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.test.service.ClassFileLocator;
 
 /**
  * DSL to build BugInstanceMatcher

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.
  */
-package com.h3xstream.findbugs.test.matcher;
+package edu.umd.cs.findbugs.test.matcher;
 
 import java.util.List;
 import java.util.regex.Matcher;

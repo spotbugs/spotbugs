@@ -25,8 +25,8 @@ import static org.junit.Assert.assertThat;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.h3xstream.findbugs.test.matcher.BugInstanceMatcher;
-import com.h3xstream.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
 

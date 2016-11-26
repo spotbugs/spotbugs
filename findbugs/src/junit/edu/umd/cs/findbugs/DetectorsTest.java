@@ -31,11 +31,10 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.h3xstream.findbugs.test.matcher.BugInstanceMatcher;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 
 /**
  * This test runs a FindBugs analysis on the findbugsTestCases project and
