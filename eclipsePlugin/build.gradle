@@ -1,3 +1,8 @@
+if (version.endsWith('-SNAPSHOT')) {
+  // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
+  version = version - '-SNAPSHOT' + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
+}
+
 sourceSets {
   main {
     java {
@@ -61,9 +66,7 @@ jar {
   archiveName 'findbugs-plugin.jar' // TODO : Change this
 }
 
-task distZip(type:Zip) {
-  dependsOn jar
-
+def distSpec = copySpec {
   from jar.outputs.files
   from(project.projectDir) {
     include 'RELEASENOTES'
@@ -95,7 +98,120 @@ task distZip(type:Zip) {
     }
     into 'META-INF/'
   }
-  into "edu.umd.cs.findbugs.plugin.eclipse_${project.version}"
-  archiveName "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.zip"
 }
 
+task distZip(type:Zip, dependsOn:jar) {
+  with distSpec
+  into "edu.umd.cs.findbugs.plugin.eclipse_${project.version}"
+  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.zip"
+}
+
+task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
+  with distSpec
+  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  destinationDir = file("${buildDir}/site/eclipse/plugins/")
+}
+
+task pluginCandidateJar(type:Copy, dependsOn:pluginJar) {
+  from pluginJar.outputs.files
+  into "${buildDir}/site/eclipse-candidate/plugins/"
+}
+
+task pluginDailyJar(type:Copy, dependsOn:pluginJar) {
+  from pluginJar.outputs.files
+  into "${buildDir}/site/eclipse-daily/plugins/"
+}
+
+def siteFilterTokens = [
+  'PLUGIN_ID':'edu.umd.cs.findbugs.plugin.eclipse',
+  'PLUGIN_VERSION':"${project.version}".toString(),
+  'FEATURE_ID':'edu.umd.cs.findbugs.plugin.eclipse',
+  'FEATURE_VERSION':"${project.version}".toString()
+]
+
+task featureJar(type:Zip) {
+  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
+  from('plugin_feature.xml') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'feature.xml' }
+  }
+  destinationDir = file("${buildDir}/site/eclipse/features/")
+}
+
+task featureCandidateJar(type:Zip) {
+  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
+  from('plugin_feature-candidate.xml') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'feature.xml' }
+  }
+  destinationDir = file("${buildDir}/site/eclipse-candidate/features/")
+}
+
+task featureDailyJar(type:Zip) {
+  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
+  from('plugin_feature-daily.xml') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'feature.xml' }
+  }
+  destinationDir = file("${buildDir}/site/eclipse-daily/features/")
+}
+
+task siteXml(type:Copy) {
+  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site.xml'
+  destinationDir = file("${buildDir}/site/eclipse")
+  rename { 'site.xml' }
+}
+
+task siteCandidateXml(type:Copy) {
+  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site-candidate.xml'
+  destinationDir = file("${buildDir}/site/eclipse-candidate")
+  rename { 'site.xml' }
+}
+
+task siteDailyXml(type:Copy) {
+  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site-daily.xml'
+  destinationDir = file("${buildDir}/site/eclipse-daily")
+  rename { 'site.xml' }
+}
+
+task generateP2Metadata(type:Exec) {
+  inputs.file 'local.properties'
+  dependsOn pluginJar, featureJar, siteXml
+  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+    '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
+    '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
+    '-source', "${buildDir}/site/eclipse"
+}
+
+task generateCandidateP2Metadata(type:Exec) {
+  inputs.file 'local.properties'
+  dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml
+  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+    '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
+    '-artifactRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
+    '-source', "${buildDir}/site/eclipse-candidate"
+}
+
+task generateP2MetadataDaily(type:Exec) {
+  inputs.file 'local.properties'
+  dependsOn pluginDailyJar, featureDailyJar, siteDailyXml
+  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+    '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
+    '-artifactRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
+    '-source', "${buildDir}/site/eclipse-daily"
+}
+
+task eclipseSite() {
+  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
+}
+
+tasks['build'].dependsOn eclipseSite
