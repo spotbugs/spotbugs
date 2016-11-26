@@ -1,5 +1,10 @@
 .gradle
 build
+.idea
+.project
+.settings
+.classpath
+*.iml
 
 # TODO : Clean up
 **/local.properties
