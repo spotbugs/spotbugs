@@ -50,10 +50,12 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import org.dom4j.Document;
@@ -423,6 +425,7 @@ public class PluginLoader {
         plugin = null;
     }
 
+    @Nonnull
     private static URL computeCoreUrl() {
         URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
@@ -590,12 +593,74 @@ public class PluginLoader {
         if (u != null) {
             return u;
         }
+        u = resourceFromFindbugsJar(name);
+        if (u != null) {
+            return u;
+        }
         u = PluginLoader.class.getResource(name);
         if (u != null) {
             return u;
         }
         u = PluginLoader.class.getResource("/"+name);
         return u;
+    }
+
+    /**
+     * Try to load resource from JAR file of Findbugs core plugin.
+     * @param slashedResourceName Name of resource to load
+     * @return URL which points resource in jar file, or null if JAR file not found
+     */
+    @CheckForNull
+    private static URL resourceFromFindbugsJar(String slashedResourceName) {
+        try {
+            @Nullable
+            URL findbugsJar = getFindbugsJar();
+            if (findbugsJar == null) {
+                return null;
+            }
+            assert findbugsJar.getProtocol().equals("file");
+            try (ZipFile jarFile = new ZipFile(new File(findbugsJar.toURI()))) {
+                ZipEntry entry = jarFile.getEntry(slashedResourceName);
+                if (entry != null) {
+                    return resourceFromPlugin(findbugsJar, slashedResourceName);
+                }
+            } catch (ZipException e) {
+                if (DEBUG) {
+                    System.out.printf("Failed to load resourceFromFindbugsJar: %s is not valid zip file.%n", findbugsJar);
+                }
+            } catch (IOException e) {
+            if (DEBUG) {
+                    System.out.printf("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file (%s) loading.%n", findbugsJar);
+                }
+            }
+        } catch (MalformedURLException | URISyntaxException e) {
+            if (DEBUG) {
+                System.out.printf("Failed to load resourceFromFindbugsJar: "
+                        + "Resource name is %s, exception message is %s.%n",
+                        slashedResourceName, e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return URL of findbugs.jar,
+     * or null if found no jar file which contains FindBugs.class
+     * @throws MalformedURLException
+     */
+    @CheckForNull
+    private static URL getFindbugsJar() throws MalformedURLException {
+        String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
+        URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
+        if (me == null) {
+            return null;
+        }
+        if (!"jar".equals(me.getProtocol())) {
+            return null;
+        }
+        String u = me.toString();
+        String jarPath = u.substring(4, u.indexOf("!/"));
+        return new URL(jarPath);
     }
 
     public static @CheckForNull
