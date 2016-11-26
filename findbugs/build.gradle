@@ -232,7 +232,7 @@ task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
 }
-tasks['assembleDist'].dependsOn distSrcZip
+tasks['assembleDist'].finalizedBy distSrcZip
 
 test {
   dependsOn ':findbugsTestCases:build'
