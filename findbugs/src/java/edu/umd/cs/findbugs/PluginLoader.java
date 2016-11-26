@@ -622,7 +622,7 @@ public class PluginLoader {
             try (ZipFile jarFile = new ZipFile(new File(findbugsJar.toURI()))) {
                 ZipEntry entry = jarFile.getEntry(slashedResourceName);
                 if (entry != null) {
-            return resourceFromPlugin(findbugsJar, slashedResourceName);
+                    return resourceFromPlugin(findbugsJar, slashedResourceName);
                 }
             } catch (ZipException e) {
                 if (DEBUG) {
