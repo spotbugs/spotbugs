@@ -50,6 +50,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
@@ -617,15 +618,29 @@ public class PluginLoader {
             if (findbugsJar == null) {
                 return null;
             }
+            assert findbugsJar.getProtocol().equals("file");
+            try (ZipFile jarFile = new ZipFile(new File(findbugsJar.toURI()))) {
+                ZipEntry entry = jarFile.getEntry(slashedResourceName);
+                if (entry != null) {
             return resourceFromPlugin(findbugsJar, slashedResourceName);
-        } catch (MalformedURLException e) {
+                }
+            } catch (ZipException e) {
+                if (DEBUG) {
+                    System.out.printf("Failed to load resourceFromFindbugsJar: %s is not valid zip file.%n", findbugsJar);
+                }
+            } catch (IOException e) {
             if (DEBUG) {
-                System.out.printf("Failed to load resourceFromFindbugsJar. "
+                    System.out.printf("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file (%s) loading.%n", findbugsJar);
+                }
+            }
+        } catch (MalformedURLException | URISyntaxException e) {
+            if (DEBUG) {
+                System.out.printf("Failed to load resourceFromFindbugsJar: "
                         + "Resource name is %s, exception message is %s.%n",
                         slashedResourceName, e.getMessage());
             }
-            return null;
         }
+        return null;
     }
 
     /**
