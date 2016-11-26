@@ -30,8 +30,38 @@ import org.hamcrest.Matcher;
 import org.junit.Assume;
 
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
+ * Abstract class for integration testing. Extend, call {@code performAnalysis("com/company/classname.class")},
+ * and finally assert the issues found over {@code getBugCollection()} by creating appropriate matchers with {@link BugInstanceMatcherBuilder}
+ * For example:
+ *
+ * <pre>
+ * <code>
+ * public class MyIntegrationTest extends AbstractIntegrationTest {
+ *
+ *     @Test
+ *     public void testIssuesAreFound() {
+ *         performAnalysis("my/company/AnalyzedClass.class");
+ *
+ *         // There should only be exactly 1 issue of this type
+ *         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
+ *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
+ *         assertThat(getBugCollection(), AbstractIntegrationTest.containsExactly(bugTypeMatcher, 1));
+ *
+ *         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
+ *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+ *                 .inClass("AnalyzedClass")
+ *                 .atLine(25)
+ *                 .build();
+ *         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+ *     }
+ * }
+ * </code>
+ * </pre>
+ *
  * @author jmsotuyo
  */
 public class AbstractIntegrationTest {
@@ -69,7 +99,7 @@ public class AbstractIntegrationTest {
      * all the available detectors and reports all the bug categories. Uses a
      * low priority threshold.
      */
-    protected void performAnalysis(final String... analyzeMe) {
+    protected void performAnalysis(@SlashedClassName final String... analyzeMe) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         this.engine = new FindBugs2();
