@@ -644,7 +644,7 @@ public class PluginLoader {
     }
 
     /**
-     * @return URL with 'jar:' which points location of findbugs.jar,
+     * @return URL of findbugs.jar,
      * or null if found no jar file which contains FindBugs.class
      * @throws MalformedURLException
      */
