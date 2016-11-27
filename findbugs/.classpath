@@ -25,6 +25,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcip-annotations.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/yjp-controller-api-redist.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-all-1.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar" sourcepath="lib/jsr305.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen-1.1.6.jar"/>

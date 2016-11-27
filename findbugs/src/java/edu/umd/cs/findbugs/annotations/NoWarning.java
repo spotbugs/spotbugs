@@ -14,7 +14,9 @@ import java.lang.annotation.RetentionPolicy;
  * See http://code.google.com/p/findbugs/wiki/FindbugsTestCases
  *
  * @author David Hovemeyer
+ * @deprecated The annotation based approach is useless for lambdas. Write expectations using {@link com.h3xstream.findbugs.test.matcher.BugInstanceMatcher} matchers
  */
+@Deprecated
 @Retention(RetentionPolicy.CLASS)
 public @interface NoWarning {
     /**
