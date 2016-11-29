@@ -6,12 +6,12 @@ Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: findbugs-plugin.jar,
  lib/jsr305.jar,
  lib/annotations.jar,
- lib/bcel.jar,
+ lib/bcel-6.0.jar,
  lib/dom4j-1.6.1.jar,
  lib/jaxen-1.1.6.jar,
  lib/jFormatString.jar,
  lib/commons-lang-2.6.jar,
- lib/asm-debug-all-6.0-SNAPSHOT.jar
+ lib/asm-debug-all-6.0_ALPHA.jar
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: FindBugs Project
 Bundle-Localization: plugin

@@ -201,7 +201,7 @@ public class NewProjectWizard extends FBDialog {
 
         wizardComponents[3] = cloudPanel;
         @SuppressWarnings("unchecked")
-        ListCellRenderer<CloudPlugin>  aRenderer = new CloudComboBoxRenderer();
+        ListCellRenderer<Object> aRenderer = new CloudComboBoxRenderer();
         cloudSelector.setRenderer(aRenderer);
         cloudSelector.addItem(null);
         String cloudId = project.getCloudId();

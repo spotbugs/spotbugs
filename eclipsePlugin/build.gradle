@@ -18,27 +18,35 @@ sourceSets {
 
 configurations {
   embeddedLibs
+  includedLibs
   compile.extendsFrom embeddedLibs
+  compile.extendsFrom includedLibs
 }
 
 def localProps = new Properties()
 localProps.load(new FileInputStream("$projectDir/local.properties"))
 
-def requiredLibs = fileTree(dir:'lib', include:['jsr305.jar',
+// TODO : convert these to external dependencies
+def requiredLibs = fileTree(dir:'lib', include:[
+  'jsr305.jar',
   'bcel.jar',
-  'annotations.jar',
   'jFormatString.jar',
   'commons-lang-2.6.jar',
-  'asm-debug-all-6.0-SNAPSHOT.jar',
   'dom4j-1.6.1.jar',
   'jaxen-1.1.6.jar'
 ])
 
 dependencies {
-  compile requiredLibs
+  includedLibs requiredLibs
 
   compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
     exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar'])
+
+  includedLibs(project(path:':findbugs', configuration:'annotations')) {
+    transitive = false
+  }
+  includedLibs 'org.apache.bcel:bcel:6.0'
+  includedLibs 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
 
   embeddedLibs(project(':findbugs')) {
     transitive = false
@@ -85,8 +93,9 @@ def distSpec = copySpec {
   from('../findbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
     into 'plugin/'
   }
-  from(requiredLibs) {
+  from(configurations.includedLibs) {
     into 'lib/'
+    rename 'annotations-.*', 'annotations.jar'
   }
   from('META-INF/MANIFEST.MF') {
     filter { line ->
@@ -214,4 +223,4 @@ task eclipseSite() {
   dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
 }
 
-tasks['build'].dependsOn eclipseSite
+tasks['assemble'].dependsOn eclipseSite

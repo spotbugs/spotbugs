@@ -30,6 +30,10 @@ sourceSets {
   }
 }
 
+configurations {
+  annotations
+}
+
 dependencies {
   compile 'org.apache.bcel:bcel:6.0'
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
@@ -187,6 +191,7 @@ artifacts {
   archives annotationJavadocJar
   archives sourcesJar
   archives annotationSourcesJar
+  annotations annotationsJar
 }
 
 apply plugin: 'distribution'
@@ -206,13 +211,11 @@ distributions {
         exclude 'AppleJavaExtensions.jar'
         exclude 'junit.jar'
 
-        // TODO : These exclusions can be removed when we delete ourselves from lib
-        exclude 'spotbugs*.jar'
-
         include '**/*.jar'
       }
       from([jar, spotbugsAnnotationsJar, anttaskJar]) {
         into 'lib'
+        rename "(.*)-${project.version}.jar", '$1.jar'
       }
       from('src/xsl') {
         into 'src/xsl'
@@ -223,30 +226,39 @@ distributions {
 }
 
 distTar.compression = Compression.GZIP
-tasks['build'].dependsOn tasks['assembleDist']
+tasks['assemble'].dependsOn tasks['assembleDist']
 
 task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
 }
-tasks['assembleDist'].dependsOn distSrcZip
+tasks['assembleDist'].finalizedBy distSrcZip
 
 test {
   dependsOn ':findbugsTestCases:build'
 }
 
+task unzipDist(type:Copy, dependsOn:distZip) {
+  from zipTree(distZip.outputs.files.singleFile)
+  into file("$buildDir/smoketest/")
+  // Remove prefix
+  eachFile { details ->
+    details.path = details.path - "spotbugs-${project.version}"
+  }
+}
+
 // TODO : actually check the output beyond it not blowing up in pieces?
 task smokeTest {
-  dependsOn anttaskJar, compileJava
+  dependsOn unzipDist
   doLast {
     ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:anttaskJar.outputs.files.asPath)
-    ant.spotbugs(home:'./', output:'xml:withMessages',
+    ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
               jvmargs:'-ea -Xmx1200m',
               excludeFilter:'findbugsExclude.xml',
               projectName:'spotbugs',
               maxRank:'20',
               timeout:'1800000',
-              outputFile:"${buildDir}/findbugscheckAll.xml") {
+              outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
       sourcePath(path:'src/java:src/gui:src/junit:src/tools:src/antTask')
       'class'(location:project.tasks['compileJava'].destinationDir)
       auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)

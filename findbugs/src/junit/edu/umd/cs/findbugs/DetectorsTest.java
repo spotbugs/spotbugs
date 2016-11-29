@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -222,5 +223,24 @@ public class DetectorsTest {
             }
         }
 
+        // FIXME : the tests use our annotations, so we need them in the classpath...
+        String classpath = System.getProperty("java.class.path");
+        if (classpath == null) {
+            String rootDirectory;
+			try {
+				rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
+			} catch (final URISyntaxException e) {
+				throw new RuntimeException(e);
+			}
+            project.addAuxClasspathEntry(rootDirectory);
+        } else {
+        	String[] cpParts = classpath.split(File.pathSeparator);
+        	for (String cpStr : cpParts) {
+        		File file = new File(cpStr);
+				if (file.isDirectory()) {
+					project.addAuxClasspathEntry(file.getCanonicalPath());
+        		}
+        	}
+        }
     }
 }

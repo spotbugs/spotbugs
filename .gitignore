@@ -1,5 +1,10 @@
 .gradle
 build
+.idea
+.project
+.settings
+.classpath
+*.iml
 
 # TODO : Clean up
 **/local.properties
@@ -11,11 +16,6 @@ bluej/bin/
 bluej/lib/
 bluej/dist/
 eclipsePlugin-test/bin_eclipse/
-eclipsePlugin/bin_build/
-eclipsePlugin/bin_eclipse/
-eclipsePlugin/dist/
-eclipsePlugin/zips/
-eclipsePlugin/lib/
 eclipsePlugin/local.properties
 findbugs/annotationJavaDoc/
 findbugs/apiJavaDoc/
