@@ -25,7 +25,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
-import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -97,7 +96,6 @@ public class FilterFactory {
         case BUGCODE:
         case CATEGORY:
         case CLASS:
-        case DESIGNATION:
         case FIRSTVERSION:
         case LASTVERSION:
         case PACKAGE:
@@ -119,9 +117,6 @@ public class FilterFactory {
             return new BugMatcher(null, null, s.getFrom(bug));
         case CLASS:
             return new ClassMatcher(s.getFrom(bug));
-        case DESIGNATION:
-            return new DesignationMatcher(s.getFrom(bug));
-
         case FIRSTVERSION:
             return new FirstVersionMatcher(s.getFrom(bug), RelationalOp.EQ);
         case LASTVERSION:
@@ -160,9 +155,6 @@ public class FilterFactory {
             return new BugMatcher(null, null, value);
         case CLASS:
             return new ClassMatcher(value);
-        case DESIGNATION:
-            return new DesignationMatcher(value);
-
         case FIRSTVERSION:
             return new FirstVersionMatcher(value, RelationalOp.EQ);
         case LASTVERSION:

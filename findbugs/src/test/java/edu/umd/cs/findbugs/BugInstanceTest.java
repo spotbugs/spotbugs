@@ -1,14 +1,10 @@
 package edu.umd.cs.findbugs;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class BugInstanceTest extends TestCase {
 
@@ -86,54 +82,6 @@ public class BugInstanceTest extends TestCase {
         checkPropertyIterator(b.propertyIterator(), new String[] { "C" }, new String[] { "c" });
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[0], new String[0]);
-    }
-
-    public void testWriteCloudPropertiesWithoutMessagesEnabled() throws Exception {
-        BugInstance inst = new BugInstance("ABC", 2);
-        inst.getXmlProps().setConsensus("NOT_A_BUG");
-        inst.getXmlProps().setFirstSeen(BugInstance.firstSeenXMLFormat().parse("4/11/10 2:00 PM"));
-        inst.getXmlProps().setReviewCount(3);
-
-        SortedBugCollection bc = new SortedBugCollection();
-        bc.setWithMessages(false);
-
-
-        String output = writeXML(inst, bc);
-        System.err.println(output);
-
-        assertTrue("firstSeen", output.contains("firstSeen=\"4/11/10 2:00 PM\""));
-        assertTrue("consensus", output.contains("consensus=\"NOT_A_BUG\""));
-        assertTrue("reviews", output.contains("reviews=\"3\""));
-        assertFalse("notAProblem", output.contains("notAProblem"));
-        assertFalse("ageInDays", output.contains("ageInDays"));
-    }
-
-    public void testWriteCloudPropertiesWithMessagesEnabled() throws Exception {
-        BugInstance inst = new BugInstance("ABC", 2);
-        inst.addClass("my.class");
-        inst.getXmlProps().setConsensus("NOT_A_BUG");
-        inst.getXmlProps().setFirstSeen(BugInstance.firstSeenXMLFormat().parse("4/11/10 2:00 PM"));
-        inst.getXmlProps().setReviewCount(3);
-
-        SortedBugCollection bc = new SortedBugCollection();
-        bc.setWithMessages(true);
-
-        String output = writeXML(inst, bc);
-        System.err.println(output);
-
-        assertTrue("firstSeen", output.contains("firstSeen=\"4/11/10 2:00 PM\""));
-        assertTrue("consensus", output.contains("consensus=\"NOT_A_BUG\""));
-        assertTrue("reviews", output.contains("reviews=\"3\""));
-        assertTrue("notAProblem", output.contains("notAProblem=\"true\""));
-        assertTrue("ageInDays", output.contains("ageInDays="));
-    }
-
-    private String writeXML(BugInstance inst, BugCollection bc) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        XMLOutput out = new OutputStreamXMLOutput(bout);
-        inst.writeXML(out, bc, bc.getWithMessages());
-        out.finish();
-        return new String(bout.toByteArray(), "UTF-8");
     }
 
     private void get(Iterator<BugProperty> iter) {

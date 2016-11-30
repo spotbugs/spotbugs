@@ -47,7 +47,6 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>baselineBugs (xml file containing baseline bugs)</li>
  * <li>class (class, jar, zip or directory containing classes to analyze)</li>
  * <li>classpath (classpath for running FindBugs)</li>
- * <li>cloud (cloud id)</li>
  * <li>conserveSpace (boolean - default false)</li>
  * <li>debug (boolean default false)</li>
  * <li>effort (enum min|default|max)</li>
@@ -113,8 +112,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
     private boolean quietErrors;
 
     private String warningsProperty;
-
-    private String cloudId;
 
     private int maxRank;
 
@@ -357,10 +354,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
      */
     public void setEffort(String effort) {
         this.effort = effort;
-    }
-
-    public void setCloud(String cloudId) {
-        this.cloudId = cloudId.trim();
     }
 
     public void setMaxRank(int maxRank) {
@@ -661,10 +654,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
                     + "elements must be defined for task <" + getTaskName() + "/>", getLocation());
         }
 
-        if (cloudId != null && cloudId.contains(" ")) {
-            throw new BuildException("cloudId must not contain spaces: '" + cloudId + "'");
-        }
-
         if (outputFormat != null
                 && !("xml".equalsIgnoreCase(outputFormat.trim()) || "xml:withMessages".equalsIgnoreCase(outputFormat.trim())
                         || "html".equalsIgnoreCase(outputFormat.trim()) || "text".equalsIgnoreCase(outputFormat.trim())
@@ -739,10 +728,6 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg("-adjustExperimental");
         }
 
-        if (cloudId != null) {
-            addArg("-cloud");
-            addArg(cloudId);
-        }
         if (conserveSpace) {
             addArg("-conserveSpace");
         }

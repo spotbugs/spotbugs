@@ -259,7 +259,6 @@ public final class MarkerUtil {
                     + packageName + "." //$NON-NLS-1$
                     + className + ": \n\t" //$NON-NLS-1$
                     + bug.getMessage() + " / Annotation: " //$NON-NLS-1$
-                    + bug.getAnnotationText() + " / Source Line: " //$NON-NLS-1$
                     + bug.getPrimarySourceLineAnnotation());
         }
     }

@@ -45,8 +45,6 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     private boolean reportHistory = false;
 
-    private boolean reportUserDesignations = false;
-
     private boolean applySuppressions = false;
 
     static final String OTHER_CATEGORY_ABBREV = "X";
@@ -125,10 +123,6 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
         if (useLongBugCodes) {
             outputStream.print(bugInstance.getType());
-            outputStream.print(" ");
-        }
-        if (reportUserDesignations) {
-            outputStream.print(bugInstance.getUserDesignationKey());
             outputStream.print(" ");
         }
 
@@ -217,10 +211,6 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
     public void setApplySuppressions(boolean applySuppressions) {
         this.applySuppressions = applySuppressions;
-    }
-
-    public void setReportUserDesignations(boolean reportUserDesignations) {
-        this.reportUserDesignations = reportUserDesignations;
     }
 
     /*

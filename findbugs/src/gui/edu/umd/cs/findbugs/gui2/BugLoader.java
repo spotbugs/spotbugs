@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.LastVersionMatcher;
@@ -146,7 +145,6 @@ public class BugLoader {
         SortedBugCollection col = new SortedBugCollection(project);
         try {
             col.readXML(source);
-            initiateCommunication(col);
             if (col.hasDeadBugs()) {
                 addDeadBugMatcher(col);
             }
@@ -156,11 +154,6 @@ public class BugLoader {
         }
         MainFrame.getInstance().setProjectAndBugCollectionInSwingThread(project, col);
         return col;
-    }
-
-    private static void initiateCommunication(SortedBugCollection col) {
-        Cloud cloud = col.getCloud();
-        cloud.initiateCommunication();
     }
 
     public static @CheckForNull
@@ -178,7 +171,6 @@ public class BugLoader {
                 System.out.println("finished reading: " + url);
                 JOptionPane.showMessageDialog(mainFrame, "loaded: " + url);
             }
-            initiateCommunication(col);
             addDeadBugMatcher(col);
 
         } catch (Throwable e) {

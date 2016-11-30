@@ -21,14 +21,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -40,7 +34,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -55,7 +48,6 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.IGuiCallback;
@@ -64,10 +56,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.CloudListener;
-import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
-import edu.umd.cs.findbugs.cloud.DoNothingCloud;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.log.ConsoleLogger;
 import edu.umd.cs.findbugs.log.LogSync;
@@ -116,10 +104,6 @@ public class MainFrame extends FBFrame implements LogSync {
     @CheckForNull
     private File saveFile = null;
 
-    private final CloudListener userAnnotationListener = new MyCloudListener();
-
-    private final Cloud.CloudStatusListener cloudStatusListener = new MyCloudStatusListener();
-
     private final ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
     private final CountDownLatch mainFrameInitialized = new CountDownLatch(1);
@@ -127,8 +111,6 @@ public class MainFrame extends FBFrame implements LogSync {
     private int waitCount = 0;
 
     private final Object waitLock = new Object();
-
-    private final Runnable updateStatusBarRunner = new StatusBarUpdater();
 
     private volatile String errorMsg = "";
 
@@ -140,8 +122,6 @@ public class MainFrame extends FBFrame implements LogSync {
     private boolean projectChanged = false;
 
     private final FindBugsLayoutManager guiLayout;
-
-    private final CommentsArea comments;
 
     private final JLabel statusBarLabel = new JLabel();
 
@@ -174,7 +154,6 @@ public class MainFrame extends FBFrame implements LogSync {
     final MainFrameMenu mainFrameMenu = new MainFrameMenu(this);
 
     private final MainFrameComponentFactory mainFrameComponentFactory = new MainFrameComponentFactory(this);
-    private final PluginUpdateDialog pluginUpdateDialog = new PluginUpdateDialog();
 
     public static void makeInstance(FindBugsLayoutManagerFactory factory) {
         if (instance != null) {
@@ -193,9 +172,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     private MainFrame(FindBugsLayoutManagerFactory factory) {
         guiLayout = factory.getInstance(this);
-        comments = new CommentsArea(this);
         FindBugsDisplayFeatures.setAbridgedMessages(true);
-        DetectorFactoryCollection.instance().addPluginUpdateListener(pluginUpdateDialog.createListener());
     }
 
     public void showMessageDialog(String message) {
@@ -350,7 +327,6 @@ public class MainFrame extends FBFrame implements LogSync {
             msg = "  " + countFilteredBugs + " "
                     + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
         }
-        msg = updateCloudSigninStatus(msg);
         if (errorMsg != null && errorMsg.length() > 0) {
             msg = join(msg, errorMsg);
         }
@@ -362,26 +338,11 @@ public class MainFrame extends FBFrame implements LogSync {
         statusBarLabel.setText(msg);
     }
 
-    private String updateCloudSigninStatus(String msg) {
-        if (getBugCollection() != null) {
-            Cloud cloud = getBugCollection().getCloud();
-            String pluginMsg = cloud.getStatusMsg();
-            if (pluginMsg != null && pluginMsg.length() > 1) {
-                msg = join(msg, pluginMsg);
-            }
-        }
-        return msg;
-    }
-
     /**
      * This method is called when the application is closing. This is either by
      * the exit menuItem or by clicking on the window's system menu.
      */
     void callOnClose() {
-        if (!canNavigateAway()) {
-            return;
-        }
-
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
             Object[] options = {
                     L10N.getLocalString("dlg.save_btn", "Save"),
@@ -411,10 +372,6 @@ public class MainFrame extends FBFrame implements LogSync {
         guiSaveState.setFrameBounds(getBounds());
         guiSaveState.setExtendedWindowState(getExtendedState());
         guiSaveState.save();
-        if (this.bugCollection != null) {
-            Cloud cloud = this.bugCollection.getCloud();
-            cloud.shutdown();
-        }
         System.exit(0);
     }
 
@@ -489,25 +446,12 @@ public class MainFrame extends FBFrame implements LogSync {
         }
         acquireDisplayWait();
         try {
-
-            if (this.bugCollection != bugCollection && this.bugCollection != null) {
-                Cloud plugin = this.bugCollection.getCloud();
-                plugin.removeListener(userAnnotationListener);
-                plugin.removeStatusListener(cloudStatusListener);
-                plugin.shutdown();
-            }
             // setRebuilding(false);
             setProject(project);
             this.bugCollection = bugCollection;
             BugLoader.addDeadBugMatcher(bugCollection);
 
-            comments.updateBugCollection();
             displayer.clearCache();
-            if (bugCollection != null) {
-                Cloud plugin = bugCollection.getCloud();
-                plugin.addListener(userAnnotationListener);
-                plugin.addStatusListener(cloudStatusListener);
-            }
             mainFrameTree.updateBugTree();
             setProjectChanged(false);
             Runnable runnable = new Runnable() {
@@ -515,7 +459,6 @@ public class MainFrame extends FBFrame implements LogSync {
                 public void run() {
                     PreferencesFrame.getInstance().updateFilterPanel();
                     mainFrameMenu.getReconfigMenuItem().setEnabled(true);
-                    comments.refresh();
                     mainFrameMenu.setViewMenu();
                     newProject();
                     clearSourcePane();
@@ -550,7 +493,6 @@ public class MainFrame extends FBFrame implements LogSync {
             model.getOffListenerList();
             model.changeSet(bs);
             // curProject=BugLoader.getLoadedProject();
-            comments.updateBugCollection();
             setProjectChanged(true);
         }
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -569,11 +511,7 @@ public class MainFrame extends FBFrame implements LogSync {
     // ============================= menu actions
     // ===============================
 
-    @SuppressWarnings("unused")
     public void createNewProjectFromMenuItem() {
-        if (!canNavigateAway()) {
-            return;
-        }
         new NewProjectWizard();
 
         newProject = true;
@@ -603,30 +541,11 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void preferences() {
-        if (!canNavigateAway()) {
-            return;
-        }
         PreferencesFrame.getInstance().setLocationRelativeTo(this);
         PreferencesFrame.getInstance().setVisible(true);
     }
 
-    public void displayCloudReport() {
-        Cloud cloud = this.bugCollection.getCloud();
-        cloud.waitUntilIssueDataDownloaded();
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        cloud.printCloudSummary(writer, getDisplayedBugs(), viewFilter.getPackagePrefixes());
-        writer.close();
-        String report = stringWriter.toString();
-        DisplayNonmodelMessage.displayNonmodelMessage("Cloud summary", report, this, false);
-
-    }
-
     void redoAnalysis() {
-        if (!canNavigateAway()) {
-            return;
-        }
-
         /// QQQ-TODO: new RuntimeException("Redo analysis called").printStackTrace();
         acquireDisplayWait();
         edu.umd.cs.findbugs.util.Util.runInDameonThread(
@@ -634,7 +553,6 @@ public class MainFrame extends FBFrame implements LogSync {
                     @Override
                     public void run() {
                         try {
-                            updateDesignationDisplay();
                             Project project = getProject();
                             BugCollection bc = BugLoader.redoAnalysisKeepComments(project);
                             updateProjectAndBugCollection(bc);
@@ -654,12 +572,8 @@ public class MainFrame extends FBFrame implements LogSync {
         if (mainFrameTree.getCurrentSelectedBugLeaf() != null) {
             BugInstance bug = mainFrameTree.getCurrentSelectedBugLeaf().getBug();
             displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
-            updateDesignationDisplay();
-            comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
             updateSummaryTab(mainFrameTree.getCurrentSelectedBugLeaf());
         } else if (currentSelectedBugAspects != null) {
-            updateDesignationDisplay();
-            comments.updateCommentsFromNonLeafInformation(currentSelectedBugAspects);
             displayer.displaySource(null, null);
             clearSummaryTab();
         } else {
@@ -694,10 +608,6 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameComponentFactory.summaryTab();
     }
 
-    JPanel createCommentsInputPanel() {
-        return mainFrameComponentFactory.createCommentsInputPanel();
-    }
-
     JPanel createSourceCodePanel() {
         return mainFrameComponentFactory.createSourceCodePanel();
     }
@@ -718,10 +628,6 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameTree.getSorter();
     }
 
-    void updateDesignationDisplay() {
-        comments.refresh();
-    }
-
     private String getActionWithoutSavingMsg(String action) {
         String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_" + action + "_without_saving_txt", null);
         if (msg != null) {
@@ -733,7 +639,6 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public void updateBugTree() {
         mainFrameTree.updateBugTree();
-        comments.refresh();
     }
 
     public void resetViewCache() {
@@ -880,10 +785,6 @@ public class MainFrame extends FBFrame implements LogSync {
         }
     }
 
-    public boolean canNavigateAway() {
-        return comments.canNavigateAway();
-    }
-
     @SuppressWarnings({ "deprecation" })
     public void createProjectSettings() {
         ProjectSettings.newInstance();
@@ -908,15 +809,6 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public SaveType getSaveType() {
         return saveType;
-    }
-
-    private Iterable<BugInstance> getDisplayedBugs() {
-        return new Iterable<BugInstance>() {
-            @Override
-            public Iterator<BugInstance> iterator() {
-                return new ShownBugsIterator();
-            }
-        };
     }
 
     // =================================== misc accessors for helpers
@@ -960,10 +852,6 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public ExecutorService getBackgroundExecutor() {
         return backgroundExecutor;
-    }
-
-    public CommentsArea getComments() {
-        return comments;
     }
 
     public JMenuItem getReconfigMenuItem() {
@@ -1054,26 +942,6 @@ public class MainFrame extends FBFrame implements LogSync {
         mainFrameInitialized.countDown();
     }
 
-    public void addDesignationItem(JMenu menu, final String key, final String text, int keyEvent) {
-        JMenuItem toggleItem = new JMenuItem(text);
-
-        toggleItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                Cloud cloud = getBugCollection().getCloud();
-                if (cloud instanceof DoNothingCloud) {
-                    JOptionPane.showMessageDialog(MainFrame.this, "No cloud selected; enable and select optional Bug Collection XML Pseudo-Cloud plugin to store designations in XML");
-                } else if (comments.canSetDesignations()) {
-                    comments.setDesignation(key);
-                } else {
-                    JOptionPane.showMessageDialog(MainFrame.this, "The currently selected cloud cannot store these designations");
-                }
-            }
-        });
-        MainFrameHelper.attachAcceleratorKey(toggleItem, keyEvent);
-        menu.add(toggleItem);
-    }
-
     enum BugCard {
         TREECARD, WAITCARD
     }
@@ -1097,68 +965,9 @@ public class MainFrame extends FBFrame implements LogSync {
         }
     }
 
-    private class ShownBugsIterator implements Iterator<BugInstance> {
-        Iterator<BugInstance> base = getBugCollection().getCollection().iterator();
-
-        boolean nextKnown;
-
-        BugInstance next;
-
-        @Override
-        public boolean hasNext() {
-            if (!nextKnown) {
-                nextKnown = true;
-                while (base.hasNext()) {
-                    next = base.next();
-                    if (shouldDisplayIssue(next)) {
-                        return true;
-                    }
-                }
-                next = null;
-                return false;
-            }
-            return next != null;
-        }
-
-        @Override
-        public BugInstance next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            BugInstance result = next;
-            next = null;
-            nextKnown = false;
-            return result;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     private class MyGuiCallback extends AbstractSwingGuiCallback {
         private MyGuiCallback() {
             super(MainFrame.this);
-        }
-
-        @Override
-        public void registerCloud(Project project, BugCollection collection, Cloud plugin) {
-            //            assert collection.getCloud() == plugin
-            //                    : collection.getCloud().getCloudName() + " vs " + plugin.getCloudName();
-            if (MainFrame.this.bugCollection == collection) {
-                plugin.addListener(userAnnotationListener);
-                plugin.addStatusListener(cloudStatusListener);
-            }
-        }
-
-        @Override
-        public void unregisterCloud(Project project, BugCollection collection, Cloud plugin) {
-            assert collection.getCloud() == plugin;
-            if (MainFrame.this.bugCollection == collection) {
-                plugin.removeListener(userAnnotationListener);
-                plugin.removeStatusListener(cloudStatusListener);
-            }
         }
 
         @Override
@@ -1172,45 +981,4 @@ public class MainFrame extends FBFrame implements LogSync {
             });
         }
     }
-
-    private class MyCloudListener implements CloudListener {
-        @Override
-        public void issueUpdated(BugInstance bug) {
-            if (mainFrameTree.getCurrentSelectedBugLeaf() != null && mainFrameTree.getCurrentSelectedBugLeaf().getBug() == bug) {
-                comments.updateCommentsFromLeafInformation(mainFrameTree.getCurrentSelectedBugLeaf());
-            }
-        }
-
-        @Override
-        public void statusUpdated() {
-            SwingUtilities.invokeLater(updateStatusBarRunner);
-        }
-
-        @Override
-        public void taskStarted(Cloud.CloudTask task) {
-        }
-    }
-
-    private class MyCloudStatusListener implements Cloud.CloudStatusListener {
-        @Override
-        public void handleIssueDataDownloadedEvent() {
-            mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
-        }
-
-        @Override
-        public void handleStateChange(SigninState oldState, SigninState state) {
-            Cloud cloud = MainFrame.this.bugCollection.getCloudLazily();
-            if (cloud != null && cloud.isInitialized()) {
-                mainFrameTree.rebuildBugTreeIfSortablesDependOnCloud();
-            }
-        }
-    }
-
-    private class StatusBarUpdater implements Runnable {
-        @Override
-        public void run() {
-            updateStatusBar();
-        }
-    }
-
 }

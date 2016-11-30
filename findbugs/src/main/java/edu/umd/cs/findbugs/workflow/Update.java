@@ -33,7 +33,6 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -293,15 +292,6 @@ public class Update {
                 BugInstance origWarning = mapFromNewToOldBug.get(bug);
 
                 mergeBugHistory(origWarning, newBug);
-                // handle getAnnotationText()/setAnnotationText() and
-                // designation key
-                BugDesignation designation = newBug.getUserDesignation();
-                if (designation != null) {
-                    designation.merge(origWarning.getUserDesignation());
-                }
-                else {
-                    newBug.setUserDesignation(origWarning.getUserDesignation()); // clone??
-                }
 
                 //                persistantBugs++;
             } else {

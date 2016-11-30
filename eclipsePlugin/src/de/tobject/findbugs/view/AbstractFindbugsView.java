@@ -184,9 +184,6 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         manager.add(actionShowPerspective);
         manager.add(new Separator());
 
-        if (!(this instanceof UserAnnotationsView)) {
-            manager.add(actionShowAnnotationsView);
-        }
         manager.add(actionShowBugTreeView);
     }
 
@@ -199,9 +196,6 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         manager.add(actionShowPerspective);
         manager.add(new Separator());
 
-        if (!(this instanceof UserAnnotationsView)) {
-            manager.add(actionShowAnnotationsView);
-        }
         manager.add(actionShowBugTreeView);
     }
 

@@ -23,15 +23,10 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.File;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
@@ -45,7 +40,6 @@ import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.CompoundMatcher;
 import edu.umd.cs.findbugs.filter.ConfidenceMatcher;
-import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.FieldMatcher;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FirstVersionMatcher;
@@ -75,8 +69,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     private static final String PROJECT = "Project";
 
     private static final String BUG_COLLECTION = "BugCollection";
-
-    private static final Logger LOGGER = Logger.getLogger(SAXBugCollectionHandler.class.getName());
 
     public String getOptionalAttribute(Attributes attributes, String qName) {
         return memoized(attributes.getValue(qName));
@@ -114,8 +106,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     private final @CheckForNull File base;
 
     private final String topLevelName;
-
-    private String cloudPropertyKey;
 
     private SAXBugCollectionHandler(String topLevelName, @CheckForNull BugCollection bugCollection,
             @CheckForNull Project project, @CheckForNull File base) {
@@ -280,32 +270,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         if (oldInstanceHash != null) {
                             bugInstance.setOldInstanceHash(oldInstanceHash);
                         }
-
-                        String firstSeen = getOptionalAttribute(attributes, "firstSeen");
-                        if (firstSeen != null) {
-                            try {
-                                bugInstance.getXmlProps().setFirstSeen(BugInstance.firstSeenXMLFormat().parse(firstSeen));
-                            } catch (ParseException e) {
-                                LOGGER.warning("Could not parse first seen entry: " + firstSeen);
-                                // ignore
-                            }
-                        }
-
-                        String isInCloud = getOptionalAttribute(attributes, "isInCloud");
-                        if (isInCloud != null) {
-                            bugInstance.getXmlProps().setIsInCloud(Boolean.parseBoolean(isInCloud));
-                        }
-
-                        String reviewCount = getOptionalAttribute(attributes, "reviews");
-                        if (reviewCount != null) {
-                            bugInstance.getXmlProps().setReviewCount(Integer.parseInt(reviewCount));
-                        }
-
-                        String consensus = getOptionalAttribute(attributes, "consensus");
-                        if (consensus != null) {
-                            bugInstance.getXmlProps().setConsensus(consensus);
-                        }
-
                     } else if ("FindBugsSummary".equals(qName)) {
                         BugCollection bugCollection = this.bugCollection;
                         assert bugCollection != null;
@@ -411,27 +375,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 } else if (BugCollection.PROJECT_ELEMENT_NAME.equals(outerElement)) {
                     Project project = this.project;
                     assert project != null;
-                    if (Project.CLOUD_ELEMENT_NAME.equals(qName)) {
-                        String cloudId = getRequiredAttribute(attributes, Project.CLOUD_ID_ATTRIBUTE_NAME, qName);
-                        project.setCloudId(cloudId);
-                        if(bugCollection != null){
-                            Map<String,String> map = new HashMap<String, String>();
-                            for (int i = 0; i < attributes.getLength(); i++) {
-                                map.put(attributes.getLocalName(i), attributes.getValue(i));
-                            }
-                            bugCollection.setXmlCloudDetails(Collections.unmodifiableMap(map));
-                        }
-                    } else if (Project.PLUGIN_ELEMENT_NAME.equals(qName)) {
+                    if (Project.PLUGIN_ELEMENT_NAME.equals(qName)) {
                         String pluginId = getRequiredAttribute(attributes, Project.PLUGIN_ID_ATTRIBUTE_NAME, qName);
                         Boolean enabled = Boolean.valueOf(getRequiredAttribute(attributes, Project.PLUGIN_STATUS_ELEMENT_NAME, qName));
                         project.setPluginStatusTrinary(pluginId, enabled);
                     }
-
-                } else if (Project.CLOUD_ELEMENT_NAME.equals(outerElement)) {
-                    if (Project.CLOUD_PROPERTY_ELEMENT_NAME.equals(qName)) {
-                        cloudPropertyKey = getRequiredAttribute(attributes, "key", qName);
-                    }
-
                 }
             }
         }
@@ -505,8 +453,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if ("LastVersion".equals(qName)) {
             addMatcher(new LastVersionMatcher(getRequiredAttribute(attributes, "value", qName), getRequiredAttribute(attributes,
                     "relOp", qName)));
-        } else if ("Designation".equals(qName)) {
-            addMatcher(new DesignationMatcher(getRequiredAttribute(attributes, "designation", qName)));
         } else if ("BugCode".equals(qName)) {
             addMatcher(new BugMatcher(getRequiredAttribute(attributes, "name", qName), "", ""));
         } else if ("Local".equals(qName)) {
@@ -624,31 +570,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String propValue = getRequiredAttribute(attributes, "value", qName);
             bugInstance.setProperty(propName, propValue);
         } else if ("UserAnnotation".equals(qName)) {
-            // ignore AnnotationText for now; will handle in endElement
-            String s = getOptionalAttribute(attributes, "designation"); // optional
-            if (s != null) {
-                bugInstance.setUserDesignationKey(s, null);
-            }
-            s = getOptionalAttribute(attributes, "user"); // optional
-            if (s != null) {
-                bugInstance.setUser(s);
-            }
-            s = getOptionalAttribute(attributes, "timestamp"); // optional
-            if (s != null) {
-                try {
-                    long timestamp = Long.parseLong(s);
-                    bugInstance.setUserAnnotationTimestamp(timestamp);
-                } catch (NumberFormatException nfe) {
-                    // ok to contine -- just won't set a timestamp for the user
-                    // designation.
-                    // but is there anyplace to report this?
-                }
-            }
-            s = getOptionalAttribute(attributes, "needsSync"); // optional
-            if (s == null || "false".equals(s)) {
-                bugInstance.setUserAnnotationDirty(false);
-            }
-
+        	// legacy from the cloud plugin stuff
         } else {
             throw new SAXException("Unknown bug annotation named " + qName);
         }
@@ -765,19 +687,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     project.addSourceDir(makeAbsolute(getTextContents()));
                 } else if ("AuxClasspathEntry".equals(qName)) {
                     project.addAuxClasspathEntry(makeAbsolute(getTextContents()));
-                }
-
-
-
-            } else if (Project.CLOUD_ELEMENT_NAME.equals(outerElement) && Project.CLOUD_PROPERTY_ELEMENT_NAME.equals(qName)) {
-                Project project = this.project;
-                assert project != null;
-                assert cloudPropertyKey != null;
-                project.getCloudProperties().setProperty(cloudPropertyKey, getTextContents());
-                cloudPropertyKey = null;
-            } else if ("BugInstance".equals(outerElement)) {
-                if ("UserAnnotation".equals(qName)) {
-                    bugInstance.setAnnotationText(getTextContents(), null);
                 }
             } else if (BugCollection.ERRORS_ELEMENT_NAME.equals(outerElement)) {
                 BugCollection bugCollection = this.bugCollection;

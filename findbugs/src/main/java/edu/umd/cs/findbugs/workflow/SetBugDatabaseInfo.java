@@ -62,10 +62,6 @@ public class SetBugDatabaseInfo {
 
         String lastVersion;
 
-        String cloudId;
-
-        HashMap<String, String> cloudProperties = new HashMap<String, String>();
-
         boolean withMessages = false;
 
         boolean purgeStats = false;
@@ -77,8 +73,6 @@ public class SetBugDatabaseInfo {
         boolean resetSource = false;
 
         boolean resetProject = false;
-
-        boolean purgeDesignations = false;
 
         long revisionTimestamp = 0L;
 
@@ -94,16 +88,12 @@ public class SetBugDatabaseInfo {
             addSwitch("-resetProject", "remove all source search paths, analysis and auxiliary classpath entries");
             addOption("-source", "directory", "Add this directory to the source search path");
             addSwitch("-purgeStats", "purge/delete information about sizes of analyzed class files");
-            addSwitch("-uploadDesignations", "upload all designations to cloud");
-            addSwitch("-purgeDesignations", "purge/delete user designations (e.g., MUST_FIX or NOT_A_BUG");
             addSwitch("-purgeClassStats", "purge/delete information about sizes of analyzed class files, but retain class stats");
             addSwitch("-purgeMissingClasses", "purge list of missing classes");
             addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
             addOption("-suppress", "filter file", "Suppress warnings matched by this file (replaces previous suppressions)");
             addOption("-lastVersion", "version", "Trim the history to just include just the specified version");
             addSwitch("-withMessages", "Add bug descriptions");
-            addOption("-cloud", "id", "set cloud id");
-            addOption("-cloudProperty", "key=value", "set cloud property");
 
         }
 
@@ -117,8 +107,6 @@ public class SetBugDatabaseInfo {
                 resetProject = true;
             } else if ("-purgeStats".equals(option)) {
                 purgeStats = true;
-            } else if ("-purgeDesignations".equals(option)) {
-                purgeDesignations = true;
             } else if ("-purgeClassStats".equals(option)) {
                 purgeClassStats = true;
             } else if ("-purgeMissingClasses".equals(option)) {
@@ -133,17 +121,6 @@ public class SetBugDatabaseInfo {
         protected void handleOptionWithArgument(String option, String argument) throws IOException {
             if ("-name".equals(option)) {
                 revisionName = argument;
-            } else if ("-cloud".equals(option)) {
-                cloudId = argument;
-            } else if ("-cloudProperty".equals(option)) {
-                int e = argument.indexOf('=');
-                if (e == -1) {
-                    throw new IllegalArgumentException("Bad cloud property: " + argument);
-                }
-                String key = argument.substring(0, e);
-                String value = argument.substring(e + 1);
-                cloudProperties.put(key, value);
-
             } else if ("-projectName".equals(option)) {
                 projectName = argument;
             } else if ("-suppress".equals(option)) {
@@ -190,11 +167,6 @@ public class SetBugDatabaseInfo {
         }
         origCollection.setWithMessages(commandLine.withMessages);
 
-        if (commandLine.purgeDesignations) {
-            for (BugInstance b : origCollection) {
-                b.setUserDesignation(null);
-            }
-        }
         if (commandLine.exclusionFilterFile != null) {
             project.setSuppressionFilter(Filter.parseFilter(commandLine.exclusionFilterFile));
         }
@@ -202,15 +174,6 @@ public class SetBugDatabaseInfo {
             project.getSourceDirList().clear();
             project.getFileList().clear();
             project.getAuxClasspathEntryList().clear();
-        }
-        boolean reinitializeCloud = false;
-        if (commandLine.cloudId != null) {
-            project.setCloudId(commandLine.cloudId);
-            reinitializeCloud = true;
-        }
-        for (Map.Entry<String, String> e : commandLine.cloudProperties.entrySet()) {
-            project.getCloudProperties().setProperty(e.getKey(), e.getValue());
-            reinitializeCloud = true;
         }
 
         if (commandLine.resetSource) {
@@ -297,14 +260,6 @@ public class SetBugDatabaseInfo {
                 }
             }
 
-        }
-
-        if (reinitializeCloud)
-        {
-            origCollection.clearCloud();
-            // OK, now we know all the missing source files
-            // we also know all the .java files in the directories we were pointed
-            // to
         }
 
         if (argCount < args.length) {

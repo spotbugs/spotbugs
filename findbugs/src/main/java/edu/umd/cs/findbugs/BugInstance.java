@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -41,12 +40,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Constants;
@@ -80,8 +76,6 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.UserDesignation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -127,9 +121,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     private int cachedHashCode;
 
-    private @CheckForNull
-    BugDesignation userDesignation;
-
     private BugProperty propertyListHead, propertyListTail;
 
     private String oldInstanceHash;
@@ -142,8 +133,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
 
     @CheckForNull
     private DetectorFactory detectorFactory;
-
-    private final AtomicReference<XmlProps> xmlProps;
 
     /*
      * The following fields are used for tracking Bug instances across multiple
@@ -194,7 +183,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
         this.type = type.intern();
         this.priority = priority;
         lastVersion = -1;
-        xmlProps = new AtomicReference<XmlProps>();
         annotationList = new ArrayList<BugAnnotation>(4);
         cachedHashCode = INVALID_HASH_CODE;
 
@@ -635,227 +623,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
     public String getAbbrev() {
         BugPattern pattern = getBugPattern();
         return pattern.getAbbrev();
-    }
-
-    /** clear the user designation. */
-    public void clearUserDesignation() {
-        userDesignation = null;
-    }
-
-    /**
-     * set the user designation object. This will clobber any existing
-     * annotationText (or any other BugDesignation field).
-     */
-    @Deprecated
-    public void setUserDesignation(BugDesignation bd) {
-        userDesignation = bd;
-    }
-
-    /**
-     * return the user designation object, which may be null.
-     *
-     * A previous calls to getSafeUserDesignation(), setAnnotationText(), or
-     * setUserDesignation() will ensure it will be non-null [barring an
-     * intervening setUserDesignation(null)].
-     *
-     * @see #getNonnullUserDesignation()
-     */
-    @Deprecated
-    @Nullable
-    public BugDesignation getUserDesignation() {
-        if (userDesignation == null) {
-            return null;
-        }
-        if (!userDesignation.hasAnnotationText() && !userDesignation.hasDesignationKey()) {
-            return null;
-        }
-        return userDesignation;
-    }
-
-    /**
-     * return the user designation object, creating one if necessary. So calling
-     * <code>getSafeUserDesignation().setDesignation("HARMLESS")</code> will
-     * always work without the possibility of a NullPointerException.
-     *
-     * @see #getUserDesignation()
-     */
-    @Deprecated
-    @Nonnull
-    public BugDesignation getNonnullUserDesignation() {
-        if (userDesignation == null) {
-            userDesignation = new BugDesignation();
-        }
-        return userDesignation;
-    }
-
-    /**
-     * Get the user designation key. E.g., "MOSTLY_HARMLESS", "CRITICAL",
-     * "NOT_A_BUG", etc.
-     *
-     * If the user designation object is null,returns UNCLASSIFIED.
-     *
-     * To set the user designation key, call
-     * <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>.
-     *
-     * @see I18N#getUserDesignation(String key)
-     * @return the user designation key
-     */
-    @Nonnull
-    public String getUserDesignationKey() {
-        if (userDesignation == null) {
-            return BugDesignation.UNCLASSIFIED;
-        }
-        return userDesignation.getDesignationKey();
-    }
-
-    public @CheckForNull String getUserName() {
-        if (userDesignation == null) {
-            return null;
-        }
-        return userDesignation.getUser();
-    }
-
-    public long getUserTimestamp() {
-        if (userDesignation == null) {
-            return Long.MAX_VALUE;
-        }
-        return userDesignation.getTimestamp();
-    }
-
-    public int getUserDesignationKeyIndex() {
-        return I18N.instance().getUserDesignationKeys(true).indexOf(getUserDesignationKey());
-    }
-
-    public void setUserDesignationKey(String key, @CheckForNull BugCollection bugCollection) {
-        BugDesignation userDesignation = key.length() > 0 ? getNonnullUserDesignation() : getUserDesignation();
-        if (userDesignation == null) {
-            return;
-        }
-        if (userDesignation.getDesignationKey().equals(key)) {
-            return;
-        }
-        userDesignation.setDesignationKey(key);
-        Cloud plugin = bugCollection != null ? bugCollection.getCloud() : null;
-        if (plugin != null) {
-            plugin.storeUserAnnotation(this);
-        }
-    }
-
-    public void setUserDesignationKeyIndex(int index, @CheckForNull BugCollection bugCollection) {
-        setUserDesignationKey(I18N.instance().getUserDesignationKey(index), bugCollection);
-    }
-
-    /**
-     * Set the user annotation text.
-     *
-     * @param annotationText
-     *            the user annotation text
-     */
-    public void setAnnotationText(String annotationText, @CheckForNull BugCollection bugCollection) {
-        BugDesignation u = annotationText.length() > 0 ? getNonnullUserDesignation() : getUserDesignation();
-        if (u == null) {
-            return;
-        }
-        String existingText = u.getNonnullAnnotationText();
-        if (existingText.equals(annotationText)) {
-            return;
-        }
-        u.setAnnotationText(annotationText);
-        Cloud plugin = bugCollection != null ? bugCollection.getCloud() : null;
-        if (plugin != null) {
-            plugin.storeUserAnnotation(this);
-        }
-    }
-
-    /**
-     * Get the user annotation text.
-     *
-     * @return the user annotation text
-     */
-    @Nonnull
-    public String getAnnotationText() {
-        BugDesignation userDesignation = this.userDesignation;
-        if (userDesignation == null) {
-            return "";
-        }
-        String s = userDesignation.getAnnotationText();
-        if (s == null) {
-            return "";
-        }
-        return s;
-    }
-
-    public void setUser(String user) {
-        BugDesignation userDesignation = getNonnullUserDesignation();
-        userDesignation.setUser(user);
-    }
-
-    public void setUserAnnotationTimestamp(long timestamp) {
-        BugDesignation userDesignation = getNonnullUserDesignation();
-        userDesignation.setTimestamp(timestamp);
-    }
-
-    public void setUserAnnotationDirty(boolean dirty) {
-        BugDesignation userDesignation = getUserDesignation();
-        if (userDesignation == null) {
-            return;
-        }
-        userDesignation.setDirty(dirty);
-    }
-
-    public boolean isUserAnnotationDirty() {
-        BugDesignation userDesignation = getUserDesignation();
-        if (userDesignation == null) {
-            return false;
-        }
-        return userDesignation.isDirty();
-    }
-
-    /**
-     * Determine whether or not the annotation text contains the given word.
-     *
-     * @param word
-     *            the word
-     * @return true if the annotation text contains the word, false otherwise
-     */
-    public boolean annotationTextContainsWord(String word) {
-        return getTextAnnotationWords().contains(word);
-    }
-
-    /**
-     * Get set of words in the text annotation.
-     */
-    public Set<String> getTextAnnotationWords() {
-        HashSet<String> result = new HashSet<String>();
-
-        StringTokenizer tok = new StringTokenizer(getAnnotationText(), " \t\r\n\f.,:;-");
-        while (tok.hasMoreTokens()) {
-            result.add(tok.nextToken());
-        }
-        return result;
-    }
-
-    public boolean hasXmlProps() {
-        XmlProps props = xmlProps.get();
-        return props != null;
-    }
-
-    public XmlProps getXmlProps() {
-        XmlProps props = xmlProps.get();
-        if (props != null) {
-            return props;
-        }
-
-        props = new XmlProps();
-        while (xmlProps.get() == null) {
-            xmlProps.compareAndSet(null, props);
-        }
-        return xmlProps.get();
-    }
-
-    public boolean hasSomeUserAnnotation() {
-        return !"".equals(getAnnotationText())
-                || !getUserDesignationKey().equals(BugDesignation.UNCLASSIFIED);
     }
 
     /*
@@ -2251,74 +2018,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             attributeList.addAttribute("removedByChange", "true");
         }
 
-        if (bugCollection != null) {
-            Cloud cloud = bugCollection.getCloudLazily();
-            if (cloud != null && cloud.communicationInitiated()) {
-                long firstSeen = cloud.getFirstSeen(this);
-                attributeList.addAttribute("firstSeen", firstSeenXMLFormat().format(firstSeen));
-                int reviews = cloud.getNumberReviewers(this);
-                UserDesignation consensus = cloud.getConsensusDesignation(this);
-                if (!cloud.isInCloud(this)) {
-                    attributeList.addAttribute("isInCloud", "false");
-                }
-                if (reviews > 0) {
-                    attributeList.addAttribute("reviews", Integer.toString(reviews));
-
-                    if (consensus != UserDesignation.UNCLASSIFIED) {
-                        attributeList.addAttribute("consensus", consensus.toString());
-                    }
-
-                }
-                if (addMessages) {
-                    int ageInDays = ageInDays(bugCollection, firstSeen);
-                    attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
-                    if (reviews > 0 && consensus != UserDesignation.UNCLASSIFIED) {
-                        if (consensus.score() < 0) {
-                            attributeList.addAttribute("notAProblem", "true");
-                        }
-                        if (consensus.score() > 0) {
-                            attributeList.addAttribute("shouldFix", "true");
-                        }
-                    }
-
-                }
-            } else if (hasXmlProps()) {
-                XmlProps props = getXmlProps();
-
-                if (props.firstSeen != null) {
-                    attributeList.addOptionalAttribute("firstSeen", firstSeenXMLFormat().format(props.firstSeen));
-                }
-                if (props.reviewCount > 0) {
-                    if (props.consensus != null) {
-                        attributeList.addOptionalAttribute("consensus", props.consensus);
-                    }
-                    attributeList.addAttribute("reviews", Integer.toString(props.reviewCount));
-                }
-                if (!props.isInCloud()) {
-                    attributeList.addAttribute("isInCloud", "false");
-                }
-                if (addMessages) {
-                    UserDesignation consesus = UserDesignation.valueOf(props.consensus);
-                    if (consesus.shouldFix()) {
-                        attributeList.addAttribute("shouldFix", "true");
-                    } else if (consesus.notAProblem()) {
-                        attributeList.addAttribute("notAProblem", "true");
-                    }
-
-                    if (props.firstSeen != null) {
-                        int ageInDays = ageInDays(bugCollection, props.firstSeen.getTime());
-                        attributeList.addAttribute("ageInDays", Integer.toString(ageInDays));
-                    }
-                }
-            }
-        }
-
         xmlOutput.openTag(ELEMENT_NAME, attributeList);
-
-        // write out the user's designation & comment
-        if (userDesignation != null) {
-            userDesignation.writeXML(xmlOutput);
-        }
 
         if (addMessages) {
             BugPattern bugPattern = getBugPattern();
@@ -2847,53 +2547,5 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Seria
             result.add(b);
         }
         return result;
-    }
-
-    /**
-     * These are properties read from an analysis XML file. These properties
-     * should not take precedence over information from the Cloud - rather, this
-     * should be used when the cloud is unavailable, or when communicating with
-     * it is not desired for performance or complexity reasons.
-     */
-    static public class XmlProps {
-        private Date firstSeen = null;
-
-        private int reviewCount = 0;
-
-        private boolean isInCloud = true;
-
-        private String consensus;
-
-        public @CheckForNull Date getFirstSeen() {
-            return firstSeen;
-        }
-
-        public int getReviewCount() {
-            return reviewCount;
-        }
-
-        public @CheckForNull String getConsensus() {
-            return consensus;
-        }
-
-        public boolean isInCloud() {
-            return isInCloud;
-        }
-
-        public void setFirstSeen(Date firstSeen) {
-            this.firstSeen = firstSeen;
-        }
-
-        public void setReviewCount(int reviewCount) {
-            this.reviewCount = reviewCount;
-        }
-
-        public void setConsensus(String consensus) {
-            this.consensus = consensus;
-        }
-
-        public void setIsInCloud(boolean inCloud) {
-            isInCloud = inCloud;
-        }
     }
 }

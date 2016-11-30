@@ -81,7 +81,6 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
@@ -533,21 +532,6 @@ public class PreferencesFrame extends FBDialog {
         return contentPanel;
     }
 
-    static class PluginWithDescription {
-
-        public PluginWithDescription(String description, CloudPlugin plugin) {
-            this.description = description;
-            //            this.plugin = plugin;
-        }
-        final String description;
-        //        final CloudPlugin plugin;
-
-        @Override
-        public String toString() {
-            return description;
-        }
-
-    }
     private void changeTabSize() {
         int tabSize;
 

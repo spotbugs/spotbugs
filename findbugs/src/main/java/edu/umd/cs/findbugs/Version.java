@@ -21,16 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
-
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.updates.UpdateChecker;
-import edu.umd.cs.findbugs.util.FutureValue;
 
 /**
  * Version number and release date information.
@@ -143,59 +136,12 @@ public class Version {
                     System.out.println("  has parent plugin " + parent.getPluginId());
                 }
 
-                for (CloudPlugin cloudPlugin : plugin.getCloudPlugins()) {
-                    System.out.printf("  cloud %s%n", cloudPlugin.getId());
-                    System.out.printf("     %s%n", cloudPlugin.getDescription());
-                }
                 for (DetectorFactory factory : plugin.getDetectorFactories()) {
                     System.out.printf("  detector %s%n", factory.getShortName());
                 }
                 System.out.println();
             }
-            printPluginUpdates(true, 10);
-        } else {
-            printPluginUpdates(false, 3);
         }
     }
-
-    private static void printPluginUpdates(boolean verbose, int secondsToWait) throws InterruptedException {
-        DetectorFactoryCollection dfc = DetectorFactoryCollection.instance();
-
-        if (dfc.getUpdateChecker().updateChecksGloballyDisabled()) {
-            if (verbose) {
-                System.out.println();
-                System.out.print("Update checking globally disabled");
-            }
-            return;
-        }
-        if (verbose) {
-            System.out.println();
-            System.out.print("Checking for plugin updates...");
-        }
-        FutureValue<Collection<UpdateChecker.PluginUpdate>>
-        updateHolder  = dfc.getUpdates();
-
-        try {
-            Collection<UpdateChecker.PluginUpdate> updates = updateHolder.get(secondsToWait, TimeUnit.SECONDS);
-            if (updates.isEmpty()) {
-                if (verbose) {
-                    System.out.println("none!");
-                }
-            } else {
-                System.out.println();
-                for (UpdateChecker.PluginUpdate update : updates) {
-                    System.out.println(update);
-                    System.out.println();
-
-                }
-            }
-        } catch (TimeoutException e) {
-            if (verbose) {
-                System.out.println("Timeout while trying to get updates");
-            }
-        }
-
-    }
-
 }
 

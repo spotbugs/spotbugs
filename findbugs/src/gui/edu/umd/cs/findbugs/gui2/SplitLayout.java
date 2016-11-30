@@ -47,7 +47,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 
     JLabel sourceTitle;
 
-    JSplitPane topLeftSPane;
+    JPanel topLeftSPane;
 
     JSplitPane topSPane;
 
@@ -74,15 +74,6 @@ public class SplitLayout implements FindBugsLayoutManager {
         return null;
     }
 
-    @Override
-    public void resetCommentsInputPane() {
-        if (topLeftSPane != null) {
-            int position = topLeftSPane.getDividerLocation();
-            topLeftSPane.setRightComponent(frame.createCommentsInputPanel());
-            topLeftSPane.setDividerLocation(position);
-        }
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -96,12 +87,7 @@ public class SplitLayout implements FindBugsLayoutManager {
         viewSource.setPreferredSize(new Dimension(150, 15));
         viewSource.setEnabled(false);
 
-        topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, frame.mainFrameTree.bugListPanel(),
-                frame.createCommentsInputPanel());
-        topLeftSPane.setOneTouchExpandable(true);
-        topLeftSPane.setContinuousLayout(true);
-        topLeftSPane.setDividerLocation(GUISaveState.getInstance().getSplitTreeComments());
-        removeSplitPaneBorders(topLeftSPane);
+        topLeftSPane = frame.mainFrameTree.bugListPanel();
 
         JPanel sourceTitlePanel = new JPanel();
         sourceTitlePanel.setLayout(new BorderLayout());
@@ -158,16 +144,6 @@ public class SplitLayout implements FindBugsLayoutManager {
     /*
      * (non-Javadoc)
      *
-     * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeCommentsVisible()
-     */
-    @Override
-    public void makeCommentsVisible() {
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeSourceVisible()
      */
     @Override
@@ -182,7 +158,6 @@ public class SplitLayout implements FindBugsLayoutManager {
      */
     @Override
     public void saveState() {
-        GUISaveState.getInstance().setSplitTreeComments(topLeftSPane.getDividerLocation());
         GUISaveState.getInstance().setSplitTop(topSPane.getDividerLocation());
         GUISaveState.getInstance().setSplitSummary(summarySPane.getDividerLocation());
         GUISaveState.getInstance().setSplitMain(mainSPane.getDividerLocation());

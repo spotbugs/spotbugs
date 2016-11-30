@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -65,8 +64,6 @@ public class PrintingBugReporter extends TextUIBugReporter {
     class PrintingCommandLine extends CommandLine {
         private String stylesheet = null;
 
-        private boolean annotationUploadFormat = false;
-
         private int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
         private int summarizeMaxRank = maxRank;
@@ -81,10 +78,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
             addSwitch("-rank", "list rank when generating text");
             addOption("-maxRank", "max rank", "only list bugs of this rank or less");
             addOption("-summarizeMaxRank", "max rank", "summary bugs with of this rank or less");
-            addSwitch("-designations", "report user designations for each bug");
             addSwitch("-history", "report first and last versions for each bug");
             addSwitch("-applySuppression", "exclude any bugs that match suppression filters");
-            addSwitch("-annotationUpload", "generate annotations in upload format");
             addSwitchWithOptionalExtraPart("-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
             addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]", "specify list of plugin Jar files to load");
             addSwitch("-exitcode", "set exit code of process");
@@ -101,14 +96,10 @@ public class PrintingBugReporter extends TextUIBugReporter {
                 setUseLongBugCodes(true);
             } else if ("-rank".equals(option)) {
                 setShowRank(true);
-            } else if ("-designations".equals(option)) {
-                setReportUserDesignations(true);
             } else if ("-applySuppression".equals(option)) {
                 setApplySuppressions(true);
             } else if ("-history".equals(option)) {
                 setReportHistory(true);
-            } else if ("-annotationUpload".equals(option)) {
-                annotationUploadFormat = true;
             } else if ("-html".equals(option)) {
                 if (!"".equals(optionExtraPart)) {
                     stylesheet = optionExtraPart;
@@ -180,63 +171,35 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
         boolean bugsReported = false;
         RuntimeException storedException = null;
-        if (commandLine.annotationUploadFormat) {
-            bugCollection.computeBugHashes();
-            for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
-                BugInstance warning = i.next();
-                try {
-                    String fHash = "fb-" + warning.getInstanceHash() + "-" + warning.getInstanceOccurrenceNum() + "-"
-                            + warning.getInstanceOccurrenceMax();
-
-                    System.out.print("#" + fHash);
-                    String key = warning.getUserDesignationKey();
-                    if (key.equals(BugDesignation.UNCLASSIFIED) || "NEEDS_FURTHER_STUDY".equals(key)) {
-                        System.out.print("#-1#" + key);
-                    } else if ("MUST_FIX".equals(key) || "SHOULD_FIX".equals(key) || "I_WILL_FIX".equals(key)) {
-                        System.out.print("#7#" + key);
-                    } else {
-                        System.out.print("#0#" + key);
-                    }
-                    SourceLineAnnotation sourceLine = warning.getPrimarySourceLineAnnotation();
-                    System.out.println("#" + sourceLine.getSourceFile() + "#" + sourceLine.getStartLine());
-                    System.out.println(warning.getAnnotationText());
-                } catch (RuntimeException e) {
-                    if (storedException == null) {
-                        storedException = e;
-                    }
-                }
-            }
-        } else {
-
-            Bag<String> lowRank = new Bag<String>(new TreeMap<String, Integer>());
-            for (BugInstance warning : bugCollection.getCollection()) {
-                if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
-                    int rank = warning.getBugRank();
-                    BugPattern pattern = warning.getBugPattern();
-                    if (rank <= commandLine.maxRank) {
-                        bugsReported = true;
-                        try {
-                            reporter.printBug(warning);
-                        } catch (RuntimeException e) {
-                            if (storedException == null) {
-                                storedException = e;
-                            }
+        
+        Bag<String> lowRank = new Bag<String>(new TreeMap<String, Integer>());
+        for (BugInstance warning : bugCollection.getCollection()) {
+            if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
+                int rank = warning.getBugRank();
+                BugPattern pattern = warning.getBugPattern();
+                if (rank <= commandLine.maxRank) {
+                    bugsReported = true;
+                    try {
+                        reporter.printBug(warning);
+                    } catch (RuntimeException e) {
+                        if (storedException == null) {
+                            storedException = e;
                         }
-                    } else if (rank <= commandLine.summarizeMaxRank) {
-                        bugsReported = true;
-                        lowRank.add(pattern.getCategory());
                     }
-
+                } else if (rank <= commandLine.summarizeMaxRank) {
+                    bugsReported = true;
+                    lowRank.add(pattern.getCategory());
                 }
-            }
 
-            reporter.finish();
-            for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
-                System.out.printf("%4d low ranked %s issues%n", e.getValue(),
-                        I18N.instance().getBugCategoryDescription(e.getKey()));
             }
-
         }
+
+        reporter.finish();
+        for (Map.Entry<String, Integer> e : lowRank.entrySet()) {
+            System.out.printf("%4d low ranked %s issues%n", e.getValue(),
+                    I18N.instance().getBugCategoryDescription(e.getKey()));
+        }
+
         if(commandLine.setExitCode){
             int exitCode = 0;
             System.err.println("Calculating exit code...");

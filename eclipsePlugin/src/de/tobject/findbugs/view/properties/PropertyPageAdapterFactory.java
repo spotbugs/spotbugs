@@ -269,7 +269,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
         if (adapterType == IPropertySource.class) {
             if (adaptableObject instanceof BugPattern || adaptableObject instanceof BugInstance
                     || adaptableObject instanceof DetectorFactory || adaptableObject instanceof Plugin
-                    || adaptableObject instanceof BugInstance.XmlProps || adaptableObject instanceof BugGroup
+                    || adaptableObject instanceof BugGroup
                     || adaptableObject instanceof BugAnnotation) {
                 return new PropertySource(adaptableObject);
             }

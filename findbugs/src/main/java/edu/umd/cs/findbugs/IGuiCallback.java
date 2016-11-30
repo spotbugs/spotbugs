@@ -25,8 +25,6 @@ import java.util.concurrent.ExecutorService;
 
 import javax.swing.JComponent;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
-
 /**
  * Interface for any kind of GUI attached to the current FindBug analysis
  *
@@ -65,14 +63,6 @@ public interface IGuiCallback {
     void displayNonmodelMessage(String title, String message);
 
     boolean showDocument(URL u);
-
-    /**
-     * Called as soon as the cloud object is created, before it is initialized.
-     * Useful for adding status msg listener.
-     */
-    void registerCloud(Project project, BugCollection collection, Cloud cloud);
-
-    void unregisterCloud(Project project, BugCollection collection, Cloud cloud);
 
     /**
      * Use this executor to queue bug collection updates without interfering

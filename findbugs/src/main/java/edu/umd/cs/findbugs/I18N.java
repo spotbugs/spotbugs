@@ -19,12 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -41,9 +35,6 @@ import javax.annotation.Nonnull;
 public class I18N {
     private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
 
-    /** a Comparator to compare user designation keys */
-    public static final Comparator<String> designationKeyComparator = new DesignationKeyComparator();
-
     public static final Locale defaultLocale = Locale.getDefault();
 
     private final ResourceBundle annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions",
@@ -54,9 +45,6 @@ public class I18N {
      */
     private final ResourceBundle englishAnnotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions",
             Locale.ENGLISH);
-
-    private final ResourceBundle userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations", defaultLocale);
-
 
     I18N() {
         super();
@@ -186,130 +174,5 @@ public class I18N {
         BugCategory bc = DetectorFactoryCollection.instance().getBugCategory(category);
         return (bc != null ? bc.getShortDescription() : category);
     }
-
-    /**
-     * Get the localized user designation string. Returns the key if no user
-     * designation can be found.
-     *
-     * @param key
-     *            the user designation key
-     * @return the localized designation string
-     */
-    public String getUserDesignation(String key) {
-        return userDesignationBundle.getString(key);
-    }
-
-    /**
-     * Get a List containing all known user designation keys keys. E.g.,
-     * "MOSTLY_HARMLESS", "MUST_FIX", "NOT_A_BUG", etc.
-     *
-     * @return List of user designation keys
-     */
-    public List<String> getUserDesignationKeys() {
-        List<String> result = new LinkedList<String>();
-        for (Enumeration<String> e = userDesignationBundle.getKeys(); e.hasMoreElements();) {
-            String key = e.nextElement();
-            result.add(key);
-        }
-        return result;
-    }
-
-    /**
-     * Get a List containing all known user designation keys keys. E.g.,
-     * "MOSTLY_HARMLESS", "MUST_FIX", "NOT_A_BUG", etc.
-     *
-     * If <code>sort == true</code> then it will attempt to sort the List as
-     * appropriate to show the user.
-     *
-     * @return List of user designation keys
-     */
-    public List<String> getUserDesignationKeys(boolean sort) {
-        List<String> result = getUserDesignationKeys();
-        if (sort) {
-            Collections.sort(result, designationKeyComparator);
-        }
-        return result;
-    }
-
-    public String getUserDesignationKey(int index) {
-        List<String> keys = getUserDesignationKeys(true);
-        return keys.get(index);
-    }
-
-    private static class DesignationKeyComparator implements Comparator<String>, Serializable {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Returns a negative integer, zero, or a positive integer as the left
-         * key is less than, equal to, or greater than the right key.
-         */
-        @Override
-        public int compare(String lKey, String rKey) {
-            int lCat = categoryOf(lKey);
-            int catDiff = lCat - categoryOf(rKey);
-            if (catDiff != 0 || lCat != 0) {
-                return catDiff;
-            }
-            // if we get this far we have two unrecognized strings
-            return lKey.compareTo(rKey);
-        }
-
-        private static int categoryOf(String key) {
-            if (key == null) {
-                return -30;
-            }
-            if (key.length() <= 0) {
-                return -29;
-            }
-            switch (key.charAt(0)) {
-            case 'U':
-                if ("UNCLASSIFIED".equals(key)) {
-                    return 20;
-                }
-                break;
-            case 'I':
-                if ("I_WILL_FIX".equals(key)) {
-                    return 12;
-                }
-                break;
-
-            case 'B':
-                if ("BAD_ANALYSIS".equals(key)) {
-                    return 15;
-                }
-                break;
-            case 'N':
-                if ("NEEDS_STUDY".equals(key)) {
-                    return -22;
-                }
-                if ("NOT_A_BUG".equals(key)) {
-                    return -15;
-                }
-                break;
-            case 'O':
-                if ("OBSOLETE_CODE".equals(key)) {
-                    return 30;
-                }
-                break;
-            case 'M':
-                if ("MOSTLY_HARMLESS".equals(key)) {
-                    return -10;
-                }
-                if ("MUST_FIX".equals(key)) {
-                    return 10;
-                }
-                break;
-            case 'S':
-                if ("SHOULD_FIX".equals(key)) {
-                    return 5;
-                }
-            }
-            return 0; // between MOSTLY_HARMLESS and SHOULD_FIX
-        }
-    }
-
-
-
-
 }
 

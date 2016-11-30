@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs.gui2;
 
-import static edu.umd.cs.findbugs.gui2.MainFrameHelper.*;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.attachAcceleratorKey;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenu;
+import static edu.umd.cs.findbugs.gui2.MainFrameHelper.newJMenuItem;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -28,17 +30,13 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui.AnnotatedString;
 import edu.umd.cs.findbugs.gui2.FilterListener.Action;
-import edu.umd.cs.findbugs.updates.UpdateChecker;
 
 public class MainFrameMenu implements Serializable {
     private final MainFrame mainFrame;
@@ -207,9 +205,6 @@ public class MainFrameMenu implements Serializable {
         reconfigMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (!mainFrame.canNavigateAway()) {
-                    return;
-                }
                 new NewProjectWizard(mainFrame.getCurProject());
             }
         });
@@ -334,9 +329,6 @@ public class MainFrameMenu implements Serializable {
         groupByMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (!mainFrame.canNavigateAway()) {
-                    return;
-                }
                 SorterDialog.getInstance().setLocationRelativeTo(mainFrame);
                 SorterDialog.getInstance().setVisible(true);
             }
@@ -390,16 +382,6 @@ public class MainFrameMenu implements Serializable {
 
         menuBar.add(navMenu);
 
-        JMenu designationMenu = newJMenu("menu.designation", "Designation");
-        int i = 0;
-        int keyEvents[] = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6,
-                KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
-        for (String key : I18N.instance().getUserDesignationKeys(true)) {
-            String name = I18N.instance().getUserDesignation(key);
-            mainFrame.addDesignationItem(designationMenu, key, name, keyEvents[i++]);
-        }
-        menuBar.add(designationMenu);
-
         if (!MainFrame.MAC_OS_X) {
             // On Mac, 'About' appears under Findbugs menu, so no need for it
             // here
@@ -414,22 +396,6 @@ public class MainFrameMenu implements Serializable {
                 }
             });
 
-            JMenuItem updateItem = newJMenuItem("menu.check_for_updates", "Check for Updates...");
-            UpdateChecker checker = DetectorFactoryCollection.instance().getUpdateChecker();
-            boolean disabled = checker.updateChecksGloballyDisabled();
-            updateItem.setEnabled(!disabled);
-            if (disabled) {
-                updateItem.setToolTipText("Update checks disabled by plugin: "
-                        + checker.getPluginThatDisabledUpdateChecks());
-            }
-            helpMenu.add(updateItem);
-
-            updateItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    DetectorFactoryCollection.instance().checkForUpdates(true);
-                }
-            });
             menuBar.add(helpMenu);
         }
         return menuBar;
@@ -437,21 +403,8 @@ public class MainFrameMenu implements Serializable {
 
     void setViewMenu() {
 
-        Cloud cloud = mainFrame.getBugCollection() == null ? null : mainFrame.getBugCollection().getCloud();
-
         viewMenu.removeAll();
         viewMenu.add(groupByMenuItem);
-        if (cloud != null && cloud.supportsCloudSummaries()) {
-            JMenuItem cloudReport = new JMenuItem("Cloud summary");
-            cloudReport.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.displayCloudReport();
-
-                }
-            });
-            viewMenu.add(cloudReport);
-        }
         if (mainFrame.getProjectPackagePrefixes().size() > 0 && mainFrame.getBugCollection() != null) {
             JMenuItem selectPackagePrefixMenu = new JMenuItem("Select class search strings by project...");
             selectPackagePrefixMenu.addActionListener(new ActionListener() {
@@ -508,73 +461,6 @@ public class MainFrameMenu implements Serializable {
             viewMenu.add(rbMenuItem);
         }
 
-        viewMenu.addSeparator();
-
-        if (cloud != null && cloud.getMode() == Cloud.Mode.COMMUNAL) {
-            ButtonGroup overallClassificationButtonGroup = new ButtonGroup();
-            for (final ViewFilter.OverallClassificationFilter r : ViewFilter.OverallClassificationFilter.values()) {
-                if (!r.supported(cloud)) {
-                    continue;
-                }
-                JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
-                AnnotatedString.localiseButton(rbMenuItem, "menu.classificatonFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
-                overallClassificationButtonGroup.add(rbMenuItem);
-                if (r == ViewFilter.OverallClassificationFilter.ALL) {
-                    rbMenuItem.setSelected(true);
-                }
-                rbMenuItem.addActionListener(new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        mainFrame.getViewFilter().setClassification(r);
-                        mainFrame.resetViewCache();
-                    }
-                });
-                viewMenu.add(rbMenuItem);
-            }
-            viewMenu.addSeparator();
-        }
-
-        ButtonGroup evalButtonGroup = new ButtonGroup();
-        for (final ViewFilter.CloudFilter r : ViewFilter.CloudFilter.values()) {
-            if (cloud != null && !r.supported(cloud)) {
-                continue;
-            }
-            JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
-            AnnotatedString.localiseButton(rbMenuItem, "menu.cloudFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
-            evalButtonGroup.add(rbMenuItem);
-            if (r == ViewFilter.CloudFilter.ALL) {
-                rbMenuItem.setSelected(true);
-            }
-            rbMenuItem.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.getViewFilter().setEvaluation(r);
-                    mainFrame.resetViewCache();
-                }
-            });
-            viewMenu.add(rbMenuItem);
-        }
-        viewMenu.addSeparator();
-        ButtonGroup ageButtonGroup = new ButtonGroup();
-        for (final ViewFilter.FirstSeenFilter r : ViewFilter.FirstSeenFilter.values()) {
-            JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
-            AnnotatedString.localiseButton(rbMenuItem, "menu.firstSeenFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
-            ageButtonGroup.add(rbMenuItem);
-            if (r == ViewFilter.FirstSeenFilter.ALL) {
-                rbMenuItem.setSelected(true);
-            }
-            rbMenuItem.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mainFrame.getViewFilter().setFirstSeen(r);
-                    mainFrame.resetViewCache();
-                }
-            });
-            viewMenu.add(rbMenuItem);
-        }
         viewMenu.addSeparator();
         final Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
         Collection<Matcher> filters = suppressionFilter.getChildren();

@@ -47,7 +47,6 @@ import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerConfidence;
 import de.tobject.findbugs.marker.FindBugsMarker.MarkerRank;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * @author Andrei
@@ -110,15 +109,10 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
     public String getText(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-            String cloudName = null;
             Object data = group.getData();
             if (group.getType() == GroupType.Project && data != null) {
                 try {
                     SortedBugCollection bc = FindbugsPlugin.getBugCollection((IProject) data, null);
-                    Cloud cloud = bc.getCloud();
-                    if (cloud.isOnlineCloud()) {
-                        cloudName = cloud.getCloudName();
-                    }
                 } catch (CoreException e) {
                     FindbugsPlugin.getDefault().logException(e, "Failed to load bug collection");
                 }
@@ -129,9 +123,6 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             int filtered = getFilteredMarkersCount(group);
             String filterCount = filtered > 0 ? "/" + filtered + " filtered" : "";
             String str = group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
-            if (cloudName != null) {
-                str += " - " + cloudName;
-            }
             return str;
         }
         if (element instanceof IMarker) {

@@ -20,11 +20,9 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
@@ -34,9 +32,6 @@ import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProjectPackagePrefixes;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.BugFilingStatus;
-import edu.umd.cs.findbugs.cloud.Cloud.Mode;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -49,42 +44,6 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 
 public enum Sortables implements Comparator<String> {
-
-    FIRST_SEEN(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_seen", "First Seen")) {
-        @Override
-        public String getFrom(BugInstance bug) {
-            long firstSeen = getFirstSeen(bug);
-            return Long.toString(firstSeen);
-        }
-
-        /**
-         * @param bug
-         * @return
-         */
-        private long getFirstSeen(BugInstance bug) {
-            BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-            long firstSeen = bugCollection.getCloud().getFirstSeen(bug);
-            return firstSeen;
-        }
-
-        @Override
-        public String formatValue(String value) {
-            long when = Long.parseLong(value);
-            return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(when);
-        }
-
-        @Override
-        public int compare(String one, String two) {
-            // Numerical (zero is first)
-            return Long.valueOf(one).compareTo(Long.valueOf(two));
-        }
-
-        @Override
-        public boolean isAvailable(MainFrame mainframe) {
-            BugCollection bugCollection = mainframe.getBugCollection();
-            return bugCollection != null;
-        }
-    },
 
     FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version")) {
         @Override
@@ -316,32 +275,6 @@ public enum Sortables implements Comparator<String> {
         }
 
     },
-    DESIGNATION(edu.umd.cs.findbugs.L10N.getLocalString("sort.designation", "Designation")) {
-        @Override
-        public String getFrom(BugInstance bug) {
-            return bug.getUserDesignationKey();
-        }
-
-        /**
-         * value is the key of the designations.
-         *
-         * @param value
-         * @return
-         */
-        @Override
-        public String formatValue(String value) {
-            return I18N.instance().getUserDesignation(value);
-        }
-
-        @Override
-        public String[] getAllSorted() {// FIXME I think we always want user to
-            // see all possible designations, not
-            // just the ones he has set in his
-            // project, Agreement? -Dan
-            List<String> sortedDesignations = I18N.instance().getUserDesignationKeys(true);
-            return sortedDesignations.toArray(new String[sortedDesignations.size()]);
-        }
-    },
     BUGCODE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_kind", "Bug Kind")) {
         @Override
         public String getFrom(BugInstance bug) {
@@ -370,29 +303,6 @@ public enum Sortables implements Comparator<String> {
             return I18N.instance().getShortMessageWithoutCode(value);
         }
     },
-    CONSENSUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.consensus", "Consensus")) {
-        @Override
-        public String getFrom(BugInstance bug) {
-            BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-
-            return bugCollection.getCloud().getConsensusDesignation(bug).name();
-        }
-
-        @Override
-        public String formatValue(String value) {
-            return I18N.instance().getUserDesignation(value);
-        }
-
-        @Override
-        public boolean isAvailable(MainFrame mf) {
-            BugCollection bugCollection = mf.getBugCollection();
-            if (bugCollection == null) {
-                return false;
-            }
-            return bugCollection.getCloud().getMode() == Mode.COMMUNAL;
-
-        }
-    },
 
     BUG_RANK(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugrank", "Bug Rank")) {
         String[] values;
@@ -412,42 +322,6 @@ public enum Sortables implements Comparator<String> {
         @Override
         public String formatValue(String value) {
             return value;
-        }
-    },
-
-    BUG_STATUS(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_bugstatus", "Status")) {
-        @Override
-        public String getFrom(BugInstance bug) {
-
-            BugCollection bugCollection = MainFrame.getInstance().getBugCollection();
-
-            Cloud cloud = bugCollection.getCloud();
-            assert cloud != null;
-            BugFilingStatus status = cloud.getBugLinkStatus(bug);
-            if (status == BugFilingStatus.VIEW_BUG) {
-                String bugStatus = cloud.getBugStatus(bug);
-                if (bugStatus != null) {
-                    return bugStatus;
-                }
-            }
-
-            return CONSENSUS.getFrom(bug);
-        }
-
-        @Override
-        public String formatValue(String value) {
-            return value;
-        }
-
-        @Override
-        public boolean isAvailable(MainFrame mf) {
-            BugCollection bugCollection = mf.getBugCollection();
-            if (bugCollection == null) {
-                return false;
-            }
-            boolean a = bugCollection.getCloud().supportsBugLinks() && bugCollection.getCloud().getMode() == Mode.COMMUNAL;
-            return a;
-
         }
     },
 
