@@ -150,8 +150,8 @@ public class PluginLoader {
     static HashSet<String> loadedPluginIds = new HashSet<String>();
     static {
         if (DEBUG) {
-            System.out.println("Debugging plugin loading. FindBugs version "
-                    + Version.getReleaseWithDateIfDev());
+            System.out.println("Debugging plugin loading. SpotBugs version "
+                    + Version.VERSION_STRING);
         }
         loadInitialPlugins();
     }
@@ -1155,9 +1155,6 @@ public class PluginLoader {
         String version = pluginDescriptor.valueOf("/FindbugsPlugin/@version");
         String releaseDate = pluginDescriptor.valueOf("/FindbugsPlugin/@releaseDate");
 
-        if ((releaseDate == null  || releaseDate.length() == 0) && isCorePlugin()) {
-            releaseDate = Version.CORE_PLUGIN_RELEASE_DATE;
-        }
         // Create the Plugin object (but don't assign to the plugin field yet,
         // since we're still not sure if everything will load correctly)
         Date parsedDate = parseDate(releaseDate);

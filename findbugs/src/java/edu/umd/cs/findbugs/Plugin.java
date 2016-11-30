@@ -118,8 +118,7 @@ public class Plugin {
         if (version == null) {
             version = "";
         } else if (USE_FINDBUGS_VERSION.equals(version)) {
-            version = Version.COMPUTED_RELEASE;
-            releaseDate = Version.getReleaseDate();
+            version = Version.VERSION_STRING;
         }
         assert enabled || !cannotDisable;
         myGlobalOptions = new HashMap<String, String>();

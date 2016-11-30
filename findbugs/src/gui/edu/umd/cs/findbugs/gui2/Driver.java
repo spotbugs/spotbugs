@@ -55,7 +55,7 @@ public class Driver {
             if (JavaWebStart.isRunningViaJavaWebstart()) {
                 name = "SpotBugs webstart GUI";
             }
-            Version.registerApplication(name, Version.RELEASE);
+            Version.registerApplication(name, Version.VERSION_STRING);
 
             if (SystemProperties.getProperty("os.name").startsWith("Mac")) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");

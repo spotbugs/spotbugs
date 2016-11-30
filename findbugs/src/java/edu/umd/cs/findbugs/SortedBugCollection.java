@@ -97,7 +97,7 @@ public class SortedBugCollection implements BugCollection {
 
     long analysisTimestamp = System.currentTimeMillis();
 
-    String analysisVersion = Version.RELEASE;
+    String analysisVersion = Version.VERSION_STRING;
 
     boolean earlyStats = SystemProperties.getBoolean("findbugs.report.summaryFirst");
 

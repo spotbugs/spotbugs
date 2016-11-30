@@ -64,8 +64,8 @@ public class AboutDialog extends javax.swing.JDialog {
             l.logMessage(Logger.ERROR, e.toString());
         }
 
-        setTitle(MessageFormat.format(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"),
-                new Object[] { Version.RELEASE }));
+        setTitle(MessageFormat.format(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aboutfindbugs_ttl", "About SpotBugs {0}"),
+                new Object[] { Version.VERSION_STRING }));
     }
 
     static Pattern pattern = Pattern.compile("@VERSION@");

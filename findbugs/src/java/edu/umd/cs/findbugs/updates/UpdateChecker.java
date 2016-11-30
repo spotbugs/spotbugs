@@ -268,7 +268,7 @@ public class UpdateChecker {
             xmlOutput.beginDocument();
 
             xmlOutput.startTag("findbugs-invocation");
-            xmlOutput.addAttribute("version", Version.RELEASE);
+            xmlOutput.addAttribute("version", Version.VERSION_STRING);
             String applicationName = Version.getApplicationName();
             if (applicationName == null || "".equals(applicationName)) {
                 int lastDot = entryPoint.lastIndexOf('.');

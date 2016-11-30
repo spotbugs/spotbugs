@@ -56,6 +56,7 @@ jar {
 
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
+               'Bundle-Version': project.version,
                'Class-Path': 'bcel.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA jsr305.jar jFormatString.jar commons-lang-2.6.jar'
   }
 }
