@@ -28,14 +28,14 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * A "meta" PatternElement that matches any of a list of other child
+ * <p>A "meta" PatternElement that matches any of a list of other child
  * PatternElements. An example of how this is useful is that you might want to
  * match invocations of any of a number of different methods. To do this, you
  * can create a MatchAny with some number of Invoke elements as children.
- * <p/>
+ * </p>
  * <p>
  * Note that the minOccur() and maxOccur() counts of the child PatternElements
- * are ignored. A MatchAny element always matches exactly one instruction.
+ * are ignored. A MatchAny element always matches exactly one instruction.</p>
  *
  * @author David Hovemeyer
  * @see PatternElement

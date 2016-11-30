@@ -28,15 +28,14 @@ import org.apache.bcel.generic.InstructionHandle;
 
 
 /**
- * A dataflow analysis to compute dominator relationships between basic blocks.
+ * <p>A dataflow analysis to compute dominator relationships between basic blocks.
  * Use the {@link #getResultFact} method to get the dominator set for a given
  * basic block. The dominator sets are represented using the
  * {@link java.util.BitSet} class, with the individual bits corresponding to the
- * IDs of basic blocks.
- * <p/>
+ * IDs of basic blocks.</p>
  * <p>
  * Subclasses extend this class to compute either dominators or postdominators.
- * <p/>
+ * </p>
  * <p>
  * An EdgeChooser may be specified to select which edges to take into account.
  * For example, exception edges could be ignored.

@@ -68,15 +68,15 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * A forward dataflow analysis to determine the types of all values in the Java
+ * <p>A forward dataflow analysis to determine the types of all values in the Java
  * stack frame at all points in a Java method. The values include local
  * variables and values on the Java operand stack.
- * <p/>
+ * </p>
  * <p>
  * As a side effect, the analysis computes the exception set throwable on each
  * exception edge in the CFG. This information can be used to prune infeasible
  * exception edges, and mark exception edges which propagate only implicit
- * exceptions.
+ * exceptions.</p>
  *
  * @author David Hovemeyer
  * @see Dataflow

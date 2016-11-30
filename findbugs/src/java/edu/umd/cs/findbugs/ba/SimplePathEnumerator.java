@@ -26,12 +26,12 @@ import java.util.List;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
- * Object to enumerate (some subset of) the simple paths in a CFG. A simple path
+ * <p>Object to enumerate (some subset of) the simple paths in a CFG. A simple path
  * is a path from entry to exit, ignoring backedges and unhandled exceptions.
- * <p/>
+ * </p>
  * <p>
  * FIXME: instead of storing the simple paths, should invoke a callback as each
- * simple path is produced. That would save memory.
+ * simple path is produced. That would save memory.</p>
  *
  * @author David Hovemeyer
  * @see CFG

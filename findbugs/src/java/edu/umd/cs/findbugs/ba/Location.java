@@ -27,16 +27,16 @@ import org.apache.bcel.generic.InstructionHandle;
 
 
 /**
- * A class representing a location in the CFG for a method. Essentially, it
+ * <p>A class representing a location in the CFG for a method. Essentially, it
  * represents a static instruction, <em>with the important caveat</em> that CFGs
  * have inlined JSR subroutines, meaning that a single InstructionHandle in a
  * CFG may represent several static locations. To this end, a Location is
  * comprised of both an InstructionHandle and the BasicBlock that contains it.
- * <p/>
+ * </p>
  * <p>
  * Location objects may be compared with each other using the equals() method,
  * and may be used as keys in tree and hash maps and sets. Note that
- * <em>it is only valid to compare Locations produced from the same CFG</em>.
+ * <em>it is only valid to compare Locations produced from the same CFG</em>.</p>
  *
  * @author David Hovemeyer
  * @see CFG

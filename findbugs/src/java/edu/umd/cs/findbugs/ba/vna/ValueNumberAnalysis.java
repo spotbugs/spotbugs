@@ -44,12 +44,12 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * A dataflow analysis to track the production and flow of values in the Java
+ * <p>A dataflow analysis to track the production and flow of values in the Java
  * stack frame. See the {@link ValueNumber ValueNumber} class for an explanation
- * of what the value numbers mean, and when they can be compared.
+ * of what the value numbers mean, and when they can be compared.</p>
  *
  * <p>
- * This class is still experimental.
+ * This class is still experimental.</p>
  *
  * @author David Hovemeyer
  * @see ValueNumber
@@ -388,16 +388,16 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      */
 
     /**
-     * Compact the value numbers assigned. This should be done only after the
+     * <p>Compact the value numbers assigned. This should be done only after the
      * dataflow algorithm has executed. This works by modifying the actual
      * ValueNumber objects assigned. After this method is called, the
      * getNumValuesAllocated() method of this object will return a value less
      * than or equal to the value it would have returned before the call to this
      * method.
-     * <p/>
+     * </p>
      * <p>
      * <em>This method should be called at most once</em>.
-     *
+     * </p>
      * @param dataflow
      *            the Dataflow object which executed this analysis (and has all
      *            of the block result values)

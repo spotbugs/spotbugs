@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
 import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
 
 /**
- * A common base class for frame modeling visitors. This class provides a
+ * <p>A common base class for frame modeling visitors. This class provides a
  * default implementation which copies values between frame slots whenever
  * appropriate. For example, its handler for the ALOAD bytecode will get the
  * value from the referenced local in the frame and push it onto the stack.
@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.bcel.generic.NULL2Z;
  * values as appropriate, and pushing the "default" value onto the stack for
  * each stack slot produced, where the default value is the one returned by the
  * getDefaultValue() method.
- * <p/>
+ * </p>
  * <p>
  * Subclasses should override the visit methods for any bytecode instructions
  * which require special handling.

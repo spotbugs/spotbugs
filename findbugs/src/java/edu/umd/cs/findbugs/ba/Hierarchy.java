@@ -291,23 +291,21 @@ public class Hierarchy {
     }
 
     /**
-     * Find the least upper bound method in the class hierarchy which could be
+     * <p>Find the least upper bound method in the class hierarchy which could be
      * called by the given InvokeInstruction. One reason this method is useful
      * is that it indicates which declared exceptions are thrown by the called
-     * methods.
-     *
-     * <p/>
+     * methods.</p>
      * <ul>
-     * <li>For invokespecial, this is simply an exact lookup.
+     * <li>For invokespecial, this is simply an exact lookup.</li>
      * <li>For invokestatic and invokevirtual, the named class is searched,
      * followed by superclasses up to the root of the object hierarchy
      * (java.lang.Object). Yes, invokestatic really is declared to check
-     * superclasses. See VMSpec, 2nd ed, sec. 5.4.3.3.
+     * superclasses. See VMSpec, 2nd ed, sec. 5.4.3.3.</li>
      * <li>For invokeinterface, the named class is searched, followed by all
      * interfaces transitively declared by the class. (Question: is the order
      * important here? Maybe the VM spec requires that the actual interface
      * desired is given, so the extended lookup will not be required. Should
-     * check.)
+     * check.)</li>
      * </ul>
      *
      * @param inv

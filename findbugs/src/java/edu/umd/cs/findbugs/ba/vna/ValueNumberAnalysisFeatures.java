@@ -26,18 +26,18 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public interface ValueNumberAnalysisFeatures {
     /**
-     * When set, perform redundant load elimination and forward substitution.
+     * <p>When set, perform redundant load elimination and forward substitution.
      * Note that we do <em>not</em> do this in a correctness-preserving way! For
      * example, we don't kill loads when methods are called, even though those
      * methods could change heap values. The intent here is simply to try to
      * handle situations where a field is read multiple times, where the intent
      * of the programmer is clearly that the loaded values will be the same in
      * each case.
-     * <p/>
+     * </p>
      * <p>
      * Eventually, we might do interprocedural analysis that would allow
      * accurate modeling of which fields a called method could modify, which
-     * would allow a more correct implementation.
+     * would allow a more correct implementation.</p>
      */
     public static final boolean REDUNDANT_LOAD_ELIMINATION = !SystemProperties.getBoolean("vna.noRLE");
 

@@ -37,39 +37,39 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * A PatternElement to match a method invocation. Currently, we don't allow
+ * <p>A PatternElement to match a method invocation. Currently, we don't allow
  * variables in this element (for arguments and return value). This would be a
  * good thing to add. We also don't distinguish between invokevirtual,
  * invokeinterface, and invokespecial.
- * <p/>
+ * </p>
  * <p>
  * Invoke objects match by class name, method name, method signature, and
  * <em>mode</em>.
- * <p/>
+ * </p>
  * <p>
  * Names and signatures may be matched in several ways:
  * <ol>
- * <li>By an exact match. This is the default behavior.
+ * <li>By an exact match. This is the default behavior.</li>
  * <li>By a regular expression. If the string provided to the Invoke constructor
  * begins with a "/" character, the rest of the string is treated as a regular
- * expression.
+ * expression.</li>
  * <li>As a subclass match. This only applies to class name matches. If the
  * first character of a class name string is "+", then the rest of the string is
  * treated as the name of a base class. Any subclass or subinterface of the
- * named type will be accepted.
+ * named type will be accepted.</li>
  * </ol>
- * <p/>
+ * </p>
  * <p>
  * The <em>mode</em> specifies what kind of invocations in the Invoke element
  * matches. It is specified as the bitwise combination of the following values:
  * <ol>
- * <li> <code>INSTANCE</code>, which matches ordinary instance method invocations
- * <li> <code>STATIC</code>, which matches static method invocations
- * <li> <code>CONSTRUCTOR</code>, which matches object constructor invocations
+ * <li> <code>INSTANCE</code>, which matches ordinary instance method invocations</li>
+ * <li> <code>STATIC</code>, which matches static method invocations</li>
+ * <li> <code>CONSTRUCTOR</code>, which matches object constructor invocations</li>
  * </ol>
  * The special mode <code>ORDINARY_METHOD</code> is equivalent to
  * <code>INSTANCE|STATIC</code>. The special mode <code>ANY</code> is equivalent
- * to <code>INSTANCE|STATIC|CONSTRUCTOR</code>.
+ * to <code>INSTANCE|STATIC|CONSTRUCTOR</code>.</p>
  *
  * @author David Hovemeyer
  * @see PatternElement

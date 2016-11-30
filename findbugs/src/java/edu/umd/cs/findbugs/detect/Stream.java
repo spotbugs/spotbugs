@@ -37,17 +37,17 @@ import edu.umd.cs.findbugs.ba.ResourceValue;
 import edu.umd.cs.findbugs.ba.ResourceValueFrame;
 
 /**
- * A Stream object marks the location in the code where a stream is created. It
+ * <p>A Stream object marks the location in the code where a stream is created. It
  * also is responsible for determining some aspects of how the stream state is
  * tracked by the ResourceValueAnalysis, such as when the stream is opened or
  * closed, and whether implicit exception edges are significant.
- * <p/>
+ * </p>
  * <p>
  * TODO: change streamClass and streamBase to ObjectType
- * <p/>
+ * </p>
  * <p>
  * TODO: isStreamOpen() and isStreamClose() should probably be abstract, so we
- * can customize how they work for different kinds of streams
+ * can customize how they work for different kinds of streams</p>
  */
 public class Stream extends ResourceCreationPoint implements Comparable<Stream> {
     private final String streamBase;
