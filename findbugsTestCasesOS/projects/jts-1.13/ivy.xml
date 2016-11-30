@@ -1,6 +1,0 @@
-<ivy-module version="2.0">
-    <info organisation="findbugs" module="findbugsTestProject"/>
-    <dependencies>
-        <dependency org="com.vividsolutions" name="jts" rev="1.13"/>
-    </dependencies>
-</ivy-module>
