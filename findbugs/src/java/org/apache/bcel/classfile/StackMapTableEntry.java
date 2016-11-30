@@ -322,8 +322,6 @@ public final class StackMapTableEntry implements Node, Cloneable
      * Update the distance (as an offset delta) from this StackMapTable
      * entry to the next.  Note that this might cause the the
      * frame type to change.  Note also that delta may be negative.
-     *
-     * @param int offset delta
      */
     public void updateByteCodeOffset(final int delta) {
         setByteCodeOffset(byte_code_offset + delta);
