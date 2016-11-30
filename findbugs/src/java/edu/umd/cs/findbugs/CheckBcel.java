@@ -106,7 +106,8 @@ public class CheckBcel {
             repository = Class.forName(ORG_APACHE_BCEL_REPOSITORY);
 
         } catch (ClassNotFoundException e) {
-            System.out.println("One or more required BCEL classes were missing.");
+            System.out.println("One or more required BCEL classes were missing."
+                    + " Ensure that bcel.jar is placed at the same directory with spotbugs.jar");
             return false;
         }
         if (isFinal(objectType)) {
