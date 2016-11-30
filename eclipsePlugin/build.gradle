@@ -29,7 +29,6 @@ localProps.load(new FileInputStream("$projectDir/local.properties"))
 // TODO : convert these to external dependencies
 def requiredLibs = fileTree(dir:'lib', include:[
   'jsr305.jar',
-  'bcel.jar',
   'jFormatString.jar',
   'commons-lang-2.6.jar',
   'dom4j-1.6.1.jar',

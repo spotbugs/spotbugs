@@ -57,7 +57,7 @@ jar {
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': 'bcel.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA jsr305.jar jFormatString.jar commons-lang-2.6.jar'
+               'Class-Path': 'bcel-6.0.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA.jar jsr305.jar jFormatString.jar commons-lang-2.6.jar'
   }
 }
 
@@ -205,7 +205,7 @@ distributions {
       }
       from 'README.txt'
       from 'licenses'
-      from('lib') {
+      from(configurations.compile) {
         into 'lib'
 
         // TODO : These exclusions can be removed when we move dependencies from lib to dependency management
