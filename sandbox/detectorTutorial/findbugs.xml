@@ -1,8 +1,0 @@
-<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="findbugsplugin.xsd" pluginid="tutorial.detector"
-    defaultenabled="true" provider="FindBugs Tutorial" website="http://findbugs.sourceforge.net">
-    <Detector class="tutorial.DetectorTutorial"
-        speed="fast" disabled="false"
-        reports="TESTING" />
-
-</FindbugsPlugin>

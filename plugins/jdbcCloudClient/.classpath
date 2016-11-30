@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.13-bin.jar"/>
-	<classpathentry kind="output" path="build/classes"/>
-</classpath>
