@@ -1,14 +1,14 @@
 sourceSets {
   main {
     java {
-      srcDirs = ['src/java', 'src/gui', 'src/antTask']
+      srcDirs = ['src/main/java', 'src/gui']
     }
     resources {
       /*
        * Becuase why put everything in a single folder when you can split it
        * and mix it with other files you don't actually need together
       */
-      srcDirs = ['src/xsl', 'etc', 'src/java', 'src/gui']
+      srcDirs = ['src/xsl', 'etc', 'src/main/java', 'src/gui']
       include '*.xsd'
       include 'bugrank.txt'
       include 'findbugs.xml'
@@ -20,12 +20,6 @@ sourceSets {
       include '**/*.db'
       include '**/*.html'
       include '**/*.png'
-    }
-  }
-
-  test {
-    java {
-      srcDirs = ['src/junit']
     }
   }
 }
@@ -59,13 +53,6 @@ jar {
                'Bundle-Version': project.version,
                'Class-Path': 'bcel-6.0.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA.jar jsr305.jar jFormatString.jar commons-lang-2.6.jar'
   }
-}
-
-// Make the anttask jar as part of the build process
-task anttaskJar(type:Jar) {
-  from sourceSets.main.output
-  include '**/anttask/*'
-  baseName 'spotbugs-ant'
 }
 
 // Build spotbugs annotations jar
@@ -111,7 +98,7 @@ task annotationsJar(type:Jar) {
   }
 }
 
-tasks['jar'].dependsOn 'anttaskJar', 'spotbugsAnnotationsJar', 'annotationsJar'
+tasks['jar'].dependsOn 'spotbugsAnnotationsJar', 'annotationsJar'
 
 // Populate bin folder with scripts
 task scripts(type:Copy) {
@@ -214,7 +201,7 @@ distributions {
 
         include '**/*.jar'
       }
-      from([jar, spotbugsAnnotationsJar, anttaskJar]) {
+      from([jar, spotbugsAnnotationsJar]) {
         into 'lib'
         rename "(.*)-${project.version}.jar", '$1.jar'
       }
@@ -253,7 +240,7 @@ task unzipDist(type:Copy, dependsOn:distZip) {
 task smokeTest {
   dependsOn unzipDist
   doLast {
-    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:anttaskJar.outputs.files.asPath)
+    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:jar.outputs.files.asPath)
     ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
               jvmargs:'-ea -Xmx1200m',
               excludeFilter:'findbugsExclude.xml',
@@ -261,7 +248,7 @@ task smokeTest {
               maxRank:'20',
               timeout:'1800000',
               outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
-      sourcePath(path:'src/java:src/gui:src/junit:src/tools:src/antTask')
+      sourcePath(path:'src/main/java:src/gui:src/test/java:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
       auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
     }
