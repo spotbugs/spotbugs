@@ -68,7 +68,7 @@ public class WorkspaceSettingsTab extends Composite {
         tabDetector.setControl(this);
 
         Label versionLabel = new Label(this, SWT.NONE);
-        versionLabel.setText("FindBugs version: " + Version.RELEASE);
+        versionLabel.setText("SpotBugs version: " + Version.VERSION_STRING);
 
         runAsExtraJob = new Button(this, SWT.CHECK);
         runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));

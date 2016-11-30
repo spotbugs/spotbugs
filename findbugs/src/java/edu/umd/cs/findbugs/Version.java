@@ -21,188 +21,49 @@ package edu.umd.cs.findbugs;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.FutureValue;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Version number and release date information.
  */
 public class Version {
     /**
-     * Major version number.
+     * SpotBugs website.
      */
-    public static final int MAJOR = 3;
-
-    /**
-     * Minor version number.
-     */
-    public static final int MINOR = 1;
-
-    /**
-     * Patch level.
-     */
-    public static final int PATCHLEVEL = 0;
-
-    /**
-     * Development version or release candidate?
-     */
-    public static final boolean IS_DEVELOPMENT = true;
-
-    /**
-     * Release candidate number. "0" indicates that the version is not a release
-     * candidate.
-     */
-    public static final int RELEASE_CANDIDATE = 0;
-
-
-    public static final String GIT_REVISION  = System.getProperty("git.revision", "UNKNOWN");
-
-    /**
-     * Release date.
-     */
-    private static final String COMPUTED_DATE;
-
-    public static final String DATE;
-
-    public static final String CORE_PLUGIN_RELEASE_DATE;
-
-    private static final String COMPUTED_ECLIPSE_DATE;
-
-    private static final String COMPUTED_PLUGIN_RELEASE_DATE;
-
+    public static final String WEBSITE = "https://spotbugs.github.io/";
+    
+    public final static String VERSION_STRING;
+    
     private static String applicationName = "";
-
     private static String applicationVersion = "";
 
     static {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy", Locale.ENGLISH);
-        SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
-        SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
-        Date now = new Date();
-        COMPUTED_DATE = dateFormat.format(now);
-        COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(now);
-        String tmp =  releaseDateFormat.format(now);
-        COMPUTED_PLUGIN_RELEASE_DATE = tmp;
-    }
-
-    /**
-     * Preview release number. "0" indicates that the version is not a preview
-     * release.
-     */
-    public static final int PREVIEW = 0;
-
-    private static final String RELEASE_SUFFIX_WORD;
-    static {
-        String suffix;
-        if (RELEASE_CANDIDATE > 0) {
-            suffix = "rc" + RELEASE_CANDIDATE;
-        } else if (PREVIEW > 0) {
-            suffix = "preview" + PREVIEW;
-        } else {
-            suffix = "dev-" + COMPUTED_ECLIPSE_DATE;
-            if (!"Unknown".equals(GIT_REVISION)) {
-                suffix += "-" + GIT_REVISION;
-            }
-        }
-        RELEASE_SUFFIX_WORD = suffix;
-    }
-
-    public static final String RELEASE_BASE = MAJOR + "." + MINOR + "." + PATCHLEVEL;
-
-    /**
-     * Release version string.
-     */
-    public static final String COMPUTED_RELEASE = RELEASE_BASE + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
-
-    /**
-     * Release version string.
-     */
-    public static final String RELEASE;
-
-    /**
-     * Version of Eclipse plugin.
-     */
-    private static final String COMPUTED_ECLIPSE_UI_VERSION = RELEASE_BASE + "." + COMPUTED_ECLIPSE_DATE;
-
-    static {
-        Class<Version> c = Version.class;
-        URL u = c.getResource(c.getSimpleName() + ".class");
-        boolean fromFile = "file".equals(u.getProtocol());
-        InputStream in = null;
-        String release = null;
-        String date = null;
-        String plugin_release_date = null;
+        final URL u = Version.class.getResource(Version.class.getSimpleName() + ".class");
+        final boolean fromFile = "file".equals(u.getProtocol());
+        
+        String version = "(Unknown)";
         if (!fromFile) {
-            try {
-                Properties versionProperties = new Properties();
-                in = Version.class.getResourceAsStream("version.properties");
-                if (in != null)  {
-                    versionProperties.load(in);
-                    release = (String) versionProperties.get("release.number");
-                    date = (String) versionProperties.get("release.date");
-                    plugin_release_date =  (String) versionProperties.get("plugin.release.date");
-                }
+            try (final InputStream in = Version.class.getResourceAsStream("META-INF/MANIFEST.MF")) {
+            	final Manifest manifest = new Manifest(in);
+            	version = manifest.getMainAttributes().getValue("Bundle-Version");
             } catch (Exception e) {
-                assert true; // ignore
-            } finally {
-                Util.closeSilently(in);
+                // ignore it
             }
+        } else {
+        	version = "Development";
         }
-        if (release == null) {
-            release = COMPUTED_RELEASE;
-        }
-        if (date == null) {
-            date = COMPUTED_DATE;
-        }
-        if (plugin_release_date == null) {
-            plugin_release_date = COMPUTED_PLUGIN_RELEASE_DATE;
-        }
-
-        RELEASE = release;
-        DATE = date;
-        CORE_PLUGIN_RELEASE_DATE = plugin_release_date;
-        Date parsedDate;
-        try {
-            SimpleDateFormat fmt = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
-
-            parsedDate = fmt.parse(CORE_PLUGIN_RELEASE_DATE);
-        } catch (ParseException e) {
-            if (SystemProperties.ASSERTIONS_ENABLED) {
-                e.printStackTrace();
-            }
-            parsedDate = null;
-        }
-        releaseDate = parsedDate;
+        
+        VERSION_STRING = version;
     }
-
-    /**
-     * FindBugs website.
-     */
-    public static final String WEBSITE = "http://findbugs.sourceforge.net";
-
-    /**
-     * Downloads website.
-     */
-    public static final String DOWNLOADS_WEBSITE = "http://prdownloads.sourceforge.net/findbugs";
-
-    /**
-     * Support email.
-     */
-    public static final String SUPPORT_EMAIL = "http://findbugs.sourceforge.net/reportingBugs.html";
-    private static Date releaseDate;
 
     public static void registerApplication(String name, String version) {
         applicationName = name;
@@ -218,10 +79,6 @@ public class Version {
     }
 
     public static void main(String[] argv) throws InterruptedException {
-
-        if (!IS_DEVELOPMENT && RELEASE_CANDIDATE != 0) {
-            throw new IllegalStateException("Non developmental version, but is release candidate " + RELEASE_CANDIDATE);
-        }
         if (argv.length == 0) {
             printVersion(false);
             return;
@@ -230,18 +87,7 @@ public class Version {
         String arg = argv[0];
 
         if ("-release".equals(arg)) {
-            System.out.println(RELEASE);
-        } else if ("-date".equals(arg)) {
-            System.out.println(DATE);
-        } else if ("-props".equals(arg)) {
-            System.out.println("release.base=" + RELEASE_BASE);
-            System.out.println("release.number=" + COMPUTED_RELEASE);
-            System.out.println("release.date=" + COMPUTED_DATE);
-            System.out.println("plugin.release.date=" + COMPUTED_PLUGIN_RELEASE_DATE);
-            System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
-            System.out.println("findbugs.website=" + WEBSITE);
-            System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
-            System.out.println("findbugs.git.revision=" + GIT_REVISION);
+            System.out.println(VERSION_STRING);
         } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
@@ -261,7 +107,6 @@ public class Version {
         } else if ("-configuration".equals(arg)){
             printVersion(true);
         } else {
-
             usage();
             System.exit(1);
         }
@@ -271,23 +116,12 @@ public class Version {
         System.err.println("Usage: " + Version.class.getName() + "  [(-release|-date|-props|-configuration)]");
     }
 
-    public static String getReleaseWithDateIfDev() {
-        if (IS_DEVELOPMENT) {
-            return RELEASE + " (" + DATE + ")";
-        }
-        return RELEASE;
-    }
-
-    public static @CheckForNull Date getReleaseDate() {
-        return releaseDate;
-    }
-
     /**
      * @param justPrintConfiguration
      * @throws InterruptedException
      */
     public static void printVersion(boolean justPrintConfiguration) throws InterruptedException {
-        System.out.println("SpotBugs " + Version.COMPUTED_RELEASE);
+        System.out.println("SpotBugs " + Version.VERSION_STRING);
         if (justPrintConfiguration) {
             for (Plugin plugin : Plugin.getAllPlugins()) {
                 System.out.printf("Plugin %s, version %s, loaded from %s%n", plugin.getPluginId(), plugin.getVersion(),
