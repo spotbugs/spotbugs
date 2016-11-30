@@ -236,6 +236,7 @@ tasks['assembleDist'].finalizedBy distSrcZip
 
 test {
   dependsOn ':findbugsTestCases:build'
+  maxHeapSize = '1G'
 }
 
 task unzipDist(type:Copy, dependsOn:distZip) {
