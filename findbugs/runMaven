@@ -1,4 +1,0 @@
-#! /bin/sh
-mvn install:install-file -Dfile=lib/asm-debug-all-6.0-SNAPSHOT.jar -DgroupId=org.ow2.asm -DartifactId=asm-debug-all -Dversion=6.0-SNAPSHOT -Dpackaging=jar
-mvn clean
-mvn package
