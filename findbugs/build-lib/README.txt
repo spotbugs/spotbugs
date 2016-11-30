@@ -1,1 +1,0 @@
-This is a folder for jars required for BUILDING, not dependencies of FindBugs itself!
