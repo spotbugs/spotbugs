@@ -46,18 +46,17 @@ import edu.umd.cs.findbugs.ExitCodes;
  *
  * The below is an example of how this could be done in an ant script:
  *
- * <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
- * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />
- * <taskdef name="findbugs-viewer"
+ * {@literal <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />}
+ * {@literal <taskdef name="findbugs-viewer"
  * classname="edu.umd.cs.findbugs.anttask.FindBugsViewerTask"
- * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />
+ * classpath="C:\dev\cvs.sourceforge.net\findbugs\lib\findbugs-ant.jar" />}
  *
- * <property name="findbugs.home" location="C:\dev\cvs.sourceforge.net\findbugs"
- * /> <property name="findbugs.bugReport" location="bcel-fb.xml" />
+ * {@literal <property name="findbugs.home" location="C:\dev\cvs.sourceforge.net\findbugs"
+ * /> <property name="findbugs.bugReport" location="bcel-fb.xml" />}
  *
- * <target name="findbugs-viewer" depends="jar"> <findbugs-viewer
+ * {@literal <target name="findbugs-viewer" depends="jar"> <findbugs-viewer
  * home="${findbugs.home}" look="native" loadbugs="${findbugs.bugReport}"/>
- * </target>
+ * </target>}
  *
  * Created on March 21, 2006, 12:57 PM
  *

@@ -37,62 +37,61 @@ import edu.umd.cs.findbugs.ExitCodes;
 /**
  * FindBugs in Java class files. This task can take the following arguments:
  * <ul>
- * <li>adjustExperimental (boolean default false)
- * <li>adjustPriority (passed to -adjustPriority)
+ * <li>adjustExperimental (boolean default false)</li>
+ * <li>adjustPriority (passed to -adjustPriority)</li>
  * <li>applySuppression (exclude any warnings that match a suppression filter
- * supplied in a project file)
+ * supplied in a project file)</li>
  * <li>auxAnalyzepath (class, jar, zip files or directories containing classes
- * to analyze)
- * <li>auxClasspath (classpath or classpathRef)
- * <li>baselineBugs (xml file containing baseline bugs)
- * <li>class (class, jar, zip or directory containing classes to analyze)
- * <li>classpath (classpath for running FindBugs)
- * <li>cloud (cloud id)
+ * to analyze)</li>
+ * <li>auxClasspath (classpath or classpathRef)</li>
+ * <li>baselineBugs (xml file containing baseline bugs)</li>
+ * <li>class (class, jar, zip or directory containing classes to analyze)</li>
+ * <li>classpath (classpath for running FindBugs)</li>
+ * <li>cloud (cloud id)</li>
  * <li>conserveSpace (boolean - default false)</li>
- * <li>debug (boolean default false)
+ * <li>debug (boolean default false)</li>
  * <li>effort (enum min|default|max)</li>
- * <li>excludeFilter (filter filename)
- * <li>excludePath (classpath or classpathRef to filters)
- * <li>failOnError (boolean - default false)
- * <li>home (findbugs install dir)
- * <li>includeFilter (filter filename)
- * <li>includePath (classpath or classpathRef to filters)
- * <li>maxRank (maximum rank issue to be reported)
- * <li>jvm (Set the command used to start the VM)
- * <li>jvmargs (any additional jvm arguments)
- * <li>omitVisitors (collection - comma separated)
+ * <li>excludeFilter (filter filename)</li>
+ * <li>excludePath (classpath or classpathRef to filters)</li>
+ * <li>failOnError (boolean - default false)</li>
+ * <li>home (findbugs install dir)</li>
+ * <li>includeFilter (filter filename)</li>
+ * <li>includePath (classpath or classpathRef to filters)</li>
+ * <li>maxRank (maximum rank issue to be reported)</li>
+ * <li>jvm (Set the command used to start the VM)</li>
+ * <li>jvmargs (any additional jvm arguments)</li>
+ * <li>omitVisitors (collection - comma separated)</li>
  * <li>onlyAnalyze (restrict analysis to find bugs to given comma-separated list
- * of classes and packages - See the textui argument description for details)
- * <li>output (enum text|xml|xml:withMessages|html - default xml)
- * <li>outputFile (name of output file to create)
- * <li>nested (boolean default true)
- * <li>noClassOk (boolean default false)
- * <li>pluginList (list of plugin Jar files to load)
- * <li>projectFile (project filename)
- * <li>projectName (project name, for display in generated HTML)
- * <li>userPrefs (user preferences filename)
- * <li>quietErrors (boolean - default false)
- * <li>relaxed (boolean - default false)
- * <li>reportLevel (enum experimental|low|medium|high)
- * <li>sort (boolean default true)
+ * of classes and packages - See the textui argument description for details)</li>
+ * <li>output (enum text|xml|xml:withMessages|html - default xml)</li>
+ * <li>outputFile (name of output file to create)</li>
+ * <li>nested (boolean default true)</li>
+ * <li>noClassOk (boolean default false)</li>
+ * <li>pluginList (list of plugin Jar files to load)</li>
+ * <li>projectFile (project filename)</li>
+ * <li>projectName (project name, for display in generated HTML)</li>
+ * <li>userPrefs (user preferences filename)</li>
+ * <li>quietErrors (boolean - default false)</li>
+ * <li>relaxed (boolean - default false)</li>
+ * <li>reportLevel (enum experimental|low|medium|high)</li>
+ * <li>sort (boolean default true)</li>
  * <li>stylesheet (name of stylesheet to generate HTML: default is
- * "default.xsl")
- * <li>systemProperty (a system property to set)
- * <li>timestampNow (boolean - default false)
- * <li>visitors (collection - comma separated)
- * <li>chooseVisitors (selectively enable/disable visitors)
- * <li>workHard (boolean default false)
- * <li>setSetExitCode (boolean default true)
+ * "default.xsl")</li>
+ * <li>systemProperty (a system property to set)</li>
+ * <li>timestampNow (boolean - default false)</li>
+ * <li>visitors (collection - comma separated)</li>
+ * <li>chooseVisitors (selectively enable/disable visitors)</li>
+ * <li>workHard (boolean default false)</li>
+ * <li>setSetExitCode (boolean default true)</li>
  * </ul>
- * Of these arguments, the <b>home</b> is required. <b>projectFile</b> is
- * required if nested &lt;class&gt; or &lt;auxAnalyzepath&gt elements are not
+ * <p>Of these arguments, the <b>home</b> is required. <b>projectFile</b> is
+ * required if nested &lt;class&gt; or &lt;auxAnalyzepath&gt; elements are not
  * specified. the &lt;class&gt; tag defines the location of either a class, jar
  * file, zip file, or directory containing classes.
- * <p>
+ * </p>
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
- * @author Michael Tamm <a
- *         href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
+ * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  * @author Scott Wolk
  * @version $Revision: 1.56 $
  *

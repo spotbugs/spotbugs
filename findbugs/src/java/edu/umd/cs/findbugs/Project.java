@@ -79,7 +79,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * </p>
  * <ul>
  * <li>some number of source directories, for locating the program's source code</li>
- * <li>some number of auxiliary classpath entries, for locating classes</li>
+ * <li>some number of auxiliary classpath entries, for locating classes
  * referenced by the program which the user doesn't want to analyze</li>
  * <li>some number of boolean options</li>
  * </ul>
@@ -1089,7 +1089,7 @@ public class Project implements XMLWriteable {
         }
     }
 
-    /**
+    /*
      * Make the given list of pathnames absolute relative to the absolute path
      * of the project file.
      *

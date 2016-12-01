@@ -29,12 +29,11 @@ import org.apache.tools.ant.types.FileSet;
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.
  *
- * <taskdef name="UnionBugs2" classname="edu.umd.cs.findbugs.anttask.UnionBugs2"
- * classpath="...">
+ * {@literal <taskdef name="UnionBugs2" classname="edu.umd.cs.findbugs.anttask.UnionBugs2"
+ * classpath="...">}
  *
- * <UnionBugs2 to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
- * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>
- *
+ * {@literal <UnionBugs2 to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
+ * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>}
  *
  * @ant.task category="utility"
  *

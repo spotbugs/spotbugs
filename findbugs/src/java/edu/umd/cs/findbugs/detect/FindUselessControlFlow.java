@@ -33,13 +33,13 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
 /**
- * <p>A Detector to look for useless control flow. For example,
+ * <p>A Detector to look for useless control flow. For example,</p>
  *
  * <pre>
  * if (argv.length == 1)
  *     ;
  * System.out.println(&quot;Hello, &quot; + argv[0]);
- * </pre></p>
+ * </pre>
  *
  * <p>In this kind of bug, we'll see an ifcmp instruction where the IF target is
  * the same as the fall-through target.

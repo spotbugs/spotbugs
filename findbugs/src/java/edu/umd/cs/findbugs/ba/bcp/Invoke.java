@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * <em>mode</em>.
  * </p>
  * <p>
- * Names and signatures may be matched in several ways:
+ * Names and signatures may be matched in several ways:</p>
  * <ol>
  * <li>By an exact match. This is the default behavior.</li>
  * <li>By a regular expression. If the string provided to the Invoke constructor
@@ -58,16 +58,15 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * treated as the name of a base class. Any subclass or subinterface of the
  * named type will be accepted.</li>
  * </ol>
- * </p>
  * <p>
  * The <em>mode</em> specifies what kind of invocations in the Invoke element
- * matches. It is specified as the bitwise combination of the following values:
+ * matches. It is specified as the bitwise combination of the following values:</p>
  * <ol>
  * <li> <code>INSTANCE</code>, which matches ordinary instance method invocations</li>
  * <li> <code>STATIC</code>, which matches static method invocations</li>
  * <li> <code>CONSTRUCTOR</code>, which matches object constructor invocations</li>
  * </ol>
- * The special mode <code>ORDINARY_METHOD</code> is equivalent to
+ * <p>The special mode <code>ORDINARY_METHOD</code> is equivalent to
  * <code>INSTANCE|STATIC</code>. The special mode <code>ANY</code> is equivalent
  * to <code>INSTANCE|STATIC|CONSTRUCTOR</code>.</p>
  *

@@ -42,8 +42,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  * can't be a set because we need to be able to sort it, also, HashList is great
  * for doing contains and indexOf, its just slow for removing which we never
  * need to do) The power of BugSet is in query. You can query a BugSet with a
- * BugAspects, a list of StringPairs like <priority,high>,
- * <designation,unclassified> and you will get out a new BugSet containing all
+ * BugAspects, a list of StringPairs like {@literal <priority,high>},
+ * {@literal <designation,unclassified>} and you will get out a new BugSet containing all
  * of the bugs that are both high priority and unclassified. Also, after the
  * first time a query is made, the results will come back instantly on future
  * calls because the old queries are cached. Note that this caching can also

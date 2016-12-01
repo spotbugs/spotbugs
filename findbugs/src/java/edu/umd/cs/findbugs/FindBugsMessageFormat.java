@@ -26,13 +26,13 @@ package edu.umd.cs.findbugs;
  * formatted.
  * </p>
  * <p>
- * Example:
+ * Example:</p>
  *
  * <pre>
  * new FindBugsMessageFormat(&quot;BUG: {1} does something bad to field {2.fullField}&quot;)
  * </pre>
  *
- * In this example, the method annotation at position 1 is formatted using the
+ * <p>In this example, the method annotation at position 1 is formatted using the
  * empty (default) key. The field annotation at position 2 is formatted using
  * the "fullField" key, which uses the long format for the field rather than the
  * usual "class.fieldname" format.</p>
