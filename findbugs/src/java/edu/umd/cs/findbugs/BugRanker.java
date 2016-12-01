@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.util.Util;
  * The following bug rankers may exist:
  * <ul>
  * <li>core bug ranker (loaded from etc/bugrank.txt)
- * <li>a bug ranker for each plugin (loaded from <plugin>/etc/bugrank.txt)
+ * <li>a bug ranker for each plugin (loaded from {@literal <plugin>}/etc/bugrank.txt)
  * <li>A global adjustment ranker (loaded from plugins/adjustBugrank.txt)
  * </ul>
  *

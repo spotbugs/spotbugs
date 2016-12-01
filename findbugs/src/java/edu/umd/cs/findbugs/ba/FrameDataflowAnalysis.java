@@ -132,10 +132,10 @@ ForwardDataflowAnalysis<FrameType> {
     }
 
     /**
-     * Create a modifiable copy of a frame. This is useful for meetInto(), if
+     * <p>Create a modifiable copy of a frame. This is useful for meetInto(), if
      * the frame needs to be modified in a path-sensitive fashion. A typical
      * usage pattern is:
-     * <p/>
+     * </p>
      *
      * <pre>
      * FrameType copy = null;
@@ -149,13 +149,12 @@ ForwardDataflowAnalysis<FrameType> {
      * }
      * if (copy != null)
      *     fact = copy;
-     * <p/>
      * mergeInto(fact, result);
      * </pre>
-     * <p/>
+     * <p>
      * The advantage of using modifyFrame() is that new code can be added before
      * or after other places where the frame is modified, and the code will
-     * remain correct.
+     * remain correct.</p>
      *
      * @param orig
      *            the original frame

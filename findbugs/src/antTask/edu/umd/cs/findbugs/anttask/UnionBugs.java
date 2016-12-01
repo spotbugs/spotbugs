@@ -37,11 +37,11 @@ import edu.umd.cs.findbugs.workflow.UnionResults;
  * An ant task that is wraps the behavior of the UnionResults executable into an
  * ant task.
  *
- * <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs"
- * classpath="...">
+ * {@literal <taskdef name="UnionBugs" classname="edu.umd.cs.findbugs.anttask.UnionBugs"
+ * classpath="...">}
  *
- * <UnionBugs to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
- * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>
+ * {@literal <UnionBugs to="${basedir}/findbugs.xml" > <fileset dir="plugins"> <include
+ * name="*_findbugs_partial.xml" /> </fileset> </UnionBugs>}
  *
  * @author Peter Franza <a href="mailto:pfranza@gmail.com">pfranza@gmail.com</a>
  * @version 1.0

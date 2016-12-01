@@ -66,7 +66,7 @@ public interface ICodeBaseEntry {
      * the class data to be loaded in order to determine the class.
      *
      * @return ClassDescriptor of this entry
-     * @throws ResourceNotFoundException, InvalidClassFileFormatException
+     * @throws ResourceNotFoundException InvalidClassFileFormatException
      *             if the codebase entry does not reference a valid classfile
      * @throws IllegalArgumentException
      *             if the codebase entry's filename is definitely not a

@@ -93,25 +93,24 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
- * An instance of a bug pattern. A BugInstance consists of several parts:
- * <p/>
+ * <p>An instance of a bug pattern. A BugInstance consists of several parts:</p>
  * <ul>
  * <li>the type, which is a string indicating what kind of bug it is; used as a
- * key for the FindBugsMessages resource bundle
- * <li>the priority; how likely this instance is to actually be a bug
- * <li>a list of <em>annotations</em>
+ * key for the FindBugsMessages resource bundle</li>
+ * <li>the priority; how likely this instance is to actually be a bug</li>
+ * <li>a list of <em>annotations</em></li>
  * </ul>
- * <p/>
+ * <p>
  * The annotations describe classes, methods, fields, source locations, and
  * other relevant context information about the bug instance. Every BugInstance
  * must have at least one ClassAnnotation, which describes the class in which
  * the instance was found. This is the "primary class annotation".
- * <p/>
+ * </p>
  * <p>
  * BugInstance objects are built up by calling a string of <code>add</code>
  * methods. (These methods all "return this", so they can be chained). Some of
  * the add methods are specialized to get information automatically from a
- * BetterVisitor or DismantleBytecode object.
+ * BetterVisitor or DismantleBytecode object.</p>
  *
  * @author David Hovemeyer
  * @see BugAnnotation

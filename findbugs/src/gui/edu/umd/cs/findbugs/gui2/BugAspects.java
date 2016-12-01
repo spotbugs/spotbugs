@@ -27,11 +27,12 @@ import edu.umd.cs.findbugs.filter.Matcher;
 /**
  * These are the branches in our tree, each branch forms a complete query that
  * could be sent to the main bugset to return all the bugs it contains For
- * example, a single bugAspects could be <priority,high> or it could be
- * <priority,high>, <designation,must fix>,<class,fishpond>,<package,default>
+ * example, a single bugAspects could be {@literal <priority,high>} or it could be
+ * {@literal <priority,high>}, {@literal <designation,must fix>},{@literal <class,fishpond>},
+ * {@literal <package,default>}
  *
- * In this implementation, <priority,high>,<designation,unclassified> is
- * different from <designation,unclassified>,<priority,high>. (I'm not talking
+ * In this implementation, {@literal <priority,high>},{@literal <designation,unclassified>} is
+ * different from {@literal <designation,unclassified>},{@literal <priority,high>}. (I'm not talking
  * about the fact we use the .equals from ArrayList, I'm talking about what a
  * query would return, though both are true) For a speed boost, this class could
  * be rewritten to make these equal, BugSet could be rewritten to cache full

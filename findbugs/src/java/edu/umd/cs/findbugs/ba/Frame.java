@@ -35,12 +35,12 @@ import org.apache.bcel.generic.StackConsumer;
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
- * Generic class for representing a Java stack frame as a dataflow value. A
+ * <p>Generic class for representing a Java stack frame as a dataflow value. A
  * frame consists of "slots", which represent the local variables and values on
  * the Java operand stack. Slots 0 .. <code>getNumLocals() - 1</code> represent
  * the local variables. Slots <code>getNumLocals()</code> ..
  * <code>getNumSlots() - 1</code> represent the Java operand stack.
- * <p/>
+ * </p>
  * <p>
  * Frame is parametized by "ValueType", which is the type of value to be stored
  * in the Frame's slots. This type must form a lattice, according to the
@@ -49,14 +49,14 @@ import edu.umd.cs.findbugs.SystemProperties;
  * all of its slots will contain null. The analysis is responsible for
  * initializing created Frames with default values at the appropriate time.
  * Typically, only initEntryFact() will need to do this.
- * <p/>
+ * </p>
  * <p>
  * A Frame may have the special "TOP" value. Such frames serve as the identity
  * element for the meet operation operation.
- * <p/>
+ * </p>
  * <p>
  * A Frame may have the special "BOTTOM" value. The result of merging any frame
- * with BOTTOM is BOTTOM.
+ * with BOTTOM is BOTTOM.</p>
  *
  * @author David Hovemeyer
  * @see FrameDataflowAnalysis

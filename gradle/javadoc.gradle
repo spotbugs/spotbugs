@@ -1,6 +1,5 @@
 tasks.withType(Javadoc).all {
   // Default configuration for all javadoc tasks
-  failOnError false // TODO : There are plenty of errors to fix
   options.with {
      memberLevel = JavadocMemberLevel.PROTECTED
      author = true
@@ -16,5 +15,6 @@ tasks.withType(Javadoc).all {
      splitIndex = true
      use = true
      version = true
+     tags = ["ant.task","noinspection"]
   }
 }

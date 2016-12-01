@@ -123,7 +123,7 @@ public abstract class ByteCodePatternDetector implements Detector {
     public abstract ByteCodePattern getPattern();
 
     /**
-     * Prescreen a method. It is a valid, but dumb, implementation simply to
+     * <p>Prescreen a method. It is a valid, but dumb, implementation simply to
      * return true unconditionally. A better implementation is to call
      * ClassContext.getBytecodeSet() to check whether the method actually
      * contains the bytecode instructions that the pattern will look for. The
@@ -131,11 +131,11 @@ public abstract class ByteCodePatternDetector implements Detector {
      * MethodGen, CFG, ValueNumberAnalysis, etc. objects required to match
      * ByteCodePatterns is slow, and the bytecode pattern matching algorithm is
      * also not particularly fast.
-     * <p/>
+     * </p>
      * <p>
      * As a datapoint, prescreening speeds up the BCPDoubleCheck detector <b>by
      * a factor of 5</b> with no loss of generality and only a dozen or so extra
-     * lines of code.
+     * lines of code.</p>
      *
      * @param method
      *            the method

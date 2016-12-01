@@ -45,12 +45,12 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
- * Match a ByteCodePattern against the code of a method, represented by a CFG.
+ * <p>Match a ByteCodePattern against the code of a method, represented by a CFG.
  * Produces some number of ByteCodePatternMatch objects, which indicate how the
  * pattern matched the bytecode instructions in the method.
- * <p/>
+ * </p>
  * <p>
- * This code is a hack and should probably be rewritten.
+ * This code is a hack and should probably be rewritten.</p>
  *
  * @author David Hovemeyer
  * @see ByteCodePattern

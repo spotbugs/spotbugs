@@ -23,15 +23,15 @@ import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
- * A "value number" is a value produced somewhere in a methods. We use value
+ * <p>A "value number" is a value produced somewhere in a methods. We use value
  * numbers as dataflow values in Frames. When two frame slots have the same
  * value number, then the same value is in both of those slots.
- * <p/>
+ * </p>
  * <p>
  * Instances of ValueNumbers produced by the same {@link ValueNumberFactory
  * ValueNumberFactory} are unique, so reference equality may be used to
  * determine whether or not two value numbers are the same. In general,
- * ValueNumbers from different factories cannot be compared.
+ * ValueNumbers from different factories cannot be compared.</p>
  *
  * @author David Hovemeyer
  * @see ValueNumberAnalysis

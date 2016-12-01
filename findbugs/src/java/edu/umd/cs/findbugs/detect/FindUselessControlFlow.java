@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
 /**
- * A Detector to look for useless control flow. For example,
+ * <p>A Detector to look for useless control flow. For example,</p>
  *
  * <pre>
  * if (argv.length == 1)
@@ -41,13 +41,13 @@ import edu.umd.cs.findbugs.StatelessDetector;
  * System.out.println(&quot;Hello, &quot; + argv[0]);
  * </pre>
  *
- * In this kind of bug, we'll see an ifcmp instruction where the IF target is
+ * <p>In this kind of bug, we'll see an ifcmp instruction where the IF target is
  * the same as the fall-through target.
- * <p/>
+ * </p>
  * <p>
  * The idea for this detector came from Richard P. King, and the idea of looking
  * for if instructions with identical branch and fall-through targets is from
- * Mike Fagan.
+ * Mike Fagan.</p>
  *
  * @author David Hovemeyer
  */

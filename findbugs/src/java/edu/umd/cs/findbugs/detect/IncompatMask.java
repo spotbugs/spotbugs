@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * Find comparisons involving values computed with bitwise operations whose
  * outcomes are fixed at compile time.
  *
- * @author Tom Truscott <trt@unx.sas.com>
+ * @author Tom Truscott &lt;trt@unx.sas.com&gt;
  * @author Tagir Valeev
  */
 public class IncompatMask extends OpcodeStackDetector {

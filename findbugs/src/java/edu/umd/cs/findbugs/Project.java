@@ -74,14 +74,14 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
- * A project in the GUI. This consists of some number of Jar files to analyze
+ * <p>A project in the GUI. This consists of some number of Jar files to analyze
  * for bugs, and optionally
- * <p/>
+ * </p>
  * <ul>
- * <li>some number of source directories, for locating the program's source code
+ * <li>some number of source directories, for locating the program's source code</li>
  * <li>some number of auxiliary classpath entries, for locating classes
- * referenced by the program which the user doesn't want to analyze
- * <li>some number of boolean options
+ * referenced by the program which the user doesn't want to analyze</li>
+ * <li>some number of boolean options</li>
  * </ul>
  *
  * @author David Hovemeyer
@@ -1089,7 +1089,7 @@ public class Project implements XMLWriteable {
         }
     }
 
-    /**
+    /*
      * Make the given list of pathnames absolute relative to the absolute path
      * of the project file.
      *

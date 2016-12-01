@@ -82,15 +82,15 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * Interface to make the use of a visitor pattern programming style possible.
+ * <p>Interface to make the use of a visitor pattern programming style possible.
  * I.e. a class that implements this interface can traverse the contents of a
  * Java class just by calling the `accept' method which all classes have.
- * <p/>
- * Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris
- * Bokowski</A>.
- * <p/>
+ * </p>
+ * <p>Implemented by wish of <A HREF="http://www.inf.fu-berlin.de/~bokowski">Boris
+ * Bokowski</A>.</p>
+ * <p>
  * If don't like it, blame him. If you do like it thank me 8-)
- *
+ * </p>
  * @author <A HREF="http://www.inf.fu-berlin.de/~dahm">M. Dahm</A>
  * @version 970819
  */

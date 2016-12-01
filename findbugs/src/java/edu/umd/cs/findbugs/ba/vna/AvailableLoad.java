@@ -22,17 +22,17 @@ package edu.umd.cs.findbugs.ba.vna;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * An AvailableLoad indicates a field and (optionally) object reference for
+ * <p>An AvailableLoad indicates a field and (optionally) object reference for
  * which a value is available. It is used to implement redundant load
  * elimination and forward substitution in ValueNumberAnalysis. The idea is that
  * programmers often reload fields unnecessarily when they "know" that the value
  * will not change. In order to deduce the intended meaning of such code, our
  * analyses need to figure out that such loads return the same value.
- * <p/>
+ * </p>
  * <p>
  * AvailableLoad objects may be used as keys in both hash and tree sets and
  * maps.
- *
+ * </p>
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
