@@ -5,16 +5,16 @@ build
 .settings
 .classpath
 *.iml
+classesEclipse
+.DS_Store
 
 # TODO : Clean up
 **/local.properties
 **/*.class
-**/.DS_Store
 eclipsePlugin-test/bin_eclipse/
 eclipsePlugin/local.properties
 findbugs/annotationJavaDoc/
 findbugs/apiJavaDoc/
-findbugs/classesEclipse/
 findbugs/doc/
 findbugs/jnlp/appengine.jnlp
 findbugs/local.properties
@@ -29,6 +29,5 @@ findbugs/src/doc/bugDescriptions_fr.html
 findbugs/src/doc/bugDescriptions_ja.html
 findbugs/web/
 findbugsTestCases/build/
-findbugsTestCases/classesEclipse/
 findbugsTestCases/history/
 *.log
