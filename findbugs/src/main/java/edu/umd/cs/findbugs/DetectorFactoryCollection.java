@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -42,12 +41,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.updates.PluginUpdateListener;
-import edu.umd.cs.findbugs.updates.UpdateCheckCallback;
-import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.ClassPathUtil;
-import edu.umd.cs.findbugs.util.FutureValue;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects used
@@ -57,7 +51,7 @@ import edu.umd.cs.findbugs.util.FutureValue;
  * @author David Hovemeyer
  * @see DetectorFactory
  */
-public class DetectorFactoryCollection implements UpdateCheckCallback {
+public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
@@ -71,17 +65,10 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
     private final List<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
     private final Map<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
     private final Map<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
-    private final Map<String, CloudPlugin> registeredClouds = new LinkedHashMap<String, CloudPlugin>();
     protected final Map<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
     protected final Map<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
     protected final Map<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
 
-    private final UpdateChecker updateChecker;
-    private final CopyOnWriteArrayList<PluginUpdateListener> pluginUpdateListeners
-    = new CopyOnWriteArrayList<PluginUpdateListener>();
-    private volatile List<UpdateChecker.PluginUpdate> updates;
-    private boolean updatesForced;
-    private final Collection<Plugin> pluginsToUpdate;
     final Map<String, String> globalOptions = new HashMap<String,String>();
     final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
 
@@ -112,8 +99,6 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
             }
         }
         setGlobalOptions();
-        updateChecker = new UpdateChecker(this);
-        pluginsToUpdate = combine(enabledPlugins);
         // There are too many places where the detector factory collection can be created,
         // and in many cases it has nothing to do with update checks, like Plugin#addCustomPlugin(URI).
 
@@ -121,22 +106,6 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         // start to update something. The reason is that custom plugins
         // can disable update globally OR just will be NOT INCLUDED in the update check!
         // updateChecker.checkForUpdates(pluginsToUpdate, false);
-    }
-
-    /**
-     * @param force whether the updates should be shown to the user no matter what - even if the updates have been
-     *        seen before
-     */
-    public void checkForUpdates(boolean force) {
-        updateChecker.checkForUpdates(pluginsToUpdate, force);
-    }
-
-    private Collection<Plugin> combine(Collection<Plugin> enabled) {
-        List<Plugin> result = new ArrayList<Plugin>(enabled);
-        if (corePlugin != null && !result.contains(corePlugin)) {
-            result.add(corePlugin);
-        }
-        return result;
     }
 
     /**
@@ -191,16 +160,6 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
             }
         }
     }
-    @Override
-    public  @CheckForNull String getGlobalOption(String key) {
-        return globalOptions.get(key);
-    }
-
-    @Override
-    public  @CheckForNull Plugin getGlobalOptionSetter(String key) {
-        return globalOptionsSetter.get(key);
-    }
-
 
     /**
      * Return an Iterator over all available Plugin objects.
@@ -433,9 +392,6 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         for (BugCode bugCode : plugin.getBugCodes()) {
             registerBugCode(bugCode);
         }
-        for (CloudPlugin cloud : plugin.getCloudPlugins()) {
-            registerCloud(cloud);
-        }
     }
 
     void unLoadPlugin(Plugin plugin)  {
@@ -455,57 +411,6 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
         for (BugCode bugCode : plugin.getBugCodes()) {
             unRegisterBugCode(bugCode);
         }
-        for (CloudPlugin cloud : plugin.getCloudPlugins()) {
-            unRegisterCloud(cloud);
-        }
-    }
-
-    @Override
-    @SuppressWarnings({"ConstantConditions"})
-    public void pluginUpdateCheckComplete(List<UpdateChecker.PluginUpdate> newUpdates, boolean force) {
-        this.updates = newUpdates;
-        this.updatesForced = force;
-        for (PluginUpdateListener listener : pluginUpdateListeners) {
-            try {
-                listener.pluginUpdateCheckComplete(newUpdates, force);
-            } catch (Throwable e) {
-                LOGGER.log(Level.INFO, "Error during update check callback", e);
-            }
-        }
-    }
-
-    public void addPluginUpdateListener(PluginUpdateListener listener) {
-        pluginUpdateListeners.add(listener);
-        if (updates != null) {
-            listener.pluginUpdateCheckComplete(updates, updatesForced);
-        } else if(!updateChecker.updateChecksGloballyDisabled()){
-            checkForUpdates(false);
-        }
-    }
-
-    public FutureValue<Collection<UpdateChecker.PluginUpdate>> getUpdates() {
-        final FutureValue<Collection<UpdateChecker.PluginUpdate>> results = new FutureValue<Collection<UpdateChecker.PluginUpdate>>();
-        addPluginUpdateListener(new PluginUpdateListener() {
-            @Override
-            public void pluginUpdateCheckComplete(Collection<UpdateChecker.PluginUpdate> u, boolean force) {
-                results.set(u);
-            }
-        });
-        return results;
-    }
-
-
-    public  Map<String, CloudPlugin> getRegisteredClouds() {
-        return Collections.unmodifiableMap(registeredClouds);
-    }
-
-    void registerCloud(CloudPlugin cloudPlugin) {
-        LOGGER.log(Level.FINE, "Registering " + cloudPlugin.getId());
-        registeredClouds.put(cloudPlugin.getId(), cloudPlugin);
-    }
-    void unRegisterCloud(CloudPlugin cloudPlugin) {
-        LOGGER.log(Level.FINE, "Unregistering " + cloudPlugin.getId());
-        registeredClouds.remove(cloudPlugin.getId());
     }
 
     /**
@@ -643,9 +548,5 @@ public class DetectorFactoryCollection implements UpdateCheckCallback {
 
     public Collection<BugCategory> getBugCategoryObjects() {
         return categoryDescriptionMap.values(); // backed by the Map
-    }
-
-    public UpdateChecker getUpdateChecker() {
-        return updateChecker;
     }
 }

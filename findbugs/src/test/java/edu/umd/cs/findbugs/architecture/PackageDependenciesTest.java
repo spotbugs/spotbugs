@@ -41,7 +41,6 @@ public class PackageDependenciesTest extends TestCase {
         assertPackageConstraint("edu.umd.cs.findbugs.ba", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.bcel", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.classfile", expectedNotEfferent);
-        assertPackageConstraint("edu.umd.cs.findbugs.cloud", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.detect", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.graph", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.io", expectedNotEfferent);
@@ -51,7 +50,6 @@ public class PackageDependenciesTest extends TestCase {
         assertPackageConstraint("edu.umd.cs.findbugs.util", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.visitclass", expectedNotEfferent);
         assertPackageConstraint("edu.umd.cs.findbugs.xml", expectedNotEfferent);
-
     }
 
     @Override

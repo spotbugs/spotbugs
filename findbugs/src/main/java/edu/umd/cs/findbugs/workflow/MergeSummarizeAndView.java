@@ -44,8 +44,6 @@ import edu.umd.cs.findbugs.IGuiCallback;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.cloud.BugCollectionStorageCloud;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.launchGUI.LaunchGUI;
 
@@ -72,8 +70,6 @@ public class MergeSummarizeAndView {
 
         public @CheckForNull
         Date baselineDate;
-
-        public String cloudId;
     }
 
     static class MSVCommandLine extends CommandLine {
@@ -84,7 +80,6 @@ public class MergeSummarizeAndView {
             this.options = options;
             addOption("-workingDir", "filename",
                     "Comma separated list of current working directory paths, used to resolve relative paths (Jar, AuxClasspathEntry, SrcDir)");
-            addOption("-cloud", "id", "id of the cloud to use");
             addOption("-srcDir", "filename", "Comma separated list of directory paths, used to resolve relative SourceFile paths");
             addOption("-maxRank", "rank", "maximum rank of issues to show in summary (default 12)");
             addOption("-maxConsideredRank", "rank", "maximum rank of issues to consider (default 14)");
@@ -126,8 +121,6 @@ public class MergeSummarizeAndView {
                 options.maxRank = Integer.parseInt(argument);
             } else if ("-maxAge".equals(option)) {
                 options.maxAge = Integer.parseInt(argument);
-            } else if ("-cloud".equals(option)) {
-                options.cloudId = argument;
             } else if ("-baseline".equals(option)) {
                 try {
                     options.baselineDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).parse(argument);
@@ -177,16 +170,8 @@ public class MergeSummarizeAndView {
             options.analysisFiles.add(argv[i]);
         }
         MergeSummarizeAndView msv = new MergeSummarizeAndView(options);
-        boolean isCloudManagedByGui = false;
-        try {
-            msv.load();
-            isCloudManagedByGui = msv.report();
-        } finally {
-            if (!isCloudManagedByGui) {
-                msv.shutdown();
-            }
-        }
-
+        msv.load();
+        msv.report();
     }
 
     SortedBugCollection results;
@@ -199,12 +184,6 @@ public class MergeSummarizeAndView {
 
     int harmless = 0;
 
-    boolean isConnectedToCloud;
-
-    Cloud cloud;
-
-    Cloud.Mode originalMode;
-
     final MSVOptions options;
 
     public MergeSummarizeAndView(MSVOptions options) {
@@ -212,15 +191,7 @@ public class MergeSummarizeAndView {
     }
 
     public void execute() {
-        try {
-            load();
-        } finally {
-            shutdown();
-        }
-    }
-
-    public boolean isConnectedToCloud() {
-        return isConnectedToCloud;
+        load();
     }
 
     /**
@@ -267,13 +238,6 @@ public class MergeSummarizeAndView {
         return tooOld;
     }
 
-    private void shutdown() {
-        if (cloud != null) {
-            cloud.shutdown();
-            cloud = null;
-        }
-    }
-
     private void load() {
         if (options.workingDirList.isEmpty()) {
             String userDir = System.getProperty("user.dir");
@@ -306,18 +270,8 @@ public class MergeSummarizeAndView {
             throw new RuntimeException("No files successfully read");
         }
 
-        if (options.cloudId != null) {
-            results.getProject().setCloudId(options.cloudId);
-            results.reinitializeCloud();
-        }
-
-        cloud = results.getCloud();
-        cloud.waitUntilIssueDataDownloaded();
-        isConnectedToCloud = !(cloud instanceof BugCollectionStorageCloud);
         Project project = results.getProject();
-        originalMode = cloud.getMode();
 
-        cloud.setMode(Cloud.Mode.COMMUNAL);
         long old = System.currentTimeMillis() - options.maxAge * (24 * 3600 * 1000L);
         if (options.baselineDate != null) {
             long old2 = options.baselineDate.getTime();
@@ -333,18 +287,9 @@ public class MergeSummarizeAndView {
                 if (rank > BugRanker.VISIBLE_RANK_MAX) {
                     continue;
                 }
-                if (cloud.getConsensusDesignation(warning).score() < 0) {
-                    harmless++;
-                    continue;
-                }
-
-                long firstSeen = cloud.getFirstSeen(warning);
-                boolean isOld = FindBugs.validTimestamp(firstSeen) && firstSeen < old;
                 boolean highRank = rank > options.maxRank;
                 if (highRank) {
                     numLowConfidence++;
-                } else if (isOld) {
-                    tooOld++;
                 } else {
                     scaryBugs.add(warning);
                 }
@@ -354,7 +299,6 @@ public class MergeSummarizeAndView {
 
     private boolean report() {
 
-        assert cloud == results.getCloud();
         boolean hasScaryBugs = !scaryBugs.getCollection().isEmpty();
         if (hasScaryBugs) {
             System.out.printf("%4s%n", "days");
@@ -362,9 +306,7 @@ public class MergeSummarizeAndView {
             for (BugInstance warning : scaryBugs) {
                 int rank = BugRanker.findRank(warning);
 
-                long firstSeen = cloud.getFirstSeen(warning);
-
-                System.out.printf("%4d %4d %s%n", ageInDays(firstSeen), rank, warning.getMessageWithoutPrefix());
+                System.out.printf("%4d %s%n", rank, warning.getMessageWithoutPrefix());
             }
         }
 
@@ -390,7 +332,6 @@ public class MergeSummarizeAndView {
                 System.out.println("Running in GUI headless mode, can't open GUI");
                 return false;
             }
-            cloud.setMode(originalMode);
 
             LaunchGUI.launchGUI(results);
             return true;

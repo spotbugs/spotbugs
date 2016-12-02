@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
-import edu.umd.cs.findbugs.cloud.Cloud;
 
 public class SAXBugCollectionHandlerTest extends TestCase {
     public void testBugInstanceXmlPropsNoReviews() throws Exception {
@@ -37,11 +36,6 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));
-        Cloud cloud = bc.getCloud();
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug));
-        assertEquals(0, cloud.getNumberReviewers(bug));
-        assertEquals(Cloud.UserDesignation.UNCLASSIFIED, cloud.getConsensusDesignation(bug));
     }
 
     public void testBugInstanceXmlPropsWithReviews() throws Exception {
@@ -73,11 +67,6 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));
-        Cloud cloud = bc.getCloud();
-        assertTrue(cloud.overallClassificationIsNotAProblem(bug));
-        assertEquals(4, cloud.getNumberReviewers(bug));
-        assertEquals(Cloud.UserDesignation.NOT_A_BUG, cloud.getConsensusDesignation(bug));
     }
 
     public void testBugInstanceXmlPropsWithReviewsShouldFix() throws Exception {
@@ -109,11 +98,6 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(bug.getXmlProps().getFirstSeen()));
-        Cloud cloud = bc.getCloud();
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug));
-        assertEquals(4, cloud.getNumberReviewers(bug));
-        assertEquals(Cloud.UserDesignation.SHOULD_FIX, cloud.getConsensusDesignation(bug));
     }
 
     public void testReadAndThenStoreXmlProps() throws Exception {
@@ -155,11 +139,6 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-        Cloud cloud = bc.getCloud();
-        assertEquals("4/11/10 11:24 AM", BugInstance.firstSeenXMLFormat().format(cloud.getFirstSeen(bug)));
-        assertFalse(cloud.overallClassificationIsNotAProblem(bug));
-        assertEquals(4, cloud.getNumberReviewers(bug));
-        assertEquals(Cloud.UserDesignation.SHOULD_FIX, cloud.getConsensusDesignation(bug));
 
     }
 }

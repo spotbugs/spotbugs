@@ -97,10 +97,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
      * This method is for when the user wants to open a file.
      */
     void open() {
-        if (!mainFrame.canNavigateAway()) {
-            return;
-        }
-
         if (askToSave()) {
             return;
         }
@@ -248,10 +244,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     boolean saveAs() {
-        if (!mainFrame.canNavigateAway()) {
-            return false;
-        }
-
         saveOpenFileChooser.setDialogTitle(L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
         if (mainFrame.getCurrentProject() == null) {
@@ -399,9 +391,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     void save() {
-        if (!mainFrame.canNavigateAway()) {
-            return;
-        }
         File sFile = mainFrame.getSaveFile();
         assert sFile != null;
 
@@ -434,9 +423,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     SaveReturn saveFBPFile(File saveFile2) {
-        if (!mainFrame.canNavigateAway()) {
-            return SaveReturn.SAVE_ERROR;
-        }
         try {
             mainFrame.getProject().writeXML(saveFile2, mainFrame.getBugCollection());
         } catch (IOException e) {
@@ -534,7 +520,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
         mainFrame.clearSourcePane();
         mainFrame.clearSummaryTab();
-        mainFrame.getComments().refresh();
         mainFrame.setProjectChanged(false);
     }
 
@@ -608,10 +593,6 @@ public class MainFrameLoadSaveHelper implements Serializable {
     }
 
     void mergeAnalysis() {
-        if (!mainFrame.canNavigateAway()) {
-            return;
-        }
-
         mainFrame.acquireDisplayWait();
         try {
             BugCollection bc = BugLoader.combineBugHistories();

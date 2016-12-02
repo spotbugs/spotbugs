@@ -33,7 +33,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.dom4j.DocumentException;
@@ -48,7 +47,6 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ExcludingHashesBugReporter;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
@@ -58,8 +56,6 @@ import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.Cloud.SigninState;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -188,10 +184,6 @@ public class Filter {
 
         public boolean dontUpdateStatsSpecified = false;
 
-        public int maxAge = 0;
-
-        public boolean maxAgeSpecified = false;
-
         public boolean withMessagesSpecified = false;
 
         public boolean withMessages = false;
@@ -251,7 +243,6 @@ public class Filter {
             makeOptionUnlisted("-priority");
             addOption("-confidence", "level", "allow only warnings with this confidence or higher");
             addOption("-maxRank", "rank", "allow only warnings with this rank or lower");
-            addOption("-maxAge", "days", "Only issues that and in the cloud and weren't first seen more than this many days ago");
             addSwitchWithOptionalExtraPart("-notAProblem", "truth",
                     "Only issues with a consensus view that they are not a problem");
             addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
@@ -261,8 +252,6 @@ public class Filter {
 
             addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
             addOption("-category", "category", "allow only warnings with a category that starts with this string");
-            addOption("-designation", "designation",
-                    "allow only warnings with this designation (e.g., -designation SHOULD_FIX,MUST_FIX)");
             addSwitch("-dontUpdateStats",
                     "used when withSource is specified to only update bugs, not the class and package stats");
             addOption("-hashes", "hash file", "only bugs with instance hashes contained in the hash file");
@@ -349,17 +338,12 @@ public class Filter {
             }
         }
 
-        private long minFirstSeen;
-
         edu.umd.cs.findbugs.filter.Filter suppressionFilter;
 
 
         void adjustFilter(Project project, BugCollection collection) {
             suppressionFilter = project.getSuppressionFilter();
 
-            if (maxAgeSpecified) {
-                minFirstSeen = collection.getAnalysisTimestamp() - maxAge * MILLISECONDS_PER_DAY;
-            }
             first = getVersionNum(collection, firstAsString, true);
             maybeMutated = getVersionNum(collection, maybeMutatedAsString, true);
             last = getVersionNum(collection, lastAsString, true);
@@ -401,9 +385,6 @@ public class Filter {
                 }
             }
             if (excludedInstanceHashes.contains(bug.getInstanceHash())) {
-                return false;
-            }
-            if (annotation != null && bug.getAnnotationText().indexOf(annotation) == -1) {
                 return false;
             }
             if (bug.getPriority() > priority) {
@@ -490,9 +471,6 @@ public class Filter {
             if (!categoryKey.isEmpty() && thisBugPattern != null && !categoryKey.contains(thisBugPattern.getCategory())) {
                 return false;
             }
-            if (!designationKey.isEmpty() && !designationKey.contains(bug.getUserDesignationKey())) {
-                return false;
-            }
 
             if (hashChangedSpecified) {
                 if (bug.isInstanceHashConsistent() == hashChanged) {
@@ -515,24 +493,6 @@ public class Filter {
                 }
             }
 
-            Cloud cloud = collection.getCloud();
-            if (maxAgeSpecified) {
-                long firstSeen = cloud.getFirstSeen(bug);
-                if (!cloud.isInCloud(bug)) {
-                    return false;
-                }
-                if (firstSeen < minFirstSeen) {
-                    return false;
-                }
-            }
-
-            if (notAProblemSpecified && notAProblem != (cloud.getConsensusDesignation(bug).score() < 0)) {
-                return false;
-            }
-            if (shouldFixSpecified && shouldFix != (cloud.getConsensusDesignation(bug).score() > 0)) {
-                return false;
-            }
-
             if (sloppyUniqueSpecified) {
                 boolean unique = uniqueSloppy.add(bug);
                 if (unique != sloppyUnique) {
@@ -541,20 +501,6 @@ public class Filter {
             }
 
             return true;
-        }
-
-        private void addDesignationKey(String argument) {
-            I18N i18n = I18N.instance();
-
-            for (String x : argument.split("[,|]")) {
-                for (String designationKey : i18n.getUserDesignationKeys()) {
-                    if (designationKey.equals(x) || i18n.getUserDesignation(designationKey).equals(x)) {
-                        this.designationKey.add(designationKey);
-                        break;
-                    }
-
-                }
-            }
         }
 
         private void addCategoryKey(String argument) {
@@ -634,8 +580,6 @@ public class Filter {
                 absentAsString = argument;
             } else if ("-category".equals(option)) {
                 addCategoryKey(argument);
-            } else if ("-designation".equals(option)) {
-                addDesignationKey(argument);
             } else if ("-class".equals(option)) {
                 classPattern = Pattern.compile(argument.replace(',', '|'));
             } else if ("-calls".equals(option)) {
@@ -662,9 +606,6 @@ public class Filter {
                 } catch (FilterException e) {
                     throw new IllegalArgumentException("Error processing include file: " + argument, e);
                 }
-            } else if ("-maxAge".equals(option)) {
-                maxAge = Integer.parseInt(argument);
-                maxAgeSpecified = true;
             } else if ("-hashes".equals(option)) {
                 hashesFromFile = new HashSet<String>();
                 BufferedReader in = null;
@@ -814,25 +755,6 @@ public class Filter {
 
         }
 
-        if (commandLine.maxAgeSpecified || commandLine.notAProblemSpecified || commandLine.shouldFixSpecified) {
-
-            Cloud cloud = origCollection.getCloud();
-            SigninState signinState = cloud.getSigninState();
-            if (!signinState.canDownload()) {
-                disconnect(verbose, commandLine, resultCollection,  cloud.getCloudName() + " state is " + signinState
-                        + "; ignoring filtering options that require cloud access");
-
-            } else if (!cloud.waitUntilIssueDataDownloaded(20, TimeUnit.SECONDS)) {
-                if (verbose) {
-                    System.out.println("Waiting for cloud information required for filtering");
-                }
-                if (!cloud.waitUntilIssueDataDownloaded(60, TimeUnit.SECONDS)) {
-                    disconnect(verbose, commandLine, resultCollection,
-                            "Unable to connect to cloud; ignoring filtering options that require cloud access");
-                }
-            }
-        }
-
         commandLine.getReady(origCollection);
 
         for (BugInstance bug : origCollection.getCollection()) {
@@ -888,17 +810,5 @@ public class Filter {
         }
 
     }
-
-
-
-    private static void disconnect(boolean verbose, final FilterCommandLine commandLine, SortedBugCollection resultCollection,
-            String msg) {
-        if (verbose) {
-            System.out.println(msg);
-        }
-        resultCollection.addError(msg);
-        commandLine.maxAgeSpecified = commandLine.notAProblemSpecified = commandLine.shouldFixSpecified = false;
-    }
-
 }
 

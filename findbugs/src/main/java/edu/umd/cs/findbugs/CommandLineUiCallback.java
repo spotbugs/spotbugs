@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.charsets.UserTextFile;
-import edu.umd.cs.findbugs.cloud.Cloud;
 
 /**
  * Implementation of the UI callback for command line sessions.
@@ -141,10 +140,6 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
 
     @Override
-    public void registerCloud(Project project, BugCollection collection, Cloud cloud) {
-    }
-
-    @Override
     public ExecutorService getBugUpdateExecutor() {
         return bugUpdateExecutor;
     }
@@ -188,19 +183,6 @@ public class CommandLineUiCallback implements IGuiCallback {
     @Override
     public boolean isHeadless() {
         return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.IGuiCallback#unregisterCloud(edu.umd.cs.findbugs.
-     * Project, edu.umd.cs.findbugs.BugCollection,
-     * edu.umd.cs.findbugs.cloud.Cloud)
-     */
-    @Override
-    public void unregisterCloud(Project project, BugCollection collection, Cloud cloud) {
-
     }
 
     /*

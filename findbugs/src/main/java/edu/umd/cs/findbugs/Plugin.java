@@ -42,7 +42,6 @@ import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.plan.DetectorOrderingConstraint;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
@@ -80,7 +79,6 @@ public class Plugin {
     private final LinkedHashSet<BugCode> bugCodeList;
 
     private final LinkedHashMap<String, BugCategory> bugCategories;
-    private final LinkedHashSet<CloudPlugin> cloudList;
 
     private final HashMap<String,String> myGlobalOptions;
 
@@ -122,7 +120,6 @@ public class Plugin {
         }
         assert enabled || !cannotDisable;
         myGlobalOptions = new HashMap<String, String>();
-        cloudList = new LinkedHashSet<CloudPlugin>();
         componentPlugins = new DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> ();
         this.version = version;
         this.releaseDate = releaseDate;
@@ -247,10 +244,6 @@ public class Plugin {
      */
     public void addDetectorFactory(DetectorFactory factory) {
         detectorFactoryList.add(factory);
-    }
-
-    public void addCloudPlugin(CloudPlugin cloudPlugin) {
-        cloudList.add(cloudPlugin);
     }
 
     /**
@@ -388,10 +381,6 @@ public class Plugin {
     @CheckForNull
     public BugCategory getBugCategory(String id) {
         return bugCategories.get(id);
-    }
-
-    public Set<CloudPlugin> getCloudPlugins() {
-        return cloudList;
     }
 
     /**

@@ -78,7 +78,6 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 } catch (Exception e) {
                     Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.FINE, "", e);
                 }
-                results.reinitializeCloud();
             }
 
             @Override

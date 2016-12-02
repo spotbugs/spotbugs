@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,9 +38,6 @@ import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
-import edu.umd.cs.findbugs.updates.UpdateChecker;
-import edu.umd.cs.findbugs.updates.UpdateChecker.PluginUpdate;
-import edu.umd.cs.findbugs.util.FutureValue;
 
 /**
  * Static methods and fields useful for working with instances of
@@ -393,11 +389,6 @@ public abstract class FindBugs {
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
         boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
 
-        FutureValue<Collection<UpdateChecker.PluginUpdate>>
-        updateHolder = null;
-        if (verbose) {
-            updateHolder  = DetectorFactoryCollection.instance().getUpdates();
-        }
         try {
             findBugs.execute();
         } catch (InterruptedException e) {
@@ -425,19 +416,6 @@ public abstract class FindBugs {
             }
             if (errorCount > 0) {
                 System.err.println("Analysis errors: " + errorCount);
-            }
-            if (updateHolder.isDone()) {
-                try {
-                    Collection<PluginUpdate> updates = updateHolder.get();
-                    if (!DetectorFactoryCollection.instance().getUpdateChecker().updatesHaveBeenSeenBefore(updates)) {
-                        for(UpdateChecker.PluginUpdate u : updates) {
-                            System.err.println(u);
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    assert true;
-                }
-
             }
         }
 

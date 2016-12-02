@@ -211,8 +211,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitch("-noClassOk", "output empty warning file if no classes are specified");
         addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
         addOption("-analyzeFromFile", "filepath", "get the list of class/jar files from a designated file");
-        addOption("-cloud", "id", "set cloud id");
-        addOption("-cloudProperty", "key=value", "set cloud property");
         addOption("-bugReporters", "name,name2,-name3", "bug reporter decorators to explicitly enable/disable");
 
         addSwitch("-printConfiguration", "print configuration and exit, without running analysis");
@@ -408,17 +406,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
                 System.exit(1);
             }
-        } else if ("-cloud".equals(option)) {
-            project.setCloudId(argument);
-        } else if ("-cloudProperty".equals(option)) {
-            int e = argument.indexOf('=');
-            if (e == -1) {
-                throw new IllegalArgumentException("Bad cloud property: " + argument);
-            }
-            String key = argument.substring(0, e);
-            String value = argument.substring(e + 1);
-            project.getCloudProperties().setProperty(key, value);
-
         } else if ("-bugReporters".equals(option)) {
             for (String s : argument.split(",")) {
                 if (s.charAt(0) == '-') {

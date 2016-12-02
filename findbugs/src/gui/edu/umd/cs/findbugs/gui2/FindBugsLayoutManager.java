@@ -31,8 +31,6 @@ public interface FindBugsLayoutManager {
 
     public void initialize();
 
-    public void makeCommentsVisible();
-
     public void makeSourceVisible();
 
     public void saveState();
@@ -40,7 +38,4 @@ public interface FindBugsLayoutManager {
     public void setSourceTitle(String title);
 
     public JComponent getSourceViewComponent();
-
-    public void resetCommentsInputPane();
-
 }

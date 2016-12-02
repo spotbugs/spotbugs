@@ -47,13 +47,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.xml.transform.TransformerException;
@@ -70,8 +67,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.util.Util;
@@ -91,8 +86,6 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
  */
 public class SortedBugCollection implements BugCollection {
 
-    private static final Logger LOGGER = Logger.getLogger(SortedBugCollection.class.getName());
-
     private static final boolean REPORT_SUMMARY_HTML = SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
     long analysisTimestamp = System.currentTimeMillis();
@@ -109,15 +102,9 @@ public class SortedBugCollection implements BugCollection {
 
     private boolean applySuppressions = false;
 
-    private @CheckForNull Cloud cloud;
-
-    boolean shouldNotUsePlugin;
-
     long timeStartedLoading, timeFinishedLoading;
 
     String dataSource = "";
-
-    private Map<String, String> xmlCloudDetails = Collections.emptyMap();
 
     private final Comparator<BugInstance> comparator;
 
@@ -173,46 +160,6 @@ public class SortedBugCollection implements BugCollection {
         return project;
     }
 
-    @Override
-    public @CheckForNull Cloud getCloudLazily() {
-        if (cloud != null && bugsPopulated) {
-            cloud.bugsPopulated();
-        }
-        return cloud;
-    }
-
-    @Override
-    public @Nonnull Cloud getCloud() {
-        if (shouldNotUsePlugin) {
-            return CloudFactory.getPlainCloud(this);
-        }
-        Cloud result = cloud;
-        if (result == null) {
-            IGuiCallback callback = getProject().getGuiCallback();
-            result = cloud = CloudFactory.createCloudWithoutInitializing(this);
-            try {
-                CloudFactory.initializeCloud(this, result);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not load cloud plugin "+ result.getCloudName(), e);
-                callback.showMessageDialog("Unable to connect to " + result.getCloudName() + ": " + Util.getNetworkErrorMessage(e));
-                if (CloudFactory.FAIL_ON_CLOUD_ERROR) {
-                    throw new IllegalStateException("Could not load SpotBugs Cloud plugin - to avoid this message, " +
-                            "set -D" + CloudFactory.FAIL_ON_CLOUD_ERROR_PROP + "=false", e);
-                }
-                result = cloud = CloudFactory.getPlainCloud(this);
-            }
-            callback.registerCloud(getProject(), this, result);
-
-
-        }
-        if (!result.isInitialized()) {
-            LOGGER.log(Level.SEVERE, "Cloud " + result.getCloudName() + " is not initialized ");
-        }
-        if (bugsPopulated) {
-            result.bugsPopulated();
-        }
-        return result;
-    }
 
     @Override
     public boolean isApplySuppressions() {
@@ -504,19 +451,7 @@ public class SortedBugCollection implements BugCollection {
         // if (project == null) throw new NullPointerException("No project");
 
 
-        if (withMessages && cloud != null) {
-            cloud.bugsPopulated();
-            cloud.initiateCommunication();
-            cloud.waitUntilIssueDataDownloaded();
-            String token = SystemProperties.getProperty("findbugs.cloud.token");
-            if (token != null && token.trim().length() > 0) {
-                LOGGER.info("Cloud token specified - uploading new issues, if necessary...");
-                cloud.waitUntilNewIssuesUploaded();
-            }
-            xmlOutput = new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
-        } else {
-            xmlOutput = new OutputStreamXMLOutput(out);
-        }
+        xmlOutput = new OutputStreamXMLOutput(out);
 
         writeXML(xmlOutput);
     }
@@ -1356,53 +1291,9 @@ public class SortedBugCollection implements BugCollection {
         return in;
     }
 
-    public void clearCloud() {
-        Cloud oldCloud = cloud;
-        IGuiCallback callback = project.getGuiCallback();
-        if (oldCloud != null) {
-            callback.unregisterCloud(project, this, oldCloud);
-            oldCloud.shutdown();
-        }
-        cloud = null;
-    }
-
-    @Override
-    public @Nonnull Cloud reinitializeCloud() {
-        Cloud oldCloud = cloud;
-        IGuiCallback callback = project.getGuiCallback();
-        if (oldCloud != null) {
-            callback.unregisterCloud(project, this, oldCloud);
-            oldCloud.shutdown();
-        }
-        cloud = null;
-        @Nonnull Cloud newCloud = getCloud();
-        assert newCloud == cloud;
-        assert cloud != null;
-        assert cloud.isInitialized();
-        if (bugsPopulated ) {
-            cloud.bugsPopulated();
-            cloud.initiateCommunication();
-        }
-        return cloud;
-    }
-
-    @Override
-    public void setXmlCloudDetails(Map<String, String> map) {
-        this.xmlCloudDetails = map;
-    }
-
-    @Override
-    public Map<String, String> getXmlCloudDetails() {
-        return xmlCloudDetails;
-    }
-
     @Override
     public void setMinimalXML(boolean minimalXML) {
         this.minimalXML = minimalXML;
-    }
-
-    public void setDoNotUseCloud(boolean b) {
-        this.shouldNotUsePlugin = b;
     }
 
     @Override

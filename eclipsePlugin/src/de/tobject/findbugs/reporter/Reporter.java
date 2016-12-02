@@ -50,7 +50,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.log.Profiler;
 
 /**
@@ -175,10 +174,6 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public void finish() {
         if (DEBUG) {
             System.out.println("Finish: Found " + bugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
-        }
-        Cloud cloud = bugCollection.getCloud();
-        if (cloud != null) {
-            cloud.bugsPopulated();
         }
         reportResultsToConsole();
     }

@@ -70,7 +70,7 @@ public class GUISaveState {
     static final int MAXNUMRECENTPROJECTS = 10;
 
     private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] { Sortables.CATEGORY, Sortables.BUGCODE,
-        Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK, Sortables.FIRST_SEEN, Sortables.DESIGNATION };
+        Sortables.TYPE, Sortables.DIVIDER, Sortables.BUG_RANK };
 
     private static final String[] RECENTPROJECTKEYS = new String[MAXNUMRECENTPROJECTS];
 
@@ -526,21 +526,6 @@ public class GUISaveState {
      */
     public void setSplitTop(int splitTop) {
         this.splitTop = splitTop;
-    }
-
-    /**
-     * @return Returns the location of the tree-comments divider.
-     */
-    public int getSplitTreeComments() {
-        return splitTreeComments;
-    }
-
-    /**
-     * @param splitTreeComments
-     *            The location of the tree-comments divider to set.
-     */
-    public void setSplitTreeComments(int splitTreeComments) {
-        this.splitTreeComments = splitTreeComments;
     }
 
     public void setPluginsEnabled(List<String> enabledPlugins, List<String> disabledPlugins) {

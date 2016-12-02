@@ -640,10 +640,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
     }
 
-    public static SortedBugCollection getBugCollection(IProject project, IProgressMonitor monitor) throws CoreException {
-        return getBugCollection(project, monitor, true);
-    }
-
     /**
      * Get the stored BugCollection for project. If there is no stored bug
      * collection for the project, or if an error occurs reading the stored bug
@@ -656,12 +652,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * @return the stored BugCollection, never null
      * @throws CoreException
      */
-    public static SortedBugCollection getBugCollection(IProject project, IProgressMonitor monitor, boolean useCloud)
+    public static SortedBugCollection getBugCollection(IProject project, IProgressMonitor monitor)
             throws CoreException {
         SortedBugCollection bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
         if (bugCollection == null) {
             try {
-                readBugCollectionAndProject(project, monitor, useCloud);
+                readBugCollectionAndProject(project, monitor);
                 bugCollection = (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
             } catch (IOException e) {
                 FindbugsPlugin.getDefault().logException(e, "Could not read bug collection for project");
@@ -686,10 +682,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
         UserPreferences userPrefs = getUserPreferences(project);
 
-        String cloudId = userPrefs.getCloudId();
-        if (cloudId != null) {
-            fbProject.setCloudId(cloudId);
-        }
         cacheBugCollectionAndProject(project, bugCollection, fbProject);
         return bugCollection;
     }
@@ -710,7 +702,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * @throws DocumentException
      * @throws CoreException
      */
-    private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor, boolean useCloud)
+    private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor)
             throws IOException, DocumentException, CoreException {
         SortedBugCollection bugCollection;
 
@@ -732,15 +724,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         UserPreferences prefs = getUserPreferences(project);
         bugCollection = new SortedBugCollection();
         bugCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
-        bugCollection.setDoNotUseCloud(!useCloud);
 
         bugCollection.readXML(bugCollectionFile);
-        if (useCloud) {
-            String cloudId = prefs.getCloudId();
-            if (cloudId != null) {
-                bugCollection.getProject().setCloudId(cloudId);
-            }
-        }
 
         cacheBugCollectionAndProject(project, bugCollection, bugCollection.getProject());
     }

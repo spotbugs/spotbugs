@@ -67,11 +67,6 @@ import org.dom4j.io.SAXReader;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
-import edu.umd.cs.findbugs.cloud.Cloud;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
-import edu.umd.cs.findbugs.cloud.CloudPluginBuilder;
-import edu.umd.cs.findbugs.cloud.username.NameLookup;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.plan.ByInterfaceDetectorFactorySelector;
@@ -81,7 +76,6 @@ import edu.umd.cs.findbugs.plan.ReportingDetectorFactorySelector;
 import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdError;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
-import edu.umd.cs.findbugs.updates.UpdateChecker;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
 import edu.umd.cs.findbugs.util.Util;
@@ -731,47 +725,6 @@ public class PluginLoader {
             throws PluginException {
         Document pluginDescriptor = getPluginDescriptor();
         List<Document> messageCollectionList = getMessageDocuments();
-        List<Node> cloudNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/Cloud");
-        for (Node cloudNode : cloudNodeList) {
-
-            String cloudClassname = cloudNode.valueOf("@cloudClass");
-            String cloudId = cloudNode.valueOf("@id");
-            String usernameClassname = cloudNode.valueOf("@usernameClass");
-            boolean onlineStorage = Boolean.valueOf(cloudNode.valueOf("@onlineStorage"));
-            String propertiesLocation = cloudNode.valueOf("@properties");
-            boolean disabled = Boolean.valueOf(cloudNode.valueOf("@disabled")) && !cloudId.equals(CloudFactory.DEFAULT_CLOUD);
-            if (disabled) {
-                continue;
-            }
-            boolean hidden = Boolean.valueOf(cloudNode.valueOf("@hidden")) && !cloudId.equals(CloudFactory.DEFAULT_CLOUD);
-
-            Class<? extends Cloud> cloudClass = getClass(classLoader, cloudClassname, Cloud.class);
-
-            Class<? extends NameLookup> usernameClass = getClass(classLoader, usernameClassname, NameLookup.class);
-            Node cloudMessageNode = findMessageNode(messageCollectionList, "/MessageCollection/Cloud[@id='" + cloudId + "']",
-                    "Missing Cloud description for cloud " + cloudId);
-            String description = getChildText(cloudMessageNode, "Description").trim();
-            String details = getChildText(cloudMessageNode, "Details").trim();
-            PropertyBundle properties = new PropertyBundle();
-            if (propertiesLocation != null && propertiesLocation.length() > 0) {
-                URL properiesURL = classLoader.getResource(propertiesLocation);
-                if (properiesURL == null) {
-                    continue;
-                }
-                properties.loadPropertiesFromURL(properiesURL);
-            }
-            List<Node> propertyNodes = XMLUtil.selectNodes(cloudNode, "Property");
-            for (Node node : propertyNodes) {
-                String key = node.valueOf("@key");
-                String value = node.getText().trim();
-                properties.setProperty(key, value);
-            }
-
-            CloudPlugin cloudPlugin = new CloudPluginBuilder().setFindbugsPluginId(plugin.getPluginId()).setCloudid(cloudId).setClassLoader(classLoader)
-                    .setCloudClass(cloudClass).setUsernameClass(usernameClass).setHidden(hidden).setProperties(properties)
-                    .setDescription(description).setDetails(details).setOnlineStorage(onlineStorage).createCloudPlugin();
-            plugin.addCloudPlugin(cloudPlugin);
-        }
 
         // Create PluginComponents
         try {
@@ -1306,7 +1259,7 @@ public class PluginLoader {
             return null;
         }
         try {
-            SimpleDateFormat releaseDateFormat = new SimpleDateFormat(UpdateChecker.PLUGIN_RELEASE_DATE_FMT, Locale.ENGLISH);
+            SimpleDateFormat releaseDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm aa z", Locale.ENGLISH);
             Date result = releaseDateFormat.parse(releaseDate);
             return result;
         } catch (ParseException e) {

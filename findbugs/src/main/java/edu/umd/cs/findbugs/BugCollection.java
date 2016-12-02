@@ -25,16 +25,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -372,21 +368,6 @@ public interface BugCollection extends Iterable<BugInstance> {
     public boolean isApplySuppressions();
 
     public void setApplySuppressions(boolean applySuppressions);
-
-    /**
-     * Get the instance of user annotation plugin
-     *
-     * @return user annotation plugin
-     */
-    public @Nonnull Cloud getCloud();
-
-    public @CheckForNull Cloud getCloudLazily();
-
-    public @Nonnull Cloud reinitializeCloud();
-
-    public void setXmlCloudDetails(Map<String, String> map);
-
-    public Map<String, String> getXmlCloudDetails();
 
     public void bugsPopulated();
 }

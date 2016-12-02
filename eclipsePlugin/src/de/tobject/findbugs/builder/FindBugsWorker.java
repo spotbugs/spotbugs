@@ -53,8 +53,6 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util.StopTimer;
 import de.tobject.findbugs.view.FindBugsConsole;
-import edu.umd.cs.findbugs.BugDesignation;
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -185,11 +183,6 @@ public class FindBugsWorker {
         for (String entry : classPathEntries) {
             findBugsProject.addAuxClasspathEntry(entry);
         }
-        String cloudId = userPrefs.getCloudId();
-        if (cloudId != null) {
-            findBugsProject.setCloudId(cloudId);
-        }
-
 
         st.newPoint("configureProps");
         IPreferenceStore store = FindbugsPlugin.getPluginPreferences(project);
@@ -329,26 +322,7 @@ public class FindBugsWorker {
         } finally {
             findBugs.dispose();
         }
-    }
-
-    void logDirty(SortedBugCollection bugCollection) {
-        if (true) {
-            return;
-        }
-        int count = 0;
-        for(BugInstance b : bugCollection) {
-            BugDesignation bd = b.getUserDesignation();
-            if (bd == null) {
-                continue;
-            }
-            if (bd.isDirty()) {
-                count++;
-            }
-
-        }
-        if (count > 0) {
-            new RuntimeException("Found " + count + " dirty designations").printStackTrace(System.out);
-        }
+ 
     }
     /**
      * Update the BugCollection for the project.
@@ -360,20 +334,14 @@ public class FindBugsWorker {
      */
     private void updateBugCollection(Project findBugsProject, Reporter bugReporter, boolean incremental) {
         SortedBugCollection newBugCollection = bugReporter.getBugCollection();
-        logDirty(newBugCollection);
         try {
             st.newPoint("getBugCollection");
-            SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project, monitor, false);
-            logDirty(oldBugCollection);
+            SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project, monitor);
 
             st.newPoint("mergeBugCollections");
             SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection, incremental);
-            logDirty(resultCollection);
              resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
             resultCollection.setTimestamp(System.currentTimeMillis());
-            resultCollection.setDoNotUseCloud(false);
-            resultCollection.reinitializeCloud();
-            logDirty(resultCollection);
 
             // will store bugs in the default FB file + Eclipse project session
             // props

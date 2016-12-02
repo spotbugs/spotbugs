@@ -11,7 +11,6 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -27,7 +26,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -38,8 +36,6 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -48,7 +44,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -142,8 +137,7 @@ public class MainFrameTree implements Serializable {
     void rebuildBugTreeIfSortablesDependOnCloud() {
         BugTreeModel bt = (BugTreeModel) (mainFrame.getTree().getModel());
         List<Sortables> sortables = sorter.getOrderBeforeDivider();
-        if (sortables.contains(Sortables.DESIGNATION) || sortables.contains(Sortables.FIRST_SEEN)
-                || sortables.contains(Sortables.FIRSTVERSION) || sortables.contains(Sortables.LASTVERSION)) {
+        if (sortables.contains(Sortables.FIRSTVERSION) || sortables.contains(Sortables.LASTVERSION)) {
 
             bt.rebuild();
         }
@@ -193,8 +187,6 @@ public class MainFrameTree implements Serializable {
         filterMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (!mainFrame.canNavigateAway()) { return; }
-
                 new NewFilterFromBug(new FilterFromBugPicker(currentSelectedBugLeaf.getBug(),
                         Arrays.asList(mainFrame.getAvailableSortables())),
                         new ApplyNewFilter(mainFrame.getProject().getSuppressionFilter(),
@@ -207,18 +199,6 @@ public class MainFrameTree implements Serializable {
         });
 
         popupMenu.add(filterMenuItem);
-
-        JMenu changeDesignationMenu = MainFrameHelper.newJMenu("menu.changeDesignation", "Change bug designation");
-
-        int i = 0;
-        int keyEvents[] = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6,
-                KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
-        for (String key : I18N.instance().getUserDesignationKeys(true)) {
-            String name = I18N.instance().getUserDesignation(key);
-            mainFrame.addDesignationItem(changeDesignationMenu, key, name, keyEvents[i++]);
-        }
-
-        popupMenu.add(changeDesignationMenu);
 
         return popupMenu;
     }
@@ -244,9 +224,6 @@ public class MainFrameTree implements Serializable {
                 // benefit of using the smarter deletion method.
 
                 try {
-                    if (!mainFrame.canNavigateAway()) {
-                        return;
-                    }
                     int startCount;
                     TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
                     TreePath deletePath = path;
@@ -310,18 +287,6 @@ public class MainFrameTree implements Serializable {
         });
 
         popupMenu.add(filterMenuItem);
-
-        JMenu changeDesignationMenu = MainFrameHelper.newJMenu("menu.changeDesignation", "Change bug designation");
-
-        int i = 0;
-        int keyEvents[] = { KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6,
-                KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9 };
-        for (String key : I18N.instance().getUserDesignationKeys(true)) {
-            String name = I18N.instance().getUserDesignation(key);
-            mainFrame.addDesignationItem(changeDesignationMenu, key, name, keyEvents[i++]);
-        }
-
-        popupMenu.add(changeDesignationMenu);
 
         return popupMenu;
     }
@@ -389,10 +354,6 @@ public class MainFrameTree implements Serializable {
     }
 
     void setupTreeListeners() {
-        // noinspection ConstantIfStatement
-        if (false) {
-            tree.addTreeExpansionListener(new MyTreeExpansionListener());
-        }
         tree.addTreeSelectionListener(new MyTreeSelectionListener());
 
         tree.addMouseListener(new TreeMouseListener());
@@ -668,17 +629,6 @@ public class MainFrameTree implements Serializable {
 
             TreePath path = selectionEvent.getNewLeadSelectionPath();
             if (path != null) {
-                if (!mainFrame.canNavigateAway()) {
-                    try {
-                        ignoreSelection = true;
-                        tree.clearSelection();
-                        tree.setSelectionPath(selectionEvent.getOldLeadSelectionPath());
-                    } finally {
-                        ignoreSelection = false;
-                    }
-                    return;
-                }
-
                 Object lastPathComponent = path.getLastPathComponent();
                 if (lastPathComponent instanceof BugLeafNode) {
                     boolean beforeProjectChanged = mainFrame.isProjectChanged();
@@ -688,49 +638,12 @@ public class MainFrameTree implements Serializable {
                     mainFrame.setProjectChanged(beforeProjectChanged);
                 } else {
                     boolean beforeProjectChanged = mainFrame.isProjectChanged();
-                    mainFrame.updateDesignationDisplay();
                     currentSelectedBugLeaf = null;
                     mainFrame.setCurrentSelectedBugAspects((BugAspects) lastPathComponent);
                     mainFrame.syncBugInformation();
                     mainFrame.setProjectChanged(beforeProjectChanged);
                 }
             }
-        }
-    }
-
-    private class MyTreeExpansionListener implements TreeExpansionListener {
-
-        @Override
-        public void treeExpanded(TreeExpansionEvent event) {
-            System.out.println("Tree expanded");
-            TreePath path = event.getPath();
-            Object lastPathComponent = path.getLastPathComponent();
-            int children = tree.getModel().getChildCount(lastPathComponent);
-            if (children == 1) {
-                Object o = tree.getModel().getChild(lastPathComponent, 0);
-                if (o instanceof BugAspects) {
-                    final TreePath p = path.pathByAddingChild(o);
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                System.out.println("auto expanding " + p);
-                                tree.expandPath(p);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-                }
-
-            }
-        }
-
-        @Override
-        public void treeCollapsed(TreeExpansionEvent event) {
-            // do nothing
         }
     }
 }

@@ -46,13 +46,11 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -62,8 +60,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
-import edu.umd.cs.findbugs.cloud.CloudFactory;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
@@ -113,8 +109,6 @@ public class Project implements XMLWriteable {
      */
     private boolean isModified;
 
-    private String cloudId;
-
     private UserPreferences configuration;
 
     /** key is plugin id */
@@ -139,46 +133,6 @@ public class Project implements XMLWriteable {
     public void setConfiguration(@Nonnull UserPreferences configuration) {
         requireNonNull(configuration);
         this.configuration = configuration;
-    }
-
-    public @CheckForNull String getCloudId() {
-        return cloudId;
-    }
-
-    public void setCloudId(@Nullable String cloudId) {
-        if (cloudId != null && cloudId.indexOf('.') == -1) {
-            Map<String, CloudPlugin> registeredClouds = DetectorFactoryCollection.instance().getRegisteredClouds();
-            String check = "." + cloudId;
-            int count = 0;
-            String result = cloudId;
-            for(String name : registeredClouds.keySet()) {
-                if (name.endsWith(check)) {
-                    count++;
-                    result = name;
-                }
-            }
-            if (count == 1) {
-                cloudId = result;
-            }
-        }
-        this.cloudId = cloudId;
-    }
-
-    private Properties cloudProperties = new Properties();
-
-    /**
-     * @return Returns the cloudProperties.
-     */
-    public Properties getCloudProperties() {
-        return cloudProperties;
-    }
-
-    /**
-     * @param cloudProperties
-     *            The cloudProperties to set.
-     */
-    public void setCloudProperties(Properties cloudProperties) {
-        this.cloudProperties = cloudProperties;
     }
 
     /**
@@ -220,8 +174,6 @@ public class Project implements XMLWriteable {
         dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
         dup.timestampForAnalyzedClasses = timestampForAnalyzedClasses;
         dup.guiCallback = guiCallback;
-        dup.cloudId = cloudId;
-        dup.cloudProperties.putAll(cloudProperties);
         return dup;
     }
 
@@ -817,11 +769,6 @@ public class Project implements XMLWriteable {
 
     static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
 
-    static final String CLOUD_ELEMENT_NAME = "Cloud";
-
-    static final String CLOUD_ID_ATTRIBUTE_NAME = "id";
-
-    static final String CLOUD_PROPERTY_ELEMENT_NAME = "Property";
     static final String PLUGIN_ELEMENT_NAME = "Plugin";
 
     static final String PLUGIN_ID_ATTRIBUTE_NAME = "id";
@@ -880,31 +827,6 @@ public class Project implements XMLWriteable {
             pluginAttributeList.addAttribute(PLUGIN_ID_ATTRIBUTE_NAME, plugin.getPluginId());
             pluginAttributeList.addAttribute(PLUGIN_STATUS_ELEMENT_NAME, enabled.toString());
             xmlOutput.openCloseTag(PLUGIN_ELEMENT_NAME, pluginAttributeList);
-        }
-        CloudPlugin cloudPlugin = bugCollection == null ? null : CloudFactory.getCloudPlugin(bugCollection);
-        if (cloudPlugin != null) {
-            String id = cloudPlugin.getId();
-            if (id == null) {
-                id = cloudId;
-            }
-            xmlOutput.startTag(CLOUD_ELEMENT_NAME);
-            xmlOutput.addAttribute(CLOUD_ID_ATTRIBUTE_NAME, id);
-            boolean onlineCloud = cloudPlugin.isOnline();
-            xmlOutput.addAttribute("online", Boolean.toString(onlineCloud));
-            String url = cloudPlugin.getProperties().getProperty("cloud.detailsUrl");
-            if (url != null) {
-                xmlOutput.addAttribute("detailsUrl", url);
-            }
-            xmlOutput.stopTag(false);
-            for (Map.Entry<?,?> e : cloudProperties.entrySet()) {
-                xmlOutput.startTag(CLOUD_PROPERTY_ELEMENT_NAME);
-                xmlOutput.addAttribute("key", e.getKey().toString());
-                xmlOutput.stopTag(false);
-                Object value = e.getValue();
-                xmlOutput.writeText(value.toString());
-                xmlOutput.closeTag(CLOUD_PROPERTY_ELEMENT_NAME);
-            }
-            xmlOutput.closeTag(CLOUD_ELEMENT_NAME);
         }
         xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
     }

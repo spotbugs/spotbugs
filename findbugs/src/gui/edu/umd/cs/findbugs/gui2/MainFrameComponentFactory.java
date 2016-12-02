@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -29,7 +28,6 @@ import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -57,7 +55,6 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.cloud.Cloud;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 public class MainFrameComponentFactory implements Serializable {
@@ -144,10 +141,6 @@ public class MainFrameComponentFactory implements Serializable {
         mainFrame.summaryHtmlArea.setEditorKit(htmlEditorKit);
     }
 
-    JPanel createCommentsInputPanel() {
-        return mainFrame.getComments().createCommentsInputPanel();
-    }
-
     /**
      * Creates the source code panel, but does not put anything in it.
      */
@@ -230,45 +223,9 @@ public class MainFrameComponentFactory implements Serializable {
     void setSourceTab(String title, @CheckForNull BugInstance bug) {
         JComponent label = mainFrame.getGuiLayout().getSourceViewComponent();
         if (label != null) {
-            URL u = null;
-            if (bug != null) {
-                Cloud plugin = mainFrame.getBugCollection().getCloud();
-                if (plugin.supportsSourceLinks()) {
-                    u = plugin.getSourceLink(bug);
-                }
-            }
-            if (u != null) {
-                addLink(label, u);
-            } else {
-                removeLink(label);
-            }
-
+            removeLink(label);
         }
         mainFrame.getGuiLayout().setSourceTitle(title);
-    }
-
-    private void addLink(JComponent component, URL source) {
-        this.sourceLink = source;
-        component.setEnabled(true);
-        if (!listenerAdded) {
-            listenerAdded = true;
-            component.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    URL u = sourceLink;
-                    if (u != null) {
-                        LaunchBrowser.showDocument(u);
-                    }
-
-                }
-            });
-        }
-        component.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        Cloud plugin = mainFrame.getBugCollection().getCloud();
-        if (plugin != null) {
-            component.setToolTipText(plugin.getSourceLinkToolTip(null));
-        }
-
     }
 
     private void removeLink(JComponent component) {

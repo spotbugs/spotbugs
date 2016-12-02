@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -40,7 +39,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -50,19 +48,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.cloud.CloudPlugin;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * The User Interface for creating a Project and editing it after the fact.
@@ -116,37 +107,9 @@ public class NewProjectWizard extends FBDialog {
 
     private final JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 
-    private final JComboBox<CloudPlugin> cloudSelector = new JComboBox<CloudPlugin>();
+    private final JComponent[] wizardComponents = new JComponent[3];
 
-    private final JComponent[] wizardComponents = new JComponent[4];
-
-    private int currentPanel;
     private boolean isNewProject;
-
-    static class CloudComboBoxRenderer extends BasicComboBoxRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-                boolean cellHasFocus) {
-            CloudPlugin plugin = (CloudPlugin) value;
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-                if (-1 < index) {
-                    if (plugin == null) {
-                        list.setToolTipText("No cloud plugin specified by project");
-                    } else {
-                        list.setToolTipText(plugin.getDetails());
-                    }
-                }
-            } else {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-            setFont(list.getFont());
-            setText((value == null) ? "<default>" : plugin.getDescription());
-            return this;
-        }
-    }
 
     public NewProjectWizard() {
         this(null);
@@ -195,33 +158,6 @@ public class NewProjectWizard extends FBDialog {
                 JFileChooser.FILES_AND_DIRECTORIES, null, "Choose Source Directories", true,
                 "http://findbugs.sourceforge.net/manual/gui.html#d0e1087");
 
-        JPanel cloudPanel = new JPanel(new BorderLayout());
-        cloudPanel.add(new JLabel("Store bug reviews in:"), BorderLayout.NORTH);
-        cloudPanel.add(cloudSelector, BorderLayout.CENTER);
-
-        wizardComponents[3] = cloudPanel;
-        @SuppressWarnings("unchecked")
-        ListCellRenderer<Object> aRenderer = new CloudComboBoxRenderer();
-        cloudSelector.setRenderer(aRenderer);
-        cloudSelector.addItem(null);
-        String cloudId = project.getCloudId();
-
-        for (CloudPlugin c : DetectorFactoryCollection.instance().getRegisteredClouds().values()) {
-            String fbid = c.getFindbugsPluginId();
-            Plugin plugin = Plugin.getByPluginId(fbid);
-            if (plugin == null) {
-                continue;
-            }
-            Boolean fbPluginStatus = project.getPluginStatus(plugin);
-            if ((!c.isHidden() || c.getId().equals(cloudId)) && !Boolean.FALSE.equals(fbPluginStatus)) {
-                cloudSelector.addItem(c);
-            }
-        }
-
-        if (cloudId != null) {
-            CloudPlugin c = DetectorFactoryCollection.instance().getRegisteredClouds().get(project.getCloudId());
-            cloudSelector.setSelectedItem(c);
-        }
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         if (MainFrameHelper.isMacLookAndFeel()) {
@@ -258,9 +194,7 @@ public class NewProjectWizard extends FBDialog {
                     return;
                 }
                 Project p;
-                String oldCloudId = null;
                 p = project;
-                oldCloudId = project.getCloudId();
                 p.setGuiCallback(MainFrame.getInstance().getGuiCallback());
                 clearProjectSettings(p);
 
@@ -276,14 +210,6 @@ public class NewProjectWizard extends FBDialog {
                     p.addSourceDir(sourceModel.get(i));
                 }
                 p.setProjectName(projectName.getText());
-                CloudPlugin cloudPlugin = (CloudPlugin) cloudSelector.getSelectedItem();
-                String newCloudId;
-                if (cloudPlugin == null || cloudSelector.getSelectedIndex() == 0) {
-                    newCloudId = null;
-                } else {
-                    newCloudId = cloudPlugin.getId();
-                }
-                p.setCloudId(newCloudId);
 
                 MainFrame mainFrame = MainFrame.getInstance();
                 if (keepGoing) {
@@ -296,19 +222,6 @@ public class NewProjectWizard extends FBDialog {
                                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"),
                                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
                     AnalyzingDialog.show(p);
-                } else if (!Util.nullSafeEquals(newCloudId, oldCloudId)) {
-                    BugCollection bugs = mainFrame.getBugCollection();
-                    try {
-                        bugs.reinitializeCloud();
-                        mainFrame.getComments().updateCloud();
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(NewProjectWizard.this, "Error loading " + newCloudId + "\n\n"
-                                + e.getClass().getSimpleName() + ": " + e.getMessage(),
-                                "SpotBugs Cloud Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    mainFrame.getComments().updateCommentsFromLeafInformation(mainFrame.getCurrentSelectedBugLeaf());
-
                 }
                 if (reconfig) {
                     mainFrame.setProjectChanged(true);
