@@ -17,8 +17,8 @@ matrix:
            - oracle-java9-installer
      
 install:
-  - wget http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz -O eclipse-3.6.2-linux64.tar.gz
-  - tar xzvf eclipse-3.6.2-linux64.tar.gz eclipse
+  - wget http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.7.2-201202080800/eclipse-SDK-3.7.2-linux-gtk-x86_64.tar.gz -O eclipse-SDK-3.7.2-linux-gtk-x86_64.tar.gz
+  - tar xzvf eclipse-SDK-3.7.2-linux-gtk-x86_64.tar.gz eclipse
   - echo eclipsePlugin.dir=$(pwd)/eclipse/plugins > eclipsePlugin/local.properties
 
 script:
