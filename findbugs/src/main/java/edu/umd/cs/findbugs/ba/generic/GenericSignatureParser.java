@@ -76,7 +76,6 @@ public class GenericSignatureParser {
 
                 case 'L':
                 case 'T':
-                    String tmp = "";
                     int startsemi = index;
                     int leftCount = 0;
                     int i = startsemi + 1;
@@ -107,6 +106,13 @@ public class GenericSignatureParser {
                 case '+':
                 case '-':
                     result.append(signature.charAt(index));
+                    ++index;
+                    done = false;
+                    break;
+
+                case '!':
+                    // Eclipse generates signatures outside of spec. Ignore them but don't break
+                    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198
                     ++index;
                     done = false;
                     break;
