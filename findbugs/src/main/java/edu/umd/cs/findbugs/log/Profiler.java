@@ -180,7 +180,7 @@ public class Profiler implements XMLWriteable {
                 if (maxContext != null) {
                     xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
                 }
-                xmlOutput.addAttribute("standardDeviationMircosecondsPerInvocation", String.valueOf(timeStandardDeviation));
+                xmlOutput.addAttribute("standardDeviationMicrosecondsPerInvocation", String.valueOf(timeStandardDeviation));
                 xmlOutput.stopTag(true);
             }
         }

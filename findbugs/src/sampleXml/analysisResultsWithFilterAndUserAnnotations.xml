@@ -2525,7 +2525,7 @@
       <ClassStats class="edu.umd.cs.findbugs.xml.XPathFind$1" sourceFile="XPathFind.java" interface="false" size="17" bugs="0"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.SAXBugCollectionHandler" totalMilliseconds="67" invocations="1" avgMicrosecondsPerInvocation="67110" maxMicrosecondsPerInvocation="67110" standardDeviationMircosecondsPerInvocation="0"/>
+      <ClassProfile name="edu.umd.cs.findbugs.SAXBugCollectionHandler" totalMilliseconds="67" invocations="1" avgMicrosecondsPerInvocation="67110" maxMicrosecondsPerInvocation="67110" standardDeviationMicrosecondsPerInvocation="0"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
