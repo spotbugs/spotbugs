@@ -1,1 +1,1 @@
-include ':findbugsTestCases', ':findbugs', ':eclipsePlugin'
+include ':findbugsTestCases', ':findbugs', ':eclipsePlugin', ':core'

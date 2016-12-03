@@ -1,0 +1,44 @@
+sourceSets {
+  main {
+    java {
+      srcDirs = ['../findbugs/src/main/java', '../findbugs/src/gui']
+    }
+    resources {
+      /*
+       * Becuase why put everything in a single folder when you can split it
+       * and mix it with other files you don't actually need together
+      */
+      srcDirs = ['../findbugs/src/xsl', '../findbugs/etc', '../findbugs/src/main/java', '../findbugs/src/gui']
+      include '../findbugs/*.xsd'
+      include '../findbugs/bugrank.txt'
+      include '../findbugs/findbugs.xml'
+      include '../findbugs/messages*.xml'
+      include '../findbugs/**/*.properties'
+      exclude '../findbugs/doc.properties'
+      exclude '../findbugs/script.properties'
+      include '../findbugs/*.xsl'
+      include '../findbugs/**/*.db'
+      include '../findbugs/**/*.html'
+      include '../findbugs/**/*.png'
+    }
+  }
+}
+
+dependencies {
+  compile 'org.apache.bcel:bcel:6.0'
+  compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+
+  // TODO : Some of these can be extracted to actual dependencies
+  compile fileTree(dir: '../findbugs/lib', include: '*.jar')
+}
+
+tasks.withType(Jar).all {
+  includeEmptyDirs = false
+  // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
+  //destinationDir = file("$projectDir/lib")
+}
+
+// Manually define what goes into the default jar, since it's not only main sourceset
+jar {
+  from sourceSets.main.output
+}
