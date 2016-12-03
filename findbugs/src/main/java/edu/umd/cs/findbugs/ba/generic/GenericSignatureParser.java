@@ -111,8 +111,8 @@ public class GenericSignatureParser {
                     break;
 
                 case '!':
-                    // Eclipse generates signatures outside of spec. Ignore them but don't break
-                    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198
+                    // Eclipse generates signatures outside of spec, marking captures with the ! prefix,
+                    // remove it and ignore it. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=494198
                     ++index;
                     done = false;
                     break;

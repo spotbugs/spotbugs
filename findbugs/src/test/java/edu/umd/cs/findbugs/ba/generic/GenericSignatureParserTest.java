@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import java.util.Iterator;
+
 import junit.framework.TestCase;
 
 /**
@@ -37,8 +39,29 @@ public class GenericSignatureParserTest extends TestCase {
         assertEquals(1, parser.getNumParameters());
     }
 
+    public void processTest(String genericSignature, String... substrings) {
+        GenericSignatureParser parser = new GenericSignatureParser(genericSignature);
+        Iterator<String> iter = parser.parameterSignatureIterator();
+
+        for (String s : substrings) {
+            assertTrue(iter.hasNext());
+            assertEquals(s, iter.next());
+        }
+        assertFalse(iter.hasNext());
+    }
+
+    public void testSignatures() {
+        processTest("(Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;");
+
+        processTest("(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;", "TE;", "*", "*",
+                "[Ljava/lang/Comparable;");
+
+        processTest("(TE;*+[Ljava/lang/Comparable;-TV;)V", "TE;", "*", "+[Ljava/lang/Comparable;", "-TV;");
+    }
+
     public void testEclipseJDTInvalidSignature() {
         GenericSignatureParser parser = new GenericSignatureParser("(!+LHasUniqueKey<Ljava/lang/Integer;>;)V");
         assertEquals(1, parser.getNumParameters());
+        assertEquals("+LHasUniqueKey<Ljava/lang/Integer;>;", parser.parameterSignatureIterator().next());
     }
 }

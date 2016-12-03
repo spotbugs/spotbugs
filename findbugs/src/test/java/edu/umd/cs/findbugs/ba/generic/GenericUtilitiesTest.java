@@ -19,11 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
+
+import junit.framework.TestCase;
 
 /**
  * @author pugh
@@ -71,4 +75,24 @@ public class GenericUtilitiesTest extends TestCase {
         GenericUtilities.getType("Lcom/palantir/finance/commons/service/calculator/Call<-Ljava/util/List<!*>;+Ljava/util/List<Ljava/lang/String;>;>;");
     }
 
+    public void testEclipseJDTInvalidUpperBoundSignature() {
+    	final Type type = GenericUtilities.getType("!+LHasUniqueKey<Ljava/lang/Integer;>;");
+    	assertThat(type, instanceOf(GenericObjectType.class));
+    	assertEquals("+", ((GenericObjectType) type).getVariable());
+    	assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
+    }
+
+    public void testEclipseJDTInvalidLowerBoundSignature() {
+    	final Type type = GenericUtilities.getType("!-LHasUniqueKey<Ljava/lang/Integer;>;");
+    	assertThat(type, instanceOf(GenericObjectType.class));
+    	assertEquals("-", ((GenericObjectType) type).getVariable());
+    	assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
+    }
+
+    public void testEclipseJDTInvalidWildcardSignature() {
+    	final Type type = GenericUtilities.getType("!*");
+    	assertThat(type, instanceOf(GenericObjectType.class));
+    	assertEquals("*", ((GenericObjectType) type).getVariable());
+    	assertNull(((GenericObjectType) type).getExtension());
+    }
 }

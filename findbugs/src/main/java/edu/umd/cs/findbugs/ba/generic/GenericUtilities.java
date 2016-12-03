@@ -260,9 +260,14 @@ public class GenericUtilities {
     Type getType(String signature) {
         try {
             // ensure signature only has one type
-            if (new GenericSignatureParser("(" + signature + ")V").getNumParameters() != 1) {
-                throw new IllegalArgumentException("the following signature does not " + "contain exactly one type: " + signature);
+            final Iterator<String> signatureIterator = new GenericSignatureParser("(" + signature + ")V")
+            		.parameterSignatureIterator();
+            signature = signatureIterator.next();
+            
+            if (signatureIterator.hasNext()) {
+                throw new IllegalArgumentException("the following signature does not contain exactly one type: " + signature);
             }
+            
             int index = 0;
 
             if (signature.startsWith("L")) {
