@@ -31,6 +31,7 @@ configurations {
 dependencies {
   compile 'org.apache.bcel:bcel:6.0'
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+  testCompile project(':test-harness:hamcrest')
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
