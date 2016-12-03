@@ -129,7 +129,7 @@ task scripts(type:Copy) {
     into 'experimental'
   }
 
-  destinationDir file('bin')
+  destinationDir file("$buildDir/bin")
   duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
 
