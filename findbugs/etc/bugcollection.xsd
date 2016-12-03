@@ -2,7 +2,7 @@
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
     xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:annotation>
-        <xs:documentation>This scheme describes the XML format used by FindBugs to store the results
+        <xs:documentation>This scheme describes the XML format used by SpotBugs to store the results
             of analysis.</xs:documentation>
     </xs:annotation>
 
@@ -364,7 +364,7 @@
                                                 <xs:attribute name="maxContext" type="xs:string"
                                                     use="optional"/>
                                                 <xs:attribute
-                                                name="standardDeviationMircosecondsPerInvocation"
+                                                name="standardDeviationMicrosecondsPerInvocation"
                                                 type="xs:unsignedInt" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
