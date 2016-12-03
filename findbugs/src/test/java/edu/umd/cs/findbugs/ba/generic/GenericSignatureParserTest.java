@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import java.util.Iterator;
+
 import junit.framework.TestCase;
 
 /**
@@ -26,15 +28,40 @@ import junit.framework.TestCase;
  */
 public class GenericSignatureParserTest extends TestCase {
 
-    public void test1() {
+    public void testGenerics() {
         GenericSignatureParser parser = new GenericSignatureParser(
                 "(Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;)V");
         assertEquals(1, parser.getNumParameters());
     }
 
-    public void test2() {
+    public void testThrowsGenerics() {
         GenericSignatureParser parser = new GenericSignatureParser("(Ljava/lang/String;^TE1;^TE2;^TE3;)V");
         assertEquals(1, parser.getNumParameters());
     }
 
+    public void processTest(String genericSignature, String... substrings) {
+        GenericSignatureParser parser = new GenericSignatureParser(genericSignature);
+        Iterator<String> iter = parser.parameterSignatureIterator();
+
+        for (String s : substrings) {
+            assertTrue(iter.hasNext());
+            assertEquals(s, iter.next());
+        }
+        assertFalse(iter.hasNext());
+    }
+
+    public void testSignatures() {
+        processTest("(Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;");
+
+        processTest("(Ljava/lang/Comparable;TE;**[Ljava/lang/Comparable;)V", "Ljava/lang/Comparable;", "TE;", "*", "*",
+                "[Ljava/lang/Comparable;");
+
+        processTest("(TE;*+[Ljava/lang/Comparable;-TV;)V", "TE;", "*", "+[Ljava/lang/Comparable;", "-TV;");
+    }
+
+    public void testEclipseJDTInvalidSignature() {
+        GenericSignatureParser parser = new GenericSignatureParser("(!+LHasUniqueKey<Ljava/lang/Integer;>;)V");
+        assertEquals(1, parser.getNumParameters());
+        assertEquals("+LHasUniqueKey<Ljava/lang/Integer;>;", parser.parameterSignatureIterator().next());
+    }
 }
