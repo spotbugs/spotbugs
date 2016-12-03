@@ -1,0 +1,8 @@
+dependencies {
+  compile project(':core'), project(':test-harness:common')
+  compile 'org.hamcrest:hamcrest-all:1.3'
+}
+
+jar {
+  baseName 'test-harness-hamcrest'
+}

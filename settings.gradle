@@ -1,1 +1,1 @@
-include ':findbugsTestCases', ':findbugs', ':eclipsePlugin', ':core'
+include ':findbugsTestCases', ':findbugs', ':eclipsePlugin', ':core', ':test-harness:common', ':test-harness:hamcrest'
