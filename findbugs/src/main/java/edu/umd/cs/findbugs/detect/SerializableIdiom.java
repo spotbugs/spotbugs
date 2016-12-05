@@ -60,7 +60,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 public class SerializableIdiom extends OpcodeStackDetector {
 
-    private static final boolean DEBUG = SystemProperties.getBoolean("se.debug");
+    private static final boolean DEBUG = true;
 
     final static boolean reportTransientFieldOfNonSerializableClass = SystemProperties
             .getBoolean("reportTransientFieldOfNonSerializableClass");
@@ -687,7 +687,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                         {
                             System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName() + " " + obj.getName() + " "
                                     + isSerializable + " " + implementsSerializableDirectly + " " + sawSerialVersionUID + " "
-                                    + isGUIClass + " " + isEjbImplClass);
+                                    + isGUIClass + " " + isEjbImplClass + " " + strongEvidenceForIntendedSerialization());
                             // Report is queued until after the entire class has been
                             // seen.
                         }

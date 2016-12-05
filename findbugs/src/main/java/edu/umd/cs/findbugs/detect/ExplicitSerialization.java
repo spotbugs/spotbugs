@@ -41,9 +41,13 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 public class ExplicitSerialization extends OpcodeStackDetector implements NonReportingDetector {
 
-    final static XMethod writeObject = XFactory.createXMethod("java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false);
-
     final static XMethod readObject = XFactory.createXMethod("java.io.ObjectInputStream", "readObject", "()Ljava/lang/Object;", false);
+    final static XMethod writeObject = XFactory.createXMethod("java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false);
+    
+    static {
+        System.err.println("INITIALIZING ExplicitSerialization STATIC MEMBERS");
+    }
+
 
     final static ClassDescriptor ObjectOutputStream = DescriptorFactory.createClassDescriptor(ObjectOutputStream.class);
     final static ClassDescriptor ObjectInputStream = DescriptorFactory.createClassDescriptor(ObjectInputStream.class);
@@ -53,9 +57,17 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
     final BugReporter bugReporter;
 
     public ExplicitSerialization(BugReporter bugReporter) {
+        System.err.println("Setting up ExplicitSerialization");
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
         unreadFields = context.getUnreadFieldsData();
         this.bugReporter = bugReporter;
+        System.err.println(XFactory.createXMethod("java.io.ObjectOutputStream", "writeObject", "(Ljava/lang/Object;)V", false));
+        System.err.println(writeObject);
+        System.err.println(writeObject.getSignature());
+        System.err.println(writeObject.getClassName());
+        System.err.println(writeObject.getName());
+        System.err.println(writeObject.getClass().getSimpleName());
+        System.err.println(readObject.getClass().getSimpleName());
     }
 
     @Override
@@ -73,24 +85,32 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
             while (signature.charAt(0) == '[') {
                 signature = signature.substring(1);
             }
+            System.err.println("Found signature " + signature);
             ClassDescriptor c = DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
+            System.err.println("And matched it to " + c);
             if (c == null || !Subtypes2.instanceOf(c, Serializable.class)) {
                 return;
             }
 
             try {
+                System.err.println("Getting XCLASS");
                 XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
+                System.err.println("Interface?");
                 if (xClass.isInterface()) {
                     return;
                 }
+                System.err.println("Synthetic?");
                 if (xClass.isSynthetic()) {
                     return;
                 }
+                System.err.println("Abstract?");
                 if (xClass.isAbstract()) {
                     return;
                 }
+                System.err.println("GOTCHA!");
                 unreadFields.strongEvidenceForIntendedSerialization(c);
             } catch (CheckedAnalysisException e) {
+                e.printStackTrace();
                 bugReporter.logError("Error looking up xClass of " + c, e);
             }
 

@@ -817,6 +817,7 @@ public class FindBugs2 implements IFindBugsEngine {
             referencedPackageSet.add(d.getPackageName());
         }
         referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
+        System.err.println(referencedClassSet);
 
         // Based on referenced packages, add any resolvable package-info classes
         // to the set of referenced classes.
@@ -965,12 +966,18 @@ public class FindBugs2 implements IFindBugsEngine {
             Collection<ClassDescriptor> badClasses = new LinkedList<ClassDescriptor>();
             for (ClassDescriptor desc : referencedClassSet) {
                 try {
+                    System.err.println("GOING TO INTERN " + desc);
                     XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
                     factory.intern(info);
+                    System.err.println("INTERN SUCCEDED");
                 } catch (CheckedAnalysisException e) {
+                    System.err.println("WTF IS WRONG WITH YOU?");
+                    e.printStackTrace();
                     AnalysisContext.logError("Couldn't get class info for " + desc, e);
                     badClasses.add(desc);
                 } catch (RuntimeException e) {
+                    System.err.println("WTF IS WRONG WITH YOU 2?");
+                    e.printStackTrace();
                     AnalysisContext.logError("Couldn't get class info for " + desc, e);
                     badClasses.add(desc);
                 }

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -68,6 +69,8 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     @Override
     public void logError(String message, Throwable e) {
+        System.err.println("ANALYSIS ERROR:");
+        e.printStackTrace();
         if (e instanceof MissingClassException) {
             MissingClassException e2 = (MissingClassException) e;
             reportMissingClass(e2.getClassNotFoundException());
@@ -84,6 +87,8 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
     @Override
     public void reportMissingClass(ClassNotFoundException ex) {
         String missing = AbstractBugReporter.getMissingClassName(ex);
+        System.err.println("MISSING CLASS:");
+        ex.printStackTrace();
         if (!isValidMissingClassMessage(missing)) {
             return;
         }
@@ -99,6 +104,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
         if (bugCollection.add(bugInstance)) {
             notifyObservers(bugInstance);
         }
+        printBug(bugInstance);
     }
 
     /*
@@ -141,6 +147,11 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
         writer.println(line);
     }
 
-
+    public void printMissingClasses() {
+        Iterator<String> iterator = bugCollection.missingClassIterator();
+        while (iterator.hasNext()) {
+            System.err.println("MISSING CLASS: " + iterator.next());
+        }
+    }
 }
 

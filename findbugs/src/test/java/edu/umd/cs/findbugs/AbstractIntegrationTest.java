@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -109,7 +110,7 @@ public class AbstractIntegrationTest {
         final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
         engine.setDetectorFactoryCollection(detectorFactoryCollection);
 
-        bugReporter = new BugCollectionBugReporter(project);
+        bugReporter = new BugCollectionBugReporter(project, new PrintWriter(System.err));
         bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
         bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
 
@@ -137,6 +138,9 @@ public class AbstractIntegrationTest {
         } catch (final IOException | InterruptedException e) {
             fail("Analysis failed with exception; " + e.getMessage());
         }
+        
+        bugReporter.reportQueuedErrors();
+        bugReporter.finish();
     }
 
     private static final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {

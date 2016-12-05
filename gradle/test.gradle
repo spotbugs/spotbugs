@@ -1,6 +1,6 @@
 tasks.withType(Test) {
     testLogging {
-        events "FAILED"
+        events "FAILED", "standardError", "standardOut"
         exceptionFormat "full"
     }
 }
