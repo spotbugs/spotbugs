@@ -32,11 +32,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public final class MemberUtils {
 
-	private MemberUtils() {
-		throw new AssertionError("Utility classes can't be instantiated");
-	}
+    private MemberUtils() {
+        throw new AssertionError("Utility classes can't be instantiated");
+    }
 
-	private static boolean internalIsSynthetic(final FieldOrMethod m) {
+    private static boolean internalIsSynthetic(final FieldOrMethod m) {
         if (m.isSynthetic()) {
             return true;
         }
@@ -50,7 +50,7 @@ public final class MemberUtils {
         return false;
     }
 
-	private static boolean internalIsSynthetic(final FieldGenOrMethodGen m) {
+    private static boolean internalIsSynthetic(final FieldGenOrMethodGen m) {
         if (m.isSynthetic()) {
             return true;
         }
@@ -64,9 +64,10 @@ public final class MemberUtils {
         return false;
     }
 
-	/**
-     * Checks if the method could be a lambda. Notice this is a best-check, since once compiled
-     * lambda methods are not univocally distinguishable.
+    /**
+     * Checks if the method could be a lambda. Notice this is a best-check,
+     * since once compiled lambda methods are not univocally distinguishable.
+     * 
      * @param m The method to check if it's a lambda
      * @return True if this could be a lambda, false otherwise
      */
@@ -75,55 +76,63 @@ public final class MemberUtils {
     }
 
     /**
-     * Checks if the method could be a lambda. Notice this is a best-check, since once compiled
-     * lambda methods are not univocally distinguishable.
+     * Checks if the method could be a lambda. Notice this is a best-check,
+     * since once compiled lambda methods are not univocally distinguishable.
+     * 
      * @param m The method to check if it's a lambda
      * @return True if this could be a lambda, false otherwise
      */
     public static boolean couldBeLambda(final XMethod m) {
-    	return m.isPrivate() && m.isSynthetic();
+        return m.isPrivate() && m.isSynthetic();
     }
 
     /**
-     * Checks if the method could be a lambda. Notice this is a best-check, since once compiled
-     * lambda methods are not univocally distinguishable.
+     * Checks if the method could be a lambda. Notice this is a best-check,
+     * since once compiled lambda methods are not univocally distinguishable.
+     * 
      * @param m The method to check if it's a lambda
      * @return True if this could be a lambda, false otherwise
      */
     public static boolean couldBeLambda(final MethodGen m) {
-    	return m.isPrivate() && internalIsSynthetic(m);
+        return m.isPrivate() && internalIsSynthetic(m);
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into account for instance lambda methods,
-     * that even though they are marked as "synthetic", they are user-generated, and therefore interesting to analysis.
+     * Checks if the the given method was user-generated. This takes into
+     * account for instance lambda methods, that even though they are marked as
+     * "synthetic", they are user-generated, and therefore interesting to
+     * analysis.
+     * 
      * @param m The field or method to check.
-     * @return True if the given member is user generated, false otherwise. 
+     * @return True if the given member is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final FieldOrMethod m) {
-    	return !internalIsSynthetic(m)
-                || (m instanceof Method && couldBeLambda((Method) m));
+        return !internalIsSynthetic(m) || (m instanceof Method && couldBeLambda((Method) m));
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into account for instance lambda methods,
-     * that even though they are marked as "synthetic", they are user-generated, and therefore interesting to analysis.
+     * Checks if the the given method was user-generated. This takes into
+     * account for instance lambda methods, that even though they are marked as
+     * "synthetic", they are user-generated, and therefore interesting to
+     * analysis.
+     * 
      * @param m The field or method to check.
-     * @return True if the given member is user generated, false otherwise. 
+     * @return True if the given member is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final ClassMember m) {
-    	return !m.isSynthetic()
-                || (m instanceof XMethod && couldBeLambda((XMethod) m));
+        return !m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m));
     }
 
     /**
-     * Checks if the the given method was user-generated. This takes into account for instance lambda methods,
-     * that even though they are marked as "synthetic", they are user-generated, and therefore interesting to analysis.
+     * Checks if the the given method was user-generated. This takes into
+     * account for instance lambda methods, that even though they are marked as
+     * "synthetic", they are user-generated, and therefore interesting to
+     * analysis.
+     * 
      * @param m The field or method to check.
-     * @return True if the given member is user generated, false otherwise. 
+     * @return True if the given member is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final FieldGenOrMethodGen m) {
-    	return !internalIsSynthetic(m)
-                || (m instanceof MethodGen && couldBeLambda((MethodGen) m));
+        return !internalIsSynthetic(m) || (m instanceof MethodGen && couldBeLambda((MethodGen) m));
     }
 }
