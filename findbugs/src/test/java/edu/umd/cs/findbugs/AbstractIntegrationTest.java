@@ -28,7 +28,6 @@ import java.io.IOException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Assume;
 
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -81,8 +80,8 @@ public class AbstractIntegrationTest {
 
     private File getFindbugsTestCasesFile(final String path) {
         final File f = new File(getFindbugsTestCases(), path);
-        Assume.assumeTrue(f.exists());
-        Assume.assumeTrue(f.canRead());
+        assertTrue(f.getAbsolutePath() + " not found", f.exists());
+        assertTrue(f.getAbsolutePath() + " is not readable", f.canRead());
 
         return f;
     }
