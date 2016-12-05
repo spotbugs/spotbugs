@@ -261,7 +261,7 @@ public class GenericUtilities {
         try {
             // ensure signature only has one type
             final Iterator<String> signatureIterator = new GenericSignatureParser("(" + signature + ")V")
-            		.parameterSignatureIterator();
+                    .parameterSignatureIterator();
             signature = signatureIterator.next();
             
             if (signatureIterator.hasNext()) {

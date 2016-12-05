@@ -570,7 +570,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String propValue = getRequiredAttribute(attributes, "value", qName);
             bugInstance.setProperty(propName, propValue);
         } else if ("UserAnnotation".equals(qName)) {
-        	// legacy from the cloud plugin stuff
+            // legacy from the cloud plugin stuff
         } else {
             throw new SAXException("Unknown bug annotation named " + qName);
         }

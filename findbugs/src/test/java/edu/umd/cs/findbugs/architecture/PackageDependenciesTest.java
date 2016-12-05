@@ -64,13 +64,13 @@ public class PackageDependenciesTest extends TestCase {
             String rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
             engine.addDirectory(rootDirectory);
         } else {
-        	String[] cpParts = classpath.split(File.pathSeparator);
-        	for (String cpStr : cpParts) {
-        		File file = new File(cpStr);
-				if (file.isDirectory()) {
-        			engine.addDirectory(file.getCanonicalPath());
-        		}
-        	}
+            String[] cpParts = classpath.split(File.pathSeparator);
+            for (String cpStr : cpParts) {
+                File file = new File(cpStr);
+                if (file.isDirectory()) {
+                    engine.addDirectory(file.getCanonicalPath());
+                }
+            }
         }
 
         // Setup the JDepend analysis

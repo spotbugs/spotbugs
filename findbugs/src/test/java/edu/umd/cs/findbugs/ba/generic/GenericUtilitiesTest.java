@@ -76,23 +76,23 @@ public class GenericUtilitiesTest extends TestCase {
     }
 
     public void testEclipseJDTInvalidUpperBoundSignature() {
-    	final Type type = GenericUtilities.getType("!+LHasUniqueKey<Ljava/lang/Integer;>;");
-    	assertThat(type, instanceOf(GenericObjectType.class));
-    	assertEquals("+", ((GenericObjectType) type).getVariable());
-    	assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
+        final Type type = GenericUtilities.getType("!+LHasUniqueKey<Ljava/lang/Integer;>;");
+        assertThat(type, instanceOf(GenericObjectType.class));
+        assertEquals("+", ((GenericObjectType) type).getVariable());
+        assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
     }
 
     public void testEclipseJDTInvalidLowerBoundSignature() {
-    	final Type type = GenericUtilities.getType("!-LHasUniqueKey<Ljava/lang/Integer;>;");
-    	assertThat(type, instanceOf(GenericObjectType.class));
-    	assertEquals("-", ((GenericObjectType) type).getVariable());
-    	assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
+        final Type type = GenericUtilities.getType("!-LHasUniqueKey<Ljava/lang/Integer;>;");
+        assertThat(type, instanceOf(GenericObjectType.class));
+        assertEquals("-", ((GenericObjectType) type).getVariable());
+        assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
     }
 
     public void testEclipseJDTInvalidWildcardSignature() {
-    	final Type type = GenericUtilities.getType("!*");
-    	assertThat(type, instanceOf(GenericObjectType.class));
-    	assertEquals("*", ((GenericObjectType) type).getVariable());
-    	assertNull(((GenericObjectType) type).getExtension());
+        final Type type = GenericUtilities.getType("!*");
+        assertThat(type, instanceOf(GenericObjectType.class));
+        assertEquals("*", ((GenericObjectType) type).getVariable());
+        assertNull(((GenericObjectType) type).getExtension());
     }
 }
