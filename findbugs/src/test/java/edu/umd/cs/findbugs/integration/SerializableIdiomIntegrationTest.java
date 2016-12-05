@@ -24,26 +24,38 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
+public class SerializableIdiomIntegrationTest extends AbstractIntegrationTest {
 
     @Test
-    public void testNullFromReturnOnLambda() {
-        performAnalysis("Elvis.class");
+    public void testBadFieldNotSerializable() {
+        performAnalysis("sfBugs/RFE3062724.class", "sfBugs/RFE3062724$A.class",
+                "sfBugs/RFE3062724$B.class", "sfBugs/RFE3062724$C.class");
 
-        // There should only be 1 issue of this type
+        // There should only be 2 issue of this type
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
-                .bugType("SI_INSTANCE_BEFORE_FINALS_ASSIGNED").build();
-        assertThat(getBugCollection(), containsExactly(bugTypeMatcher, 1));
+                .bugType("SE_BAD_FIELD").build();
+        assertThat(getBugCollection(), containsExactly(bugTypeMatcher, 2));
 
-        // It must be on the INSTANCE field
+        // It must be on the notSerializable field
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
-                .bugType("SI_INSTANCE_BEFORE_FINALS_ASSIGNED")
-                .inClass("Elvis")
-                .atField("INSTANCE")
+                .bugType("SE_BAD_FIELD")
+                .inClass("sfBugs.RFE3062724$B")
+                .atField("notSerializable")
+                .withConfidence(Confidence.HIGH)
                 .build();
         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+
+        // It must be on the notSerializable field
+        final BugInstanceMatcher bugInstanceMatcher2 = new BugInstanceMatcherBuilder()
+                .bugType("SE_BAD_FIELD")
+                .inClass("sfBugs.RFE3062724$C")
+                .atField("notSerializable")
+                .withConfidence(Confidence.HIGH)
+                .build();
+        assertThat(getBugCollection(), hasItem(bugInstanceMatcher2));
     }
 }
