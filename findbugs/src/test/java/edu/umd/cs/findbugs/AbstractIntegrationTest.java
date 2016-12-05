@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -71,9 +72,9 @@ public class AbstractIntegrationTest {
 
     private File getFindbugsTestCases() {
         final File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
-        Assume.assumeTrue(f.exists());
-        Assume.assumeTrue(f.isDirectory());
-        Assume.assumeTrue(f.canRead());
+        assertTrue("'findbugsTestCases' directory not found", f.exists());
+        assertTrue(f.isDirectory());
+        assertTrue(f.canRead());
 
         return f;
     }
