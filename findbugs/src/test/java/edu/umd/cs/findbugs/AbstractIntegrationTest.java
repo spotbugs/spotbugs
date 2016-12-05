@@ -121,7 +121,7 @@ public class AbstractIntegrationTest {
 
         for (final String s : analyzeMe) {
             // TODO : Unwire this once we move bug samples to a proper sourceset
-            project.addFile(getFindbugsTestCasesFile("/build/classes/" + s).getPath());
+            project.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).getPath());
         }
 
         project.addAuxClasspathEntry("lib/junit.jar");
