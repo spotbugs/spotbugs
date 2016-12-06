@@ -1,7 +1,6 @@
 package lambdas;
 
 import javax.annotation.CheckForNull;
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Issue20 {
 
