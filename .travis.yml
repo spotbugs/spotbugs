@@ -17,8 +17,9 @@ matrix:
            - oracle-java9-installer
      
 install:
-  - wget http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz -O eclipse-3.6.2-linux64.tar.gz
-  - tar xzvf eclipse-3.6.2-linux64.tar.gz eclipse
+  - mkdir -p deps
+  - wget -c http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz -O deps/eclipse.tar.gz
+  - tar xzvf deps/eclipse.tar.gz eclipse
   - echo eclipsePlugin.dir=$(pwd)/eclipse/plugins > eclipsePlugin/local.properties
 
 script:
@@ -34,4 +35,5 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - deps/
 
