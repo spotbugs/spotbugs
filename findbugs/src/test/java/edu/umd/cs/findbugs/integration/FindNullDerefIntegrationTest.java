@@ -52,9 +52,9 @@ public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void testLambdaIssue20() throws IOException, InterruptedException {
-    	performAnalysis("lambdas/Issue20.class");
+        performAnalysis("lambdas/Issue20.class");
 
-    	// There should only be 1 issue of this type
+        // There should only be 1 issue of this type
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
         assertThat(getBugCollection(), containsExactly(bugTypeMatcher, 1));
