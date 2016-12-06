@@ -227,20 +227,20 @@ public class DetectorsTest {
         String classpath = System.getProperty("java.class.path");
         if (classpath == null) {
             String rootDirectory;
-			try {
-				rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
-			} catch (final URISyntaxException e) {
-				throw new RuntimeException(e);
-			}
+            try {
+                rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
+            } catch (final URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
             project.addAuxClasspathEntry(rootDirectory);
         } else {
-        	String[] cpParts = classpath.split(File.pathSeparator);
-        	for (String cpStr : cpParts) {
-        		File file = new File(cpStr);
-				if (file.isDirectory()) {
-					project.addAuxClasspathEntry(file.getCanonicalPath());
-        		}
-        	}
+            String[] cpParts = classpath.split(File.pathSeparator);
+            for (String cpStr : cpParts) {
+                File file = new File(cpStr);
+                if (file.isDirectory()) {
+                    project.addAuxClasspathEntry(file.getCanonicalPath());
+                }
+            }
         }
     }
 }

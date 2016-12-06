@@ -46,13 +46,13 @@ public class Version {
         String version = "(Unknown)";
         if (!fromFile) {
             try (final InputStream in = Version.class.getResourceAsStream("META-INF/MANIFEST.MF")) {
-            	final Manifest manifest = new Manifest(in);
-            	version = manifest.getMainAttributes().getValue("Bundle-Version");
+                final Manifest manifest = new Manifest(in);
+                version = manifest.getMainAttributes().getValue("Bundle-Version");
             } catch (Exception e) {
                 // ignore it
             }
         } else {
-        	version = "Development";
+            version = "Development";
         }
         
         VERSION_STRING = version;
