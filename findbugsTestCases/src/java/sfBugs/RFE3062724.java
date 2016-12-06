@@ -5,9 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.annotations.Confidence;
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-
 public class RFE3062724 {
 
     static abstract class A implements Serializable {
@@ -15,12 +12,10 @@ public class RFE3062724 {
     }
 
     static class B extends A {
-        @ExpectWarning(value="SE_BAD_FIELD", confidence=Confidence.HIGH)
         RFE3062724 notSerializable;
     }
 
     static class C extends A {
-        @ExpectWarning(value="SE_BAD_FIELD", confidence=Confidence.HIGH)
         RFE3062724 notSerializable;
     }
 

@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2008 University of Maryland
+ * SpotBugs - Find Bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +18,16 @@
 
 package edu.umd.cs.findbugs;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Assume;
 
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -71,17 +71,17 @@ public class AbstractIntegrationTest {
 
     private File getFindbugsTestCases() {
         final File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
-        Assume.assumeTrue(f.exists());
-        Assume.assumeTrue(f.isDirectory());
-        Assume.assumeTrue(f.canRead());
+        assertTrue("'findbugsTestCases' directory not found", f.exists());
+        assertTrue(f.isDirectory());
+        assertTrue(f.canRead());
 
         return f;
     }
 
     private File getFindbugsTestCasesFile(final String path) {
         final File f = new File(getFindbugsTestCases(), path);
-        Assume.assumeTrue(f.exists());
-        Assume.assumeTrue(f.canRead());
+        assertTrue(f.getAbsolutePath() + " not found", f.exists());
+        assertTrue(f.getAbsolutePath() + " is not readable", f.canRead());
 
         return f;
     }
@@ -110,7 +110,7 @@ public class AbstractIntegrationTest {
         final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
         engine.setDetectorFactoryCollection(detectorFactoryCollection);
 
-        bugReporter = new BugCollectionBugReporter(project);
+        bugReporter = new BugCollectionBugReporter(project, new PrintWriter(System.err));
         bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
         bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
 
@@ -121,7 +121,7 @@ public class AbstractIntegrationTest {
 
         for (final String s : analyzeMe) {
             // TODO : Unwire this once we move bug samples to a proper sourceset
-            project.addFile(getFindbugsTestCasesFile("/build/classes/" + s).getPath());
+            project.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).getPath());
         }
 
         project.addAuxClasspathEntry("lib/junit.jar");
@@ -138,6 +138,9 @@ public class AbstractIntegrationTest {
         } catch (final IOException | InterruptedException e) {
             fail("Analysis failed with exception; " + e.getMessage());
         }
+        
+        bugReporter.reportQueuedErrors();
+        bugReporter.finish();
     }
 
     private static final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {
