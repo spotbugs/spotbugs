@@ -9,8 +9,8 @@ More information at the [official website](https://spotbugs.github.io/). A lot o
 
 # Build
 
-SpotBugs is built using Gradle. If you don't have Gradle installed, you can simply run the `gradlew` wrapper, which will automatically download Gradle if needed.
+SpotBugs is built using [Gradle](https://gradle.org). The recommended way to obtain it is to simply run the `gradlew` (or `gradlew.bat`) wrapper, which will automatically download and run the correct version as needed (using the settings in `gradle/wrapper/gradle-wrapper.properties`).
 
-To see a list of build options, run `gradle tasks` (or `./gradlew tasks`). The `build` task will perform a full build and test.
+To see a list of build options, run `gradle tasks` (or `gradlew tasks`). The `build` task will perform a full build and test.
 
 To build the FindBugs plugin for Eclipse, you'll need to create the file `eclipsePlugin/local.properties`, containing a property `eclipsePlugin.dir` that points to an Eclipse installation's plugin directory (see `.travis.yml` for an example), then run the build.
