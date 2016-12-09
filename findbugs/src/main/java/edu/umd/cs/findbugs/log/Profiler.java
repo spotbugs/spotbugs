@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.log;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.EmptyStackException;
 import java.util.Stack;
@@ -276,7 +275,7 @@ public class Profiler implements XMLWriteable {
 
     }
 
-    public static class ClassNameComparator implements Comparator<Class<?>>, Serializable {
+    public static class ClassNameComparator implements Comparator<Class<?>> {
         final protected Profiler profiler;
 
         public ClassNameComparator(Profiler p) {
