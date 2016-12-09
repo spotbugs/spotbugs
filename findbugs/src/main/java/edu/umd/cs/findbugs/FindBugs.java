@@ -53,6 +53,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:min.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
@@ -68,6 +69,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:less.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -83,6 +85,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:default.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -98,6 +101,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:more.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -113,6 +117,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:max.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
