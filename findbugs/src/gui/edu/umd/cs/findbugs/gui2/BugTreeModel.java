@@ -458,7 +458,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         }
     }
 
-    public static boolean TRACE = false;
+    public static final boolean TRACE = false;
 
     public void resetData()// FIXME: Does this need a setAsRootAndCache() on the
     // new BugSet?
