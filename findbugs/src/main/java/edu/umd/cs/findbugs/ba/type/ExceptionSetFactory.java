@@ -19,17 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.bcel.generic.ObjectType;
 
-public class ExceptionSetFactory implements Serializable {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+public class ExceptionSetFactory {
 
     private final HashMap<ObjectType, Integer> typeIndexMap;
 

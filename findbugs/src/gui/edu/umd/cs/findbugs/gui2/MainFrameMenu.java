@@ -11,7 +11,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui.AnnotatedString;
 import edu.umd.cs.findbugs.gui2.FilterListener.Action;
 
-public class MainFrameMenu implements Serializable {
+public class MainFrameMenu {
     private final MainFrame mainFrame;
 
     JMenuItem reconfigMenuItem = newJMenuItem("menu.reconfig", "Reconfigure...", KeyEvent.VK_F);
