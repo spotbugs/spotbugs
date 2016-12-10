@@ -29,7 +29,7 @@ configurations {
 }
 
 dependencies {
-  compile 'org.apache.bcel:bcel:6.0'
+  compile 'org.apache.bcel:bcel:6.1-SNAPSHOT'
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
 
   // TODO : Some of these can be extracted to actual dependencies

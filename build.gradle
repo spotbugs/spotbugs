@@ -12,6 +12,10 @@ subprojects {
 
   repositories {
     jcenter()
+
+    maven {
+        url "https://repository.apache.org/content/repositories/snapshots"
+    }
   }
 }
 
