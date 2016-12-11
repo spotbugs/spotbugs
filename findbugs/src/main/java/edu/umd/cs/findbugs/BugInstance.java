@@ -111,8 +111,6 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Cloneable {
 
-    private static final long serialVersionUID = 1L;
-
     private final String type;
 
     private int priority;
