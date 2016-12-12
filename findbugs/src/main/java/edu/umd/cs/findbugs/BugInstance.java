@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -110,9 +109,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Serializable, Cloneable {
-
-    private static final long serialVersionUID = 1L;
+public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Cloneable {
 
     private final String type;
 
