@@ -25,7 +25,6 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.StartTime;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
@@ -39,9 +38,6 @@ import edu.umd.cs.findbugs.util.JavaWebStart;
  *
  */
 public class Driver {
-    /** Force start time to be computed */
-    private static long START_TIME = StartTime.START_TIME;
-
     private static final String USAGE = Driver.class.getName() + " [options] [project or analysis results file]";
 
     private static GUI2CommandLine commandLine = new GUI2CommandLine();
@@ -87,16 +83,6 @@ public class Driver {
                 }
             }
 
-            if (commandLine.getDocking()) {
-                // make sure docking runtime support is available
-                try {
-                    Class.forName("net.infonode.docking.DockingWindow");
-                    Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
-                } catch (Exception e) {
-                    commandLine.setDocking(false);
-                }
-            }
-
             try {
                 GUISaveState.loadInstance();
             } catch (RuntimeException e) {
@@ -121,13 +107,7 @@ public class Driver {
             // System.out.println(serializableIdiomDetector.getFullName());
             // UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
 
-            FindBugsLayoutManagerFactory factory;
-
-            if (isDocking()) {
-                factory = new FindBugsLayoutManagerFactory("edu.umd.cs.findbugs.gui2.DockLayout");
-            } else {
-                factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
-            }
+            FindBugsLayoutManagerFactory factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
             MainFrame.makeInstance(factory);
 
 
@@ -170,10 +150,6 @@ public class Driver {
 
             MainFrame.getInstance().redoAnalysis();
         }
-    }
-
-    public static boolean isDocking() {
-        return commandLine.getDocking();
     }
 
     public static float getFontSize() {
