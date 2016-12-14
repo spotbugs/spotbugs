@@ -29,7 +29,6 @@ configurations {
 }
 
 dependencies {
-  compile 'org.apache.bcel:bcel:6.1-SNAPSHOT'
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
 
   // TODO : Some of these can be extracted to actual dependencies
@@ -51,7 +50,7 @@ jar {
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': 'bcel-6.0.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA.jar jsr305.jar jFormatString.jar commons-lang-2.6.jar'
+               'Class-Path': 'bcel-6.1-20161207.023659-9.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA.jar jsr305.jar jFormatString.jar commons-lang-2.6.jar'
   }
 }
 
