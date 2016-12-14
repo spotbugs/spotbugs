@@ -142,18 +142,18 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                     sawDateClass = true;
                     break;
                 }
-                try {
-                    ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
-
-                    if (subtypes2.isSubtype(cDesc, calendarType) || subtypes2.isSubtype(cDesc, dateFormatType)) {
-                        sawDateClass = true;
-                        break;
+                if (className.charAt(0) != '[') {
+                    try {
+                        ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
+    
+                        if (subtypes2.isSubtype(cDesc, calendarType) || subtypes2.isSubtype(cDesc, dateFormatType)) {
+                            sawDateClass = true;
+                            break;
+                        }
+                    } catch (ClassNotFoundException e) {
+                        reporter.reportMissingClass(e);
                     }
-                } catch (ClassNotFoundException e) {
-                    reporter.reportMissingClass(e);
                 }
-
-
             }
         }
     }

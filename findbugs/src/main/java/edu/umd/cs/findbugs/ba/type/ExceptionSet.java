@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
-import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -42,8 +41,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
  * @author David Hovemeyer
  * @see TypeAnalysis
  */
-public class ExceptionSet implements Serializable {
-    private static final long serialVersionUID = 1;
+public class ExceptionSet {
 
     private final ExceptionSetFactory factory;
 

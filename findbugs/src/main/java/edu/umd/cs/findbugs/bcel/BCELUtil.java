@@ -31,6 +31,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -159,6 +160,16 @@ public abstract class BCELUtil {
         return  getObjectTypeInstance(clazz.getName());
     }
 
+    /**
+     * Checks if the given member is synthetic
+     * 
+     * @param m The member to be checked
+     * @return True if the member is synthetic, false otherwise
+     * @deprecated You probably don't care for synthetic members, but want to
+     *             know if the developer added it (think of lambdas), use
+     *             {@link MemberUtils#isUserGenerated(FieldOrMethod)} instead
+     */
+    @Deprecated
     public static boolean isSynthetic(FieldOrMethod m) {
         if (m.isSynthetic()) {
             return true;

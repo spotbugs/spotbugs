@@ -36,14 +36,12 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 
     private boolean fontSizeSpecified = false;
 
-    private boolean docking = true;
-
     private int priority = Thread.NORM_PRIORITY - 1;
 
     private File saveFile;
 
     public GUI2CommandLine() {
-        // Additional constuctor just as hack for decoupling the core package
+        // Additional constructor just as hack for decoupling the core package
         // from gui2 package
         // please add all options in the super class
         super(true);
@@ -55,7 +53,8 @@ public class GUI2CommandLine extends FindBugsCommandLine {
             GUISaveState.clear();
             System.exit(0);
         } else if ("-d".equals(option) || "--nodock".equals(option)) {
-            docking = false;
+            // For backwards compatibility, keep parsing the flag
+            System.err.println("Flag '" + option + "' is deprecated and will be removed in Spotbugs 4.0.0");
         } else if ("-look".equals(option)) {
             String arg = optionExtraPart;
             String theme = null;
@@ -118,14 +117,6 @@ public class GUI2CommandLine extends FindBugsCommandLine {
 
     public boolean isFontSizeSpecified() {
         return fontSizeSpecified;
-    }
-
-    public boolean getDocking() {
-        return docking;
-    }
-
-    public void setDocking(boolean docking) {
-        this.docking = docking;
     }
 
     public int getPriority() {
