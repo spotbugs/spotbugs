@@ -190,7 +190,6 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
                 if (size > thisSize) {
                     result.clear();
                     size = thisSize;
-                    Constant kind = constantPool.getConstant(catchBlock.getCatchType());
                     result.add("C" + catchBlock.getCatchType());
                 } else if (size == thisSize) {
                     result.add("C" + catchBlock.getCatchType());

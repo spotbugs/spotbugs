@@ -186,7 +186,6 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
         while (iei.hasNext()) {
             Edge e = iei.next();
-            String edgeString = e.toString();
             if (EdgeTypes.FALL_THROUGH_EDGE == e.getType()) {
                 return getDeepFirstInstruction(cfg, e.getTarget());
             }
@@ -328,7 +327,6 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 while (iei.hasNext()) {
                     Edge e = iei.next();
                     int eType = e.getType();
-                    String aab = e.toString();
                     if (eType == EdgeTypes.GOTO_EDGE) {
                         BasicBlock target = e.getTarget();
                         InstructionHandle targetFirst = getDeepFirstInstruction(cfg, target);

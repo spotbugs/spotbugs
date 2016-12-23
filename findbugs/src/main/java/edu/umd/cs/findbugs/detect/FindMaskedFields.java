@@ -106,7 +106,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
             } catch (CheckedAnalysisException e) {
                 break;
             }
-            XClass superClass = c;
+            
             for (XField fld : c.getXFields()) {
                 if (!fld.isStatic() && (fld.isPublic() || fld.isProtected())) {
                     fieldName = fld.getName();

@@ -114,7 +114,6 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
                 System.out.println("PC : " + handle.getPosition() + " " + ins);
             }
             if (DEBUG && ins instanceof InvokeInstruction) {
-                InvokeInstruction iins = (InvokeInstruction) ins;
                 System.out.println("  " + ins.toString(cpg.getConstantPool()));
             }
             if (DEBUG) {

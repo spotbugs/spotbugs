@@ -402,7 +402,7 @@ public class PluginLoader {
      * Fake plugin.
      */
     @Deprecated
-    public PluginLoader(boolean fake, URL url) throws PluginException {
+    public PluginLoader(boolean fake, URL url) {
         classLoader = getClass().getClassLoader();
         classLoaderForResources = classLoader;
         corePlugin = false;
