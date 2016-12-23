@@ -89,9 +89,9 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         descriptor = typeDescriptor;
         this.roleDescription = roleDescription;
         if (descriptor.startsWith("L")) {
-            String className = typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
             if (context != null) {
+                String className = typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
                 this.sourceFileName = context.lookupSourceFile(className);
                 this.sourceLines = ClassAnnotation.getSourceLinesForClass(className, sourceFileName);
             } else {
