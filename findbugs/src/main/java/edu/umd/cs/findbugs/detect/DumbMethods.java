@@ -167,12 +167,12 @@ public class DumbMethods extends OpcodeStackDetector {
 
             if (seen == INVOKESTATIC && ("junit/framework/Assert".equals(getClassConstantOperand()) || "org/junit/Assert".equals(getClassConstantOperand()))
                     && "assertNotNull".equals(getNameConstantOperand())) {
-                int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
 
                 OpcodeStack.Item item = stack.getStackItem(0);
                 Object o = item.getConstant();
                 if (o instanceof String) {
 
+                    int args = PreorderVisitor.getNumberArguments(getSigConstantOperand());
                     OpcodeStack.Item secondArgument = null;
                     String bugPattern = "DMI_DOH";
                     if (args == 2) {
