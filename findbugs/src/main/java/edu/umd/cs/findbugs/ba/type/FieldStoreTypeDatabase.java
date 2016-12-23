@@ -41,7 +41,6 @@ public class FieldStoreTypeDatabase extends FieldPropertyDatabase<FieldStoreType
     public void purgeBoringEntries() {
         Collection<FieldDescriptor> keys = new ArrayList<FieldDescriptor>(getKeys());
         for (FieldDescriptor f : keys) {
-            String s = f.getSignature();
             FieldStoreType type = getProperty(f);
             Type fieldType = Type.getType(f.getSignature());
             if (!(fieldType instanceof ReferenceType)) {

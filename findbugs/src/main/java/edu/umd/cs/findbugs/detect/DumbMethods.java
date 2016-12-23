@@ -1064,7 +1064,6 @@ public class DumbMethods extends OpcodeStackDetector {
                             loadConstant = 2;
                         }
                         int nextCodeByte1 = getNextCodeByte(loadConstant);
-                        int nextCodeByte2 = getNextCodeByte(loadConstant+1);
                         int nextJumpOffset = loadConstant+2;
                         if (nextCodeByte1 == SIPUSH) {
                             nextJumpOffset++;
