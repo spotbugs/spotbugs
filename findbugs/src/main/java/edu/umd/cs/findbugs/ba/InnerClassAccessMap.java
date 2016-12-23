@@ -294,10 +294,10 @@ public class InnerClassAccessMap {
             String methodReturnType = methodSig.substring(paramsEnd + 1);
 
             // Figure out what the expected method parameters should be
-            String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
             StringBuilder buf = new StringBuilder();
             buf.append('(');
             if (!field.isStatic()) {
+                String classSig = "L" + javaClass.getClassName().replace('.', '/') + ";";
                 buf.append(classSig); // the OuterClass.this reference
             }
             if (!isLoad) {
