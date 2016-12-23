@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 /**
  * Class representing the set of opcodes used in a method.
@@ -33,7 +33,7 @@ public class MethodBytecodeSet extends BitSet {
     public String toString() {
         StringBuilder buf = new StringBuilder("[");
         for (int i = nextSetBit(0); i >= 0; i = nextSetBit(i + 1)) {
-            buf.append(Constants.OPCODE_NAMES[i]).append(", ");
+            buf.append(Const.getOpcodeName(i)).append(", ");
         }
         buf.setLength(buf.length() - 2);
         buf.append("]");

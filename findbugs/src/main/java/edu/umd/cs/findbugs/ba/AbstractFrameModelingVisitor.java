@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.*;
 
 import edu.umd.cs.findbugs.bcel.generic.NONNULL2Z;
@@ -139,7 +139,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      */
     public int getNumWordsConsumed(Instruction ins) {
         int numWordsConsumed = ins.consumeStack(cpg);
-        if (numWordsConsumed == Constants.UNPREDICTABLE) {
+        if (numWordsConsumed == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack consumption");
         }
         return numWordsConsumed;
@@ -151,7 +151,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public int getNumWordsProduced(Instruction ins) {
 
         int numWordsProduced = ins.produceStack(cpg);
-        if (numWordsProduced == Constants.UNPREDICTABLE) {
+        if (numWordsProduced == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack productions");
         }
         return numWordsProduced;
@@ -311,7 +311,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public void handleStoreInstruction(StoreInstruction obj) {
         try {
             int numConsumed = obj.consumeStack(cpg);
-            if (numConsumed == Constants.UNPREDICTABLE) {
+            if (numConsumed == Const.UNPREDICTABLE) {
                 throw new InvalidBytecodeException("Unpredictable stack consumption");
             }
 
@@ -335,7 +335,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      */
     public void handleLoadInstruction(LoadInstruction obj) {
         int numProduced = obj.produceStack(cpg);
-        if (numProduced == Constants.UNPREDICTABLE) {
+        if (numProduced == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack production");
         }
 

@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -91,7 +91,7 @@ public class CallToUnsupportedMethod implements Detector {
      */
     private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException,
     DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method)|| (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) {
+        if (BCELUtil.isSynthetic(method)|| (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
         }
         CFG cfg = classContext.getCFG(method);

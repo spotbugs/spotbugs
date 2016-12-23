@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -33,17 +33,17 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
 
     @Override
     public boolean isVolatile() {
-        return (getAccessFlags() & Constants.ACC_VOLATILE) != 0;
+        return (getAccessFlags() & Const.ACC_VOLATILE) != 0;
     }
 
     @Override
     public final boolean isSynthetic() {
-        return (getAccessFlags() & Constants.ACC_SYNTHETIC) != 0;
+        return (getAccessFlags() & Const.ACC_SYNTHETIC) != 0;
     }
 
     @Override
     public boolean isEnum() {
-        return (getAccessFlags() & Constants.ACC_ENUM) != 0;
+        return (getAccessFlags() & Const.ACC_ENUM) != 0;
     }
 
     /*

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantMethodref;
@@ -346,7 +346,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
         private InvokeInstruction toInvokeInstruction(Instruction ins) {
             short opcode = ins.getOpcode();
-            if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE) {
+            if (opcode != Const.INVOKEVIRTUAL && opcode != Const.INVOKEINTERFACE) {
                 return null;
             }
             return (InvokeInstruction) ins;
@@ -412,7 +412,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
         MethodGen methodGen = classContext.getMethodGen(method);
 
         return methodGen != null && methodGen.getName().toLowerCase().indexOf("lock") == -1
-                && (bytecodeSet.get(Constants.INVOKEVIRTUAL) || bytecodeSet.get(Constants.INVOKEINTERFACE));
+                && (bytecodeSet.get(Const.INVOKEVIRTUAL) || bytecodeSet.get(Const.INVOKEINTERFACE));
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -86,7 +86,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
             if (bytecodeSet == null) {
                 continue;
             }
-            if (!(bytecodeSet.get(Constants.MONITORENTER) && bytecodeSet.get(Constants.INVOKEVIRTUAL))) {
+            if (!(bytecodeSet.get(Const.MONITORENTER) && bytecodeSet.get(Const.INVOKEVIRTUAL))) {
                 continue;
             }
 
@@ -127,7 +127,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 
             if (Hierarchy.isMonitorWait(methodName, methodSig) || Hierarchy.isMonitorNotify(methodName, methodSig)) {
                 int numConsumed = inv.consumeStack(cpg);
-                if (numConsumed == Constants.UNPREDICTABLE) {
+                if (numConsumed == Const.UNPREDICTABLE) {
                     throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
                 }
 

@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -662,7 +662,7 @@ public class FindInconsistentSync2 implements Detector {
                     if (xfield == null) {
                         continue;
                     }
-                    isWrite = ins.getOpcode() == Constants.PUTFIELD;
+                    isWrite = ins.getOpcode() == Const.PUTFIELD;
                     isLocal = fins.getClassName(cpg).equals(classContext.getJavaClass().getClassName());
                     if (DEBUG) {
                         System.out.println("Handling field access: " + location.getHandle() + " (frame="
@@ -828,36 +828,36 @@ public class FindInconsistentSync2 implements Detector {
         while (it.hasNext()) {
             InstructionHandle ih = it.next();
             switch (ih.getInstruction().getOpcode()) {
-            case Constants.GETFIELD:
+            case Const.GETFIELD:
                 count++;
                 if (count > 1) {
                     return false;
                 }
                 break;
-            case Constants.PUTFIELD:
-            case Constants.BALOAD:
-            case Constants.CALOAD:
-            case Constants.DALOAD:
-            case Constants.FALOAD:
-            case Constants.IALOAD:
-            case Constants.LALOAD:
-            case Constants.SALOAD:
-            case Constants.AALOAD:
-            case Constants.BASTORE:
-            case Constants.CASTORE:
-            case Constants.DASTORE:
-            case Constants.FASTORE:
-            case Constants.IASTORE:
-            case Constants.LASTORE:
-            case Constants.SASTORE:
-            case Constants.AASTORE:
-            case Constants.PUTSTATIC:
+            case Const.PUTFIELD:
+            case Const.BALOAD:
+            case Const.CALOAD:
+            case Const.DALOAD:
+            case Const.FALOAD:
+            case Const.IALOAD:
+            case Const.LALOAD:
+            case Const.SALOAD:
+            case Const.AALOAD:
+            case Const.BASTORE:
+            case Const.CASTORE:
+            case Const.DASTORE:
+            case Const.FASTORE:
+            case Const.IASTORE:
+            case Const.LASTORE:
+            case Const.SASTORE:
+            case Const.AASTORE:
+            case Const.PUTSTATIC:
                 return false;
-            case Constants.INVOKESTATIC:
-            case Constants.INVOKEVIRTUAL:
-            case Constants.INVOKEINTERFACE:
-            case Constants.INVOKESPECIAL:
-            case Constants.GETSTATIC:
+            case Const.INVOKESTATIC:
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+            case Const.GETSTATIC:
                 // no-op
 
             }
@@ -1062,7 +1062,7 @@ public class FindInconsistentSync2 implements Detector {
             // Only instance method calls qualify as candidates for
             // "obviously locked"
             Instruction ins = handle.getInstruction();
-            if (ins.getOpcode() == Constants.INVOKESTATIC) {
+            if (ins.getOpcode() == Const.INVOKESTATIC) {
                 continue;
             }
 
@@ -1085,7 +1085,7 @@ public class FindInconsistentSync2 implements Detector {
             int numConsumed = ins.consumeStack(cpg);
             MethodGen methodGen = classContext.getMethodGen(method);
             assert methodGen != null;
-            if (numConsumed == Constants.UNPREDICTABLE) {
+            if (numConsumed == Const.UNPREDICTABLE) {
                 throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
             }
             // if (DEBUG) System.out.println("Getting receiver for frame: " +

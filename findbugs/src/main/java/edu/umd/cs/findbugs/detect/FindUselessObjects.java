@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Constants.*;
+import static org.apache.bcel.Const.*;
 
 import java.util.BitSet;
 import java.util.HashMap;

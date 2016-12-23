@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.BitSet;
 import java.util.HashMap;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -80,7 +80,7 @@ public class LockChecker {
         if (bytecodeSet == null) {
             return;
         }
-        if (bytecodeSet.get(Constants.MONITORENTER) || bytecodeSet.get(Constants.MONITOREXIT)) {
+        if (bytecodeSet.get(Const.MONITORENTER) || bytecodeSet.get(Const.MONITOREXIT)) {
             this.lockDataflow = classContext.getLockDataflow(method);
         } else if (method.isSynchronized()) {
             this.vnaDataflow = classContext.getValueNumberDataflow(method); // will

@@ -18,7 +18,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -78,10 +78,10 @@ public class BuildInterproceduralCallGraph extends BytecodeScanningDetector impl
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case Constants.INVOKESTATIC:
-        case Constants.INVOKEVIRTUAL:
-        case Constants.INVOKEINTERFACE:
-        case Constants.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
             MethodDescriptor called = getMethodDescriptorOperand();
             XMethod calledXMethod = XFactory.createXMethod(called);
             InterproceduralCallGraphVertex calledVertex = findVertex(calledXMethod);

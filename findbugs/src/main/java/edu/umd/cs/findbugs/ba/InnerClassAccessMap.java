@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantClass;
@@ -211,13 +211,13 @@ public class InnerClassAccessMap {
         @Override
         public void handleInstruction(int opcode, int index) {
             switch (opcode) {
-            case Constants.GETFIELD:
-            case Constants.PUTFIELD:
-                setField(getIndex(instructionList, index), false, opcode == Constants.GETFIELD);
+            case Const.GETFIELD:
+            case Const.PUTFIELD:
+                setField(getIndex(instructionList, index), false, opcode == Const.GETFIELD);
                 break;
-            case Constants.GETSTATIC:
-            case Constants.PUTSTATIC:
-                setField(getIndex(instructionList, index), true, opcode == Constants.GETSTATIC);
+            case Const.GETSTATIC:
+            case Const.PUTSTATIC:
+                setField(getIndex(instructionList, index), true, opcode == Const.GETSTATIC);
                 break;
             default:
                 break;

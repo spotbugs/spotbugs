@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.constant;
 import edu.umd.cs.findbugs.ba.Frame;
 
 /**
- * Dataflow Frame for Constants.
+ * Dataflow Frame for Const.
  *
  * @see edu.umd.cs.findbugs.ba.constant.Constant
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis

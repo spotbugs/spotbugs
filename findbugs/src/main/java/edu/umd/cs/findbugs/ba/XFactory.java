@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -258,7 +258,7 @@ public class XFactory {
      * Create a new, never-before-seen, XMethod object and intern it.
      */
     private static XMethod createXMethod(@DottedClassName String className, String methodName, String methodSig, int accessFlags) {
-        return createXMethod(className, methodName, methodSig, (accessFlags & Constants.ACC_STATIC) != 0);
+        return createXMethod(className, methodName, methodSig, (accessFlags & Const.ACC_STATIC) != 0);
     }
 
     /**
@@ -465,7 +465,7 @@ public class XFactory {
         String fieldSig = fieldInstruction.getSignature(cpg);
 
         int opcode = fieldInstruction.getOpcode();
-        return createXField(className, fieldName, fieldSig, opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC);
+        return createXField(className, fieldName, fieldSig, opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
     }
 
     public static XField createReferencedXField(DismantleBytecode visitor) {
@@ -479,7 +479,7 @@ public class XFactory {
 
     public static XMethod createReferencedXMethod(DismantleBytecode visitor) {
         XMethod m = createXMethodUsingSlashedClassName(visitor.getClassConstantOperand(), visitor.getNameConstantOperand(),
-                visitor.getSigConstantOperand(), visitor.getOpcode() == Constants.INVOKESTATIC);
+                visitor.getSigConstantOperand(), visitor.getOpcode() == Const.INVOKESTATIC);
         return m.resolveAccessMethodForMethod();
     }
 
@@ -612,7 +612,7 @@ public class XFactory {
         String methodName = invokeInstruction.getName(cpg);
         String methodSig = invokeInstruction.getSignature(cpg);
 
-        return createXMethod(className, methodName, methodSig, invokeInstruction.getOpcode() == Constants.INVOKESTATIC);
+        return createXMethod(className, methodName, methodSig, invokeInstruction.getOpcode() == Const.INVOKESTATIC);
     }
 
     /**

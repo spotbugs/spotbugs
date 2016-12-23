@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -137,8 +137,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         }
 
         // The pattern requires a get/put pair accessing the same field.
-        boolean hasGetStatic = bytecodeSet.get(Constants.GETSTATIC);
-        boolean hasPutStatic = bytecodeSet.get(Constants.PUTSTATIC);
+        boolean hasGetStatic = bytecodeSet.get(Const.GETSTATIC);
+        boolean hasPutStatic = bytecodeSet.get(Const.PUTSTATIC);
         if (!hasGetStatic || !hasPutStatic) {
             return false;
         }
@@ -348,7 +348,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
             return;
         }
         int priority = LOW_PRIORITY;
-        boolean isDefaultAccess = (method.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
+        boolean isDefaultAccess = (method.getAccessFlags() & (Const.ACC_PUBLIC | Const.ACC_PRIVATE | Const.ACC_PROTECTED)) == 0;
         if (method.isPublic()) {
             priority = NORMAL_PRIORITY;
         } else if (method.isProtected() || isDefaultAccess) {

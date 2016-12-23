@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -41,10 +41,10 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
     private static final BitSet invokeOpcodeSet = new BitSet();
 
     static {
-        invokeOpcodeSet.set(Constants.INVOKEINTERFACE);
-        invokeOpcodeSet.set(Constants.INVOKESPECIAL);
-        invokeOpcodeSet.set(Constants.INVOKESTATIC);
-        invokeOpcodeSet.set(Constants.INVOKEVIRTUAL);
+        invokeOpcodeSet.set(Const.INVOKEINTERFACE);
+        invokeOpcodeSet.set(Const.INVOKESPECIAL);
+        invokeOpcodeSet.set(Const.INVOKESTATIC);
+        invokeOpcodeSet.set(Const.INVOKEVIRTUAL);
     }
 
     private final ObjectType baseClassType;

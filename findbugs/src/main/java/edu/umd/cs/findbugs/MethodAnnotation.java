@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
@@ -145,7 +145,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         String methodName = visitor.getNameConstantOperand();
         String methodSig = visitor.getSigConstantOperand();
 
-        if (visitor instanceof OpcodeStackDetector && visitor.getOpcode() != Constants.INVOKESTATIC) {
+        if (visitor instanceof OpcodeStackDetector && visitor.getOpcode() != Const.INVOKESTATIC) {
             int params = PreorderVisitor.getNumberArguments(methodSig);
             OpcodeStackDetector oVisitor = (OpcodeStackDetector) visitor;
             if (!oVisitor.getStack().isTop() && oVisitor.getStack().getStackDepth() > params) {
@@ -159,7 +159,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
         }
 
-        return fromCalledMethod(className, methodName, methodSig, visitor.getOpcode() == Constants.INVOKESTATIC);
+        return fromCalledMethod(className, methodName, methodSig, visitor.getOpcode() == Const.INVOKESTATIC);
     }
 
     /**
@@ -184,7 +184,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         // Create MethodAnnotation.
         // It won't have source lines yet.
         MethodAnnotation methodAnnotation = new MethodAnnotation(className, methodName, methodSig,
-                (accessFlags & Constants.ACC_STATIC) != 0);
+                (accessFlags & Const.ACC_STATIC) != 0);
 
         SourceLineAnnotation sourceLines = SourceLineAnnotation.getSourceAnnotationForMethod(className, methodName, methodSig);
 

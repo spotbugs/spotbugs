@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
@@ -73,7 +73,7 @@ public abstract class BCELUtil {
         String calledClassName = inv.getClassName(cpg).replace('.', '/');
         String calledMethodName = inv.getMethodName(cpg);
         String calledMethodSig = inv.getSignature(cpg);
-        boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+        boolean isStatic = inv.getOpcode() == Const.INVOKESTATIC;
 
         return DescriptorFactory.instance().getMethodDescriptor(calledClassName, calledMethodName, calledMethodSig, isStatic);
     }
@@ -93,7 +93,7 @@ public abstract class BCELUtil {
         String className = fins.getClassName(cpg);
         String fieldName = fins.getName(cpg);
         String fieldSig = fins.getSignature(cpg);
-        boolean isStatic = (fins.getOpcode() == Constants.GETSTATIC || fins.getOpcode() == Constants.PUTSTATIC);
+        boolean isStatic = (fins.getOpcode() == Const.GETSTATIC || fins.getOpcode() == Const.PUTSTATIC);
         return DescriptorFactory.instance().getFieldDescriptor(className, fieldName, fieldSig, isStatic);
     }
 

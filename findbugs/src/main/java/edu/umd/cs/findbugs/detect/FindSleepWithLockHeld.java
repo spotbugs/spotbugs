@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -86,12 +86,12 @@ public class FindSleepWithLockHeld implements Detector {
             return false;
         }
         // method must acquire a lock
-        if (!bytecodeSet.get(Constants.MONITORENTER) && !method.isSynchronized()) {
+        if (!bytecodeSet.get(Const.MONITORENTER) && !method.isSynchronized()) {
             return false;
         }
 
         // and contain a static method invocation
-        if (!bytecodeSet.get(Constants.INVOKESTATIC)) {
+        if (!bytecodeSet.get(Const.INVOKESTATIC)) {
             return false;
         }
 
