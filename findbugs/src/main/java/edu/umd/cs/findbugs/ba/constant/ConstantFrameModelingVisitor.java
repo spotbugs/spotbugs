@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
  *
  * <p>
  * For now, only String constants are modeled. In the future we can add other
- * kinds of Const.
+ * kinds of Constants.
  * </p>
  *
  * @see edu.umd.cs.findbugs.ba.constant.ConstantAnalysis
