@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -132,7 +132,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
         }
 
         switch (seen) {
-        case Constants.INVOKESPECIAL:
+        case Const.INVOKESPECIAL:
             if (!getMethod().isStatic() && "<init>".equals(getNameConstantOperand()) && isSelfOperation()) {
                 OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
                 if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
@@ -141,7 +141,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                 break;
             }
             break;
-        case Constants.PUTFIELD:
+        case Const.PUTFIELD:
             if (getMethod().isStatic()) {
                 return;
             }
@@ -156,7 +156,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                 }
             }
             break;
-        case Constants.PUTSTATIC:
+        case Const.PUTSTATIC:
             if (!getMethod().isStatic()) {
                 break;
             }

@@ -33,7 +33,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.JavaClass;
@@ -512,14 +512,14 @@ public class ClassContext {
             return false;
         }
         switch (0xff & codeBytes[pos]) {
-        case Constants.IF_ACMPEQ:
-        case Constants.IF_ACMPNE:
-        case Constants.IF_ICMPEQ:
-        case Constants.IF_ICMPGE:
-        case Constants.IF_ICMPGT:
-        case Constants.IF_ICMPLE:
-        case Constants.IF_ICMPLT:
-        case Constants.IF_ICMPNE:
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPGE:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPLE:
+        case Const.IF_ICMPLT:
+        case Const.IF_ICMPNE:
             break;
         default:
             return false;
@@ -528,7 +528,7 @@ public class ClassContext {
         if (branchTarget - 3 < pos || branchTarget >= codeBytes.length) {
             return false;
         }
-        if ((codeBytes[branchTarget - 3] & 0xff) != Constants.GOTO) {
+        if ((codeBytes[branchTarget - 3] & 0xff) != Const.GOTO) {
             return false;
         }
         int backBranchTarget = branchTarget + getBranchOffset(codeBytes, branchTarget - 2);

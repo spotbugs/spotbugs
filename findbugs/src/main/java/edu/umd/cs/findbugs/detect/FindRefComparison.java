@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -150,10 +150,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     private static final BitSet invokeInstanceSet = new BitSet();
 
     static {
-        invokeInstanceSet.set(Constants.INVOKEVIRTUAL);
-        invokeInstanceSet.set(Constants.INVOKEINTERFACE);
-        invokeInstanceSet.set(Constants.INVOKESPECIAL);
-        invokeInstanceSet.set(Constants.INVOKESTATIC);
+        invokeInstanceSet.set(Const.INVOKEVIRTUAL);
+        invokeInstanceSet.set(Const.INVOKEINTERFACE);
+        invokeInstanceSet.set(Const.INVOKESPECIAL);
+        invokeInstanceSet.set(Const.INVOKESTATIC);
     }
 
     /**
@@ -163,8 +163,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     static {
         prescreenSet.or(invokeInstanceSet);
-        prescreenSet.set(Constants.IF_ACMPEQ);
-        prescreenSet.set(Constants.IF_ACMPNE);
+        prescreenSet.set(Const.IF_ACMPEQ);
+        prescreenSet.set(Const.IF_ACMPNE);
     }
 
     /*
@@ -841,7 +841,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     throws DataflowAnalysisException {
         Instruction ins = location.getHandle().getInstruction();
         short opcode = ins.getOpcode();
-        if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+        if (opcode == Const.IF_ACMPEQ || opcode == Const.IF_ACMPNE) {
             checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
                     refComparisonList);
         } else if (ins instanceof InvokeInstruction) {

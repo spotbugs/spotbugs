@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.vna;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ArrayInstruction;
@@ -212,10 +212,10 @@ Debug, ValueNumberAnalysisFeatures {
         int numConsumed = ins.consumeStack(getCPG());
         int numProduced = ins.produceStack(getCPG());
 
-        if (numConsumed == Constants.UNPREDICTABLE) {
+        if (numConsumed == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
         }
-        if (numProduced == Constants.UNPREDICTABLE) {
+        if (numProduced == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack production for " + ins);
         }
 

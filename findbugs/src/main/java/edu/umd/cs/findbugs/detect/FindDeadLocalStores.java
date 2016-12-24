@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -142,23 +142,23 @@ public class FindDeadLocalStores implements Detector {
      */
     private static final BitSet defensiveConstantValueOpcodes = new BitSet();
     static {
-        defensiveConstantValueOpcodes.set(Constants.DCONST_0);
-        defensiveConstantValueOpcodes.set(Constants.DCONST_1);
-        defensiveConstantValueOpcodes.set(Constants.FCONST_0);
-        defensiveConstantValueOpcodes.set(Constants.FCONST_1);
-        defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_M1);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_0);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_1);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_2);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_3);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_4);
-        defensiveConstantValueOpcodes.set(Constants.ICONST_5);
-        defensiveConstantValueOpcodes.set(Constants.LCONST_0);
-        defensiveConstantValueOpcodes.set(Constants.LCONST_1);
-        defensiveConstantValueOpcodes.set(Constants.LDC);
-        defensiveConstantValueOpcodes.set(Constants.LDC_W);
-        defensiveConstantValueOpcodes.set(Constants.LDC2_W);
+        defensiveConstantValueOpcodes.set(Const.DCONST_0);
+        defensiveConstantValueOpcodes.set(Const.DCONST_1);
+        defensiveConstantValueOpcodes.set(Const.FCONST_0);
+        defensiveConstantValueOpcodes.set(Const.FCONST_1);
+        defensiveConstantValueOpcodes.set(Const.ACONST_NULL);
+        defensiveConstantValueOpcodes.set(Const.ICONST_M1);
+        defensiveConstantValueOpcodes.set(Const.ICONST_0);
+        defensiveConstantValueOpcodes.set(Const.ICONST_1);
+        defensiveConstantValueOpcodes.set(Const.ICONST_2);
+        defensiveConstantValueOpcodes.set(Const.ICONST_3);
+        defensiveConstantValueOpcodes.set(Const.ICONST_4);
+        defensiveConstantValueOpcodes.set(Const.ICONST_5);
+        defensiveConstantValueOpcodes.set(Const.LCONST_0);
+        defensiveConstantValueOpcodes.set(Const.LCONST_1);
+        defensiveConstantValueOpcodes.set(Const.LDC);
+        defensiveConstantValueOpcodes.set(Const.LDC_W);
+        defensiveConstantValueOpcodes.set(Const.LDC2_W);
     }
 
     private final BugReporter bugReporter;
@@ -201,7 +201,7 @@ public class FindDeadLocalStores implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) {
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
         }
 

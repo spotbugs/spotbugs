@@ -26,7 +26,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -304,7 +304,7 @@ public abstract class Frame<ValueType> {
      */
     public int getInstanceStackLocation(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
         int numConsumed = ins.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE) {
+        if (numConsumed == Const.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         }
         return numConsumed - 1;
@@ -326,7 +326,7 @@ public abstract class Frame<ValueType> {
             throw new DataflowAnalysisException("Accessing invalid frame at " + ins);
         }
         int numConsumed = ins.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE) {
+        if (numConsumed == Const.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         }
         if (numConsumed > getStackDepth()) {
@@ -364,7 +364,7 @@ public abstract class Frame<ValueType> {
     public int getNumArgumentsIncludingObjectInstance(InvokeInstruction ins, ConstantPoolGen cpg)
             throws DataflowAnalysisException {
         int numConsumed = ins.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE) {
+        if (numConsumed == Const.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         }
         return numConsumed;
@@ -444,7 +444,7 @@ public abstract class Frame<ValueType> {
      */
     public ValueType getOperand(StackConsumer ins, ConstantPoolGen cpg, int i) throws DataflowAnalysisException {
         int numOperands = ins.consumeStack(cpg);
-        if (numOperands == Constants.UNPREDICTABLE) {
+        if (numOperands == Const.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         }
         return getStackValue((numOperands - 1) - i);

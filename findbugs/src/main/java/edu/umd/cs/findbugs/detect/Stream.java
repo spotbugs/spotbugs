@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -264,7 +264,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 
     private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv, ConstantPoolGen cpg) {
         int numConsumed = inv.consumeStack(cpg);
-        if (numConsumed == Constants.UNPREDICTABLE) {
+        if (numConsumed == Const.UNPREDICTABLE) {
             throw new IllegalStateException();
         }
         return frame.getValue(frame.getNumSlots() - numConsumed);

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.props;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ReferenceType;
@@ -48,13 +48,13 @@ public abstract class WarningPropertyUtil {
     /** Set of instructions which operate on a receiver object. */
     private static final BitSet receiverObjectInstructionSet = new BitSet();
     static {
-        receiverObjectInstructionSet.set(Constants.INVOKEINTERFACE);
-        receiverObjectInstructionSet.set(Constants.INVOKEVIRTUAL);
-        receiverObjectInstructionSet.set(Constants.INVOKESPECIAL);
-        receiverObjectInstructionSet.set(Constants.GETFIELD);
-        receiverObjectInstructionSet.set(Constants.PUTFIELD);
-        receiverObjectInstructionSet.set(Constants.CHECKCAST);
-        receiverObjectInstructionSet.set(Constants.INSTANCEOF);
+        receiverObjectInstructionSet.set(Const.INVOKEINTERFACE);
+        receiverObjectInstructionSet.set(Const.INVOKEVIRTUAL);
+        receiverObjectInstructionSet.set(Const.INVOKESPECIAL);
+        receiverObjectInstructionSet.set(Const.GETFIELD);
+        receiverObjectInstructionSet.set(Const.PUTFIELD);
+        receiverObjectInstructionSet.set(Const.CHECKCAST);
+        receiverObjectInstructionSet.set(Const.INSTANCEOF);
     }
 
     /**

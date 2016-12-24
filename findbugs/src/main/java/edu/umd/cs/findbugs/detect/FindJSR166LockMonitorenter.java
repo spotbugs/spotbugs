@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -102,7 +102,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             if (bytecodeSet == null) {
                 continue;
             }
-            if (false && !bytecodeSet.get(Constants.MONITORENTER)) {
+            if (false && !bytecodeSet.get(Const.MONITORENTER)) {
                 continue;
             }
 
@@ -134,7 +134,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             InstructionHandle handle = location.getHandle();
             Instruction ins = handle.getInstruction();
 
-            if (ins.getOpcode() == Constants.INVOKEVIRTUAL) {
+            if (ins.getOpcode() == Const.INVOKEVIRTUAL) {
                 INVOKEVIRTUAL iv = (INVOKEVIRTUAL) ins;
 
                 String methodName = iv.getMethodName(cpg);
@@ -199,7 +199,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
             }
 
-            if (ins.getOpcode() != Constants.MONITORENTER) {
+            if (ins.getOpcode() != Const.MONITORENTER) {
                 continue;
             }
             Type type;

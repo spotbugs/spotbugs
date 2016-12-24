@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -55,22 +55,22 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
     private static final BitSet ifInstructionSet = new BitSet();
 
     static {
-        ifInstructionSet.set(Constants.IF_ACMPEQ);
-        ifInstructionSet.set(Constants.IF_ACMPNE);
-        ifInstructionSet.set(Constants.IF_ICMPEQ);
-        ifInstructionSet.set(Constants.IF_ICMPNE);
-        ifInstructionSet.set(Constants.IF_ICMPLT);
-        ifInstructionSet.set(Constants.IF_ICMPLE);
-        ifInstructionSet.set(Constants.IF_ICMPGT);
-        ifInstructionSet.set(Constants.IF_ICMPGE);
-        ifInstructionSet.set(Constants.IFEQ);
-        ifInstructionSet.set(Constants.IFNE);
-        ifInstructionSet.set(Constants.IFLT);
-        ifInstructionSet.set(Constants.IFLE);
-        ifInstructionSet.set(Constants.IFGT);
-        ifInstructionSet.set(Constants.IFGE);
-        ifInstructionSet.set(Constants.IFNULL);
-        ifInstructionSet.set(Constants.IFNONNULL);
+        ifInstructionSet.set(Const.IF_ACMPEQ);
+        ifInstructionSet.set(Const.IF_ACMPNE);
+        ifInstructionSet.set(Const.IF_ICMPEQ);
+        ifInstructionSet.set(Const.IF_ICMPNE);
+        ifInstructionSet.set(Const.IF_ICMPLT);
+        ifInstructionSet.set(Const.IF_ICMPLE);
+        ifInstructionSet.set(Const.IF_ICMPGT);
+        ifInstructionSet.set(Const.IF_ICMPGE);
+        ifInstructionSet.set(Const.IFEQ);
+        ifInstructionSet.set(Const.IFNE);
+        ifInstructionSet.set(Const.IFLT);
+        ifInstructionSet.set(Const.IFLE);
+        ifInstructionSet.set(Const.IFGT);
+        ifInstructionSet.set(Const.IFGE);
+        ifInstructionSet.set(Const.IFNULL);
+        ifInstructionSet.set(Const.IFNONNULL);
     }
 
     private final BugAccumulator bugAccumulator;

@@ -28,7 +28,7 @@ package edu.umd.cs.findbugs.ba.type;
  * @see TypeAnalysis
  */
 public interface ExtendedTypes {
-    // FIXME: these values depend on those in org.apache.bcel.Constants.
+    // FIXME: these values depend on those in org.apache.bcel.Const.
     // They need to be distinct from all type codes defined there.
     // It would be nice if BCEL provided built-in functionality for
     // some or all of these.

@@ -29,7 +29,7 @@ import java.util.Map;
 
 import javax.annotation.WillClose;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -106,7 +106,7 @@ public class InstructionActionCache {
                 } else if (signature.indexOf(';') >= -1) {
                     ReferenceType receiverType = inv.getReferenceType(cpg);
 
-                    boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+                    boolean isStatic = inv.getOpcode() == Const.INVOKESTATIC;
                     actionList = new LinkedList<ObligationPolicyDatabaseAction>();
 
                     database.getActions(receiverType, methodName, signature, isStatic, actionList);

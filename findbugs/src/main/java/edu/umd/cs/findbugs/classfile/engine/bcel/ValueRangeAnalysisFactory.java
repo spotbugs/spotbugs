@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import static org.apache.bcel.Constants.*;
+import static org.apache.bcel.Const.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

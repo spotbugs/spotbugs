@@ -25,7 +25,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
@@ -348,9 +348,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         for (Type argType : argumentTypes) {
             // Add special "extra" type for long or double params.
             // These occupy the slot before the "plain" type.
-            if (argType.getType() == Constants.T_LONG) {
+            if (argType.getType() == Const.T_LONG) {
                 result.setValue(slot++, TypeFrame.getLongExtraType());
-            } else if (argType.getType() == Constants.T_DOUBLE) {
+            } else if (argType.getType() == Const.T_DOUBLE) {
                 result.setValue(slot++, TypeFrame.getDoubleExtraType());
             }
 
@@ -591,9 +591,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         int edgeType = edge.getType();
         int numSlots = Math.min(fact.getNumSlots(), vnaFrame.getNumSlots());
 
-        if ((edgeType == EdgeTypes.IFCMP_EDGE && (branchOpcode == Constants.IFNE || branchOpcode == Constants.IFGT || branchOpcode == Constants.IFNULL))
+        if ((edgeType == EdgeTypes.IFCMP_EDGE && (branchOpcode == Const.IFNE || branchOpcode == Const.IFGT || branchOpcode == Const.IFNULL))
 
-                || (edgeType == EdgeTypes.FALL_THROUGH_EDGE && (branchOpcode == Constants.IFEQ || branchOpcode == Constants.IFLE || branchOpcode == Constants.IFNONNULL))) {
+                || (edgeType == EdgeTypes.FALL_THROUGH_EDGE && (branchOpcode == Const.IFEQ || branchOpcode == Const.IFLE || branchOpcode == Const.IFNONNULL))) {
             // System.out.println("Successful check on edge " + edge);
 
             // Successful instanceof check.

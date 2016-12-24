@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
 import org.apache.bcel.generic.IF_ACMPEQ;
@@ -166,7 +166,7 @@ EdgeTypes {
                     // If instructions exist and both push one word onto the
                     // stack and the next-topmost pushes null...
                     if (ihPrev != null && ihPrevPrev != null && prevPush == 1 && prevPrevPush == 1
-                            && ihPrevPrev.getInstruction().getOpcode() == Constants.ACONST_NULL) {
+                            && ihPrevPrev.getInstruction().getOpcode() == Const.ACONST_NULL) {
                         // Topmost item on stack is being compared with null
                         // (the null itself is next-topmost on the stack)
                         isNullCheck = lastInSource instanceof IF_ACMPEQ;

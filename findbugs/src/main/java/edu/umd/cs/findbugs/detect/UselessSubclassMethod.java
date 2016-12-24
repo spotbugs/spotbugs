@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -71,7 +71,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
             JavaClass cls = classContext.getJavaClass();
             superclassName = cls.getSuperclassName();
             JavaClass[] interfaces = null;
-            if (cls.isClass() && ((cls.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
+            if (cls.isClass() && ((cls.getAccessFlags() & Const.ACC_ABSTRACT) != 0)) {
                 interfaces = cls.getAllInterfaces();
                 interfaceMethods = new HashSet<String>();
                 for (JavaClass aInterface : interfaces) {
@@ -95,7 +95,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 
     @Override
     public void visitMethod(Method obj) {
-        if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
+        if ((interfaceMethods != null) && ((obj.getAccessFlags() & Const.ACC_ABSTRACT) != 0)) {
             String curDetail = obj.getName() + obj.getSignature();
             for (String infMethodDetail : interfaceMethods) {
                 if (curDetail.equals(infMethodDetail)) {
@@ -113,7 +113,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
             String methodName = getMethodName();
 
             if (!"<init>".equals(methodName) && !"clone".equals(methodName)
-                    && ((getMethod().getAccessFlags() & (Constants.ACC_STATIC | Constants.ACC_SYNTHETIC)) == 0)) {
+                    && ((getMethod().getAccessFlags() & (Const.ACC_STATIC | Const.ACC_SYNTHETIC)) == 0)) {
 
                 /*
                  * for some reason, access flags doesn't return Synthetic, so do
@@ -312,9 +312,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
             return true;
         }
         int access1 = m1.getAccessFlags()
-                & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC | Constants.ACC_FINAL);
+                & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC | Const.ACC_FINAL);
         int access2 = m2.getAccessFlags()
-                & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC | Constants.ACC_FINAL);
+                & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC | Const.ACC_FINAL);
 
 
         m1.getAnnotationEntries();

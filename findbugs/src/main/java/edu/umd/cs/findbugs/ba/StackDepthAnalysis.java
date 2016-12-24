@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -95,7 +95,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
         Instruction ins = handle.getInstruction();
         int produced = ins.produceStack(cpg);
         int consumed = ins.consumeStack(cpg);
-        if (produced == Constants.UNPREDICTABLE || consumed == Constants.UNPREDICTABLE) {
+        if (produced == Const.UNPREDICTABLE || consumed == Const.UNPREDICTABLE) {
             throw new IllegalStateException("Unpredictable stack delta for instruction: " + handle);
         }
         int depth = fact.getDepth();

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -92,7 +92,7 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
             short opcode = ins.getOpcode();
 
             // Field store instruction?
-            if (opcode != Constants.PUTFIELD && opcode != Constants.PUTSTATIC) {
+            if (opcode != Const.PUTFIELD && opcode != Const.PUTSTATIC) {
                 continue;
             }
 

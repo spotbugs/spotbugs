@@ -26,7 +26,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -171,14 +171,14 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 return false;
             }
             short opcode2 = h.getInstruction().getOpcode();
-            if (opcode == Constants.LDC) {
+            if (opcode == Const.LDC) {
                 switch (opcode2) {
-                case Constants.LDC:
-                case Constants.ALOAD:
-                case Constants.ALOAD_0:
-                case Constants.ALOAD_1:
-                case Constants.ALOAD_2:
-                case Constants.ALOAD_3:
+                case Const.LDC:
+                case Const.ALOAD:
+                case Const.ALOAD_0:
+                case Const.ALOAD_1:
+                case Const.ALOAD_2:
+                case Const.ALOAD_3:
                     break;
                 default:
                     return false;

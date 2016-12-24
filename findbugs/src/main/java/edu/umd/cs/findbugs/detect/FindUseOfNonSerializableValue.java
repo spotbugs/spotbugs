@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
@@ -62,7 +62,7 @@ public class FindUseOfNonSerializableValue implements Detector {
             if (c instanceof ConstantMethodref || c instanceof ConstantInterfaceMethodref) {
                 ConstantCP m = (ConstantCP) c;
                 @DottedClassName String clazz = m.getClass(constantPool);
-                ConstantNameAndType nt = (ConstantNameAndType) constantPool.getConstant(m.getNameAndTypeIndex(), Constants.CONSTANT_NameAndType);
+                ConstantNameAndType nt = (ConstantNameAndType) constantPool.getConstant(m.getNameAndTypeIndex(), Const.CONSTANT_NameAndType);
                 String name = nt.getName(constantPool);
                 if ("setAttribute".equals(name) && "javax.servlet.http.HttpSession".equals(clazz) || ("writeObject".equals(name)
                         && ("java.io.ObjectOutput".equals(clazz)
@@ -132,7 +132,7 @@ public class FindUseOfNonSerializableValue implements Detector {
             return;
         }
         // We don't adequately model instanceof interfaces yet
-        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST)) {
+        if (bytecodeSet.get(Const.INSTANCEOF) || bytecodeSet.get(Const.CHECKCAST)) {
             return;
         }
         CFG cfg = classContext.getCFG(method);
