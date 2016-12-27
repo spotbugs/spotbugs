@@ -166,6 +166,14 @@ This plugin contains all of the standard SpotBugs detectors.
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
+    <Details>
+<![CDATA[
+<p> Finds overriding methods that must call super.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants">
     <Details>
 <![CDATA[
@@ -1657,6 +1665,14 @@ factory pattern to create these objects.</p>
   BugPatterns
   **********************************************************************
    -->
+  <BugPattern type="OVERRIDING_METHODS_MUST_INVOKE_SUPER">
+    <ShortDescription>Super method is annotated with @OverridingMethodsMustInvokeSuper, but the overriding method isn't calling the super method.</ShortDescription>
+    <LongDescription>Super method is annotated with @OverridingMethodsMustInvokeSuper, but {1} isn't calling the super method.</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>Super method is annotated with @OverridingMethodsMustInvokeSuper, but the overriding method isn't calling the super method.</p>
+]]>
+    </Details>  </BugPattern>
   <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
     <ShortDescription>Rough value of known constant found</ShortDescription>
     <LongDescription>Rough value of {3} found: {2}</LongDescription>

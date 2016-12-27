@@ -289,6 +289,9 @@
                               <Later class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings"/>
                     </SplitPass>
           </OrderingConstraints>
+
+          <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector"
+                    reports="OVERRIDING_METHODS_MUST_INVOKE_SUPER" speed="fast" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants"
                     reports="CNT_ROUGH_CONSTANT_VALUE" speed="fast" hidden="false"/>
 
@@ -672,6 +675,7 @@
           <BugCode abbrev="FB"/>
           <BugCode abbrev="AT"/>
           <!-- Bug patterns -->
+          <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
 
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
