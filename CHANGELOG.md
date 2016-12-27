@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## 3.1.6 - 2018-07-18
 
+### Added
+
+* Support for new annotation edu.umd.cs.findbugs.annotations.OverridingMethodsMustInvokeSuper
+
 ### Fixed
 
 * Potential NPE in test-harness-core ([#671](https://github.com/spotbugs/spotbugs/issues/671))

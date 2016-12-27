@@ -19,15 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Lookup;
-import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.OverridingMethodsMustInvokeSuper;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -36,29 +34,23 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
 
-    BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-    ClassDescriptor mustOverrideAnnotation = DescriptorFactory.createClassDescriptor(OverridingMethodsMustInvokeSuper.class);
-
-    private final boolean testingEnabled;
+    ClassDescriptor mustOverrideAnnotation = DescriptorFactory.createClassDescriptor( OverridingMethodsMustInvokeSuper.class );
 
     public CbeckMustOverrideSuperAnnotation(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     private boolean sawCallToSuper;
 
     @Override
     public void visit(Code code) {
-        if(!testingEnabled){
+        if (getMethod().isStatic() || getMethod().isPrivate() || getMethod().isSynthetic()) {
             return;
         }
-        if (getMethod().isStatic() || getMethod().isPrivate()) {
-            return;
-        }
-        XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getMethodSig(), bugReporter);
 
+        XMethod overrides = Lookup.findSuperImplementorAsXMethod(getThisClass(), getMethodName(), getEffectiveMethodSig(), bugReporter);
         if (overrides == null) {
             return;
         }
@@ -69,9 +61,20 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
         sawCallToSuper = false;
         super.visit(code);
         if (!sawCallToSuper) {
-            bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClassAndMethod(this).addString(
+            bugReporter.reportBug(new BugInstance(this, "OVERRIDING_METHODS_MUST_INVOKE_SUPER", NORMAL_PRIORITY).addClassAndMethod(this).addString(
                     "Method must invoke override method in superclass"));
         }
+    }
+
+    public String getEffectiveMethodSig() {
+        String methodSig = getMethodSig();
+        XMethod bridgeFrom = getXMethod().bridgeFrom();
+
+        if (bridgeFrom != null) {
+            methodSig = bridgeFrom.getSignature();
+        }
+
+        return methodSig;
     }
 
     /*
@@ -89,7 +92,7 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
         String calledMethodName = getNameConstantOperand();
         String calledMethodSig = getSigConstantOperand();
         if (calledClassName.equals(getSuperclassName()) && calledMethodName.equals(getMethodName())
-                && calledMethodSig.equals(getMethodSig())) {
+                && calledMethodSig.equals(getEffectiveMethodSig())) {
             sawCallToSuper = true;
         }
 
