@@ -183,6 +183,40 @@ task annotationSourcesJar(type: Jar, dependsOn: classes) {
   include '**/annotations/*'
 }
 
+task testHarnessJar(type: Jar, dependsOn: testClasses) {
+  baseName 'test-harness'
+  from sourceSets.test.output
+  include 'edu/umd/cs/findbugs/AbstractIntegrationTest.class'
+  include 'org/sonar/plugins/findbugs/resource/SmapParser.class'
+  include 'edu/umd/cs/findbugs/test/**/*.class'
+}
+
+task testHarnessJavadoc(type: Javadoc) {
+  source sourceSets.test.allSource
+  include 'edu/umd/cs/findbugs/AbstractIntegrationTest.java'
+  include 'org/sonar/plugins/findbugs/resource/SmapParser.java'
+  include 'edu/umd/cs/findbugs/test/**/*.java'
+  destinationDir = file("${project.docsDir}/test-harness")
+  options.with {
+    tags = ['Test']
+  }
+}
+
+task testHarnessJavadocJar(type: Jar, dependsOn: testHarnessJavadoc) {
+  classifier = 'javadoc'
+  baseName 'test-harness'
+  from testHarnessJavadoc.destinationDir
+}
+
+task testHarnessSourcesJar(type: Jar, dependsOn: testClasses) {
+  classifier = 'sources'
+  baseName 'test-harness'
+  from sourceSets.test.allSource
+  include 'edu/umd/cs/findbugs/AbstractIntegrationTest.java'
+  include 'org/sonar/plugins/findbugs/resource/SmapParser.java'
+  include 'edu/umd/cs/findbugs/test/**/*.java'
+}
+
 artifacts {
   archives javadocJar
   archives annotationJavadocJar
@@ -289,6 +323,19 @@ publishing {
       }
 
       artifact annotationJavadocJar {
+        classifier 'javadoc'
+      }
+    }
+
+    testHarness(MavenPublication) {
+      artifactId 'test-harness'
+      artifact testHarnessJar
+
+      artifact testHarnessSourcesJar {
+        classifier 'sources'
+      }
+
+      artifact testHarnessJavadocJar {
         classifier 'javadoc'
       }
     }
