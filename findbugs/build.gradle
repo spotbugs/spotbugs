@@ -255,6 +255,37 @@ task smokeTest {
   }
 }
 
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      artifactId 'spotbugs'
+
+      artifact sourcesJar {
+        classifier 'sources'
+      }
+
+      artifact javadocJar {
+        classifier 'javadoc'
+      }
+    }
+
+    annotations(MavenPublication) {
+      artifactId 'spotbugs-annotations'
+      artifact annotationsJar
+
+      artifact annotationSourcesJar {
+        classifier 'sources'
+      }
+
+      artifact annotationJavadocJar {
+        classifier 'javadoc'
+      }
+    }
+  }
+}
+
 // TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
