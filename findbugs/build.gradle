@@ -98,7 +98,7 @@ task annotationsJar(type:Jar) {
   }
 }
 
-tasks['jar'].dependsOn 'spotbugsAnnotationsJar', 'annotationsJar'
+tasks['jar'].dependsOn 'spotbugsAnnotationsJar', 'annotationsJar', 'testHarnessJar'
 
 // Populate bin folder with scripts
 task scripts(type:Copy) {
