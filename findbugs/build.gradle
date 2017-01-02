@@ -31,6 +31,7 @@ configurations {
 dependencies {
   compile 'org.apache.bcel:bcel:6.0'
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+  compile 'net.jcip:jcip-annotations:1.0'
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
@@ -76,11 +77,17 @@ task annotationsJar(type:Jar) {
   from(sourceSets.main.output) {
     include '**/annotations/*'
   }
-  // TODO : These includes source java files.. exclude them and put them in a separate sources jar?
-  from zipTree("$projectDir/lib/jcip-annotations.jar").matching {
-    exclude 'META-INF/**'
-    exclude '**/*.html'
+
+  from {
+    configurations.compile.filter {
+      it.name.startsWith('jcip-annotations')
+    } collect {
+      zipTree(it).matching {
+        exclude 'META-INF/**'
+      }
+    }
   }
+
   from zipTree("$projectDir/lib/jsr305.jar").matching { // TODO : to be dropped
     exclude 'META-INF/**'
     exclude '**/*.html'
