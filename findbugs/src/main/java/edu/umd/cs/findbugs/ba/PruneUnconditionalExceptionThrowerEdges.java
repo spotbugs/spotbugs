@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -66,12 +66,12 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
     private static final BitSet RETURN_OPCODE_SET = new BitSet();
     static {
-        RETURN_OPCODE_SET.set(Constants.ARETURN);
-        RETURN_OPCODE_SET.set(Constants.IRETURN);
-        RETURN_OPCODE_SET.set(Constants.LRETURN);
-        RETURN_OPCODE_SET.set(Constants.DRETURN);
-        RETURN_OPCODE_SET.set(Constants.FRETURN);
-        RETURN_OPCODE_SET.set(Constants.RETURN);
+        RETURN_OPCODE_SET.set(Const.ARETURN);
+        RETURN_OPCODE_SET.set(Const.IRETURN);
+        RETURN_OPCODE_SET.set(Const.LRETURN);
+        RETURN_OPCODE_SET.set(Const.DRETURN);
+        RETURN_OPCODE_SET.set(Const.FRETURN);
+        RETURN_OPCODE_SET.set(Const.RETURN);
         Pattern p;
         try {
             p = Pattern.compile(UNCONDITIONAL_THROWER_METHOD_NAMES);

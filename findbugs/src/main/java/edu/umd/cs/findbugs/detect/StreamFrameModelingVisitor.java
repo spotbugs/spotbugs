@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -103,18 +103,18 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         // System.out.print("[Passed as arg="+instanceArgNum+" at " + inv +
         // "]");
 
-        boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
+        boolean escapes = (inv.getOpcode() == Const.INVOKESTATIC || instanceArgNum != 0);
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
-        if (inv.getOpcode() == Constants.INVOKEVIRTUAL
+        if (inv.getOpcode() == Const.INVOKEVIRTUAL
                 && ("load".equals(methodName) || "loadFromXml".equals(methodName) || "store".equals(methodName) || "save".equals(methodName)) && "java.util.Properties".equals(className)) {
             escapes = false;
         }
-        if (inv.getOpcode() == Constants.INVOKEVIRTUAL && ("load".equals(methodName) || "store".equals(methodName))
+        if (inv.getOpcode() == Const.INVOKEVIRTUAL && ("load".equals(methodName) || "store".equals(methodName))
                 && "java.security.KeyStore".equals(className)) {
             escapes = false;
         }
-        if (inv.getOpcode() == Constants.INVOKEVIRTUAL && "getChannel".equals(methodName)
+        if (inv.getOpcode() == Const.INVOKEVIRTUAL && "getChannel".equals(methodName)
                 && "()Ljava/nio/channels/FileChannel;".equals(methodSig)) {
             escapes = true;
         }

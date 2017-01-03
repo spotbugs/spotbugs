@@ -82,7 +82,7 @@ public class AssignedFieldMap implements Constants {
      * ConstantPoolGen cpg = methodGen.getConstantPool();
      *
      * while (handle != null) { Instruction ins = handle.getInstruction(); short
-     * opcode = ins.getOpcode(); if (opcode == Constants.PUTFIELD) { PUTFIELD
+     * opcode = ins.getOpcode(); if (opcode == Const.PUTFIELD) { PUTFIELD
      * putfield = (PUTFIELD) ins;
      *
      * XField instanceField = Hierarchy.findXField(putfield, cpg); if

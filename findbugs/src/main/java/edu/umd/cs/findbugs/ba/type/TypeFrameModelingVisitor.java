@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
@@ -216,7 +217,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         TypeFrame frame = getFrame();
 
         int numWordsConsumed = ins.consumeStack(cpg);
-        if (numWordsConsumed == Constants.UNPREDICTABLE) {
+        if (numWordsConsumed == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
         }
         if (numWordsConsumed > frame.getStackDepth()) {
@@ -874,7 +875,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     @Override
     public void handleLoadInstruction(LoadInstruction obj) {
         int numProduced = obj.produceStack(cpg);
-        if (numProduced == Constants.UNPREDICTABLE) {
+        if (numProduced == Const.UNPREDICTABLE) {
             throw new InvalidBytecodeException("Unpredictable stack production");
         }
 

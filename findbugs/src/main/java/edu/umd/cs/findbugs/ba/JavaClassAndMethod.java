@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -104,7 +104,7 @@ public class JavaClassAndMethod {
     }
 
     private String getSlashedClassName() {
-        return javaClass.getConstantPool().getConstantString(javaClass.getClassNameIndex(), Constants.CONSTANT_Class);
+        return javaClass.getConstantPool().getConstantString(javaClass.getClassNameIndex(), Const.CONSTANT_Class);
     }
 
     @Override

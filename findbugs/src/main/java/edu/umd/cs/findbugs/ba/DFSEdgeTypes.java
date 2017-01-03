@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 /**
- * Interface defining depth first search edge type constants. This is just a
+ * Interface defining depth first search edge type Const. This is just a
  * placeholder that forwards to the real interface in the
  * edu.umd.cs.findbugs.graph package.
  *

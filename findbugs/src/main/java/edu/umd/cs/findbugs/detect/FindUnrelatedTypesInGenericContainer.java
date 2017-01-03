@@ -33,7 +33,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.JavaClass;
@@ -277,9 +277,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     public boolean prescreen(ClassContext classContext, Method method) {
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
         return bytecodeSet != null
-                && (bytecodeSet.get(Constants.INVOKEINTERFACE) || bytecodeSet.get(Constants.INVOKEVIRTUAL)
-                        || bytecodeSet.get(Constants.INVOKESPECIAL) || bytecodeSet.get(Constants.INVOKESTATIC) || bytecodeSet
-                        .get(Constants.INVOKENONVIRTUAL));
+                && (bytecodeSet.get(Const.INVOKEINTERFACE) || bytecodeSet.get(Const.INVOKEVIRTUAL)
+                        || bytecodeSet.get(Const.INVOKESPECIAL) || bytecodeSet.get(Const.INVOKESTATIC) || bytecodeSet
+                        .get(Const.INVOKENONVIRTUAL));
     }
 
     /**
@@ -287,7 +287,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
      * code
      */
     private boolean isSynthetic(Method m) {
-        if ((m.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+        if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) != 0) {
             return true;
         }
         Attribute[] attrs = m.getAttributes();

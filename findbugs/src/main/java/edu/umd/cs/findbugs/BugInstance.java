@@ -44,7 +44,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -68,7 +68,6 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
-import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -110,8 +109,6 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @see BugAnnotation
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Cloneable {
-
-    private static final long serialVersionUID = 1L;
 
     private final String type;
 
@@ -1467,7 +1464,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         String className = inv.getClassName(cpg);
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
-        addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
+        addMethod(className, methodName, methodSig, inv.getOpcode() == Const.INVOKESTATIC);
         describe(MethodAnnotation.METHOD_CALLED);
         return this;
     }

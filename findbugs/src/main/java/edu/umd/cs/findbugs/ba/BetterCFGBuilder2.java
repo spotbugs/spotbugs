@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -874,7 +874,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 // address.
                 // if (ins instanceof ASTORE) ...
 
-                if (opcode == Constants.JSR || opcode == Constants.JSR_W) {
+                if (opcode == Const.JSR || opcode == Const.JSR_W) {
                     // Find JSR subroutine, add it to subroutine work list if
                     // we haven't built a CFG for it yet
                     JsrInstruction jsr = (JsrInstruction) ins;
@@ -891,7 +891,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     // It will be replaced later by the inlined JSR subroutine.
                     subroutine.addEdgeAndExplore(basicBlock, handle.getNext(), JSR_EDGE);
                     endOfBasicBlock = true;
-                } else if (opcode == Constants.RET) {
+                } else if (opcode == Const.RET) {
                     // End of JSR subroutine
                     subroutine.addEdge(basicBlock, subroutine.getExit(), RET_EDGE);
                     endOfBasicBlock = true;
@@ -1061,7 +1061,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
      * @return true if this object is known to be non-null
      */
     private boolean isSafeFieldSource(InstructionHandle handle) {
-        while(handle != null && handle.getInstruction().getOpcode() == Constants.DUP) {
+        while(handle != null && handle.getInstruction().getOpcode() == Const.DUP) {
             // Some compilers generate DUP for field increment code like
             // ALOAD_0 / DUP / GETFIELD x / ICONST_1 / IADD / PUTFIELD x
             handle = handle.getPrev();
@@ -1070,7 +1070,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             return false;
         }
         Instruction inst = handle.getInstruction();
-        if(inst.getOpcode() == Constants.ALOAD_0) {
+        if(inst.getOpcode() == Const.ALOAD_0) {
             return true;
         }
         if(inst instanceof GETFIELD && ((GETFIELD)inst).getFieldName(cpg).startsWith("this$")) {

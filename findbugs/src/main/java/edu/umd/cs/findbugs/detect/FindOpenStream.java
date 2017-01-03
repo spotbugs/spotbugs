@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.apache.bcel.classfile.ConstantMethodref;
@@ -306,12 +306,12 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
                 ConstantMethodref cmr = (ConstantMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Constants.CONSTANT_Class);
+                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
             } else if (constant instanceof ConstantInterfaceMethodref) {
                 ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Constants.CONSTANT_Class);
+                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
             }
 
             if (className != null) {
@@ -340,9 +340,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         if (bytecodeSet == null) {
             return false;
         }
-        return bytecodeSet.get(Constants.NEW) || bytecodeSet.get(Constants.INVOKEINTERFACE)
-                || bytecodeSet.get(Constants.INVOKESPECIAL) || bytecodeSet.get(Constants.INVOKESTATIC)
-                || bytecodeSet.get(Constants.INVOKEVIRTUAL);
+        return bytecodeSet.get(Const.NEW) || bytecodeSet.get(Const.INVOKEINTERFACE)
+                || bytecodeSet.get(Const.INVOKESPECIAL) || bytecodeSet.get(Const.INVOKESTATIC)
+                || bytecodeSet.get(Const.INVOKEVIRTUAL);
     }
 
     @Override
@@ -398,8 +398,8 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
                 }
 
                 switch (type.getType()) {
-                case Constants.T_LONG:
-                case Constants.T_DOUBLE:
+                case Const.T_LONG:
+                case Const.T_DOUBLE:
                     local += 2;
                     break;
                 default:

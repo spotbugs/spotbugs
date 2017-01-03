@@ -25,7 +25,7 @@ import java.util.Collections;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -50,7 +50,7 @@ public class UnresolvedXField extends AbstractField {
     }
 
     protected UnresolvedXField(FieldDescriptor m) {
-        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), m.isStatic() ? Constants.ACC_STATIC : 0);
+        super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(), m.isStatic() ? Const.ACC_STATIC : 0);
         if (m.getSignature().charAt(0) == '(') {
             throw new IllegalArgumentException("Bad signature: " + m.getSignature());
         }

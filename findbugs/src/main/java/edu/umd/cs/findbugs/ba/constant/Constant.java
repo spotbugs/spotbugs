@@ -94,7 +94,7 @@ public class Constant {
     }
 
     /**
-     * Merge two Constants.
+     * Merge two Constnts.
      *
      * @param a
      *            a StaticConstant

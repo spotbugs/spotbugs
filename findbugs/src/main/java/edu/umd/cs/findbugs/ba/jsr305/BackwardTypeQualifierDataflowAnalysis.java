@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import javax.annotation.meta.When;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -171,7 +171,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
             } else {
                 short opcode = ins.getOpcode();
 
-                if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC) {
+                if (opcode == Const.PUTFIELD || opcode == Const.PUTSTATIC) {
                     modelFieldStore(location);
                 } else if (location.getHandle().getInstruction() instanceof InvokeInstruction) {
                     modelArguments(location);

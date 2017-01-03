@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.ObjectType;
@@ -60,7 +60,7 @@ public class IOStreamFactory implements StreamFactory {
         try {
             Instruction ins = location.getHandle().getInstruction();
 
-            if (ins.getOpcode() != Constants.NEW) {
+            if (ins.getOpcode() != Const.NEW) {
                 return null;
             }
 

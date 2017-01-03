@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.ba.Hierarchy.*;
+import static edu.umd.cs.findbugs.ba.Hierarchy.DEBUG_METHOD_LOOKUP;
+import static edu.umd.cs.findbugs.ba.Hierarchy.INSTANCE_METHOD;
+import static edu.umd.cs.findbugs.ba.Hierarchy.STATIC_METHOD;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +31,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -112,7 +114,7 @@ public class Hierarchy2 {
 
         short opcode = inv.getOpcode();
 
-        if (opcode == Constants.INVOKESTATIC) {
+        if (opcode == Const.INVOKESTATIC) {
             if (methodChooser == INSTANCE_METHOD) {
                 return null;
             }
@@ -123,7 +125,7 @@ public class Hierarchy2 {
         }
 
         // Find the method
-        if (opcode == Constants.INVOKESPECIAL) {
+        if (opcode == Const.INVOKESPECIAL) {
             // Non-virtual dispatch
             return findExactMethod(inv, cpg, methodChooser);
         } else {
@@ -144,7 +146,7 @@ public class Hierarchy2 {
             try {
                 return thisOrNothing(
                         findInvocationLeastUpperBound(getXClassFromDottedClassName(className), methodName, methodSig,
-                                opcode == Constants.INVOKESTATIC, opcode == Constants.INVOKEINTERFACE), methodChooser);
+                                opcode == Const.INVOKESTATIC, opcode == Const.INVOKEINTERFACE), methodChooser);
             } catch (CheckedAnalysisException e) {
                 return null;
             }
@@ -304,7 +306,7 @@ public class Hierarchy2 {
 
         short opcode = invokeInstruction.getOpcode();
 
-        if (opcode == Constants.INVOKESTATIC) {
+        if (opcode == Const.INVOKESTATIC) {
             return Util.emptyOrNonnullSingleton(findInvocationLeastUpperBound(invokeInstruction, cpg, STATIC_METHOD));
         }
 
@@ -313,14 +315,14 @@ public class Hierarchy2 {
         }
 
         // XXX handle INVOKEDYNAMIC
-        if (opcode == Constants.INVOKEDYNAMIC) {
+        if (opcode == Const.INVOKEDYNAMIC) {
             return Collections.<XMethod> emptySet();
         }
 
         Type receiverType;
         boolean receiverTypeIsExact;
 
-        if (opcode == Constants.INVOKESPECIAL) {
+        if (opcode == Const.INVOKESPECIAL) {
             // invokespecial instructions are dispatched to EXACTLY
             // the class specified by the instruction
             receiverType = ObjectTypeFactory.getInstance(invokeInstruction.getClassName(cpg));
@@ -380,7 +382,7 @@ public class Hierarchy2 {
     public static Set<XMethod> resolveMethodCallTargets(ReferenceType receiverType, InvokeInstruction invokeInstruction,
             ConstantPoolGen cpg, boolean receiverTypeIsExact) throws ClassNotFoundException {
 
-        if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC) {
+        if (invokeInstruction.getOpcode() == Const.INVOKESTATIC) {
             throw new IllegalArgumentException();
         }
 

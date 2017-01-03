@@ -27,7 +27,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -415,10 +415,10 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                     Instruction ins = handle.getInstruction();
                     short opcode = ins.getOpcode();
                     if (DEBUG) {
-                        System.out.printf("%3d %s%n", handle.getPosition(),Constants.OPCODE_NAMES[opcode]);
+                        System.out.printf("%3d %s%n", handle.getPosition(),Const.getOpcodeName(opcode));
                     }
 
-                    if (opcode == Constants.PUTFIELD || opcode == Constants.PUTSTATIC || opcode == Constants.ARETURN) {
+                    if (opcode == Const.PUTFIELD || opcode == Const.PUTSTATIC || opcode == Const.ARETURN) {
                         //
                         // A value is being assigned to a field or returned from
                         // the method.

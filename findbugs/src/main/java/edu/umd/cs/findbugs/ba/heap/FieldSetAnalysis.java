@@ -24,7 +24,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -118,26 +118,26 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         XField field;
 
         switch (opcode) {
-        case Constants.GETFIELD:
-        case Constants.GETSTATIC:
+        case Const.GETFIELD:
+        case Const.GETSTATIC:
             field = lookupField(handle, (FieldInstruction) ins);
             if (field != null) {
                 sawLoad(fact, field);
             }
             break;
 
-        case Constants.PUTFIELD:
-        case Constants.PUTSTATIC:
+        case Const.PUTFIELD:
+        case Const.PUTSTATIC:
             field = lookupField(handle, (FieldInstruction) ins);
             if (field != null) {
                 sawStore(fact, field);
             }
             break;
 
-        case Constants.INVOKEINTERFACE:
-        case Constants.INVOKESPECIAL:
-        case Constants.INVOKESTATIC:
-        case Constants.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+        case Const.INVOKEVIRTUAL:
             // Assume that the called method assigns loads and stores all
             // possible fields
             fact.setBottom();

@@ -25,7 +25,7 @@ import java.util.Set;
 
 import javax.annotation.meta.When;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantClass;
@@ -148,8 +148,8 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                             int startPC = e.getStartPC();
                             int handlerPC = e.getHandlerPC();
                             if (startPC == 0 && endPC + 1 == handlerPC && handlerPC == codeBytes.length - 3
-                                    && (codeBytes[handlerPC + 1] & 0xff) == Constants.ICONST_0
-                                    && (codeBytes[handlerPC + 2] & 0xff) == Constants.IRETURN
+                                    && (codeBytes[handlerPC + 1] & 0xff) == Const.ICONST_0
+                                    && (codeBytes[handlerPC + 2] & 0xff) == Const.IRETURN
                                     && FindNullDeref.catchTypesForNull.contains(cl.getBytes(cp))) {
                                 // equals method body contained in try clause
                                 return;

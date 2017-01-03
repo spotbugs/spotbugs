@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -116,7 +116,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
      *            accessFlags for the field
      */
     public FieldAnnotation(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
-        this(className, fieldName, fieldSig, (accessFlags & Constants.ACC_STATIC) != 0);
+        this(className, fieldName, fieldSig, (accessFlags & Const.ACC_STATIC) != 0);
     }
 
     /**

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -116,12 +116,12 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 
         Instruction ins = handle.getInstruction();
         short opcode = ins.getOpcode();
-        if (opcode == Constants.MONITORENTER || opcode == Constants.MONITOREXIT) {
+        if (opcode == Const.MONITORENTER || opcode == Const.MONITOREXIT) {
             ValueNumberFrame frame = vnaDataflow.getFactAtLocation(new Location(handle, basicBlock));
 
-            modifyLock(frame, fact, opcode == Constants.MONITORENTER ? 1 : -1);
+            modifyLock(frame, fact, opcode == Const.MONITORENTER ? 1 : -1);
 
-        } else if (opcode == Constants.INVOKEVIRTUAL || opcode == Constants.INVOKEINTERFACE) {
+        } else if (opcode == Const.INVOKEVIRTUAL || opcode == Const.INVOKEINTERFACE) {
 
             InvokeInstruction inv = (InvokeInstruction) ins;
             String name = inv.getMethodName(methodGen.getConstantPool());

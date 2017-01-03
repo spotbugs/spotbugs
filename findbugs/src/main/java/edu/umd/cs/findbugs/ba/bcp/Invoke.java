@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -200,7 +200,7 @@ public class Invoke extends PatternElement {
         InvokeInstruction inv = (InvokeInstruction) ins;
 
         String methodName = inv.getMethodName(cpg);
-        boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
+        boolean isStatic = inv.getOpcode() == Const.INVOKESTATIC;
         boolean isCtor = "<init>".equals(methodName);
 
         int actualMode = 0;
