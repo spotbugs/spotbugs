@@ -940,8 +940,6 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
-        assert !bugsPopulated;
-
         if (bugsPopulated) {
             AnalysisContext.logError("Bug collection marked as populated, but bugs added",
                     new RuntimeException("Bug collection marked as populated, but bugs added"));
