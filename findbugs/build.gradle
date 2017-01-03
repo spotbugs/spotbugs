@@ -183,19 +183,19 @@ task annotationSourcesJar(type: Jar, dependsOn: classes) {
   include '**/annotations/*'
 }
 
+def harnessIncludes = ['edu/umd/cs/findbugs/AbstractIntegrationTest',
+  'org/sonar/plugins/findbugs/resource/SmapParser',
+  'edu/umd/cs/findbugs/test/**/*']
+
 task testHarnessJar(type: Jar, dependsOn: testClasses) {
   baseName 'test-harness'
   from sourceSets.test.output
-  include 'edu/umd/cs/findbugs/AbstractIntegrationTest.class'
-  include 'org/sonar/plugins/findbugs/resource/SmapParser.class'
-  include 'edu/umd/cs/findbugs/test/**/*.class'
+  include harnessIncludes.collect { it + '.class' }
 }
 
 task testHarnessJavadoc(type: Javadoc) {
   source sourceSets.test.allSource
-  include 'edu/umd/cs/findbugs/AbstractIntegrationTest.java'
-  include 'org/sonar/plugins/findbugs/resource/SmapParser.java'
-  include 'edu/umd/cs/findbugs/test/**/*.java'
+  include harnessIncludes.collect { it + '.java' }
   destinationDir = file("${project.docsDir}/test-harness")
   options.with {
     tags = ['Test']
@@ -212,9 +212,7 @@ task testHarnessSourcesJar(type: Jar, dependsOn: testClasses) {
   classifier = 'sources'
   baseName 'test-harness'
   from sourceSets.test.allSource
-  include 'edu/umd/cs/findbugs/AbstractIntegrationTest.java'
-  include 'org/sonar/plugins/findbugs/resource/SmapParser.java'
-  include 'edu/umd/cs/findbugs/test/**/*.java'
+  include harnessIncludes.collect { it + '.java' }
 }
 
 artifacts {
