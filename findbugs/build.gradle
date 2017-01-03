@@ -221,6 +221,9 @@ artifacts {
   archives sourcesJar
   archives annotationSourcesJar
   annotations annotationsJar
+  archives testHarnessJar
+  archives testHarnessJavadocJar
+  archives testHarnessSourcesJar
 }
 
 apply plugin: 'distribution'
