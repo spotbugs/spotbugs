@@ -195,6 +195,7 @@ task testHarnessJar(type: Jar, dependsOn: testClasses) {
 
 task testHarnessJavadoc(type: Javadoc) {
   source sourceSets.test.allSource
+  classpath = sourceSets.test.compileClasspath
   include harnessIncludes.collect { it + '.java' }
   destinationDir = file("${project.docsDir}/test-harness")
   options.with {
