@@ -24,7 +24,7 @@ import java.util.Iterator;
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -108,7 +108,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             if (instruction instanceof InvokeInstruction) {
                 // Model return value
                 registerReturnValueSource(location);
-            } else if (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC) {
+            } else if (opcode == Const.GETFIELD || opcode == Const.GETSTATIC) {
                 // Model field loads
                 registerFieldLoadSource(location);
             } else if (instruction instanceof LDC) {

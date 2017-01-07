@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.JavaClass;
@@ -124,7 +124,7 @@ public class FindBadCast2 implements Detector {
 
     public boolean prescreen(ClassContext classContext, Method method) {
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
-        return bytecodeSet != null && (bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF));
+        return bytecodeSet != null && (bytecodeSet.get(Const.CHECKCAST) || bytecodeSet.get(Const.INSTANCEOF));
     }
 
     private Set<ValueNumber> getParameterValueNumbers(ClassContext classContext, Method method, CFG cfg)

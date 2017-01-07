@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import junit.framework.TestCase;
+import org.apache.bcel.Const;
 
-import org.apache.bcel.Constants;
+import junit.framework.TestCase;
 
 /**
  * @author pugh
@@ -29,11 +29,11 @@ import org.apache.bcel.Constants;
 public class DismantleBytecodeTest extends TestCase {
 
     public void testAreOppositeBranches() {
-        assertTrue(DismantleBytecode.areOppositeBranches(Constants.IF_ACMPEQ, Constants.IF_ACMPNE));
-        assertTrue(DismantleBytecode.areOppositeBranches(Constants.IF_ICMPEQ, Constants.IF_ICMPNE));
-        assertTrue(DismantleBytecode.areOppositeBranches(Constants.IF_ICMPLT, Constants.IF_ICMPGE));
-        assertTrue(DismantleBytecode.areOppositeBranches(Constants.IFNE, Constants.IFEQ));
-        assertTrue(DismantleBytecode.areOppositeBranches(Constants.IFLT, Constants.IFGE));
-        assertTrue(DismantleBytecode.areOppositeBranches(Constants.IFNULL, Constants.IFNONNULL));
+        assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ACMPEQ, Const.IF_ACMPNE));
+        assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ICMPEQ, Const.IF_ICMPNE));
+        assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ICMPLT, Const.IF_ICMPGE));
+        assertTrue(DismantleBytecode.areOppositeBranches(Const.IFNE, Const.IFEQ));
+        assertTrue(DismantleBytecode.areOppositeBranches(Const.IFLT, Const.IFGE));
+        assertTrue(DismantleBytecode.areOppositeBranches(Const.IFNULL, Const.IFNONNULL));
     }
 }

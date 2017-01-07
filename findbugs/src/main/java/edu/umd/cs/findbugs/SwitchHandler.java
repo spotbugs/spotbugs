@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
@@ -55,7 +55,7 @@ public class SwitchHandler {
 
     public void enterSwitch(DismantleBytecode dbc, @CheckForNull XClass enumType) {
 
-        assert dbc.getOpcode() == Constants.TABLESWITCH || dbc.getOpcode() == Constants.LOOKUPSWITCH;
+        assert dbc.getOpcode() == Const.TABLESWITCH || dbc.getOpcode() == Const.LOOKUPSWITCH;
         int[] switchOffsets = dbc.getSwitchOffsets();
         SwitchDetails details = new SwitchDetails(dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(enumType));
 

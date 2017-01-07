@@ -18,7 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -39,17 +39,17 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 
     @Override
     public boolean isNative() {
-        return (getAccessFlags() & Constants.ACC_NATIVE) != 0;
+        return (getAccessFlags() & Const.ACC_NATIVE) != 0;
     }
 
     @Override
     public boolean isSynchronized() {
-        return (getAccessFlags() & Constants.ACC_SYNCHRONIZED) != 0;
+        return (getAccessFlags() & Const.ACC_SYNCHRONIZED) != 0;
     }
 
     @Override
     public boolean isBridge() {
-        return (getAccessFlags() & Constants.ACC_BRIDGE) != 0;
+        return (getAccessFlags() & Const.ACC_BRIDGE) != 0;
     }
 
     @Override

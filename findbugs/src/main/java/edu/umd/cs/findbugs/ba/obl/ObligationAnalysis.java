@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
@@ -236,13 +236,13 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
         short opcode = last.getInstruction().getOpcode();
         switch (opcode) {
-        case Constants.IFNULL:
-        case Constants.IFNONNULL:
+        case Const.IFNULL:
+        case Const.IFNONNULL:
             type = nullCheck(opcode, edge, last, sourceBlock);
             break;
 
-        case Constants.IF_ACMPEQ:
-        case Constants.IF_ACMPNE:
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE:
             type = acmpNullCheck(opcode, edge, last, sourceBlock);
             break;
         default:
@@ -269,8 +269,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             System.out.println("checking for nullcheck on edge " + edge);
         }
         Type type = null;
-        if ((opcode == Constants.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE)
-                || (opcode == Constants.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+        if ((opcode == Const.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE)
+                || (opcode == Const.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
             Location location = new Location(last, sourceBlock);
             TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
             if (typeFrame.isValid()) {
@@ -291,8 +291,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         // this edge is the edge on which the
         // compared value is definitely null.
         //
-        if ((opcode == Constants.IF_ACMPEQ && edge.getType() == EdgeTypes.IFCMP_EDGE)
-                || (opcode == Constants.IF_ACMPNE && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+        if ((opcode == Const.IF_ACMPEQ && edge.getType() == EdgeTypes.IFCMP_EDGE)
+                || (opcode == Const.IF_ACMPNE && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
             //
             // Check nullness and type of the top two stack values.
             //

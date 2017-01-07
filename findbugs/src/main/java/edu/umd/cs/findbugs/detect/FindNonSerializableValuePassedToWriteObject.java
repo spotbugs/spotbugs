@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -69,7 +69,7 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
             return;
         }
         // We don't adequately model instanceof interfaces yet
-        if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST)) {
+        if (bytecodeSet.get(Const.INSTANCEOF) || bytecodeSet.get(Const.CHECKCAST)) {
             return;
         }
         CFG cfg = classContext.getCFG(method);
@@ -85,7 +85,6 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
-            int pc = handle.getPosition();
             Instruction ins = handle.getInstruction();
 
             if (!(ins instanceof InvokeInstruction)) {

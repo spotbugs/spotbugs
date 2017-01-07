@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.interproc;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -62,7 +62,7 @@ public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<F
         }
 
         return DescriptorFactory.instance().getFieldDescriptor(ClassName.toSlashedClassName(className), fieldName, signature,
-                (accessFlags & Constants.ACC_STATIC) != 0);
+                (accessFlags & Const.ACC_STATIC) != 0);
     }
 
     /*

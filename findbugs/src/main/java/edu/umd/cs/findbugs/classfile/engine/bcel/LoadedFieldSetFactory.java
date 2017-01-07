@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -55,10 +55,10 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
 
     static final BitSet fieldInstructionOpcodeSet = new BitSet();
     static {
-        fieldInstructionOpcodeSet.set(Constants.GETFIELD);
-        fieldInstructionOpcodeSet.set(Constants.PUTFIELD);
-        fieldInstructionOpcodeSet.set(Constants.GETSTATIC);
-        fieldInstructionOpcodeSet.set(Constants.PUTSTATIC);
+        fieldInstructionOpcodeSet.set(Const.GETFIELD);
+        fieldInstructionOpcodeSet.set(Const.PUTFIELD);
+        fieldInstructionOpcodeSet.set(Const.GETSTATIC);
+        fieldInstructionOpcodeSet.set(Const.PUTSTATIC);
     }
 
     /**
@@ -90,7 +90,7 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
             Instruction ins = handle.getInstruction();
             short opcode = ins.getOpcode();
             try {
-                if (opcode == Constants.INVOKESTATIC) {
+                if (opcode == Const.INVOKESTATIC) {
                     INVOKESTATIC inv = (INVOKESTATIC) ins;
                     if (Hierarchy.isInnerClassAccess(inv, cpg)) {
                         InnerClassAccess access = Hierarchy.getInnerClassAccess(inv, cpg);
@@ -109,7 +109,7 @@ public class LoadedFieldSetFactory extends AnalysisFactory<LoadedFieldSet> {
                         }
                     }
                 } else if (fieldInstructionOpcodeSet.get(opcode)) {
-                    boolean isLoad = (opcode == Constants.GETFIELD || opcode == Constants.GETSTATIC);
+                    boolean isLoad = (opcode == Const.GETFIELD || opcode == Const.GETSTATIC);
                     XField field = Hierarchy.findXField((FieldInstruction) ins, cpg);
                     if (field != null) {
                         if (isLoad) {

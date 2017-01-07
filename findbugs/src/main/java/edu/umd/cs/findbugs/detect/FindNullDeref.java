@@ -35,7 +35,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantPool;
@@ -223,7 +223,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             System.out.println("Pre FND ");
         }
 
-        if ((method.getAccessFlags() & Constants.ACC_BRIDGE) != 0) {
+        if ((method.getAccessFlags() & Const.ACC_BRIDGE) != 0) {
             return;
         }
 
@@ -357,7 +357,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
                     if (ins instanceof InvokeInstruction) {
                         examineCallSite(location, cpg, typeDataflow);
-                    } else if (methodAnnotation == NullnessAnnotation.NONNULL && ins.getOpcode() == Constants.ARETURN) {
+                    } else if (methodAnnotation == NullnessAnnotation.NONNULL && ins.getOpcode() == Const.ARETURN) {
                         examineReturnInstruction(location);
                     } else if (ins instanceof PUTFIELD) {
                         examinePutfieldInstruction(location, (PUTFIELD) ins, cpg);
@@ -728,8 +728,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         String bugType;
         int priority;
-        if (privateCall || invokeInstruction.getOpcode() == Constants.INVOKESTATIC
-                || invokeInstruction.getOpcode() == Constants.INVOKESPECIAL) {
+        if (privateCall || invokeInstruction.getOpcode() == Const.INVOKESTATIC
+                || invokeInstruction.getOpcode() == Const.INVOKESPECIAL) {
             bugType = "NP_NULL_PARAM_DEREF_NONVIRTUAL";
             priority = HIGH_PRIORITY;
         } else if (safeCallTargetSet.isEmpty()) {
@@ -1335,7 +1335,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
      * @return true if the instruction is a goto, false otherwise
      */
     private boolean isGoto(Instruction instruction) {
-        return instruction.getOpcode() == Constants.GOTO || instruction.getOpcode() == Constants.GOTO_W;
+        return instruction.getOpcode() == Const.GOTO || instruction.getOpcode() == Const.GOTO_W;
     }
 
     int minPC(Collection<Location> locs) {

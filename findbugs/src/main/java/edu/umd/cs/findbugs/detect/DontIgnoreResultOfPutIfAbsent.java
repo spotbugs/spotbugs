@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
@@ -75,25 +75,20 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
-    final static boolean countOtherCalls = false;
-
     final BugReporter bugReporter;
 
     final BugAccumulator accumulator;
 
     final ClassDescriptor concurrentMapDescriptor = DescriptorFactory.createClassDescriptor(ConcurrentMap.class);
 
-    //    private final boolean testingEnabled;
-
     public DontIgnoreResultOfPutIfAbsent(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.accumulator = new BugAccumulator(bugReporter);
-        //        testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
     @Override
     public void report() {
-        //
+        // nothing to do?
     }
 
     @Override
@@ -204,7 +199,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Constants.ACC_BRIDGE) == Constants.ACC_BRIDGE) {
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
         }
 
@@ -242,7 +237,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                             boolean isIgnored = next != null && next.getInstruction() instanceof POP;
                             //                        boolean isImmediateNullTest = next != null
                             //                                && (next.getInstruction() instanceof IFNULL || next.getInstruction() instanceof IFNONNULL);
-                            if (countOtherCalls || isIgnored) {
+                            if (isIgnored) {
                                 BitSet live = llsaDataflow.getAnalysis().getFactAtLocation(location);
                                 ValueNumberFrame vna = vnaDataflow.getAnalysis().getFactAtLocation(location);
                                 ValueNumber vn = vna.getTopValue();
@@ -257,9 +252,6 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                                             continue;
                                         }
                                         String pattern = "RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED";
-                                        if (!isIgnored) {
-                                            pattern = "UNKNOWN";
-                                        }
                                         Type type = typeFrame.getTopValue();
                                         int priority = getPriorityForBeingMutable(type);
                                         BugInstance bugInstance = new BugInstance(this, pattern, priority)
@@ -273,34 +265,8 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                                     }
                                 }
                             }
-                            /*
-                            if (testingEnabled && (countOtherCalls && !isRetained)) {
-                                int priority = LOW_PRIORITY;
-                                if (!isImmediateNullTest && !isIgnored) {
-                                    TypeDataflow typeAnalysis = classContext.getTypeDataflow(method);
-                                    Type type = typeAnalysis.getFactAtLocation(location).getTopValue();
-                                    String valueSignature = type.getSignature();
-                                    if (!valueSignature.startsWith("Ljava/util/concurrent/atomic/Atomic")) {
-                                        priority = Priorities.HIGH_PRIORITY;
-                                    }
-                                }
-                                BugInstance bugInstance = new BugInstance(this, "TESTING", priority)
-                                .addClassAndMethod(methodGen, sourceFileName).addString("Counting putIfAbsentCalls")
-                                .addCalledMethod(methodGen, invoke);
-                                SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
-                                        location);
-                                accumulator.accumulateBug(bugInstance, where);
-                            }
-                             */
                         }
-                    } /* else if (testingEnabled && countOtherCalls) {
-                        BugInstance bugInstance = new BugInstance(this, "TESTING2", Priorities.NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke);
-                        SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext, method, location);
-                        accumulator.accumulateBug(bugInstance, where);
-
                     }
-                     */
                 }
 
             }

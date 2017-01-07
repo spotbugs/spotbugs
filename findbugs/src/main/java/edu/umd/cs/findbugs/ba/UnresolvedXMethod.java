@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -28,7 +28,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     protected UnresolvedXMethod(MethodDescriptor m) {
         super(m.getClassDescriptor().getDottedClassName(), m.getName(), m.getSignature(),
-                m.isStatic() ? Constants.ACC_STATIC : 0);
+                m.isStatic() ? Const.ACC_STATIC : 0);
         if (XFactory.DEBUG_UNRESOLVED) {
             System.out.println("Unresolved xmethod: " + this);
         }

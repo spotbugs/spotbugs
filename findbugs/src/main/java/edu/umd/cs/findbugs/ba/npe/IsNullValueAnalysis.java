@@ -25,7 +25,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.IF_ACMPNE;
@@ -327,7 +327,7 @@ IsNullValueAnalysisFeatures {
             lastFrame.copyFrom(fact);
         }
 
-        if (handle.getInstruction().getOpcode() == Constants.INSTANCEOF) {
+        if (handle.getInstruction().getOpcode() == Const.INSTANCEOF) {
             instanceOfFrame = createFact();
             instanceOfFrame.copyFrom(fact);
         }
@@ -349,7 +349,7 @@ IsNullValueAnalysisFeatures {
         // Also, make a note of any newly-produced null values.
 
         int numProduced = ins.produceStack(methodGen.getConstantPool());
-        if (numProduced == Constants.UNPREDICTABLE) {
+        if (numProduced == Const.UNPREDICTABLE) {
             throw new DataflowAnalysisException("Unpredictable stack production", methodGen, handle);
         }
 
@@ -387,10 +387,10 @@ IsNullValueAnalysisFeatures {
     private static final BitSet nullComparisonInstructionSet = new BitSet();
 
     static {
-        nullComparisonInstructionSet.set(Constants.IFNULL);
-        nullComparisonInstructionSet.set(Constants.IFNONNULL);
-        nullComparisonInstructionSet.set(Constants.IF_ACMPEQ);
-        nullComparisonInstructionSet.set(Constants.IF_ACMPNE);
+        nullComparisonInstructionSet.set(Const.IFNULL);
+        nullComparisonInstructionSet.set(Const.IFNONNULL);
+        nullComparisonInstructionSet.set(Const.IF_ACMPEQ);
+        nullComparisonInstructionSet.set(Const.IF_ACMPNE);
     }
 
     @Override
@@ -661,7 +661,7 @@ IsNullValueAnalysisFeatures {
         }
 
         final short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
-        if (lastInSourceOpcode == Constants.IFEQ || lastInSourceOpcode == Constants.IFNE) {
+        if (lastInSourceOpcode == Const.IFEQ || lastInSourceOpcode == Const.IFNE) {
             // check for instanceof check
             InstructionHandle prev = lastInSourceHandle.getPrev();
             if (prev == null) {
@@ -669,15 +669,15 @@ IsNullValueAnalysisFeatures {
             }
             short secondToLastOpcode = prev.getInstruction().getOpcode();
             // System.out.println("Second last opcode: " +
-            // Constants.OPCODE_NAMES[secondToLastOpcode]);
-            if (secondToLastOpcode != Constants.INSTANCEOF) {
+            // Const.OPCODE_NAMES[secondToLastOpcode]);
+            if (secondToLastOpcode != Const.INSTANCEOF) {
                 return null;
             }
             if (instanceOfFrame == null) {
                 return null;
             }
             IsNullValue tos = instanceOfFrame.getTopValue();
-            boolean isNotInstanceOf = (lastInSourceOpcode != Constants.IFNE);
+            boolean isNotInstanceOf = (lastInSourceOpcode != Const.IFNE);
             Location atInstanceOf = new Location(prev, basicBlock);
             ValueNumberFrame instanceOfVnaFrame = vnaDataflow.getFactAtLocation(atInstanceOf);
 
@@ -715,23 +715,23 @@ IsNullValueAnalysisFeatures {
 
         switch (lastInSourceOpcode) {
 
-        case Constants.IFNULL:
-        case Constants.IFNONNULL: {
+        case Const.IFNULL:
+        case Const.IFNONNULL: {
             IsNullValue tos = lastFrame.getTopValue();
-            boolean ifnull = (lastInSourceOpcode == Constants.IFNULL);
+            boolean ifnull = (lastInSourceOpcode == Const.IFNULL);
             ValueNumber prevTopValue = prevVnaFrame.getTopValue();
 
             return handleIfNull(tos, prevTopValue, ifnull);
         }
-        case Constants.IF_ACMPEQ:
-        case Constants.IF_ACMPNE: {
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE: {
             IsNullValue tos = lastFrame.getStackValue(0);
             IsNullValue nextToTos = lastFrame.getStackValue(1);
 
             boolean tosNull = tos.isDefinitelyNull();
             boolean nextToTosNull = nextToTos.isDefinitelyNull();
 
-            boolean cmpeq = (lastInSourceOpcode == Constants.IF_ACMPEQ);
+            boolean cmpeq = (lastInSourceOpcode == Const.IF_ACMPEQ);
 
             // Initially, assume neither branch is feasible.
             IsNullValue ifcmpDecision = null;

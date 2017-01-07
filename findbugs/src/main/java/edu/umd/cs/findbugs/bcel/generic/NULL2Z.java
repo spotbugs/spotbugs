@@ -10,7 +10,7 @@ public class NULL2Z extends NullnessConversationInstruction {
 
 
     public NULL2Z() {
-        super(org.apache.bcel.Constants.IMPDEP1);
+        super(org.apache.bcel.Const.IMPDEP1);
     }
 
 

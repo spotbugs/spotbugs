@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.Instruction;
@@ -65,7 +65,7 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
             RepositoryLookupFailureCallback lookupFailureCallback) {
 
         Instruction ins = location.getHandle().getInstruction();
-        if (ins.getOpcode() != Constants.GETSTATIC) {
+        if (ins.getOpcode() != Const.GETSTATIC) {
             return null;
         }
 

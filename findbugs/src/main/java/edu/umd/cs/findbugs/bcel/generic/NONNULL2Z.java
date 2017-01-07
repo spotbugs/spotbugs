@@ -9,7 +9,7 @@ package edu.umd.cs.findbugs.bcel.generic;
 public class NONNULL2Z extends NullnessConversationInstruction {
 
     public NONNULL2Z() {
-        super(org.apache.bcel.Constants.IMPDEP2);
+        super(org.apache.bcel.Const.IMPDEP2);
     }
 
 

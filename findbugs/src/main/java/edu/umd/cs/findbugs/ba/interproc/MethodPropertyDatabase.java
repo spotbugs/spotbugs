@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.interproc;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -54,7 +54,7 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
             String methodName = XFactory.canonicalizeString(tuple[1]);
             String methodSig = XFactory.canonicalizeString(tuple[2]);
             return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className), methodName,
-                    methodSig, (accessFlags & Constants.ACC_STATIC) != 0);
+                    methodSig, (accessFlags & Const.ACC_STATIC) != 0);
 
         } catch (NumberFormatException e) {
             return null;

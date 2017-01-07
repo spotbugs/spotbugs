@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
@@ -62,10 +62,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     private static final BitSet INVOKE_OPCODE_SET = new BitSet();
     static {
-        INVOKE_OPCODE_SET.set(Constants.INVOKEINTERFACE);
-        INVOKE_OPCODE_SET.set(Constants.INVOKESPECIAL);
-        INVOKE_OPCODE_SET.set(Constants.INVOKESTATIC);
-        INVOKE_OPCODE_SET.set(Constants.INVOKEVIRTUAL);
+        INVOKE_OPCODE_SET.set(Const.INVOKEINTERFACE);
+        INVOKE_OPCODE_SET.set(Const.INVOKESPECIAL);
+        INVOKE_OPCODE_SET.set(Const.INVOKESTATIC);
+        INVOKE_OPCODE_SET.set(Const.INVOKEVIRTUAL);
     }
 
     boolean previousOpcodeWasNEW;
@@ -154,9 +154,9 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         }
 
         switch (seen) {
-        case Constants.IF_ICMPEQ:
+        case Const.IF_ICMPEQ:
 
-        case Constants.IF_ICMPNE:
+        case Const.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
             if (badUseOfCompareResult(left, right)) {
@@ -310,7 +310,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
     }
 
     private boolean isPop(int seen) {
-        return seen == Constants.POP || seen == Constants.POP2;
+        return seen == Const.POP || seen == Const.POP2;
     }
 
 }

@@ -58,8 +58,6 @@ import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.StackMap;
 import org.apache.bcel.classfile.StackMapEntry;
-import org.apache.bcel.classfile.StackMapTable;
-import org.apache.bcel.classfile.StackMapTableEntry;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -192,7 +190,6 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
                 if (size > thisSize) {
                     result.clear();
                     size = thisSize;
-                    Constant kind = constantPool.getConstant(catchBlock.getCatchType());
                     result.add("C" + catchBlock.getCatchType());
                 } else if (size == thisSize) {
                     result.add("C" + catchBlock.getCatchType());
@@ -829,45 +826,12 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     public void visitParameterAnnotation(ParameterAnnotations arg0) {
     }
 
-    @Deprecated
-    public void visitStackMapTable(StackMapTable arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.
-     * bcel.classfile.StackMapTableEntry)
-     */
-    @Deprecated
-    public void visitStackMapTableEntry(StackMapTableEntry arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.apache.bcel.classfile.Visitor#visitStackMapTable(org.apache.bcel.
-     * classfile.StackMapTable)
-     */
     @Override
     public void visitStackMap(StackMap arg0) {
         // TODO Auto-generated method stub
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.apache.bcel.classfile.Visitor#visitStackMapTableEntry(org.apache.
-     * bcel.classfile.StackMapTableEntry)
-     */
     @Override
     public void visitStackMapEntry(StackMapEntry arg0) {
         // TODO Auto-generated method stub

@@ -26,7 +26,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.ba.ComparableField;
@@ -96,8 +96,8 @@ public class FieldInfo extends FieldDescriptor implements XField {
     private FieldInfo(@SlashedClassName String className, String fieldName, String fieldSignature,
             @CheckForNull String fieldSourceSignature, int accessFlags, Map<ClassDescriptor, AnnotationValue> fieldAnnotations,
             boolean isResolved) {
-        super(className, fieldName, fieldSignature, (accessFlags & Constants.ACC_STATIC) != 0);
-        this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Constants.ACC_FINAL : 0);
+        super(className, fieldName, fieldSignature, (accessFlags & Const.ACC_STATIC) != 0);
+        this.accessFlags = accessFlags | (fieldName.startsWith("this$") ? Const.ACC_FINAL : 0);
         this.fieldSourceSignature = fieldSourceSignature;
         this.fieldAnnotations = Util.immutableMap(fieldAnnotations);
         this.isResolved = isResolved;
@@ -112,11 +112,11 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     public boolean isNative() {
-        return checkFlag(Constants.ACC_NATIVE);
+        return checkFlag(Const.ACC_NATIVE);
     }
 
     public boolean isSynchronized() {
-        return checkFlag(Constants.ACC_SYNCHRONIZED);
+        return checkFlag(Const.ACC_SYNCHRONIZED);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      */
     @Override
     public boolean isFinal() {
-        return checkFlag(Constants.ACC_FINAL);
+        return checkFlag(Const.ACC_FINAL);
     }
 
     /*
@@ -186,12 +186,12 @@ public class FieldInfo extends FieldDescriptor implements XField {
      */
     @Override
     public boolean isPrivate() {
-        return checkFlag(Constants.ACC_PRIVATE);
+        return checkFlag(Const.ACC_PRIVATE);
     }
 
     @Override
     public boolean isEnum() {
-        return checkFlag(Constants.ACC_ENUM);
+        return checkFlag(Const.ACC_ENUM);
     }
 
     /*
@@ -201,7 +201,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      */
     @Override
     public boolean isProtected() {
-        return checkFlag(Constants.ACC_PROTECTED);
+        return checkFlag(Const.ACC_PROTECTED);
     }
 
     /*
@@ -211,7 +211,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      */
     @Override
     public boolean isPublic() {
-        return checkFlag(Constants.ACC_PUBLIC);
+        return checkFlag(Const.ACC_PUBLIC);
     }
 
     /*
@@ -241,12 +241,12 @@ public class FieldInfo extends FieldDescriptor implements XField {
      */
     @Override
     public boolean isVolatile() {
-        return checkFlag(Constants.ACC_VOLATILE);
+        return checkFlag(Const.ACC_VOLATILE);
     }
 
     @Override
     public boolean isSynthetic() {
-        return checkFlag(Constants.ACC_SYNTHETIC);
+        return checkFlag(Const.ACC_SYNTHETIC);
     }
 
     @Override
@@ -312,7 +312,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
                 // we don't know
                 // if it has a
                 // generic type
-                isStatic ? Constants.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
+                isStatic ? Const.ACC_STATIC : 0, new HashMap<ClassDescriptor, AnnotationValue>(), false);
     }
 
     @Override

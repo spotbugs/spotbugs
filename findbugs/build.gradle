@@ -30,6 +30,7 @@ configurations {
 
 dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+  compile 'net.jcip:jcip-annotations:1.0'
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
@@ -75,11 +76,17 @@ task annotationsJar(type:Jar) {
   from(sourceSets.main.output) {
     include '**/annotations/*'
   }
-  // TODO : These includes source java files.. exclude them and put them in a separate sources jar?
-  from zipTree("$projectDir/lib/jcip-annotations.jar").matching {
-    exclude 'META-INF/**'
-    exclude '**/*.html'
+
+  from {
+    configurations.compile.filter {
+      it.name.startsWith('jcip-annotations')
+    } collect {
+      zipTree(it).matching {
+        exclude 'META-INF/**'
+      }
+    }
   }
+
   from zipTree("$projectDir/lib/jsr305.jar").matching { // TODO : to be dropped
     exclude 'META-INF/**'
     exclude '**/*.html'
@@ -250,6 +257,37 @@ task smokeTest {
       sourcePath(path:'src/main/java:src/gui:src/test/java:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
       auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
+    }
+  }
+}
+
+// https://docs.gradle.org/current/userguide/publishing_maven.html
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      artifactId 'spotbugs'
+
+      artifact sourcesJar {
+        classifier 'sources'
+      }
+
+      artifact javadocJar {
+        classifier 'javadoc'
+      }
+    }
+
+    annotations(MavenPublication) {
+      artifactId 'spotbugs-annotations'
+      artifact annotationsJar
+
+      artifact annotationSourcesJar {
+        classifier 'sources'
+      }
+
+      artifact annotationJavadocJar {
+        classifier 'javadoc'
+      }
     }
   }
 }

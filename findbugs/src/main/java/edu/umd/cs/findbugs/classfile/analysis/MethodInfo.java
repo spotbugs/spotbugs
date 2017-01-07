@@ -29,7 +29,7 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -288,7 +288,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             @CheckForNull MethodDescriptor accessMethodForMethod,
             @CheckForNull FieldDescriptor accessMethodForField,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations, long variableIsSynthetic) {
-        super(className, methodName, methodSignature, (accessFlags & Constants.ACC_STATIC) != 0);
+        super(className, methodName, methodSignature, (accessFlags & Const.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
         if (exceptions != null) {
@@ -377,22 +377,22 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public boolean isNative() {
-        return checkFlag(Constants.ACC_NATIVE);
+        return checkFlag(Const.ACC_NATIVE);
     }
 
     @Override
     public boolean isAbstract() {
-        return checkFlag(Constants.ACC_ABSTRACT);
+        return checkFlag(Const.ACC_ABSTRACT);
     }
 
     @Override
     public boolean isSynchronized() {
-        return checkFlag(Constants.ACC_SYNCHRONIZED);
+        return checkFlag(Const.ACC_SYNCHRONIZED);
     }
 
     @Override
     public boolean isBridge() {
-        return checkFlag(Constants.ACC_BRIDGE);
+        return checkFlag(Const.ACC_BRIDGE);
     }
 
     /*
@@ -459,7 +459,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public boolean isFinal() {
-        return checkFlag(Constants.ACC_FINAL);
+        return checkFlag(Const.ACC_FINAL);
     }
 
     /*
@@ -469,7 +469,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public boolean isPrivate() {
-        return checkFlag(Constants.ACC_PRIVATE);
+        return checkFlag(Const.ACC_PRIVATE);
     }
 
     @Override
@@ -484,7 +484,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public boolean isProtected() {
-        return checkFlag(Constants.ACC_PROTECTED);
+        return checkFlag(Const.ACC_PROTECTED);
     }
 
     /*
@@ -494,12 +494,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public boolean isPublic() {
-        return checkFlag(Constants.ACC_PUBLIC);
+        return checkFlag(Const.ACC_PUBLIC);
     }
 
     @Override
     public boolean isSynthetic() {
-        return checkFlag(Constants.ACC_SYNTHETIC);
+        return checkFlag(Const.ACC_SYNTHETIC);
     }
 
     /*
@@ -644,7 +644,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public boolean isVarArgs() {
-        return checkFlag(Constants.ACC_VARARGS);
+        return checkFlag(Const.ACC_VARARGS);
     }
 
     /*

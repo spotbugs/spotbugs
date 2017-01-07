@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -53,31 +53,31 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
     private static final BitSet nullCheckInstructionSet = new BitSet();
 
     static {
-        nullCheckInstructionSet.set(Constants.GETFIELD);
-        nullCheckInstructionSet.set(Constants.PUTFIELD);
-        nullCheckInstructionSet.set(Constants.INVOKESPECIAL);
-        nullCheckInstructionSet.set(Constants.INVOKEVIRTUAL);
-        nullCheckInstructionSet.set(Constants.INVOKEINTERFACE);
-        nullCheckInstructionSet.set(Constants.AALOAD);
-        nullCheckInstructionSet.set(Constants.AASTORE);
-        nullCheckInstructionSet.set(Constants.BALOAD);
-        nullCheckInstructionSet.set(Constants.BASTORE);
-        nullCheckInstructionSet.set(Constants.CALOAD);
-        nullCheckInstructionSet.set(Constants.CASTORE);
-        nullCheckInstructionSet.set(Constants.DALOAD);
-        nullCheckInstructionSet.set(Constants.DASTORE);
-        nullCheckInstructionSet.set(Constants.FALOAD);
-        nullCheckInstructionSet.set(Constants.FASTORE);
-        nullCheckInstructionSet.set(Constants.IALOAD);
-        nullCheckInstructionSet.set(Constants.IASTORE);
-        nullCheckInstructionSet.set(Constants.LALOAD);
-        nullCheckInstructionSet.set(Constants.LASTORE);
-        nullCheckInstructionSet.set(Constants.SALOAD);
-        nullCheckInstructionSet.set(Constants.SASTORE);
-        nullCheckInstructionSet.set(Constants.MONITORENTER);
-        nullCheckInstructionSet.set(Constants.ARRAYLENGTH);
-        // nullCheckInstructionSet.set(Constants.MONITOREXIT);
-        nullCheckInstructionSet.set(Constants.ATHROW);
+        nullCheckInstructionSet.set(Const.GETFIELD);
+        nullCheckInstructionSet.set(Const.PUTFIELD);
+        nullCheckInstructionSet.set(Const.INVOKESPECIAL);
+        nullCheckInstructionSet.set(Const.INVOKEVIRTUAL);
+        nullCheckInstructionSet.set(Const.INVOKEINTERFACE);
+        nullCheckInstructionSet.set(Const.AALOAD);
+        nullCheckInstructionSet.set(Const.AASTORE);
+        nullCheckInstructionSet.set(Const.BALOAD);
+        nullCheckInstructionSet.set(Const.BASTORE);
+        nullCheckInstructionSet.set(Const.CALOAD);
+        nullCheckInstructionSet.set(Const.CASTORE);
+        nullCheckInstructionSet.set(Const.DALOAD);
+        nullCheckInstructionSet.set(Const.DASTORE);
+        nullCheckInstructionSet.set(Const.FALOAD);
+        nullCheckInstructionSet.set(Const.FASTORE);
+        nullCheckInstructionSet.set(Const.IALOAD);
+        nullCheckInstructionSet.set(Const.IASTORE);
+        nullCheckInstructionSet.set(Const.LALOAD);
+        nullCheckInstructionSet.set(Const.LASTORE);
+        nullCheckInstructionSet.set(Const.SALOAD);
+        nullCheckInstructionSet.set(Const.SASTORE);
+        nullCheckInstructionSet.set(Const.MONITORENTER);
+        nullCheckInstructionSet.set(Const.ARRAYLENGTH);
+        // nullCheckInstructionSet.set(Const.MONITOREXIT);
+        nullCheckInstructionSet.set(Const.ATHROW);
 
         // Any others?
     }

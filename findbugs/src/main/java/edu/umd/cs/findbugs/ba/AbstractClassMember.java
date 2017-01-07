@@ -18,7 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -109,27 +109,27 @@ public abstract class AbstractClassMember implements ClassMember {
 
     @Override
     public boolean isStatic() {
-        return (accessFlags & Constants.ACC_STATIC) != 0;
+        return (accessFlags & Const.ACC_STATIC) != 0;
     }
 
     @Override
     public boolean isFinal() {
-        return (accessFlags & Constants.ACC_FINAL) != 0;
+        return (accessFlags & Const.ACC_FINAL) != 0;
     }
 
     @Override
     public boolean isPublic() {
-        return (accessFlags & Constants.ACC_PUBLIC) != 0;
+        return (accessFlags & Const.ACC_PUBLIC) != 0;
     }
 
     @Override
     public boolean isProtected() {
-        return (accessFlags & Constants.ACC_PROTECTED) != 0;
+        return (accessFlags & Const.ACC_PROTECTED) != 0;
     }
 
     @Override
     public boolean isPrivate() {
-        return (accessFlags & Constants.ACC_PRIVATE) != 0;
+        return (accessFlags & Const.ACC_PRIVATE) != 0;
     }
 
     // public int compareTo(ClassMember other) {

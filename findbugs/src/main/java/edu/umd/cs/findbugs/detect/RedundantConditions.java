@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -163,8 +163,8 @@ public class RedundantConditions implements Detector {
                     Instruction consumerInst = consumer == null ? null : consumer.getInstruction();
                     if(consumerInst != null) {
                         short opcode = consumerInst.getOpcode();
-                        if(opcode == Constants.IADD || opcode == Constants.ISUB || opcode == Constants.IMUL
-                                || opcode == Constants.ISHR || opcode == Constants.ISHL || opcode == Constants.IUSHR) {
+                        if(opcode == Const.IADD || opcode == Const.ISUB || opcode == Const.IMUL
+                                || opcode == Const.ISHR || opcode == Const.ISHL || opcode == Const.IUSHR) {
                             // It's actually integer expression with explicit ? 1 : 0 or ? 0 : 1 operation
                             return priority;
                         }

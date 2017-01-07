@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 
@@ -101,8 +101,8 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         switch (seen) {
         default:
             break;
-        case Constants.IF_ICMPEQ:
-        case Constants.IF_ICMPNE:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
             OpcodeStack.Item right = stack.getStackItem(0);
             if (bad(left, right) || bad(right, left)) {
