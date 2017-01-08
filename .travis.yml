@@ -11,8 +11,8 @@ env:
 matrix:
   include:
      env:
-       - JDK_FOR_TEST=oraclejdk9
-       - GRADLE_OPTS='--add-opens java.base/java.lang=ALL-UNNAMED'
+       JDK_FOR_TEST: oraclejdk9
+       GRADLE_OPTS: '--add-opens java.base/java.lang=ALL-UNNAMED'
      addons:
        apt:
          packages:
