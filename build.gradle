@@ -1,3 +1,7 @@
+plugins {
+  id "com.github.kt3k.coveralls" version "2.7.1"
+}
+
 subprojects {
   apply plugin: 'java'
   apply plugin: 'maven-publish'
@@ -21,4 +25,9 @@ subprojects {
 wrapper {
   gradleVersion = '3.2.1'
   distributionType = Wrapper.DistributionType.ALL
+}
+
+coveralls {
+  sourceDirs = [project(':findbugs')].sourceSets.main.allSource.srcDirs.flatten()
+  jacocoReportPath = "findbugs/build/reports/jacoco/test/jacocoTestReport.xml"
 }
