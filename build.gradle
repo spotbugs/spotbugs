@@ -3,6 +3,7 @@ subprojects {
   apply plugin: 'maven-publish'
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"
+  apply from: "$rootDir/gradle/jacoco.gradle"
   apply from: "$rootDir/gradle/test.gradle"
 
   group = 'com.github.spotbugs'

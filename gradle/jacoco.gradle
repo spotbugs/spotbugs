@@ -1,0 +1,5 @@
+apply plugin: 'jacoco'
+
+jacoco {
+  toolVersion = "0.7.8"
+}
