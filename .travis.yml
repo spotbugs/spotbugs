@@ -6,7 +6,7 @@ matrix:
   include:
     - env:
         - JDK_VERSION=oraclejdk9
-        - JVM_ARGS='--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED'
+        - JVM_ARGS='--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED -Dsun.reflect.debugModuleAccessChecks=true'
       addons:
         apt:
           packages:
