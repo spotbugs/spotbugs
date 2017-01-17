@@ -1,13 +1,8 @@
-plugins {
-  id "com.github.kt3k.coveralls" version "2.7.1"
-}
-
 subprojects {
   apply plugin: 'java'
   apply plugin: 'maven-publish'
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"
-  apply from: "$rootDir/gradle/jacoco.gradle"
   apply from: "$rootDir/gradle/test.gradle"
 
   group = 'com.github.spotbugs'
@@ -25,9 +20,4 @@ subprojects {
 wrapper {
   gradleVersion = '3.2.1'
   distributionType = Wrapper.DistributionType.ALL
-}
-
-coveralls {
-  sourceDirs = [project(':findbugs')].sourceSets.main.allSource.srcDirs.flatten()
-  jacocoReportPath = "findbugs/build/reports/jacoco/test/jacocoTestReport.xml"
 }

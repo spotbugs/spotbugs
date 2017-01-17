@@ -1,3 +1,9 @@
+plugins {
+  id "com.github.kt3k.coveralls" version "2.7.1"
+}
+
+apply from: "$rootDir/gradle/jacoco.gradle"
+
 sourceSets {
   main {
     java {
@@ -291,6 +297,10 @@ publishing {
       }
     }
   }
+}
+
+coveralls {
+  jacocoReportPath = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
 }
 
 // TODO : jsr305.jar (really?)
