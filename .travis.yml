@@ -4,17 +4,15 @@ dist: trusty
 
 matrix:
   include:
-    - env:
-        - JDK_VERSION=oraclejdk9
-        - JVM_ARGS='--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED -Dsun.reflect.debugModuleAccessChecks=true'
-      addons:
+    - addons:
         apt:
           packages:
             - oracle-java9-installer
-            - oracle-java9-set-default
-    - env:
-        - JDK_VERSION=oraclejdk8
-      addons:
+            - oracle-java8-installer
+            - oracle-java8-set-default
+      env:
+          - JAVA_9_HOME=$(jdk_switcher home oraclejdk9)
+    - addons:
         apt:
           packages:
             - oracle-java8-installer
@@ -27,7 +25,7 @@ install:
   - echo eclipsePlugin.dir=$(pwd)/eclipse/plugins > eclipsePlugin/local.properties
 
 script:
-  - ./gradlew build smoketest -S --no-daemon -Dorg.gradle.java.home=$(jdk_switcher home $JDK_VERSION) -Dorg.gradle.jvmargs="$JVM_ARGS"
+  - ./gradlew build smoketest -S --debug --no-daemon -Dorg.gradle.java.home=$(jdk_switcher home oraclejdk8)
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
