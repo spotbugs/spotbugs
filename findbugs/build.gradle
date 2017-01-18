@@ -232,6 +232,21 @@ tasks['assembleDist'].finalizedBy distSrcZip
 test {
   dependsOn ':findbugsTestCases:build'
   maxHeapSize = '1G'
+
+  if (System.env.containsKey('JAVA_9_HOME')) {
+    def java9Bin = new File(System.env['JAVA_9_HOME'], 'bin')
+    def java9 = new File(java9Bin, 'java')
+    assert java9.exists() : "Java9 not found at: ${java9}"
+    println "This build will test with Java9 stored at: ${java9}"
+
+    executable = java9.toString()
+    jvmArgs += [
+      '-Dsun.reflect.debugModuleAccessChecks=true',
+      '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+      '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+      '--add-opens', 'java.base/java.io=ALL-UNNAMED'
+    ]
+  }
 }
 
 task unzipDist(type:Copy, dependsOn:distZip) {

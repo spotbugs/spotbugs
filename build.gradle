@@ -21,20 +21,3 @@ wrapper {
   gradleVersion = '3.2.1'
   distributionType = Wrapper.DistributionType.ALL
 }
-
-afterEvaluate {
-  if (System.env.containsKey('JAVA_9_HOME')) {
-    def java9Bin = new File(System.env['JAVA_9_HOME'], 'bin')
-    def java9 = new File(java9Bin, 'java')
-    assert java9.exists() : "Java9 not found at: ${java9}"
-    println "This build will test with Java9 stored at: ${java9}"
-
-    tasks.withType(Test) {
-      executable = java9.toString()
-      jvmArgs += ['-Dsun.reflect.debugModuleAccessChecks=true']
-      jvmArgs += ['--add-opens', 'java.base/java.lang=ALL-UNNAMED']
-      jvmArgs += ['--add-opens', 'java.base/java.util=ALL-UNNAMED']
-      jvmArgs += ['--add-opens', 'java.base/java.io=ALL-UNNAMED']
-    }
-  }
-}
