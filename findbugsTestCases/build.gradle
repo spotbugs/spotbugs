@@ -8,8 +8,7 @@ sourceSets {
 }
 
 dependencies {
-  // TODO : Some of these can be extracted to actual dependencies
-  compile fileTree(dir: 'lib', include: '*.jar')
+  compile 'org.apache.geronimo.specs:geronimo-j2ee_1.4_spec:1.1'
   compile 'javax.inject:javax.inject:1'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'junit:junit:4.12'
