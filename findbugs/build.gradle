@@ -33,6 +33,7 @@ dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
+  compile 'commons-lang:commons-lang:2.6'
   testCompile 'junit:junit:4.12'
   testCompile 'org.hamcrest:hamcrest-all:1.3'
 
@@ -205,9 +206,9 @@ distributions {
       from(configurations.compile) {
         into 'lib'
 
+        // TODO : Package necessary jar files from dependency management
         // TODO : These exclusions can be removed when we move dependencies from lib to dependency management
         exclude 'AppleJavaExtensions.jar'
-        exclude 'junit.jar'
 
         include '**/*.jar'
       }
