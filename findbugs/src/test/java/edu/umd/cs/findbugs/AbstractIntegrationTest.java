@@ -124,8 +124,6 @@ public class AbstractIntegrationTest {
             project.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).getPath());
         }
 
-        project.addAuxClasspathEntry("lib/junit.jar");
-
         try {
             engine.execute();
         } catch (final IOException | InterruptedException e) {
