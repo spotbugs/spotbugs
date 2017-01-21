@@ -11,6 +11,7 @@ dependencies {
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
   compile 'junit:junit:4.12'
+  compile 'org.testng:testng:6.3.1'
   compile project(':findbugs')
 }
 
