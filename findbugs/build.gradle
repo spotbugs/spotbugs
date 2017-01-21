@@ -34,6 +34,7 @@ dependencies {
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
   compile 'commons-lang:commons-lang:2.6'
+  compile 'jaxen:jaxen:1.1.6'
   testCompile 'junit:junit:4.12'
   testCompile 'org.hamcrest:hamcrest-all:1.3'
 
