@@ -1,18 +1,30 @@
 language: java
-sudo: false
+sudo: true
 jdk: oraclejdk8
 
 env:
   matrix:
     - JDK_FOR_TEST=oraclejdk8
+#    - JDK_FOR_TEST=oraclejdk9
+
+# Java 9 is not currently officially supported, so install it manually
+matrix:
+  include:
+     env: JDK_FOR_TEST=oraclejdk9
+
+before_install:
+  - mkdir -p deps
+  - if [[ $JDK_FOR_TEST == "oraclejdk9" && ! -e deps/oracle-java9-installer.deb ]]; then wget -O deps/oracle-java9-installer.deb http://ppa.launchpad.net/webupd8team/java/ubuntu/pool/main/o/oracle-java9-installer/oracle-java9-installer_9b140+9b140arm-1~webupd8~3_all.deb; fi
+  - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then sudo dpkg -i deps/oracle-java9-installer.deb; fi
 
 install:
-  - mkdir -p deps
   - if [[ ! -e deps/eclipse.tar.gz ]]; then wget http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz -O deps/eclipse.tar.gz; fi
   - tar xzvf deps/eclipse.tar.gz eclipse
   - echo eclipsePlugin.dir=$(pwd)/eclipse/plugins > eclipsePlugin/local.properties
 
 script:
+  # Manually switch to JDK9 if needed
+  - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then remove_dir_from_path $JAVA_HOME/bin; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; fi
   - ./gradlew build smoketest -S
 
 before_cache:
@@ -24,3 +36,4 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - deps/
+
