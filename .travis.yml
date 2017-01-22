@@ -27,6 +27,9 @@ script:
   - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then remove_dir_from_path $JAVA_HOME/bin; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; fi
   - ./gradlew build smoketest -S
 
+after_success:
+  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew jacocoTestReport coveralls; fi
+
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/

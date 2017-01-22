@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/spotbugs/spotbugs.svg?branch=master)](https://travis-ci.org/spotbugs/spotbugs)
+[![Coverage Status](https://coveralls.io/repos/github/spotbugs/spotbugs/badge.svg?branch=master)](https://coveralls.io/github/spotbugs/spotbugs?branch=master)
 
 # SpotBugs
 
