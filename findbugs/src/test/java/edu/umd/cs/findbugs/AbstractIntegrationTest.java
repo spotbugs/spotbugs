@@ -138,6 +138,13 @@ public class AbstractIntegrationTest {
         } catch (final IOException | InterruptedException e) {
             fail("Analysis failed with exception; " + e.getMessage());
         }
+        if (! bugReporter.getQueuedErrors().isEmpty()) {
+            AssertionError assertionError = new AssertionError("Analysis failed with exception. Check stderr for detail.");
+            bugReporter.getQueuedErrors().stream()
+                .map(error -> error.getCause())
+                .forEach(assertionError::addSuppressed);
+            throw assertionError;
+        }
     }
 
     private static final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {

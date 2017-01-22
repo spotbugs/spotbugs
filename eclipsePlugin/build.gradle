@@ -44,7 +44,7 @@ dependencies {
   includedLibs(project(path:':findbugs', configuration:'annotations')) {
     transitive = false
   }
-  includedLibs 'org.apache.bcel:bcel:6.0'
+  includedLibs fileTree(dir: '../findbugs/lib', include: 'bcel-6.1*.jar')
   includedLibs 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
 
   embeddedLibs(project(':findbugs')) {
