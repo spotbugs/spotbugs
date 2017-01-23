@@ -37,6 +37,7 @@ configurations {
 dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
   compile 'net.jcip:jcip-annotations:1.0'
+  testCompile project(':test-harness')
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
@@ -113,7 +114,7 @@ task annotationsJar(type:Jar) {
   }
 }
 
-tasks['jar'].dependsOn 'spotbugsAnnotationsJar', 'annotationsJar', 'testHarnessJar'
+tasks['jar'].dependsOn 'spotbugsAnnotationsJar', 'annotationsJar'
 
 // Populate bin folder with scripts
 task scripts(type:Copy) {
@@ -189,48 +190,12 @@ task annotationSourcesJar(type: Jar, dependsOn: classes) {
   include '**/annotations/*'
 }
 
-def harnessIncludes = ['edu/umd/cs/findbugs/AbstractIntegrationTest',
-  'org/sonar/plugins/findbugs/resource/SmapParser',
-  'edu/umd/cs/findbugs/test/**/*']
-
-task testHarnessJar(type: Jar, dependsOn: testClasses) {
-  baseName 'test-harness'
-  from sourceSets.test.output
-  include harnessIncludes.collect { it + '.class' }
-}
-
-task testHarnessJavadoc(type: Javadoc) {
-  source sourceSets.test.allSource
-  classpath = sourceSets.test.compileClasspath
-  include harnessIncludes.collect { it + '.java' }
-  destinationDir = file("${project.docsDir}/test-harness")
-  options.with {
-    tags = ['Test']
-  }
-}
-
-task testHarnessJavadocJar(type: Jar, dependsOn: testHarnessJavadoc) {
-  classifier = 'javadoc'
-  baseName 'test-harness'
-  from testHarnessJavadoc.destinationDir
-}
-
-task testHarnessSourcesJar(type: Jar, dependsOn: testClasses) {
-  classifier = 'sources'
-  baseName 'test-harness'
-  from sourceSets.test.allSource
-  include harnessIncludes.collect { it + '.java' }
-}
-
 artifacts {
   archives javadocJar
   archives annotationJavadocJar
   archives sourcesJar
   archives annotationSourcesJar
   annotations annotationsJar
-  archives testHarnessJar
-  archives testHarnessJavadocJar
-  archives testHarnessSourcesJar
 }
 
 apply plugin: 'distribution'
@@ -331,19 +296,6 @@ publishing {
       }
 
       artifact annotationJavadocJar {
-        classifier 'javadoc'
-      }
-    }
-
-    testHarness(MavenPublication) {
-      artifactId 'test-harness'
-      artifact testHarnessJar
-
-      artifact testHarnessSourcesJar {
-        classifier 'sources'
-      }
-
-      artifact testHarnessJavadocJar {
         classifier 'javadoc'
       }
     }
