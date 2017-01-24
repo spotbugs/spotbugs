@@ -1,0 +1,39 @@
+apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/javadoc.gradle"
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+dependencies {
+  compile 'com.google.code.findbugs:jsr305:3.0.1'
+}
+
+jar {
+  manifest {
+    attributes 'Bundle-Name': 'SpotbugsInternalAnnotations',
+               'Bundle-SymbolicName': 'spotbugsInternalAnnotations',
+               'Bundle-Version': project.version,
+               'Export-Package': 'edu.umd.cs.findbugs.annotations',
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5'
+  }
+}
+
+javadoc {
+  options.with {
+    memberLevel = JavadocMemberLevel.PUBLIC
+    docTitle = 'SpotBugs Annotation Documentation'
+  }
+}
+
+task javadocJar(type: Jar) {
+  classifier = 'javadoc'
+  from javadoc
+}
+
+task sourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+artifacts {
+  archives jar, javadocJar, sourcesJar
+}
