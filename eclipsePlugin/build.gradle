@@ -41,9 +41,9 @@ dependencies {
   compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
     exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar'])
 
-  includedLibs(project(path:':findbugs', configuration:'annotations')) {
-    transitive = false
-  }
+  includedLibs project(':spotbugs-annotations')
+  includedLibs 'com.google.code.findbugs:jsr305:3.0.1'
+  includedLibs 'net.jcip:jcip-annotations:1.0'
   includedLibs fileTree(dir: '../findbugs/lib', include: 'bcel-6.1*.jar')
   includedLibs 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
 
