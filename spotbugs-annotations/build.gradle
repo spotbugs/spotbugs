@@ -1,7 +1,5 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
-apply plugin: 'maven'
-apply plugin: 'signing'
 
 dependencies {
   compile 'com.google.code.findbugs:jsr305:3.0.1'
