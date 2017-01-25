@@ -23,11 +23,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,16 +223,21 @@ public class DetectorsTest {
             }
         }
 
-        File annotationsLib = new File("../spotbugs-annotations/build/libs");
-        Files.walkFileTree(annotationsLib.toPath(), new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                String fileName = file.getFileName().toString();
-                if (!fileName.contains("-sources") && !fileName.contains("-javadoc")) {
-                    project.addAuxClasspathEntry(file.toAbsolutePath().toString());
-                }
-                return super.visitFile(file, attrs);
+        String classpath = System.getProperty("java.class.path");
+        if (classpath == null) {
+            String rootDirectory;
+            try {
+                rootDirectory = new File(getClass().getResource("/").toURI()).getCanonicalPath();
+            } catch (final URISyntaxException e) {
+                throw new RuntimeException(e);
             }
-        });
+            project.addAuxClasspathEntry(rootDirectory);
+        } else {
+            String[] cpParts = classpath.split(File.pathSeparator);
+            for (String cpStr : cpParts) {
+                File file = new File(cpStr);
+                project.addAuxClasspathEntry(file.getCanonicalPath());
+            }
+        }
     }
 }
