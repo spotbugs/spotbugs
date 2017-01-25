@@ -135,7 +135,7 @@ distributions {
 
         include '**/*.jar'
       }
-      from([jar]) {
+      from(jar) {
         into 'lib'
         rename "(.*)-${project.version}.jar", '$1.jar'
       }
