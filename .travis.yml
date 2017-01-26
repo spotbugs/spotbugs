@@ -3,6 +3,9 @@ sudo: true
 jdk: oraclejdk8
 
 env:
+  global:
+    - SONATYPE_USERNAME="eller86"
+    - secure: "bNbHxR43FHIWX/im5GUZD52UF0FszM5kxhw/3DFqpaOWEpf3BtvSTDpHvOdbVmcD+HtC8cCaXViCQaSIsDWuP2LrxxGlULl/a9yF5FLq+BxyTx28+Xi6c+mXSeava82poWEbF6whiLrn8GIIC+z2xwpphT+bBXj/3UmOmPj/cxfsuzb6gH95Xk1OhQJjhJ0Lt6muO0YmxA4dAtNDJHHwTU/GVn25+41WiAO1P4tDHRnPdAZFXnbM5kPV41KmYw4/0YbPgr5aJuAyrUD86ufwJR0Zp+TR4JJB+miw9+XYUgjRMgPBSS3VChOnYugKClfwVq8MwxRpUpBjG5eszt64TxgeEX0sTLBv9JwxUu5R+uCYgQvSdVKduyQYVTdJnMqTsVFCeOQlF0XHXvRXK7+SSNjkpaV/TMlfZ0vY+BAUnBIUAsMjvpX9RNMvDYx5D/5/cqj9WiEsaBLBLuQX90bZA0B8xbA1IHj9pRSxm9N8VAWMTzxhZzuqqMAi2IszBRZicKKYd66z83T1k9SFcTY4mvg0W2uVvZsoaBMIYmhvBZXPOLEgwadTbeiqFW2vox16k6k8xRlKzH+IIYQAChFPqxDxBtP8b7LZDa6ahreBMKtp3xBPbbCgbrviE647CwyPwb+DxOihua5GNfgxXby4kxiXcuglUXZ5NWCmvks2KIE="
   matrix:
     - JDK_FOR_TEST=oraclejdk8
 #    - JDK_FOR_TEST=oraclejdk9
@@ -40,3 +43,10 @@ cache:
     - $HOME/.gradle/wrapper/
     - deps/
 
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
+  on:
+    branch: master
+    condition: "$JDK_FOR_TEST = oraclejdk8"

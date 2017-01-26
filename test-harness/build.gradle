@@ -1,7 +1,6 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
-apply plugin: 'maven'
-apply plugin: 'signing'
+apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   compile 'junit:junit:4.12'

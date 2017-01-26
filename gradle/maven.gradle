@@ -1,0 +1,43 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+signing {
+  required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:uploadArchives") }
+  sign configurations.archives
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      def username = project.hasProperty('ossrhUsername') ? ossrhUsername : "Unknown user"
+      def password = project.hasProperty('ossrhPassword') ? ossrhPassword : "Unknown password"
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: username, password: password)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: username, password: password)
+      }
+
+      pom.project {
+        url 'https://spotbugs.github.io/'
+
+        scm {
+          connection 'scm:git:git@github.com:spotbugs/spotbugs.git'
+          developerConnection 'scm:git:git@github.com:spotbugs/spotbugs.git'
+          url 'https://github.com/spotbugs/spotbugs/'
+        }
+
+        licenses {
+          license {
+            name 'GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1'
+            url 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html'
+          }
+        }
+      }
+    }
+  }
+}
