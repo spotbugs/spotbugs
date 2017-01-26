@@ -34,6 +34,7 @@ dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
+  compile 'jdepend:jdepend:2.9.1'
   compile 'commons-lang:commons-lang:2.6'
   compile 'jaxen:jaxen:1.1.6'
   compile 'com.google.code.findbugs:jFormatString:3.0.0'
