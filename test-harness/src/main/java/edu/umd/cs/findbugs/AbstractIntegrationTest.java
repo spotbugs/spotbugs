@@ -124,7 +124,6 @@ public class AbstractIntegrationTest {
             project.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).getPath());
         }
 
-        project.addAuxClasspathEntry("lib/junit.jar");
         final File lib = getFindbugsTestCasesFile("lib");
         for (final File f : lib.listFiles()) {
             final String path = f.getPath();
