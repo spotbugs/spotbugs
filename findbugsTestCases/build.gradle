@@ -21,6 +21,7 @@ dependencies {
   compile 'com.google.inject.extensions:guice-servlet:3.0'
   compile 'org.springframework:spring-core:3.1.2.RELEASE'
   compile project(':findbugs')
+  compile project(':spotbugs-annotations')
 }
 
 tasks.withType(JavaCompile).all {

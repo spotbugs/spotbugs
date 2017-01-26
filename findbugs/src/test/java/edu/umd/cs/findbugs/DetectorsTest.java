@@ -223,7 +223,6 @@ public class DetectorsTest {
             }
         }
 
-        // FIXME : the tests use our annotations, so we need them in the classpath...
         String classpath = System.getProperty("java.class.path");
         if (classpath == null) {
             String rootDirectory;
@@ -237,9 +236,7 @@ public class DetectorsTest {
             String[] cpParts = classpath.split(File.pathSeparator);
             for (String cpStr : cpParts) {
                 File file = new File(cpStr);
-                if (file.isDirectory()) {
-                    project.addAuxClasspathEntry(file.getCanonicalPath());
-                }
+                project.addAuxClasspathEntry(file.getCanonicalPath());
             }
         }
     }

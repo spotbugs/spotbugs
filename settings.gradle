@@ -1,7 +1,7 @@
 def eclipseFile = "eclipsePlugin/local.properties"
 if (new File(eclipseFile).exists()) {
-  include ':findbugsTestCases', ':findbugs', ':eclipsePlugin'
+  include ':findbugsTestCases', ':findbugs', ':eclipsePlugin', ':test-harness', ':spotbugs-annotations'
 } else {
   logger.lifecycle('Eclipse plugin configuration (' + eclipseFile + ') was not found. Skipping Eclipse plugin...')
-  include ':findbugsTestCases', ':findbugs'
+  include ':findbugsTestCases', ':findbugs', ':test-harness', ':spotbugs-annotations'
 }
