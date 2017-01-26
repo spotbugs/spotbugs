@@ -3,6 +3,7 @@ plugins {
 }
 
 apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "$rootDir/gradle/maven.gradle"
 
 sourceSets {
   main {
@@ -188,24 +189,6 @@ task smokeTest {
       sourcePath(path:'src/main/java:src/gui:src/test/java:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
       auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
-    }
-  }
-}
-
-// https://docs.gradle.org/current/userguide/publishing_maven.html
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      from components.java
-      artifactId 'spotbugs'
-
-      artifact sourcesJar {
-        classifier 'sources'
-      }
-
-      artifact javadocJar {
-        classifier 'javadoc'
-      }
     }
   }
 }
