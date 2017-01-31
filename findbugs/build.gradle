@@ -138,6 +138,7 @@ distributions {
       from(configurations.compile) {
         into 'lib'
         include '**/*.jar'
+        rename "(.*)-${project.version}.jar", '$1.jar'
       }
       from(jar) {
         into 'lib'
