@@ -32,7 +32,6 @@ sourceSets {
 }
 
 dependencies {
-  compile 'org.apache.ant:ant:1.9.4'
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
@@ -45,6 +44,7 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.hamcrest:hamcrest-all:1.3'
   testCompile project(':test-harness')
+  testCompile 'org.apache.ant:ant:1.9.4'
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
@@ -139,7 +139,7 @@ distributions {
         into 'lib'
         include '**/*.jar'
       }
-      from(jar) {
+      from([jar, project(':spotbugs-ant').jar]) {
         into 'lib'
         rename "(.*)-${project.version}.jar", '$1.jar'
       }
