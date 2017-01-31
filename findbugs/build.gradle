@@ -178,7 +178,7 @@ task unzipDist(type:Copy, dependsOn:distZip) {
 task smokeTest {
   dependsOn unzipDist
   doLast {
-    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:jar.outputs.files.asPath)
+    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:project(':spotbugs-ant').jar.outputs.files.asPath)
     ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
               jvmargs:'-ea -Xmx1200m',
               excludeFilter:'findbugsExclude.xml',
