@@ -39,7 +39,11 @@ dependencies {
   compile 'jaxen:jaxen:1.1.6'
   compile 'jdepend:jdepend:2.9.1'
   compile 'com.google.code.findbugs:jFormatString:3.0.0'
+
+  // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
+  // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   compile project(':spotbugs-annotations')
+
   compileOnly 'com.apple:AppleJavaExtensions:1.4'
   testCompile 'junit:junit:4.12'
   testCompile 'org.hamcrest:hamcrest-all:1.3'
@@ -58,7 +62,10 @@ tasks.withType(Jar).all {
 
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
+  dependsOn project(':spotbugs-annotations').compileJava
+
   from sourceSets.main.output
+  from project(':spotbugs-annotations').sourceSets.main.output
   from zipTree("$projectDir/lib/bcel-6.1-20161207.023659-9.jar").matching {
     exclude 'META-INF/**'
   }
@@ -189,6 +196,7 @@ task smokeTest {
       sourcePath(path:'src/main/java:src/gui:src/test/java:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
       auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
+      configurations.compile.each { File file -> auxClasspath(path:file.path) }
     }
   }
 }
