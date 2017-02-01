@@ -176,7 +176,7 @@ task unzipDist(type:Copy, dependsOn:distZip) {
 
 // TODO : actually check the output beyond it not blowing up in pieces?
 task smokeTest {
-  dependsOn unzipDist
+  dependsOn unzipDist, project(':spotbugs-ant').jar
   doLast {
     ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:project(':spotbugs-ant').jar.outputs.files.asPath)
     ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
