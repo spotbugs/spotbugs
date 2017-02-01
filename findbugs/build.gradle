@@ -62,8 +62,6 @@ tasks.withType(Jar).all {
 
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
-  dependsOn project(':spotbugs-annotations').compileJava
-
   from sourceSets.main.output
   from project(':spotbugs-annotations').sourceSets.main.output
   from zipTree("$projectDir/lib/bcel-6.1-20161207.023659-9.jar").matching {
