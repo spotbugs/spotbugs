@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Matcher;
 
@@ -96,11 +99,6 @@ public class AbstractIntegrationTest {
     protected void performAnalysis(@SlashedClassName final String... analyzeMe) {
         AnalysisRunner runner = new AnalysisRunner();
 
-        for (final String s : analyzeMe) {
-            // TODO : Unwire this once we move bug samples to a proper sourceset
-            runner.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).toPath());
-        }
-
         final File lib = getFindbugsTestCasesFile("lib");
         for (final File f : lib.listFiles()) {
             final String path = f.getPath();
@@ -109,6 +107,11 @@ public class AbstractIntegrationTest {
             }
         }
 
-        this.bugReporter = runner.run();
+        // TODO : Unwire this once we move bug samples to a proper sourceset
+        Path[] paths = Arrays.stream(analyzeMe)
+                .map(s -> getFindbugsTestCasesFile("/build/classes/main/" + s).toPath())
+                .collect(Collectors.toList())
+                .toArray(new Path[analyzeMe.length]);
+        this.bugReporter = runner.run(paths);
     }
 }

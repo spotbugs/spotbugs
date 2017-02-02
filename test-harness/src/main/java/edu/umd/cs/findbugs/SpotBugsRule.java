@@ -22,8 +22,8 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  *     public SpotBugsRule spotbugs = new SpotBugsRule();
  *     &#064;Test
  *     public void testIssuesAreFound() {
- *         spotbugs.addFile(Paths.get("target/classes/my/company/AnalyzedClass.class"));
- *         BugCollection bugCollection = spotbugs.performAnalysis();
+ *         Path path = Paths.get("target/classes/my/company/AnalyzedClass.class")
+ *         BugCollection bugCollection = spotbugs.performAnalysis(path);
  *
  *         // There should only be exactly 1 issue of this type
  *         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
@@ -62,7 +62,7 @@ public class SpotBugsRule extends ExternalResource {
      * </p>
      * <pre>
      * <code>
-     * BugCollection bugCollection = spotBugsRule.performAnalysis();
+     * BugCollection bugCollection = spotBugsRule.performAnalysis(...);
      * assertThat(
      *     bugCollection,
      *     containsExactly(bugInstanceMatcher, 1));
@@ -78,24 +78,6 @@ public class SpotBugsRule extends ExternalResource {
      */
     public static <T> Matcher<Iterable<T>> containsExactly(final Matcher<T> matcher, final int count) {
         return new CountMatcher<T>(count, matcher);
-    }
-
-    /**
-     * <p>
-     * Add a target class file to SpotBugs analysis.
-     * </p>
-     * @param path
-     *      A path of the target class file. Non-null.
-     * @return callee itself, so caller can chain another method in fluent interface.
-     */
-    // TODO let users specify SlashedClassName, then find its file path automatically
-    @Nonnull
-    public SpotBugsRule addFile(Path path) {
-        if (runner == null) {
-            throw new IllegalStateException("Please call this addFile() method in @Before method or test method");
-        }
-        runner.addFile(path);
-        return this;
     }
 
     /**
@@ -121,13 +103,16 @@ public class SpotBugsRule extends ExternalResource {
      * <p>
      * Run SpotBugs under given condition, and return its result.
      * </p>
+     * @param paths
+     *     Paths of target class files
      * @return a {@link BugCollection} which contains all detected bugs.
      */
+    // TODO let users specify SlashedClassName, then find its file path automatically
     @Nonnull
-    public BugCollection performAnalysis() {
+    public BugCollection performAnalysis(Path... paths) {
         if (runner == null) {
             throw new IllegalStateException("Please call this performAnalysis() method in test method");
         }
-        return runner.run().getBugCollection();
+        return runner.run(paths).getBugCollection();
     }
 }

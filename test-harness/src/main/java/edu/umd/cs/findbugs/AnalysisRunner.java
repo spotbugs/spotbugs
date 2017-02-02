@@ -24,18 +24,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 @ParametersAreNonnullByDefault
 class AnalysisRunner {
-    private final List<Path> files = new ArrayList<>();
     private final List<Path> auxClasspathEntries = new ArrayList<>();
-
-    @Nonnull
-    AnalysisRunner addFile(Path path) {
-        Objects.requireNonNull(path);
-        if (!path.toFile().canRead()) {
-            throw new IllegalArgumentException("Cannot read " + path.toAbsolutePath());
-        }
-        files.add(path);
-        return this;
-    }
 
     @Nonnull
     AnalysisRunner addAuxClasspathEntry(Path path) {
@@ -48,7 +37,7 @@ class AnalysisRunner {
     }
 
     @Nonnull
-    BugCollectionBugReporter run() {
+    BugCollectionBugReporter run(Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         FindBugs2 engine = new FindBugs2();

@@ -22,8 +22,7 @@ public class FindUnsatisfiedObligationTest {
      */
     @Test
     public void testIssue60() {
-        spotbugs.addFile(Paths.get("../findbugsTestCases/build/classes/main/Issue60.class"));
-        BugCollection bugCollection = spotbugs.performAnalysis();
+        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../findbugsTestCases/build/classes/main/Issue60.class"));
         assertThat(bugCollection, is(emptyIterable()));
     }
 }
