@@ -20,14 +20,11 @@
 package edu.umd.cs.findbugs;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.hamcrest.Matcher;
 
-import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
@@ -65,7 +62,6 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public class AbstractIntegrationTest {
 
     private BugCollectionBugReporter bugReporter;
-    private IFindBugsEngine engine;
 
     private File getFindbugsTestCases() {
         final File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
@@ -98,49 +94,21 @@ public class AbstractIntegrationTest {
      * low priority threshold.
      */
     protected void performAnalysis(@SlashedClassName final String... analyzeMe) {
-        DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
-
-        this.engine = new FindBugs2();
-        final Project project = new Project();
-        project.setProjectName(getClass().getSimpleName());
-        this.engine.setProject(project);
-
-        final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
-        engine.setDetectorFactoryCollection(detectorFactoryCollection);
-
-        bugReporter = new BugCollectionBugReporter(project);
-        bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
-        bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
-
-        engine.setBugReporter(this.bugReporter);
-        final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-        preferences.getFilterSettings().clearAllCategories();
-        this.engine.setUserPreferences(preferences);
+        AnalysisRunner runner = new AnalysisRunner();
 
         for (final String s : analyzeMe) {
             // TODO : Unwire this once we move bug samples to a proper sourceset
-            project.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).getPath());
+            runner.addFile(getFindbugsTestCasesFile("/build/classes/main/" + s).toPath());
         }
 
         final File lib = getFindbugsTestCasesFile("lib");
         for (final File f : lib.listFiles()) {
             final String path = f.getPath();
             if (f.canRead() && path.endsWith(".jar")) {
-                project.addAuxClasspathEntry(path);
+                runner.addAuxClasspathEntry(f.toPath());
             }
         }
 
-        try {
-            engine.execute();
-        } catch (final IOException | InterruptedException e) {
-            fail("Analysis failed with exception; " + e.getMessage());
-        }
-        if (! bugReporter.getQueuedErrors().isEmpty()) {
-            AssertionError assertionError = new AssertionError("Analysis failed with exception. Check stderr for detail.");
-            bugReporter.getQueuedErrors().stream()
-                .map(error -> error.getCause())
-                .forEach(assertionError::addSuppressed);
-            throw assertionError;
-        }
+        this.bugReporter = runner.run();
     }
 }
