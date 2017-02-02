@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -26,6 +27,7 @@ class AnalysisRunner {
     private final List<Path> files = new ArrayList<>();
     private final List<Path> auxClasspathEntries = new ArrayList<>();
 
+    @Nonnull
     AnalysisRunner addFile(Path path) {
         Objects.requireNonNull(path);
         if (!path.toFile().canRead()) {
@@ -35,6 +37,7 @@ class AnalysisRunner {
         return this;
     }
 
+    @Nonnull
     AnalysisRunner addAuxClasspathEntry(Path path) {
         Objects.requireNonNull(path);
         if (!path.toFile().canRead()) {
@@ -44,6 +47,7 @@ class AnalysisRunner {
         return this;
     }
 
+    @Nonnull
     BugCollectionBugReporter run() {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
