@@ -193,7 +193,6 @@ task smokeTest {
               outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
       sourcePath(path:'src/main/java:src/gui:src/test/java:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
-      auxClasspath(path:project.fileTree(dir:'lib', include:'**/*.jar').asPath)
       configurations.compile.each { File file -> auxClasspath(path:file.path) }
     }
   }
