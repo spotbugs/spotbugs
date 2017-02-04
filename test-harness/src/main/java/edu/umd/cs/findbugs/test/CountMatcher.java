@@ -1,10 +1,10 @@
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.test;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {
+public final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {
     private final int count;
     private final Matcher<T> matcher;
 
@@ -12,7 +12,7 @@ final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {
      * @param count
      * @param matcher
      */
-    CountMatcher(int count, Matcher<T> matcher) {
+    public CountMatcher(int count, Matcher<T> matcher) {
         this.count = count;
         this.matcher = matcher;
     }

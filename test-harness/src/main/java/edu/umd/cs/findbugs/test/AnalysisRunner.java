@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.test;
 
 import static org.junit.Assert.fail;
 
@@ -11,23 +11,29 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
  * <p>
  * This class runs analysis with SpotBugs. The target class files and
- * auxClasspathEntries should be specified before you invoke {@link #run()}
+ * auxClasspathEntries should be specified before you invoke {@link #run(Path...)}
  * method.
  * </p>
  * 
  * @since 3.1
  */
 @ParametersAreNonnullByDefault
-class AnalysisRunner {
+public class AnalysisRunner {
     private final List<Path> auxClasspathEntries = new ArrayList<>();
 
     @Nonnull
-    AnalysisRunner addAuxClasspathEntry(Path path) {
+    public AnalysisRunner addAuxClasspathEntry(Path path) {
         Objects.requireNonNull(path);
         if (!path.toFile().canRead()) {
             throw new IllegalArgumentException("Cannot read " + path.toAbsolutePath());
@@ -37,7 +43,7 @@ class AnalysisRunner {
     }
 
     @Nonnull
-    BugCollectionBugReporter run(Path... files) {
+    public BugCollectionBugReporter run(Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         FindBugs2 engine = new FindBugs2();

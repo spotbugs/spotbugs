@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import org.hamcrest.Matcher;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import edu.umd.cs.findbugs.test.AnalysisRunner;
+import edu.umd.cs.findbugs.test.CountMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**

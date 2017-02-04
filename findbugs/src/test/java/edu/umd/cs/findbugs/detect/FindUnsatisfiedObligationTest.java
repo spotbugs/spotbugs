@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.SpotBugsRule;
+import edu.umd.cs.findbugs.test.SpotBugsRule;
 
 public class FindUnsatisfiedObligationTest {
     @Rule

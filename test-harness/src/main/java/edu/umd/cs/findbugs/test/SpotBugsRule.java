@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.test;
 
 import java.nio.file.Path;
 
@@ -8,6 +8,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import org.hamcrest.Matcher;
 import org.junit.rules.ExternalResource;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
