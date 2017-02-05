@@ -72,7 +72,7 @@ public class DetectorFactoryCollection {
     final Map<String, String> globalOptions = new HashMap<String,String>();
     final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
 
-    protected DetectorFactoryCollection() {
+    public DetectorFactoryCollection() {
         this(true, false, Plugin.getAllPlugins(), new ArrayList<Plugin>());
     }
 

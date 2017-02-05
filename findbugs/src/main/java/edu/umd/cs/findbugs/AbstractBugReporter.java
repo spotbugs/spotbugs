@@ -52,7 +52,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
 
-    protected static class Error {
+    public static class Error {
         private final int sequence;
 
         private final String message;
@@ -327,7 +327,7 @@ public abstract class AbstractBugReporter implements BugReporter {
     /**
      * @return the set with all analysis errors reported so far
      */
-    protected Set<Error> getQueuedErrors() {
+    public Set<Error> getQueuedErrors() {
         return errorSet;
     }
 

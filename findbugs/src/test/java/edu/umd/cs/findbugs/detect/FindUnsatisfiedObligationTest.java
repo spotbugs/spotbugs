@@ -1,22 +1,28 @@
 package edu.umd.cs.findbugs.detect;
 
+import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import static org.hamcrest.core.Is.is;
+import java.nio.file.Paths;
 
-import static org.hamcrest.collection.IsEmptyIterable.*;
+import org.junit.Rule;
 import org.junit.Test;
 
-import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.test.SpotBugsRule;
 
-public class FindUnsatisfiedObligationTest extends AbstractIntegrationTest {
+public class FindUnsatisfiedObligationTest {
+    @Rule
+    public SpotBugsRule spotbugs = new SpotBugsRule();
+
     /**
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/60">GitHub
      *      issue</a>
      */
     @Test
     public void testIssue60() {
-        performAnalysis("Issue60.class");
-        assertThat(getBugCollection(), is(emptyIterable()));
+        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../findbugsTestCases/build/classes/main/Issue60.class"));
+        assertThat(bugCollection, is(emptyIterable()));
     }
 }
