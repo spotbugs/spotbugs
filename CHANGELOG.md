@@ -7,7 +7,12 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 ### Added
 
 * Make TypeQualifierResolver recognize JetBrains NotNull annotations ([Patch #248](https://sourceforge.net/p/findbugs/patches/248/))
-
+* excludePath and includePath in AntTask ([6668a9](https://github.com/spotbugs/spotbugs/commit/6668a9))
+* Cancellation of queueing FindBugsJob in Eclipse plugin ([bceec81](https://github.com/spotbugs/spotbugs/commit/bceec81))
+* Artifact which contains SpotBugs annotations only ([Bug#1341](https://sourceforge.net/p/findbugs/bugs/1341/))
+* Warn if excludeFilter is empty ([4b7e93f](https://github.com/spotbugs/spotbugs/commit/4b7e93f))
+* Partial Java9 support ([FindBugs#105](https://github.com/findbugsproject/findbugs/issues/105))
+* `spotbugs.home` is available like `findbugs.home` ([#33](https://github.com/spotbugs/spotbugs/pull/33))
 
 ### Changed
 
@@ -19,21 +24,18 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 ### Removed
 
 * Java7 Support ([Issue #19](https://github.com/spotbugs/spotbugs/issues/19))
+* Artifact which packages not only SpotBugs annotations but also JSR305 annotations
 
 ### Fixed
 
-* Fix typo in description of VA_FORMAT_STRING_BAD_CONVERSION ([f5f62b6](https://github.com/spotbugs/spotbugs/commit/f5f62b6))
-* Fix description for VA_FORMAT_STRING_USES_NEWLINE ([89b82fa](https://github.com/spotbugs/spotbugs/commit/89b82fa))
+* Typos in description, documentation and so on
 * StackOverflowError in ValueRangeAnalysisFactory ([Bug#1369](https://sourceforge.net/p/findbugs/bugs/1369/))
-* Fix descriptions of UC_USELESS_CONDITION and UC_USELESS_CONDITION_TYPE ([e02535c](https://github.com/spotbugs/spotbugs/commit/e02535c))
 * Command line "@" feature ([Bug#1375](https://sourceforge.net/p/findbugs/bugs/1375/))
 * SOAPMessage.getSOAPHeader() can and does return null ([Bug#1368](https://sourceforge.net/p/findbugs/bugs/1368/))
 * False positive in UC_USELESS_OBJECT  ([Bug#1373](https://sourceforge.net/p/findbugs/bugs/1373/))
 * False positive in NP_LOAD_OF_KNOWN_NULL_VALUE  ([Bug#1372](https://sourceforge.net/p/findbugs/bugs/1372/))
 * Missing java.nio.file.Files support in  OS_OPEN_STREAM ([Bugs#1399](https://sourceforge.net/p/findbugs/bugs/1399/)])
 * False negative in GC_UNRELATED_TYPES  ([Bug#1387](https://sourceforge.net/p/findbugs/bugs/1387/))
-* Japanese messages  ([Bug#1380](https://sourceforge.net/p/findbugs/bugs/1380/), [FindBugs#45](https://github.com/findbugsproject/findbugs/pull/45), [Bug#1417](https://sourceforge.net/p/findbugs/bugs/1417/))
-* Description of NP_OPTIONAL_RETURN_NULL ([05680c6](https://github.com/findbugsproject/findbugs/commit/05680c6))
 * Not reliable BIT_SIGNED_CHECK ([Bug#1408](https://sourceforge.net/p/findbugs/bugs/1408/))
 * Annotation of SIC_INNER_SHOULD_BE_STATIC_ANON ([Bug#1418](https://sourceforge.net/p/findbugs/bugs/1418/))
 * Bug in ClassName.isAnonymous ([dcfb934](https://github.com/findbugsproject/findbugs/commit/dcfb934))
@@ -45,7 +47,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 * Do not report WrongMapIterator for EnumMap ([Bug#1422](https://sourceforge.net/p/findbugs/bugs/1422/))
 * Default Case is Missing With Alias Enum Constants ([Bug#1392](https://sourceforge.net/p/findbugs/bugs/1392/))
 * NPE when launched using IBM JDK on Linux ([Bug#1383](https://sourceforge.net/p/findbugs/bugs/1383/))
-
+* Serializable should be out of target for  RI_REDUNDANT_INTERFACES   ([FindBugs#49](https://github.com/findbugsproject/findbugs/pull/49/files))
+* nonnull annotations database for java.util.concurrent.ForkJoinPool ((fb8a953)[https://github.com/spotbugs/spotbugs/commit/fb8a953])
 
 ## FindBugs 3.0.1 or older
 
