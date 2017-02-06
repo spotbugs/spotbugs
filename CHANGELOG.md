@@ -9,7 +9,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 * Make TypeQualifierResolver recognize JetBrains NotNull annotations ([Patch #248](https://sourceforge.net/p/findbugs/patches/248/))
 * excludePath and includePath in AntTask ([6668a9](https://github.com/spotbugs/spotbugs/commit/6668a9))
 * Cancellation of queueing FindBugsJob in Eclipse plugin ([bceec81](https://github.com/spotbugs/spotbugs/commit/bceec81))
-* Artifact which contains SpotBugs annotations only ([Bug#1341](https://sourceforge.net/p/findbugs/bugs/1341/))
+* Artifact which contains only SpotBugs annotations ([Bug#1341](https://sourceforge.net/p/findbugs/bugs/1341/))
 * Warn if excludeFilter is empty ([4b7e93f](https://github.com/spotbugs/spotbugs/commit/4b7e93f))
 * Partial Java9 support ([FindBugs#105](https://github.com/findbugsproject/findbugs/issues/105))
 * `spotbugs.home` is available like `findbugs.home` ([#33](https://github.com/spotbugs/spotbugs/pull/33))
@@ -18,12 +18,15 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 * Support user preferences exported by the Export->Preferences wizard in Eclipse ([01b7df7](https://github.com/spotbugs/spotbugs/commit/01b7df7))
 * No more dependency in annotations on BugRanker and Priorities ([2f9d672](https://github.com/findbugsproject/findbugs/commit/2f9d672), [725be6e](https://github.com/findbugsproject/findbugs/commit/725be6e))
+* Several classes are now not Serializable ([#85](https://github.com/spotbugs/spotbugs/pull/85))
 
 ### Deprecated
 
 ### Removed
 
 * Java7 Support ([Issue #19](https://github.com/spotbugs/spotbugs/issues/19))
+* WebCloud and other plugins
+* BlueJ Support
 * Artifact which packages not only SpotBugs annotations but also JSR305 annotations
 
 ### Fixed
@@ -49,6 +52,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 * NPE when launched using IBM JDK on Linux ([Bug#1383](https://sourceforge.net/p/findbugs/bugs/1383/))
 * Serializable should be out of target for  RI_REDUNDANT_INTERFACES   ([FindBugs#49](https://github.com/findbugsproject/findbugs/pull/49/files))
 * nonnull annotations database for java.util.concurrent.ForkJoinPool ((fb8a953)[https://github.com/spotbugs/spotbugs/commit/fb8a953])
+* Better handling for JDT illegal signatures([#55](https://github.com/spotbugs/spotbugs/pull/55))
+* StaticCalendarDetector is constantly throwing ClassNotFoundExceptions ([#76](https://github.com/spotbugs/spotbugs/pull/76))
+* ClassFormatException when analyze class with lambda (INVOKEDYNAMIC) ([#60](https://github.com/spotbugs/spotbugs/issues/60))
 
 ## FindBugs 3.0.1 or older
 
