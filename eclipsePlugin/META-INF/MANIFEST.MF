@@ -11,6 +11,7 @@ Bundle-ClassPath: findbugs-plugin.jar,
  lib/jaxen-1.1.6.jar,
  lib/jFormatString.jar,
  lib/commons-lang-2.6.jar,
+ lib/spotbugs-annotations.jar,
  lib/asm-debug-all-6.0_ALPHA.jar
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: FindBugs Project
