@@ -210,7 +210,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
-        Version.registerApplication("FindBugs-Eclipse", Version.VERSION_STRING);
+        Version.registerApplication("SpotBugs-Eclipse", Version.VERSION_STRING);
 
          // configure debugging
         configurePluginDebugOptions();
@@ -227,7 +227,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // - see de.tobject.findbugs.builder.FindBugsWorker.work() too
             String findBugsHome = getFindBugsEnginePluginLocation();
             if (DEBUG) {
-                logInfo("FindBugs home is: " + findBugsHome);
+                logInfo("SpotBugs home is: " + findBugsHome);
             }
             System.setProperty("findbugs.home", findBugsHome);
         }
@@ -584,7 +584,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public void logMessage(int severity, String message, Throwable e) {
         if (DEBUG) {
             String what = (severity == IStatus.ERROR) ? (e != null ? "Exception" : "Error") : "Warning";
-            System.out.println(what + " in FindBugs plugin: " + message);
+            System.out.println(what + " in SpotBugs plugin: " + message);
             if (e != null) {
                 e.printStackTrace();
             }
@@ -789,7 +789,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
             @Override
             public String getTaskDescription() {
-                return "creating XML FindBugs data file";
+                return "creating XML SpotBugs data file";
             }
         };
         IO.writeFile(bugCollectionFile, fileOutput, monitor);

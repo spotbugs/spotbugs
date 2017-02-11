@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="@FEATURE_ID@"
-      label="FindBugs Feature"
+      label="SpotBugs Feature"
       version="@FEATURE_VERSION@"
-      provider-name="FindBugs Project"
+      provider-name="SpotBugs Project"
       plugin="@PLUGIN_ID@">
 
-   <description url="http://findbugs.sourceforge.net">
+   <description url="https://spotbugs.github.io/">
       This feature is a wrapper for the FindBugs plugin for installation via the Eclipse Update Manager.
    </description>
 
@@ -14,13 +14,13 @@
       (c) 2006-2011, University of Maryland
    </copyright>
 
-   <license url="http://findbugs.sourceforge.net/manual/license.html">
-      FindBugs is free software distributed under the terms of the Lesser GNU Public License.
+   <license url="https://opensource.org/licenses/LGPL-2.1">
+      SpotBugs is free software distributed under the terms of the Lesser GNU Public License.
 http://www.gnu.org/licenses/lgpl.html
    </license>
 
    <url>
-      <update label="FindBugs candidate release update site" url="http://findbugs.cs.umd.edu/eclipse-candidate/"/>
+      <update label="SpotBugs candidate release update site" url="https://spotbugs.github.io/eclipse-candidate/"/>
       <!-- <discovery label="FindBugs discovery site" url="http://findbugs.cs.umd.edu/eclipse-candidate/"/> -->
    </url>
 

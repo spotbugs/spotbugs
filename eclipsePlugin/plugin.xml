@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="findbugsPlugins" name="Custom FindBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
-   <extension-point id="findbugsQuickFixes" name="Custom FindBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
+   <extension-point id="findbugsPlugins" name="Custom SpotBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
+   <extension-point id="findbugsQuickFixes" name="Custom SpotBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
@@ -17,7 +17,7 @@
      <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            name="FindBugs"
+            name="SpotBugs"
             class="de.tobject.findbugs.properties.FindbugsPropertyPage"
             id="FindBugsPropertyPage">
          <filter
@@ -53,7 +53,7 @@
    </extension>
    <extension
          id="findbugsMarker"
-         name="FindBugs Problem"
+         name="SpotBugs Problem"
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.core.resources.problemmarker"/>
       <super type="org.eclipse.core.resources.textmarker"/>
@@ -63,7 +63,7 @@
 
  <extension
          id="findbugsMarkerScariest"
-         name="FindBugs Problem (Scariest)"
+         name="SpotBugs Problem (Scariest)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -74,7 +74,7 @@
    </extension>
    <extension
          id="findbugsMarkerScary"
-         name="FindBugs Problem (Scary)"
+         name="SpotBugs Problem (Scary)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -84,7 +84,7 @@
    </extension>
    <extension
          id="findbugsMarkerTroubling"
-         name="FindBugs Problem (Troubling)"
+         name="SpotBugs Problem (Troubling)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -94,7 +94,7 @@
    </extension>
    <extension
          id="findbugsMarkerOfConcern"
-         name="FindBugs Problem (Of concern)"
+         name="SpotBugs Problem (Of concern)"
          point="org.eclipse.core.resources.markers">
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
@@ -131,19 +131,19 @@
       </markerAttributeGrouping>
       <markerGroupingEntry
             id="fb.high"
-            label="FindBugs Warnings (High Confidence)"
+            label="SpotBugs Warnings (High Confidence)"
             markerGrouping="org.eclipse.jdt.ui.java_marker_category"
             priority="79">
       </markerGroupingEntry>
       <markerGroupingEntry
             id="fb.normal"
-            label="FindBugs Warnings (Normal Confidence)"
+            label="SpotBugs Warnings (Normal Confidence)"
             markerGrouping="org.eclipse.jdt.ui.java_marker_category"
             priority="75">
       </markerGroupingEntry>
       <markerGroupingEntry
             id="fb.low"
-            label="FindBugs Warnings (Low Confidence)"
+            label="SpotBugs Warnings (Low Confidence)"
             markerGrouping="org.eclipse.jdt.ui.java_marker_category"
             priority="71">
       </markerGroupingEntry>
@@ -178,7 +178,7 @@
             includeOnPreferencePage="true"
             isGoToNextNavigationTarget="true"
             isGoToNextNavigationTargetKey="findbugs.ofconcern.gotonext"
-            label="FindBugs 'Of Concern' Warnings"
+            label="SpotBugs 'Of Concern' Warnings"
             overviewRulerPreferenceKey="findbugs.ofconcern.overview"
             overviewRulerPreferenceValue="true"
             quickFixIcon="icons/buggy-tiny-yellow2.png"
@@ -199,7 +199,7 @@
             includeOnPreferencePage="true"
             isGoToNextNavigationTarget="true"
             isGoToNextNavigationTargetKey="findbugs.troubling.gotonext"
-            label="FindBugs &apos;Troubling&apos; Warnings"
+            label="SpotBugs &apos;Troubling&apos; Warnings"
             overviewRulerPreferenceKey="findbugs.troubling.overview"
             overviewRulerPreferenceValue="true"
             quickFixIcon="icons/buggy-tiny-yellow.png"
@@ -220,7 +220,7 @@
             includeOnPreferencePage="true"
             isGoToNextNavigationTarget="true"
             isGoToNextNavigationTargetKey="findbugs.scary.gotonext"
-            label="FindBugs &apos;Scary&apos; Warnings"
+            label="SpotBugs &apos;Scary&apos; Warnings"
             overviewRulerPreferenceKey="findbugs.scary.overview"
             overviewRulerPreferenceValue="true"
             quickFixIcon="icons/buggy-tiny-orange.png"
@@ -241,7 +241,7 @@
             includeOnPreferencePage="true"
             isGoToNextNavigationTarget="true"
             isGoToNextNavigationTargetKey="findbugs.scariest.gotonext"
-            label="FindBugs &apos;Scariest&apos; Warnings"
+            label="SpotBugs &apos;Scariest&apos; Warnings"
             overviewRulerPreferenceKey="findbugs.scariest.overview"
             overviewRulerPreferenceValue="true"
             quickFixIcon="icons/buggy-tiny.png"
@@ -265,7 +265,7 @@
             objectClass="org.eclipse.jdt.core.IOpenable">
          <menu
                id="findbugs"
-               label="Find Bugs"
+               label="Spot Bugs"
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
@@ -279,7 +279,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Find Bugs"
+               label="&amp;Spot Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
          <visibility>
@@ -300,7 +300,7 @@
             objectClass="org.eclipse.ui.IWorkingSet">
          <menu
                id="findbugs"
-               label="Find Bugs"
+               label="Spot Bugs"
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
@@ -314,7 +314,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugsOnWorkingSet"
-               label="&amp;Find Bugs"
+               label="&amp;Spot Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
       </objectContribution>
@@ -329,7 +329,7 @@
             objectClass="org.eclipse.core.resources.IProject">
          <menu
                id="findbugs"
-               label="Find Bugs"
+               label="Spot Bugs"
                path="group.build">
             <separator name="doit" />
             <separator name="save" />
@@ -369,7 +369,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Find Bugs"
+               label="&amp;Spot Bugs"
                menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
            </action>
@@ -390,8 +390,8 @@
          point="org.eclipse.ui.popupMenus">
       <!--
           "Show Details" context menu entry for markers in the editor ruler.
-        The existing FindBugs marker action cannot be used, as the editor ruler
-        markers are not FindBugs markers
+        The existing SpotBugs marker action cannot be used, as the editor ruler
+        markers are not SpotBugs markers
       -->
       <viewerContribution
             targetID="#CompilationUnitRulerContext"
@@ -429,7 +429,7 @@
                class="de.tobject.findbugs.actions.FindBugsEditorAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Find Bugs"
+               label="&amp;Spot Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
       </viewerContribution>
@@ -446,7 +446,7 @@
             enablesFor="1"
             icon="icons/runFindbugs.png"
             id="de.tobject.findbugs.findBugs"
-            label="&amp;Find Bugs"
+            label="&amp;Spot Bugs"
             menubarPath="additions"
             tooltip="%menu.findBugsPopup">
       </action>
@@ -578,7 +578,7 @@
          </action>
          <menu
                id="findbugs"
-               label="Find Bugs"
+               label="Spot Bugs"
                path="group.build">
          </menu>
       </objectContribution>
@@ -642,7 +642,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Find Bugs"
+               label="&amp;Spot Bugs"
                menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
          </action>
@@ -656,7 +656,7 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="FindBugs"
+            name="SpotBugs"
             id="de.tobject.findbugs.view.findBugsCategory">
       </category>
       <view
@@ -741,7 +741,7 @@
             fixed="false"
             icon="icons/buggy-tiny.png"
             id="de.tobject.findbugs.FindBugsPerspective"
-            name="FindBugs">
+            name="SpotBugs">
       </perspective>
    </extension>
 
@@ -1137,8 +1137,8 @@
          point="org.eclipse.ui.commands">
 
       <category
-            name="FindBugs commands"
-            description="FindBugs commands"
+            name="SpotBugs commands"
+            description="SpotBugs commands"
             id="FindBugs.category"/>
       <command
             categoryId="FindBugs.category"
@@ -1325,7 +1325,7 @@
              category="org.eclipse.jdt.ui.preferences.JavaBasePreferencePage"
              class="de.tobject.findbugs.properties.FindbugsPropertyPage"
              id="FindBugsPreferencePage"
-             name="FindBugs">
+             name="SpotBugs">
        </page>
     </extension>
 
@@ -1334,7 +1334,7 @@
       <consoleFactory
             class="de.tobject.findbugs.view.FindBugsConsole$FindBugsConsoleFactory"
             icon="icons/buggy-tiny.png"
-            label="FindBugs Console"/>
+            label="SpotBugs Console"/>
    </extension>
    <extension
          point="org.eclipse.ui.console.consolePageParticipants">
@@ -1352,11 +1352,11 @@
             categoryId="findBugsEclipsePlugin.theme"
             defaultsTo="org.eclipse.jface.textfont"
             id="findBugsEclipsePlugin.consoleFont"
-            label="FindBugs Console">
+            label="SpotBugs Console">
       </fontDefinition>
       <themeElementCategory
             id="findBugsEclipsePlugin.theme"
-            label="FindBugs">
+            label="SpotBugs">
       </themeElementCategory>
    </extension>
 
@@ -1376,13 +1376,13 @@
          point="org.eclipse.ui.preferenceTransfer">
        <transfer
             icon="icons/buggy-tiny.png"
-            name="FindBugs Preferences"
+            name="SpotBugs Preferences"
             id="edu.umd.cs.findbugs.plugin.eclipse">
             <mapping scope="instance">
                 <entry node="edu.umd.cs.findbugs.plugin.eclipse"/>
             </mapping>
       <description>
-             Java &gt; FindBugs preferences.
+             Java &gt; SpotBugs preferences.
       </description>
     </transfer>
    </extension>
