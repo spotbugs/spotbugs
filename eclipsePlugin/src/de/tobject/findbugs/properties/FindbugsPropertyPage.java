@@ -307,8 +307,8 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 currentUserPreferences.setEffort(placeHolder.getEffortLevel());
             }
         });
-        effortLabel.setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
-        effortViewer.getCombo().setToolTipText("Set FindBugs analysis effort (minimal is faster but less precise)");
+        effortLabel.setToolTipText("Set SpotBugs analysis effort (minimal is faster but less precise)");
+        effortViewer.getCombo().setToolTipText("Set SpotBugs analysis effort (minimal is faster but less precise)");
     }
 
     private void createWorkspaceButtons(Composite parent) {
@@ -464,7 +464,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 try {
                     FindbugsPlugin.saveUserPreferences(getProject(), currentUserPreferences);
                 } catch (CoreException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
+                    FindbugsPlugin.getDefault().logException(e, "Could not store SpotBugs preferences for project");
                 }
             }
             if(pluginsChanged) {
@@ -520,8 +520,8 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     }
 
     protected void remindAboutFullBuild() {
-        MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(getShell(), "Full FindBugs build required",
-                "FindBugs analysis settings are changed." + "\nReexecute FindBugs analysis to see updated results.",
+        MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(getShell(), "Full SpotBugs build required",
+                "SpotBugs analysis settings are changed." + "\nReexecute SpotBugs analysis to see updated results.",
                 "Do not show this warning again", false, null, null);
 
         getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog.getToggleState());
@@ -615,7 +615,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         private boolean add = true;
 
         public NatureWorker(boolean add) {
-            super((add ? "Adding FindBugs nature to " : "Removing FindBugs nature from ") + getProject(), getProject());
+            super((add ? "Adding SpotBugs nature to " : "Removing SpotBugs nature from ") + getProject(), getProject());
             this.add = add;
             // adding/removing nature uses workspace scope
             setRule(ResourcesPlugin.getWorkspace().getRoot());

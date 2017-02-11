@@ -2,7 +2,7 @@
    <!-- Action set for classifying FindBugs warnings. -->
    <extension point="org.eclipse.ui.actionSets">
            <actionSet
-               label="FindBugs Warning Classification"
+               label="SpotBugs Warning Classification"
                id="de.tobject.findbugs.classificationActionSet"
                visible="true">
                <!-- Note that actions appear in the toolbar in the reverse of

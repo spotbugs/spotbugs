@@ -3,10 +3,10 @@
 <schema targetNamespace="edu.umd.cs.findbugs.plugin.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="edu.umd.cs.findbugs.plugin.eclipse" id="findbugsPlugins" name="Custom FindBugs plugins"/>
+         <meta.schema plugin="edu.umd.cs.findbugs.plugin.eclipse" id="findbugsPlugins" name="Custom SpotBugs plugins"/>
       </appInfo>
       <documentation>
-         Extension point can be used to contribute custom plugins for the FindBugs engine.
+         Extension point can be used to contribute custom plugins for the SpotBugs engine.
       </documentation>
    </annotation>
 
@@ -52,18 +52,18 @@
          <attribute name="fbPluginId" type="string" use="required">
             <annotation>
                <documentation>
-                  Unique FindBugs plugin id for the library, must match &quot;pluginid&quot; value from the contributed findbugs.xml.
+                  Unique SpotBugs plugin id for the library, must match &quot;pluginid&quot; value from the contributed findbugs.xml.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="libraryPath" type="string" use="default" value=".">
             <annotation>
                <documentation>
-                  FindBugs plugin library (usually *.jar file) path, relative to the Eclipse plugin installation directory. 
+                  SpotBugs plugin library (usually *.jar file) path, relative to the Eclipse plugin installation directory.
 
-Default value is &quot;.&quot; and should be used if the Eclipse plugin jar itself represents the valid FindBugs plugin package. 
+Default value is &quot;.&quot; and should be used if the Eclipse plugin jar itself represents the valid SpotBugs plugin package.
 
-If a custom library path other then &quot;.&quot; is specified, forward slash &quot;/&quot; must be used as file separator.
+If a custom library path other then &quot;.&quot; is specified, forward slash &quot;/&quot; must be used as file separator
                </documentation>
             </annotation>
          </attribute>
@@ -84,13 +84,13 @@ If a custom library path other then &quot;.&quot; is specified, forward slash &q
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         Example contribution for FindBugs plugins which are deployed as a single Eclipse plugin archive (*.jar) file:
+         Example contribution for SpotBugs plugins which are deployed as a single Eclipse plugin archive (*.jar) file:
 &lt;pre&gt;
    &lt;extension point=&quot;edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins&quot;&gt;
       &lt;findbugsPlugin fbPluginId=&quot;my.cool.detector&quot; libraryPath=&quot;.&quot; /&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
-Example contribution for two FindBugs plugins which are deployed as a part (*.jar library) of one Eclipse plugin. Please note different &quot;fbPluginId&quot; attributes for each FindBugs plugin (they must match &quot;pluginid&quot; value from findbugs.xml).
+Example contribution for two SpotBugs plugins which are deployed as a part (*.jar library) of one Eclipse plugin. Please note different &quot;fbPluginId&quot; attributes for each SpotBugs plugin (they must match &quot;pluginid&quot; value from findbugs.xml).
 The Eclipse plugin is deployed as a directory containing one or more *.jar files:
 &lt;pre&gt;
    &lt;extension point=&quot;edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins&quot;&gt;
@@ -106,7 +106,7 @@ The Eclipse plugin is deployed as a directory containing one or more *.jar files
          <meta.section type="apiinfo"/>
       </appInfo>
       <documentation>
-         A valid FindBugs plugin package is a jar file containing bugrank.txt, findbugs.xml, messages.xml and (optionally) class files.
+         A valid SpotBugs plugin package is a jar file containing bugrank.txt, findbugs.xml, messages.xml and (optionally) class files.
       </documentation>
    </annotation>
 

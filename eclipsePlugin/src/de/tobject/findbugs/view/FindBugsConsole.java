@@ -48,7 +48,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     private static class RemoveAction extends Action {
         public RemoveAction() {
-            super("Close FindBugs console", PlatformUI.getWorkbench().getSharedImages()
+            super("Close SpotBugs console", PlatformUI.getWorkbench().getSharedImages()
                     .getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
         }
 
@@ -116,7 +116,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
                 }
             }
         } else {
-            console = new FindBugsConsole("FindBugs", null, true);
+            console = new FindBugsConsole("SpotBugs", null, true);
         }
         if (!exists) {
             manager.addConsoles(new IConsole[] { console });
