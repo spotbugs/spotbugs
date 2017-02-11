@@ -40,11 +40,6 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
         topLeft.addPlaceholder(JavaUI.ID_PACKAGES);
 
         // Bottom right.
-        IFolderLayout bottomRightA = layout.createFolder("bottomRightA", IPageLayout.BOTTOM, (float) 0.55, editorArea);
-
-        bottomRightA.addView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-
-
         IFolderLayout bottomRightB = layout.createFolder("bottomRightB", IPageLayout.RIGHT, (float) 0.45, "bottomRightA");
 
         bottomRightB.addView(FindbugsPlugin.DETAILS_VIEW_ID);
