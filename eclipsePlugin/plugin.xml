@@ -661,12 +661,6 @@
       </category>
       <view
             category="de.tobject.findbugs.view.findBugsCategory"
-            class="de.tobject.findbugs.view.UserAnnotationsView"
-            icon="icons/annotationsView.png"
-            id="de.tobject.findbugs.view.userannotationsview"
-            name="Bug Reviews"/>
-      <view
-            category="de.tobject.findbugs.view.findBugsCategory"
             class="de.tobject.findbugs.view.BugInfoView"
             icon="icons/annotationsView.png"
             id="de.tobject.findbugs.view.buginfoview"
@@ -762,7 +756,6 @@
          <perspectiveShortcut id="org.eclipse.jdt.ui.JavaHierarchyPerspective"/>
          <perspectiveShortcut id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
 
-         <viewShortcut id="de.tobject.findbugs.view.userannotationsview"/>
          <viewShortcut id="de.tobject.findbugs.view.buginfoview"/>
          <viewShortcut id="de.tobject.findbugs.view.bugtreeview"/>
          <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/>

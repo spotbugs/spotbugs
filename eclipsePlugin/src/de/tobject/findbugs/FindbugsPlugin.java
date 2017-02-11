@@ -136,8 +136,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.buginfoview";
 
-    public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
-
     public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 
     public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";

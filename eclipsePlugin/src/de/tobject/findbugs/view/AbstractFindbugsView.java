@@ -145,15 +145,6 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
     }
 
     protected void makeActions() {
-        actionShowAnnotationsView = new Action() {
-            @Override
-            public void run() {
-                showUserAnnotationView();
-            }
-        };
-        configureAction(actionShowAnnotationsView, "Show Bug Reviews View", "Show Bug Reviews View",
-                USER_ANNOTATIONS_VIEW_IMG);
-
         actionShowBugTreeView = new Action() {
             @Override
             public void run() {
@@ -226,19 +217,6 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite().getAdapter(
                 IWorkbenchSiteProgressService.class);
         return service;
-    }
-
-    /**
-     * @return instance of annotations view or null if view couldn't be opened
-     */
-    static IViewPart showUserAnnotationView() {
-        IWorkbenchPage page = FindbugsPlugin.getActiveWorkbenchWindow().getActivePage();
-        try {
-            return page.showView(FindbugsPlugin.USER_ANNOTATIONS_VIEW_ID);
-        } catch (PartInitException e) {
-            FindbugsPlugin.getDefault().logException(e, "Could not show bug annotations view");
-        }
-        return null;
     }
 
     /**
