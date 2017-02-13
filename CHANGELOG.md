@@ -22,6 +22,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ### Deprecated
 
+* `OpcodeStack.Item.defineNewSpecialKind(String)` ([#27](https://github.com/spotbugs/spotbugs/pull/27))
+
 ### Removed
 
 * Java7 Support ([Issue #19](https://github.com/spotbugs/spotbugs/issues/19))
