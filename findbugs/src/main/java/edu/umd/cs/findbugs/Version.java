@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
@@ -51,9 +52,21 @@ public class Version {
         
         String version = "(Unknown)";
         if (!fromFile) {
-            try (final InputStream in = Version.class.getResourceAsStream("META-INF/MANIFEST.MF")) {
-                final Manifest manifest = new Manifest(in);
-                version = manifest.getMainAttributes().getValue("Bundle-Version");
+            try {
+                final Enumeration<URL> resources = Version.class.getClassLoader()
+                    .getResources("META-INF/MANIFEST.MF");
+                while (resources.hasMoreElements()) {
+                    try (final InputStream is = resources.nextElement().openStream()) {
+                        final Manifest manifest = new Manifest(is);
+                        
+                        // is this the one we are looking for?
+                        String mainClass = manifest.getMainAttributes().getValue("Main-Class");
+                        if (LaunchAppropriateUI.class.getName().equals(mainClass)) {
+                            version = manifest.getMainAttributes().getValue("Bundle-Version");
+                            break;
+                        }
+                    }
+                }
             } catch (Exception e) {
                 // ignore it
             }
