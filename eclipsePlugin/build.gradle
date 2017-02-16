@@ -1,3 +1,5 @@
+apply from: "$rootDir/gradle/maven.gradle"
+
 if (version.endsWith('-SNAPSHOT')) {
   // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
   version = version - '-SNAPSHOT' + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
@@ -224,4 +226,16 @@ task eclipseSite() {
   dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
 }
 
+task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
+  from("${buildDir}/site")
+  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_site_${project.version}.zip"
+}
+
 tasks['assemble'].dependsOn eclipseSite
+
+artifacts {
+  archives jar
+
+  // deploy site zip to Maven central, to upload it to official update site https://spotbugs.github.io/
+  archives eclipseSiteZip
+}

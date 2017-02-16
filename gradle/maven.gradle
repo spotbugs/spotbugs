@@ -1,7 +1,7 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT") && /* for Eclipse plugin */ !version.contains("-SNAPSHOT.")
 signing {
   required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:uploadArchives") }
   sign configurations.archives
