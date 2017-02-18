@@ -68,18 +68,15 @@ public class DescriptorFactory {
         this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
     }
 
-    private final MapCache<String, String> stringCache = new MapCache<String, String>(10000);
-
+    /**
+     * This method was designed to canonicalize String to improve performance,
+     * but now GC cost is cheaper than calculation cost in application thread
+     * so removing this old optimization makes SpotBugs 16% faster.
+     * @return given string instance
+     * @deprecated this hack is needless for modern JVM, at least Java8
+     */
+    @Deprecated
     public static String canonicalizeString(@CheckForNull String s) {
-        if (s == null) {
-            return s;
-        }
-        DescriptorFactory df =  instanceThreadLocal.get();
-        String cached = df.stringCache.get(s);
-        if (cached != null) {
-            return cached;
-        }
-        df.stringCache.put(s, s);
         return s;
     }
 
