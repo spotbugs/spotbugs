@@ -205,6 +205,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
         case INVOKESPECIAL:
         case INVOKEVIRTUAL:
         case INVOKESTATIC:
+        case INVOKEDYNAMIC:
             return true;
 
         }
@@ -1169,5 +1170,13 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             }
         }
         return referencedXClass;
+    }
+
+    /**
+     * This is a setter only for unit test.
+     * @param opcode new opcode value
+     */
+    void setOpcode(int opcode) {
+        this.opcode = opcode;
     }
 }

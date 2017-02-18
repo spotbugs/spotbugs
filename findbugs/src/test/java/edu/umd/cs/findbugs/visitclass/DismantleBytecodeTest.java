@@ -19,7 +19,12 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.apache.bcel.Const;
+import org.apache.bcel.Constants;
 
 import junit.framework.TestCase;
 
@@ -27,6 +32,12 @@ import junit.framework.TestCase;
  * @author pugh
  */
 public class DismantleBytecodeTest extends TestCase {
+    public void testIsMethodCall() {
+        DismantleBytecode dismantleBytecode = new DismantleBytecode() {
+        };
+        dismantleBytecode.setOpcode(Constants.INVOKEDYNAMIC);
+        assertThat(dismantleBytecode.isMethodCall(), is(equalTo(true)));
+    }
 
     public void testAreOppositeBranches() {
         assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ACMPEQ, Const.IF_ACMPNE));
