@@ -77,7 +77,7 @@ public abstract class Frame<ValueType> {
     /**
      * Array storing the values of local variables and operand stack slots.
      */
-    private final ArrayList<ValueType> slotList;
+    private ArrayList<ValueType> slotList;
 
     /**
      * Flag marking this frame as a special "TOP" value. Such Frames serve as
@@ -605,30 +605,7 @@ public abstract class Frame<ValueType> {
      */
     public void copyFrom(Frame<ValueType> other) {
         lastUpdateTimestamp = other.lastUpdateTimestamp;
-        if (true) {
-            int size = slotList.size();
-            if (size == other.slotList.size()) {
-                for (int i = 0; i < size; i++) {
-                    slotList.set(i, other.slotList.get(i));
-                }
-            } else {
-                slotList.clear();
-                for (ValueType v : other.slotList) {
-                    slotList.add(v);
-                }
-            }
-        } else {
-            slotList.clear();
-            slotList.addAll(other.slotList);
-
-        }
-        /*
-         * Andrei, 27.02.2008: "optimized" code below takes ~18% overall FB
-         * execution time, code above only 5% int size = slotList.size(); if
-         * (size == other.slotList.size()) { for (int i = 0; i < size; i++)
-         * slotList.set(i, other.slotList.get(i)); } else { slotList.clear();
-         * for (ValueType v : other.slotList) slotList.add(v); }
-         */
+        slotList = new ArrayList<>(other.slotList);
         isTop = other.isTop;
         isBottom = other.isBottom;
     }

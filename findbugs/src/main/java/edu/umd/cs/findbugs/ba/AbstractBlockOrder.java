@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -37,22 +37,17 @@ public abstract class AbstractBlockOrder implements BlockOrder {
 
     public AbstractBlockOrder(CFG cfg, Comparator<BasicBlock> comparator) {
         this.comparator = comparator;
+
         // Put the blocks in an array
-        int numBlocks = cfg.getNumBasicBlocks(), count = 0;
-        BasicBlock[] blocks = new BasicBlock[numBlocks];
-        for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
-            blocks[count++] = i.next();
+        int numBlocks = cfg.getNumBasicBlocks();
+        blockList = new ArrayList<BasicBlock>(cfg.getNumBasicBlocks());
+        for (BasicBlock bb : cfg.blocks()) {
+            blockList.add(bb);
         }
-        assert count == numBlocks;
+        assert blockList.size() == numBlocks;
 
         // Sort the blocks according to the comparator
-        Arrays.sort(blocks, comparator);
-
-        // Put the ordered blocks into an array list
-        blockList = new ArrayList<BasicBlock>(numBlocks);
-        for (int i = 0; i < numBlocks; ++i) {
-            blockList.add(blocks[i]);
-        }
+        Collections.sort(blockList, comparator);
     }
 
     @Override
