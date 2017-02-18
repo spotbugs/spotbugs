@@ -24,6 +24,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 * `OpcodeStack.Item.defineNewSpecialKind(String)` ([#27](https://github.com/spotbugs/spotbugs/pull/27))
 * `Version.RELEASE` ([#125](https://github.com/spotbugs/spotbugs/pull/125))
+* `DescriptorFactory.canonicalizeString(String)` ([#128](https://github.com/spotbugs/spotbugs/pull/128))
 
 ### Removed
 
