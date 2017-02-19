@@ -1,6 +1,9 @@
 if (version.endsWith('-SNAPSHOT')) {
   // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
   version = version - '-SNAPSHOT' + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
+} else if (version.contains('-RC')) {
+  // eclipse doesn't like the `-RC`, so we timestamp uniquely
+  version = version - '-RC' + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
 }
 
 sourceSets {
