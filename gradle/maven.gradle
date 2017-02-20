@@ -37,6 +37,37 @@ uploadArchives {
             url 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html'
           }
         }
+
+        developers {
+          developer {
+            id 'jsotuyod'
+            name 'Juan Martín Sotuyo Dodero'
+            url 'https://github.com/jsotuyod'
+            timezone '-3'
+          }
+          developer {
+            id 'mebigfatguy'
+            name 'Dave Brosius'
+            email 'dbrosius@mebigfatguy.com'
+            url 'http://www.jroller.com/dbrosius/'
+            timezone '-5'
+          }
+          developer {
+            id 'henrik242'
+            url 'https://github.com/henrik242'
+          }
+          developer {
+            id 'KengoTODA'
+            name 'Kengo TODA'
+            email 'skypencil@gmail.com'
+            url 'https://github.com/KengoTODA/'
+            timezone '+8'
+          }
+          developer {
+            id 'ThrawnCA'
+            url 'https://github.com/ThrawnCA'
+          }
+        }
       }
     }
   }

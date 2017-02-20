@@ -203,6 +203,17 @@ coveralls {
   jacocoReportPath = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
 }
 
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'SpotBugs'
+        description "SpotBugs: Because it's easy!"
+      }
+    }
+  }
+}
+
 // TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual

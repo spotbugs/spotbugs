@@ -27,3 +27,14 @@ task sourcesJar(type: Jar) {
 artifacts {
   archives jar, javadocJar, sourcesJar
 }
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'SpotBugs Ant Task'
+        description 'AntTask to run SpotBugs'
+      }
+    }
+  }
+}
