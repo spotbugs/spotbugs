@@ -26,3 +26,20 @@ task sourcesJar(type: Jar) {
 artifacts {
   archives jar, javadocJar, sourcesJar
 }
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        licenses {
+          // This project contains copied source files from SonarSource and find-sec-bugs,
+          // which is licensed under LGPL 3.0, so we should use v3.0 instead of 2.1.
+          license {
+            name 'GNU LESSER GENERAL PUBLIC LICENSE, Version 3.0'
+            url 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
+          }
+        }
+      }
+    }
+  }
+}
