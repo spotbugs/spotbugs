@@ -239,3 +239,14 @@ artifacts {
   // deploy site zip to Maven central, to upload it to official update site https://spotbugs.github.io/
   archives eclipseSiteZip
 }
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'SpotBugs Eclipse Plugin'
+        description "Eclpse Plugin to integrate SpotBugs daily development"
+      }
+    }
+  }
+}
