@@ -42,7 +42,7 @@ uploadArchives {
     mavenDeployer {
       pom.project {
         name 'SpotBugs Annotations'
-        description 'Annotation the SpotBugs tool supports'
+        description 'Annotations the SpotBugs tool supports'
       }
     }
   }
