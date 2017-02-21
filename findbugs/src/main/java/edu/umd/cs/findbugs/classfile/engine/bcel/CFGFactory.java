@@ -118,7 +118,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
 
         // Remove CFG edges corresponding to failed assertions.
         boolean changed = false;
-        boolean ASSUME_ASSERTIONS_ENABLED = true;
+        boolean ASSUME_ASSERTIONS_ENABLED = false;
         if (ASSUME_ASSERTIONS_ENABLED) {
             LinkedList<Edge> edgesToRemove = new LinkedList<Edge>();
             for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
