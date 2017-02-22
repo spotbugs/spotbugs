@@ -68,8 +68,6 @@ jar {
     exclude 'META-INF/**'
   }
 
-  baseName 'spotbugs' // Needed until we rename the directory
-
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
@@ -115,13 +113,11 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
   classifier 'javadoc'
-  baseName 'spotbugs' // TODO : This is undeeded once we change the dir / project name
   from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
   classifier = 'sources'
-  baseName 'spotbugs' // TODO : This is undeeded once we change the dir / project name
   from sourceSets.main.allSource
 }
 
@@ -133,7 +129,6 @@ artifacts {
 apply plugin: 'distribution'
 distributions {
   main {
-    baseName = 'spotbugs' // TODO : This is undeeded once we change the dir / project name
     contents {
       from(scripts) {
         into 'bin'
