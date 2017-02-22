@@ -10,7 +10,7 @@ sourceSets {
 dependencies {
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
-  compile project(':findbugs')
+  compile project(':spotbugs')
   compile project(':spotbugs-annotations')
 }
 

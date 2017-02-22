@@ -4,7 +4,7 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   compile 'junit:junit:4.12'
-  compile project(':findbugs')
+  compile project(':spotbugs')
 }
 
 javadoc {
