@@ -25,7 +25,7 @@ Types of Match clauses:
 =======================
 
    <BugCode> specifies abbreviations of bugs.
-   The "name" attribute is a comma-seperated list of abbreviations.
+   The "name" attribute is a comma-separated list of abbreviations.
 
    <Method> specifies a method.  The "name" attribute is the name
    of the method.  The "params" attribute is a comma separated list

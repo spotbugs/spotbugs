@@ -439,7 +439,7 @@ java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
 <!--
 <para>
 
-There are two ways to invoke &FindBugs;.  The first invokes the the Graphical User Interface (GUI):
+There are two ways to invoke &FindBugs;.  The first invokes the Graphical User Interface (GUI):
 
 <screen>
 <prompt>$ </prompt><command>findbugs <replaceable>[standard options]</replaceable> <replaceable>[GUI options]</replaceable></command>

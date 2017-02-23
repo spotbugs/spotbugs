@@ -644,7 +644,7 @@ FindBugs using the <command>findbugs</command> command.
 <!--
 <para>
 
-There are two ways to invoke &FindBugs;.  The first invokes the the Graphical User Interface (GUI):
+There are two ways to invoke &FindBugs;.  The first invokes the Graphical User Interface (GUI):
 
 <screen>
 <prompt>$ </prompt><command>findbugs <replaceable>[standard options]</replaceable> <replaceable>[GUI options]</replaceable></command>
@@ -2108,7 +2108,7 @@ In other words, each of the children must be true for the predicate to be true.
  <varlistentry>
    <term><literal>&lt;Field&gt;</literal></term>
 
-   <listitem><para>This element specifies a field. The <literal>name</literal> attribute is is used to specify
+   <listitem><para>This element specifies a field. The <literal>name</literal> attribute is used to specify
    the exact or regex match pattern for the field name. You can also filter fields according to their signature -
    use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify either or both
    of these attributes in order to perform name / signature based matches. The <literal>role</literal> attribute is
@@ -2119,7 +2119,7 @@ In other words, each of the children must be true for the predicate to be true.
    <varlistentry>
    <term><literal>&lt;Local&gt;</literal></term>
 
-   <listitem><para>This element specifies a local variable. The <literal>name</literal> attribute is is used to specify
+   <listitem><para>This element specifies a local variable. The <literal>name</literal> attribute is used to specify
    the exact or regex match pattern for the local variable name. Local variables are variables defined within a method.
    </para></listitem>
  </varlistentry>
@@ -2973,7 +2973,7 @@ Instead of running FindBugs on the entire project, you may use <command>
 rejarForAnalysis</command> build one large, all-inclusive jarfile
 containing all classes, invoke <command>rejarForAnalysis</command>
 again to split the project into multiple jarfiles, then run FindBugs
-on each divided jarfiles in turn, specifying the the all-inclusive jarfile in
+on each divided jarfiles in turn, specifying the all-inclusive jarfile in
 the <command>-auxclasspath</command>.
 </para>
 
