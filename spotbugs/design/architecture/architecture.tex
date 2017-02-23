@@ -187,7 +187,7 @@ This makes FindBugs non-reentrant, so it is not possible to create two
 FindBugs objects and perform two separate analysis sessions at the same time.
 Unfortunately, BCEL uses the static Repository extensively in its
 internal implementation, meaning that the Repository is very tightly coupled
-with the rest of of BCEL.
+with the rest of BCEL.
 The only long-term solution to this problem is to drop BCEL.
 (Which we should do anyway.)
 }
@@ -335,7 +335,7 @@ CFG-based detectors in order to simplify the code.}
 \Indent \= request a CFG for the method from the ClassContext \\
         \> request one or more analysis objects on the method from the ClassContext \\
         \> \ForEach\ location in the method \Do \\
-        \> \Indent \= get the the dataflow facts at the location \\
+        \> \Indent \= get the dataflow facts at the location \\
         \>         \> inspect the dataflow facts \\
         \>         \> \If\ a dataflow fact indicates an error \Then \\
         \>         \> \Indent \= report a warning \\

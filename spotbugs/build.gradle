@@ -12,7 +12,7 @@ sourceSets {
     }
     resources {
       /*
-       * Becuase why put everything in a single folder when you can split it
+       * Because why put everything in a single folder when you can split it
        * and mix it with other files you don't actually need together
       */
       srcDirs = ['src/xsl', 'etc', 'src/main/java', 'src/gui']
