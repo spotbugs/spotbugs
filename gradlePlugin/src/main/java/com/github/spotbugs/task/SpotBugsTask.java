@@ -11,11 +11,10 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Incubating;
-import org.gradle.api.JavaVersion;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.internal.ClosureBackedAction;
-import org.gradle.api.logging.LogLevel;
+import org.gradle.api.plugins.quality.internal.findbugs.FindBugsResult;
 import org.gradle.api.reporting.Reporting;
 import org.gradle.api.reporting.SingleFileReport;
 import org.gradle.api.resources.TextResource;
@@ -36,18 +35,15 @@ import org.gradle.internal.logging.ConsoleRenderer;
 import org.gradle.internal.reflect.Instantiator;
 import org.gradle.process.internal.worker.WorkerProcessFactory;
 
-import com.github.spotbugs.internal.SpotBugsClasspathValidator;
 import com.github.spotbugs.internal.SpotBugsReportsImpl;
 import com.github.spotbugs.internal.SpotBugsReportsInternal;
-import com.github.spotbugs.internal.SpotBugsResult;
-import com.github.spotbugs.internal.SpotBugsSpec;
-import com.github.spotbugs.internal.SpotBugsSpecBuilder;
-import com.github.spotbugs.internal.SpotBugsWorkerManager;
 import com.github.spotbugs.reporting.SpotBugsReports;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.TextUICommandLine;
 import groovy.lang.Closure;
 
 @CacheableTask
@@ -203,46 +199,31 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
 
   @TaskAction
   public void run() throws IOException, InterruptedException {
-      new SpotBugsClasspathValidator(JavaVersion.current()).validateClasspath(
-          Iterables.transform(getSpotBugsClasspath().getFiles(), new Function<File, String>() {
-              @Override
-              public String apply(File input) {
-                  return input.getName();
-              }
-          }));
-      SpotBugsSpec spec = generateSpec();
-      SpotBugsWorkerManager manager = new SpotBugsWorkerManager();
+    final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    try {
+        String[] strArray = extraArgs.toArray(new String[0]);
 
-      getLogging().captureStandardOutput(LogLevel.DEBUG);
-      getLogging().captureStandardError(LogLevel.DEBUG);
+        Thread.currentThread().setContextClassLoader(FindBugs2.class.getClassLoader());
+        FindBugs2 findBugs2 = new FindBugs2();
+        TextUICommandLine commandLine = new TextUICommandLine();
+        FindBugs.processCommandLine(commandLine, strArray, findBugs2);
+        findBugs2.execute();
 
-      SpotBugsResult result = manager.runWorker(getProject().getProjectDir(), getWorkerProcessBuilderFactory(), getSpotBugsClasspath(), spec);
-      evaluateResult(result);
+        evaluateResult(createFindbugsResult(findBugs2));
+    } finally {
+        Thread.currentThread().setContextClassLoader(contextClassLoader);
+    }
+  }
+  
+  FindBugsResult createFindbugsResult(IFindBugsEngine findBugs) {
+    int bugCount = findBugs.getBugCount();
+    int missingClassCount = findBugs.getMissingClassCount();
+    int errorCount = findBugs.getErrorCount();
+    return new FindBugsResult(bugCount, missingClassCount, errorCount);
   }
 
   @VisibleForTesting
-  SpotBugsSpec generateSpec() {
-      SpotBugsSpecBuilder specBuilder = new SpotBugsSpecBuilder(getClasses())
-          .withPluginsList(getPluginClasspath())
-          .withSources(getSource())
-          .withClasspath(getClasspath())
-          .withDebugging(getLogger().isDebugEnabled())
-          .withEffort(getEffort())
-          .withReportLevel(getReportLevel())
-          .withMaxHeapSize(getMaxHeapSize())
-          .withVisitors(getVisitors())
-          .withOmitVisitors(getOmitVisitors())
-          .withExcludeFilter(getExcludeFilter())
-          .withIncludeFilter(getIncludeFilter())
-          .withExcludeBugsFilter(getExcludeBugsFilter())
-          .withExtraArgs(getExtraArgs())
-          .configureReports(getReports());
-
-      return specBuilder.build();
-  }
-
-  @VisibleForTesting
-  void evaluateResult(SpotBugsResult result) {
+  void evaluateResult(FindBugsResult result) {
       if (result.getException() != null) {
           throw new GradleException("SpotBugs encountered an error. Run with --debug to get more information.", result.getException());
       }
@@ -264,9 +245,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
           } else {
               throw new GradleException(message);
           }
-
       }
-
   }
 
   public SpotBugsTask extraArgs(Iterable<String> arguments) {

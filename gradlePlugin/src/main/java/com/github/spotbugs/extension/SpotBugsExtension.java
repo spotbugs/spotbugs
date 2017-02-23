@@ -13,14 +13,13 @@ import org.gradle.api.resources.TextResource;
  */
 public class SpotBugsExtension extends CodeQualityExtension{
   private final Project project;
-  private String effort;
-  private String reportLevel;
+  private String effort = "default";
+  private String reportLevel = "medium";
   private Collection<String> visitors;
   private Collection<String> omitVisitors;
   private TextResource includeFilterConfig;
   private TextResource excludeFilterConfig;
   private TextResource excludeBugsFilterConfig;
-  private Collection<String> extraArgs;
   
   public SpotBugsExtension(Project project) {
     this.project = project;
@@ -134,24 +133,5 @@ public class SpotBugsExtension extends CodeQualityExtension{
    */
   public void setExcludeBugsFilter(File filter) {
       setExcludeBugsFilterConfig(project.getResources().getText().fromFile(filter));
-  }
-  
-  /**
-   * Any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to FindBugs.
-   * <p>
-   * Extra arguments are passed to FindBugs after the arguments Gradle understands (like {@code effort} but before the list of classes to analyze.
-   * This should only be used for arguments that cannot be provided by Gradle directly.
-   * Gradle does not try to interpret or validate the arguments before passing them to FindBugs.
-   * <p>
-   * See the <a href="https://code.google.com/p/findbugs/source/browse/findbugs/src/java/edu/umd/cs/findbugs/TextUICommandLine.java">FindBugs
-   * TextUICommandLine source</a> for available options.
-   *
-   * @since 2.6
-   */
-  public Collection<String> getExtraArgs() {
-    return extraArgs;
-  }
-  public void setExtraArgs(Collection<String> extraArgs) {
-    this.extraArgs = extraArgs;
   }
 }
