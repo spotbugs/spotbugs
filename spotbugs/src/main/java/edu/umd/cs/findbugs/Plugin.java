@@ -637,6 +637,11 @@ public class Plugin {
 
     /**
      * Loads the given plugin and enables it for the given project.
+     * 
+     * @param f
+     *      A non-null jar file of custom plugin.
+     * @param project
+     *      A nullable target project
      */
     public static Plugin loadCustomPlugin(File f, @CheckForNull Project project)
             throws PluginException {

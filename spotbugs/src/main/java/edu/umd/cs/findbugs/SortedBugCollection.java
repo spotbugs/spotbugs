@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -1301,5 +1302,9 @@ public class SortedBugCollection implements BugCollection {
         bugsPopulated = true;
     }
 
+    @Override
+    public String toString() {
+        return bugSet.stream().map(Object::toString).collect(Collectors.joining(",", "[", "]"));
+    }
 }
 
