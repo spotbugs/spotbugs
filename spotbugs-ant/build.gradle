@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compile project(':findbugs')
+  compile project(':spotbugs')
   compile 'org.apache.ant:ant:1.9.4'
 }
 

@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/spotbugs/spotbugs.svg?branch=master)](https://travis-ci.org/spotbugs/spotbugs)
 [![Coverage Status](https://coveralls.io/repos/github/spotbugs/spotbugs/badge.svg?branch=master)](https://coveralls.io/github/spotbugs/spotbugs?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs)
+[![Javadocs](http://javadoc.io/badge/com.github.spotbugs/spotbugs.svg)](http://javadoc.io/doc/com.github.spotbugs/spotbugs)
 
 
 [SpotBugs](https://spotbugs.github.io/) is the spiritual successor of [FindBugs](https://github.com/findbugsproject/findbugs), carrying on from the point where it left off with support of its community.
