@@ -25,13 +25,13 @@ import com.google.common.util.concurrent.Callables;
  * Additional plugins can be added to the <tt>findbugsPlugins</tt> configuration.
  *
  * <p>
- * For projects that have the Java (base) plugin applied, a {@link FindBugs} task is
+ * For projects that have the Java (base) plugin applied, a {@link SpotBugsTask} task is
  * created for each source set.
  *
- * @see FindBugs
+ * @see SpotBugsTask
  * @see FindBugsExtension
  */
-public class SpotBugsPlugin extends AbstractCodeQualityPlugin<FindBugs> {
+public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     public static final String DEFAULT_FINDBUGS_VERSION = "3.0.1";
     private FindBugsExtension extension;
@@ -42,8 +42,8 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<FindBugs> {
     }
 
     @Override
-    protected Class<FindBugs> getTaskType() {
-        return FindBugs.class;
+    protected Class<SpotBugsTask> getTaskType() {
+        return SpotBugsTask.class;
     }
 
     @Override
@@ -60,13 +60,13 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<FindBugs> {
 
     @Override
     protected CodeQualityExtension createExtension() {
-        extension = project.getExtensions().create("findbugs", FindBugsExtension.class, project);
+        extension = project.getExtensions().create("spotbugs", FindBugsExtension.class, project);
         extension.setToolVersion(DEFAULT_FINDBUGS_VERSION);
         return extension;
     }
 
     @Override
-    protected void configureTaskDefaults(FindBugs task, String baseName) {
+    protected void configureTaskDefaults(SpotBugsTask task, String baseName) {
         task.setPluginClasspath(project.getConfigurations().getAt("findbugsPlugins"));
         Configuration configuration = project.getConfigurations().getAt("findbugs");
         configureDefaultDependencies(configuration);
@@ -83,7 +83,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<FindBugs> {
         });
     }
 
-    private void configureTaskConventionMapping(Configuration configuration, FindBugs task) {
+    private void configureTaskConventionMapping(Configuration configuration, SpotBugsTask task) {
         ConventionMapping taskMapping = task.getConventionMapping();
         taskMapping.map("findbugsClasspath", Callables.returning(configuration));
         taskMapping.map("ignoreFailures", new Callable<Boolean>() {
@@ -144,7 +144,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<FindBugs> {
         });
     }
 
-    private void configureReportsConventionMapping(FindBugs task, final String baseName) {
+    private void configureReportsConventionMapping(SpotBugsTask task, final String baseName) {
         task.getReports().all(new Action<SingleFileReport>() {
             @Override
             public void execute(final SingleFileReport report) {
@@ -166,7 +166,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<FindBugs> {
     }
 
     @Override
-    protected void configureForSourceSet(final SourceSet sourceSet, FindBugs task) {
+    protected void configureForSourceSet(final SourceSet sourceSet, SpotBugsTask task) {
         task.setDescription("Run FindBugs analysis for " + sourceSet.getName() + " classes");
         task.setSource(sourceSet.getAllJava());
         ConventionMapping taskMapping = task.getConventionMapping();

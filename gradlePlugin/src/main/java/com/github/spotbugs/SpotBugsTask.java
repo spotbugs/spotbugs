@@ -54,7 +54,7 @@ import groovy.lang.Closure;
  * options.
  */
 @CacheableTask
-public class FindBugs extends SourceTask implements VerificationTask, Reporting<FindBugsReports> {
+public class SpotBugsTask extends SourceTask implements VerificationTask, Reporting<FindBugsReports> {
   private FileCollection classes;
 
   private FileCollection classpath;
@@ -86,7 +86,7 @@ public class FindBugs extends SourceTask implements VerificationTask, Reporting<
   @Nested
   private final FindBugsReportsInternal reports;
 
-  public FindBugs() {
+  public SpotBugsTask() {
       reports = getInstantiator().newInstance(FindBugsReportsImpl.class, this);
   }
 
@@ -271,7 +271,7 @@ public class FindBugs extends SourceTask implements VerificationTask, Reporting<
 
   }
 
-  public FindBugs extraArgs(Iterable<String> arguments) {
+  public SpotBugsTask extraArgs(Iterable<String> arguments) {
       for (String argument : arguments) {
           extraArgs.add(argument);
       }
@@ -279,7 +279,7 @@ public class FindBugs extends SourceTask implements VerificationTask, Reporting<
       return this;
   }
 
-  public FindBugs extraArgs(String... arguments) {
+  public SpotBugsTask extraArgs(String... arguments) {
       extraArgs.addAll(Arrays.asList(arguments));
       return this;
   }
