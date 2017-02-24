@@ -1,4 +1,4 @@
-package com.github.spotbugs.internal;
+package com.github.spotbugs.internal.spotbugs;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,9 +8,9 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.TextUICommandLine;
 
-public class SpotBugsExecuter implements SpotBugsWorker {
+public class FindBugsExecuter implements FindBugsWorker {
   @Override
-  public SpotBugsResult runSpotBugs(SpotBugsSpec spec) throws IOException, InterruptedException {
+  public FindBugsResult runFindbugs(FindBugsSpec spec) throws IOException, InterruptedException {
       final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
       try {
           final List<String> args = spec.getArguments();
@@ -22,16 +22,16 @@ public class SpotBugsExecuter implements SpotBugsWorker {
           FindBugs.processCommandLine(commandLine, strArray, findBugs2);
           findBugs2.execute();
 
-          return createSpotBugsResult(findBugs2);
+          return createFindbugsResult(findBugs2);
       } finally {
           Thread.currentThread().setContextClassLoader(contextClassLoader);
       }
   }
 
-  SpotBugsResult createSpotBugsResult(IFindBugsEngine findBugs) {
+  FindBugsResult createFindbugsResult(IFindBugsEngine findBugs) {
           int bugCount = findBugs.getBugCount();
           int missingClassCount = findBugs.getMissingClassCount();
           int errorCount = findBugs.getErrorCount();
-          return new SpotBugsResult(bugCount, missingClassCount, errorCount);
+          return new FindBugsResult(bugCount, missingClassCount, errorCount);
       }
 }

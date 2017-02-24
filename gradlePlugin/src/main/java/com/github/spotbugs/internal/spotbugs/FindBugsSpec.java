@@ -1,17 +1,17 @@
-package com.github.spotbugs.internal;
+package com.github.spotbugs.internal.spotbugs;
 
 import java.io.Serializable;
 import java.util.List;
 
-import org.gradle.internal.impldep.com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
-public class SpotBugsSpec implements Serializable {
+public class FindBugsSpec implements Serializable {
   private static final long serialVersionUID = 1L;
   private List<String> arguments;
   private String maxHeapSize;
   private boolean debugEnabled;
 
-  public SpotBugsSpec(List<String> arguments, String maxHeapSize, boolean debugEnabled) {
+  public FindBugsSpec(List<String> arguments, String maxHeapSize, boolean debugEnabled) {
       this.debugEnabled = debugEnabled;
       this.maxHeapSize = maxHeapSize;
       this.arguments = arguments;
@@ -30,6 +30,6 @@ public class SpotBugsSpec implements Serializable {
   }
   
   public String toString() {
-      return Objects.toStringHelper(this).add("arguments", arguments).add("debugEnabled", debugEnabled).toString();
+      return MoreObjects.toStringHelper(this).add("arguments", arguments).add("debugEnabled", debugEnabled).toString();
   }
 }

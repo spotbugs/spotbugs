@@ -1,4 +1,4 @@
-package com.github.spotbugs.task;
+package com.github.spotbugs;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +11,11 @@ import javax.inject.Inject;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.Incubating;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.internal.ClosureBackedAction;
-import org.gradle.api.plugins.quality.internal.findbugs.FindBugsResult;
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.reporting.Reporting;
 import org.gradle.api.reporting.SingleFileReport;
 import org.gradle.api.resources.TextResource;
@@ -35,25 +36,30 @@ import org.gradle.internal.logging.ConsoleRenderer;
 import org.gradle.internal.reflect.Instantiator;
 import org.gradle.process.internal.worker.WorkerProcessFactory;
 
-import com.github.spotbugs.internal.SpotBugsReportsImpl;
-import com.github.spotbugs.internal.SpotBugsReportsInternal;
-import com.github.spotbugs.reporting.SpotBugsReports;
+import com.github.spotbugs.internal.FindBugsReportsImpl;
+import com.github.spotbugs.internal.FindBugsReportsInternal;
+import com.github.spotbugs.internal.spotbugs.FindBugsClasspathValidator;
+import com.github.spotbugs.internal.spotbugs.FindBugsResult;
+import com.github.spotbugs.internal.spotbugs.FindBugsSpec;
+import com.github.spotbugs.internal.spotbugs.FindBugsSpecBuilder;
+import com.github.spotbugs.internal.spotbugs.FindBugsWorkerManager;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 
-import edu.umd.cs.findbugs.FindBugs;
-import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.IFindBugsEngine;
-import edu.umd.cs.findbugs.TextUICommandLine;
 import groovy.lang.Closure;
 
+/**
+ * Analyzes code with <a href="http://findbugs.sourceforge.net">FindBugs</a>. See the <a href="http://findbugs.sourceforge.net/manual/">FindBugs Manual</a> for additional information on configuration
+ * options.
+ */
 @CacheableTask
-public class SpotBugsTask extends SourceTask implements VerificationTask, Reporting<SpotBugsReports>{
-
+public class FindBugs extends SourceTask implements VerificationTask, Reporting<FindBugsReports> {
   private FileCollection classes;
 
   private FileCollection classpath;
 
-  private FileCollection SpotBugsClasspath;
+  private FileCollection findbugsClasspath;
 
   private FileCollection pluginClasspath;
 
@@ -78,10 +84,10 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
   private Collection<String> extraArgs = new ArrayList<String>();
 
   @Nested
-  private final SpotBugsReportsInternal reports;
+  private final FindBugsReportsInternal reports;
 
-  public SpotBugsTask() {
-      reports = getInstantiator().newInstance(SpotBugsReportsImpl.class, this);
+  public FindBugs() {
+      reports = getInstantiator().newInstance(FindBugsReportsImpl.class, this);
   }
 
   @Inject
@@ -99,7 +105,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
    *
    * @return The reports container
    */
-  public SpotBugsReports getReports() {
+  public FindBugsReports getReports() {
       return reports;
   }
 
@@ -109,10 +115,10 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
    * The contained reports can be configured by name and closures. Example:
    *
    * <pre>
-   * SpotBugsTask {
+   * findbugsTask {
    *   reports {
    *     xml {
-   *       destination "build/SpotBugs.xml"
+   *       destination "build/findbugs.xml"
    *     }
    *   }
    * }
@@ -121,8 +127,8 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
    * @param closure The configuration
    * @return The reports container
    */
-  public SpotBugsReports reports(Closure closure) {
-      return reports(new ClosureBackedAction<SpotBugsReports>(closure));
+  public FindBugsReports reports(Closure closure) {
+      return reports(new ClosureBackedAction<FindBugsReports>(closure));
   }
 
   /**
@@ -131,10 +137,10 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
    * The contained reports can be configured by name and closures. Example:
    *
    * <pre>
-   * SpotBugsTask {
+   * findbugsTask {
    *   reports {
    *     xml {
-   *       destination "build/SpotBugs.xml"
+   *       destination "build/findbugs.xml"
    *     }
    *   }
    * }
@@ -144,7 +150,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
    * @param configureAction The configuration
    * @return The reports container
    */
-  public SpotBugsReports reports(Action<? super SpotBugsReports> configureAction) {
+  public FindBugsReports reports(Action<? super FindBugsReports> configureAction) {
       configureAction.execute(reports);
       return reports;
   }
@@ -199,41 +205,56 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
 
   @TaskAction
   public void run() throws IOException, InterruptedException {
-    final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    try {
-        String[] strArray = extraArgs.toArray(new String[0]);
+      new FindBugsClasspathValidator(JavaVersion.current()).validateClasspath(
+          Iterables.transform(getFindbugsClasspath().getFiles(), new Function<File, String>() {
+              @Override
+              public String apply(File input) {
+                  return input.getName();
+              }
+          }));
+      FindBugsSpec spec = generateSpec();
+      FindBugsWorkerManager manager = new FindBugsWorkerManager();
 
-        Thread.currentThread().setContextClassLoader(FindBugs2.class.getClassLoader());
-        FindBugs2 findBugs2 = new FindBugs2();
-        TextUICommandLine commandLine = new TextUICommandLine();
-        FindBugs.processCommandLine(commandLine, strArray, findBugs2);
-        findBugs2.execute();
+      getLogging().captureStandardOutput(LogLevel.DEBUG);
+      getLogging().captureStandardError(LogLevel.DEBUG);
 
-        evaluateResult(createFindbugsResult(findBugs2));
-    } finally {
-        Thread.currentThread().setContextClassLoader(contextClassLoader);
-    }
+      FindBugsResult result = manager.runWorker(getProject().getProjectDir(), getWorkerProcessBuilderFactory(), getFindbugsClasspath(), spec);
+      evaluateResult(result);
   }
-  
-  FindBugsResult createFindbugsResult(IFindBugsEngine findBugs) {
-    int bugCount = findBugs.getBugCount();
-    int missingClassCount = findBugs.getMissingClassCount();
-    int errorCount = findBugs.getErrorCount();
-    return new FindBugsResult(bugCount, missingClassCount, errorCount);
+
+  @VisibleForTesting
+  FindBugsSpec generateSpec() {
+      FindBugsSpecBuilder specBuilder = new FindBugsSpecBuilder(getClasses())
+          .withPluginsList(getPluginClasspath())
+          .withSources(getSource())
+          .withClasspath(getClasspath())
+          .withDebugging(getLogger().isDebugEnabled())
+          .withEffort(getEffort())
+          .withReportLevel(getReportLevel())
+          .withMaxHeapSize(getMaxHeapSize())
+          .withVisitors(getVisitors())
+          .withOmitVisitors(getOmitVisitors())
+          .withExcludeFilter(getExcludeFilter())
+          .withIncludeFilter(getIncludeFilter())
+          .withExcludeBugsFilter(getExcludeBugsFilter())
+          .withExtraArgs(getExtraArgs())
+          .configureReports(getReports());
+
+      return specBuilder.build();
   }
 
   @VisibleForTesting
   void evaluateResult(FindBugsResult result) {
       if (result.getException() != null) {
-          throw new GradleException("SpotBugs encountered an error. Run with --debug to get more information.", result.getException());
+          throw new GradleException("FindBugs encountered an error. Run with --debug to get more information.", result.getException());
       }
 
       if (result.getErrorCount() > 0) {
-          throw new GradleException("SpotBugs encountered an error. Run with --debug to get more information.");
+          throw new GradleException("FindBugs encountered an error. Run with --debug to get more information.");
       }
 
       if (result.getBugCount() > 0) {
-          String message = "SpotBugs rule violations were found.";
+          String message = "FindBugs rule violations were found.";
           SingleFileReport report = reports.getFirstEnabled();
           if (report != null) {
               String reportUrl = new ConsoleRenderer().asClickableFileUrl(report.getDestination());
@@ -245,10 +266,12 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
           } else {
               throw new GradleException(message);
           }
+
       }
+
   }
 
-  public SpotBugsTask extraArgs(Iterable<String> arguments) {
+  public FindBugs extraArgs(Iterable<String> arguments) {
       for (String argument : arguments) {
           extraArgs.add(argument);
       }
@@ -256,7 +279,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
       return this;
   }
 
-  public SpotBugsTask extraArgs(String... arguments) {
+  public FindBugs extraArgs(String... arguments) {
       extraArgs.addAll(Arrays.asList(arguments));
       return this;
   }
@@ -297,19 +320,19 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
   }
 
   /**
-   * Class path holding the SpotBugs library.
+   * Class path holding the FindBugs library.
    */
   @Classpath
-  public FileCollection getSpotBugsClasspath() {
-      return SpotBugsClasspath;
+  public FileCollection getFindbugsClasspath() {
+      return findbugsClasspath;
   }
 
-  public void setSpotBugsClasspath(FileCollection SpotBugsClasspath) {
-      this.SpotBugsClasspath = SpotBugsClasspath;
+  public void setFindbugsClasspath(FileCollection findbugsClasspath) {
+      this.findbugsClasspath = findbugsClasspath;
   }
 
   /**
-   * Class path holding any additional SpotBugs plugins.
+   * Class path holding any additional FindBugs plugins.
    */
   @Classpath
   public FileCollection getPluginClasspath() {
@@ -362,7 +385,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
   }
 
   /**
-   * The maximum heap size for the forked SpotBugs process (ex: '1g').
+   * The maximum heap size for the forked findbugs process (ex: '1g').
    */
   @Input
   @Optional
@@ -448,9 +471,9 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
   }
 
   /**
-   * Any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to SpotBugs. <p> Extra arguments are passed to SpotBugs after the arguments Gradle understands
+   * Any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to FindBugs. <p> Extra arguments are passed to FindBugs after the arguments Gradle understands
    * (like {@code effort} but before the list of classes to analyze. This should only be used for arguments that cannot be provided by Gradle directly. Gradle does not try to interpret or validate
-   * the arguments before passing them to SpotBugs. <p> See the <a href="https://code.google.com/p/SpotBugs/source/browse/SpotBugs/src/java/edu/umd/cs/SpotBugs/TextUICommandLine.java">SpotBugs
+   * the arguments before passing them to FindBugs. <p> See the <a href="https://code.google.com/p/findbugs/source/browse/findbugs/src/java/edu/umd/cs/findbugs/TextUICommandLine.java">FindBugs
    * TextUICommandLine source</a> for available options.
    *
    * @since 2.6
