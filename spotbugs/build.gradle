@@ -162,7 +162,7 @@ task distSrcZip(type:Exec) {
 tasks['assembleDist'].finalizedBy distSrcZip
 
 test {
-  dependsOn ':findbugsTestCases:build'
+  dependsOn ':spotbugsTestCases:build'
   maxHeapSize = '1G'
 }
 

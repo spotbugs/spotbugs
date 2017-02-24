@@ -66,7 +66,7 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 
 /**
  * Check uses of the ExpectWarning and NoWarning annotations. This is for
- * internal testing of FindBugs (against findbugsTestCases).
+ * internal testing of FindBugs (against spotbugsTestCases).
  *
  * @author David Hovemeyer
  * @deprecated The annotation based approach is useless for lambdas. Write expectations using {@code edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher} matchers in test source directory

@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 
 /**
- * This test runs a FindBugs analysis on the findbugsTestCases project and
+ * This test runs a FindBugs analysis on the spotbugsTestCases project and
  * checks if there are any unexpected bugs.
  *
  * The results are checked for the unexpected bugs of type
@@ -62,21 +62,21 @@ public class DetectorsTest {
 
     private IFindBugsEngine engine;
 
-    private  File findbugsTestCases;
+    private  File spotbugsTestCases;
 
     /** detectors which are disabled by default but which must be used in test */
     private final String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
 
     public  File getFindbugsTestCases()  {
-        if (findbugsTestCases != null) {
-            return findbugsTestCases;
+        if (spotbugsTestCases != null) {
+            return spotbugsTestCases;
         }
-        File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
+        File f = new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
         Assume.assumeTrue(f.exists());
         Assume.assumeTrue(f.isDirectory());
         Assume.assumeTrue(f.canRead());
 
-        findbugsTestCases = f;
+        spotbugsTestCases = f;
         return f;
     }
 
@@ -180,14 +180,14 @@ public class DetectorsTest {
     }
 
     /**
-     * Sets up a FB engine to run on the 'findbugsTestCases' project. It enables
+     * Sets up a FB engine to run on the 'spotbugsTestCases' project. It enables
      * all the available detectors and reports all the bug categories. Uses a
      * low priority threshold.
      */
     private void setUpEngine(String... analyzeMe) throws IOException {
         this.engine = new FindBugs2();
         Project project = new Project();
-        project.setProjectName("findbugsTestCases");
+        project.setProjectName("spotbugsTestCases");
         this.engine.setProject(project);
 
         DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
