@@ -18,7 +18,7 @@
   *   at edu.umd.cs.findbugs.FindBugs.runMain(FindBugs.java:323)
   *   at edu.umd.cs.findbugs.FindBugs2.main(FindBugs2.java:1067)
   *   Caused by: edu.umd.cs.findbugs.classfile.ResourceNotFoundException:
-  *     Resource not found: ${findbugs.home}/../findbugsTestCases/build/classes/sfBugs/*.class
+  *     Resource not found: ${findbugs.home}/../spotbugsTestCases/build/classes/sfBugs/*.class
   *   at edu.umd.cs.findbugs.classfile.impl.SingleFileCodeBase.getClassDescriptor(SingleFileCodeBase.java:225)
   *   at edu.umd.cs.findbugs.classfile.impl.SingleFileCodeBaseEntry.getClassDescriptor(SingleFileCodeBaseEntry.java:63)
   *   at edu.umd.cs.findbugs.classfile.impl.ClassPathBuilder.build(ClassPathBuilder.java:222)
@@ -59,10 +59,10 @@
                 projectName="Bug2073901"
                 debug="false">
          <!--
-             Uses findbugsTestCases as example test classes,
+             Uses spotbugsTestCases as example test classes,
              assumes test cases appear in parent directory of findbugs src
          -->
-         <class location="${findbugs.home}/../findbugsTestCases/build/classes/sfBugs/*.class" />
+         <class location="${findbugs.home}/../spotbugsTestCases/build/classes/sfBugs/*.class" />
       </findbugs>
    </target>
 

@@ -14,7 +14,7 @@
   *
   * Example exception output:
   *   Exception in thread "main" java.util.zip.ZipException:
-  *     Error opening ${findbugs.home}/../findbugsTestCases/build/classes/sfBugs/*
+  *     Error opening ${findbugs.home}/../spotbugsTestCases/build/classes/sfBugs/*
   *   at edu.umd.cs.findbugs.classfile.impl.ZipFileCodeBase.<init>(ZipFileCodeBase.java:56)
   *   at edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory.makeZipCodeBase(ZipCodeBaseFactory.java:40)
   *   at edu.umd.cs.findbugs.classfile.impl.ClassFactory.createFilesystemCodeBase(ClassFactory.java:96)
@@ -59,10 +59,10 @@
                 projectName="Bug2073889"
                 debug="false">
          <!--
-             Uses findbugsTestCases as example test classes,
+             Uses spotbugsTestCases as example test classes,
              assumes test cases appear in parent directory of findbugs src
          -->
-         <class location="${findbugs.home}/../findbugsTestCases/build/classes/sfBugs/*" />
+         <class location="${findbugs.home}/../spotbugsTestCases/build/classes/sfBugs/*" />
       </findbugs>
    </target>
 

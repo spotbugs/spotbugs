@@ -69,8 +69,8 @@ public class AbstractIntegrationTest {
     private BugCollectionBugReporter bugReporter;
 
     private File getFindbugsTestCases() {
-        final File f = new File(SystemProperties.getProperty("findbugsTestCases.home", "../findbugsTestCases"));
-        assertTrue("'findbugsTestCases' directory not found", f.exists());
+        final File f = new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
+        assertTrue("'spotbugsTestCases' directory not found", f.exists());
         assertTrue(f.isDirectory());
         assertTrue(f.canRead());
 
@@ -94,7 +94,7 @@ public class AbstractIntegrationTest {
     }
 
     /**
-     * Sets up a FB engine to run on the 'findbugsTestCases' project. It enables
+     * Sets up a FB engine to run on the 'spotbugsTestCases' project. It enables
      * all the available detectors and reports all the bug categories. Uses a
      * low priority threshold.
      */

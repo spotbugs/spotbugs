@@ -7,7 +7,7 @@ Before you submit issue or pull request, please check the following points.
 When you find problems such as false-positives or false-negatives, consider to add a JUnit test case to reproduce.
 Just three steps to follow:
 
-1. Create a [minimum and complete](http://stackoverflow.com/help/mcve) .java file under `findbugsTestCases/src/java` directory.
+1. Create a [minimum and complete](http://stackoverflow.com/help/mcve) .java file under `spotbugsTestCases/src/java` directory.
 2. Create an unit test case under `findbugs/src/test/java` directory, Refer [pull request #69](https://github.com/spotbugs/spotbugs/pull/69/files) as example.
 3. Confirm that `./gradlew clean findbugs:build` is failed by your new unit test case.
 

@@ -30,7 +30,7 @@ Import the projects
             +- findbugs
             +- findbugsEclipsePlugin
             +- findbugsEclipsePlugin-test
-            +- findbugsTestCases
+            +- spotbugsTestCases
    Click [Finish].
    g) Now "findbugs" project will be compiled by Eclipse and should not have any errors,
    the rest will have classpath errors due missing libraries/wrong target platform.
