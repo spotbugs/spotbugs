@@ -17,7 +17,6 @@ import org.gradle.api.resources.TextResource;
  * <p>Below is a full configuration example. Since all properties have sensible defaults,
  * typically only selected properties will be configured.
  *
- * <pre autoTested=''>
  *     apply plugin: "java"
  *     apply plugin: "findbugs"
  *
@@ -34,9 +33,8 @@ import org.gradle.api.resources.TextResource;
  *         excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
  *         excludeBugsFilter = file("$rootProject.projectDir/config/findbugs/excludeBugsFilter.xml")
  *     }
- * </pre>
  *
- * @see FindBugsPlugin
+ * @see SpotBugsPlugin
  */
 public class FindBugsExtension extends CodeQualityExtension {
 
