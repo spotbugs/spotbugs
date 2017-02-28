@@ -20,3 +20,19 @@ dependencies {
 test { //show test output
   testLogging.showStandardStreams = true
 }
+
+// The configuration example below shows the minimum required properties
+// configured to publish your plugin to the plugin portal
+pluginBundle {
+  website = 'https://spotbugs.github.io/'
+  vcsUrl = 'https://github.com/spotbugs/spotbugs'
+  description = "Performs quality checks on your project's Java source files using SpotBugs and generates reports from these checks"
+  tags = ['spotbugs', 'findbugs', 'code quality']
+
+  plugins {
+    spotbugsPlugin {
+      id = 'com.github.spotbugs'
+      displayName = 'SpotBugs Gradle plugin'
+    }
+  }
+}
