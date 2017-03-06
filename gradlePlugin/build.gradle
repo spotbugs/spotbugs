@@ -4,6 +4,8 @@ plugins{
   id "com.gradle.plugin-publish" version "0.9.7"
 }
 
+apply from: "$rootDir/gradle/checkstyle.gradle"
+
 version = "1.0"
 group = "com.github.spotbugs"
 
