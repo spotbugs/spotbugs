@@ -118,21 +118,13 @@ Please add `com.github.spotbugs:spotbugs` to dependency of `org.codehaus.mojo.fi
 FindBugs Gradle plugin
 ----------------------
 
-Please use findbugs plugin without the dependency on findbugs.
-You need to add the dependency on ``spotbugs`` instead.
+Please use spotbugs plugin found on https://plugins.gradle.org
 
 .. code-block:: groovy
 
-  configurations {
-    findbugs {
-      exclude group:'com.google.code.findbugs', module:'findbugs'
-    }
+  plugins {
+    id  'com.github.spotbugs' version "1.0"
   }
-  dependencies {
-    findbugs 'com.github.spotbugs:spotbugs:3.1.0-RC1'
-  }
-
-In near future we release SpotBugs Gradle plugin.
 
 FindBugs Eclipse plugin
 -----------------------
