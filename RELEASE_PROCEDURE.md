@@ -4,8 +4,7 @@ When you release fixed version of SpotBugs, please follow these procedures.
 
 ## Release to Maven Central
 
-Add necessary properties to `gradle.properties` and run `gradle clean build smoketest uploadArchives`.
-Make sure that you have proper `eclipsePlugin/local.properties` file to release Eclipse plugin at the same time.
+Add necessary properties to `~/.gradle/gradle.properties` and make sure that you have proper `eclipsePlugin/local.properties` file to release Eclipse plugin at the same time. Then run `./gradlew build smoketest uploadArchives`.
 
 Check [SonaType official page](http://central.sonatype.org/pages/gradle.html) for detail.
 
@@ -22,7 +21,7 @@ See [this pull-request](https://github.com/spotbugs/spotbugs.github.io/pull/12) 
 
 ## Release to Gradle Plugin Portal
 
-TBU
+Add necessary properties to `~/.gradle/gradle.properties` and run `./gradlew publishPlugins`.
 
 ## Release to ReadTheDocs
 
