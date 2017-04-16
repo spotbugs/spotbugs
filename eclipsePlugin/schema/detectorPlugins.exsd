@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="edu.umd.cs.findbugs.plugin.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="com.github.spotbugs.plugin.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="edu.umd.cs.findbugs.plugin.eclipse" id="findbugsPlugins" name="Custom SpotBugs plugins"/>
+         <meta.schema plugin="com.github.spotbugs.plugin.eclipse" id="findbugsPlugins" name="Custom SpotBugs plugins"/>
       </appInfo>
       <documentation>
          Extension point can be used to contribute custom plugins for the SpotBugs engine.
@@ -86,14 +86,14 @@ If a custom library path other then &quot;.&quot; is specified, forward slash &q
       <documentation>
          Example contribution for SpotBugs plugins which are deployed as a single Eclipse plugin archive (*.jar) file:
 &lt;pre&gt;
-   &lt;extension point=&quot;edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins&quot;&gt;
+   &lt;extension point=&quot;com.github.spotbugs.plugin.eclipse.detectorPlugins&quot;&gt;
       &lt;findbugsPlugin fbPluginId=&quot;my.cool.detector&quot; libraryPath=&quot;.&quot; /&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
 Example contribution for two SpotBugs plugins which are deployed as a part (*.jar library) of one Eclipse plugin. Please note different &quot;fbPluginId&quot; attributes for each SpotBugs plugin (they must match &quot;pluginid&quot; value from findbugs.xml).
 The Eclipse plugin is deployed as a directory containing one or more *.jar files:
 &lt;pre&gt;
-   &lt;extension point=&quot;edu.umd.cs.findbugs.plugin.eclipse.detectorPlugins&quot;&gt;
+   &lt;extension point=&quot;com.github.spotbugs.plugin.eclipse.detectorPlugins&quot;&gt;
       &lt;findbugsPlugin fbPluginId=&quot;my.cool.detector&quot; libraryPath=&quot;lib/myDetectorsPlugin.jar&quot; /&gt;
       &lt;findbugsPlugin fbPluginId=&quot;com.foo.detector&quot; libraryPath=&quot;lib/thirdPartyDetectorsPlugin.jar&quot; /&gt;
    &lt;/extension&gt;

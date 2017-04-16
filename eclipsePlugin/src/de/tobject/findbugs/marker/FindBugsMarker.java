@@ -39,14 +39,14 @@ public interface FindBugsMarker {
      * Marker type for FindBugs warnings. (should be the plugin id concatenated
      * with ".findbugsMarker")
      */
-    public static final String NAME = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker";
+    public static final String NAME = "com.github.spotbugs.plugin.eclipse.findbugsMarker";
 
-    public static final String TYPE_SCARIEST = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest";
+    public static final String TYPE_SCARIEST = "com.github.spotbugs.plugin.eclipse.findbugsMarkerScariest";
 
-    public static final String TYPE_SCARY = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary";
+    public static final String TYPE_SCARY = "com.github.spotbugs.plugin.eclipse.findbugsMarkerScary";
 
-    public static final String TYPE_TROUBLING = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling";
-    public static final String TYPE_OF_CONCERN = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern";
+    public static final String TYPE_TROUBLING = "com.github.spotbugs.plugin.eclipse.findbugsMarkerTroubling";
+    public static final String TYPE_OF_CONCERN = "com.github.spotbugs.plugin.eclipse.findbugsMarkerOfConcern";
 
 
     /**

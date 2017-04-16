@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
 
-   <description url="http://findbugs.cs.umd.edu/eclipse">
+   <description url="https://spotbugs.github.io/eclipse">
       This is the Eclipse update site for SpotBugs features.
    </description>
 

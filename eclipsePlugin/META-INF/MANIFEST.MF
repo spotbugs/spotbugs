@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SpotBugs Plug-in
-Bundle-SymbolicName: edu.umd.cs.findbugs.plugin.eclipse; singleton:=true
+Bundle-SymbolicName: com.github.spotbugs.plugin.eclipse; singleton:=true
 Bundle-Version: 3.1.0.qualifier
 Bundle-ClassPath: findbugs-plugin.jar,
  lib/jsr305.jar,
@@ -39,7 +39,7 @@ Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.views.properties.tabbed,
  org.eclipse.ui.console,
  org.eclipse.core.filesystem,
- findbugs;resolution:=optional;visibility:=reexport
+ spotbugs;resolution:=optional;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: registered
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
