@@ -113,10 +113,10 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * The plug-in identifier of the FindBugs Plug-in (value
-     * "edu.umd.cs.findbugs.plugin.eclipse", was
+     * "com.github.spotbugs.plugin.eclipse", was
      * <code>"de.tobject.findbugs"</code>).
      */
-    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "com.github.spotbugs.plugin.eclipse"; //$NON-NLS-1$
 
     private static final String DEFAULT_CLOUD_ID = "edu.umd.cs.findbugs.cloud.doNothingCloud";
 
@@ -149,13 +149,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * The identifier for the FindBugs builder (value
-     * <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsbuilder"</code>).
+     * <code>"com.github.spotbugs.plugin.eclipse.findbugsbuilder"</code>).
      */
     public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
 
     /**
      * The identifier for the FindBugs nature (value
-     * <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsnature"</code>).
+     * <code>"com.github.spotbugs.plugin.eclipse.findbugsnature"</code>).
      *
      * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
      */

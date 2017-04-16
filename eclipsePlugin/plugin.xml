@@ -65,7 +65,7 @@
          id="findbugsMarkerScariest"
          name="SpotBugs Problem (Scariest)"
          point="org.eclipse.core.resources.markers">
-      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="com.github.spotbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
       <super type="org.eclipse.core.resources.textmarker"/>
       <super type="org.eclipse.jdt.core.problem"/>
@@ -76,7 +76,7 @@
          id="findbugsMarkerScary"
          name="SpotBugs Problem (Scary)"
          point="org.eclipse.core.resources.markers">
-      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="com.github.spotbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
       <super type="org.eclipse.core.resources.textmarker"/>
       <super type="org.eclipse.jdt.core.problem"/>
@@ -86,7 +86,7 @@
          id="findbugsMarkerTroubling"
          name="SpotBugs Problem (Troubling)"
          point="org.eclipse.core.resources.markers">
-      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="com.github.spotbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
       <super type="org.eclipse.core.resources.textmarker"/>
       <super type="org.eclipse.jdt.core.problem"/>
@@ -96,7 +96,7 @@
          id="findbugsMarkerOfConcern"
          name="SpotBugs Problem (Of concern)"
          point="org.eclipse.core.resources.markers">
-      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+      <super type="com.github.spotbugs.plugin.eclipse.findbugsMarker"/>
       <super type="org.eclipse.core.resources.problemmarker"/>
       <super type="org.eclipse.core.resources.textmarker"/>
       <super type="org.eclipse.jdt.core.problem"/>
@@ -114,7 +114,7 @@
       <markerAttributeGrouping
             attribute="priority"
             defaultGroupingEntry="org.eclipse.jdt.ui.category.potential"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarker">
          <markerAttributeMapping
 
                markerGroupingEntry="fb.low"
@@ -153,25 +153,25 @@
    <!-- specify custom icon for findbugsMarker -->
    <extension point="org.eclipse.ui.editors.annotationTypes">
       <type
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
+            name="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
             super="org.eclipse.ui.workbench.texteditor.warning"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest"/>
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerScariest"/>
       <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerScary"
+            name="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationScary"
             super="org.eclipse.ui.workbench.texteditor.warning"/>
       <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerTroubling"
+            name="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
             super="org.eclipse.ui.workbench.texteditor.warning"/>
       <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerOfConcern"
+            name="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
             super="org.eclipse.ui.workbench.texteditor.warning"/>
   </extension>
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
+            annotationType="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationOfConcern"
             colorPreferenceKey="findbugs.ofconcern.color"
             colorPreferenceValue="146,209,120"
             icon="icons/buggy-tiny-yellow2.png"
@@ -192,7 +192,7 @@
             verticalRulerPreferenceValue="true"/>
 
       <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
+            annotationType="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationTroubling"
             colorPreferenceKey="findbugs.troubling.color"
             colorPreferenceValue="248,218,49"
             icon="icons/buggy-tiny-yellow.png"
@@ -213,7 +213,7 @@
             verticalRulerPreferenceValue="true"/>
 
        <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScary"
+            annotationType="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationScary"
             colorPreferenceKey="findbugs.scary.color"
             colorPreferenceValue="248,77,06"
             icon="icons/buggy-tiny-orange.png"
@@ -234,7 +234,7 @@
             verticalRulerPreferenceValue="true"/>
 
       <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
+            annotationType="com.github.spotbugs.plugin.eclipse.findbugsWarningAnnotationScariest"
             colorPreferenceKey="findbugs.scariest.color"
             colorPreferenceValue="212,6,28"
             icon="icons/buggy-tiny.png"
@@ -501,7 +501,7 @@
          </action>
          <filter
                name="superType"
-               value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
+               value="com.github.spotbugs.plugin.eclipse.findbugsMarker">
          </filter>
          <action
                class="de.tobject.findbugs.actions.ShowInPackageExplorerAction"
@@ -679,22 +679,22 @@
       <imageprovider
          icon="icons/buggy-tiny.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest">
+         markertype="com.github.spotbugs.plugin.eclipse.findbugsMarkerScariest">
       </imageprovider>
       <imageprovider
          icon="icons/buggy-tiny-orange.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary">
+         markertype="com.github.spotbugs.plugin.eclipse.findbugsMarkerScary">
       </imageprovider>
       <imageprovider
          icon="icons/buggy-tiny-yellow.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling">
+         markertype="com.github.spotbugs.plugin.eclipse.findbugsMarkerTroubling">
       </imageprovider>
       <imageprovider
          icon="icons/buggy-tiny-yellow2.png"
          id="de.tobject.findbugs.imageprovider"
-         markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern">
+         markertype="com.github.spotbugs.plugin.eclipse.findbugsMarkerOfConcern">
       </imageprovider>
    </extension>
 
@@ -712,19 +712,19 @@
    <extension
          point="org.eclipse.ui.ide.markerResolution">
       <markerResolutionGenerator
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScariest"
-            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerScariest"
+            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
       <markerResolutionGenerator
-            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerScary">
+            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerScary">
       </markerResolutionGenerator>
       <markerResolutionGenerator
-            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerTroubling">
+            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerTroubling">
       </markerResolutionGenerator>
       <markerResolutionGenerator
-            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerOfConcern">
+            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerOfConcern">
       </markerResolutionGenerator>
    </extension>
 
@@ -1299,7 +1299,7 @@
        <propertyTester
              class="de.tobject.findbugs.view.explorer.GroupPropertyTester"
              id="de.tobject.findbugs.BugGroupTester"
-             namespace="edu.umd.cs.findbugs.plugin.eclipse"
+             namespace="com.github.spotbugs.plugin.eclipse"
              properties="type"
              type="de.tobject.findbugs.view.explorer.BugGroup">
        </propertyTester>
@@ -1370,9 +1370,9 @@
        <transfer
             icon="icons/buggy-tiny.png"
             name="SpotBugs Preferences"
-            id="edu.umd.cs.findbugs.plugin.eclipse">
+            id="com.github.spotbugs.plugin.eclipse">
             <mapping scope="instance">
-                <entry node="edu.umd.cs.findbugs.plugin.eclipse"/>
+                <entry node="com.github.spotbugs.plugin.eclipse"/>
             </mapping>
       <description>
              Java &gt; SpotBugs preferences.
@@ -1382,111 +1382,111 @@
 
 
    <extension
-         point="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes">
+         point="com.github.spotbugs.plugin.eclipse.findbugsQuickFixes">
 
     <quickFix
         pattern="DM_BOOLEAN_CTOR"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Boolean.valueOf(YYY) instead"
     />
     <quickFix
         arguments="isFloatingPoint=true,isDouble=false"
         pattern="DM_FP_NUMBER_CTOR"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Float.valueOf(YYY) instead"
     />
     <quickFix
             arguments="isFloatingPoint=true,isDouble=true"
         pattern="DM_FP_NUMBER_CTOR"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Double.valueOf(YYY) instead"
     />
     <quickFix
         pattern="DM_NUMBER_CTOR"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Integer.valueOf(YYY) instead"
     />
     <quickFix
         pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateDoPrivilegedBlockResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateDoPrivilegedBlockResolution"
         label="Create doPrivileged() block."
     />
     <quickFix
         pattern="EI_EXPOSE_REP"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution"
         label="Clone the field (think about performance first!)"
     />
     <quickFix
         pattern="ES_COMPARING_STRINGS_WITH_EQ"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.UseEqualsResolution"
         label="Use equals(...) instead"
     />
     <quickFix
         pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.UseEqualsResolution"
         label="Use equals(...) instead"
     />
     <quickFix
         pattern="ESync_EMPTY_SYNC"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution"
         label="Remove empty synchronized block"
     />
     <quickFix
         pattern="FI_EMPTY"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
         label="Remove empty finalizer."
     />
     <quickFix
         pattern="FI_USELESS"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
         label="Remove useless finalizer."
     />
     <quickFix
         pattern="FI_PUBLIC_SHOULD_BE_PROTECTED"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.ChangePublicToProtectedResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.ChangePublicToProtectedResolution"
         label="Change public to protected."
     />
     <quickFix
         pattern="FI_MISSING_SUPER_CALL"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
         label="Add super.finalize() call."
         arguments="insertFirst=false"
     />
     <quickFix
         pattern="IJU_SETUP_NO_SUPER"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
         label="Add super.setUp() call."
         arguments="insertFirst=true"
     />
     <quickFix
         pattern="IJU_TEARDOWN_NO_SUPER"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
         label="Add super.tearDown() call."
         arguments="insertFirst=false"
     />
     <quickFix
         pattern="IM_BAD_CHECK_FOR_ODD"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution"
         label="Replace if-condition by 'x % 2 != 0'"
     />
     <quickFix
         pattern="IM_BAD_CHECK_FOR_ODD"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution"
         label="Replace if-condition by '(x &amp; 1) == 1'"
     />
     <quickFix
         pattern="MS_SHOULD_BE_FINAL"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldFinalResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.MakeFieldFinalResolution"
         label="Add 'final' modifier to field"
     />
     <quickFix
         pattern="SIC_INNER_SHOULD_BE_STATIC"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeInnerTypeStaticResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.MakeInnerTypeStaticResolution"
         label="Make inner class static"
     />
     <quickFix
         pattern="SS_SHOULD_BE_STATIC"
-        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldStaticResolution"
+        class="com.github.spotbugs.plugin.eclipse.quickfix.MakeFieldStaticResolution"
         label="Change to a static field"
     />
    </extension>

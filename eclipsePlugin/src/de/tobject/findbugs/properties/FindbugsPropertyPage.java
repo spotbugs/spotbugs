@@ -78,7 +78,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * <p>
  * There are two different preference files: FindBugs core preferences, saved in
  * the "*.fbprefs" file, and Eclipse plugin preferences, saved in the
- * "edu.umd.cs.findbugs.plugin.eclipse.prefs" file. The difference is, that FB
+ * "com.github.spotbugs.plugin.eclipse.prefs" file. The difference is, that FB
  * core prefs are saved/read by the FB core API and there should go all FB
  * engine settings and none of Eclipse related stuff.
  * <p>

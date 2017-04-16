@@ -28,6 +28,8 @@ configurations {
   compile.extendsFrom includedLibs
 }
 
+def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+
 def localProps = new Properties()
 localProps.load(new FileInputStream("$projectDir/local.properties"))
 
@@ -44,7 +46,7 @@ dependencies {
   includedLibs requiredLibs
 
   compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
-    exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar'])
+    exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar', 'com.github.spotbugs.**/*.jar'])
 
   includedLibs project(':spotbugs-annotations')
   includedLibs 'net.jcip:jcip-annotations:1.0'
@@ -57,7 +59,7 @@ dependencies {
 }
 
 task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/edu.umd.cs.findbugs.plugin.eclipse_${project.version}-source.zip", 'HEAD'
+  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
 }
 
 jar {
@@ -114,13 +116,13 @@ def distSpec = copySpec {
 
 task distZip(type:Zip, dependsOn:jar) {
   with distSpec
-  into "edu.umd.cs.findbugs.plugin.eclipse_${project.version}"
-  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.zip"
+  into "${eclipsePluginId}_${project.version}"
+  archiveName = "${eclipsePluginId}_${project.version}.zip"
 }
 
 task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
   with distSpec
-  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  archiveName = "${eclipsePluginId}_${project.version}.jar"
   destinationDir = file("${buildDir}/site/eclipse/plugins/")
 }
 
@@ -135,14 +137,14 @@ task pluginDailyJar(type:Copy, dependsOn:pluginJar) {
 }
 
 def siteFilterTokens = [
-  'PLUGIN_ID':'edu.umd.cs.findbugs.plugin.eclipse',
+  'PLUGIN_ID': eclipsePluginId,
   'PLUGIN_VERSION':"${project.version}".toString(),
-  'FEATURE_ID':'edu.umd.cs.findbugs.plugin.eclipse',
+  'FEATURE_ID': eclipsePluginId,
   'FEATURE_VERSION':"${project.version}".toString()
 ]
 
 task featureJar(type:Zip) {
-  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  archiveName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -152,7 +154,7 @@ task featureJar(type:Zip) {
 }
 
 task featureCandidateJar(type:Zip) {
-  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  archiveName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-candidate.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -162,7 +164,7 @@ task featureCandidateJar(type:Zip) {
 }
 
 task featureDailyJar(type:Zip) {
-  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_${project.version}.jar"
+  archiveName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-daily.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -228,7 +230,7 @@ task eclipseSite() {
 
 task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
   from("${buildDir}/site")
-  archiveName = "edu.umd.cs.findbugs.plugin.eclipse_site_${project.version}.zip"
+  archiveName = "${eclipsePluginId}_site_${project.version}.zip"
 }
 
 tasks['assemble'].dependsOn eclipseSite
