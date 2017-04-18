@@ -45,9 +45,6 @@ dependencies {
   compile project(':spotbugs-annotations')
 
   compileOnly 'com.apple:AppleJavaExtensions:1.4'
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.hamcrest:hamcrest-all:1.3'
-  testCompile project(':test-harness')
   testCompile 'org.apache.ant:ant:1.9.4'
 
   // TODO : Some of these can be extracted to actual dependencies
@@ -187,7 +184,7 @@ task smokeTest {
               maxRank:'20',
               timeout:'1800000',
               outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
-      sourcePath(path:'src/main/java:src/gui:src/test/java:src/tools')
+      sourcePath(path:'src/main/java:src/gui:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
       configurations.compile.each { File file -> auxClasspath(path:file.path) }
     }
