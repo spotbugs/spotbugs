@@ -2,6 +2,13 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
+## 3.1.0-RC2 (2017/Apr/22)
+
+### Changed
+
+* First release for SpotBugs Gradle Plugin ([#142](https://github.com/spotbugs/spotbugs/pull/142))
+* Change Eclipse Plugin ID to avoid conflict with FindBugs Eclipse Plugin ([#157](https://github.com/spotbugs/spotbugs/pull/157))
+
 ## 3.1.0-RC1 (2017/Feb/21)
 
 ### Added
