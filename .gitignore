@@ -7,6 +7,13 @@ build
 *.iml
 classesEclipse
 .DS_Store
+deps/
+eclipse/
+
+# generated manifest files
+eclipsePlugin/META-INF/MANIFEST-DIST.MF
+eclipsePlugin/META-INF/MANIFEST.MF
+eclipsePlugin/build.properties
 
 # TODO : Clean up
 **/local.properties

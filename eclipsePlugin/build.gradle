@@ -34,24 +34,20 @@ def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
 def localProps = new Properties()
 localProps.load(new FileInputStream("$projectDir/local.properties"))
 
-// TODO : convert these to external dependencies
-def requiredLibs = fileTree(dir:'lib', include:[
-  'jsr305.jar',
-  'jFormatString.jar',
-  'commons-lang-2.6.jar',
-  'dom4j-1.6.1.jar',
-  'jaxen-1.1.6.jar'
-])
-
 dependencies {
-  includedLibs requiredLibs
-
   compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
     exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar', 'com.github.spotbugs.**/*.jar'])
 
-  includedLibs project(':spotbugs-annotations')
+  includedLibs(project(':spotbugs-annotations')) {
+    transitive = false
+  }
   includedLibs 'net.jcip:jcip-annotations:1.0'
-  includedLibs fileTree(dir: '../findbugs/lib', include: 'bcel-6.1*.jar')
+  includedLibs 'com.google.code.findbugs:jFormatString:3.0.0'
+  includedLibs 'dom4j:dom4j:1.6.1'
+  includedLibs 'jaxen:jaxen:1.1.6'
+  includedLibs 'commons-lang:commons-lang:2.6'
+  includedLibs 'com.google.code.findbugs:jsr305:3.0.1'
+  includedLibs fileTree(dir: '../spotbugs/lib', include: 'bcel-6.1*.jar')
   includedLibs 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
 
   embeddedLibs(project(':spotbugs')) {
@@ -63,7 +59,44 @@ task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
 }
 
+def manifestSpec = manifest {
+  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+  attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+             'Bundle-Version': project.version,
+             'Bundle-ClassPath': (configurations.includedLibs.files +
+        eclipse.classpath.defaultOutputDir).collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+}
+
+def distManifestSpec = manifest {
+  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+  attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+             'Bundle-Version': project.version,
+             'Bundle-ClassPath': configurations.includedLibs.files.collect { 'lib/' + it.name }.join(',')
+}
+
+task updateManifest {
+  dependsOn configurations.includedLibs
+  doLast {
+    // write manifests
+    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+    distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
+
+    // write build.properties
+    def propsTemplate = file('build-template.properties')
+    def props = new Properties()
+    props.load(propsTemplate.newDataInputStream())
+    props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
+        configurations.includedLibs.files.collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(','))
+    props.store(file('build.properties').newWriter(), null)
+  }
+}
+
+// create manifest when importing to eclipse
+tasks.eclipse.dependsOn updateManifest
+
 jar {
+  // Make sure we always update the manifest when building
+  dependsOn updateManifest
   includeEmptyDirs = false
   from(configurations.embeddedLibs.collect { zipTree(it) }) {
     exclude 'edu/umd/cs/findbugs/gui/**/*.*'
@@ -93,25 +126,17 @@ def distSpec = copySpec {
     include 'plugin/*.*'
     include 'icons/*.*'
   }
-  from('../findbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
+  from('../spotbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
     include 'plugin/**'
-  }
-  from('../findbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
-    into 'plugin/'
   }
   from(configurations.includedLibs) {
     into 'lib/'
-    rename 'annotations-.*', 'annotations.jar'
   }
-  from('META-INF/MANIFEST.MF') {
-    filter { line ->
-      if (line.startsWith('Bundle-Version:')) {
-        return "Bundle-Version: ${project.version}"
-      }
-
-      line
-    }
+  from('META-INF/MANIFEST-DIST.MF') {
     into 'META-INF/'
+    rename {
+      'MANIFEST.MF'
+    }
   }
 }
 
