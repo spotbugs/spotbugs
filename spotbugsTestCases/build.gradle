@@ -14,15 +14,18 @@ dependencies {
   compile project(':spotbugs-annotations')
 }
 
-tasks.withType(JavaCompile).all {
-  options.compilerArgs << '-Xlint:none'
-}
-
 task classesJava7(type:JavaCompile) {
   exclude '**/*jdk8.java'
+  exclude '**/lambdas/**'
   sourceCompatibility = '1.7'
   targetCompatibility = '1.7'
   destinationDir = file("$buildDir/classes-jdk7")
+  classpath = sourceSets.main.compileClasspath
+  source = sourceSets.main.java
+}
+
+tasks.withType(JavaCompile).all {
+  options.compilerArgs << '-Xlint:none'
 }
 
 tasks['build'].dependsOn classesJava7
