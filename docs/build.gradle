@@ -1,0 +1,53 @@
+
+/**
+ * Generate list of bug categories and bug patterns.
+ * @see http://findbugs.sourceforge.net/bugDescriptions.html
+ */
+task generateBugDescriptionPage {
+  def findbugsXml = file("../spotbugs/etc/findbugs.xml")
+  def messagesXml = file("../spotbugs/etc/messages.xml")
+  def bugDescriptionPage = file('bugDescriptionList.rst')
+
+  inputs.files findbugsXml, messagesXml
+  outputs.file bugDescriptionPage
+
+  doLast {
+    def findbugs = new XmlSlurper().parse(findbugsXml)
+    def messages = new XmlSlurper().parse(messagesXml)
+    bugDescriptionPage.withWriter { writer ->
+      messages.BugCategory.sort(false) {
+        it.@category.toString()
+      }.each {
+        // TODO Do we need to hide HIDDEN bug category such as NOISE?
+        def category = it.@category
+        def categoryTitle = "${it.Description} (${it.@category})"
+        writer << "${categoryTitle}\n${'-' * categoryTitle.length()}\n"
+        it.Details.text().eachLine { line ->
+          writer << line.trim()
+          writer << '\n'
+        }
+        writer << '\n\n'
+        findbugs.BugPattern.findAll {
+          it.@category == category
+        }.each {
+          def type = it.@type
+          def abbrev = it.@abbrev
+          def message = messages.BugPattern.find {
+            it.@type == type
+          }
+          def patternTitle = "${abbrev}: ${message.ShortDescription} (${type})"
+          writer << "${patternTitle}\n${'^' * patternTitle.length()}\n\n"
+          String details = message.Details
+          writer << '.. raw:: html\n'
+          details.eachLine { line ->
+            writer << '  '
+            writer << line
+            writer << '\n'
+          }
+          writer << '\n'
+        }
+      }
+    }
+  }
+}
+tasks.processResources.dependsOn generateBugDescriptionPage

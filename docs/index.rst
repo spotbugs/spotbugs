@@ -25,4 +25,5 @@ Contents
 
    introduction
    installing
+   bugDescriptions
    migration
