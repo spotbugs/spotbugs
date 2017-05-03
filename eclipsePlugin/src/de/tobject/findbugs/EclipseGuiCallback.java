@@ -43,7 +43,7 @@ public class EclipseGuiCallback implements IGuiCallback {
     }
 
     public String getDialogTitle() {
-        return getProjectName() + ": FindBugs";
+        return getProjectName() + ": SpotBugs";
     }
 
     public String getDialogTitle(String title) {

@@ -63,7 +63,7 @@ final class ClearMarkersJob extends FindBugsJob {
     private final List<WorkItem> resources;
 
     ClearMarkersJob(IResource resource, List<WorkItem> resources) {
-        super("Removing FindBugs markers", resource);
+        super("Removing SpotBugs markers", resource);
         setRule(resource);
         this.resources = resources;
     }

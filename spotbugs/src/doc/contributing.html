@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Contributing to FindBugs</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css">
+@GOOGLE_ANALYTICS@
+</head>
+<body>
+
+<table width="100%"><tr>
+
+@HTML_SIDEBAR@
+
+<td align="left" valign="top">
+
+<h1>Contributing to FindBugs</h1>
+
+<p> If you have a bug fix or feature enhancement you would like to contribute,
+we would be happy to consider it for inclusion.</p>
+
+<h2>Import FindBugs code as Eclipse projects</h2>
+
+<p>The preferred way to get the FindBugs source code and create the patch is to use Eclipse + Git.
+You can easily import FindBugs code into Eclipse by following the steps described
+here: <a href="https://github.com/findbugsproject/findbugs/blob/master/eclipsePlugin/doc/building_findbugsplugin.txt">Import Eclipse projects</a>
+.
+</p>
+
+<h2>Preparing a patch</h2>
+
+<p> The best way to create a patch is to fork FindBugs Git repository here:
+ <a href="https://github.com/findbugsproject/findbugs">https://github.com/findbugsproject/findbugs</a>,
+ commit changes with descriptive commit messages (small commits are better) and
+ create a new <a href="https://github.com/findbugsproject/findbugs/pulls">pull request</a>
+ with the appropriate title and description.
+</p>
+
+<p> Please follow these guidelines when preparing your patch:</p>
+<ul>
+<li> <b>Use the same indentation style as the source file(s) you
+     are modifying</b>. In particular, please use spaces
+     to indent your code; four spaces per indent level.
+<li> If at all possible, avoid making whitespace modifications.
+<li> Small patches/changesets are appreciated.
+<li> If you have lot of changes, try to group them by small commits with descriptive messages.
+<li> If you have multiple patches, create <b>branch per patch</b>.
+<li> All new files should contain proper license header (<a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>).
+<li> If you are submitting a new bug detector, please submit a small
+     standalone source file that contains an instance of the
+     kind of bug the detector looks for. The file should be placed at
+     <a href="https://github.com/findbugsproject/findbugs/tree/master/spotbugsTestCases/src/java/ghBugsNew">spotbugsTestCases/src/java/ghBugsNew</a>
+     package and named after the bug or feature you are addressing.
+</ul>
+
+<p> Following these guidelines makes it much easier for us
+to incorporate new code.
+
+<h2>Where to submit a patch</h2>
+
+<p> Patches may be submitted through the
+<a href="https://github.com/findbugsproject/findbugs/pulls">pull requests</a> on the
+<a href="https://github.com/findbugsproject/findbugs">GitHub project page</a>.
+
+@HTML_FOOTER@
+
+</td>
+
+</tr></table>
+
+</body>
+</html>

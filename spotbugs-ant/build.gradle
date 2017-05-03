@@ -1,0 +1,40 @@
+apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/javadoc.gradle"
+apply from: "$rootDir/gradle/maven.gradle"
+
+dependencies {
+  compile project(':spotbugs')
+  compile 'org.apache.ant:ant:1.9.4'
+}
+
+javadoc {
+  options.with {
+    memberLevel = JavadocMemberLevel.PUBLIC
+    docTitle = 'SpotBugs Ant Task Documentation'
+  }
+}
+
+task javadocJar(type: Jar) {
+  classifier = 'javadoc'
+  from javadoc
+}
+
+task sourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+artifacts {
+  archives jar, javadocJar, sourcesJar
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.project {
+        name 'SpotBugs Ant Task'
+        description 'Ant Task to run SpotBugs'
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+<project name="Bug2073901" default="findbugs">
+  <!--
+  ****************************************
+  * $Id$
+  * SF bug 2073901:
+  *   Findbugs ant task throws exception when wildcards are present in test path
+  *   (expected behavior is to include all globbed class files)
+  *
+  * JVM:  1.5.0_16 (OS X, PPC)
+  * FBv:  1.3.7-dev-20081123
+  *
+  * Test case based on example code from Findbugs manual
+  * <http://findbugs.sourceforge.net/manual/datamining.html#antexample>
+  *
+  * Example exception output:
+  *   Exception in thread "main" java.io.IOException: IOException while scanning codebases
+  *   at edu.umd.cs.findbugs.FindBugs2.execute(FindBugs2.java:233)
+  *   at edu.umd.cs.findbugs.FindBugs.runMain(FindBugs.java:323)
+  *   at edu.umd.cs.findbugs.FindBugs2.main(FindBugs2.java:1067)
+  *   Caused by: edu.umd.cs.findbugs.classfile.ResourceNotFoundException:
+  *     Resource not found: ${findbugs.home}/../spotbugsTestCases/build/classes/sfBugs/*.class
+  *   at edu.umd.cs.findbugs.classfile.impl.SingleFileCodeBase.getClassDescriptor(SingleFileCodeBase.java:225)
+  *   at edu.umd.cs.findbugs.classfile.impl.SingleFileCodeBaseEntry.getClassDescriptor(SingleFileCodeBaseEntry.java:63)
+  *   at edu.umd.cs.findbugs.classfile.impl.ClassPathBuilder.build(ClassPathBuilder.java:222)
+  *   at edu.umd.cs.findbugs.FindBugs2.buildClassPath(FindBugs2.java:624)
+  *   at edu.umd.cs.findbugs.FindBugs2.execute(FindBugs2.java:182)
+  *   ... 2 more
+  *
+  * ****************************************
+  -->
+   <property name="jvmargs" value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${findbugs.home}" />
+
+   <echo>Specify $${findbugs.home} property on command line:  use -Dfindbugs.home=[PATH]</echo>
+
+   <path id="findbugs.lib">
+     <fileset dir="${findbugs.home}/lib">
+       <include name="findbugs-ant.jar"/>
+     </fileset>
+   </path>
+
+   <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+
+   <!-- findbugs task definition -->
+   <target name="findbugs">
+     <antcall target="analyze" />
+   </target>
+
+   <!-- analyze task -->
+   <target name="analyze">
+      <findbugs home="${findbugs.home}"
+                output="xml:withMessages"
+                timeout="90000000"
+                effort="default"
+                jvmargs="${jvmargs}"
+                failOnError="true"
+                outputFile="Bug2073901.xml"
+                projectName="Bug2073901"
+                debug="false">
+         <!--
+             Uses spotbugsTestCases as example test classes,
+             assumes test cases appear in parent directory of findbugs src
+         -->
+         <class location="${findbugs.home}/../spotbugsTestCases/build/classes/sfBugs/*.class" />
+      </findbugs>
+   </target>
+
+</project>

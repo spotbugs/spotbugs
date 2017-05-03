@@ -113,10 +113,10 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 public class FindbugsPlugin extends AbstractUIPlugin {
     /**
      * The plug-in identifier of the FindBugs Plug-in (value
-     * "edu.umd.cs.findbugs.plugin.eclipse", was
+     * "com.github.spotbugs.plugin.eclipse", was
      * <code>"de.tobject.findbugs"</code>).
      */
-    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "com.github.spotbugs.plugin.eclipse"; //$NON-NLS-1$
 
     private static final String DEFAULT_CLOUD_ID = "edu.umd.cs.findbugs.cloud.doNothingCloud";
 
@@ -136,8 +136,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static final String DETAILS_VIEW_ID = "de.tobject.findbugs.view.buginfoview";
 
-    public static final String USER_ANNOTATIONS_VIEW_ID = "de.tobject.findbugs.view.userannotationsview";
-
     public static final String TREE_VIEW_ID = "de.tobject.findbugs.view.bugtreeview";
 
     public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";
@@ -151,13 +149,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /**
      * The identifier for the FindBugs builder (value
-     * <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsbuilder"</code>).
+     * <code>"com.github.spotbugs.plugin.eclipse.findbugsbuilder"</code>).
      */
     public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
 
     /**
      * The identifier for the FindBugs nature (value
-     * <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsnature"</code>).
+     * <code>"com.github.spotbugs.plugin.eclipse.findbugsnature"</code>).
      *
      * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
      */
@@ -210,7 +208,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
-        Version.registerApplication("FindBugs-Eclipse", Version.VERSION_STRING);
+        Version.registerApplication("SpotBugs-Eclipse", Version.VERSION_STRING);
 
          // configure debugging
         configurePluginDebugOptions();
@@ -227,7 +225,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // - see de.tobject.findbugs.builder.FindBugsWorker.work() too
             String findBugsHome = getFindBugsEnginePluginLocation();
             if (DEBUG) {
-                logInfo("FindBugs home is: " + findBugsHome);
+                logInfo("SpotBugs home is: " + findBugsHome);
             }
             System.setProperty("findbugs.home", findBugsHome);
         }
@@ -584,7 +582,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public void logMessage(int severity, String message, Throwable e) {
         if (DEBUG) {
             String what = (severity == IStatus.ERROR) ? (e != null ? "Exception" : "Error") : "Warning";
-            System.out.println(what + " in FindBugs plugin: " + message);
+            System.out.println(what + " in SpotBugs plugin: " + message);
             if (e != null) {
                 e.printStackTrace();
             }
@@ -789,7 +787,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
             @Override
             public String getTaskDescription() {
-                return "creating XML FindBugs data file";
+                return "creating XML SpotBugs data file";
             }
         };
         IO.writeFile(bugCollectionFile, fileOutput, monitor);

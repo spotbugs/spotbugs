@@ -1,0 +1,4175 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                    "../../etc/docbook/docbookx.dtd" [
+<!ENTITY FindBugs "<application>FindBugs</application>">
+<!ENTITY Ant "<application>Ant</application>">
+<!ENTITY Saxon "<application>Saxon</application>">
+<!ENTITY FBHome "<replaceable>$FINDBUGS_HOME</replaceable>">
+<!ENTITY FBHomeWin "<replaceable>&#x25;FINDBUGS_HOME&#x25;</replaceable>">
+<!ENTITY nbsp "&#160;">
+]>
+
+<book lang="en" id="findbugs-manual">
+
+<bookinfo>
+<title>&FindBugs;&trade; Manual</title>
+
+<authorgroup>
+  <author>
+    <firstname>David</firstname>
+    <othername>H.</othername>
+    <surname>Hovemeyer</surname>
+  </author>
+    <author>
+        <firstname>William</firstname>
+        <othername>W.</othername>
+        <surname>Pugh</surname>
+    </author>
+</authorgroup>
+
+<copyright>
+  <year>2003 - 2012</year>
+  <holder>University of Maryland</holder>
+</copyright>
+
+<legalnotice>
+<para>
+This manual is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
+To view a copy of this license, visit
+<ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
+or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+</para>
+<para>
+The name FindBugs and the FindBugs logo are trademarked by the University of Maryland.
+</para>
+</legalnotice>
+
+<edition>@VERSION@</edition>
+
+<pubdate>@RELEASE_DATE@</pubdate>
+
+</bookinfo>
+
+<!--
+   **************************************************************************
+   Introduction
+   **************************************************************************
+-->
+
+<chapter id="introduction">
+<title>Introduction</title>
+
+<para> &FindBugs;&trade; is a program to find bugs in Java programs.  It looks for instances
+of "bug patterns" --- code instances that are likely to be errors.</para>
+
+<para> This document describes version @VERSION@ of &FindBugs;.We
+are very interested in getting your feedback on &FindBugs;. Please visit
+the <ulink url="@WEBSITE@">&FindBugs; web page</ulink> for
+the latest information on &FindBugs;, contact information, and support resources such
+as information about the &FindBugs; mailing lists.</para>
+
+<sect1>
+<title>Requirements</title>
+<para> To use &FindBugs;, you need a runtime environment compatible with
+<ulink url="http://java.sun.com/j2se">Java 2 Standard Edition</ulink>, version 1.5 or later.
+&FindBugs; is platform independent, and is known to run on GNU/Linux, Windows, and
+MacOS X platforms.</para>
+
+<para>You should have at least 512 MB of memory to use &FindBugs;.
+To analyze very large projects, more memory may be needed.</para>
+</sect1>
+
+</chapter>
+
+<!--
+   **************************************************************************
+   Installing FindBugs
+   **************************************************************************
+-->
+
+<chapter id="installing">
+<title>Installing &FindBugs;&trade;</title>
+
+<para>
+This chapter explains how to install &FindBugs;.
+</para>
+
+<sect1>
+<title>Extracting the Distribution</title>
+
+<para>
+The easiest way to install &FindBugs; is to download a binary distribution.
+Binary distributions are available in
+<ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@.tar.gz?download">gzipped tar format</ulink> and
+<ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@.zip?download">zip format</ulink>.
+Once you have downloaded a binary distribution, extract it into a directory of your choice.
+</para>
+
+<para>
+Extracting a gzipped tar format distribution:
+<screen>
+<prompt>$ </prompt><command>gunzip -c findbugs-@VERSION@.tar.gz | tar xvf -</command>
+</screen>
+</para>
+
+<para>
+Extracting a zip format distribution:
+<screen>
+<prompt>C:\Software></prompt><command>unzip findbugs-@VERSION@.zip</command>
+</screen>
+</para>
+
+<para>
+Usually, extracting a binary distribution will create a directory ending in
+<filename class="directory">findbugs-@VERSION@</filename>. For example, if you extracted
+the binary distribution from the <filename class="directory">C:\Software</filename>
+directory, then the &FindBugs; software will be extracted into the directory
+<filename class="directory">C:\Software\findbugs-@VERSION@</filename>.
+This directory is the &FindBugs; home directory.  We'll refer to it as
+&FBHome; (or &FBHomeWin; for Windows) throughout this manual.
+</para>
+</sect1>
+
+</chapter>
+
+<!--
+   **************************************************************************
+   Compiling FindBugs from Source
+   **************************************************************************
+-->
+
+<chapter id="building">
+<title>Building &FindBugs;&trade; from Source</title>
+
+<para>
+This chapter describes how to build &FindBugs; from source code.  Unless you are
+interesting in modifying &FindBugs;, you will probably want to skip to the
+<link linkend="running">next chapter</link>.
+</para>
+
+<sect1>
+<title>Prerequisites</title>
+
+<para>
+To compile &FindBugs; from source, you will need the following:
+<itemizedlist>
+  <listitem>
+    <para>
+      The <ulink url="@DOWNLOADS_WEBSITE@/findbugs-@VERSION@-source.zip?download"
+      >&FindBugs; source distribution</ulink>
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      <ulink url="http://java.sun.com/j2se/">JDK 1.5.0 or later</ulink>
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      <ulink url="http://ant.apache.org/">Apache &Ant;</ulink>, version 1.6.3 or later
+    </para>
+  </listitem>
+</itemizedlist>
+</para>
+
+<warning>
+    <para>
+        The version of &Ant; included as <filename>/usr/bin/ant</filename> on
+        Redhat Linux systems will <emphasis>not</emphasis> work for compiling
+        &FindBugs;.  We recommend you install a binary distribution of &Ant;
+        downloaded from the <ulink url="http://ant.apache.org/">&Ant; website</ulink>.
+        Make sure that when you run &Ant; your <replaceable>JAVA_HOME</replaceable>
+        environment variable points to the directory in which you installed
+        JDK 1.5 (or later).
+    </para>
+</warning>
+
+<para>
+If you want to be able to generate formatted versions of the &FindBugs; documentation,
+you will also need the following software:
+<itemizedlist>
+  <listitem>
+    <para>
+    The <ulink url="http://docbook.sourceforge.net/projects/xsl/index.html">DocBook XSL Stylesheets</ulink>.
+    These are required to convert the &FindBugs; manual into HTML format.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      The <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
+      (Also required for converting the &FindBugs; manual to HTML.)
+    </para>
+  </listitem>
+<!--
+  <listitem>
+    <para>
+    </para>
+  </listitem>
+-->
+</itemizedlist>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Extracting the Source Distribution</title>
+<para>
+After you download the source distribution, you'll need to extract it into
+a working directory.  A typical command to do this is:
+
+<screen>
+<prompt>$ </prompt><command>unzip findbugs-@VERSION@-source.zip</command>
+</screen>
+
+</para>
+</sect1>
+
+<sect1>
+<title>Modifying <filename>local.properties</filename></title>
+<para>
+If you intend to build the FindBugs documentation,
+you will need to modify the <filename>local.properties</filename> file
+used by the <ulink url="http://ant.apache.org/">&Ant;</ulink>
+<filename>build.xml</filename> file to build &FindBugs;.
+If you do not want to build the FindBugs documentation, then you
+can ignore this file.
+</para>
+
+<para>
+The <filename>local.properties</filename> overrides definitions
+in the <filename>build.properties</filename> file.
+The <filename>build.properties</filename> file looks something like this:
+<programlisting>
+<![CDATA[
+# User Configuration:
+# This section must be modified to reflect your system.
+
+local.software.home     =/export/home/daveho/linux
+
+# Set this to the directory containing the DocBook Modular XSL Stylesheets
+#  from http://docbook.sourceforge.net/projects/xsl/
+
+xsl.stylesheet.home     =${local.software.home}/docbook/docbook-xsl-1.71.1
+
+# Set this to the directory where Saxon (http://saxon.sourceforge.net/)
+# is installed.
+
+saxon.home              =${local.software.home}/java/saxon-6.5.5
+]]>
+</programlisting>
+</para>
+
+<para>
+The <varname>xsl.stylesheet.home</varname> property specifies the full
+path to the directory where you have installed the
+<ulink url="http://docbook.sourceforge.net/projects/xsl/">DocBook Modular XSL
+Stylesheets</ulink>.  You only need to specify this property if you will be
+generating the &FindBugs; documentation.
+</para>
+
+<para>
+The <varname>saxon.home</varname> property is the full path to the
+directory where you installed the <ulink url="http://saxon.sourceforge.net/">&Saxon; XSLT Processor</ulink>.
+You only need to specify this property if you will be
+generating the &FindBugs; documentation.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running &Ant;</title>
+
+<para>
+Once you have extracted the source distribution,
+made sure that &Ant; is installed,
+modified <filename>build.properties</filename> (optional),
+and configured the tools (such as &Saxon;),
+you are ready to build &FindBugs;.  Invoking &Ant; is a simple matter
+of running the command
+<screen>
+<prompt>$ </prompt><command>ant <replaceable>target</replaceable></command>
+</screen>
+where <replaceable>target</replaceable> is one of the following:
+<variablelist>
+  <varlistentry>
+    <term><command>build</command></term>
+    <listitem>
+       <para>
+         This target compiles the code for &FindBugs;. It is the default target.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>docs</command></term>
+    <listitem>
+       <para>
+       This target formats the documentation.  (It also compiles some of
+       the source code as a side-effect.)
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>runjunit</command></term>
+    <listitem>
+        <para>
+            This target compiles and runs the internal JUnit tests included
+            in &FindBugs;.  It will print an error message if any unit
+            tests fail.
+        </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>bindist</command></term>
+    <listitem>
+        <para>
+            Builds a binary distribution of &FindBugs;.
+            The target creates both <filename>.zip</filename> and
+            <filename>.tar.gz</filename> archives.
+        </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</para>
+
+<para>
+After running an &Ant; command, you should see output similar to
+the following (after some other messages regarding the tasks that
+&Ant; is running):
+<screen>
+<computeroutput>
+BUILD SUCCESSFUL
+Total time: 17 seconds
+</computeroutput>
+</screen>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running &FindBugs;&trade; from a source directory</title>
+<para>
+The &Ant; build script for &FindBugs; is written such that after
+building the <command>build</command> target, the working directory
+is set up just like a binary distribution.  So, the information about
+running &FindBugs; in <xref linkend="running" />
+applies to source distributions, too.
+</para>
+</sect1>
+
+</chapter>
+
+
+<!--
+   **************************************************************************
+   Running FindBugs
+   **************************************************************************
+-->
+
+<chapter id="running">
+<title>Running &FindBugs;&trade;</title>
+
+<para>
+&FindBugs; has two user interfaces: a graphical user interface (GUI) and a
+command line user interface.  This chapter describes
+how to run each of these user interfaces.
+</para>
+
+    <warning>
+        <para>
+            This chapter is in the process of being re-written.
+            The rewrite is not complete yet.
+        </para>
+    </warning>
+
+<!--
+<sect1>
+<title>Executing the &FindBugs;&trade; GUI</title>
+</sect1>
+-->
+
+<sect1>
+    <title>Quick Start</title>
+    <para>
+        If you are running &FindBugs; on a  Windows system,
+        double-click on the file <filename>&FBHomeWin;\lib\findbugs.jar</filename> to start the &FindBugs; GUI.
+    </para>
+
+    <para>
+        On a Unix, Linux, or Mac OS X system, run the <filename>&FBHome;/bin/findbugs</filename>
+        script, or run the command <screen>
+<command>java -jar &FBHome;/lib/findbugs.jar</command></screen>
+    to run the &FindBugs; GUI.
+    </para>
+
+    <para>
+    Refer to <xref linkend="gui"/> for information on how to use the GUI.
+    </para>
+</sect1>
+
+<sect1>
+
+    <title>Executing &FindBugs;</title>
+
+    <para>
+        This section describes how to invoke the &FindBugs; program.
+        There are two ways to invoke &FindBugs;: directly, or using a
+        wrapper script.
+    </para>
+
+
+    <sect2 id="directInvocation">
+        <title>Direct invocation of &FindBugs;</title>
+
+        <para>
+            The preferred method of running &FindBugs; is to directly execute
+            <filename>&FBHome;/lib/findbugs.jar</filename> using the <command>-jar</command>
+            command line switch of the JVM (<command>java</command>) executable.
+            (Versions of &FindBugs; prior to 1.3.5 required a wrapper script
+            to invoke &FindBugs;.)
+        </para>
+
+        <para>
+            The general syntax of invoking &FindBugs; directly is the following:
+<screen>
+    <command>java <replaceable>[JVM arguments]</replaceable> -jar &FBHome;/lib/findbugs.jar <replaceable>options...</replaceable></command>
+</screen>
+        </para>
+
+<!--
+        <para>
+            By default, executing <filename>findbugs.jar</filename> runs the
+            &FindBugs; graphical user interface (GUI).  On windows systems,
+            you can double-click on <filename>findbugs.jar</filename> to launch
+            the GUI.  From a command line, the command
+            <screen>
+java -jar <replaceable>&FBHome;</replaceable>/lib/findbugs.jar</screen>
+            will launch the GUI.
+        </para>
+-->
+
+        <sect3 id="chooseUI">
+            <title>Choosing the User Interface</title>
+
+        <para>
+            The first command line option chooses the &FindBugs; user interface to execute.
+            Possible values are:
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                <command>-gui</command>: runs the graphical user interface (GUI)
+                </para>
+            </listitem>
+
+            <listitem>
+                <para>
+                    <command>-textui</command>: runs the command line user interface
+                </para>
+            </listitem>
+
+            <listitem>
+                <para>
+                    <command>-version</command>: displays the &FindBugs; version number
+                </para>
+            </listitem>
+
+            <listitem>
+                <para>
+                    <command>-help</command>: displays help information for the
+                    &FindBugs; command line user interface
+                </para>
+            </listitem>
+
+            <listitem>
+                <para>
+                    <command>-gui1</command>: executes the original (obsolete)
+                    &FindBugs; graphical user interface
+                </para>
+            </listitem>
+        </itemizedlist>
+
+        </sect3>
+
+        <sect3 id="jvmArgs">
+            <title>Java Virtual Machine (JVM) arguments</title>
+
+            <para>
+                Several Java Virtual Machine arguments are useful when invoking
+                &FindBugs;.
+            </para>
+
+            <variablelist>
+                <varlistentry>
+                    <term><command>-Xmx<replaceable>NN</replaceable>m</command></term>
+                    <listitem>
+                        <para>
+                            Set the maximum Java heap size to <replaceable>NN</replaceable>
+                            megabytes.  &FindBugs; generally requires a large amount of
+                            memory.  For a very large project, using 1500 megabytes
+                            is not unusual.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><command>-D<replaceable>name</replaceable>=<replaceable>value</replaceable></command></term>
+                    <listitem>
+                        <para>
+                            Set a Java system property.  For example, you might use the
+                            argument <command>-Duser.language=ja</command> to display
+                            GUI messages in Japanese.
+                        </para>
+                    </listitem>
+                </varlistentry>
+
+                <!--
+                <varlistentry>
+                    <term></term>
+                    <listitem>
+                        <para>
+                        </para>
+                    </listitem>
+                </varlistentry>
+                -->
+            </variablelist>
+        </sect3>
+
+    </sect2>
+
+    <sect2 id="wrapperScript">
+        <title>Invocation of &FindBugs; using a wrapper script</title>
+
+        <para>
+            Another way to run &FindBugs; is to use a wrapper script.
+        </para>
+
+<para>
+On Unix-like systems, use the following command to invoke the wrapper script:
+<screen>
+<prompt>$ </prompt><command>&FBHome;/bin/findbugs <replaceable>options...</replaceable></command>
+</screen>
+</para>
+
+<para>
+On Windows systems, the command to invoke the wrapper script is
+<screen>
+<prompt>C:\My Directory></prompt><command>&FBHomeWin;\bin\findbugs.bat <replaceable>options...</replaceable></command>
+</screen>
+</para>
+
+<para>
+On both Unix-like and Windows systems, you can simply add the <filename><replaceable>$FINDBUGS_HOME</replaceable>/bin</filename>
+directory to your <filename>PATH</filename> environment variable and then invoke
+FindBugs using the <command>findbugs</command> command.
+</para>
+
+    <sect3 id="wrapperOptions">
+        <title>Wrapper script command line options</title>
+        <para>The &FindBugs; wrapper scripts support the following command-line options.
+        Note that these command line options are <emphasis>not</emphasis> handled by
+        the &FindBugs; program per se; rather, they are handled by the wrapper
+        script.
+        </para>
+    <variablelist>
+  <varlistentry>
+    <term><command>-jvmArgs <replaceable>args</replaceable></command></term>
+    <listitem>
+       <para>
+         Specifies arguments to pass to the JVM.  For example, you might want
+         to set a JVM property:
+<screen>
+<prompt>$ </prompt><command>findbugs -textui -jvmArgs "-Duser.language=ja" <replaceable>myApp.jar</replaceable></command>
+</screen>
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-javahome <replaceable>directory</replaceable></command></term>
+    <listitem>
+      <para>
+        Specifies the directory containing the JRE (Java Runtime Environment) to
+        use to execute &FindBugs;.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-maxHeap <replaceable>size</replaceable></command></term>
+    <listitem>
+      <para>
+      Specifies the maximum Java heap size in megabytes. The default is 256.
+      More memory may be required to analyze very large programs or libraries.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-debug</command></term>
+    <listitem>
+      <para>
+      Prints a trace of detectors run and classes analyzed to standard output.
+      Useful for troubleshooting unexpected analysis failures.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-property</command> <replaceable>name=value</replaceable></term>
+    <listitem>
+      <para>
+      This option sets a system property.&nbsp; &FindBugs; uses system properties
+      to configure analysis options.  See <xref linkend="analysisprops"/>.
+      You can use this option multiple times in order to set multiple properties.
+      Note: In most versions of Windows, the <replaceable>name=value</replaceable>
+      string must be in quotes.
+      </para>
+    </listitem>
+  </varlistentry>
+
+    </variablelist>
+
+    </sect3>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="commandLineOptions">
+<title>Command-line Options</title>
+
+<!--
+<para>
+
+There are two ways to invoke &FindBugs;.  The first invokes the Graphical User Interface (GUI):
+
+<screen>
+<prompt>$ </prompt><command>findbugs <replaceable>[standard options]</replaceable> <replaceable>[GUI options]</replaceable></command>
+</screen>
+
+The second invokes the Command Line Interface (Text UI):
+
+<screen>
+<prompt>$ </prompt><command>findbugs -textui <replaceable>[standard options]</replaceable> <replaceable>[Text UI options]</replaceable></command>
+</screen>
+</para>
+-->
+
+<para>
+    This section describes the command line options supported by &FindBugs;.
+    These command line options may be used when invoking &FindBugs; directly,
+    or when using a wrapper script.
+</para>
+
+<sect2>
+<title>Common command-line options</title>
+
+<para>
+These options may be used with both the GUI and command-line interfaces.
+</para>
+
+<variablelist>
+
+  <varlistentry>
+    <term><command>-effort:min</command></term>
+    <listitem>
+      <para>
+      This option disables analyses that increase precision but also
+      increase memory consumption.  You may want to try this option if
+      you find that &FindBugs; runs out of memory, or takes an unusually
+      long time to complete its analysis.
+      </para>
+    </listitem>
+  </varlistentry>
+
+
+  <varlistentry>
+    <term><command>-effort:max</command></term>
+    <listitem>
+      <para>
+        Enable analyses which increase precision and find more bugs, but which
+        may require more memory and take more time to complete.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-project</command> <replaceable>project</replaceable></term>
+  <listitem>
+    <para>
+    Specify a project to be analyzed.  The project file you specify should
+    be one that was created using the GUI interface.  It will typically end
+    in the extension <filename>.fb</filename> or <filename>.fbp</filename>.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <!--
+  <varlistentry>
+      <term><command></command></term>
+      <listitem>
+          <para>
+
+          </para>
+      </listitem>
+  </varlistentry>
+  -->
+
+</variablelist>
+
+</sect2>
+
+<sect2>
+<title>GUI Options</title>
+
+<para>
+These options are only accepted by the Graphical User Interface.
+
+<variablelist>
+  <varlistentry>
+    <term><command>-look:</command><replaceable>plastic|gtk|native</replaceable></term>
+    <listitem>
+       <para>
+        Set Swing look and feel.
+       </para>
+    </listitem>
+  </varlistentry>
+
+</variablelist>
+</para>
+</sect2>
+
+<sect2>
+<title>Text UI Options</title>
+
+<para>
+These options are only accepted by the Text User Interface.
+</para>
+
+<variablelist>
+  <varlistentry>
+    <term><command>-sortByClass</command></term>
+    <listitem>
+       <para>
+       Sort reported bug instances by class name.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command >-include</command> <replaceable>filterFile.xml</replaceable></term>
+    <listitem>
+       <para>
+       Only report bug instances that match the filter specified by <replaceable>filterFile.xml</replaceable>.
+       See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command >-exclude</command> <replaceable>filterFile.xml</replaceable></term>
+    <listitem>
+       <para>
+       Report all bug instances except those matching the filter specified by <replaceable>filterFile.xml</replaceable>.
+       See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*</replaceable></term>
+    <listitem>
+      <para>
+      Restrict analysis to find bugs to given comma-separated list of
+      classes and packages.
+      Unlike filtering, this option avoids running analysis on
+      classes and packages that are not explicitly matched:
+      for large projects, this may greatly reduce the amount of time
+      needed to run the analysis.  (However, some detectors may produce
+      inaccurate results if they aren't run on the entire application.)
+      Classes should be specified using their full classnames (including
+      package), and packages should be specified in the same way
+      they would in a Java <literal>import</literal> statement to
+      import all classes in the package (i.e., add <literal>.*</literal>
+      to the full name of the package).
+      Replace <literal>.*</literal> with <literal>.-</literal> to also
+      analyze all subpackages.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-low</command></term>
+  <listitem>
+    <para>
+    Report all bugs.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-medium</command></term>
+  <listitem>
+    <para>
+    Report medium and high priority bugs.  This is the default setting.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-high</command></term>
+  <listitem>
+    <para>
+    Report only high priority bugs.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-relaxed</command></term>
+    <listitem>
+        <para>
+            Relaxed reporting mode.  For many detectors, this option
+            suppresses the heuristics used to avoid reporting false positives.
+        </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-xml</command></term>
+  <listitem>
+    <para>
+    Produce the bug reports as XML.  The XML data produced may be
+    viewed in the GUI at a later time.  You may also specify this
+    option as <command>-xml:withMessages</command>; when this variant
+    of the option is used, the XML output will contain human-readable
+    messages describing the warnings contained in the file.
+    XML files generated this way are easy to transform into reports.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-html</command></term>
+  <listitem>
+    <para>
+    Generate HTML output.  By default, &FindBugs; will use the <filename>default.xsl</filename>
+    <ulink url="http://www.w3.org/TR/xslt">XSLT</ulink>
+    stylesheet to generate the HTML: you can find this file in <filename>findbugs.jar</filename>,
+    or in the &FindBugs; source or binary distributions.  Variants of this option include
+    <command>-html:plain.xsl</command>, <command>-html:fancy.xsl</command> and <command>-html:fancy-hist.xsl</command>.
+    The <filename>plain.xsl</filename> stylesheet does not use Javascript or DOM,
+    and may work better with older web browsers, or for printing.  The <filename>fancy.xsl</filename>
+    stylesheet uses DOM and Javascript for navigation and CSS for
+    visual presentation. The <command>fancy-hist.xsl</command> an evolution of <command>fancy.xsl</command> stylesheet.
+    It makes an extensive use of DOM and Javascript for dynamically filtering the lists of bugs.
+    </para>
+
+    <para>
+      If you want to specify your own
+    XSLT stylesheet to perform the transformation to HTML, specify the option as
+    <command>-html:<replaceable>myStylesheet.xsl</replaceable></command>,
+    where <replaceable>myStylesheet.xsl</replaceable> is the filename of the
+    stylesheet you want to use.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-emacs</command></term>
+  <listitem>
+    <para>
+    Produce the bug reports in Emacs format.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-xdocs</command></term>
+  <listitem>
+    <para>
+    Produce the bug reports in xdoc XML format for use with Apache Maven.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-output</command> <replaceable>filename</replaceable></term>
+    <listitem>
+       <para>
+       Produce the output in the specified file.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>-outputFile</command> <replaceable>filename</replaceable></term>
+    <listitem>
+       <para>
+       This argument is deprecated.  Use <command>-output</command> instead.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-nested</command><replaceable>[:true|false]</replaceable></term>
+  <listitem>
+    <para>
+    This option enables or disables scanning of nested jar and zip files found in
+    the list of files and directories to be analyzed.
+    By default, scanning of nested jar/zip files is enabled.
+    To disable it, add <command>-nested:false</command> to the command line
+    arguments.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-auxclasspath</command> <replaceable>classpath</replaceable></term>
+  <listitem>
+    <para>
+    Set the auxiliary classpath for analysis.  This classpath should include all
+    jar files and directories containing classes that are part of the program
+    being analyzed but you do not want to have analyzed for bugs.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-auxclasspathFromInput</command> </term>
+  <listitem>
+    <para>
+    Read the auxiliary classpath for analysis from standard input, each line adds new
+    entry to the auxiliary classpath for analysis.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-auxclasspathFromFile</command> <replaceable>filepath</replaceable></term>
+  <listitem>
+    <para>
+    Read the auxiliary classpath for analysis from file, each line adds new
+    entry to the auxiliary classpath for analysis.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-analyzeFromFile</command> <replaceable>filepath</replaceable></term>
+  <listitem>
+    <para>
+    Read the files to analyze from file, each line adds new
+    entry to the classpath for analysis.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-userPrefs</command> <replaceable>edu.umd.cs.findbugs.core.prefs</replaceable></term>
+  <listitem>
+    <para>
+    Set the path of the user preferences file to use, which might override some of the options abobe.
+    Specifying <literal>userPrefs</literal> as first argument would mean some later
+    options will override them, as last argument would mean they will override some previous options).
+    This rationale behind this option is to reuse FindBugs Eclipse project settings for command
+    line execution.
+    </para>
+  </listitem>
+  </varlistentry>
+
+<!--
+  <varlistentry>
+  <term><command></command> <replaceable></replaceable></term>
+  <listitem>
+    <para>
+    </para>
+  </listitem>
+  </varlistentry>
+-->
+
+</variablelist>
+
+</sect2>
+</sect1>
+
+
+</chapter>
+
+<chapter id="gui">
+    <title>Using the &FindBugs; GUI</title>
+
+    <para>
+        This chapter describes how to use the &FindBugs; graphical user interface (GUI).
+    </para>
+
+<sect1>
+<title>Creating a Project</title>
+<para>
+After you have started &FindBugs; using the <command>findbugs</command> command,
+choose the <menuchoice><guimenu>File</guimenu><guimenuitem>New Project</guimenuitem></menuchoice>
+menu item.  You will see a dialog which looks like this:
+<mediaobject>
+<imageobject>
+<imagedata fileref="project-dialog.png"  />
+</imageobject>
+</mediaobject>
+</para>
+
+<para>
+Use the "Add" button next to "Classpath to analyze" to select a Java archive
+file (zip, jar, ear, or war file) or directory containing java classes to analyze for bugs.  You may add multiple
+archives/directories.
+</para>
+
+<para>
+You can also add the source directories which contain
+the source code for the Java archives you are analyzing.  This will enable
+&FindBugs; to highlight the source code which contains a possible error.
+The source directories you add should be the roots of the Java
+package hierarchy.  For example, if your application is contained in the
+<varname>org.foobar.myapp</varname> package, you should add the
+parent directory of the <filename class="directory">org</filename> directory
+to the source directory list for the project.
+</para>
+
+<para>
+Another optional step is to add additional Jar files or directories as
+"Auxiliary classpath locations" entries.  You should do this if the archives and directories you are analyzing
+have references to other classes which are not included in the analyzed
+archives/directories and are not in the standard runtime classpath.  Some of the bug
+pattern detectors in &FindBugs; make use of class hierarchy information,
+so you will get more accurate results if the entire class hierarchy is
+available which &FindBugs; performs its analysis.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Running the Analysis</title>
+<para>
+Once you have added all of the archives, directories, and source directories,
+click the "Analyze" button to analyze the classes contained in the
+Jar files.  Note that for a very large program on an older computer,
+this may take quite a while (tens of minutes).  A recent computer with
+ample memory will typically be able to analyze a large program in only a
+few minutes.
+</para>
+</sect1>
+
+<sect1>
+<title>Browsing Results</title>
+
+<para>
+When the analysis completes, you will see a screen like the following:
+<mediaobject>
+  <imageobject>
+    <imagedata fileref="example-details.png"  />
+  </imageobject>
+</mediaobject>
+</para>
+
+<para>
+The upper left-hand pane of the window shows the bug tree; this is a hierarchical
+representation of all of the potential bugs detected in the analyzed
+Jar files.
+</para>
+
+<para>
+When you select a particular bug instance in the top pane, you will
+see a description of the bug in the "Details" tab of the bottom pane.
+In addition, the source code pane on the upper-right will show the
+program source code where the potential bug occurs, if source is available.
+In the above example, the bug is a stream object that is not closed.  The
+source code window highlights the line where the stream object is created.
+</para>
+
+<para>
+You may add a textual annotations to bug instances.  To do so, type them
+into the text box just below the hierarchical view.  You can type any
+information which you would like to record.  When you load and save bug
+results files, the annotations are preserved.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Saving and Opening</title>
+
+<para>
+You may use the <menuchoice><guimenu>File</guimenu><guimenuitem>Save as...</guimenuitem></menuchoice>
+menu option to save your work.  To save your work, including the jar
+file lists you specified and all bug results, choose
+"FindBugs analysis results (.xml)" from the drop-down list in the
+"Save as..." dialog.  There are also options for saving just the jar
+file lists ("FindBugs project file (.fbp)") or just the results
+("FindBugs analysis file (.fba)").
+A saved file may be loaded with the
+<menuchoice><guimenu>File</guimenu><guimenuitem>Open...</guimenuitem></menuchoice>
+menu option.
+</para>
+
+</sect1>
+
+<!--
+<sect1 id="textui">
+<title>Using the &FindBugs;&trade; Command Line Interface</title>
+
+<para>
+The &FindBugs; Command Line Interface (or Text UI) can be used to
+analyze an application for bugs non-interactively.  Each bug instance will be
+reported on a single line.  All output is written to the standard output file descriptor.
+<xref linkend="filter" /> explains how bug reports may be filtered in order
+to get only the output you're interested in.
+</para>
+
+<para>
+See <xref linkend="commandLineOptions" /> for a description of how to invoke the
+Command Line Interface.
+</para>
+</sect1>
+-->
+
+</chapter>
+
+<!--
+   **************************************************************************
+   Using the FindBugs Ant task
+   **************************************************************************
+-->
+
+<chapter id="anttask">
+<title>Using the &FindBugs;&trade; &Ant; task</title>
+
+<para>
+This chapter describes how to integrate &FindBugs; into a build script
+for <ulink url="http://ant.apache.org/">&Ant;</ulink>, which is a popular Java build
+and deployment tool.  Using the &FindBugs; &Ant; task, your build script can
+automatically run &FindBugs; on your Java code.
+</para>
+
+<para>
+The &Ant; task was generously contributed by Mike Fagan.
+</para>
+
+<sect1>
+<title>Installing the &Ant; task</title>
+
+<para>
+To install the &Ant; task, simply copy <filename>&FBHome;/lib/findbugs-ant.jar</filename>
+into the <filename>lib</filename> subdirectory of your &Ant; installation.
+
+<note>
+<para>It is strongly recommended that you use the &Ant; task with the version
+of &FindBugs; it was included with.  We do not guarantee that the &Ant; task Jar file
+will work with any version of &FindBugs; other than the one it was included with.</para>
+</note>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Modifying build.xml</title>
+
+<para>
+To incorporate &FindBugs; into <filename>build.xml</filename> (the build script
+for &Ant;), you first need to add a task definition.  This should appear as follows:
+
+<screen>
+  &lt;taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/&gt;
+</screen>
+
+The task definition specifies that when a <literal>findbugs</literal> element is
+seen in <filename>build.xml</filename>, it should use the indicated class to execute the task.
+</para>
+
+<para>
+After you have added the task definition, you can define a target
+which uses the <literal>findbugs</literal> task.  Here is an example
+which could be added to the <filename>build.xml</filename> for the
+Apache <ulink url="http://jakarta.apache.org/bcel/">BCEL</ulink> library.
+
+<screen>
+  &lt;property name="findbugs.home" value="/export/home/daveho/work/findbugs" /&gt;
+
+  &lt;target name="findbugs" depends="jar"&gt;
+    &lt;findbugs home="${findbugs.home}"
+              output="xml"
+              outputFile="bcel-fb.xml" &gt;
+      &lt;auxClasspath path="${basedir}/lib/Regex.jar" /&gt;
+      &lt;sourcePath path="${basedir}/src/java" /&gt;
+      &lt;class location="${basedir}/bin/bcel.jar" /&gt;
+    &lt;/findbugs&gt;
+  &lt;/target&gt;
+</screen>
+
+The <literal>findbugs</literal> element must have the <literal>home</literal>
+attribute set to the directory in which &FindBugs; is installed; in other words,
+&FBHome;.  See <xref linkend="installing" />.
+</para>
+
+<para>
+This target will execute &FindBugs; on <filename>bcel.jar</filename>, which is the
+Jar file produced by BCEL's build script.  (By making it depend on the "jar"
+target, we ensure that the library is fully compiled before running &FindBugs; on it.)
+The output of &FindBugs; will be saved in XML format to a file called
+<filename>bcel-fb.xml</filename>.
+An auxiliary Jar file, <filename>Regex.jar</filename>, is added to the aux classpath,
+because it is referenced by the main BCEL library.  A source path is specified
+so that the saved bug data will have accurate references to the BCEL source code.
+</para>
+</sect1>
+
+<sect1>
+<title>Executing the task</title>
+
+<para>
+Here is an example of invoking &Ant; from the command line, using the <literal>findbugs</literal>
+target defined above.
+
+<screen>
+  <prompt>[daveho@noir]$</prompt> <command>ant findbugs</command>
+  Buildfile: build.xml
+
+  init:
+
+  compile:
+
+  examples:
+
+  jar:
+
+  findbugs:
+   [findbugs] Running FindBugs...
+   [findbugs] Bugs were found
+   [findbugs] Output saved to bcel-fb.xml
+
+  BUILD SUCCESSFUL
+  Total time: 35 seconds
+</screen>
+
+In this case, because we saved the bug results in an XML file, we can
+use the &FindBugs; GUI to view the results; see <xref linkend="running"/>.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Parameters</title>
+
+<para>This section describes the parameters that may be specified when
+using the &FindBugs; task.
+
+<variablelist>
+
+  <varlistentry>
+    <term><literal>class</literal></term>
+    <listitem>
+       <para>
+       A optional nested element specifying which classes to analyze.  The <literal>class</literal>
+       element must specify a <literal>location</literal> attribute which names the
+       archive file (jar, zip, etc.), directory, or class file to be analyzed.  Multiple <literal>class</literal>
+       elements may be specified as children of a single <literal>findbugs</literal> element.
+       </para>
+       <para>In addition to or instead of specifying a <literal>class</literal> element,
+       the  &FindBugs; task can contain one or more <literal>fileset</literal> or <literal>dirset</literal> element(s) that
+       specify files or class folders to be analyzed.
+       For example, you might use a fileset to specify that all of the jar files in a directory
+       should be analyzed.
+       Using a dirset, you can have ANT dynamically collect the class folders of multiple sub-projects to be 
+       analyzed in a single run.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>auxClasspath</literal></term>
+    <listitem>
+       <para>
+       An optional nested element which specifies a classpath (Jar files or directories)
+       containing classes used by the analyzed library or application, but which
+       you don't want to analyze.  It is specified the same way as
+       &Ant;'s <literal>classpath</literal> element for the Java task.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>sourcePath</literal></term>
+    <listitem>
+       <para>
+       An optional nested element which specifies a source directory path
+       containing source files used to compile the Java code being analyzed.
+       By specifying a source path, any generated XML bug output will have
+       complete source information, which allows later viewing in the
+       GUI.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>home</literal></term>
+    <listitem>
+       <para>
+       A required attribute.
+       It must be set to the name of the directory where &FindBugs; is installed.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>quietErrors</literal></term>
+    <listitem>
+       <para>
+       An optional boolean attribute.
+       If true, reports of serious analysis errors and missing classes will
+       be suppressed in the &FindBugs; output.  Default is false.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>reportLevel</literal></term>
+    <listitem>
+       <para>
+       An optional attribute.  It specifies
+       the confidence/priority threshold for reporting issues.  If set to "low", confidence is not used to filter bugs.
+       If set to "medium" (the default), low confidence issues are suppressed.
+       If set to "high", only high confidence bugs are reported.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>output</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.
+       It specifies the output format.  If set to "xml" (the default), output
+       is in XML format.
+       If set to "xml:withMessages", output is in XML format augmented with
+       human-readable messages.  (You should use this format if you plan
+        to generate a report using an XSL stylesheet.)
+       If set to "html", output is in HTML formatted (default stylesheet is default.xsl).
+        If set to "text", output is in ad-hoc text format.
+       If set to "emacs", output is in <ulink url="http://www.gnu.org/software/emacs/">Emacs</ulink> error message format.
+       If set to "xdocs", output is xdoc XML for use with Apache Maven.
+       </para>
+    </listitem>
+  </varlistentry>
+ <varlistentry>
+    <term><literal>stylesheet</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.
+      It specifies the stylesheet to use to generate html output when the output is set to html.
+      Stylesheets included in the FindBugs distribution include default.xsl, fancy.xsl, fancy-hist.xsl, plain.xsl, and summary.xsl.
+       The default value, if no stylesheet attribute is provided, is default.xsl.
+
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>sort</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  If the <literal>output</literal> attribute
+       is set to "text", then the <literal>sort</literal> attribute specifies
+       whether or not reported bugs are sorted by class.  Default is true.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>outputFile</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  If specified, names the output file in which the
+       &FindBugs; output will be saved.  By default, the output is displayed
+       directly by &Ant;.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>debug</literal></term>
+    <listitem>
+       <para>
+      Optional boolean attribute.  If set to true, &FindBugs; prints diagnostic
+      information about which classes are being analyzed, and which bug pattern
+      detectors are being run.  Default is false.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+      <term><literal>effort</literal></term>
+      <listitem>
+          <para>
+              Set the analysis effort level.  The value specified should be
+              one of <literal>min</literal>, <literal>default</literal>,
+              or <literal>max</literal>.  See <xref linkend="commandLineOptions"/>
+              for more information about setting the analysis level.
+          </para>
+      </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>conserveSpace</literal></term>
+    <listitem>
+       <para>Synonym for effort="min".</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>workHard</literal></term>
+    <listitem>
+       <para>Synonym for effort="max".</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>visitors</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies a comma-separated list of bug detectors
+       which should be run.  The bug detectors are specified by their class names,
+       without any package qualification.  By default, all detectors which are
+       not disabled by default are run.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>omitVisitors</literal></term>
+    <listitem>
+       <para>
+       Optional attribute. It specifies a comma-separated list of bug detectors.
+       It is like the <literal>visitors</literal> attribute,
+       except it specifies detectors which will <emphasis>not</emphasis> be run.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>chooseVisitors</literal></term>
+    <listitem>
+       <para>
+       Optional attribute. It specifies a comma-separated list of bug detectors
+       prefixed with "+" or "-" to selectively enable/disable them.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>excludeFilter</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the filename of a filter specifying bugs
+       to exclude from being reported.  See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>excludePath</literal></term>
+    <listitem>
+       <para>
+       Since Findbugs 3.0.2.
+       </para>
+       <para>
+       An optional nested element which specifies a path
+       containing filters specifying bugs
+       to exclude from being reported.  See <xref linkend="filter" />.
+       </para>
+       <para>
+		Example:
+
+		<screen>
+		    &lt;findbugs home="${findbugs.home}">
+		      &lt;excludePath&gt;
+		              &lt;path&gt;
+		                      &lt;fileset dir="${findbugs-exclusion-filters.dir}" includes="findbugs-*-exclude-filter.xml" /&gt;
+		              &lt;/path&gt;
+		      &lt;/excludePath&gt;
+		    &lt;/findbugs&gt;
+		</screen>
+
+		See <ulink url="https://ant.apache.org/manual/using.html#path">Apache Ant's Path-like Structures documentation</ulink> for details.
+		</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>includeFilter</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the filename of a filter specifying
+       which bugs are reported.  See <xref linkend="filter" />.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>includePath</literal></term>
+    <listitem>
+       <para>
+       Since Findbugs 3.0.2.
+       </para>
+       <para>
+       An optional nested element which specifies a path
+       containing filters specifying which bugs
+       are reported.  See <xref linkend="filter" />.
+       </para>
+       <para>
+		Example:
+
+		<screen>
+		    &lt;findbugs home="${findbugs.home}">
+		      &lt;includePath&gt;
+		              &lt;path&gt;
+		                      &lt;fileset dir="${findbugs-inclusion-filters.dir}" includes="findbugs-*-include-filter.xml" /&gt;
+		              &lt;/path&gt;
+		      &lt;/includePath&gt;
+		    &lt;/findbugs&gt;
+		</screen>
+
+		See <ulink url="https://ant.apache.org/manual/using.html#path">Apache Ant's Path-like Structures documentation</ulink> for details.
+		</para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>projectFile</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the name of a project file.
+       Project files are created by the &FindBugs; GUI, and specify classes,
+       aux classpath entries, and source directories.  By naming a project,
+       you don't need to specify any <literal>class</literal> elements,
+       nor do you need to specify <literal>auxClasspath</literal> or
+       <literal>sourcePath</literal> attributes.
+       See <xref linkend="running"/> for how to create a project.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>jvmargs</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies any arguments that should be passed
+       to the Java virtual machine used to run &FindBugs;.  You may need to
+       use this attribute to specify flags to increase the amount of memory
+       the JVM may use if you are analyzing a very large program.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>systemProperty</literal></term>
+    <listitem>
+      <para>
+      Optional nested element.  If specified, defines a system property.
+      The <literal>name</literal> attribute specifies the name of the
+      system property, and the <literal>value</literal> attribute specifies
+      the value of the system property.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>timeout</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.  It specifies the amount of time, in milliseconds,
+       that the Java process executing &FindBugs; may run before it is
+       assumed to be hung and is terminated.  The default is 600,000
+       milliseconds, which is ten minutes.  Note that for very large
+       programs, &FindBugs; may require more than ten minutes to complete its
+       analysis.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>failOnError</literal></term>
+    <listitem>
+       <para>
+       Optional boolean attribute.  Whether to abort the build process if there is an
+       error running &FindBugs;. Defaults to "false"
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>errorProperty</literal></term>
+    <listitem>
+       <para>
+       Optional attribute which specifies the name of a property that
+       will be set to "true" if an error occurs while running &FindBugs;.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+      <term><literal>warningsProperty</literal></term>
+      <listitem>
+          <para>
+              Optional attribute which specifies the name of a property
+              that will be set to "true" if any warnings are reported by
+              &FindBugs; on the analyzed program.
+          </para>
+      </listitem>
+  </varlistentry>
+
+  <varlistentry>
+      <term><literal>userPreferencesFile</literal></term>
+      <listitem>
+          <para>
+              Optional attribute. Set the path of the user preferences file to use, which might override some of the options abobe.
+              Specifying <literal>userPreferencesFile</literal> as first argument would mean some later
+              options will override them, as last argument would mean they will override some previous options).
+              This rationale behind this option is to reuse FindBugs Eclipse project settings for command
+              line execution.
+            </para>
+      </listitem>
+  </varlistentry>
+
+  <varlistentry>
+      <term><literal>nested</literal></term>
+      <listitem>
+          <para>
+              Optional attribute which enables or disables scanning of nested jar and zip files found in
+                the list of files and directories to be analyzed.
+                By default, scanning of nested jar/zip files is enabled.
+          </para>
+      </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>setExitCode</literal></term>
+    <listitem>
+       <para>
+       Optional boolean attribute.  Whether the exit code will be returned to
+       the main ant job. Defaults to "true".
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><literal>pluginList</literal></term>
+    <listitem>
+       <para>
+       A optional String attribute or optional nested element specifying which BugDetector Jar files to add..  The <literal>pluginList</literal>
+       element must specify a <literal>location</literal> attribute which names the
+       archive file (jar, zip, etc.), directory, or class file to be analyzed.  Multiple <literal>pluginList</literal>
+       elements may be specified as children of a single <literal>findbugs</literal> element.
+       </para>
+    </listitem>
+  </varlistentry>
+
+</variablelist>
+
+
+</para>
+
+<!--
+
+-->
+
+</sect1>
+
+</chapter>
+
+<!--
+   **************************************************************************
+   Using the FindBugs Eclipse plugin
+   **************************************************************************
+-->
+
+<chapter id="eclipse">
+<title>Using the &FindBugs;&trade; Eclipse plugin</title>
+
+<para>
+The FindBugs Eclipse plugin allows &FindBugs; to be used within
+the <ulink url="http://www.eclipse.org/">Eclipse</ulink> IDE.
+The FindBugs Eclipse plugin was generously contributed by Peter Friese.
+Phil Crosby and Andrey Loskutov contributed major improvements
+to the plugin.
+</para>
+
+<sect1>
+<title>Requirements</title>
+
+<para>
+To use the &FindBugs; Plugin for Eclipse, you need Eclipse 3.3 or later,
+and JRE/JDK 1.5 or later.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Installation</title>
+
+<para>
+  We provide update sites that allow you to automatically install FindBugs into Eclipse and also query and install updates.
+  There are three different update sites</para>
+
+  <variablelist><title>FindBugs Eclipse update sites</title>
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse/">http://findbugs.cs.umd.edu/eclipse/</ulink></term>
+
+    <listitem>
+      <para>
+       Only provides official releases of FindBugs.
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-candidate/">http://findbugs.cs.umd.edu/eclipse-candidate/</ulink></term>
+
+      <listitem>
+        <para>
+          Provides official releases and release candidates of FindBugs.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry><term><ulink url="http://findbugs.cs.umd.edu/eclipse-daily/">http://findbugs.cs.umd.edu/eclipse-daily/</ulink></term>
+
+      <listitem>
+        <para>
+         Provides the daily build of FindBugs. No testing other than that it compiles.
+        </para>
+      </listitem>
+    </varlistentry>
+    </variablelist>
+
+<para>You can also manually
+download the plugin from the following link:
+<ulink url="@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download"
+>@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download</ulink>.
+Extract it in Eclipse's "plugins" subdirectory.
+(So &lt;eclipse_install_dir&gt;/plugins/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@/findbugs.png
+should be the path to the &FindBugs; logo.)
+
+</para>
+
+<para>
+Once the plugin is extracted, start Eclipse and choose
+<menuchoice>
+  <guimenu>Help</guimenu>
+  <guimenuitem>About Eclipse Platform</guimenuitem>
+  <guimenuitem>Plug-in Details</guimenuitem>
+</menuchoice>.
+You should find a plugin called "FindBugs Plug-in" provided by "FindBugs Project".
+</para>
+</sect1>
+
+<sect1>
+<title>Using the Plugin</title>
+
+<para>
+To get started, right click on a Java project in Package Explorer,
+and select the option labeled "Find Bugs".
+&FindBugs; will run, and problem markers (displayed in source
+windows, and also in the Eclipse Problems view) will point to
+locations in your code which have been identified as potential instances
+of bug patterns.
+</para>
+<para>
+You can also run &FindBugs; on existing java archives (jar, ear, zip, war etc). Simply
+create an empty Java project and attach archives to the project classpath. Having that, you
+can now right click the archive node in Package Explorer and select the option labeled
+"Find Bugs". If you additionally configure the source code locations for the binaries,
+&FindBugs; will also link the generated warnings to the right source files.
+</para>
+<para>
+You may customize how &FindBugs; runs by opening the Properties
+dialog for a Java project, and choosing the "Findbugs" property page.
+Options you may choose include:
+</para>
+
+<itemizedlist>
+  <listitem>
+    <para>
+    Enable or disable the "Run FindBugs Automatically" checkbox.
+    When enabled, FindBugs will run every time you modify a Java class
+    within the project.
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    Choose minimum warning priority and enabled bug categories.
+    These options will choose which warnings are shown.
+    For example, if you select the "Medium" warning priority,
+    only Medium and High priority warnings will be shown.
+    Similarly, if you uncheck the "Style" checkbox, no warnings
+    in the Style category will be displayed.
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    Select detectors.  The table allows you to select which detectors
+    you want to enable for your project.
+    </para>
+  </listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1>
+<title>Extending the Eclipse Plugin (since 2.0.0)</title>
+<para>
+Eclipse plugin supports contribution of custom &FindBugs; detectors (see also
+<ulink url="https://github.com/findbugsproject/findbugs/blob/master/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+for more information). There are two ways to contribute custom plugins to the Eclipse:
+</para>
+<itemizedlist>
+  <listitem>
+    <para>
+    Existing standard &FindBugs; detector packages can be configured via
+    <menuchoice>
+        <guimenu>Window</guimenu>
+        <guimenuitem>Preferences</guimenuitem>
+        <guimenuitem>Java</guimenuitem>
+        <guimenuitem>FindBugs</guimenuitem>
+        <guimenuitem>Misc. Settings</guimenuitem>
+        <guimenuitem>Custom Detectors</guimenuitem>
+    </menuchoice>.
+    Simply specify there locations of any additional plugin libraries.
+    </para>
+
+    <para>
+    The benefit of this solution is that already existing detector packages can be
+    used "as is", and that you can quickly verify the quality of third party detectors.
+    The drawback is that you have to apply this settings in each
+    new Eclipse workspace, and this settings can't be shared between team members.
+    </para>
+  </listitem>
+
+  <listitem>
+    <para>
+    It is possible to contribute custom detectors via standard Eclipse extensions mechanism.
+    </para>
+
+    <para>
+    Please check the documentation of the
+    <ulink url="https://github.com/findbugsproject/findbugs/blob/master//eclipsePlugin/schema/detectorPlugins.exsd">
+    findBugsEclipsePlugin/schema/detectorPlugins.exsd</ulink>
+    extension point how to update the plugin.xml. Existing &FindBugs; detector plugins can
+    be easily "extended" to be full featured &FindBugs; AND Eclipse detector plugins.
+    Usually you only need to add META-INF/MANIFEST.MF and plugin.xml to the jar and
+    update your build scripts to not to override the MANIFEST.MF during the build.
+    </para>
+
+    <para>
+    The benefit of this solution is that for given (shared) Eclipse installation
+    each team member has exactly same detectors set, and there is no need to configure
+    anything anymore. The (really small) precondition
+    is that you have to convert your existing detectors package to the valid
+    Eclipse plugin. You can do this even for third-party detector packages.
+    Another major differentiator is the ability to extend the default FindBugs
+    classpath at runtime with required third party libraries (see
+    <ulink url="https://github.com/findbugsproject/findbugs/blob/master/findbugs/src/doc/AddingDetectors.txt">AddingDetectors.txt</ulink>
+    for more information).
+    </para>
+  </listitem>
+
+</itemizedlist>
+
+</sect1>
+
+<sect1>
+<title>Troubleshooting</title>
+
+<para>
+This section lists common problems with the plugin and (if known) how to resolve them.
+</para>
+
+<itemizedlist>
+  <listitem>
+    <para>
+    If you see OutOfMemory error dialogs after starting &FindBugs; analysis in Eclipse,
+    please increase JVM available memory: change eclipse.ini and add the lines below
+    to the end of the file:
+    <programlisting>
+    -vmargs
+    -Xmx1000m
+    </programlisting>
+    Important: the configuration arguments starting with the line "-vmargs" must
+    be last lines in the eclipse.ini file, and only one argument per line is allowed!
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+    If you do not see any &FindBugs; problem markers (in your source
+    windows or in the Problems View), you may need to change your
+    Problems View filter settings.  See
+    <ulink url="http://findbugs.sourceforge.net/FAQ.html#q7">http://findbugs.sourceforge.net/FAQ.html#q7</ulink> for more information.
+    </para>
+  </listitem>
+
+</itemizedlist>
+
+</sect1>
+
+
+</chapter>
+
+
+<!--
+   **************************************************************************
+   Filter files
+   **************************************************************************
+-->
+
+<chapter id="filter">
+<title>Filter Files</title>
+
+<para>
+Filter files may be used to include or exclude bug reports for particular classes
+and methods.  This chapter explains how to use filter files.
+</para>
+
+
+<sect1>
+<title>Introduction to Filter Files</title>
+
+<para>
+Conceptually, a filter matches bug instances against a set of criteria.
+By defining a filter, you can select bug instances for special treatment;
+for example, to exclude or include them in a report.
+</para>
+
+<para>
+A filter file is an <ulink url="http://www.w3.org/XML/">XML</ulink> document with a top-level <literal>FindBugsFilter</literal> element
+which has some number of <literal>Match</literal> elements as children.  Each <literal>Match</literal>
+element represents a predicate which is applied to generated bug instances.
+Usually, a filter will be used to exclude bug instances.  For example:
+
+<screen>
+<prompt>$ </prompt><command>findbugs -textui -exclude <replaceable>myExcludeFilter.xml</replaceable> <replaceable>myApp.jar</replaceable></command>
+</screen>
+
+However, a filter could also be used to select bug instances to specifically
+report:
+
+<screen>
+<prompt>$ </prompt><command>findbugs -textui -include <replaceable>myIncludeFilter.xml</replaceable> <replaceable>myApp.jar</replaceable></command>
+</screen>
+</para>
+
+<para>
+<literal>Match</literal> elements contain children, which are conjuncts of the predicate.
+In other words, each of the children must be true for the predicate to be true.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Types of Match clauses</title>
+
+<variablelist>
+ <varlistentry>
+   <term><literal>&lt;Bug&gt;</literal></term>
+   <listitem><para>
+            This element specifies a particular bug pattern or patterns to match.
+            The <literal>pattern</literal> attribute is a comma-separated list of
+            bug pattern types.  You can find the bug pattern types for particular
+            warnings by looking at the output produced by the <command>-xml</command>
+            output option (the <literal>type</literal> attribute of <literal>BugInstance</literal>
+            elements), or from the <ulink url="../bugDescriptions.html">bug
+            descriptions document</ulink>.
+   </para><para>
+               For more coarse-grained matching, use <literal>code</literal> attribute. It takes
+               a comma-separated list of bug abbreviations. For most-coarse grained matching use
+               <literal>category</literal> attriute, that takes a comma separated list of bug category names:
+               <literal>CORRECTNESS</literal>, <literal>MT_CORRECTNESS</literal>,
+               <literal>BAD_PRACTICICE</literal>, <literal>PERFORMANCE</literal>, <literal>STYLE</literal>.
+   </para><para>
+               If more than one of the attributes mentioned above are specified on the same
+               <literal>&lt;Bug&gt;</literal> element, all bug patterns that match either one of specified
+               pattern names, or abreviations, or categories will be matched.
+   </para><para>
+               As a backwards compatibility measure, <literal>&lt;BugPattern&gt;</literal> and
+               <literal>&lt;BugCode&gt;</literal> elements may be used instead of
+               <literal>&lt;Bug&gt;</literal> element. Each of these uses a
+               <literal>name</literal> attribute for specifying accepted values list. Support for these
+               elements may be removed in a future release.
+   </para></listitem>
+ </varlistentry>
+
+ <varlistentry>
+    <term><literal>&lt;Confidence&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings with a particular bug confidence.
+            The <literal>value</literal> attribute should be an integer value:
+            1 to match high-confidence warnings, 2 to match normal-confidence warnings,
+            or 3 to match low-confidence warnings. &lt;Confidence&gt; replaced
+            &lt;Priority&gt; in 2.0.0 release.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+    <term><literal>&lt;Priority&gt;</literal></term>
+    <listitem>
+        <para>
+            Same as <literal>&lt;Confidence&gt;</literal>, exists for backward compatibility.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+    <term><literal>&lt;Rank&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings with a particular bug rank.
+            The <literal>value</literal> attribute should be an integer value
+            between 1 and 20, where 1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling,
+            and 15 to 20 of concern bugs.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Package&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings associated with classes within the package specified
+            using <literal>name</literal> attribute. Nested packages are not included (along the
+            lines of Java import statement). However matching multiple packages can be achieved
+            easily using regex name match.
+        </para>
+    </listitem>
+  </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Class&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings associated with a particular class. The
+            <literal>name</literal> attribute is used to specify the exact or regex match pattern
+            for the class name.  The <literal>role</literal> attribute is the class role.
+        </para>
+
+        <para>
+            As a backward compatibility measure, instead of element of this type, you can use
+             <literal>class</literal> attribute on a <literal>Match</literal> element to specify
+             exact an class name or <literal>classregex</literal> attribute to specify a regular
+             expression to match the class name against.
+        </para>
+
+        <para>
+            If the <literal>Match</literal> element contains neither a <literal>Class</literal> element,
+            nor a <literal>class</literal> / <literal>classregex</literal> attribute, the predicate will apply
+            to all classes. Such predicate is likely to match more bug instances than you want, unless it is
+            refined further down with appropriate method or field predicates.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Source&gt;</literal></term>
+    <listitem>
+        <para>
+            This element matches warnings associated with a particular source file. The
+            <literal>name</literal> attribute is used to specify the exact or regex match pattern
+            for the source file name.
+        </para>
+    </listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Method&gt;</literal></term>
+
+   <listitem><para>This element specifies a method.  The <literal>name</literal> is used to specify
+   the exact or regex match pattern for the method name.
+   The <literal>params</literal> attribute is a comma-separated list
+   of the types of the method's parameters.  The <literal>returns</literal> attribute is
+   the method's return type. The <literal>role</literal> attribute is
+   the method role. In <literal>params</literal> and <literal>returns</literal>, class names
+   must be fully qualified. (E.g., "java.lang.String" instead of just
+   "String".) If one of the latter attributes is specified the other is required for creating a method signature.
+   Note that you can provide either <literal>name</literal> attribute or <literal>params</literal>
+   and <literal>returns</literal> attributes or all three of them. This way you can provide various kinds of
+   name and signature based matches.
+   </para></listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Field&gt;</literal></term>
+
+   <listitem><para>This element specifies a field. The <literal>name</literal> attribute is used to specify
+   the exact or regex match pattern for the field name. You can also filter fields according to their signature -
+   use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify either or both
+   of these attributes in order to perform name / signature based matches. The <literal>role</literal> attribute is
+   the field role.
+   </para></listitem>
+ </varlistentry>
+
+   <varlistentry>
+   <term><literal>&lt;Local&gt;</literal></term>
+
+   <listitem><para>This element specifies a local variable. The <literal>name</literal> attribute is used to specify
+   the exact or regex match pattern for the local variable name. Local variables are variables defined within a method.
+   </para></listitem>
+ </varlistentry>
+
+ <varlistentry>
+   <term><literal>&lt;Or&gt;</literal></term>
+    <listitem><para>
+   This element combines <literal>Match</literal> clauses as disjuncts.  I.e., you can put two
+   <literal>Method</literal> elements in an <literal>Or</literal> clause in order to match either method.
+   </para></listitem>
+ </varlistentry>
+ <varlistentry>
+   <term><literal>&lt;And&gt;</literal></term>
+    <listitem><para>
+   This element combines <literal>Match</literal> clauses which both must evaluate to true.  I.e., you can put
+   <literal>Bug</literal> and <literal>Confidence</literal> elements in an <literal>And</literal> clause in order
+   to match specific bugs with given confidence only.
+   </para></listitem>
+ </varlistentry>
+ <varlistentry>
+   <term><literal>&lt;Not&gt;</literal></term>
+    <listitem><para>
+   This element inverts the included child <literal>Match</literal>. I.e., you can put a
+   <literal>Bug</literal> element in a <literal>Not</literal> clause in order to match any bug
+   excluding the given one.
+   </para></listitem>
+ </varlistentry>
+</variablelist>
+
+</sect1>
+
+<sect1>
+<title>Java element name matching</title>
+
+<para>
+If the <literal>name</literal> attribute of <literal>Class</literal>, <literal>Source</literal>,
+<literal>Method</literal> or <literal>Field</literal> starts with the ~ character
+the rest of attribute content is interpreted as
+a Java regular expression that is matched against the names of the Java element in question.
+</para>
+
+<para>
+Note that the pattern is matched against whole element name and therefore .* clauses need to be used
+at pattern beginning and/or end to perform substring matching.
+</para>
+
+<para>
+See <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html"><literal>java.util.regex.Pattern</literal></ulink>
+documentation for pattern syntax.
+</para>
+</sect1>
+
+<sect1>
+<title>Caveats</title>
+
+<para>
+<literal>Match</literal> clauses can only match information that is actually contained in the
+bug instances.  Every bug instance has a class, so in general, excluding
+bugs by class will work.
+</para>
+
+<para>
+Some bug instances have two (or more) classes.  For example, the DE (dropped exception)
+bugs report both the class containing the method where the dropped exception
+happens, and the class which represents the type of the dropped exception.
+Only the <emphasis>first</emphasis> (primary) class is matched against <literal>Match</literal> clauses.
+So, for example, if you want to suppress IC (initialization circularity)
+reports for classes "com.foobar.A" and "com.foobar.B", you would use
+two <literal>Match</literal> clauses:
+
+<programlisting>
+   &lt;Match&gt;
+      &lt;Class name="com.foobar.A" /&gt;
+      &lt;Bug code="IC" /&gt;
+   &lt;/Match&gt;
+
+   &lt;Match&gt;
+      &lt;Class name="com.foobar.B" /&gt;
+      &lt;Bug code="IC" /&gt;
+   &lt;/Match&gt;
+</programlisting>
+
+By explicitly matching both classes, you ensure that the IC bug instance will be
+matched regardless of which class involved in the circularity happens to be
+listed first in the bug instance.  (Of course, this approach might accidentally
+suppress circularities involving "com.foobar.A" or "com.foobar.B" and a third
+class.)
+</para>
+
+<para>
+Many kinds of bugs report what method they occur in.  For those bug instances,
+you can put <literal>Method</literal> clauses in the <literal>Match</literal> element and they should work
+as expected.
+</para>
+
+</sect1>
+
+<sect1>
+<title>Examples</title>
+
+<para>
+  1. Match all bug reports for a class.
+
+<programlisting>
+<![CDATA[
+     <Match>
+       <Class name="com.foobar.MyClass" />
+     </Match>
+]]>
+</programlisting>
+
+</para>
+
+<para>
+  2. Match certain tests from a class by specifying their abbreviations.
+<programlisting>
+<![CDATA[
+     <Match>
+       <Class name="com.foobar.MyClass"/ >
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  3. Match certain tests from all classes by specifying their abbreviations.
+
+<programlisting>
+<![CDATA[
+     <Match>
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  4. Match certain tests from all classes by specifying their category.
+
+<programlisting>
+<![CDATA[
+     <Match>
+       <Bug category="PERFORMANCE" />
+     </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  5. Match bug types from specified methods of a class by their abbreviations.
+
+<programlisting>
+<![CDATA[
+     <Match>
+       <Class name="com.foobar.MyClass" />
+       <Or>
+         <Method name="frob" params="int,java.lang.String" returns="void" />
+         <Method name="blat" params="" returns="boolean" />
+       </Or>
+       <Bug code="DC" />
+     </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+    6. Match a particular bug pattern in a particular method.
+
+<programlisting>
+<![CDATA[
+    <!-- A method with an open stream false positive. -->
+    <Match>
+      <Class name="com.foobar.MyClass" />
+      <Method name="writeDataToFile" />
+      <Bug pattern="OS_OPEN_STREAM" />
+    </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+    7. Match a particular bug pattern with a given priority in a particular method.
+
+<programlisting>
+<![CDATA[
+    <!-- A method with a dead local store false positive (medium priority). -->
+    <Match>
+      <Class name="com.foobar.MyClass" />
+      <Method name="someMethod" />
+      <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+      <Priority value="2" />
+    </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+    8. Match minor bugs introduced by AspectJ compiler (you are probably not interested in these unless
+    you are an AspectJ developer).
+
+<programlisting>
+<![CDATA[
+    <Match>
+      <Class name="~.*\$AjcClosure\d+" />
+      <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+      <Method name="run" />
+    </Match>
+    <Match>
+      <Bug pattern="UUF_UNUSED_FIELD" />
+      <Field name="~ajc\$.*" />
+    </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+    9. Match bugs in specific parts of the code base
+
+<programlisting>
+<![CDATA[
+    <!-- match unused fields warnings in Messages classes in all packages -->
+    <Match>
+      <Class name="~.*\.Messages" />
+      <Bug code="UUF" />
+    </Match>
+    <!-- match mutable statics warnings in all internal packages -->
+    <Match>
+      <Package name="~.*\.internal" />
+      <Bug code="MS" />
+    </Match>
+    <!-- match anonymoous inner classes warnings in ui package hierarchy -->
+    <Match>
+      <Package name="~com\.foobar\.fooproject\.ui.*" />
+      <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+    </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+    10. Match bugs on fields or methods with specific signatures
+<programlisting>
+<![CDATA[
+    <!-- match System.exit(...) usage warnings in void main(String[]) methods in all classes -->
+    <Match>
+      <Method returns="void" name="main" params="java.lang.String[]" />
+      <Bug pattern="DM_EXIT" />
+    </Match>
+    <!-- match UuF warnings on fields of type com.foobar.DebugInfo on all classes -->
+    <Match>
+      <Field type="com.foobar.DebugInfo" />
+      <Bug code="UuF" />
+    </Match>
+]]>
+</programlisting>
+</para>
+
+
+<para>
+    11. Match bugs using the Not filter operator
+<programlisting>
+<![CDATA[
+<!-- ignore all bugs in test classes, except for those bugs specifically relating to JUnit tests -->
+<!-- i.e. filter bug if ( classIsJUnitTest && ! bugIsRelatedToJUnit ) -->
+<Match>
+  <!-- the Match filter is equivalent to a logical 'And' -->
+
+  <Class name="~.*\.*Test" />
+  <!-- test classes are suffixed by 'Test' -->
+
+  <Not>
+      <Bug code="IJU" /> <!-- 'IJU' is the code for bugs related to JUnit test code -->
+  </Not>
+</Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  12. Full exclusion filter file to match all classes generated from Groovy source files.
+
+<programlisting>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+<Match>
+    <Source name="~.*\.groovy" />
+</Match>
+</FindBugsFilter>
+]]>
+</programlisting>
+</para>
+
+</sect1>
+
+<sect1>
+<title>Complete Example</title>
+
+<programlisting>
+<![CDATA[
+<FindBugsFilter>
+     <Match>
+       <Class name="com.foobar.ClassNotToBeAnalyzed" />
+     </Match>
+
+     <Match>
+       <Class name="com.foobar.ClassWithSomeBugsMatched" />
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+
+     <!-- Match all XYZ violations. -->
+     <Match>
+       <Bug code="XYZ" />
+     </Match>
+
+     <!-- Match all doublecheck violations in these methods of "AnotherClass". -->
+     <Match>
+       <Class name="com.foobar.AnotherClass" />
+       <Or>
+         <Method name="nonOverloadedMethod" />
+         <Method name="frob" params="int,java.lang.String" returns="void" />
+         <Method name="blat" params="" returns="boolean" />
+       </Or>
+       <Bug code="DC" />
+     </Match>
+
+     <!-- A method with a dead local store false positive (medium priority). -->
+     <Match>
+       <Class name="com.foobar.MyClass" />
+       <Method name="someMethod" />
+       <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+       <Priority value="2" />
+     </Match>
+
+     <!-- All bugs in test classes, except for JUnit-specific bugs -->
+     <Match>
+      <Class name="~.*\.*Test" />
+      <Not>
+          <Bug code="IJU" />
+      </Not>
+     </Match>
+
+</FindBugsFilter>
+]]>
+</programlisting>
+
+</sect1>
+
+
+</chapter>
+
+
+<!--
+   **************************************************************************
+   Analysis properties
+   **************************************************************************
+-->
+
+<chapter id="analysisprops">
+<title>Analysis Properties</title>
+
+<para>
+&FindBugs; allows several aspects of the analyses it performs to be
+customized.  System properties are used to configure these options.
+This chapter describes the configurable analysis options.
+</para>
+
+<para>
+The analysis options have two main purposes.  First, they allow you
+to inform &FindBugs; about the meaning of methods in your application,
+so that it can produce more accurate results, or produce fewer
+false warnings.  Second, they allow you to configure the precision
+of the analysis performed.  Reducing analysis precision can save
+memory and analysis time, at the expense of missing some real bugs,
+or producing more false warnings.
+</para>
+
+<para>
+The analysis options are set using the <command>-property</command>
+command line option.  For example:
+<screen>
+<prompt>$ </prompt><command>findbugs -textui -property "cfg.noprune=true" <replaceable>myApp.jar</replaceable></command>
+</screen>
+</para>
+
+<para>
+The list of configurable analysis properties is shown in
+<xref linkend="analysisproptable"/>.
+</para>
+
+<table id="analysisproptable">
+<title>Configurable Analysis Properties</title>
+<tgroup cols="3" align="left">
+  <thead>
+    <row>
+      <entry>Property Name</entry>
+      <entry>Value</entry>
+      <entry>Meaning</entry>
+    </row>
+  </thead>
+  <tbody>
+<!--
+    <row>
+      <entry>cfg.noprune</entry>
+      <entry>true or false</entry>
+      <entry>If true, infeasible exception edges are not pruned from
+      the control flow graphs of analyzed methods.  This option
+      increases the speed of the analysis (by about 20%-30%),
+      but causes some detectors to produce more false warnings.</entry>
+    </row>
+-->
+    <row>
+      <entry>findbugs.assertionmethods</entry>
+      <entry>Comma-separated list of fully qualified method names:
+      e.g., "com.foo.MyClass.checkAssertion"</entry>
+      <entry>This property specifies the names of methods that are used
+      to check program assertions.  Specifying these methods allows
+      the null pointer dereference bug detector to avoid reporting
+      false warnings for values which are checked by assertion
+      methods.</entry>
+    </row>
+    <row>
+      <entry>findbugs.de.comment</entry>
+      <entry>true or false</entry>
+      <entry>If true, the DroppedException detector scans source code
+        for empty catch blocks for a comment, and if one is found, does
+        not report a warning.</entry>
+    </row>
+    <row>
+      <entry>findbugs.maskedfields.locals</entry>
+      <entry>true or false</entry>
+      <entry>If true, emit low priority warnings for local variables
+      which obscure fields.  Default is false.</entry>
+    </row>
+    <row>
+      <entry>findbugs.nullderef.assumensp</entry>
+      <entry>true or false</entry>
+      <entry>not used
+      (intention: If true, the null dereference detector assumes that any
+      reference value returned from a method or passed to a method
+      in a parameter might be null.  Default is false.  Note that
+      enabling this property will very likely cause a large number
+      of false warnings to be produced.)</entry>
+    </row>
+    <row>
+      <entry>findbugs.refcomp.reportAll</entry>
+      <entry>true or false</entry>
+      <entry>If true, all suspicious reference comparisons
+        using the == and != operators are reported.&nbsp; If false,
+        only one such warning is issued per method.&nbsp; Default
+        is false.</entry>
+    </row>
+    <row>
+      <entry>findbugs.sf.comment</entry>
+      <entry>true or false</entry>
+      <entry>If true, the SwitchFallthrough detector will only report
+      warnings for cases where the source code does not have a comment
+      containing the words "fall" or "nobreak".  (An accurate source
+      path must be used for this feature to work correctly.)
+      This helps find cases where the switch fallthrough is likely
+      to be unintentional.</entry>
+    </row>
+<!-- see others at src/doc/manual/sysprops.html
+    <row>
+      <entry></entry>
+      <entry></entry>
+      <entry></entry>
+    </row>
+-->
+  </tbody>
+</tgroup>
+</table>
+
+</chapter>
+
+<!--
+    **************************************************************************
+   Annotations
+   ***************************************************************************
+-->
+
+<chapter id="annotations">
+<title>Annotations</title>
+
+<para>
+&FindBugs; supports several annotations to express the developer's intent
+so that FindBugs can issue warnings more appropriately. You need to use
+Java 5 to use annotations, and must place the annotations.jar and jsr305.jar
+files in the classpath while compiling your program.
+</para>
+
+<variablelist>
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.CheckForNull</command></term>
+    <listitem>
+    <para>
+        <command>[Target]</command> Field, Method, Parameter
+    </para>
+    </listitem>
+    <listitem>
+      <para>
+The annotated element might be null, and uses of the element should check for null.
+When this annotation is applied to a method it applies to the method return value.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.CheckReturnValue</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Method, Constructor
+    </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>priority:</command>The priority of the warning (HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>explanation:</command>A textual explanation of why the return value should be checked. Default value:"".
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This annotation is used to denote a method whose return value should always be checked after invoking the method.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotation</command></term>
+    <listitem>
+      <para>
+        <command>[Target]</command> Type, Package
+      </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+Indicates that all members of the class or package should be annotated with the default
+value of the supplied annotation classes. This would be used for behavior annotations
+such as @NonNull, @CheckForNull, or @CheckReturnValue. In particular, you can use
+@DefaultAnnotation(NonNull.class) on a class or package, and then use @Nullable only
+on those parameters, methods or fields that you want to allow to be null.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Type, Package
+    </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This is same as the DefaultAnnotation except it only applys to fields.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Type, Package
+    </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This is same as the DefaultAnnotation except it only applys to methods.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Type, Package
+    </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This is same as the DefaultAnnotation except it only applys to method parameters.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.NonNull</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Field, Method, Parameter
+    </para>
+    </listitem>
+    <listitem>
+      <para>
+The annotated element must not be null.
+Annotated fields must not be null after construction has completed. Annotated methods must have non-null return values.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.Nullable</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Field, Method, Parameter
+    </para>
+    </listitem>
+    <listitem>
+      <para>
+The annotated element could be null under some circumstances. In general, this means
+developers will have to read the documentation to determine when a null value is
+acceptable and whether it is necessary to check for a null value.  FindBugs will
+treat the annotated items as though they had no annotation.
+      </para>
+      <para>
+In practice this annotation is useful only for overriding an overarching NonNull
+annotation.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.OverrideMustInvoke</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Method
+    </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Specify when the super invocation should be
+              performed (FIRST, ANYTIME, LAST). Default value:ANYTIME.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+Used to annotate a method that, if overridden, must (or should) be invoke super
+in the overriding method. Examples of such methods include finalize() and clone().
+The argument to the method indicates when the super invocation should occur:
+at any time, at the beginning of the overriding method, or at the end of the overriding method.
+(This anotation is not implmemented in FindBugs as of September 8, 2006).
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.PossiblyNull</command></term>
+    <listitem>
+      <para>
+This annotation is deprecated. Use CheckForNull instead.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.SuppressWarnings</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Type, Field, Method, Parameter, Constructor, Package
+    </para>
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>The name of the warning. More than one name can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>justification:</command>Reason why the warning should be ignored. Default value:"".
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+The set of warnings that are to be suppressed by the compiler in the annotated element.
+Duplicate names are permitted.  The second and successive occurrences of a name are ignored.
+The presence of unrecognized warning names is <emphasis>not</emphasis> an error: Compilers
+must ignore any warning names they do not recognize. They are, however, free to emit a
+warning if an annotation contains an unrecognized warning name. Compiler vendors should
+document the warning names they support in conjunction with this annotation type. They
+are encouraged to cooperate to ensure that the same names work across multiple compilers.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Field, Method, Parameter
+    </para>
+    </listitem>
+    <listitem>
+      <para>
+Used to indicate that the nullness of the target is unknown, or my vary in unknown ways in subclasses.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
+    <listitem>
+    <para>
+      <command>[Target]</command> Field, Method, Parameter
+    </para>
+    </listitem>
+    <listitem>
+      <para>
+Used to indicate that the nullness of the target is unknown, or my vary in unknown ways in subclasses.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>
+ &FindBugs; also supports the following annotations:
+<itemizedlist>
+  <listitem><para>net.jcip.annotations.GuardedBy</para></listitem>
+  <listitem><para>net.jcip.annotations.Immutable</para></listitem>
+  <listitem><para>net.jcip.annotations.NotThreadSafe</para></listitem>
+  <listitem><para>net.jcip.annotations.ThreadSafe</para></listitem>
+</itemizedlist>
+</para>
+<para>
+You can refer the JCIP annotation <ulink url="http://jcip.net/annotations/doc/index.html">
+API documentation</ulink> at <ulink url="http://jcip.net/">Java Concurrency in Practice</ulink>.
+</para>
+</chapter>
+
+<!--
+   **************************************************************************
+   Using rejarForAnalysis
+   **************************************************************************
+-->
+
+<chapter id="rejarForAnalysis">
+<title>Using rejarForAnalysis</title>
+
+<para>
+If your project consists of many jarfiles or the jarfiles are scattered
+over many directories, you may wish to use the <command>rejarForAnalysis
+</command> script to make
+FindBugs invocation easier.  The script collects many jarfiles and combines them
+into a single, large jarfile that can then be easily passed to FindBugs for
+analysis.  This can be particularly useful in combination with the 'find' command
+on unix systems; e.g. <command>find . -name '*.jar' | xargs rejarForAnalysis
+</command>.
+</para>
+
+<para>
+The <command>rejarForAnalysis</command> script
+can also be used to split a very large project up into a set of jarfiles with
+the project classfiles evenly divided between them.  This is useful when running
+FindBugs on the entire project is not practical due to time or memory consumption.
+Instead of running FindBugs on the entire project, you may use <command>
+rejarForAnalysis</command> build one large, all-inclusive jarfile
+containing all classes, invoke <command>rejarForAnalysis</command>
+again to split the project into multiple jarfiles, then run FindBugs
+on each divided jarfiles in turn, specifying the all-inclusive jarfile in
+the <command>-auxclasspath</command>.
+</para>
+
+<para>
+These are the options accepted by the <command>rejarForAnalysis</command> script:
+</para>
+
+<variablelist>
+  <varlistentry>
+    <term><command>-maxAge</command> <replaceable>days</replaceable></term>
+    <listitem>
+       <para>
+       Maximum age in days (ignore jar files older than this).
+       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><command>-inputFileList</command> <replaceable>filename</replaceable></term>
+    <listitem>
+       <para>
+       Text file containing names of jar files.
+       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><command>-maxClasses</command> <replaceable>num</replaceable></term>
+    <listitem>
+       <para>
+       Maximum number of classes per analysis*.jar file.
+       </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><command>-prefix</command> <replaceable>class name prefix</replaceable></term>
+    <listitem>
+       <para>
+       Prefix of class names that should be analyzed (e.g., edu.umd.cs.).
+       </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</chapter>
+
+<!--
+   **************************************************************************
+   Data mining
+   **************************************************************************
+-->
+
+<chapter id="datamining">
+    <title>Data mining of bugs with &FindBugs;&trade;</title>
+
+<para>
+FindBugs incorporates an ability to perform sophisticated queries on bug
+databases and track warnings across multiple versions of code being
+studied, allowing you to do things such as seeing when a bug was first introduced, examining
+just the warnings that have been introduced since the last release, or graphing the number
+of infinite recursive loops in your code over time.</para>
+
+<para>
+These techniques all depend upon the XML format used by FindBugs for storing warnings.
+These XML files usually contain just the warnings from one particular analysis run, but
+they can also store the results from analyzing a sequence of software builds or versions.
+    </para>
+
+<para>
+Any FindBugs XML bug database contains a version name and timestamp.
+FindBugs tries to compute a timestamp from the timestamps of the files that
+are analyzed (e.g., the timestamp is intended to be the time the class files
+were generated, not analyzed). Each bug database also contains a version name.
+Both the version name and timestamp can be set manually using the
+<command>setBugDatabaseInfo</command> (<xref linkend="setBugDatabaseInfo" />) command.
+    </para>
+
+<para>A multiversion bug database assigns a sequence number to each version of
+the analyzed code. These sequence numbers are simply successive integers,
+starting at 0 (e.g., a bug database for 4 versions of the code will contain
+versions 0..3). The bug database will also record the name and timestamp for
+each version. The <command>filterBugs</command> command allows you to refer
+to a version by sequence number, name or timestamp.</para>
+
+<para>
+You can take a sequence (or pair) of single version bug databases and create
+from them a multiversion bug database, or combine a multiversion bug database
+with a sequence of later single-version bug databases.</para>
+
+<para>
+Some of these commands can be invoked as ant tasks.  See below for specifics
+on how to invoke them and what attributes and arguments they take.  All of
+the examples assume that the <literal>findbugs.lib</literal>
+<literal>refid</literal> is set correctly.  Here is one way to set it:
+</para>
+
+<programlisting>
+<![CDATA[
+   <!-- findbugs task definition -->
+   <property name="findbugs.home" value="/your/path/to/findbugs" />
+   <path id="findbugs.lib">
+      <fileset dir="${findbugs.home}/lib">
+         <include name="findbugs-ant.jar"/>
+      </fileset>
+   </path>
+]]>
+</programlisting>
+
+    <sect1 id="commands">
+        <title>Commands</title>
+
+        <para>
+All tools for FindBugs data mining are can be invoked from the command line,
+and some of the more useful tools can also be invoked from an
+ant build file.</para>
+
+<para>
+Briefly, the command-line tools are:</para>
+
+        <variablelist>
+            <varlistentry>
+                <term><command><link linkend="unionBugs">unionBugs</link></command></term>
+                <listitem>
+                    <para>
+                         combine the results from separate analysis of disjoint
+        classes
+                    </para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="computeBugHistory">computeBugHistory</link></command></term>
+                <listitem>
+                    <para>Merge bug warnings from multiple versions of
+            analyzed code into
+            a single multiversion bug database. This can either be used
+            to add more versions to an existing multiversion database,
+            or to create a multiversion database from a sequence of single version
+            bug warning databases.</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="setBugDatabaseInfo">setBugDatabaseInfo</link></command></term>
+                <listitem>
+                    <para>Set information such as the revision name or
+timestamp in an XML bug database</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="listBugDatabaseInfo">listBugDatabaseInfo</link></command></term>
+                <listitem>
+                    <para>List information such as the revision name and
+timestamp for a list of XML bug databases</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="filterBugs">filterBugs</link></command></term>
+                <listitem>
+                    <para>Select a subset of a bug database</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="mineBugHistory">mineBugHistory</link></command></term>
+                <listitem>
+                    <para>Generate a tabular listing of the number of warnings in each
+        version of a multiversion bug database</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="defectDensity">defectDensity</link></command></term>
+                <listitem>
+                    <para>List information about defect density
+                         (warnings per 1000 NCSS)
+                         for the entire project and each class and package</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term><command><link linkend="convertXmlToText">convertXmlToText</link></command></term>
+                <listitem>
+                    <para>Convert bug warnings in XML format to
+                    a textual one-line-per-bug format, or to HTML</para>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+
+
+        <sect2 id="unionBugs">
+            <title>unionBugs</title>
+
+        <para>
+        If you have, for example, separately analyzing each jar file used in an application,
+        you can use this command to combine the separately generated xml bug warning files into
+        a single file containing all of the warnings.</para>
+
+            <para>Do <emphasis>not</emphasis> use this command to combine results from analyzing different versions of the same
+            file; use <command>computeBugHistory</command> instead.</para>
+
+            <para>Specify the xml files on the command line. The result is sent to standard output.</para>
+        </sect2>
+
+        <sect2 id="computeBugHistory">
+            <title>computeBugHistory</title>
+
+<para>Use this command to generate a bug database containing information from different builds or versions
+of software you are analyzing.
+History is taken from the first file provided as input; any following
+files should be single version bug databases (if they contain history, the history in those
+files will be ignored).</para>
+<para>By default, output is written to the standard output.
+</para>
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>computeBugHistory</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="computeBugHistory" classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.
+To specify input files, nest them inside with a
+<literal>&lt;datafile&gt;</literal> element.  For example:
+</para>
+
+<programlisting>
+<![CDATA[
+<computeBugHistory home="${findbugs.home}" ...>
+    <datafile name="analyze1.xml"/>
+    <datafile name="analyze2.xml"/>
+</computeBugHistory>
+]]>
+</programlisting>
+
+        <table id="computeBugHistoryTable">
+            <title>Options for computeBugHistory command</title>
+            <tgroup cols="3" align="left">
+                  <thead>
+                    <row>
+                          <entry>Command-line option</entry>
+                          <entry>Ant attribute</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                      </thead>
+                  <tbody>
+<row><entry>-output &lt;file&gt;</entry>           <entry>output="&lt;file&gt;"</entry>           <entry>save output in the named file (may also be an input file)</entry></row>
+<row><entry>-overrideRevisionNames[:truth]</entry> <entry>overrideRevisionNames="[true|false]"</entry><entry>override revision names for each version with names computed from the filenames</entry></row>
+<row><entry>-noPackageMoves[:truth]</entry>        <entry>noPackageMoves="[true|false]"</entry><entry>if a class has moved to another package, treat warnings in that class as separate</entry></row>
+<row><entry>-preciseMatch[:truth]</entry>          <entry>preciseMatch="[true|false]"</entry><entry>require bug patterns to match precisely</entry></row>
+<row><entry>-precisePriorityMatch[:truth]</entry>  <entry>precisePriorityMatch="[true|false]"</entry><entry>consider two warnings as the same only if priorities match exactly</entry></row>
+<row><entry>-quiet[:truth]</entry>                 <entry>quiet="[true|false]"</entry><entry>don't generate any output to standard out unless there is an error</entry></row>
+<row><entry>-withMessages[:truth]</entry>          <entry>withMessages="[true|false]"</entry><entry>include human-readable messages describing the warnings in XML output</entry></row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        </sect2>
+        <sect2 id="filterBugs">
+            <title>filterBugs</title>
+<para>This command is used to select a subset of warnings from a FindBugs XML warning file
+and write the selected subset to a new FindBugs warning file.</para>
+<para>
+This command takes a sequence of options, and either zero, one or two
+filenames of findbugs xml bug files on the command line.</para>
+<para>If no file names are provided, the command reads from standard input
+and writes to standard output. If one file name is provided,
+it reads from the file and writes to standard output.
+If two file names are provided, it reads from the first and writes the output
+to the second file name.</para>
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>filterBugs</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="filterBugs" classname="edu.umd.cs.findbugs.anttask.FilterBugsTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.
+To specify an input file either use the input attribute or nest it inside
+the ant call with a <literal>&lt;datafile&gt;</literal> element.  For example:
+</para>
+
+<programlisting>
+<![CDATA[
+<filterBugs home="${findbugs.home}" ...>
+    <datafile name="analyze.xml"/>
+</filterBugs>
+]]>
+</programlisting>
+
+        <table id="filterOptionsTable">
+            <title>Options for filterBugs command</title>
+            <tgroup cols="3" align="left">
+                  <thead>
+                    <row>
+                          <entry>Command-line option</entry>
+                          <entry>Ant attribute</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                      </thead>
+                  <tbody>
+<row><entry></entry>                            <entry>input="&lt;file&gt;"</entry>             <entry>use file as input</entry></row>
+<row><entry></entry>                            <entry>output="&lt;file&gt;"</entry>            <entry>output results to file</entry></row>
+<row><entry>-not</entry>                        <entry>not="[true|false]"</entry>               <entry>reverse (all) switches for the filter</entry></row>
+<row><entry>-withSource[:truth]</entry>         <entry>withSource="[true|false]"</entry>        <entry>only warnings for switch source is available</entry></row>
+<row><entry>-exclude &lt;filter file&gt;</entry><entry>exclude="&lt;filter file&gt;"</entry>    <entry>exclude bugs matching given filter</entry></row>
+<row><entry>-include &lt;filter file&gt;</entry><entry>include="&lt;filter file&gt;"</entry>    <entry>include only bugs matching given filter</entry></row>
+<row><entry>-annotation &lt;text&gt;</entry>    <entry>annotation="&lt;text&gt;"</entry>        <entry>allow only warnings containing this text in a manual annotation</entry></row>
+<row><entry>-after &lt;when&gt;</entry>         <entry>after="&lt;when&gt;"</entry>             <entry>allow only warnings that first occurred after this version</entry></row>
+<row><entry>-before &lt;when&gt;</entry>        <entry>before="&lt;when&gt;"</entry>            <entry>allow only warnings that first occurred before this version</entry></row>
+<row><entry>-first &lt;when&gt;</entry>         <entry>first="&lt;when&gt;"</entry>             <entry>allow only warnings that first occurred in this version</entry></row>
+<row><entry>-last &lt;when&gt;</entry>          <entry>last="&lt;when&gt;"</entry>              <entry>allow only warnings that last occurred in this version</entry></row>
+<row><entry>-fixed &lt;when&gt;</entry>         <entry>fixed="&lt;when&gt;"</entry>             <entry>allow only warnings that last occurred in the previous version (clobbers <option>-last</option>)</entry></row>
+<row><entry>-present &lt;when&gt;</entry>       <entry>present="&lt;when&gt;"</entry>           <entry>allow only warnings present in this version</entry></row>
+<row><entry>-absent &lt;when&gt;</entry>        <entry>absent="&lt;when&gt;"</entry>            <entry>allow only warnings absent in this version</entry></row>
+<row><entry>-active[:truth]</entry>             <entry>active="[true|false]"</entry>            <entry>allow only warnings alive in the last sequence number</entry></row>
+<row><entry>-introducedByChange[:truth]</entry> <entry>introducedByChange="[true|false]"</entry><entry>allow only warnings introduced by a change of an existing class</entry></row>
+<row><entry>-removedByChange[:truth]</entry>    <entry>removedByChange="[true|false]"</entry>   <entry>allow only warnings removed by a change of a persisting class</entry></row>
+<row><entry>-newCode[:truth]</entry>            <entry>newCode="[true|false]"</entry>           <entry>allow only warnings introduced by the addition of a new class</entry></row>
+<row><entry>-removedCode[:truth]</entry>        <entry>removedCode="[true|false]"</entry>       <entry>allow only warnings removed by removal of a class</entry></row>
+<row><entry>-priority &lt;level&gt;</entry>     <entry>priority="&lt;level&gt;"</entry>         <entry>allow only warnings with this priority or higher</entry></row>
+<row><entry>-maxRank &lt;rank&gt;</entry>       <entry>rank="[1..20]"</entry>                   <entry>allow only warnings with this rank or lower</entry></row>
+<row><entry>-class &lt;pattern&gt;</entry>      <entry>class="&lt;class&gt;"</entry>            <entry>allow only bugs whose primary class name matches this pattern</entry></row>
+<row><entry>-bugPattern &lt;pattern&gt;</entry> <entry>bugPattern="&lt;pattern&gt;"</entry>     <entry>allow only bugs whose type matches this pattern</entry></row>
+<row><entry>-category &lt;category&gt;</entry>  <entry>category="&lt;category&gt;"</entry>      <entry>allow only warnings with a category that starts with this string</entry></row>
+<row><entry>-designation &lt;designation&gt;</entry> <entry>designation="&lt;designation&gt;"</entry> <entry>allow only warnings with this designation (e.g., -designation SHOULD_FIX)</entry></row>
+<row><entry>-withMessages[:truth] </entry>      <entry>withMessages="[true|false]"</entry>      <entry>the generated XML should contain textual messages</entry></row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        </sect2>
+
+        <sect2 id="mineBugHistory">
+            <title>mineBugHistory</title>
+<para>This command generates a table containing counts of the numbers of warnings
+in each version of a multiversion bug database.</para>
+
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>mineBugHistory</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="mineBugHistory" classname="edu.umd.cs.findbugs.anttask.MineBugHistoryTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.
+To specify an input file either use the <literal>input</literal>
+attribute or nest it inside the ant call with a
+<literal>&lt;datafile&gt;</literal> element.  For example:
+</para>
+
+<programlisting>
+<![CDATA[
+<mineBugHistory home="${findbugs.home}" ...>
+    <datafile name="analyze.xml"/>
+</mineBugHistory>
+]]>
+</programlisting>
+
+        <table id="mineBugHistoryOptionsTable">
+            <title>Options for mineBugHistory command</title>
+            <tgroup cols="3" align="left">
+                  <thead>
+                    <row>
+                          <entry>Command-line option</entry>
+                          <entry>Ant attribute</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+<row><entry></entry>               <entry>input="&lt;file&gt;"</entry>             <entry>use file as input</entry></row>
+<row><entry></entry>               <entry>output="&lt;file&gt;"</entry>            <entry>write output to file</entry></row>
+<row><entry>-formatDates</entry>   <entry>formatDates="[true|false]"</entry>       <entry>render dates in textual form</entry></row>
+<row><entry>-noTabs</entry>        <entry>noTabs="[true|false]"</entry>            <entry>delimit columns with groups of spaces instead of tabs (see below)</entry></row>
+<row><entry>-summary</entry>       <entry>summary="[true|false]"</entry>           <entry>output terse summary of changes over the last ten entries</entry></row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>
+        The <option>-noTabs</option> output can be easier to read from a shell
+        with a fixed-width font.
+        Because numeric columns are right-justified, spaces may precede the
+        first column value. This option also causes <option>-formatDates</option>
+        to render dates in terser format without embedded whitespace.
+        </para>
+
+        <para>The table is a tab-separated (barring <option>-noTabs</option>)
+        table with the following columns:</para>
+
+        <table id="mineBugHistoryColumns">
+            <title>Columns in mineBugHistory output</title>
+            <tgroup cols="2" align="left">
+                  <thead>
+                    <row>
+                          <entry>Title</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                      </thead>
+                  <tbody>
+                      <row><entry>seq</entry><entry>Sequence number (successive integers, starting at 0)</entry></row>
+                      <row><entry>version</entry><entry>Version name</entry></row>
+                      <row><entry>time</entry><entry>Release timestamp</entry></row>
+                      <row><entry>classes</entry><entry>Number of classes analyzed</entry></row>
+                      <row><entry>NCSS</entry><entry>Non Commenting Source Statements</entry></row>
+                      <row><entry>added</entry><entry>Count of new warnings for a class that existed in the previous version</entry></row>
+                      <row><entry>newCode</entry><entry>Count of new warnings for a class that did not exist in the previous version</entry></row>
+                      <row><entry>fixed</entry><entry>Count of warnings removed from a class that remains in the current version</entry></row>
+                      <row><entry>removed</entry><entry>Count of warnings in the previous version for a class that is not present in the current version</entry></row>
+                      <row><entry>retained</entry><entry>Count of warnings that were in both the previous and current version</entry></row>
+                      <row><entry>dead</entry><entry>Warnings that were present in earlier versions but in neither the current version or the immediately preceding version</entry></row>
+                      <row><entry>active</entry><entry>Total warnings present in the current version</entry></row>
+                </tbody>
+                </tgroup>
+        </table>
+        </sect2>
+
+        <sect2 id="defectDensity">
+            <title>defectDensity</title>
+<para>
+This command lists information about defect density (warnings per 1000 NCSS) for the entire project and each class and package.
+It can either be invoked with no files specified on the command line (in which case it reads from standard input)
+or with one file specified on the command line.</para>
+<para>It generates a table with the following columns, and with one
+row for the entire project, and one row for each package or class that contains at least
+4 warnings.</para>
+        <table id="defectDensityColumns">
+            <title>Columns in defectDensity output</title>
+            <tgroup cols="2" align="left">
+                  <thead>
+                    <row>
+                          <entry>Title</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                      </thead>
+                  <tbody>
+                      <row><entry>kind</entry><entry>project, package or class</entry></row>
+                      <row><entry>name</entry><entry>The name of the project, package or class</entry></row>
+                      <row><entry>density</entry><entry>Number of warnings generated per 1000 lines of NCSS.</entry></row>
+                      <row><entry>bugs</entry><entry>Number of warnings</entry></row>
+                      <row><entry>NCSS</entry><entry>Calculated number of NCSS</entry></row>
+                </tbody>
+                </tgroup>
+            </table>
+        </sect2>
+
+        <sect2 id="convertXmlToText">
+            <title>convertXmlToText</title>
+
+            <para>
+                This command converts a warning collection in XML format to a text
+                format with one line per warning, or to HTML.
+            </para>
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>convertXmlToText</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="convertXmlToText" classname="edu.umd.cs.findbugs.anttask.ConvertXmlToTextTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.</para>
+
+            <table id="convertXmlToTextTable">
+            <title>Options for convertXmlToText command</title>
+            <tgroup cols="3" align="left">
+                  <thead>
+                    <row>
+                          <entry>Command-line option</entry>
+                          <entry>Ant attribute</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                      </thead>
+                  <tbody>
+<row><entry></entry>                   <entry>input="&lt;filename&gt;"</entry>         <entry>use file as input</entry></row>
+<row><entry></entry>                   <entry>output="&lt;filename&gt;"</entry>        <entry>output results to file</entry></row>
+<row><entry>-longBugCodes</entry>      <entry>longBugCodes="[true|false]"</entry>      <entry>use the full bug pattern code instead of two-letter abbreviation</entry></row>
+<row><entry></entry>                   <entry>format="text"</entry>                    <entry>generate plain text output with one bug per line (command-line default)</entry></row>
+<row><entry>-html[:stylesheet]</entry> <entry>format="html:&lt;stylesheet&gt;"</entry> <entry>generate output with specified stylesheet (see below), or default.xsl if unspecified</entry></row>
+                </tbody>
+            </tgroup>
+            </table>
+
+            <para>
+            You may specify plain.xsl, default.xsl, fancy.xsl, fancy-hist.xsl,
+            or your own XSL stylesheet for the -html/format option.
+            Despite the name of this option, you may specify
+            a stylesheet that emits something other than html.
+            When applying a stylesheet other than those included
+            with FindBugs (listed above), the -html/format option should be used
+            with a path or URL to the stylesheet.
+            </para>
+        </sect2>
+
+        <sect2 id="setBugDatabaseInfo">
+            <title>setBugDatabaseInfo</title>
+
+            <para>
+                This command sets meta-information in a specified warning collection.
+                It takes the following options:
+            </para>
+
+<para>This functionality may also can be accessed from ant.
+First create a taskdef for <command>setBugDatabaseInfo</command> in your
+build file:
+</para>
+
+<programlisting>
+<![CDATA[
+<taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask">
+    <classpath refid="findbugs.lib" />
+</taskdef>
+]]>
+</programlisting>
+
+<para>Attributes for this ant task are listed in the following table.
+To specify an input file either use the <literal>input</literal>
+attribute or nest it inside the ant call with a
+<literal>&lt;datafile&gt;</literal> element.  For example:
+</para>
+
+<programlisting>
+<![CDATA[
+<setBugDatabaseInfo home="${findbugs.home}" ...>
+    <datafile name="analyze.xml"/>
+</setBugDatabaseInfo>
+]]>
+</programlisting>
+
+        <table id="setBugDatabaseInfoOptions">
+            <title>setBugDatabaseInfo Options</title>
+            <tgroup cols="3" align="left">
+                  <thead>
+                    <row>
+                          <entry>Command-line option</entry>
+                          <entry>Ant attribute</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+                      <row><entry></entry>                              <entry>input="&lt;file&gt;"</entry>           <entry>use file as input</entry></row>
+                      <row><entry></entry>                              <entry>output="&lt;file&gt;"</entry>          <entry>write output to file</entry></row>
+                      <row><entry>-name &lt;name&gt;</entry>            <entry>name="&lt;name&gt;"</entry>            <entry>set name for (last) revision</entry></row>
+                      <row><entry>-timestamp &lt;when&gt;</entry>       <entry>timestamp="&lt;when&gt;"</entry>       <entry>set timestamp for (last) revision</entry></row>
+                      <row><entry>-source &lt;directory&gt;</entry>     <entry>source="&lt;directory&gt;"</entry>     <entry>add specified directory to the source search path</entry></row>
+                      <row><entry>-findSource &lt;directory&gt;</entry> <entry>findSource="&lt;directory&gt;"</entry> <entry>find and add all relevant source directions contained within specified directory</entry></row>
+                      <row><entry>-suppress &lt;filter file&gt;</entry> <entry>suppress="&lt;filter file&gt;"</entry> <entry>suppress warnings matched by this file (replaces previous suppressions)</entry></row>
+                      <row><entry>-withMessages</entry>                 <entry>withMessages="[true|false]"</entry>    <entry>add textual messages to XML</entry></row>
+                      <row><entry>-resetSource</entry>                  <entry>resetSource="[true|false]"</entry>     <entry>remove all source search paths</entry></row>
+                 </tbody>
+                </tgroup>
+            </table>
+        </sect2>
+
+        <sect2 id="listBugDatabaseInfo">
+            <title>listBugDatabaseInfo</title>
+
+            <para>This command takes a list of zero or more xml bug database filenames on the command line.
+If zero file names are provided, it reads from standard input and does not generate
+a table header.</para>
+
+<para>There is only one option: <option>-formatDates</option> renders dates
+    in textual form.
+    </para>
+
+<para>The output is a table one row per bug database and the following columns:</para>
+        <table id="listBugDatabaseInfoColumns">
+            <title>listBugDatabaseInfo Columns</title>
+            <tgroup cols="2" align="left">
+                  <thead>
+                    <row>
+                          <entry>Column</entry>
+                          <entry>Meaning</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+                      <row><entry>version</entry><entry>version name</entry></row>
+                      <row><entry>time</entry><entry>Release timestamp</entry></row>
+                      <row><entry>classes</entry><entry>Number of classes analyzed</entry></row>
+                      <row><entry>NCSS</entry><entry>Non Commenting Source Statements analyzed</entry></row>
+                      <row><entry>total</entry><entry>Total number of warnings of all kinds</entry></row>
+                      <row><entry>high</entry><entry>Total number of high priority warnings of all kinds</entry></row>
+                      <row><entry>medium</entry><entry>Total number of medium/normal priority warnings of all kinds</entry></row>
+                      <row><entry>low</entry><entry>Total number of low priority warnings of all kinds</entry></row>
+                      <row><entry>filename</entry><entry>filename of database</entry></row>
+<!--
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+                      <row><entry></entry><entry></entry></row>
+-->
+                 </tbody>
+                </tgroup>
+            </table>
+
+        </sect2>
+
+    </sect1>
+
+    <sect1 id="examples">
+        <title>Examples</title>
+<sect2 id="unixscriptsexamples">
+   <title>Mining history using proveded shell scrips</title>
+<para>In all of the following, the commands are given in a directory that contains
+directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.</para>
+
+<para>You can use the command:</para>
+<screen>
+computeBugHistory jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates
+</screen>
+<para>to generate the following output:</para>
+
+<screen>
+seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
+0	jdk1.6.0-b12	"Thu Nov 11 09:07:20 EST 2004"	13128	811569	0	4	0	0	0	0	4
+1	jdk1.6.0-b13	"Thu Nov 18 06:02:06 EST 2004"	13128	811570	0	0	0	0	4	0	4
+2	jdk1.6.0-b14	"Thu Dec 02 06:12:26 EST 2004"	13145	811786	0	0	2	0	2	0	2
+3	jdk1.6.0-b15	"Thu Dec 09 06:07:04 EST 2004"	13174	811693	0	0	1	0	1	2	1
+4	jdk1.6.0-b16	"Thu Dec 16 06:21:28 EST 2004"	13175	811715	0	0	0	0	1	3	1
+5	jdk1.6.0-b17	"Thu Dec 23 06:27:22 EST 2004"	13176	811974	0	0	0	0	1	3	1
+6	jdk1.6.0-b19	"Thu Jan 13 06:41:16 EST 2005"	13176	812011	0	0	0	0	1	3	1
+7	jdk1.6.0-b21	"Thu Jan 27 05:57:52 EST 2005"	13177	812173	0	0	0	0	1	3	1
+8	jdk1.6.0-b23	"Thu Feb 10 05:44:36 EST 2005"	13179	812188	0	0	0	0	1	3	1
+9	jdk1.6.0-b26	"Thu Mar 03 06:04:02 EST 2005"	13199	811770	0	0	0	0	1	3	1
+10	jdk1.6.0-b27	"Thu Mar 10 04:48:38 EST 2005"	13189	812440	0	0	0	0	1	3	1
+11	jdk1.6.0-b28	"Thu Mar 17 02:54:22 EST 2005"	13185	812056	0	0	0	0	1	3	1
+12	jdk1.6.0-b29	"Thu Mar 24 03:09:20 EST 2005"	13117	809468	0	0	0	0	1	3	1
+13	jdk1.6.0-b30	"Thu Mar 31 02:53:32 EST 2005"	13118	809501	0	0	0	0	1	3	1
+14	jdk1.6.0-b31	"Thu Apr 07 03:00:14 EDT 2005"	13117	809572	0	0	0	0	1	3	1
+15	jdk1.6.0-b32	"Thu Apr 14 02:56:56 EDT 2005"	13169	811096	0	0	0	0	1	3	1
+16	jdk1.6.0-b33	"Thu Apr 21 02:46:22 EDT 2005"	13187	811942	0	0	0	0	1	3	1
+17	jdk1.6.0-b34	"Thu Apr 28 02:49:00 EDT 2005"	13195	813488	0	1	0	0	1	3	2
+18	jdk1.6.0-b35	"Thu May 05 02:49:04 EDT 2005"	13457	829837	0	0	0	0	2	3	2
+19	jdk1.6.0-b36	"Thu May 12 02:59:46 EDT 2005"	13462	831278	0	0	0	0	2	3	2
+20	jdk1.6.0-b37	"Thu May 19 02:55:08 EDT 2005"	13464	831971	0	0	0	0	2	3	2
+21	jdk1.6.0-b38	"Thu May 26 03:08:16 EDT 2005"	13564	836565	0	0	0	0	2	3	2
+22	jdk1.6.0-b39	"Fri Jun 03 03:10:48 EDT 2005"	13856	849992	0	1	0	0	2	3	3
+23	jdk1.6.0-b40	"Thu Jun 09 03:30:28 EDT 2005"	15972	959619	0	2	0	0	3	3	5
+24	jdk1.6.0-b41	"Thu Jun 16 03:19:22 EDT 2005"	15972	959619	0	0	0	0	5	3	5
+25	jdk1.6.0-b42	"Fri Jun 24 03:38:54 EDT 2005"	15966	958581	0	0	0	0	5	3	5
+26	jdk1.6.0-b43	"Thu Jul 14 03:09:34 EDT 2005"	16041	960544	0	0	0	0	5	3	5
+27	jdk1.6.0-b44	"Thu Jul 21 03:05:54 EDT 2005"	16041	960547	0	0	0	0	5	3	5
+28	jdk1.6.0-b45	"Thu Jul 28 03:26:10 EDT 2005"	16037	960606	0	0	1	0	4	3	4
+29	jdk1.6.0-b46	"Thu Aug 04 03:02:48 EDT 2005"	15936	951355	0	0	0	0	4	4	4
+30	jdk1.6.0-b47	"Thu Aug 11 03:18:56 EDT 2005"	15964	952387	0	0	1	0	3	4	3
+31	jdk1.6.0-b48	"Thu Aug 18 08:10:40 EDT 2005"	15970	953421	0	0	0	0	3	5	3
+32	jdk1.6.0-b49	"Thu Aug 25 03:24:38 EDT 2005"	16048	958940	0	0	0	0	3	5	3
+33	jdk1.6.0-b50	"Thu Sep 01 01:52:40 EDT 2005"	16287	974937	1	0	0	0	3	5	4
+34	jdk1.6.0-b51	"Thu Sep 08 01:55:36 EDT 2005"	16362	979377	0	0	0	0	4	5	4
+35	jdk1.6.0-b52	"Thu Sep 15 02:04:08 EDT 2005"	16477	979399	0	0	0	0	4	5	4
+36	jdk1.6.0-b53	"Thu Sep 22 02:00:28 EDT 2005"	16019	957900	0	0	1	0	3	5	3
+37	jdk1.6.0-b54	"Thu Sep 29 01:54:34 EDT 2005"	16019	957900	0	0	0	0	3	6	3
+38	jdk1.6.0-b55	"Thu Oct 06 01:54:14 EDT 2005"	16051	959014	0	0	0	0	3	6	3
+39	jdk1.6.0-b56	"Thu Oct 13 01:54:12 EDT 2005"	16211	970835	0	0	0	0	3	6	3
+40	jdk1.6.0-b57	"Thu Oct 20 01:55:26 EDT 2005"	16279	971627	0	0	0	0	3	6	3
+41	jdk1.6.0-b58	"Thu Oct 27 01:56:30 EDT 2005"	16283	971945	0	0	0	0	3	6	3
+42	jdk1.6.0-b59	"Thu Nov 03 01:56:58 EST 2005"	16232	972193	0	0	0	0	3	6	3
+43	jdk1.6.0-b60	"Thu Nov 10 01:54:18 EST 2005"	16235	972346	0	0	0	0	3	6	3
+</screen>
+
+<para>
+We could also generate that information directly, without creating an intermediate db.xml file, using the command
+</para>
+
+<screen>
+computeBugHistory  jdk1.6.0-b*/jre/lib/rt.xml | filterBugs -bugPattern IL_ db.xml | mineBugHistory -formatDates
+</screen>
+
+<para>We can then use that information to display a graph showing the number of infinite recursive loops
+found by FindBugs in each build of Sun's JDK1.6.0. The blue area indicates the number of infinite
+recursive loops in that build, the red area above it indicates the number of infinite recursive loops that existed
+in some previous version but not in the current version (thus, the combined height of the red and blue areas
+is guaranteed to never decrease, and goes up whenever a new infinite recursive loop bug is introduced). The height
+of the red area is computed as the sum of the fixed, removed and dead values for each version.
+The reductions in builds 13 and 14 came after Sun was notified about the bugs found by FindBugs in the JDK.
+    </para>
+<mediaobject>
+<imageobject>
+<imagedata fileref="infiniteRecursiveLoops.png"  />
+</imageobject>
+</mediaobject>
+
+<para>
+Given the db.xml file that contains the results for all the jdk1.6.0 builds, the following command will show the history of high and medium priority correctness warnings:
+</para>
+
+<screen>
+filterBugs -priority M -category C db.xml | mineBugHistory -formatDates
+</screen>
+
+<para>
+generating the table:
+</para>
+
+<screen>
+seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
+0	jdk1.6.0-b12	"Thu Nov 11 09:07:20 EST 2004"	13128	811569	0	1075	0	0	0	0	1075
+1	jdk1.6.0-b13	"Thu Nov 18 06:02:06 EST 2004"	13128	811570	0	0	0	0	1075	0	1075
+2	jdk1.6.0-b14	"Thu Dec 02 06:12:26 EST 2004"	13145	811786	3	0	6	0	1069	0	1072
+3	jdk1.6.0-b15	"Thu Dec 09 06:07:04 EST 2004"	13174	811693	2	1	3	0	1069	6	1072
+4	jdk1.6.0-b16	"Thu Dec 16 06:21:28 EST 2004"	13175	811715	0	0	1	0	1071	9	1071
+5	jdk1.6.0-b17	"Thu Dec 23 06:27:22 EST 2004"	13176	811974	0	0	1	0	1070	10	1070
+6	jdk1.6.0-b19	"Thu Jan 13 06:41:16 EST 2005"	13176	812011	0	0	0	0	1070	11	1070
+7	jdk1.6.0-b21	"Thu Jan 27 05:57:52 EST 2005"	13177	812173	0	0	1	0	1069	11	1069
+8	jdk1.6.0-b23	"Thu Feb 10 05:44:36 EST 2005"	13179	812188	0	0	0	0	1069	12	1069
+9	jdk1.6.0-b26	"Thu Mar 03 06:04:02 EST 2005"	13199	811770	0	0	2	1	1066	12	1066
+10	jdk1.6.0-b27	"Thu Mar 10 04:48:38 EST 2005"	13189	812440	1	0	1	1	1064	15	1065
+11	jdk1.6.0-b28	"Thu Mar 17 02:54:22 EST 2005"	13185	812056	0	0	0	0	1065	17	1065
+12	jdk1.6.0-b29	"Thu Mar 24 03:09:20 EST 2005"	13117	809468	3	0	8	26	1031	17	1034
+13	jdk1.6.0-b30	"Thu Mar 31 02:53:32 EST 2005"	13118	809501	0	0	0	0	1034	51	1034
+14	jdk1.6.0-b31	"Thu Apr 07 03:00:14 EDT 2005"	13117	809572	0	0	0	0	1034	51	1034
+15	jdk1.6.0-b32	"Thu Apr 14 02:56:56 EDT 2005"	13169	811096	1	1	0	1	1033	51	1035
+16	jdk1.6.0-b33	"Thu Apr 21 02:46:22 EDT 2005"	13187	811942	3	0	2	1	1032	52	1035
+17	jdk1.6.0-b34	"Thu Apr 28 02:49:00 EDT 2005"	13195	813488	0	1	0	0	1035	55	1036
+18	jdk1.6.0-b35	"Thu May 05 02:49:04 EDT 2005"	13457	829837	0	36	2	0	1034	55	1070
+19	jdk1.6.0-b36	"Thu May 12 02:59:46 EDT 2005"	13462	831278	0	0	0	0	1070	57	1070
+20	jdk1.6.0-b37	"Thu May 19 02:55:08 EDT 2005"	13464	831971	0	1	1	0	1069	57	1070
+21	jdk1.6.0-b38	"Thu May 26 03:08:16 EDT 2005"	13564	836565	1	7	2	6	1062	58	1070
+22	jdk1.6.0-b39	"Fri Jun 03 03:10:48 EDT 2005"	13856	849992	6	39	5	0	1065	66	1110
+23	jdk1.6.0-b40	"Thu Jun 09 03:30:28 EDT 2005"	15972	959619	7	147	11	0	1099	71	1253
+24	jdk1.6.0-b41	"Thu Jun 16 03:19:22 EDT 2005"	15972	959619	0	0	0	0	1253	82	1253
+25	jdk1.6.0-b42	"Fri Jun 24 03:38:54 EDT 2005"	15966	958581	3	0	1	2	1250	82	1253
+26	jdk1.6.0-b43	"Thu Jul 14 03:09:34 EDT 2005"	16041	960544	5	11	15	8	1230	85	1246
+27	jdk1.6.0-b44	"Thu Jul 21 03:05:54 EDT 2005"	16041	960547	0	0	0	0	1246	108	1246
+28	jdk1.6.0-b45	"Thu Jul 28 03:26:10 EDT 2005"	16037	960606	19	0	2	0	1244	108	1263
+29	jdk1.6.0-b46	"Thu Aug 04 03:02:48 EDT 2005"	15936	951355	13	1	1	32	1230	110	1244
+30	jdk1.6.0-b47	"Thu Aug 11 03:18:56 EDT 2005"	15964	952387	163	8	7	20	1217	143	1388
+31	jdk1.6.0-b48	"Thu Aug 18 08:10:40 EDT 2005"	15970	953421	0	0	0	0	1388	170	1388
+32	jdk1.6.0-b49	"Thu Aug 25 03:24:38 EDT 2005"	16048	958940	1	11	1	0	1387	170	1399
+33	jdk1.6.0-b50	"Thu Sep 01 01:52:40 EDT 2005"	16287	974937	19	27	16	7	1376	171	1422
+34	jdk1.6.0-b51	"Thu Sep 08 01:55:36 EDT 2005"	16362	979377	1	15	3	0	1419	194	1435
+35	jdk1.6.0-b52	"Thu Sep 15 02:04:08 EDT 2005"	16477	979399	0	0	1	1	1433	197	1433
+36	jdk1.6.0-b53	"Thu Sep 22 02:00:28 EDT 2005"	16019	957900	13	12	16	20	1397	199	1422
+37	jdk1.6.0-b54	"Thu Sep 29 01:54:34 EDT 2005"	16019	957900	0	0	0	0	1422	235	1422
+38	jdk1.6.0-b55	"Thu Oct 06 01:54:14 EDT 2005"	16051	959014	1	4	7	0	1415	235	1420
+39	jdk1.6.0-b56	"Thu Oct 13 01:54:12 EDT 2005"	16211	970835	6	8	37	0	1383	242	1397
+40	jdk1.6.0-b57	"Thu Oct 20 01:55:26 EDT 2005"	16279	971627	0	0	0	0	1397	279	1397
+41	jdk1.6.0-b58	"Thu Oct 27 01:56:30 EDT 2005"	16283	971945	0	1	1	0	1396	279	1397
+42	jdk1.6.0-b59	"Thu Nov 03 01:56:58 EST 2005"	16232	972193	6	0	5	0	1392	280	1398
+43	jdk1.6.0-b60	"Thu Nov 10 01:54:18 EST 2005"	16235	972346	0	0	0	0	1398	285	1398
+44	jdk1.6.0-b61	"Thu Nov 17 01:58:42 EST 2005"	16202	971134	2	0	4	0	1394	285	1396
+</screen>
+</sect2>
+
+<sect2 id="incrementalhistory">
+    <title>Incremental history maintenance</title>
+
+<para>
+If db.xml contains the results of running findbugs over builds b12 - b60, we can update db.xml to include the results of analyzing b61 with the commands:
+</para>
+<screen>
+computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
+</screen>
+</sect2>
+
+            </sect1>
+
+         <sect1 id="antexample">
+            <title>Ant example</title>
+<para>
+Here is a complete ant script example for both running findbugs and running a chain of data-mining tools afterward:
+</para>
+<screen>
+<![CDATA[
+<project name="analyze_asm_util" default="findbugs">
+   <!-- findbugs task definition -->
+   <property name="findbugs.home" value="/Users/ben/Documents/workspace/findbugs/findbugs" />
+   <property name="jvmargs" value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${findbugs.home}" />
+
+    <path id="findbugs.lib">
+      <fileset dir="${findbugs.home}/lib">
+         <include name="findbugs-ant.jar"/>
+      </fileset>
+   </path>
+
+   <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+
+   <taskdef name="computeBugHistory" classname="edu.umd.cs.findbugs.anttask.ComputeBugHistoryTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+
+   <taskdef name="setBugDatabaseInfo" classname="edu.umd.cs.findbugs.anttask.SetBugDatabaseInfoTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+
+   <taskdef name="mineBugHistory" classname="edu.umd.cs.findbugs.anttask.MineBugHistoryTask">
+      <classpath refid="findbugs.lib" />
+   </taskdef>
+
+   <!-- findbugs task definition -->
+   <target name="findbugs">
+      <antcall target="analyze" />
+      <antcall target="mine" />
+   </target>
+
+   <!-- analyze task -->
+   <target name="analyze">
+      <!-- run findbugs against asm-util -->
+      <findbugs home="${findbugs.home}"
+                output="xml:withMessages"
+                timeout="90000000"
+                reportLevel="experimental"
+                workHard="true"
+                effort="max"
+                adjustExperimental="true"
+                jvmargs="${jvmargs}"
+                failOnError="true"
+                outputFile="out.xml"
+                projectName="Findbugs"
+                debug="false">
+         <class location="asm-util-3.0.jar" />
+      </findbugs>
+   </target>
+
+   <target name="mine">
+
+      <!-- Set info to the latest analysis -->
+      <setBugDatabaseInfo home="${findbugs.home}"
+                            withMessages="true"
+                            name="asm-util-3.0.jar"
+                            input="out.xml"
+                            output="out-rel.xml"/>
+
+      <!-- Checking if history file already exists (out-hist.xml) -->
+      <condition property="mining.historyfile.available">
+         <available file="out-hist.xml"/>
+      </condition>
+      <condition property="mining.historyfile.notavailable">
+         <not>
+            <available file="out-hist.xml"/>
+         </not>
+      </condition>
+
+      <!-- this target is executed if the history file do not exist (first run) -->
+      <antcall target="history-init">
+        <param name="data.file" value="out-rel.xml" />
+        <param name="hist.file" value="out-hist.xml" />
+      </antcall>
+      <!-- else this one is executed -->
+      <antcall target="history">
+        <param name="data.file"         value="out-rel.xml" />
+        <param name="hist.file"         value="out-hist.xml" />
+        <param name="hist.summary.file" value="out-hist.txt" />
+      </antcall>
+   </target>
+
+   <!-- Initializing history file -->
+   <target name="history-init" if="mining.historyfile.notavailable">
+      <copy file="${data.file}" tofile="${hist.file}" />
+   </target>
+
+   <!-- Computing bug history -->
+   <target name="history" if="mining.historyfile.available">
+      <!-- Merging ${data.file} into ${hist.file} -->
+      <computeBugHistory home="${findbugs.home}"
+                           withMessages="true"
+                           output="${hist.file}">
+            <dataFile name="${hist.file}"/>
+            <dataFile name="${data.file}"/>
+      </computeBugHistory>
+
+      <!-- Compute history into ${hist.summary.file} -->
+      <mineBugHistory home="${findbugs.home}"
+                        formatDates="true"
+                      noTabs="true"
+                        input="${hist.file}"
+                        output="${hist.summary.file}"/>
+   </target>
+
+</project>
+]]>
+</screen>
+         </sect1>
+</chapter>
+
+
+<!--
+   **************************************************************************
+   License
+   **************************************************************************
+-->
+
+<chapter id="license">
+<title>License</title>
+
+<para>
+The name FindBugs and the FindBugs logo is trademarked by the University
+of Maryland.
+FindBugs is free software distributed under the terms of the
+<ulink url="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</ulink>.
+You should have received a copy of the license in the file <filename>LICENSE.txt</filename>
+in the &FindBugs; distribution.
+</para>
+
+<para>
+You can find the latest version of FindBugs, along with its source code, from the
+<ulink url="@WEBSITE@">FindBugs web page</ulink>.
+</para>
+
+</chapter>
+
+
+<!--
+   **************************************************************************
+   Acknowledgments
+   **************************************************************************
+-->
+<chapter id="acknowledgments">
+<title>Acknowledgments</title>
+
+<sect1>
+<title>Contributors</title>
+
+<para>&FindBugs; was originally written by Bill Pugh (<email>pugh@cs.umd.edu</email>).
+David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
+detectors, added the Swing GUI, and is a co-maintainer.</para>
+
+<para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
+the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
+
+<para>Germano Leichsenring contributed Japanese translations of the bug
+summaries.</para>
+
+<para>David Li contributed the Emacs bug report format.</para>
+
+<para>Peter D. Stout contributed recursive detection of Class-Path
+attributes in analyzed Jar files, German translations of
+text used in the Swing GUI, and other fixes.</para>
+
+<para>Peter Friese wrote the &FindBugs; Eclipse plugin.</para>
+
+<para>Rohan Lloyd contributed several Mac OS X enhancements,
+bug detector improvements,
+and maintains the Fink package for &FindBugs;.</para>
+
+<para>Hiroshi Okugawa translated the &FindBugs; manual and
+more of the bug summaries into Japanese.</para>
+
+<para>Phil Crosby enhanced the Eclipse plugin to add a view
+to display the bug details.</para>
+
+<para>Dave Brosius fixed a number of bugs, added user preferences
+to the Swing GUI, improved several bug detectors, and
+contributed the string concatenation detector.</para>
+
+<para>Thomas Klaeger contributed a number of bug fixes and
+bug detector improvements.</para>
+
+<para>Andrey Loskutov made a number of bug fixes and
+bug detector improvements. He is maintainer of the Eclipse plugin.</para>
+
+<para>Brian Goetz contributed a major refactoring of the
+visitor classes to improve readability and understandability.</para>
+
+<para> Pete Angstadt fixed several problems in the Swing GUI.</para>
+
+<para>Francis Lalonde provided a task resource file for the
+FindBugs Ant task.</para>
+
+<para>Garvin LeClaire contributed support for output in
+Xdocs format, for use by Maven.</para>
+
+<para>Holger Stenzhorn contributed improved German translations of items
+in the Swing GUI.</para>
+
+<para>Juha Knuutila contributed Finnish translations of items
+in the Swing GUI.</para>
+
+<para>Tanel Lebedev contributed Estonian translations of items
+in the Swing GUI.</para>
+
+<para>Hanai Shisei (ruimo) contributed full Japanese translations of
+bug messages, and text used in the Swing GUI.</para>
+
+<para>David Cotton contributed Fresh translations for bug
+messages and for the Swing GUI.</para>
+
+<para>Michael Tamm contributed support for the "errorProperty" attribute
+in the Ant task.</para>
+
+<para>Thomas Kuehne improved the German translation of the Swing GUI.</para>
+
+<para>Len Trigg improved source file support for the Emacs output mode.</para>
+
+<para>Greg Bentz provided a fix for the hashcode/equals detector.</para>
+
+<para>K. Hashimoto contributed internationalization fixes and several other
+    bug fixes.</para>
+
+<para>
+    Glenn Boysko contributed support for ignoring specified local
+    variables in the dead local store detector.
+</para>
+
+<para>
+    Jay Dunning contributed a detector to find equality comparisons
+    of floating-point values, and overhauled the analysis summary
+    report and its representation in the saved XML format.
+</para>
+
+<para>
+    Olivier Parent contributed updated French translations for bug descriptions and
+    Swing GUI.
+</para>
+
+<para>
+    Chris Nappin contributed the <filename>plain.xsl</filename>
+    stylesheet.
+</para>
+
+<para>
+    Etienne Giraudy contributed the <filename>fancy.xsl</filename> and  <filename>fancy-hist.xsl</filename>
+    stylesheets, and made improvements to the <command>-xml:withMessages</command>
+    option.
+</para>
+
+<para>
+    Takashi Okamoto fixed bugs in the project preferences dialog
+    in the Eclipse plugin, and contributed to its internationalization and localization.
+</para>
+
+<para>Thomas Einwaller fixed bugs in the project preferences dialog in the Eclipse plugin.</para>
+
+<para>Jeff Knox contributed support for the warningsProperty attribute
+in the Ant task.</para>
+
+<para>Peter Hendriks extended the Eclipse plugin preferences,
+and fixed a bug related to renaming the Eclipse plugin ID.</para>
+
+<para>Mark McKay contributed an Ant task to launch the findbugs frame.</para>
+
+<para>Dieter von Holten (dvholten) contributed
+some German improvements to findbugs_de.properties.</para>
+
+<para>Kevin Lubick contributed fixes and tests for multi-quick-fixes and customizable
+annotation colors for Eclipse plugin.</para>
+
+<para>Boris Bokowski contributed several new bug patterns: BIT_SIGNED_CHECK and BIT_SIGNED_CHECK_HIGH_BIT.</para>
+
+<para>Tagir Valeev contributed several new bug detectors and improved existing ones.</para>
+
+<para>If you have contributed to &FindBugs;, but aren't mentioned above,
+please send email to <email>findbugs@cs.umd.edu</email> (and also accept
+our humble apologies).</para>
+
+</sect1>
+
+<sect1>
+<title>Software Used</title>
+
+<para>&FindBugs; uses several open-source software packages, without which its
+development would have been much more difficult.</para>
+
+<sect2>
+<title>BCEL</title>
+<para>&FindBugs; includes software developed by the Apache Software Foundation
+(<ulink url="http://www.apache.org/">http://www.apache.org/</ulink>).
+Specifically, it uses the <ulink url="http://jakarta.apache.org/bcel/">Byte Code
+Engineering Library</ulink>.</para>
+</sect2>
+
+<sect2>
+<title>ASM</title>
+<para>&FindBugs; uses the <ulink url="http://asm.objectweb.org/">ASM</ulink>
+bytecode framework, which is distributed under the following license:</para>
+
+<blockquote>
+<para>
+Copyright (c) 2000-2005 INRIA, France Telecom
+All rights reserved.
+</para>
+
+<para>
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+</para>
+
+<orderedlist numeration="arabic">
+   <listitem><para>
+   Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+  </para></listitem>
+   <listitem><para>
+   Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+  </para></listitem>
+   <listitem><para>
+   Neither the name of the copyright holders nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+  </para></listitem>
+</orderedlist>
+
+<para>
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGE.
+</para>
+</blockquote>
+</sect2>
+
+<sect2>
+<title>DOM4J</title>
+<para>&FindBugs; uses <ulink url="http://dom4j.org">DOM4J</ulink>, which is
+distributed under the following license:</para>
+
+<blockquote>
+<para>
+Copyright 2001 (C) MetaStuff, Ltd. All Rights Reserved.
+</para>
+
+<para>
+Redistribution and use of this software and associated documentation
+("Software"), with or without modification, are permitted provided that
+the following conditions are met:
+</para>
+
+<orderedlist numeration="arabic">
+   <listitem><para>
+   Redistributions of source code must retain copyright statements and
+   notices. Redistributions must also contain a copy of this document.
+  </para></listitem>
+   <listitem><para>
+   Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+  </para></listitem>
+   <listitem><para>
+   The name "DOM4J" must not be used to endorse or promote products
+   derived from this Software without prior written permission
+   of MetaStuff, Ltd. For written permission, please contact
+   <email>dom4j-info@metastuff.com</email>.
+  </para></listitem>
+   <listitem><para>
+   Products derived from this Software may not be called "DOM4J" nor may
+   "DOM4J" appear in their names without prior written permission of
+   MetaStuff, Ltd. DOM4J is a registered trademark of MetaStuff, Ltd.
+  </para></listitem>
+   <listitem><para>
+   Due credit should be given to the DOM4J Project (<ulink url="http://dom4j.org/">http://dom4j.org/</ulink>).
+  </para></listitem>
+</orderedlist>
+
+<para>
+THIS SOFTWARE IS PROVIDED BY METASTUFF, LTD. AND CONTRIBUTORS ``AS IS''
+AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL METASTUFF, LTD. OR ITS
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</para>
+</blockquote>
+
+</sect2>
+
+</sect1>
+
+</chapter>
+
+
+</book>

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
 
-   <description url="http://findbugs.cs.umd.edu/eclipse">
-      This is the Eclipse update site for FindBugs features.
+   <description url="https://spotbugs.github.io/eclipse-daily">
+      This is the Eclipse update site for SpotBugs features.
    </description>
 
    <feature url="features/@FEATURE_ID@_@FEATURE_VERSION@.jar"
             id="@FEATURE_ID@"
             version="@FEATURE_VERSION@">
-      <category name="FindBugs"/>
+      <category name="SpotBugs"/>
    </feature>
 
-   <category-def name="FindBugs" label="FindBugs">
+   <category-def name="SpotBugs" label="SpotBugs">
       <description>
-         This is the Eclipse category for FindBugs features.
+         This is the Eclipse category for SpotBugs features.
       </description>
    </category-def>
 
