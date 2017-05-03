@@ -1,3 +1,17 @@
+/**
+ * @param category &lt;BugCategory&gt; XML node from messages_*.xml
+ */
+def generateCategoryTitle(category) {
+  "${category.Description} (${category.@category})"
+}
+
+/**
+ * @param findbugs &lt;BugPattern&gt; XML node from findbugs.xml
+ * @param message &lt;BugPattern&gt; XML node from messages_*.xml
+ */
+def generatePatternTitle(findbugs, message) {
+  "${findbugs.@abbrev}: ${message.ShortDescription} (${findbugs.@type})"
+}
 
 /**
  * Generate list of bug categories and bug patterns.
@@ -20,7 +34,7 @@ task generateBugDescriptionPage {
       }.each {
         // TODO Do we need to hide HIDDEN bug category such as NOISE?
         def category = it.@category
-        def categoryTitle = "${it.Description} (${it.@category})"
+        def categoryTitle = generateCategoryTitle(it)
         writer << "${categoryTitle}\n${'-' * categoryTitle.length()}\n"
         it.Details.text().eachLine { line ->
           writer << line.trim()
@@ -31,11 +45,10 @@ task generateBugDescriptionPage {
           it.@category == category
         }.each {
           def type = it.@type
-          def abbrev = it.@abbrev
           def message = messages.BugPattern.find {
             it.@type == type
           }
-          def patternTitle = "${abbrev}: ${message.ShortDescription} (${type})"
+          def patternTitle = generatePatternTitle(it, message)
           writer << "${patternTitle}\n${'^' * patternTitle.length()}\n\n"
           String details = message.Details
           writer << '.. raw:: html\n'
@@ -51,3 +64,66 @@ task generateBugDescriptionPage {
   }
 }
 tasks.processResources.dependsOn generateBugDescriptionPage
+
+task generatePoFile {
+  def findbugsXml = file("../spotbugs/etc/findbugs.xml")
+  def enXml = file("../spotbugs/etc/messages.xml")
+  def jaXml = file("../spotbugs/etc/messages_ja.xml")
+  def bugDescriptionPo = file('locale/ja/LC_MESSAGES/bugDescriptions.po')
+
+  inputs.files findbugsXml, enXml, jaXml
+  outputs.file bugDescriptionPo
+
+  doLast {
+    def findbugs = new XmlSlurper().parse(findbugsXml)
+    def enMessages = new XmlSlurper().parse(enXml)
+    def jaMessages = new XmlSlurper().parse(jaXml)
+    bugDescriptionPo.withWriter { writer ->
+      writer << 'msgid "Bug descriptions"\n'
+      writer << 'msgstr "検知可能なバグの詳細"\n\n'
+      writer << 'msgid "This document lists the standard bug patterns reported by SpotBugs."\n'
+      writer << 'msgstr "このページではSpotBugsが標準で検知可能なバグを一覧で紹介しています。"\n\n'
+
+      enMessages.BugCategory.each {
+        def category = it.@category
+        writer << "msgid "
+        generateCategoryTitle(it).eachLine { line ->
+          writer << '"'
+          writer << line
+          writer << '"\n'
+        }
+        writer << "msgstr "
+        generateCategoryTitle(jaMessages.BugCategory.find {
+          it.@category == category
+        }).eachLine { line ->
+          writer << '"'
+          writer << line
+          writer << '"\n'
+        }
+        writer << '\n'
+      }
+      enMessages.BugPattern.each {
+        def type = it.@type
+        def findbugsData = findbugs.BugPattern.find {
+          it.@type == type
+        }
+        writer << "msgid "
+        generatePatternTitle(findbugsData, it).eachLine { line ->
+          writer << '"'
+          writer << line
+          writer << '"\n'
+        }
+        writer << "msgstr "
+        generatePatternTitle(findbugsData, jaMessages.BugPattern.find {
+          it.@type == type
+        }).eachLine { line ->
+          writer << '"'
+          writer << line
+          writer << '"\n'
+        }
+        writer << '\n'
+      }
+    }
+  }
+}
+tasks.processResources.dependsOn generatePoFile

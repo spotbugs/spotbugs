@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2016-2017, spotbugs community
-# This file is distributed under the same license as the spotbugs package.
+# Translations template for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: spotbugs 3.1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-02 09:03+0000\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-05-02 14:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,11 +19,15 @@ msgstr ""
 
 #: ../../bugDescriptions.rst:2
 msgid "Bug descriptions"
-msgstr ""
+msgstr "検知可能なバグの詳細"
+
+#: ../../bugDescriptions.rst:4
+msgid "This document lists the standard bug patterns reported by SpotBugs."
+msgstr "このページではSpotBugsが標準で検知可能なバグを一覧で紹介しています。"
 
 #: ../../bugDescriptionList.rst:2
 msgid "Bad practice (BAD_PRACTICE)"
-msgstr ""
+msgstr "バッドプラクティス (BAD_PRACTICE)"
 
 #: ../../bugDescriptionList.rst:3
 msgid ""
@@ -36,477 +40,530 @@ msgstr ""
 
 #: ../../bugDescriptionList.rst:13
 msgid "CNT: Rough value of known constant found (CNT_ROUGH_CONSTANT_VALUE)"
-msgstr ""
+msgstr "CNT: 既知の定数の大雑把な値を見つけた (CNT_ROUGH_CONSTANT_VALUE)"
 
 #: ../../bugDescriptionList.rst:23
 msgid ""
 "NP: Method with Boolean return type returns explicit null "
 "(NP_BOOLEAN_RETURN_NULL)"
-msgstr ""
+msgstr "NP: 戻り型が Boolean のメソッドが明示的に null を返している (NP_BOOLEAN_RETURN_NULL)"
 
 #: ../../bugDescriptionList.rst:38
 msgid ""
 "SW: Certain swing methods needs to be invoked in Swing thread "
 "(SW_SWING_METHODS_INVOKED_IN_SWING_THREAD)"
 msgstr ""
+"SW: Swing メソッドは AWT イベントディスパッチスレッドから呼び出す必要がある "
+"(SW_SWING_METHODS_INVOKED_IN_SWING_THREAD)"
 
 #: ../../bugDescriptionList.rst:57
 msgid "FI: Finalizer only nulls fields (FI_FINALIZER_ONLY_NULLS_FIELDS)"
-msgstr ""
+msgstr "FI: ファイナライザはフィールドを null にするだけ (FI_FINALIZER_ONLY_NULLS_FIELDS)"
 
 #: ../../bugDescriptionList.rst:69
 msgid "FI: Finalizer nulls fields (FI_FINALIZER_NULLS_FIELDS)"
-msgstr ""
+msgstr "FI: ファイナライザはフィールドを null にする (FI_FINALIZER_NULLS_FIELDS)"
 
 #: ../../bugDescriptionList.rst:80
 msgid ""
 "UI: Usage of GetResource may be unsafe if class is extended "
 "(UI_INHERITANCE_UNSAFE_GETRESOURCE)"
 msgstr ""
+"UI: クラスが拡張されるなら getResource の使い方は安全ではないかもしれない "
+"(UI_INHERITANCE_UNSAFE_GETRESOURCE)"
 
 #: ../../bugDescriptionList.rst:92
 msgid "AM: Creates an empty zip file entry (AM_CREATES_EMPTY_ZIP_FILE_ENTRY)"
-msgstr ""
+msgstr "AM: 空の ZIP ファイルエントリの作成 (AM_CREATES_EMPTY_ZIP_FILE_ENTRY)"
 
 #: ../../bugDescriptionList.rst:107
 msgid "AM: Creates an empty jar file entry (AM_CREATES_EMPTY_JAR_FILE_ENTRY)"
-msgstr ""
+msgstr "AM: 空の JAR ファイルエントリの作成 (AM_CREATES_EMPTY_JAR_FILE_ENTRY)"
 
 #: ../../bugDescriptionList.rst:122
 msgid ""
 "IMSE: Dubious catching of IllegalMonitorStateException "
 "(IMSE_DONT_CATCH_IMSE)"
-msgstr ""
+msgstr "IMSE: 疑わしい IllegalMonitorStateException のキャッチ (IMSE_DONT_CATCH_IMSE)"
 
 #: ../../bugDescriptionList.rst:134
 msgid ""
 "CN: Class defines clone() but doesn't implement Cloneable "
 "(CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE)"
 msgstr ""
+"CN: Cloneable を実装していないクラスが clone メソッドを定義している "
+"(CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE)"
 
 #: ../../bugDescriptionList.rst:147
 msgid ""
 "CN: Class implements Cloneable but does not define or use clone method "
 "(CN_IDIOM)"
-msgstr ""
+msgstr "CN: Cloneable を実装したクラスが clone メソッドを定義していないか、使用していない (CN_IDIOM)"
 
 #: ../../bugDescriptionList.rst:159
 msgid "CN: clone method does not call super.clone() (CN_IDIOM_NO_SUPER_CALL)"
-msgstr ""
+msgstr "CN: clone メソッドが super.clone() を呼び出していない (CN_IDIOM_NO_SUPER_CALL)"
 
 #: ../../bugDescriptionList.rst:176
 msgid "DE: Method might drop exception (DE_MIGHT_DROP)"
-msgstr ""
+msgstr "DE: 例外を捨てているかもしれないメソッド (DE_MIGHT_DROP)"
 
 #: ../../bugDescriptionList.rst:188
 msgid "DE: Method might ignore exception (DE_MIGHT_IGNORE)"
-msgstr ""
+msgstr "DE: 例外を無視しているかもしれないメソッド (DE_MIGHT_IGNORE)"
 
 #: ../../bugDescriptionList.rst:200
 msgid "Dm: Method invokes System.exit(...) (DM_EXIT)"
-msgstr ""
+msgstr "Dm: System.exit(...) を呼び出しているメソッド (DM_EXIT)"
 
 #: ../../bugDescriptionList.rst:213
 msgid ""
 "Nm: Use of identifier that is a keyword in later versions of Java "
 "(NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER)"
 msgstr ""
+"Nm: Java の後のバージョンのキーワードである識別子を使用している "
+"(NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER)"
 
 #: ../../bugDescriptionList.rst:225
 msgid ""
 "Nm: Use of identifier that is a keyword in later versions of Java "
 "(NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER)"
 msgstr ""
+"Nm: Java の後のバージョンのキーワードである識別子を使用している "
+"(NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER)"
 
 #: ../../bugDescriptionList.rst:238
 msgid ""
 "JCIP: Fields of immutable classes should be final "
 "(JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS)"
-msgstr ""
+msgstr "JCIP: 不変クラスのフィールドは final にすべき (JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS)"
 
 #: ../../bugDescriptionList.rst:250
 msgid ""
 "Dm: Method invokes dangerous method runFinalizersOnExit "
 "(DM_RUN_FINALIZERS_ON_EXIT)"
-msgstr ""
+msgstr "Dm: 危険なメソッド runFinalizersOnExit を呼び出しているメソッド (DM_RUN_FINALIZERS_ON_EXIT)"
 
 #: ../../bugDescriptionList.rst:262
 msgid ""
 "NP: equals() method does not check for null argument "
 "(NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT)"
 msgstr ""
+"NP: equals メソッドは null の引数をチェックしていない "
+"(NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT)"
 
 #: ../../bugDescriptionList.rst:277
 msgid "FI: Empty finalizer should be deleted (FI_EMPTY)"
-msgstr ""
+msgstr "FI: 空のファイナライザは削除するべき (FI_EMPTY)"
 
 #: ../../bugDescriptionList.rst:288
 msgid "FI: Finalizer nullifies superclass finalizer (FI_NULLIFY_SUPER)"
-msgstr ""
+msgstr "FI: ファイナライザはスーパークラスのファイナライザを無効にしている (FI_NULLIFY_SUPER)"
 
 #: ../../bugDescriptionList.rst:301
 msgid "FI: Finalizer does nothing but call superclass finalizer (FI_USELESS)"
-msgstr ""
+msgstr "FI: ファイナライザはスーパークラスのファイナライザを呼び出しているだけ (FI_USELESS)"
 
 #: ../../bugDescriptionList.rst:313
 msgid "FI: Finalizer does not call superclass finalizer (FI_MISSING_SUPER_CALL)"
-msgstr ""
+msgstr "FI: ファイナライザはスーパークラスのファイナライザを呼び出していない (FI_MISSING_SUPER_CALL)"
 
 #: ../../bugDescriptionList.rst:326
 msgid "FI: Explicit invocation of finalizer (FI_EXPLICIT_INVOCATION)"
-msgstr ""
+msgstr "FI: ファイナライザの明示的な呼び出し (FI_EXPLICIT_INVOCATION)"
 
 #: ../../bugDescriptionList.rst:342
 msgid ""
 "Eq: Equals checks for incompatible operand "
 "(EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS)"
 msgstr ""
+"Eq: equals メソッドは互換性のないオペランドをチェックしている "
+"(EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS)"
 
 #: ../../bugDescriptionList.rst:368
 msgid "Eq: equals method fails for subtypes (EQ_GETCLASS_AND_CLASS_CONSTANT)"
-msgstr ""
+msgstr "Eq: equals メソッドはサブタイプのために失敗する (EQ_GETCLASS_AND_CLASS_CONSTANT)"
 
 #: ../../bugDescriptionList.rst:382
 msgid "Eq: Covariant equals() method defined (EQ_SELF_NO_OBJECT)"
-msgstr ""
+msgstr "Eq: 共変な equals メソッドの定義 (EQ_SELF_NO_OBJECT)"
 
 #: ../../bugDescriptionList.rst:395
 msgid "Co: Covariant compareTo() method defined (CO_SELF_NO_OBJECT)"
-msgstr ""
+msgstr "Co: 共変な compareTo メソッドの定義 (CO_SELF_NO_OBJECT)"
 
 #: ../../bugDescriptionList.rst:408
 msgid ""
 "Co: compareTo()/compare() returns Integer.MIN_VALUE "
 "(CO_COMPARETO_RESULTS_MIN_VALUE)"
 msgstr ""
+"Co: compareTo()/compare() は Integer.MIN_VALUE を返す "
+"(CO_COMPARETO_RESULTS_MIN_VALUE)"
 
 #: ../../bugDescriptionList.rst:423
 msgid ""
 "Co: compareTo()/compare() incorrectly handles float or double value "
 "(CO_COMPARETO_INCORRECT_FLOATING)"
 msgstr ""
+"Co: compareTo()/compare() は間違って float または double 値を処理する "
+"(CO_COMPARETO_INCORRECT_FLOATING)"
 
 #: ../../bugDescriptionList.rst:436
 msgid ""
 "RV: Negating the result of compareTo()/compare() "
 "(RV_NEGATING_RESULT_OF_COMPARETO)"
-msgstr ""
+msgstr "RV: compareTo()/compare() の結果を無効にする (RV_NEGATING_RESULT_OF_COMPARETO)"
 
 #: ../../bugDescriptionList.rst:451
 msgid ""
 "ES: Comparison of String objects using == or != "
 "(ES_COMPARING_STRINGS_WITH_EQ)"
-msgstr ""
+msgstr "ES: String オブジェクトを == や != を使用して比較している (ES_COMPARING_STRINGS_WITH_EQ)"
 
 #: ../../bugDescriptionList.rst:466
 msgid ""
 "ES: Comparison of String parameter using == or != "
 "(ES_COMPARING_PARAMETER_STRING_WITH_EQ)"
 msgstr ""
+"ES: String パラメータを == や != を使用して比較している "
+"(ES_COMPARING_PARAMETER_STRING_WITH_EQ)"
 
 #: ../../bugDescriptionList.rst:480
 msgid ""
 "Eq: Class defines compareTo(...) and uses Object.equals() "
 "(EQ_COMPARETO_USE_OBJECT_EQUALS)"
 msgstr ""
+"Eq: compareTo(...) メソッドを定義して Object.equals() を使用しているクラス "
+"(EQ_COMPARETO_USE_OBJECT_EQUALS)"
 
 #: ../../bugDescriptionList.rst:504
 msgid ""
 "HE: Class defines hashCode() and uses Object.equals() "
 "(HE_HASHCODE_USE_OBJECT_EQUALS)"
 msgstr ""
+"HE: hashCode メソッドを定義して Object.equals() を使用しているクラス "
+"(HE_HASHCODE_USE_OBJECT_EQUALS)"
 
 #: ../../bugDescriptionList.rst:527
 msgid "HE: Class defines hashCode() but not equals() (HE_HASHCODE_NO_EQUALS)"
-msgstr ""
+msgstr "HE: hashCode メソッドを定義していますが equals メソッドは定義していないクラス (HE_HASHCODE_NO_EQUALS)"
 
 #: ../../bugDescriptionList.rst:539
 msgid ""
 "HE: Class defines equals() and uses Object.hashCode() "
 "(HE_EQUALS_USE_HASHCODE)"
-msgstr ""
+msgstr "HE: equals メソッドを定義して Object.hashCode() を使用しているクラス (HE_EQUALS_USE_HASHCODE)"
 
 #: ../../bugDescriptionList.rst:561
 msgid ""
 "HE: Class inherits equals() and uses Object.hashCode() "
 "(HE_INHERITS_EQUALS_USE_HASHCODE)"
 msgstr ""
+"HE: equals メソッドを継承して Object.hashCode() を使用しているクラス "
+"(HE_INHERITS_EQUALS_USE_HASHCODE)"
 
 #: ../../bugDescriptionList.rst:581
 msgid "HE: Class defines equals() but not hashCode() (HE_EQUALS_NO_HASHCODE)"
-msgstr ""
+msgstr "HE: equals メソッドは定義していますが hashCode メソッドは定義していないクラス (HE_EQUALS_NO_HASHCODE)"
 
 #: ../../bugDescriptionList.rst:593
 msgid "Eq: Abstract class defines covariant equals() method (EQ_ABSTRACT_SELF)"
-msgstr ""
+msgstr "Eq: 抽象クラスは共変な equals メソッドを宣言している (EQ_ABSTRACT_SELF)"
 
 #: ../../bugDescriptionList.rst:606
 msgid "Co: Abstract class defines covariant compareTo() method (CO_ABSTRACT_SELF)"
-msgstr ""
+msgstr "Co: 抽象クラスは共変な compareTo メソッドを定義している (CO_ABSTRACT_SELF)"
 
 #: ../../bugDescriptionList.rst:619
 msgid ""
 "IC: Superclass uses subclass during initialization "
 "(IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION)"
 msgstr ""
+"IC: スーパークラスは初期化中にサブクラスを使用している "
+"(IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION)"
 
 #: ../../bugDescriptionList.rst:642
 msgid ""
 "SI: Static initializer creates instance before all static final fields "
 "assigned (SI_INSTANCE_BEFORE_FINALS_ASSIGNED)"
 msgstr ""
+"SI: スタティックイニシャライザは、すべての static final フィールドが代入される前にインスタンスを作成する "
+"(SI_INSTANCE_BEFORE_FINALS_ASSIGNED)"
 
 #: ../../bugDescriptionList.rst:653
 msgid ""
 "It: Iterator next() method can't throw NoSuchElementException "
 "(IT_NO_SUCH_ELEMENT)"
-msgstr ""
+msgstr "It: Iterator.next() が NoSuchElementException をスローできない (IT_NO_SUCH_ELEMENT)"
 
 #: ../../bugDescriptionList.rst:667
 msgid "ME: Enum field is public and mutable (ME_MUTABLE_ENUM_FIELD)"
-msgstr ""
+msgstr "ME: 列挙型フィールドは public で可変である (ME_MUTABLE_ENUM_FIELD)"
 
 #: ../../bugDescriptionList.rst:679
 msgid ""
 "ME: Public enum method unconditionally sets its field "
 "(ME_ENUM_FIELD_SETTER)"
-msgstr ""
+msgstr "ME: public 列挙型メソッドが無条件にフィールドを設定する (ME_ENUM_FIELD_SETTER)"
 
 #: ../../bugDescriptionList.rst:691
 msgid ""
 "Nm: Method names should start with a lower case letter "
 "(NM_METHOD_NAMING_CONVENTION)"
-msgstr ""
+msgstr "Nm: メソッド名は小文字から始めるべき (NM_METHOD_NAMING_CONVENTION)"
 
 #: ../../bugDescriptionList.rst:703
 msgid ""
 "Nm: Field names should start with a lower case letter "
 "(NM_FIELD_NAMING_CONVENTION)"
-msgstr ""
+msgstr "Nm: フィールド名は小文字から始めるべき (NM_FIELD_NAMING_CONVENTION)"
 
 #: ../../bugDescriptionList.rst:715
 msgid ""
 "Nm: Class names shouldn't shadow simple name of implemented interface "
 "(NM_SAME_SIMPLE_NAME_AS_INTERFACE)"
-msgstr ""
+msgstr "Nm: クラス名は実装されたインタフェースの単純名を遮るべきではない (NM_SAME_SIMPLE_NAME_AS_INTERFACE)"
 
 #: ../../bugDescriptionList.rst:730
 msgid ""
 "Nm: Class names shouldn't shadow simple name of superclass "
 "(NM_SAME_SIMPLE_NAME_AS_SUPERCLASS)"
-msgstr ""
+msgstr "Nm: クラス名はスーパークラスの単純名を遮るべきではない (NM_SAME_SIMPLE_NAME_AS_SUPERCLASS)"
 
 #: ../../bugDescriptionList.rst:745
 msgid ""
 "Nm: Class names should start with an upper case letter "
 "(NM_CLASS_NAMING_CONVENTION)"
-msgstr ""
+msgstr "Nm: クラス名は大文字から始めるべき (NM_CLASS_NAMING_CONVENTION)"
 
 #: ../../bugDescriptionList.rst:756
 msgid ""
 "Nm: Very confusing method names (but perhaps intentional) "
 "(NM_VERY_CONFUSING_INTENTIONAL)"
-msgstr ""
+msgstr "Nm: 非常に紛らわしい名前のメソッド (多分意図的) (NM_VERY_CONFUSING_INTENTIONAL)"
 
 #: ../../bugDescriptionList.rst:771
 msgid ""
 "Nm: Method doesn't override method in superclass due to wrong package for"
 " parameter (NM_WRONG_PACKAGE_INTENTIONAL)"
 msgstr ""
+"Nm: パラメータの間違ったパッケージのためにスーパークラスのメソッドをオーバーライドしていないメソッド "
+"(NM_WRONG_PACKAGE_INTENTIONAL)"
 
 #: ../../bugDescriptionList.rst:808
 msgid "Nm: Confusing method names (NM_CONFUSING)"
-msgstr ""
+msgstr "Nm: 紛らわしい名前のメソッド (NM_CONFUSING)"
 
 #: ../../bugDescriptionList.rst:818
 msgid ""
 "Nm: Class is not derived from an Exception, even though it is named as "
 "such (NM_CLASS_NOT_EXCEPTION)"
-msgstr ""
+msgstr "Nm: 例外クラスのように命名されているが、クラスは Exception から派生されていない (NM_CLASS_NOT_EXCEPTION)"
 
 #: ../../bugDescriptionList.rst:829
 msgid "RR: Method ignores results of InputStream.read() (RR_NOT_CHECKED)"
-msgstr ""
+msgstr "RR: InputStream.read() の戻り値を無視しているメソッド (RR_NOT_CHECKED)"
 
 #: ../../bugDescriptionList.rst:845
 msgid "RR: Method ignores results of InputStream.skip() (SR_NOT_CHECKED)"
-msgstr ""
+msgstr "RR: InputStream.skip() の戻り値を無視しているメソッド (SR_NOT_CHECKED)"
 
 #: ../../bugDescriptionList.rst:863
 msgid ""
 "Se: Class is Serializable but its superclass doesn't define a void "
 "constructor (SE_NO_SUITABLE_CONSTRUCTOR)"
 msgstr ""
+"Se: Serializable なクラスのスーパークラスで、引数なしコンストラクタを定義していない "
+"(SE_NO_SUITABLE_CONSTRUCTOR)"
 
 #: ../../bugDescriptionList.rst:878
 msgid ""
 "Se: Class is Externalizable but doesn't define a void constructor "
 "(SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION)"
 msgstr ""
+"Se: Externalizable なクラスが引数なしコンストラクタを定義していない "
+"(SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION)"
 
 #: ../../bugDescriptionList.rst:892
 msgid ""
 "Se: Comparator doesn't implement Serializable "
 "(SE_COMPARATOR_SHOULD_BE_SERIALIZABLE)"
 msgstr ""
+"Se: Comparator は Serializable を実装していない "
+"(SE_COMPARATOR_SHOULD_BE_SERIALIZABLE)"
 
 #: ../../bugDescriptionList.rst:909
 msgid ""
 "SnVI: Class is Serializable, but doesn't define serialVersionUID "
 "(SE_NO_SERIALVERSIONID)"
-msgstr ""
+msgstr "SnVI: Serializable なクラスが serialVersionUID を定義していない (SE_NO_SERIALVERSIONID)"
 
 #: ../../bugDescriptionList.rst:930
 msgid ""
 "Se: The readResolve method must be declared with a return type of Object."
 "  (SE_READ_RESOLVE_MUST_RETURN_OBJECT)"
 msgstr ""
+"Se: readResolve メソッドの戻り値の型が Object で宣言されていない "
+"(SE_READ_RESOLVE_MUST_RETURN_OBJECT)"
 
 #: ../../bugDescriptionList.rst:942
 msgid ""
 "Se: Transient field that isn't set by deserialization.  "
 "(SE_TRANSIENT_FIELD_NOT_RESTORED)"
-msgstr ""
+msgstr "Se: 直列化復元によって設定されない transient フィールド  (SE_TRANSIENT_FIELD_NOT_RESTORED)"
 
 #: ../../bugDescriptionList.rst:954
 msgid "Se: serialVersionUID isn't final (SE_NONFINAL_SERIALVERSIONID)"
-msgstr ""
+msgstr "Se: serialVersionUID が final ではない (SE_NONFINAL_SERIALVERSIONID)"
 
 #: ../../bugDescriptionList.rst:967
 msgid "Se: serialVersionUID isn't static (SE_NONSTATIC_SERIALVERSIONID)"
-msgstr ""
+msgstr "Se: serialVersionUID が static ではない (SE_NONSTATIC_SERIALVERSIONID)"
 
 #: ../../bugDescriptionList.rst:980
 msgid "Se: serialVersionUID isn't long (SE_NONLONG_SERIALVERSIONID)"
-msgstr ""
+msgstr "Se: serialVersionUID が long ではない (SE_NONLONG_SERIALVERSIONID)"
 
 #: ../../bugDescriptionList.rst:993
 msgid ""
 "Se: Non-transient non-serializable instance field in serializable class "
 "(SE_BAD_FIELD)"
-msgstr ""
+msgstr "Se: 直列化可能クラスの非 transient で非直列化可能なインスタンスフィールド (SE_BAD_FIELD)"
 
 #: ../../bugDescriptionList.rst:1008
 msgid "Se: Serializable inner class (SE_INNER_CLASS)"
-msgstr ""
+msgstr "Se: 直列化可能な内部クラス (SE_INNER_CLASS)"
 
 #: ../../bugDescriptionList.rst:1022
 msgid ""
 "Se: Non-serializable class has a serializable inner class "
 "(SE_BAD_FIELD_INNER_CLASS)"
-msgstr ""
+msgstr "Se: 非直列化可能クラスに直列化可能な内部クラスがある (SE_BAD_FIELD_INNER_CLASS)"
 
 #: ../../bugDescriptionList.rst:1039
 msgid ""
 "Se: Non-serializable value stored into instance field of a serializable "
 "class (SE_BAD_FIELD_STORE)"
-msgstr ""
+msgstr "Se: 非直列化可能な値を直列化可能クラスのインスタンスフィールドに格納している (SE_BAD_FIELD_STORE)"
 
 #: ../../bugDescriptionList.rst:1050
 msgid ""
 "RV: Method ignores exceptional return value "
 "(RV_RETURN_VALUE_IGNORED_BAD_PRACTICE)"
-msgstr ""
+msgstr "RV: 例外的戻り値を無視しているメソッド (RV_RETURN_VALUE_IGNORED_BAD_PRACTICE)"
 
 #: ../../bugDescriptionList.rst:1067
 msgid "NP: toString method may return null (NP_TOSTRING_COULD_RETURN_NULL)"
-msgstr ""
+msgstr "NP: null を返すかもしれない toString メソッド (NP_TOSTRING_COULD_RETURN_NULL)"
 
 #: ../../bugDescriptionList.rst:1081
 msgid "NP: Clone method may return null (NP_CLONE_COULD_RETURN_NULL)"
-msgstr ""
+msgstr "NP: null を返すかもしれない clone メソッド (NP_CLONE_COULD_RETURN_NULL)"
 
 #: ../../bugDescriptionList.rst:1095
 msgid "OS: Method may fail to close stream (OS_OPEN_STREAM)"
-msgstr ""
+msgstr "OS: ストリームのクローズに失敗するかもしれないメソッド (OS_OPEN_STREAM)"
 
 #: ../../bugDescriptionList.rst:1111
 msgid ""
 "OS: Method may fail to close stream on exception "
 "(OS_OPEN_STREAM_EXCEPTION_PATH)"
-msgstr ""
+msgstr "OS: 例外経路でストリームのクローズに失敗するかもしれないメソッド (OS_OPEN_STREAM_EXCEPTION_PATH)"
 
 #: ../../bugDescriptionList.rst:1126
 msgid ""
 "RC: Suspicious reference comparison to constant "
 "(RC_REF_COMPARISON_BAD_PRACTICE)"
-msgstr ""
+msgstr "RC: 定数への疑わしい参照比較 (RC_REF_COMPARISON_BAD_PRACTICE)"
 
 #: ../../bugDescriptionList.rst:1142
 msgid ""
 "RC: Suspicious reference comparison of Boolean values "
 "(RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN)"
-msgstr ""
+msgstr "RC: Boolean 値の疑わしい参照比較 (RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN)"
 
 #: ../../bugDescriptionList.rst:1158
+#, fuzzy
 msgid ""
 "FS: Format string should use %n rather than \\n "
 "(VA_FORMAT_STRING_USES_NEWLINE)"
 msgstr ""
+"FS: 書式文字列は \n"
+" よりも %n を使用するべき (VA_FORMAT_STRING_USES_NEWLINE)"
 
 #: ../../bugDescriptionList.rst:1171
 msgid "BIT: Check for sign of bitwise operation (BIT_SIGNED_CHECK)"
-msgstr ""
+msgstr "BIT: ビット演算の符号をチェックする (BIT_SIGNED_CHECK)"
 
 #: ../../bugDescriptionList.rst:1188
 msgid ""
 "ODR: Method may fail to close database resource "
 "(ODR_OPEN_DATABASE_RESOURCE)"
-msgstr ""
+msgstr "ODR: データベースリソースのクローズに失敗するかもしれないメソッド (ODR_OPEN_DATABASE_RESOURCE)"
 
 #: ../../bugDescriptionList.rst:1205
 msgid ""
 "ODR: Method may fail to close database resource on exception "
 "(ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH)"
 msgstr ""
+"ODR: 例外経路でデータベースリソースのクローズに失敗するかもしれないメソッド "
+"(ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH)"
 
 #: ../../bugDescriptionList.rst:1221
 msgid ""
 "ISC: Needless instantiation of class that only supplies static methods "
 "(ISC_INSTANTIATE_STATIC_CLASS)"
-msgstr ""
+msgstr "ISC: static メソッドだけを提供するクラスの不必要なインスタンス化 (ISC_INSTANTIATE_STATIC_CLASS)"
 
 #: ../../bugDescriptionList.rst:1232
 msgid "DMI: Random object created and used only once (DMI_RANDOM_USED_ONLY_ONCE)"
-msgstr ""
+msgstr "DMI: Random オブジェクトが作成され1度しか使われない (DMI_RANDOM_USED_ONLY_ONCE)"
 
 #: ../../bugDescriptionList.rst:1251
 msgid ""
 "BC: Equals method should not assume anything about the type of its "
 "argument (BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS)"
 msgstr ""
+"BC: equals メソッドは引数の型を仮定するべきではない "
+"(BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS)"
 
 #: ../../bugDescriptionList.rst:1265
 msgid ""
 "J2EE: Store of non serializable object into HttpSession "
 "(J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION)"
 msgstr ""
+"J2EE: HttpSession への非直列化可能オブジェクトの格納 "
+"(J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION)"
 
 #: ../../bugDescriptionList.rst:1278
 msgid "GC: Unchecked type in generic call (GC_UNCHECKED_TYPE_IN_GENERIC_CALL)"
-msgstr ""
+msgstr "GC: 検査されない型への総称呼び出し (GC_UNCHECKED_TYPE_IN_GENERIC_CALL)"
 
 #: ../../bugDescriptionList.rst:1294
 msgid ""
 "PZ: Don't reuse entry objects in iterators "
 "(PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS)"
-msgstr ""
+msgstr "PZ: 繰り返しでエントリオブジェクトを再利用しない (PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS)"
 
 #: ../../bugDescriptionList.rst:1312
 msgid ""
 "DMI: Adding elements of an entry set may fail due to reuse of Entry "
 "objects (DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS)"
 msgstr ""
+"DMI: エントリセットの要素を加えることは、Entry オブジェクトの再利用のために失敗するかもしれない "
+"(DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS)"
 
 #: ../../bugDescriptionList.rst:1329
 msgid ""
 "DMI: Don't use removeAll to clear a collection "
 "(DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION)"
 msgstr ""
+"DMI: コレクションを消去するために removeAll メソッドを使用しない "
+"(DMI_USING_REMOVEALL_TO_CLEAR_COLLECTION)"
 
 #: ../../bugDescriptionList.rst:1343
 msgid "Correctness (CORRECTNESS)"
-msgstr ""
+msgstr "正確性 (CORRECTNESS)"
 
 #: ../../bugDescriptionList.rst:1344
 msgid ""
@@ -520,58 +577,63 @@ msgid ""
 "NP: Method with Optional return type returns explicit null "
 "(NP_OPTIONAL_RETURN_NULL)"
 msgstr ""
+"NP: Optional の戻り型 ((java.util.Optional または "
+"com.google.common.base.Optional)) を持つメソッドが明示的に null を返す "
+"(NP_OPTIONAL_RETURN_NULL)"
 
 #: ../../bugDescriptionList.rst:1364
 msgid ""
 "NP: Non-null field is not initialized "
 "(NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR)"
 msgstr ""
+"NP: 非 null フィールドは初期化されていない "
+"(NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR)"
 
 #: ../../bugDescriptionList.rst:1377
 msgid ""
 "VR: Class makes reference to unresolvable class or method "
 "(VR_UNRESOLVABLE_REFERENCE)"
-msgstr ""
+msgstr "VR: 解決できないクラス、メソッドへの参照 (VR_UNRESOLVABLE_REFERENCE)"
 
 #: ../../bugDescriptionList.rst:1390
 msgid "IL: An apparent infinite loop (IL_INFINITE_LOOP)"
-msgstr ""
+msgstr "IL: 明らかな無限ループ (IL_INFINITE_LOOP)"
 
 #: ../../bugDescriptionList.rst:1401
 msgid ""
 "IO: Doomed attempt to append to an object output stream "
 "(IO_APPENDING_TO_OBJECT_OUTPUT_STREAM)"
-msgstr ""
+msgstr "IO: オブジェクト出力ストリームへの追加は失敗に終わる (IO_APPENDING_TO_OBJECT_OUTPUT_STREAM)"
 
 #: ../../bugDescriptionList.rst:1423
 msgid "IL: An apparent infinite recursive loop (IL_INFINITE_RECURSIVE_LOOP)"
-msgstr ""
+msgstr "IL: 明らかな無限再帰ループ (IL_INFINITE_RECURSIVE_LOOP)"
 
 #: ../../bugDescriptionList.rst:1434
 msgid "IL: A collection is added to itself (IL_CONTAINER_ADDED_TO_ITSELF)"
-msgstr ""
+msgstr "IL: コレクションは自分自身を追加している (IL_CONTAINER_ADDED_TO_ITSELF)"
 
 #: ../../bugDescriptionList.rst:1446
 msgid "RpC: Repeated conditional tests (RpC_REPEATED_CONDITIONAL_TEST)"
-msgstr ""
+msgstr "RpC: 条件テストの繰り返し (RpC_REPEATED_CONDITIONAL_TEST)"
 
 #: ../../bugDescriptionList.rst:1459
 msgid ""
 "FL: Method performs math using floating point precision "
 "(FL_MATH_USING_FLOAT_PRECISION)"
-msgstr ""
+msgstr "FL: 浮動小数点精度を使用した計算をしている (FL_MATH_USING_FLOAT_PRECISION)"
 
 #: ../../bugDescriptionList.rst:1472
 msgid ""
 "CAA: Possibly incompatible element is stored in covariant array "
 "(CAA_COVARIANT_ARRAY_ELEMENT_STORE)"
-msgstr ""
+msgstr "CAA: おそら互換性のない要素をく共変配列に格納している (CAA_COVARIANT_ARRAY_ELEMENT_STORE)"
 
 #: ../../bugDescriptionList.rst:1486
 msgid ""
 "Dm: Useless/vacuous call to EasyMock method "
 "(DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD)"
-msgstr ""
+msgstr "Dm: EasyMock メソッドへの役に立たない/無意味な呼び出し (DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD)"
 
 #: ../../bugDescriptionList.rst:1498
 msgid ""
@@ -579,750 +641,820 @@ msgid ""
 " "
 "(DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR)"
 msgstr ""
+"Dm: ScheduledThreadPoolExecutor の最大プールサイズを変えようとする無駄な試み "
+"(DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR)"
 
 #: ../../bugDescriptionList.rst:1511
 msgid ""
 "DMI: BigDecimal constructed from double that isn't represented precisely "
 "(DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE)"
 msgstr ""
+"DMI: 正確に表されない double から構築された BigDecimal "
+"(DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE)"
 
 #: ../../bugDescriptionList.rst:1528
 msgid ""
 "Dm: Creation of ScheduledThreadPoolExecutor with zero core threads "
 "(DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS)"
 msgstr ""
+"Dm: コアプールサイズが0の ScheduledThreadPoolExecutor の作成 "
+"(DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS)"
 
 #: ../../bugDescriptionList.rst:1541
 msgid ""
 "Dm: Can't use reflection to check for presence of annotation without "
 "runtime retention (DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION)"
 msgstr ""
+"Dm: ランタイムリテンションなしで、アノテーションの存在を調べるためにリフレクションを使用することはできない "
+"(DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION)"
 
 #: ../../bugDescriptionList.rst:1553
 msgid "NP: Method does not check for null argument (NP_ARGUMENT_MIGHT_BE_NULL)"
-msgstr ""
+msgstr "NP: null の引数をチェックしていないメソッド (NP_ARGUMENT_MIGHT_BE_NULL)"
 
 #: ../../bugDescriptionList.rst:1567
 msgid ""
 "RV: Bad attempt to compute absolute value of signed random integer "
 "(RV_ABSOLUTE_VALUE_OF_RANDOM_INT)"
-msgstr ""
+msgstr "RV: 符号付き整数の乱数の絶対値を計算する間違った試み (RV_ABSOLUTE_VALUE_OF_RANDOM_INT)"
 
 #: ../../bugDescriptionList.rst:1581
 msgid ""
 "RV: Bad attempt to compute absolute value of signed 32-bit hashcode  "
 "(RV_ABSOLUTE_VALUE_OF_HASHCODE)"
-msgstr ""
+msgstr "RV: 符号付き32ビットハッシュコードの絶対値を計算する間違った試み (RV_ABSOLUTE_VALUE_OF_HASHCODE)"
 
 #: ../../bugDescriptionList.rst:1598
 msgid "RV: Random value from 0 to 1 is coerced to the integer 0 (RV_01_TO_INT)"
-msgstr ""
+msgstr "RV: 0から1の乱数値は整数値0に丸められる (RV_01_TO_INT)"
 
 #: ../../bugDescriptionList.rst:1610
 msgid "Dm: Incorrect combination of Math.max and Math.min (DM_INVALID_MIN_MAX)"
-msgstr ""
+msgstr "Dm: Math.max と Math.min の間違った組み合わせ (DM_INVALID_MIN_MAX)"
 
 #: ../../bugDescriptionList.rst:1622
 msgid ""
 "Eq: equals method compares class names rather than class objects "
 "(EQ_COMPARING_CLASS_NAMES)"
-msgstr ""
+msgstr "Eq: equals メソッドはクラスオブジェクトではなくクラス名を比較している (EQ_COMPARING_CLASS_NAMES)"
 
 #: ../../bugDescriptionList.rst:1635
 msgid "Eq: equals method always returns true (EQ_ALWAYS_TRUE)"
-msgstr ""
+msgstr "Eq: equals メソッドは常に true を返す (EQ_ALWAYS_TRUE)"
 
 #: ../../bugDescriptionList.rst:1647
 msgid "Eq: equals method always returns false (EQ_ALWAYS_FALSE)"
-msgstr ""
+msgstr "Eq: equals メソッドは常に false を戻す (EQ_ALWAYS_FALSE)"
 
 #: ../../bugDescriptionList.rst:1663
 msgid ""
 "Eq: equals method overrides equals in superclass and may not be symmetric"
 " (EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC)"
 msgstr ""
+"Eq: equals メソッドはスーパークラスの equals メソッドをオーバーライドしているが、対称的ではないかもしれない "
+"(EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC)"
 
 #: ../../bugDescriptionList.rst:1679
 msgid ""
 "Eq: Covariant equals() method defined for enum "
 "(EQ_DONT_DEFINE_EQUALS_FOR_ENUM)"
-msgstr ""
+msgstr "Eq: 列挙型は共変な equals メソッドを定義している (EQ_DONT_DEFINE_EQUALS_FOR_ENUM)"
 
 #: ../../bugDescriptionList.rst:1695
 msgid ""
 "Eq: Covariant equals() method defined, Object.equals(Object) inherited "
 "(EQ_SELF_USE_OBJECT)"
 msgstr ""
+"Eq: 共変な equals メソッドを定義して、Object.equals(Object) を継承している "
+"(EQ_SELF_USE_OBJECT)"
 
 #: ../../bugDescriptionList.rst:1709
 msgid ""
 "Eq: equals() method defined that doesn't override Object.equals(Object) "
 "(EQ_OTHER_USE_OBJECT)"
 msgstr ""
+"Eq: Object.equals(Object) をオーバーライドしていない equals メソッドの定義 "
+"(EQ_OTHER_USE_OBJECT)"
 
 #: ../../bugDescriptionList.rst:1723
 msgid ""
 "Eq: equals() method defined that doesn't override equals(Object) "
 "(EQ_OTHER_NO_OBJECT)"
-msgstr ""
+msgstr "Eq: equals(Object) メソッドをオーバーライドしていない equals メソッドの定義 (EQ_OTHER_NO_OBJECT)"
 
 #: ../../bugDescriptionList.rst:1738
 msgid ""
 "HE: Signature declares use of unhashable class in hashed construct "
 "(HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS)"
 msgstr ""
+"HE: ハッシュ化された文脈でハッシュ化できないクラスの使用がシグネチャで宣言されている "
+"(HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS)"
 
 #: ../../bugDescriptionList.rst:1753
 msgid ""
 "HE: Use of class without a hashCode() method in a hashed data structure "
 "(HE_USE_OF_UNHASHABLE_CLASS)"
-msgstr ""
+msgstr "HE: ハッシュデータ構造で hashCode メソッドのないクラスを使用している (HE_USE_OF_UNHASHABLE_CLASS)"
 
 #: ../../bugDescriptionList.rst:1766
 msgid "UR: Uninitialized read of field in constructor (UR_UNINIT_READ)"
-msgstr ""
+msgstr "UR: コンストラクタで初期化されていないフィールドを読み出している (UR_UNINIT_READ)"
 
 #: ../../bugDescriptionList.rst:1778
 msgid ""
 "UR: Uninitialized read of field method called from constructor of "
 "superclass (UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR)"
 msgstr ""
+"UR: スーパークラスのコンストラクタから呼び出されるメソッドで初期化されていないフィールドを読み出している "
+"(UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR)"
 
 #: ../../bugDescriptionList.rst:1812
 msgid "Nm: Very confusing method names (NM_VERY_CONFUSING)"
-msgstr ""
+msgstr "Nm: 非常に紛らわしい名前のメソッド (NM_VERY_CONFUSING)"
 
 #: ../../bugDescriptionList.rst:1825
 msgid ""
 "Nm: Method doesn't override method in superclass due to wrong package for"
 " parameter (NM_WRONG_PACKAGE)"
-msgstr ""
+msgstr "Nm: パラメータの間違ったパッケージのためにスーパークラスのメソッドをオーバーライドしていないメソッド (NM_WRONG_PACKAGE)"
 
 #: ../../bugDescriptionList.rst:1856
 msgid ""
 "Nm: Apparent method/constructor confusion "
 "(NM_METHOD_CONSTRUCTOR_CONFUSION)"
-msgstr ""
+msgstr "Nm: 明らかなメソッドとコンストラクタの混乱 (NM_METHOD_CONSTRUCTOR_CONFUSION)"
 
 #: ../../bugDescriptionList.rst:1870
 msgid "Nm: Class defines hashcode(); should it be hashCode()? (NM_LCASE_HASHCODE)"
-msgstr ""
+msgstr "Nm: クラスは hashcode() を定義しています。hashCode() にすべきですか? (NM_LCASE_HASHCODE)"
 
 #: ../../bugDescriptionList.rst:1882
 msgid "Nm: Class defines tostring(); should it be toString()? (NM_LCASE_TOSTRING)"
-msgstr ""
+msgstr "Nm: クラスは tostring() を定義しています。toString() にすべきですか? (NM_LCASE_TOSTRING)"
 
 #: ../../bugDescriptionList.rst:1894
 msgid ""
 "Nm: Class defines equal(Object); should it be equals(Object)? "
 "(NM_BAD_EQUAL)"
-msgstr ""
+msgstr "Nm: クラスは equal(Object) を定義しています。equals(Object) にすべきですか? (NM_BAD_EQUAL)"
 
 #: ../../bugDescriptionList.rst:1906
 msgid ""
 "Se: The readResolve method must not be declared as a static method.   "
 "(SE_READ_RESOLVE_IS_STATIC)"
-msgstr ""
+msgstr "Se: readResolve メソッドが static メソッドとして宣言されている (SE_READ_RESOLVE_IS_STATIC)"
 
 #: ../../bugDescriptionList.rst:1918
 msgid ""
 "Se: Method must be private in order for serialization to work "
 "(SE_METHOD_MUST_BE_PRIVATE)"
-msgstr ""
+msgstr "Se: 直列化機構のために private にしなければならないメソッド (SE_METHOD_MUST_BE_PRIVATE)"
 
 #: ../../bugDescriptionList.rst:1930
 msgid ""
 "SF: Dead store due to switch statement fall through "
 "(SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH)"
 msgstr ""
+"SF: switch 文のフォールスルーのために格納が無効になっている "
+"(SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH)"
 
 #: ../../bugDescriptionList.rst:1942
 msgid ""
 "SF: Dead store due to switch statement fall through to throw "
 "(SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW)"
 msgstr ""
+"SF: スローする switch 文のフォールスルーのために格納が無効になっている "
+"(SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW)"
 
 #: ../../bugDescriptionList.rst:1955
 msgid "NP: Read of unwritten field (NP_UNWRITTEN_FIELD)"
-msgstr ""
+msgstr "NP: 書き込まれていないフィールドの読み出し (NP_UNWRITTEN_FIELD)"
 
 #: ../../bugDescriptionList.rst:1968
 msgid "UwF: Field only ever set to null (UWF_NULL_FIELD)"
-msgstr ""
+msgstr "UwF: null に設定されるだけのフィールド (UWF_NULL_FIELD)"
 
 #: ../../bugDescriptionList.rst:1980
 msgid "UwF: Unwritten field (UWF_UNWRITTEN_FIELD)"
-msgstr ""
+msgstr "UwF: 書き込まれていないフィールド (UWF_UNWRITTEN_FIELD)"
 
 #: ../../bugDescriptionList.rst:1991
 msgid ""
 "SIC: Deadly embrace of non-static inner class and thread local "
 "(SIC_THREADLOCAL_DEADLY_EMBRACE)"
-msgstr ""
+msgstr "SIC: 非 static 内部クラスとスレッドローカルのデッドロック (SIC_THREADLOCAL_DEADLY_EMBRACE)"
 
 #: ../../bugDescriptionList.rst:2008
 msgid "RANGE: Array index is out of bounds (RANGE_ARRAY_INDEX)"
-msgstr ""
+msgstr "RANGE: 配列インデックスは範囲外 (RANGE_ARRAY_INDEX)"
 
 #: ../../bugDescriptionList.rst:2018
 msgid "RANGE: Array offset is out of bounds (RANGE_ARRAY_OFFSET)"
-msgstr ""
+msgstr "RANGE: 配列オフセットは範囲外 (RANGE_ARRAY_OFFSET)"
 
 #: ../../bugDescriptionList.rst:2028
 msgid "RANGE: Array length is out of bounds (RANGE_ARRAY_LENGTH)"
-msgstr ""
+msgstr "RANGE: 配列の長さは範囲外 (RANGE_ARRAY_LENGTH)"
 
 #: ../../bugDescriptionList.rst:2038
 msgid "RANGE: String index is out of bounds (RANGE_STRING_INDEX)"
-msgstr ""
+msgstr "RANGE: 文字列インデックスは範囲外 (RANGE_STRING_INDEX)"
 
 #: ../../bugDescriptionList.rst:2048
 msgid "RV: Method ignores return value (RV_RETURN_VALUE_IGNORED)"
-msgstr ""
+msgstr "RV: 戻り値を無視しているメソッド (RV_RETURN_VALUE_IGNORED)"
 
 #: ../../bugDescriptionList.rst:2077
 msgid ""
 "RV: Exception created and dropped rather than thrown "
 "(RV_EXCEPTION_NOT_THROWN)"
-msgstr ""
+msgstr "RV: 作成した例外をスローするのではなく捨てている (RV_EXCEPTION_NOT_THROWN)"
 
 #: ../../bugDescriptionList.rst:2101
 msgid ""
 "RV: Code checks for specific values returned by compareTo "
 "(RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE)"
 msgstr ""
+"RV: compareTo によって返された特定の値のコードチェック "
+"(RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE)"
 
 #: ../../bugDescriptionList.rst:2114
 msgid "NP: Null pointer dereference (NP_ALWAYS_NULL)"
-msgstr ""
+msgstr "NP: null 値を利用している (NP_ALWAYS_NULL)"
 
 #: ../../bugDescriptionList.rst:2125
 msgid "NP: close() invoked on a value that is always null (NP_CLOSING_NULL)"
-msgstr ""
+msgstr "NP: 常に null 値のオブジェクトで close メソッドを呼び出している (NP_CLOSING_NULL)"
 
 #: ../../bugDescriptionList.rst:2137
 msgid ""
 "NP: Store of null value into field annotated @Nonnull "
 "(NP_STORE_INTO_NONNULL_FIELD)"
-msgstr ""
+msgstr "NP: @Nonnull でアノテートされたフィールドに null を格納している (NP_STORE_INTO_NONNULL_FIELD)"
 
 #: ../../bugDescriptionList.rst:2147
 msgid ""
 "NP: Null pointer dereference in method on exception path "
 "(NP_ALWAYS_NULL_EXCEPTION)"
-msgstr ""
+msgstr "NP: null 値を例外経路で利用している (NP_ALWAYS_NULL_EXCEPTION)"
 
 #: ../../bugDescriptionList.rst:2163
 msgid "NP: Possible null pointer dereference (NP_NULL_ON_SOME_PATH)"
-msgstr ""
+msgstr "NP: null 値を利用している可能性がある (NP_NULL_ON_SOME_PATH)"
 
 #: ../../bugDescriptionList.rst:2178
 msgid ""
 "NP: Possible null pointer dereference in method on exception path "
 "(NP_NULL_ON_SOME_PATH_EXCEPTION)"
-msgstr ""
+msgstr "NP: null 値を例外経路で利用している可能性がある (NP_NULL_ON_SOME_PATH_EXCEPTION)"
 
 #: ../../bugDescriptionList.rst:2195
 msgid "NP: Method call passes null for non-null parameter (NP_NULL_PARAM_DEREF)"
-msgstr ""
+msgstr "NP: メソッド呼び出しは非 null パラメータに対して null を渡している (NP_NULL_PARAM_DEREF)"
 
 #: ../../bugDescriptionList.rst:2210
 msgid ""
 "NP: Non-virtual method call passes null for non-null parameter "
 "(NP_NULL_PARAM_DEREF_NONVIRTUAL)"
-msgstr ""
+msgstr "NP: 非 null パラメータに null を渡している非仮想メソッドの呼び出し (NP_NULL_PARAM_DEREF_NONVIRTUAL)"
 
 #: ../../bugDescriptionList.rst:2225
 msgid ""
 "NP: Method call passes null for non-null parameter "
 "(NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS)"
 msgstr ""
+"NP: メソッド呼び出しは非 null パラメータに対して null を渡している "
+"(NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS)"
 
 #: ../../bugDescriptionList.rst:2241
 msgid ""
 "NP: Method call passes null to a non-null parameter  "
 "(NP_NONNULL_PARAM_VIOLATION)"
-msgstr ""
+msgstr "NP: メソッド呼び出しは非 null パラメータに対して null を渡している (NP_NONNULL_PARAM_VIOLATION)"
 
 #: ../../bugDescriptionList.rst:2256
 msgid ""
 "NP: Method may return null, but is declared @Nonnull "
 "(NP_NONNULL_RETURN_VIOLATION)"
-msgstr ""
+msgstr "NP: null を返すかもしれないメソッドが @Nonnull 宣言されている (NP_NONNULL_RETURN_VIOLATION)"
 
 #: ../../bugDescriptionList.rst:2269
 msgid "NP: Null value is guaranteed to be dereferenced (NP_GUARANTEED_DEREF)"
-msgstr ""
+msgstr "NP: null 値を利用することが保証されている (NP_GUARANTEED_DEREF)"
 
 #: ../../bugDescriptionList.rst:2287
 msgid ""
 "NP: Value is null and guaranteed to be dereferenced on exception path "
 "(NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH)"
-msgstr ""
+msgstr "NP: null 値を例外経路で利用することが保証されている (NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH)"
 
 #: ../../bugDescriptionList.rst:2303
 msgid "DMI: Reversed method arguments (DMI_ARGUMENTS_WRONG_ORDER)"
-msgstr ""
+msgstr "DMI: 逆にされた引数 (DMI_ARGUMENTS_WRONG_ORDER)"
 
 #: ../../bugDescriptionList.rst:2316
 msgid ""
 "RCN: Nullcheck of value previously dereferenced "
 "(RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE)"
-msgstr ""
+msgstr "RCN: 既に利用していた値の null チェック (RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE)"
 
 #: ../../bugDescriptionList.rst:2331
 msgid "RC: Suspicious reference comparison (RC_REF_COMPARISON)"
-msgstr ""
+msgstr "RC: 疑わしい参照比較 (RC_REF_COMPARISON)"
 
 #: ../../bugDescriptionList.rst:2347
 msgid ""
 "VA: Primitive array passed to function expecting a variable number of "
 "object arguments (VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG)"
 msgstr ""
+"VA: 可変長引数を期待しているメソッドにプリミティブ型の配列を渡している "
+"(VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG)"
 
 #: ../../bugDescriptionList.rst:2360
 msgid ""
 "FS: The type of a supplied argument doesn't match format specifier "
 "(VA_FORMAT_STRING_BAD_CONVERSION)"
-msgstr ""
+msgstr "FS: 与えられた引数の型は書式指示子に合致しない (VA_FORMAT_STRING_BAD_CONVERSION)"
 
 #: ../../bugDescriptionList.rst:2375
 msgid ""
 "USELESS_STRING: Array formatted in useless way using format string "
 "(VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY)"
 msgstr ""
+"USELESS_STRING: 書式文字列を使用して役に立たない方法で配列をフォーマットしている "
+"(VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY)"
 
 #: ../../bugDescriptionList.rst:2390
 msgid ""
 "FS: No previous argument for format string "
 "(VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT)"
-msgstr ""
+msgstr "FS: 書式文字列ための前の引数がない (VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT)"
 
 #: ../../bugDescriptionList.rst:2408
 msgid ""
 "FS: Number of format-string arguments does not correspond to number of "
 "placeholders (VA_FORMAT_STRING_ARG_MISMATCH)"
-msgstr ""
+msgstr "FS: 書式文字列への引数の数と書式指示子の数が一致していない (VA_FORMAT_STRING_ARG_MISMATCH)"
 
 #: ../../bugDescriptionList.rst:2423
 msgid ""
 "FS: Format string placeholder incompatible with passed argument "
 "(VA_FORMAT_STRING_BAD_ARGUMENT)"
-msgstr ""
+msgstr "FS: 書式指示子へ渡している引数に互換性がない (VA_FORMAT_STRING_BAD_ARGUMENT)"
 
 #: ../../bugDescriptionList.rst:2443
 msgid ""
 "FS: Format string references missing argument "
 "(VA_FORMAT_STRING_MISSING_ARGUMENT)"
-msgstr ""
+msgstr "FS: 書式文字列は足りない引数を参照している (VA_FORMAT_STRING_MISSING_ARGUMENT)"
 
 #: ../../bugDescriptionList.rst:2457
 msgid "FS: Illegal format string (VA_FORMAT_STRING_ILLEGAL)"
-msgstr ""
+msgstr "FS: 無効な書式文字列 (VA_FORMAT_STRING_ILLEGAL)"
 
 #: ../../bugDescriptionList.rst:2471
 msgid ""
 "FS: More arguments are passed than are actually used in the format string"
 " (VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED)"
-msgstr ""
+msgstr "FS: 書式文字列で実際に使われるより、多くの引数が渡されている (VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED)"
 
 #: ../../bugDescriptionList.rst:2486
 msgid ""
 "FS: MessageFormat supplied where printf style format expected "
 "(VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED)"
 msgstr ""
+"FS: printf スタイルの書式が期待されているところで MessageFormat が与えられている "
+"(VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED)"
 
 #: ../../bugDescriptionList.rst:2503
 msgid ""
 "EC: Using pointer equality to compare different types "
 "(EC_UNRELATED_TYPES_USING_POINTER_EQUALITY)"
-msgstr ""
+msgstr "EC: 参照等価性を使用して異なる型を比較している (EC_UNRELATED_TYPES_USING_POINTER_EQUALITY)"
 
 #: ../../bugDescriptionList.rst:2515
 msgid "EC: Call to equals() comparing different types (EC_UNRELATED_TYPES)"
-msgstr ""
+msgstr "EC: equals メソッドを呼び出して異なる型を比較している (EC_UNRELATED_TYPES)"
 
 #: ../../bugDescriptionList.rst:2531
 msgid "EC: equals() used to compare array and nonarray (EC_ARRAY_AND_NONARRAY)"
-msgstr ""
+msgstr "EC: equals メソッドを使用して配列と非配列を比較している (EC_ARRAY_AND_NONARRAY)"
 
 #: ../../bugDescriptionList.rst:2548
 msgid "EC: Call to equals(null) (EC_NULL_ARG)"
-msgstr ""
+msgstr "EC: equals(null) の呼び出し (EC_NULL_ARG)"
 
 #: ../../bugDescriptionList.rst:2560
 msgid ""
 "EC: Call to equals() comparing different interface types "
 "(EC_UNRELATED_INTERFACES)"
-msgstr ""
+msgstr "EC: equals メソッドを呼び出して異なる型のインタフェースを比較している (EC_UNRELATED_INTERFACES)"
 
 #: ../../bugDescriptionList.rst:2582
 msgid ""
 "EC: Call to equals() comparing unrelated class and interface "
 "(EC_UNRELATED_CLASS_AND_INTERFACE)"
 msgstr ""
+"EC: equals メソッドを呼び出して無関係のクラスとインタフェースを比較している "
+"(EC_UNRELATED_CLASS_AND_INTERFACE)"
 
 #: ../../bugDescriptionList.rst:2605
 msgid ""
 "SA: Self assignment of local rather than assignment to field "
 "(SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD)"
-msgstr ""
+msgstr "SA: フィールドへの代入ではなくローカル変数への自己代入 (SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD)"
 
 #: ../../bugDescriptionList.rst:2624
 msgid ""
 "INT: Bad comparison of int value with long constant "
 "(INT_BAD_COMPARISON_WITH_INT_VALUE)"
-msgstr ""
+msgstr "INT: int 値と long 定数との間違った比較 (INT_BAD_COMPARISON_WITH_INT_VALUE)"
 
 #: ../../bugDescriptionList.rst:2637
 msgid "INT: Bad comparison of signed byte (INT_BAD_COMPARISON_WITH_SIGNED_BYTE)"
-msgstr ""
+msgstr "INT: 符号付きバイトの間違った比較 (INT_BAD_COMPARISON_WITH_SIGNED_BYTE)"
 
 #: ../../bugDescriptionList.rst:2651
 msgid ""
 "INT: Bad comparison of nonnegative value with negative constant or zero "
 "(INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE)"
-msgstr ""
+msgstr "INT: 負でない値と負の定数またはゼロとの間違った比較 (INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE)"
 
 #: ../../bugDescriptionList.rst:2662
 msgid "BIT: Bitwise add of signed byte value (BIT_ADD_OF_SIGNED_BYTE)"
-msgstr ""
+msgstr "BIT: 符号付きバイト値のビット加算 (BIT_ADD_OF_SIGNED_BYTE)"
 
 #: ../../bugDescriptionList.rst:2695
 msgid "BIT: Bitwise OR of signed byte value (BIT_IOR_OF_SIGNED_BYTE)"
-msgstr ""
+msgstr "BIT: 符号付きバイト値のビット論理和 (BIT_IOR_OF_SIGNED_BYTE)"
 
 #: ../../bugDescriptionList.rst:2729
 msgid ""
 "BIT: Check for sign of bitwise operation involving negative number "
 "(BIT_SIGNED_CHECK_HIGH_BIT)"
-msgstr ""
+msgstr "BIT: 負数を含むビット演算の符号をチェックする (BIT_SIGNED_CHECK_HIGH_BIT)"
 
 #: ../../bugDescriptionList.rst:2744
 msgid "BIT: Incompatible bit masks (BIT_AND)"
-msgstr ""
+msgstr "BIT: 互換性のないビットマスク (BIT_AND)"
 
 #: ../../bugDescriptionList.rst:2757
 msgid "BIT: Check to see if ((...) & 0) == 0 (BIT_AND_ZZ)"
-msgstr ""
+msgstr "BIT: ((...) & 0) == 0 なのか確かめている (BIT_AND_ZZ)"
 
 #: ../../bugDescriptionList.rst:2769
 msgid "BIT: Incompatible bit masks (BIT_IOR)"
-msgstr ""
+msgstr "BIT: 互換性のないビットマスク (BIT_IOR)"
 
 #: ../../bugDescriptionList.rst:2789
 msgid "SA: Self assignment of field (SA_FIELD_SELF_ASSIGNMENT)"
-msgstr ""
+msgstr "SA: フィールドの自己代入 (SA_FIELD_SELF_ASSIGNMENT)"
 
 #: ../../bugDescriptionList.rst:2807
 msgid ""
 "SA: Nonsensical self computation involving a field (e.g., x & x) "
 "(SA_FIELD_SELF_COMPUTATION)"
-msgstr ""
+msgstr "SA: フィールドの無意味な自己演算 (たとえば、 x & x) (SA_FIELD_SELF_COMPUTATION)"
 
 #: ../../bugDescriptionList.rst:2822
 msgid ""
 "SA: Nonsensical self computation involving a variable (e.g., x & x) "
 "(SA_LOCAL_SELF_COMPUTATION)"
-msgstr ""
+msgstr "SA: 変数の無意味な自己演算 (たとえば、x & x) (SA_LOCAL_SELF_COMPUTATION)"
 
 #: ../../bugDescriptionList.rst:2837
 msgid "SA: Self comparison of field with itself (SA_FIELD_SELF_COMPARISON)"
-msgstr ""
+msgstr "SA: フィールドとそれ自身との自己比較 (SA_FIELD_SELF_COMPARISON)"
 
 #: ../../bugDescriptionList.rst:2849
 msgid "SA: Self comparison of value with itself (SA_LOCAL_SELF_COMPARISON)"
-msgstr ""
+msgstr "SA: ローカル変数とそれ自身との自己比較 (SA_LOCAL_SELF_COMPARISON)"
 
 #: ../../bugDescriptionList.rst:2861
 msgid ""
 "UMAC: Uncallable method defined in anonymous class "
 "(UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS)"
 msgstr ""
+"UMAC: 呼び出し不可能なメソッドが無名クラスで定義されている "
+"(UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS)"
 
 #: ../../bugDescriptionList.rst:2876
 msgid ""
 "IJU: JUnit assertion in run method will not be noticed by JUnit "
 "(IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD)"
 msgstr ""
+"IJU: run メソッドでの JUnit アサーションは JUnit によって通知されない "
+"(IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD)"
 
 #: ../../bugDescriptionList.rst:2891
 msgid "IJU: TestCase declares a bad suite method  (IJU_BAD_SUITE_METHOD)"
-msgstr ""
+msgstr "IJU: TestCase は suite メソッドの間違った宣言をしている (IJU_BAD_SUITE_METHOD)"
 
 #: ../../bugDescriptionList.rst:2905
 msgid ""
 "IJU: TestCase defines setUp that doesn't call super.setUp() "
 "(IJU_SETUP_NO_SUPER)"
 msgstr ""
+"IJU: TestCase は super.setup() を呼び出さない setUp メソッドを実装している "
+"(IJU_SETUP_NO_SUPER)"
 
 #: ../../bugDescriptionList.rst:2916
 msgid ""
 "IJU: TestCase defines tearDown that doesn't call super.tearDown() "
 "(IJU_TEARDOWN_NO_SUPER)"
 msgstr ""
+"IJU: TestCase は super.tearDown() を呼び出さない tearDown メソッドを実装している  "
+"(IJU_TEARDOWN_NO_SUPER)"
 
 #: ../../bugDescriptionList.rst:2927
 msgid "IJU: TestCase implements a non-static suite method  (IJU_SUITE_NOT_STATIC)"
-msgstr ""
+msgstr "IJU: TestCase は 非 static な suite メソッドを実装している (IJU_SUITE_NOT_STATIC)"
 
 #: ../../bugDescriptionList.rst:2938
 msgid "IJU: TestCase has no tests (IJU_NO_TESTS)"
-msgstr ""
+msgstr "IJU: TestCase はテストがない  (IJU_NO_TESTS)"
 
 #: ../../bugDescriptionList.rst:2948
 msgid ""
 "BOA: Class overrides a method implemented in super class Adapter wrongly "
 "(BOA_BADLY_OVERRIDDEN_ADAPTER)"
 msgstr ""
+"BOA: スーパークラスの Adapter で実装されるメソッドを誤ってオーバーライドしているクラス "
+"(BOA_BADLY_OVERRIDDEN_ADAPTER)"
 
 #: ../../bugDescriptionList.rst:2960
 msgid ""
 "SQL: Method attempts to access a result set field with index 0 "
 "(BRSA_BAD_RESULTSET_ACCESS)"
 msgstr ""
+"SQL: Method attempts to access a result set field with index 0 "
+"(BRSA_BAD_RESULTSET_ACCESS)"
 
 #: ../../bugDescriptionList.rst:2971
 msgid ""
 "SQL: Method attempts to access a result set field with index 0 "
 "(SQL_BAD_RESULTSET_ACCESS)"
-msgstr ""
+msgstr "SQL: インデックスが0で ResultSet にアクセスしようとしているメソッド (SQL_BAD_RESULTSET_ACCESS)"
 
 #: ../../bugDescriptionList.rst:2982
 msgid ""
 "SQL: Method attempts to access a prepared statement parameter with index "
 "0 (SQL_BAD_PREPARED_STATEMENT_ACCESS)"
 msgstr ""
+"SQL: インデックスが0で PreparedStatement にアクセスしようとしているメソッド "
+"(SQL_BAD_PREPARED_STATEMENT_ACCESS)"
 
 #: ../../bugDescriptionList.rst:2993
 msgid ""
 "SIO: Unnecessary type check done using instanceof operator "
 "(SIO_SUPERFLUOUS_INSTANCEOF)"
-msgstr ""
+msgstr "SIO: instanceof 演算子を使用した不必要な型チェック (SIO_SUPERFLUOUS_INSTANCEOF)"
 
 #: ../../bugDescriptionList.rst:3004
 msgid ""
 "BAC: Bad Applet Constructor relies on uninitialized AppletStub "
 "(BAC_BAD_APPLET_CONSTRUCTOR)"
 msgstr ""
+"BAC: 初期化されていない AppletStub に依存する間違ったアプレットコンストラクタ "
+"(BAC_BAD_APPLET_CONSTRUCTOR)"
 
 #: ../../bugDescriptionList.rst:3018
 msgid ""
 "EC: equals(...) used to compare incompatible arrays "
 "(EC_INCOMPATIBLE_ARRAY_COMPARE)"
-msgstr ""
+msgstr "EC: equals(...) メソッドを使用して互換性のない配列を比較している (EC_INCOMPATIBLE_ARRAY_COMPARE)"
 
 #: ../../bugDescriptionList.rst:3033
 msgid ""
 "EC: Invocation of equals() on an array, which is equivalent to == "
 "(EC_BAD_ARRAY_COMPARE)"
-msgstr ""
+msgstr "EC: 配列の equals メソッド呼び出しは == と等価である (EC_BAD_ARRAY_COMPARE)"
 
 #: ../../bugDescriptionList.rst:3049
 msgid ""
 "STI: Unneeded use of currentThread() call, to call interrupted()  "
 "(STI_INTERRUPTED_ON_CURRENTTHREAD)"
 msgstr ""
+"STI: interrupted メソッドを呼び出すために不要な currentThread メソッドを呼び出している "
+"(STI_INTERRUPTED_ON_CURRENTTHREAD)"
 
 #: ../../bugDescriptionList.rst:3062
 msgid ""
 "STI: Static Thread.interrupted() method invoked on thread instance "
 "(STI_INTERRUPTED_ON_UNKNOWNTHREAD)"
 msgstr ""
+"STI: スレッドインスタンスで static Thread.interrupted() を呼び出している "
+"(STI_INTERRUPTED_ON_UNKNOWNTHREAD)"
 
 #: ../../bugDescriptionList.rst:3076
 msgid ""
 "DLS: Useless increment in return statement "
 "(DLS_DEAD_LOCAL_INCREMENT_IN_RETURN)"
-msgstr ""
+msgstr "DLS: return 文に無駄なインクリメントがある (DLS_DEAD_LOCAL_INCREMENT_IN_RETURN)"
 
 #: ../../bugDescriptionList.rst:3090
 msgid "DLS: Dead store of class literal (DLS_DEAD_STORE_OF_CLASS_LITERAL)"
-msgstr ""
+msgstr "DLS: クラスリテラルの無効な代入 (DLS_DEAD_STORE_OF_CLASS_LITERAL)"
 
 #: ../../bugDescriptionList.rst:3109
 msgid ""
 "IP: A parameter is dead upon entry to a method but overwritten "
 "(IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN)"
-msgstr ""
+msgstr "IP: メソッドで読み取られずに上書きされているパラメータ (IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN)"
 
 #: ../../bugDescriptionList.rst:3124
 msgid ""
 "MF: Method defines a variable that obscures a field "
 "(MF_METHOD_MASKS_FIELD)"
-msgstr ""
+msgstr "MF: フィールドを隠す変数を定義しているメソッド (MF_METHOD_MASKS_FIELD)"
 
 #: ../../bugDescriptionList.rst:3137
 msgid ""
 "MF: Class defines field that masks a superclass field "
 "(MF_CLASS_MASKS_FIELD)"
-msgstr ""
+msgstr "MF: スーパークラスのフィールドを隠すフィールドを定義しているクラス (MF_CLASS_MASKS_FIELD)"
 
 #: ../../bugDescriptionList.rst:3150
 msgid "FE: Doomed test for equality to NaN (FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER)"
-msgstr ""
+msgstr "FE: NaN への等価性のための絶望的なテスト (FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER)"
 
 #: ../../bugDescriptionList.rst:3171
 msgid ""
 "ICAST: int value converted to long and used as absolute time "
 "(ICAST_INT_2_LONG_AS_INSTANT)"
-msgstr ""
+msgstr "ICAST: int 値を long に変換して絶対時間として使用している (ICAST_INT_2_LONG_AS_INSTANT)"
 
 #: ../../bugDescriptionList.rst:3203
 msgid ""
 "ICAST: Integral value cast to double and then passed to Math.ceil "
 "(ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL)"
 msgstr ""
+"ICAST: 整数値を double にキャストして Math.ceil() に渡している "
+"(ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL)"
 
 #: ../../bugDescriptionList.rst:3224
 msgid ""
 "ICAST: int value cast to float and then passed to Math.round "
 "(ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND)"
 msgstr ""
+"ICAST: 整数値を float にキャストして Math.round() に渡している "
+"(ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND)"
 
 #: ../../bugDescriptionList.rst:3244
 msgid ""
 "NP: A known null value is checked to see if it is an instance of a type "
 "(NP_NULL_INSTANCEOF)"
-msgstr ""
+msgstr "NP: null とわかっている値をその型のインスタンスなのか確かめている (NP_NULL_INSTANCEOF)"
 
 #: ../../bugDescriptionList.rst:3258
 msgid ""
 "NP: A known null value is checked to see if it is an instance of a type "
 "(BC_NULL_INSTANCEOF)"
 msgstr ""
+"NP: A known null value is checked to see if it is an instance of a type "
+"(BC_NULL_INSTANCEOF)"
 
 #: ../../bugDescriptionList.rst:3272
 msgid ""
 "DMI: Double.longBitsToDouble invoked on an int "
 "(DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT)"
 msgstr ""
+"DMI: int に対して Double.longBitsToDouble() を呼び出している "
+"(DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT)"
 
 #: ../../bugDescriptionList.rst:3285
 msgid ""
 "BC: Impossible cast involving primitive array "
 "(BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY)"
-msgstr ""
+msgstr "BC: プリミティブ型の配列を含んでいる不可能なキャスト (BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY)"
 
 #: ../../bugDescriptionList.rst:3297
 msgid "BC: Impossible cast (BC_IMPOSSIBLE_CAST)"
-msgstr ""
+msgstr "BC: 不可能なキャスト (BC_IMPOSSIBLE_CAST)"
 
 #: ../../bugDescriptionList.rst:3316
 msgid "BC: Impossible downcast (BC_IMPOSSIBLE_DOWNCAST)"
-msgstr ""
+msgstr "BC: 不可能なダウンキャスト (BC_IMPOSSIBLE_DOWNCAST)"
 
 #: ../../bugDescriptionList.rst:3331
 msgid ""
 "BC: Impossible downcast of toArray() result "
 "(BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY)"
-msgstr ""
+msgstr "BC: toArray メソッドの結果の不可能なダウンキャスト (BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY)"
 
 #: ../../bugDescriptionList.rst:3360
 msgid "BC: instanceof will always return false (BC_IMPOSSIBLE_INSTANCEOF)"
-msgstr ""
+msgstr "BC: 常に false を返す instanceof (BC_IMPOSSIBLE_INSTANCEOF)"
 
 #: ../../bugDescriptionList.rst:3373
 msgid ""
 "RE: \".\" or \"|\" used for regular expression "
 "(RE_POSSIBLE_UNINTENDED_PATTERN)"
-msgstr ""
+msgstr "RE: 正規表現のために使われている \".\" または \"|\" (RE_POSSIBLE_UNINTENDED_PATTERN)"
 
 #: ../../bugDescriptionList.rst:3391
 msgid ""
 "RE: Invalid syntax for regular expression "
 "(RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION)"
-msgstr ""
+msgstr "RE: 正規表現のための無効な構文 (RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION)"
 
 #: ../../bugDescriptionList.rst:3405
 msgid ""
 "RE: File.separator used for regular expression "
 "(RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION)"
 msgstr ""
+"RE: 正規表現のために使われている File.separator "
+"(RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION)"
 
 #: ../../bugDescriptionList.rst:3423
 msgid "DLS: Overwritten increment (DLS_OVERWRITTEN_INCREMENT)"
-msgstr ""
+msgstr "DLS: 上書きされたインクリメント (DLS_OVERWRITTEN_INCREMENT)"
 
 #: ../../bugDescriptionList.rst:3437
 msgid ""
 "BSHIFT: 32 bit int shifted by an amount not in the range -31..31 "
 "(ICAST_BAD_SHIFT_AMOUNT)"
-msgstr ""
+msgstr "BSHIFT: 32ビット int の-31から31の範囲を超えた量によるシフト (ICAST_BAD_SHIFT_AMOUNT)"
 
 #: ../../bugDescriptionList.rst:3454
 msgid ""
 "BSHIFT: Possible bad parsing of shift operation "
 "(BSHIFT_WRONG_ADD_PRIORITY)"
-msgstr ""
+msgstr "BSHIFT: シフト演算の正しくない構文解析の可能性がある (BSHIFT_WRONG_ADD_PRIORITY)"
 
 #: ../../bugDescriptionList.rst:3468
 msgid ""
 "IM: Integer multiply of result of integer remainder "
 "(IM_MULTIPLYING_RESULT_OF_IREM)"
-msgstr ""
+msgstr "IM: 整数剰余の結果の整数乗算 (IM_MULTIPLYING_RESULT_OF_IREM)"
 
 #: ../../bugDescriptionList.rst:3482
 msgid "DMI: Invocation of hashCode on an array (DMI_INVOKING_HASHCODE_ON_ARRAY)"
-msgstr ""
+msgstr "DMI: 配列で hashCode メソッドを呼び出している (DMI_INVOKING_HASHCODE_ON_ARRAY)"
 
 #: ../../bugDescriptionList.rst:3499
 msgid ""
 "USELESS_STRING: Invocation of toString on an array "
 "(DMI_INVOKING_TOSTRING_ON_ARRAY)"
-msgstr ""
+msgstr "USELESS_STRING: 配列で toString メソッドを呼び出している (DMI_INVOKING_TOSTRING_ON_ARRAY)"
 
 #: ../../bugDescriptionList.rst:3513
 msgid ""
 "USELESS_STRING: Invocation of toString on an unnamed array "
 "(DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY)"
 msgstr ""
+"USELESS_STRING: 名前のない配列で toString メソッドを呼び出している "
+"(DMI_INVOKING_TOSTRING_ON_ANONYMOUS_ARRAY)"
 
 #: ../../bugDescriptionList.rst:3527
 msgid "DMI: Bad constant value for month (DMI_BAD_MONTH)"
-msgstr ""
+msgstr "DMI: 月のための間違った定数値 (DMI_BAD_MONTH)"
 
 #: ../../bugDescriptionList.rst:3540
 msgid "DMI: hasNext method invokes next (DMI_CALLING_NEXT_FROM_HASNEXT)"
-msgstr ""
+msgstr "DMI: hasNext メソッドで next メソッドを呼び出している (DMI_CALLING_NEXT_FROM_HASNEXT)"
 
 #: ../../bugDescriptionList.rst:3554
 msgid ""
 "QBA: Method assigns boolean literal in boolean expression "
 "(QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT)"
-msgstr ""
+msgstr "QBA: 論理式で boolean リテラル値を代入しているメソッド (QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT)"
 
 #: ../../bugDescriptionList.rst:3568
 msgid ""
 "GC: No relationship between generic parameter and method argument "
 "(GC_UNRELATED_TYPES)"
-msgstr ""
+msgstr "GC: 型パラメータとメソッド引数に関係がない (GC_UNRELATED_TYPES)"
 
 #: ../../bugDescriptionList.rst:3600
 msgid "DMI: Vacuous call to collections (DMI_VACUOUS_SELF_COLLECTION_CALL)"
-msgstr ""
+msgstr "DMI: コレクションへの無意味な呼び出し (DMI_VACUOUS_SELF_COLLECTION_CALL)"
 
 #: ../../bugDescriptionList.rst:3612
 msgid "DMI: D'oh! A nonsensical method invocation (DMI_DOH)"
-msgstr ""
+msgstr "DMI: D'oh! 無意味なメソッド呼び出し (DMI_DOH)"
 
 #: ../../bugDescriptionList.rst:3625
 msgid ""
 "DMI: Collections should not contain themselves "
 "(DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES)"
-msgstr ""
+msgstr "DMI: コレクションは自分自身を含めるべきではない (DMI_COLLECTIONS_SHOULD_NOT_CONTAIN_THEMSELVES)"
 
 #: ../../bugDescriptionList.rst:3639
 msgid ""
 "TQ: Value without a type qualifier used where a value is required to have"
 " that qualifier (TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED)"
 msgstr ""
+"TQ: 型修飾子がない値が修飾子を必要とする場所で使われている "
+"(TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED)"
 
 #: ../../bugDescriptionList.rst:3660
 msgid ""
 "TQ: Comparing values with incompatible type qualifiers "
 "(TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS)"
 msgstr ""
+"TQ: 互換性のない型修飾子による比較値 "
+"(TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS)"
 
 #: ../../bugDescriptionList.rst:3693
 msgid ""
@@ -1330,6 +1462,8 @@ msgid ""
 "must not carry that qualifier is required "
 "(TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED)"
 msgstr ""
+"TQ: 型修飾子でアノテーションされた値がその修飾子を付けてはならない値を必要とする場所で使われている "
+"(TQ_ALWAYS_VALUE_USED_WHERE_NEVER_REQUIRED)"
 
 #: ../../bugDescriptionList.rst:3727
 msgid ""
@@ -1337,12 +1471,16 @@ msgid ""
 "carrying that qualifier is required "
 "(TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED)"
 msgstr ""
+"TQ: 型修飾子でアノテートされていない値がその修飾子が付けられた値を必要とする場所で使われている "
+"(TQ_NEVER_VALUE_USED_WHERE_ALWAYS_REQUIRED)"
 
 #: ../../bugDescriptionList.rst:3750
 msgid ""
 "TQ: Value that might not carry a type qualifier is always used in a way "
 "requires that type qualifier (TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK)"
 msgstr ""
+"TQ: 型修飾子を付けていないかもしれない値がその型修飾子を必要とする方法で常に使われている "
+"(TQ_MAYBE_SOURCE_VALUE_REACHES_ALWAYS_SINK)"
 
 #: ../../bugDescriptionList.rst:3764
 msgid ""
@@ -1350,20 +1488,22 @@ msgid ""
 "prohibits it from having that type qualifier "
 "(TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK)"
 msgstr ""
+"TQ: 型修飾子を付けているかもしれない値がその型修飾子を禁止する方法で常に使われている "
+"(TQ_MAYBE_SOURCE_VALUE_REACHES_NEVER_SINK)"
 
 #: ../../bugDescriptionList.rst:3778
 msgid "FB: Unexpected/undesired warning from FindBugs (FB_UNEXPECTED_WARNING)"
-msgstr ""
+msgstr "FB: FindBugs からの予期しない/望ましくない警告 (FB_UNEXPECTED_WARNING)"
 
 #: ../../bugDescriptionList.rst:3789
 msgid ""
 "FB: Missing expected or desired warning from FindBugs "
 "(FB_MISSING_EXPECTED_WARNING)"
-msgstr ""
+msgstr "FB: 失われた FindBugs からの予期した/望ましい警告 (FB_MISSING_EXPECTED_WARNING)"
 
 #: ../../bugDescriptionList.rst:3800
 msgid "Experimental (EXPERIMENTAL)"
-msgstr ""
+msgstr "実験用 (EXPERIMENTAL)"
 
 #: ../../bugDescriptionList.rst:3801
 msgid "Experimental and not fully vetted bug patterns"
@@ -1371,49 +1511,53 @@ msgstr ""
 
 #: ../../bugDescriptionList.rst:3805
 msgid "SKIPPED: Class too big for analysis (SKIPPED_CLASS_TOO_BIG)"
-msgstr ""
+msgstr "SKIPPED: 解析するにはあまりにも大きいクラス (SKIPPED_CLASS_TOO_BIG)"
 
 #: ../../bugDescriptionList.rst:3817
 msgid "TEST: Unknown bug pattern (UNKNOWN)"
-msgstr ""
+msgstr "TEST: 未知のバグパターン (UNKNOWN)"
 
 #: ../../bugDescriptionList.rst:3830
 msgid "TEST: Testing (TESTING)"
-msgstr ""
+msgstr "TEST: テスト (TESTING)"
 
 #: ../../bugDescriptionList.rst:3841
 msgid "TEST: Testing 1  (TESTING1)"
-msgstr ""
+msgstr "TEST: テスト1 (TESTING1)"
 
 #: ../../bugDescriptionList.rst:3852
 msgid "TEST: Testing 2 (TESTING2)"
-msgstr ""
+msgstr "TEST: テスト2 (TESTING2)"
 
 #: ../../bugDescriptionList.rst:3863
 msgid "TEST: Testing 3 (TESTING3)"
-msgstr ""
+msgstr "TEST: テスト3 (TESTING3)"
 
 #: ../../bugDescriptionList.rst:3874
 msgid ""
 "OBL: Method may fail to clean up stream or resource "
 "(OBL_UNSATISFIED_OBLIGATION)"
-msgstr ""
+msgstr "OBL: ストリームやリソースのクリーンアップに失敗するかもしれないメソッド (OBL_UNSATISFIED_OBLIGATION)"
 
 #: ../../bugDescriptionList.rst:3920
 msgid ""
 "OBL: Method may fail to clean up stream or resource on checked exception "
 "(OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE)"
 msgstr ""
+"OBL: チェック例外でストリームやリソースのクリーンアップに失敗するかもしれないメソッド "
+"(OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE)"
 
 #: ../../bugDescriptionList.rst:3967
 msgid ""
 "LG: Potential lost logger changes due to weak reference in OpenJDK "
 "(LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE)"
 msgstr ""
+"LG: ロガーの変更は OpenJDK の弱参照が原因で潜在的に失われる "
+"(LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE)"
 
 #: ../../bugDescriptionList.rst:4003
 msgid "Internationalization (I18N)"
-msgstr ""
+msgstr "国際化 (I18N)"
 
 #: ../../bugDescriptionList.rst:4004
 msgid "code flaws having to do with internationalization and locale"
@@ -1423,15 +1567,15 @@ msgstr ""
 msgid ""
 "Dm: Consider using Locale parameterized version of invoked method "
 "(DM_CONVERT_CASE)"
-msgstr ""
+msgstr "Dm: 呼び出したメソッドの Locale パラメータの使用を検討する (DM_CONVERT_CASE)"
 
 #: ../../bugDescriptionList.rst:4024
 msgid "Dm: Reliance on default encoding (DM_DEFAULT_ENCODING)"
-msgstr ""
+msgstr "Dm: デフォルトエンコーディングへの依存 (DM_DEFAULT_ENCODING)"
 
 #: ../../bugDescriptionList.rst:4034
 msgid "Malicious code vulnerability (MALICIOUS_CODE)"
-msgstr ""
+msgstr "悪意のあるコード脆弱性 (MALICIOUS_CODE)"
 
 #: ../../bugDescriptionList.rst:4035
 msgid "code that is vulnerable to attacks from untrusted code"
@@ -1441,95 +1585,99 @@ msgstr ""
 msgid ""
 "DP: Method invoked that should be only be invoked inside a doPrivileged "
 "block (DP_DO_INSIDE_DO_PRIVILEGED)"
-msgstr ""
+msgstr "DP: doPrivileged ブロック内で呼び出すべきメソッド (DP_DO_INSIDE_DO_PRIVILEGED)"
 
 #: ../../bugDescriptionList.rst:4051
 msgid ""
 "DP: Classloaders should only be created inside doPrivileged block "
 "(DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED)"
 msgstr ""
+"DP: doPrivileged ブロック内で作成されるべきクラスローダ "
+"(DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED)"
 
 #: ../../bugDescriptionList.rst:4063
 msgid ""
 "FI: Finalizer should be protected, not public "
 "(FI_PUBLIC_SHOULD_BE_PROTECTED)"
-msgstr ""
+msgstr "FI: ファイナライザは public ではなく protected にすべき (FI_PUBLIC_SHOULD_BE_PROTECTED)"
 
 #: ../../bugDescriptionList.rst:4074
 msgid ""
 "MS: Public static method may expose internal representation by returning "
 "array (MS_EXPOSE_REP)"
-msgstr ""
+msgstr "MS: 配列を返すことによって内部表現を暴露するかもしれない public static メソッド (MS_EXPOSE_REP)"
 
 #: ../../bugDescriptionList.rst:4088
 msgid ""
 "EI: May expose internal representation by returning reference to mutable "
 "object (EI_EXPOSE_REP)"
-msgstr ""
+msgstr "EI: 可変オブジェクトへの参照を返すことによって内部表現を暴露するかもしれないメソッド (EI_EXPOSE_REP)"
 
 #: ../../bugDescriptionList.rst:4104
 msgid ""
 "EI2: May expose internal representation by incorporating reference to "
 "mutable object (EI_EXPOSE_REP2)"
-msgstr ""
+msgstr "EI2: 可変オブジェクトへの参照を取り込むことによって内部表現を暴露するかもしれないメソッド (EI_EXPOSE_REP2)"
 
 #: ../../bugDescriptionList.rst:4120
 msgid ""
 "MS: May expose internal static state by storing a mutable object into a "
 "static field (EI_EXPOSE_STATIC_REP2)"
 msgstr ""
+"MS: static フィールドに可変オブジェクトを格納することによって、内部の静的状態を暴露するかもしれないメソッド "
+"(EI_EXPOSE_STATIC_REP2)"
 
 #: ../../bugDescriptionList.rst:4135
 msgid ""
 "MS: Field should be moved out of an interface and made package protected "
 "(MS_OOI_PKGPROTECT)"
-msgstr ""
+msgstr "MS: インタフェースから移動してパッケージプロテクテッドにすべきフィールド (MS_OOI_PKGPROTECT)"
 
 #: ../../bugDescriptionList.rst:4155
 msgid "MS: Field should be both final and package protected (MS_FINAL_PKGPROTECT)"
-msgstr ""
+msgstr "MS: final かつパッケージプロテクテッドにすべきフィールド (MS_FINAL_PKGPROTECT)"
 
 #: ../../bugDescriptionList.rst:4170
 msgid "MS: Field isn't final but should be (MS_SHOULD_BE_FINAL)"
-msgstr ""
+msgstr "MS: final にすべきフィールド (MS_SHOULD_BE_FINAL)"
 
 #: ../../bugDescriptionList.rst:4185
 msgid ""
 "MS: Field isn't final but should be refactored to be so "
 "(MS_SHOULD_BE_REFACTORED_TO_BE_FINAL)"
-msgstr ""
+msgstr "MS: final でないフィールドはリファクタリングするべき (MS_SHOULD_BE_REFACTORED_TO_BE_FINAL)"
 
 #: ../../bugDescriptionList.rst:4202
 msgid "MS: Field should be package protected (MS_PKGPROTECT)"
-msgstr ""
+msgstr "MS: パッケージプロテクテッドにすべきフィールド (MS_PKGPROTECT)"
 
 #: ../../bugDescriptionList.rst:4215
 msgid "MS: Field is a mutable Hashtable (MS_MUTABLE_HASHTABLE)"
-msgstr ""
+msgstr "MS: 可変 Hashtable のフィールド (MS_MUTABLE_HASHTABLE)"
 
 #: ../../bugDescriptionList.rst:4228
 msgid "MS: Field is a mutable array (MS_MUTABLE_ARRAY)"
-msgstr ""
+msgstr "MS: 可変配列のフィールド (MS_MUTABLE_ARRAY)"
 
 #: ../../bugDescriptionList.rst:4241
 msgid "MS: Field is a mutable collection (MS_MUTABLE_COLLECTION)"
-msgstr ""
+msgstr "MS: 可変コレクションのフィールド (MS_MUTABLE_COLLECTION)"
 
 #: ../../bugDescriptionList.rst:4254
 msgid ""
 "MS: Field is a mutable collection which should be package protected "
 "(MS_MUTABLE_COLLECTION_PKGPROTECT)"
-msgstr ""
+msgstr "MS: パッケージプロテクテッドにすべき可変コレクションのフィールド (MS_MUTABLE_COLLECTION_PKGPROTECT)"
 
 #: ../../bugDescriptionList.rst:4268
 msgid ""
 "MS: Field isn't final and can't be protected from malicious code "
 "(MS_CANNOT_BE_FINAL)"
-msgstr ""
+msgstr "MS: final でないフィールドは悪意のあるコードから保護できない (MS_CANNOT_BE_FINAL)"
 
 #: ../../bugDescriptionList.rst:4282
 msgid "Multithreaded correctness (MT_CORRECTNESS)"
-msgstr ""
+msgstr "マルチスレッドの正確性 (MT_CORRECTNESS)"
 
 #: ../../bugDescriptionList.rst:4283
 msgid "code flaws having to do with threads, locks, and volatiles"
@@ -1540,242 +1688,262 @@ msgid ""
 "AT: Sequence of calls to concurrent abstraction may not be atomic "
 "(AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION)"
 msgstr ""
+"AT: 並行抽象の呼び出しシーケンスはアトミックではないかもしれない "
+"(AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION)"
 
 #: ../../bugDescriptionList.rst:4299
 msgid "STCAL: Static Calendar field (STCAL_STATIC_CALENDAR_INSTANCE)"
-msgstr ""
+msgstr "STCAL: static Calendar フィールド (STCAL_STATIC_CALENDAR_INSTANCE)"
 
 #: ../../bugDescriptionList.rst:4315
 msgid "STCAL: Static DateFormat (STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE)"
-msgstr ""
+msgstr "STCAL: static DateFormat フィールド (STCAL_STATIC_SIMPLE_DATE_FORMAT_INSTANCE)"
 
 #: ../../bugDescriptionList.rst:4330
 msgid "STCAL: Call to static Calendar (STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE)"
-msgstr ""
+msgstr "STCAL: static Calendar の呼び出し (STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE)"
 
 #: ../../bugDescriptionList.rst:4343
 msgid ""
 "STCAL: Call to static DateFormat "
 "(STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE)"
 msgstr ""
+"STCAL: static DateFormat の呼び出し "
+"(STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE)"
 
 #: ../../bugDescriptionList.rst:4356
 msgid ""
 "NP: Synchronize and null check on the same field. "
 "(NP_SYNC_AND_NULL_CHECK_FIELD)"
-msgstr ""
+msgstr "NP: 同じフィールドでの同期化と null チェック (NP_SYNC_AND_NULL_CHECK_FIELD)"
 
 #: ../../bugDescriptionList.rst:4370
 msgid ""
 "VO: A volatile reference to an array doesn't treat the array elements as "
 "volatile (VO_VOLATILE_REFERENCE_TO_ARRAY)"
 msgstr ""
+"VO: 配列への volatile 参照は、配列要素を volatile として扱わない "
+"(VO_VOLATILE_REFERENCE_TO_ARRAY)"
 
 #: ../../bugDescriptionList.rst:4385
 msgid "VO: An increment to a volatile field isn't atomic (VO_VOLATILE_INCREMENT)"
-msgstr ""
+msgstr "VO: volatile フィールドへのインクリメントはアトミックではない (VO_VOLATILE_INCREMENT)"
 
 #: ../../bugDescriptionList.rst:4398
 msgid "Dm: Monitor wait() called on Condition (DM_MONITOR_WAIT_ON_CONDITION)"
-msgstr ""
+msgstr "Dm: Condition で wait メソッドを呼び出している (DM_MONITOR_WAIT_ON_CONDITION)"
 
 #: ../../bugDescriptionList.rst:4413
 msgid ""
 "Dm: A thread was created using the default empty run method "
 "(DM_USELESS_THREAD)"
-msgstr ""
+msgstr "Dm: デフォルトの空の run メソッドを使用して作成されたスレッド (DM_USELESS_THREAD)"
 
 #: ../../bugDescriptionList.rst:4425
 msgid "DC: Possible double check of field (DC_DOUBLECHECK)"
-msgstr ""
+msgstr "DC: フィールドのダブルチェックの可能性 (DC_DOUBLECHECK)"
 
 #: ../../bugDescriptionList.rst:4439
 msgid ""
 "DC: Possible exposure of partially initialized object "
 "(DC_PARTIALLY_CONSTRUCTED)"
-msgstr ""
+msgstr "DC: 部分的に初期化されたオブジェクトを暴露する可能性がある (DC_PARTIALLY_CONSTRUCTED)"
 
 #: ../../bugDescriptionList.rst:4454
 msgid ""
 "DL: Synchronization on interned String  "
 "(DL_SYNCHRONIZATION_ON_SHARED_CONSTANT)"
-msgstr ""
+msgstr "DL: 正準化した文字列の同期化 (DL_SYNCHRONIZATION_ON_SHARED_CONSTANT)"
 
 #: ../../bugDescriptionList.rst:4475
 msgid "DL: Synchronization on Boolean (DL_SYNCHRONIZATION_ON_BOOLEAN)"
-msgstr ""
+msgstr "DL: Boolean の同期化 (DL_SYNCHRONIZATION_ON_BOOLEAN)"
 
 #: ../../bugDescriptionList.rst:4499
 msgid ""
 "DL: Synchronization on boxed primitive "
 "(DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE)"
 msgstr ""
+"DL: デッドロックの原因になる可能性があるボクシングされたプリミティブ型の同期化 "
+"(DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE)"
 
 #: ../../bugDescriptionList.rst:4521
 msgid ""
 "DL: Synchronization on boxed primitive values "
 "(DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE)"
-msgstr ""
+msgstr "DL: ボクシングされたプリミティブ値の同期化 (DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE)"
 
 #: ../../bugDescriptionList.rst:4550
 msgid ""
 "WL: Synchronization on getClass rather than class literal "
 "(WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL)"
 msgstr ""
+"WL: クラスリテラルではなく getClass で同期化している "
+"(WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL)"
 
 #: ../../bugDescriptionList.rst:4584
 msgid "ESync: Empty synchronized block (ESync_EMPTY_SYNC)"
-msgstr ""
+msgstr "ESync: 空の synchronized ブロック (ESync_EMPTY_SYNC)"
 
 #: ../../bugDescriptionList.rst:4602
 msgid "MSF: Mutable servlet field (MSF_MUTABLE_SERVLET_FIELD)"
-msgstr ""
+msgstr "MSF: 可変サーブレットフィールド (MSF_MUTABLE_SERVLET_FIELD)"
 
 #: ../../bugDescriptionList.rst:4617
 msgid "IS: Inconsistent synchronization (IS2_INCONSISTENT_SYNC)"
-msgstr ""
+msgstr "IS: 一貫性のない同期化 (IS2_INCONSISTENT_SYNC)"
 
 #: ../../bugDescriptionList.rst:4651
 msgid "NN: Naked notify (NN_NAKED_NOTIFY)"
-msgstr ""
+msgstr "NN: 裸の notify メソッド (NN_NAKED_NOTIFY)"
 
 #: ../../bugDescriptionList.rst:4670
 msgid ""
 "Ru: Invokes run on a thread (did you mean to start it instead?) "
 "(RU_INVOKE_RUN)"
-msgstr ""
+msgstr "Ru: スレッドで run メソッドを呼び出している (RU_INVOKE_RUN)"
 
 #: ../../bugDescriptionList.rst:4683
 msgid "SP: Method spins on field (SP_SPIN_ON_FIELD)"
-msgstr ""
+msgstr "SP: スピンロックをしているメソッド (SP_SPIN_ON_FIELD)"
 
 #: ../../bugDescriptionList.rst:4696
 msgid "TLW: Wait with two locks held (TLW_TWO_LOCK_WAIT)"
-msgstr ""
+msgstr "TLW: 2つ以上のロックを保持して wait メソッドを呼び出している (TLW_TWO_LOCK_WAIT)"
 
 #: ../../bugDescriptionList.rst:4713
 msgid "TLW: Notify with two locks held (TLW_TWO_LOCK_NOTIFY)"
-msgstr ""
+msgstr "TLW: Notify with two locks held (TLW_TWO_LOCK_NOTIFY)"
 
 #: ../../bugDescriptionList.rst:4730
 msgid "UW: Unconditional wait (UW_UNCOND_WAIT)"
-msgstr ""
+msgstr "UW: wait メソッドの無条件呼び出し (UW_UNCOND_WAIT)"
 
 #: ../../bugDescriptionList.rst:4744
 msgid ""
 "UG: Unsynchronized get method, synchronized set method "
 "(UG_SYNC_SET_UNSYNC_GET)"
-msgstr ""
+msgstr "UG: 同期化していない get メソッド、同期化している set メソッド (UG_SYNC_SET_UNSYNC_GET)"
 
 #: ../../bugDescriptionList.rst:4758
 msgid "IS: Inconsistent synchronization (IS_INCONSISTENT_SYNC)"
-msgstr ""
+msgstr "IS: 一貫性のない同期化 (IS_INCONSISTENT_SYNC)"
 
 #: ../../bugDescriptionList.rst:4786
 msgid "IS: Field not guarded against concurrent access (IS_FIELD_NOT_GUARDED)"
-msgstr ""
+msgstr "IS: 並行アクセスに対してガードされていないフィールド (IS_FIELD_NOT_GUARDED)"
 
 #: ../../bugDescriptionList.rst:4796
 msgid ""
 "ML: Synchronization on field in futile attempt to guard that field "
 "(ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD)"
 msgstr ""
+"ML: フィールドを同期化でガードしようとする無駄な試み "
+"(ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD)"
 
 #: ../../bugDescriptionList.rst:4822
 msgid "ML: Method synchronizes on an updated field (ML_SYNC_ON_UPDATED_FIELD)"
-msgstr ""
+msgstr "ML: 更新されるフィールドで同期化しているメソッド (ML_SYNC_ON_UPDATED_FIELD)"
 
 #: ../../bugDescriptionList.rst:4835
 msgid ""
 "WS: Class's writeObject() method is synchronized but nothing else is "
 "(WS_WRITEOBJECT_SYNC)"
-msgstr ""
+msgstr "WS: writeObject メソッドは同期化しているがその他のメソッドは同期化していないクラス (WS_WRITEOBJECT_SYNC)"
 
 #: ../../bugDescriptionList.rst:4846
 msgid "RS: Class's readObject() method is synchronized (RS_READOBJECT_SYNC)"
-msgstr ""
+msgstr "RS: readObject メソッドを同期化しているクラス (RS_READOBJECT_SYNC)"
 
 #: ../../bugDescriptionList.rst:4861
 msgid "SC: Constructor invokes Thread.start() (SC_START_IN_CTOR)"
-msgstr ""
+msgstr "SC: Thread.start() を呼び出しているコンストラクタ (SC_START_IN_CTOR)"
 
 #: ../../bugDescriptionList.rst:4873
 msgid "Wa: Wait not in loop  (WA_NOT_IN_LOOP)"
-msgstr ""
+msgstr "Wa: wait メソッドがループの中にない (WA_NOT_IN_LOOP)"
 
 #: ../../bugDescriptionList.rst:4886
 msgid "Wa: Condition.await() not in loop  (WA_AWAIT_NOT_IN_LOOP)"
-msgstr ""
+msgstr "Wa: Condition.await() がループの中にない (WA_AWAIT_NOT_IN_LOOP)"
 
 #: ../../bugDescriptionList.rst:4900
 msgid "No: Using notify() rather than notifyAll() (NO_NOTIFY_NOT_NOTIFYALL)"
-msgstr ""
+msgstr "No: notifyAll メソッドではなく notify メソッドを使用している (NO_NOTIFY_NOT_NOTIFYALL)"
 
 #: ../../bugDescriptionList.rst:4913
 msgid "UL: Method does not release lock on all paths (UL_UNRELEASED_LOCK)"
-msgstr ""
+msgstr "UL: すべての経路でロックが解除されないメソッド (UL_UNRELEASED_LOCK)"
 
 #: ../../bugDescriptionList.rst:4935
 msgid ""
 "UL: Method does not release lock on all exception paths "
 "(UL_UNRELEASED_LOCK_EXCEPTION_PATH)"
-msgstr ""
+msgstr "UL: すべての例外経路でロックが解除されないメソッド (UL_UNRELEASED_LOCK_EXCEPTION_PATH)"
 
 #: ../../bugDescriptionList.rst:4957
 msgid "MWN: Mismatched wait() (MWN_MISMATCHED_WAIT)"
-msgstr ""
+msgstr "MWN: 不整合な wait メソッド (MWN_MISMATCHED_WAIT)"
 
 #: ../../bugDescriptionList.rst:4969
 msgid "MWN: Mismatched notify() (MWN_MISMATCHED_NOTIFY)"
-msgstr ""
+msgstr "MWN: 不整合な notify メソッド (MWN_MISMATCHED_NOTIFY)"
 
 #: ../../bugDescriptionList.rst:4981
 msgid ""
 "LI: Incorrect lazy initialization of instance field "
 "(LI_LAZY_INIT_INSTANCE)"
 msgstr ""
+"LI: Incorrect lazy initialization of instance field "
+"(LI_LAZY_INIT_INSTANCE)"
 
 #: ../../bugDescriptionList.rst:4998
 msgid "LI: Incorrect lazy initialization of static field (LI_LAZY_INIT_STATIC)"
-msgstr ""
+msgstr "LI: static フィールドの間違った遅延初期化 (LI_LAZY_INIT_STATIC)"
 
 #: ../../bugDescriptionList.rst:5015
 msgid ""
 "LI: Incorrect lazy initialization and update of static field "
 "(LI_LAZY_INIT_UPDATE_STATIC)"
-msgstr ""
+msgstr "LI: 更新される static フィールドの間違った遅延初期化 (LI_LAZY_INIT_UPDATE_STATIC)"
 
 #: ../../bugDescriptionList.rst:5034
 msgid ""
 "JLM: Synchronization performed on util.concurrent instance "
 "(JLM_JSR166_UTILCONCURRENT_MONITORENTER)"
 msgstr ""
+"JLM: java.util.concurrent のインスタンスで同期化している "
+"(JLM_JSR166_UTILCONCURRENT_MONITORENTER)"
 
 #: ../../bugDescriptionList.rst:5051
 msgid ""
 "JLM: Using monitor style wait methods on util.concurrent abstraction "
 "(JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT)"
 msgstr ""
+"JLM: util.concurrent 抽象でモニタスタイルの wait メソッドを使用している "
+"(JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT)"
 
 #: ../../bugDescriptionList.rst:5070
 msgid "JLM: Synchronization performed on Lock (JLM_JSR166_LOCK_MONITORENTER)"
-msgstr ""
+msgstr "JLM: Lock で同期化している (JLM_JSR166_LOCK_MONITORENTER)"
 
 #: ../../bugDescriptionList.rst:5084
 msgid ""
 "SWL: Method calls Thread.sleep() with a lock held "
 "(SWL_SLEEP_WITH_LOCK_HELD)"
-msgstr ""
+msgstr "SWL: ロックを保持して Thread.sleep() を呼び出しているメソッド (SWL_SLEEP_WITH_LOCK_HELD)"
 
 #: ../../bugDescriptionList.rst:5100
 msgid ""
 "RV: Return value of putIfAbsent ignored, value passed to putIfAbsent "
 "reused (RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED)"
 msgstr ""
+"RV: putIfAbsent の戻り値は無視されて putIfAbsent に渡した値は再利用された "
+"(RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED)"
 
 #: ../../bugDescriptionList.rst:5116
 msgid "Bogus random noise (NOISE)"
-msgstr ""
+msgstr "偽のランダムノイズ (NOISE)"
 
 #: ../../bugDescriptionList.rst:5117
 msgid ""
@@ -1787,23 +1955,23 @@ msgstr ""
 msgid ""
 "NOISE: Bogus warning about a null pointer dereference "
 "(NOISE_NULL_DEREFERENCE)"
-msgstr ""
+msgstr "NOISE: null ポインタ間接参照に関する偽の警告 (NOISE_NULL_DEREFERENCE)"
 
 #: ../../bugDescriptionList.rst:5133
 msgid "NOISE: Bogus warning about a method call (NOISE_METHOD_CALL)"
-msgstr ""
+msgstr "NOISE: メソッド呼び出しに関する偽の警告 (NOISE_METHOD_CALL)"
 
 #: ../../bugDescriptionList.rst:5143
 msgid "NOISE: Bogus warning about a field reference (NOISE_FIELD_REFERENCE)"
-msgstr ""
+msgstr "NOISE: フィールド参照に関する偽の警告 (NOISE_FIELD_REFERENCE)"
 
 #: ../../bugDescriptionList.rst:5153
 msgid "NOISE: Bogus warning about an operation (NOISE_OPERATION)"
-msgstr ""
+msgstr "NOISE: 演算に関する偽の警告 (NOISE_OPERATION)"
 
 #: ../../bugDescriptionList.rst:5163
 msgid "Performance (PERFORMANCE)"
-msgstr ""
+msgstr "性能 (PERFORMANCE)"
 
 #: ../../bugDescriptionList.rst:5164
 msgid "code that is not necessarily incorrect but may be inefficient"
@@ -1813,205 +1981,217 @@ msgstr ""
 msgid ""
 "HSC: Huge string constants is duplicated across multiple class files "
 "(HSC_HUGE_SHARED_STRING_CONSTANT)"
-msgstr ""
+msgstr "HSC: 複数のクラスファイルにわたって複製されている巨大な文字列定数 (HSC_HUGE_SHARED_STRING_CONSTANT)"
 
 #: ../../bugDescriptionList.rst:5185
 msgid ""
 "Dm: The equals and hashCode methods of URL are blocking "
 "(DMI_BLOCKING_METHODS_ON_URL)"
-msgstr ""
+msgstr "Dm: URL の equals メソッドと hashCode メソッドはブロックする (DMI_BLOCKING_METHODS_ON_URL)"
 
 #: ../../bugDescriptionList.rst:5199
 msgid "Dm: Maps and sets of URLs can be performance hogs (DMI_COLLECTION_OF_URLS)"
-msgstr ""
+msgstr "Dm: URL の Map や Set はひどい性能になる (DMI_COLLECTION_OF_URLS)"
 
 #: ../../bugDescriptionList.rst:5213
 msgid ""
 "Dm: Method invokes inefficient new String(String) constructor "
 "(DM_STRING_CTOR)"
-msgstr ""
+msgstr "Dm: 効率が悪い new String(String) コンストラクタを呼び出しているメソッド (DM_STRING_CTOR)"
 
 #: ../../bugDescriptionList.rst:5226
 msgid ""
 "Dm: Method invokes inefficient new String() constructor "
 "(DM_STRING_VOID_CTOR)"
-msgstr ""
+msgstr "Dm: 効率が悪い new String() コンストラクタを呼び出しているメソッド (DM_STRING_VOID_CTOR)"
 
 #: ../../bugDescriptionList.rst:5241
 msgid "Dm: Method invokes toString() method on a String (DM_STRING_TOSTRING)"
-msgstr ""
+msgstr "Dm: String の toString メソッドを呼び出しているメソッド (DM_STRING_TOSTRING)"
 
 #: ../../bugDescriptionList.rst:5252
 msgid ""
 "Dm: Explicit garbage collection; extremely dubious except in benchmarking"
 " code (DM_GC)"
-msgstr ""
+msgstr "Dm: 明示的なガベージコレクション (DM_GC)"
 
 #: ../../bugDescriptionList.rst:5268
 msgid ""
 "Dm: Method invokes inefficient Boolean constructor; use "
 "Boolean.valueOf(...) instead (DM_BOOLEAN_CTOR)"
-msgstr ""
+msgstr "Dm: 効率が悪い Boolean コンストラクタを呼び出しているメソッド (DM_BOOLEAN_CTOR)"
 
 #: ../../bugDescriptionList.rst:5281
 msgid ""
 "Bx: Method invokes inefficient Number constructor; use static valueOf "
 "instead (DM_NUMBER_CTOR)"
-msgstr ""
+msgstr "Bx: 効率が悪い Number コンストラクタを呼び出しているメソッド (DM_NUMBER_CTOR)"
 
 #: ../../bugDescriptionList.rst:5305
 msgid ""
 "Bx: Method invokes inefficient floating-point Number constructor; use "
 "static valueOf instead (DM_FP_NUMBER_CTOR)"
-msgstr ""
+msgstr "Bx: 効率が悪い浮動小数点 Number コンストラクタを呼び出しているメソッド (DM_FP_NUMBER_CTOR)"
 
 #: ../../bugDescriptionList.rst:5323
 msgid ""
 "Bx: Method allocates a boxed primitive just to call toString "
 "(DM_BOXED_PRIMITIVE_TOSTRING)"
 msgstr ""
+"Bx: toString メソッドを呼び出すためにプリミティブ型のラッパクラスのインスタンスを作成している "
+"(DM_BOXED_PRIMITIVE_TOSTRING)"
 
 #: ../../bugDescriptionList.rst:5344
 msgid "Bx: Boxing/unboxing to parse a primitive (DM_BOXED_PRIMITIVE_FOR_PARSING)"
-msgstr ""
+msgstr "Bx: ボクシング/アンボクシングはプリミティブを解析する (DM_BOXED_PRIMITIVE_FOR_PARSING)"
 
 #: ../../bugDescriptionList.rst:5355
 msgid "Bx: Boxing a primitive to compare (DM_BOXED_PRIMITIVE_FOR_COMPARE)"
-msgstr ""
+msgstr "Bx: プリミティブが比較でボクシングされている (DM_BOXED_PRIMITIVE_FOR_COMPARE)"
 
 #: ../../bugDescriptionList.rst:5367
 msgid ""
 "Bx: Primitive value is unboxed and coerced for ternary operator "
 "(BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR)"
 msgstr ""
+"Bx: プリミティブ値が3項演算子のためにアンボクシングされて、型変換される "
+"(BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR)"
 
 #: ../../bugDescriptionList.rst:5384
 msgid ""
 "Bx: Boxed value is unboxed and then immediately reboxed "
 "(BX_UNBOXING_IMMEDIATELY_REBOXED)"
-msgstr ""
+msgstr "Bx: ボクシングされた値がアンボクシングされて、すぐに再ボクシングされる (BX_UNBOXING_IMMEDIATELY_REBOXED)"
 
 #: ../../bugDescriptionList.rst:5395
 msgid ""
 "Bx: Primitive value is boxed and then immediately unboxed "
 "(BX_BOXING_IMMEDIATELY_UNBOXED)"
-msgstr ""
+msgstr "Bx: プリミティブ値がボクシングされて、すぐにアンボクシングされる (BX_BOXING_IMMEDIATELY_UNBOXED)"
 
 #: ../../bugDescriptionList.rst:5408
 msgid ""
 "Bx: Primitive value is boxed then unboxed to perform primitive coercion "
 "(BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION)"
 msgstr ""
+"Bx: プリミティブ値がプリミティブ型の型変換をするためにボクシングされて、アンボクシングされる "
+"(BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION)"
 
 #: ../../bugDescriptionList.rst:5419
 msgid ""
 "Dm: Method allocates an object, only to get the class object "
 "(DM_NEW_FOR_GETCLASS)"
-msgstr ""
+msgstr "Dm: クラスオブジェクトを得るためだけにインスタンスを作成しているメソッド (DM_NEW_FOR_GETCLASS)"
 
 #: ../../bugDescriptionList.rst:5430
 msgid ""
 "Dm: Use the nextInt method of Random rather than nextDouble to generate a"
 " random integer (DM_NEXTINT_VIA_NEXTDOUBLE)"
 msgstr ""
+"Dm: 整数の乱数を生成するためには nextDouble メソッド ではなく nextInt メソッドを使用する "
+"(DM_NEXTINT_VIA_NEXTDOUBLE)"
 
 #: ../../bugDescriptionList.rst:5445
 msgid "SS: Unread field: should this field be static? (SS_SHOULD_BE_STATIC)"
-msgstr ""
+msgstr "SS: 読み出されないフィールド (SS_SHOULD_BE_STATIC)"
 
 #: ../../bugDescriptionList.rst:5457
 msgid "UuF: Unused field (UUF_UNUSED_FIELD)"
-msgstr ""
+msgstr "UuF: 未使用のフィールド (UUF_UNUSED_FIELD)"
 
 #: ../../bugDescriptionList.rst:5467
 msgid "UrF: Unread field (URF_UNREAD_FIELD)"
-msgstr ""
+msgstr "UrF: 読み出されないフィールド (URF_UNREAD_FIELD)"
 
 #: ../../bugDescriptionList.rst:5477
 msgid "SIC: Should be a static inner class (SIC_INNER_SHOULD_BE_STATIC)"
-msgstr ""
+msgstr "SIC: static 内部クラスにすべき (SIC_INNER_SHOULD_BE_STATIC)"
 
 #: ../../bugDescriptionList.rst:5492
 msgid ""
 "SIC: Could be refactored into a static inner class "
 "(SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS)"
 msgstr ""
+"SIC: static 内部クラスにリファクタリングできるかもしれない "
+"(SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS)"
 
 #: ../../bugDescriptionList.rst:5511
 msgid ""
 "SIC: Could be refactored into a named static inner class "
 "(SIC_INNER_SHOULD_BE_STATIC_ANON)"
-msgstr ""
+msgstr "SIC: 名前付き static 内部クラスにリファクタリングできるかもしれない (SIC_INNER_SHOULD_BE_STATIC_ANON)"
 
 #: ../../bugDescriptionList.rst:5527
 msgid "UPM: Private method is never called (UPM_UNCALLED_PRIVATE_METHOD)"
-msgstr ""
+msgstr "UPM: private メソッドは決して呼び出されない (UPM_UNCALLED_PRIVATE_METHOD)"
 
 #: ../../bugDescriptionList.rst:5540
 msgid ""
 "SBSC: Method concatenates strings using + in a loop "
 "(SBSC_USE_STRINGBUFFER_CONCATENATION)"
-msgstr ""
+msgstr "SBSC: ループの中で + を使用して文字列を連結しているメソッド (SBSC_USE_STRINGBUFFER_CONCATENATION)"
 
 #: ../../bugDescriptionList.rst:5573
 msgid ""
 "IIL: NodeList.getLength() called in a loop "
 "(IIL_ELEMENTS_GET_LENGTH_IN_LOOP)"
 msgstr ""
+"IIL: ループの中で NodeList.getLength() を呼び出しているメソッド "
+"(IIL_ELEMENTS_GET_LENGTH_IN_LOOP)"
 
 #: ../../bugDescriptionList.rst:5586
 msgid ""
 "IIL: Method calls prepareStatement in a loop "
 "(IIL_PREPARE_STATEMENT_IN_LOOP)"
-msgstr ""
+msgstr "IIL: ループの中で prepareStatement を呼び出しているメソッド (IIL_PREPARE_STATEMENT_IN_LOOP)"
 
 #: ../../bugDescriptionList.rst:5598
 msgid "IIL: Method calls Pattern.compile in a loop (IIL_PATTERN_COMPILE_IN_LOOP)"
-msgstr ""
+msgstr "IIL: ループの中で Pattern.compile を呼び出しているメソッド (IIL_PATTERN_COMPILE_IN_LOOP)"
 
 #: ../../bugDescriptionList.rst:5610
 msgid ""
 "IIL: Method compiles the regular expression in a loop "
 "(IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT)"
-msgstr ""
+msgstr "IIL: ループの中で正規表現をコンパイルしているメソッド (IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT)"
 
 #: ../../bugDescriptionList.rst:5621
 msgid "IIO: Inefficient use of String.indexOf(String) (IIO_INEFFICIENT_INDEX_OF)"
-msgstr ""
+msgstr "IIO: String.indexOf(String) の非効率的な使用 (IIO_INEFFICIENT_INDEX_OF)"
 
 #: ../../bugDescriptionList.rst:5633
 msgid ""
 "IIO: Inefficient use of String.lastIndexOf(String) "
 "(IIO_INEFFICIENT_LAST_INDEX_OF)"
-msgstr ""
+msgstr "IIO: String.lastIndexOf(String)　の非効率的な使用 (IIO_INEFFICIENT_LAST_INDEX_OF)"
 
 #: ../../bugDescriptionList.rst:5645
 msgid ""
 "ITA: Method uses toArray() with zero-length array argument "
 "(ITA_INEFFICIENT_TO_ARRAY)"
-msgstr ""
+msgstr "ITA: 長さが0の配列の引数で toArray メソッドを使用しているメソッド (ITA_INEFFICIENT_TO_ARRAY)"
 
 #: ../../bugDescriptionList.rst:5661
 msgid ""
 "WMI: Inefficient use of keySet iterator instead of entrySet iterator "
 "(WMI_WRONG_MAP_ITERATOR)"
-msgstr ""
+msgstr "WMI: entrySet イテレータではなく効率が悪い keySet イテレータを使用している (WMI_WRONG_MAP_ITERATOR)"
 
 #: ../../bugDescriptionList.rst:5673
 msgid ""
 "UM: Method calls static Math class method on a constant value "
 "(UM_UNNECESSARY_MATH)"
-msgstr ""
+msgstr "UM: 定数値で Math クラスの static メソッドを呼び出しているメソッド (UM_UNNECESSARY_MATH)"
 
 #: ../../bugDescriptionList.rst:5760
 msgid ""
 "IMA: Method accesses a private member variable of owning class "
 "(IMA_INEFFICIENT_MEMBER_ACCESS)"
-msgstr ""
+msgstr "IMA: 所有クラスの private メンバー変数にアクセスしているメソッド (IMA_INEFFICIENT_MEMBER_ACCESS)"
 
 #: ../../bugDescriptionList.rst:5775
 msgid "Security (SECURITY)"
-msgstr ""
+msgstr "セキュリティ (SECURITY)"
 
 #: ../../bugDescriptionList.rst:5776
 msgid ""
@@ -2024,62 +2204,70 @@ msgid ""
 "XSS: Servlet reflected cross site scripting vulnerability in error page "
 "(XSS_REQUEST_PARAMETER_TO_SEND_ERROR)"
 msgstr ""
+"XSS: 反射型クロスサイトスクリプティング脆弱性がエラーページにあるサーブレット "
+"(XSS_REQUEST_PARAMETER_TO_SEND_ERROR)"
 
 #: ../../bugDescriptionList.rst:5800
 msgid ""
 "XSS: Servlet reflected cross site scripting vulnerability "
 "(XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER)"
 msgstr ""
+"XSS: 反射型クロスサイトスクリプティング脆弱性があるサーブレット "
+"(XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER)"
 
 #: ../../bugDescriptionList.rst:5818
 msgid ""
 "XSS: JSP reflected cross site scripting vulnerability "
 "(XSS_REQUEST_PARAMETER_TO_JSP_WRITER)"
-msgstr ""
+msgstr "XSS: 反射型クロスサイトスクリプティング脆弱性がある JSP (XSS_REQUEST_PARAMETER_TO_JSP_WRITER)"
 
 #: ../../bugDescriptionList.rst:5835
 msgid ""
 "HRS: HTTP Response splitting vulnerability "
 "(HRS_REQUEST_PARAMETER_TO_HTTP_HEADER)"
-msgstr ""
+msgstr "HRS: HTTP レスポンススプリッティング脆弱性 (HRS_REQUEST_PARAMETER_TO_HTTP_HEADER)"
 
 #: ../../bugDescriptionList.rst:5853
 msgid ""
 "HRS: HTTP cookie formed from untrusted input "
 "(HRS_REQUEST_PARAMETER_TO_COOKIE)"
-msgstr ""
+msgstr "HRS: 信頼できない入力から形成された HTTP cookie (HRS_REQUEST_PARAMETER_TO_COOKIE)"
 
 #: ../../bugDescriptionList.rst:5871
 msgid "PT: Absolute path traversal in servlet (PT_ABSOLUTE_PATH_TRAVERSAL)"
-msgstr ""
+msgstr "PT: サーブレットの絶対パストラバーサル (PT_ABSOLUTE_PATH_TRAVERSAL)"
 
 #: ../../bugDescriptionList.rst:5891
 msgid "PT: Relative path traversal in servlet (PT_RELATIVE_PATH_TRAVERSAL)"
-msgstr ""
+msgstr "PT: サーブレットの相対パストラバーサル (PT_RELATIVE_PATH_TRAVERSAL)"
 
 #: ../../bugDescriptionList.rst:5910
 msgid "Dm: Hardcoded constant database password (DMI_CONSTANT_DB_PASSWORD)"
-msgstr ""
+msgstr "Dm: ハードコードされた定数データベースパスワード (DMI_CONSTANT_DB_PASSWORD)"
 
 #: ../../bugDescriptionList.rst:5923
 msgid "Dm: Empty database password (DMI_EMPTY_DB_PASSWORD)"
-msgstr ""
+msgstr "Dm: 空のデータベースパスワード (DMI_EMPTY_DB_PASSWORD)"
 
 #: ../../bugDescriptionList.rst:5935
 msgid ""
 "SQL: Nonconstant string passed to execute or addBatch method on an SQL "
 "statement (SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE)"
 msgstr ""
+"SQL: SQL の Statement の  execute または addBatch メソッドに定数でない文字列を渡している "
+"(SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE)"
 
 #: ../../bugDescriptionList.rst:5949
 msgid ""
 "SQL: A prepared statement is generated from a nonconstant String "
 "(SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING)"
 msgstr ""
+"SQL: PreparedStatement が定数でない文字列から生成されている "
+"(SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING)"
 
 #: ../../bugDescriptionList.rst:5962
 msgid "Dodgy code (STYLE)"
-msgstr ""
+msgstr "危ないコード (STYLE)"
 
 #: ../../bugDescriptionList.rst:5963
 msgid ""
@@ -2092,475 +2280,539 @@ msgstr ""
 
 #: ../../bugDescriptionList.rst:5973
 msgid "CAA: Covariant array assignment to a field (CAA_COVARIANT_ARRAY_FIELD)"
-msgstr ""
+msgstr "CAA: フィールドへの共変配列代入 (CAA_COVARIANT_ARRAY_FIELD)"
 
 #: ../../bugDescriptionList.rst:5989
 msgid ""
 "CAA: Covariant array is returned from the method "
 "(CAA_COVARIANT_ARRAY_RETURN)"
-msgstr ""
+msgstr "CAA: 共変配列がメソッドから返される (CAA_COVARIANT_ARRAY_RETURN)"
 
 #: ../../bugDescriptionList.rst:6002
 msgid ""
 "CAA: Covariant array assignment to a local variable "
 "(CAA_COVARIANT_ARRAY_LOCAL)"
-msgstr ""
+msgstr "CAA: ローカル変数への共変配列代入 (CAA_COVARIANT_ARRAY_LOCAL)"
 
 #: ../../bugDescriptionList.rst:6018
 msgid "Dm: Call to unsupported method (DMI_UNSUPPORTED_METHOD)"
-msgstr ""
+msgstr "Dm: サポートされていないメソッドの呼び出し (DMI_UNSUPPORTED_METHOD)"
 
 #: ../../bugDescriptionList.rst:6030
 msgid ""
 "Dm: Thread passed where Runnable expected "
 "(DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED)"
 msgstr ""
+"Dm: Thread オブジェクトが Runnable が期待されているところに渡されている "
+"(DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED)"
 
 #: ../../bugDescriptionList.rst:6043
 msgid ""
 "NP: Dereference of the result of readLine() without nullcheck "
 "(NP_DEREFERENCE_OF_READLINE_VALUE)"
 msgstr ""
+"NP: readLine メソッドの結果が null なのか確かめないで値を利用している "
+"(NP_DEREFERENCE_OF_READLINE_VALUE)"
 
 #: ../../bugDescriptionList.rst:6055
 msgid ""
 "NP: Immediate dereference of the result of readLine() "
 "(NP_IMMEDIATE_DEREFERENCE_OF_READLINE)"
-msgstr ""
+msgstr "NP: readLine メソッドの結果をすぐに利用している (NP_IMMEDIATE_DEREFERENCE_OF_READLINE)"
 
 #: ../../bugDescriptionList.rst:6067
 msgid "RV: Remainder of 32-bit signed random integer (RV_REM_OF_RANDOM_INT)"
-msgstr ""
+msgstr "RV: 符号付き32ビット整数の乱数の剰余 (RV_REM_OF_RANDOM_INT)"
 
 #: ../../bugDescriptionList.rst:6082
 msgid "RV: Remainder of hashCode could be negative (RV_REM_OF_HASHCODE)"
-msgstr ""
+msgstr "RV: ハッシュコードの剰余は負かもしれない (RV_REM_OF_HASHCODE)"
 
 #: ../../bugDescriptionList.rst:6105
 msgid "Eq: Unusual equals method  (EQ_UNUSUAL)"
-msgstr ""
+msgstr "Eq: 異常な equals メソッド  (EQ_UNUSUAL)"
 
 #: ../../bugDescriptionList.rst:6118
 msgid ""
 "Eq: Class doesn't override equals in superclass "
 "(EQ_DOESNT_OVERRIDE_EQUALS)"
-msgstr ""
+msgstr "Eq: スーパークラスの equals メソッドをオーバーライドしていないクラス (EQ_DOESNT_OVERRIDE_EQUALS)"
 
 #: ../../bugDescriptionList.rst:6135
 msgid "NS: Questionable use of non-short-circuit logic (NS_NON_SHORT_CIRCUIT)"
-msgstr ""
+msgstr "NS: 非短絡論理の疑わしい使用 (NS_NON_SHORT_CIRCUIT)"
 
 #: ../../bugDescriptionList.rst:6157
 msgid ""
 "NS: Potentially dangerous use of non-short-circuit logic "
 "(NS_DANGEROUS_NON_SHORT_CIRCUIT)"
-msgstr ""
+msgstr "NS: 潜在的な非短絡論理の危険な使用 (NS_DANGEROUS_NON_SHORT_CIRCUIT)"
 
 #: ../../bugDescriptionList.rst:6184
 msgid "IC: Initialization circularity (IC_INIT_CIRCULARITY)"
-msgstr ""
+msgstr "IC: 初期化が循環している (IC_INIT_CIRCULARITY)"
 
 #: ../../bugDescriptionList.rst:6196
 msgid ""
 "IA: Potentially ambiguous invocation of either an inherited or outer "
 "method (IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD)"
 msgstr ""
+"IA: 潜在的な継承されたメソッドなのか外部のメソッドなのかあいまいなメソッドの呼び出し "
+"(IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD)"
 
 #: ../../bugDescriptionList.rst:6222
 msgid ""
 "Se: Private readResolve method not inherited by subclasses "
 "(SE_PRIVATE_READ_RESOLVE_NOT_INHERITED)"
 msgstr ""
+"Se: サブクラスで継承できない private な readResolve メソッド "
+"(SE_PRIVATE_READ_RESOLVE_NOT_INHERITED)"
 
 #: ../../bugDescriptionList.rst:6234
 msgid ""
 "Se: Transient field of class that isn't Serializable.  "
 "(SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS)"
 msgstr ""
+"Se: Serializable でないクラスの transient フィールド "
+"(SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS)"
 
 #: ../../bugDescriptionList.rst:6248
 msgid ""
 "SF: Switch statement found where one case falls through to the next case "
 "(SF_SWITCH_FALLTHROUGH)"
-msgstr ""
+msgstr "SF: 1つの case が次の case へと通り抜ける switch 文を見つけた (SF_SWITCH_FALLTHROUGH)"
 
 #: ../../bugDescriptionList.rst:6259
 msgid ""
 "SF: Switch statement found where default case is missing "
 "(SF_SWITCH_NO_DEFAULT)"
-msgstr ""
+msgstr "SF: default がない switch 文を見つけた (SF_SWITCH_NO_DEFAULT)"
 
 #: ../../bugDescriptionList.rst:6273
 msgid ""
 "UuF: Unused public or protected field "
 "(UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD)"
 msgstr ""
+"UuF: 未使用の public または protected フィールド "
+"(UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD)"
 
 #: ../../bugDescriptionList.rst:6286
 msgid "UrF: Unread public/protected field (URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD)"
 msgstr ""
+"UrF: 読み出されない public または protected フィールド "
+"(URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD)"
 
 #: ../../bugDescriptionList.rst:6299
 msgid ""
 "QF: Complicated, subtle or wrong increment in for-loop  "
 "(QF_QUESTIONABLE_FOR_LOOP)"
-msgstr ""
+msgstr "QF: 複雑か巧妙か間違ったインクリメントの for ループ (QF_QUESTIONABLE_FOR_LOOP)"
 
 #: ../../bugDescriptionList.rst:6312
 msgid ""
 "NP: Read of unwritten public or protected field "
 "(NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD)"
 msgstr ""
+"NP: 書き込まれていない public または protected フィールドの読み出し "
+"(NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD)"
 
 #: ../../bugDescriptionList.rst:6326
 msgid ""
 "UwF: Field not initialized in constructor but dereferenced without null "
 "check (UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR)"
 msgstr ""
+"UwF: コンストラクタで初期化されていないフィールドを null チェックなしで null 値を利用している "
+"(UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR)"
 
 #: ../../bugDescriptionList.rst:6341
 msgid ""
 "UwF: Unwritten public or protected field "
 "(UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD)"
 msgstr ""
+"UwF: 書き込まてれいない public または protected フィールド "
+"(UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD)"
 
 #: ../../bugDescriptionList.rst:6352
 msgid "UC: Useless non-empty void method (UC_USELESS_VOID_METHOD)"
-msgstr ""
+msgstr "UC: 役に立たない空ではない void メソッド (UC_USELESS_VOID_METHOD)"
 
 #: ../../bugDescriptionList.rst:6368
 msgid "UC: Condition has no effect (UC_USELESS_CONDITION)"
-msgstr ""
+msgstr "UC: 条件は効果がない (UC_USELESS_CONDITION)"
 
 #: ../../bugDescriptionList.rst:6379
 msgid ""
 "UC: Condition has no effect due to the variable type "
 "(UC_USELESS_CONDITION_TYPE)"
-msgstr ""
+msgstr "UC: 条件は変数型のために効果がない (UC_USELESS_CONDITION_TYPE)"
 
 #: ../../bugDescriptionList.rst:6390
 msgid "UC: Useless object created (UC_USELESS_OBJECT)"
-msgstr ""
+msgstr "UC: 役に立たないオブジェクトを作成した (UC_USELESS_OBJECT)"
 
 #: ../../bugDescriptionList.rst:6406
 msgid "UC: Useless object created on stack (UC_USELESS_OBJECT_STACK)"
-msgstr ""
+msgstr "UC: 役に立たないオブジェクトをスタックで作成した (UC_USELESS_OBJECT_STACK)"
 
 #: ../../bugDescriptionList.rst:6417
 msgid ""
 "RV: Method ignores return value, is this OK? "
 "(RV_RETURN_VALUE_IGNORED_INFERRED)"
-msgstr ""
+msgstr "RV: メソッドは戻り値を無視しています。これは間違いではないですか? (RV_RETURN_VALUE_IGNORED_INFERRED)"
 
 #: ../../bugDescriptionList.rst:6438
 msgid ""
 "RV: Return value of method without side effect is ignored "
 "(RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT)"
-msgstr ""
+msgstr "RV: 副作用がないメソッドの戻り値は無視される (RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT)"
 
 #: ../../bugDescriptionList.rst:6459
 msgid ""
 "RV: Method checks to see if result of String.indexOf is positive "
 "(RV_CHECK_FOR_POSITIVE_INDEXOF)"
-msgstr ""
+msgstr "RV: String.indexOf の結果が正かどうか確かめている (RV_CHECK_FOR_POSITIVE_INDEXOF)"
 
 #: ../../bugDescriptionList.rst:6472
 msgid ""
 "RV: Method discards result of readLine after checking if it is non-null "
 "(RV_DONT_JUST_NULL_CHECK_READLINE)"
 msgstr ""
+"RV: readLine メソッドの結果を null でないのか確かめた後で捨てている "
+"(RV_DONT_JUST_NULL_CHECK_READLINE)"
 
 #: ../../bugDescriptionList.rst:6484
 msgid ""
 "NP: Parameter must be non-null but is marked as nullable "
 "(NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE)"
 msgstr ""
+"NP: パラメータは  非 null でなければならないが null 可能としてアノテートされている "
+"(NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE)"
 
 #: ../../bugDescriptionList.rst:6497
 msgid ""
 "NP: Possible null pointer dereference due to return value of called "
 "method (NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE)"
 msgstr ""
+"NP: null になっている可能性があるメソッドの戻り値を利用している "
+"(NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE)"
 
 #: ../../bugDescriptionList.rst:6510
 msgid ""
 "NP: Possible null pointer dereference on branch that might be infeasible "
 "(NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE)"
 msgstr ""
+"NP: null 値を実行不可能かもしれない分岐で利用している可能性がある "
+"(NP_NULL_ON_SOME_PATH_MIGHT_BE_INFEASIBLE)"
 
 #: ../../bugDescriptionList.rst:6527
 msgid "NP: Load of known null value (NP_LOAD_OF_KNOWN_NULL_VALUE)"
-msgstr ""
+msgstr "NP: null とわかっている値のロード (NP_LOAD_OF_KNOWN_NULL_VALUE)"
 
 #: ../../bugDescriptionList.rst:6541
 msgid ""
 "PZLA: Consider returning a zero length array rather than null "
 "(PZLA_PREFER_ZERO_LENGTH_ARRAYS)"
-msgstr ""
+msgstr "PZLA: null ではなく長さが0の配列を返すことを検討する (PZLA_PREFER_ZERO_LENGTH_ARRAYS)"
 
 #: ../../bugDescriptionList.rst:6560
 msgid "UCF: Useless control flow (UCF_USELESS_CONTROL_FLOW)"
-msgstr ""
+msgstr "UCF: 役に立たない制御フロー (UCF_USELESS_CONTROL_FLOW)"
 
 #: ../../bugDescriptionList.rst:6579
 msgid ""
 "UCF: Useless control flow to next line "
 "(UCF_USELESS_CONTROL_FLOW_NEXT_LINE)"
-msgstr ""
+msgstr "UCF: 次の行へ続くだけの役に立たない制御フロー (UCF_USELESS_CONTROL_FLOW_NEXT_LINE)"
 
 #: ../../bugDescriptionList.rst:6597
 msgid ""
 "RCN: Redundant nullcheck of value known to be null "
 "(RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE)"
-msgstr ""
+msgstr "RCN: null とわかっている値の冗長な null チェック (RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE)"
 
 #: ../../bugDescriptionList.rst:6608
 msgid ""
 "RCN: Redundant nullcheck of value known to be non-null "
 "(RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE)"
 msgstr ""
+"RCN: null でないことがわかっている値の冗長な null チェック "
+"(RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE)"
 
 #: ../../bugDescriptionList.rst:6619
 msgid ""
 "RCN: Redundant comparison of two null values "
 "(RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES)"
-msgstr ""
+msgstr "RCN: 2つの null 値の冗長な比較 (RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES)"
 
 #: ../../bugDescriptionList.rst:6630
 msgid ""
 "RCN: Redundant comparison of non-null value to null "
 "(RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE)"
 msgstr ""
+"RCN: 非 null 値と null 値との冗長な比較 "
+"(RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE)"
 
 #: ../../bugDescriptionList.rst:6641
 msgid ""
 "FS: Non-Boolean argument formatted using %b format specifier "
 "(VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN)"
 msgstr ""
+"FS: Boolean 型でない引数を ％b 書式指示子を使用してフォーマットしている "
+"(VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN)"
 
 #: ../../bugDescriptionList.rst:6655
 msgid "SA: Self assignment of local variable (SA_LOCAL_SELF_ASSIGNMENT)"
-msgstr ""
+msgstr "SA: ローカル変数の自己代入 (SA_LOCAL_SELF_ASSIGNMENT)"
 
 #: ../../bugDescriptionList.rst:6674
 msgid "INT: Integer remainder modulo 1 (INT_BAD_REM_BY_1)"
-msgstr ""
+msgstr "INT: 1を法とする整数の剰余 (INT_BAD_REM_BY_1)"
 
 #: ../../bugDescriptionList.rst:6686
 msgid "INT: Vacuous comparison of integer value (INT_VACUOUS_COMPARISON)"
-msgstr ""
+msgstr "INT: 整数値の無意味な比較 (INT_VACUOUS_COMPARISON)"
 
 #: ../../bugDescriptionList.rst:6698
 msgid ""
 "INT: Vacuous bit mask operation on integer value "
 "(INT_VACUOUS_BIT_OPERATION)"
-msgstr ""
+msgstr "INT: 整数値の無意味なビットマスク演算 (INT_VACUOUS_BIT_OPERATION)"
 
 #: ../../bugDescriptionList.rst:6711
 msgid "SA: Double assignment of local variable  (SA_LOCAL_DOUBLE_ASSIGNMENT)"
-msgstr ""
+msgstr "SA: ローカル変数の二重代入 (SA_LOCAL_DOUBLE_ASSIGNMENT)"
 
 #: ../../bugDescriptionList.rst:6729
 msgid "SA: Double assignment of field (SA_FIELD_DOUBLE_ASSIGNMENT)"
-msgstr ""
+msgstr "SA: フィールドの二重代入 (SA_FIELD_DOUBLE_ASSIGNMENT)"
 
 #: ../../bugDescriptionList.rst:6747
 msgid ""
 "DLS: Useless assignment in return statement "
 "(DLS_DEAD_LOCAL_STORE_IN_RETURN)"
-msgstr ""
+msgstr "DLS: return 文に役に立たない代入がある (DLS_DEAD_LOCAL_STORE_IN_RETURN)"
 
 #: ../../bugDescriptionList.rst:6760
 msgid "DLS: Dead store to local variable (DLS_DEAD_LOCAL_STORE)"
-msgstr ""
+msgstr "DLS: ローカル変数への無効な代入 (DLS_DEAD_LOCAL_STORE)"
 
 #: ../../bugDescriptionList.rst:6780
 msgid ""
 "DLS: Dead store to local variable that shadows field "
 "(DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD)"
-msgstr ""
+msgstr "DLS: フィールドを遮るローカル変数への無効な代入 (DLS_DEAD_LOCAL_STORE_SHADOWS_FIELD)"
 
 #: ../../bugDescriptionList.rst:6796
 msgid "DLS: Dead store of null to local variable (DLS_DEAD_LOCAL_STORE_OF_NULL)"
-msgstr ""
+msgstr "DLS: ローカル変数への無効な null 代入 (DLS_DEAD_LOCAL_STORE_OF_NULL)"
 
 #: ../../bugDescriptionList.rst:6809
 msgid ""
 "REC: Exception is caught when Exception is not thrown "
 "(REC_CATCH_EXCEPTION)"
-msgstr ""
+msgstr "REC: 例外がスローされないのに例外をキャッチしている (REC_CATCH_EXCEPTION)"
 
 #: ../../bugDescriptionList.rst:6835
 msgid "FE: Test for floating point equality (FE_FLOATING_POINT_EQUALITY)"
-msgstr ""
+msgstr "FE: 浮動小数点の等価性のためのテスト (FE_FLOATING_POINT_EQUALITY)"
 
 #: ../../bugDescriptionList.rst:6855
 msgid "CD: Test for circular dependencies among classes (CD_CIRCULAR_DEPENDENCY)"
-msgstr ""
+msgstr "CD: クラス間の循環依存関係のテスト (CD_CIRCULAR_DEPENDENCY)"
 
 #: ../../bugDescriptionList.rst:6869
 msgid ""
 "RI: Class implements same interface as superclass "
 "(RI_REDUNDANT_INTERFACES)"
-msgstr ""
+msgstr "RI: スーパークラスと同じインタフェースを実装しているクラス (RI_REDUNDANT_INTERFACES)"
 
 #: ../../bugDescriptionList.rst:6885
 msgid ""
 "MTIA: Class extends Struts Action class and uses instance variables "
 "(MTIA_SUSPECT_STRUTS_INSTANCE_FIELD)"
 msgstr ""
+"MTIA: Struts Action を拡張したクラスでのインスタンス変数の使用 "
+"(MTIA_SUSPECT_STRUTS_INSTANCE_FIELD)"
 
 #: ../../bugDescriptionList.rst:6901
 msgid ""
 "MTIA: Class extends Servlet class and uses instance variables "
 "(MTIA_SUSPECT_SERVLET_INSTANCE_FIELD)"
 msgstr ""
+"MTIA: Servlet クラスを拡張したクラスでのインスタンス変数の使用 "
+"(MTIA_SUSPECT_SERVLET_INSTANCE_FIELD)"
 
 #: ../../bugDescriptionList.rst:6916
 msgid ""
 "PS: Class exposes synchronization and semaphores in its public interface "
 "(PS_PUBLIC_SEMAPHORES)"
-msgstr ""
+msgstr "PS: 公開インタフェースで同期化とセマフォを暴露するクラス (PS_PUBLIC_SEMAPHORES)"
 
 #: ../../bugDescriptionList.rst:6932
 msgid ""
 "ICAST: Result of integer multiplication cast to long "
 "(ICAST_INTEGER_MULTIPLY_CAST_TO_LONG)"
-msgstr ""
+msgstr "ICAST: 整数乗算の結果を long にキャストしている (ICAST_INTEGER_MULTIPLY_CAST_TO_LONG)"
 
 #: ../../bugDescriptionList.rst:6959
 msgid ""
 "ICAST: Integral division result cast to double or float "
 "(ICAST_IDIV_CAST_TO_DOUBLE)"
-msgstr ""
+msgstr "ICAST: 整数の除算の結果を double または float にキャストしている (ICAST_IDIV_CAST_TO_DOUBLE)"
 
 #: ../../bugDescriptionList.rst:6989
 msgid ""
 "BC: Questionable cast to concrete collection "
 "(BC_BAD_CAST_TO_CONCRETE_COLLECTION)"
-msgstr ""
+msgstr "BC: 具象コレクションへの疑わしいキャスト (BC_BAD_CAST_TO_CONCRETE_COLLECTION)"
 
 #: ../../bugDescriptionList.rst:7006
 msgid "BC: Unchecked/unconfirmed cast (BC_UNCONFIRMED_CAST)"
-msgstr ""
+msgstr "BC: 未チェック/未確認のキャスト (BC_UNCONFIRMED_CAST)"
 
 #: ../../bugDescriptionList.rst:7020
 msgid ""
 "BC: Unchecked/unconfirmed cast of return value from method "
 "(BC_UNCONFIRMED_CAST_OF_RETURN_VALUE)"
-msgstr ""
+msgstr "BC: メソッドからの戻り値の未チェック/未確認のキャスト (BC_UNCONFIRMED_CAST_OF_RETURN_VALUE)"
 
 #: ../../bugDescriptionList.rst:7035
 msgid "BC: instanceof will always return true (BC_VACUOUS_INSTANCEOF)"
-msgstr ""
+msgstr "BC: 常に true を返す instanceof (BC_VACUOUS_INSTANCEOF)"
 
 #: ../../bugDescriptionList.rst:7051
 msgid ""
 "BC: Questionable cast to abstract collection  "
 "(BC_BAD_CAST_TO_ABSTRACT_COLLECTION)"
-msgstr ""
+msgstr "BC: 抽象コレクションへの疑わしいキャスト (BC_BAD_CAST_TO_ABSTRACT_COLLECTION)"
 
 #: ../../bugDescriptionList.rst:7067
 msgid ""
 "IM: Check for oddness that won't work for negative numbers  "
 "(IM_BAD_CHECK_FOR_ODD)"
-msgstr ""
+msgstr "IM: 負数で機能しない奇数チェック (IM_BAD_CHECK_FOR_ODD)"
 
 #: ../../bugDescriptionList.rst:7081
 msgid ""
 "IM: Computation of average could overflow "
 "(IM_AVERAGE_COMPUTATION_COULD_OVERFLOW)"
-msgstr ""
+msgstr "IM: 平均の計算はオーバーフローする可能性がある (IM_AVERAGE_COMPUTATION_COULD_OVERFLOW)"
 
 #: ../../bugDescriptionList.rst:7103
 msgid ""
 "BSHIFT: Unsigned right shift cast to short/byte "
 "(ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT)"
 msgstr ""
+"BSHIFT: 符号なし右シフトを short/byte にキャストしている "
+"(ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT)"
 
 #: ../../bugDescriptionList.rst:7118
 msgid ""
 "DMI: Code contains a hard coded reference to an absolute pathname "
 "(DMI_HARDCODED_ABSOLUTE_FILENAME)"
-msgstr ""
+msgstr "DMI: ハードコードされた絶対パス名への参照がある (DMI_HARDCODED_ABSOLUTE_FILENAME)"
 
 #: ../../bugDescriptionList.rst:7130
 msgid ""
 "DMI: Invocation of substring(0), which returns the original value "
 "(DMI_USELESS_SUBSTRING)"
-msgstr ""
+msgstr "DMI: substring(0) の呼び出しは元の値を返す (DMI_USELESS_SUBSTRING)"
 
 #: ../../bugDescriptionList.rst:7142
 msgid ""
 "ST: Write to static field from instance method "
 "(ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD)"
 msgstr ""
+"ST: インスタンスメソッドから static フィールドへの書き込み "
+"(ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD)"
 
 #: ../../bugDescriptionList.rst:7155
 msgid ""
 "DMI: Non serializable object written to ObjectOutput "
 "(DMI_NONSERIALIZABLE_OBJECT_WRITTEN)"
-msgstr ""
+msgstr "DMI: ObjectOutput に書き込まれる非直列化可能オブジェクト (DMI_NONSERIALIZABLE_OBJECT_WRITTEN)"
 
 #: ../../bugDescriptionList.rst:7168
 msgid "DB: Method uses the same code for two branches (DB_DUPLICATE_BRANCHES)"
-msgstr ""
+msgstr "DB: 2つの分岐のために同じコードを使用しているメソッド (DB_DUPLICATE_BRANCHES)"
 
 #: ../../bugDescriptionList.rst:7181
 msgid ""
 "DB: Method uses the same code for two switch clauses "
 "(DB_DUPLICATE_SWITCH_CLAUSES)"
-msgstr ""
+msgstr "DB: switch 文の2つの case のために同じコードを使用しているメソッド (DB_DUPLICATE_SWITCH_CLAUSES)"
 
 #: ../../bugDescriptionList.rst:7195
 msgid ""
 "XFB: Method directly allocates a specific implementation of xml "
 "interfaces (XFB_XML_FACTORY_BYPASS)"
-msgstr ""
+msgstr "XFB: XMLインタフェースの特定の実装のインスタンスを作成しているメソッド (XFB_XML_FACTORY_BYPASS)"
 
 #: ../../bugDescriptionList.rst:7216
 msgid ""
 "USM: Method superfluously delegates to parent class method "
 "(USM_USELESS_SUBCLASS_METHOD)"
-msgstr ""
+msgstr "USM: 親クラスのメソッドに過剰に委譲しているメソッド (USM_USELESS_SUBCLASS_METHOD)"
 
 #: ../../bugDescriptionList.rst:7229
 msgid ""
 "USM: Abstract Method is already defined in implemented interface "
 "(USM_USELESS_ABSTRACT_METHOD)"
-msgstr ""
+msgstr "USM: 実装されたインタフェースで既に定義された抽象メソッド (USM_USELESS_ABSTRACT_METHOD)"
 
 #: ../../bugDescriptionList.rst:7242
 msgid "CI: Class is final but declares protected field (CI_CONFUSED_INHERITANCE)"
-msgstr ""
+msgstr "CI: final なクラスが protected フィールドを宣言している (CI_CONFUSED_INHERITANCE)"
 
 #: ../../bugDescriptionList.rst:7257
 msgid ""
 "TQ: Value required to not have type qualifier, but marked as unknown "
 "(TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK)"
 msgstr ""
+"TQ: 値は型修飾子を必要としないが、不明としてマークされている "
+"(TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK)"
 
 #: ../../bugDescriptionList.rst:7271
 msgid ""
 "TQ: Value required to have type qualifier, but marked as unknown "
 "(TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK)"
 msgstr ""
+"TQ: 値は型修飾子を必要としているが、不明としてマークされている "
+"(TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK)"
 
 #: ../../bugDescriptionList.rst:7285
 msgid ""
 "NP: Method relaxes nullness annotation on return value "
 "(NP_METHOD_RETURN_RELAXING_ANNOTATION)"
 msgstr ""
+"NP: メソッドは戻り値の nullness アノテーションを緩和している "
+"(NP_METHOD_RETURN_RELAXING_ANNOTATION)"
 
 #: ../../bugDescriptionList.rst:7298
 msgid ""
 "NP: Method tightens nullness annotation on parameter "
 "(NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION)"
 msgstr ""
+"NP: メソッドはパラメータに nullness アノテーションを強化している "
+"(NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION)"
 
 #: ../../bugDescriptionList.rst:7310
 msgid ""
 "NP: Method tightens nullness annotation on parameter "
 "(NP_METHOD_PARAMETER_RELAXING_ANNOTATION)"
 msgstr ""
+"NP: メソッドはパラメータに nullness アノテーションを強化している "
+"(NP_METHOD_PARAMETER_RELAXING_ANNOTATION)"
+
+#~ msgid ""
+#~ ": Method invoked that should be "
+#~ "only be invoked inside a doPrivileged"
+#~ " block ()"
+#~ msgstr ""
+#~ ": Method invoked that should be "
+#~ "only be invoked inside a doPrivileged"
+#~ " block ()"
+
+#~ msgid ": Redundant comparison to null of previously checked value ()"
+#~ msgstr ": Redundant comparison to null of previously checked value ()"
 
