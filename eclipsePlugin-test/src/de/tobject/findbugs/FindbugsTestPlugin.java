@@ -36,7 +36,7 @@ import org.osgi.framework.BundleContext;
 public class FindbugsTestPlugin extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse.test";
+    public static final String PLUGIN_ID = "com.github.spotbugs.plugin.eclipse.test";
 
     // The shared instance
     private static FindbugsTestPlugin plugin;
