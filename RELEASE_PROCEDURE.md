@@ -8,16 +8,17 @@ Add necessary properties to `~/.gradle/gradle.properties` and make sure that you
 
 Check [SonaType official page](http://central.sonatype.org/pages/gradle.html) for detail.
 
-## Release to Eclipse Marketplace
-
-TBU
-
 ## Release to Eclipse Update Site
 
 Send pull-request to spotbugs/spotbugs.github.io, to update contents.
 As files to upload, you can use the zip file which is uploaded to Maven Central when you release to there.
 
 See [this pull-request](https://github.com/spotbugs/spotbugs.github.io/pull/12) as example.
+
+## Release to Eclipse Marketplace
+
+No action necessary. Just push latest plugin to Eclipse Update Site then it's enough.
+If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin), please contact with @KengoTODA or @iloveeclipse.
 
 ## Release to Gradle Plugin Portal
 
