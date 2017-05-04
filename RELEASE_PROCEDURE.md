@@ -26,7 +26,9 @@ Add necessary properties to `~/.gradle/gradle.properties` and run `./gradlew pub
 
 ## Release to ReadTheDocs
 
-Install `docker 1.13.1` or later in your local, and make sure `docs/build.sh` can run without error. This script should generate HTML pages under `.build/html`. If there is no problem, ReadTheDocs should be possible to build and publish documents to their site. Simply merge your change to `master` then it will be used by [the `latest` document](http://spotbugs.readthedocs.io/en/latest/).
+Install `docker 1.13.1` or later in your local, and make sure `docs/build.sh` can run without error. This script should generate HTML pages under `docs/.build/html`. If there is no problem, ReadTheDocs should be possible to build and publish documents to their site. Simply merge your change to `master` then it will be used by [the `latest` document](http://spotbugs.readthedocs.io/en/latest/).
 
 Note that we manage manuals by two ReadTheDocs projects: [spotbugs](https://readthedocs.org/projects/spotbugs/) and [spotbugs-ja](https://readthedocs.org/projects/spotbugs-ja/).  
 When we want to add active versions for documents, visit [version page](https://readthedocs.org/projects/spotbugs/versions/). When we want to add more languages, follow [official document](http://docs.readthedocs.io/en/latest/localization.html#project-with-multiple-translations) and create a new ReadTheDocs project for new language.
+
+If you need maintainer access to Read the Docs, please contact with @KengoTODA.
