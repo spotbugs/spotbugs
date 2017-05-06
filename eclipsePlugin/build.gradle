@@ -19,11 +19,6 @@ sourceSets {
       include '**/*.xml'
     }
   }
-  test {
-    java {
-      srcDirs = ['test']
-    }
-  }
 }
 
 configurations {
@@ -61,9 +56,6 @@ dependencies {
   embeddedLibs(project(':spotbugs')) {
     transitive = false
   }
-
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.mockito:mockito-core:2.7.22'
 }
 
 task distSrcZip(type:Exec) {
