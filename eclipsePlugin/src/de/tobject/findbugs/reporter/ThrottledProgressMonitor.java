@@ -1,5 +1,7 @@
 package de.tobject.findbugs.reporter;
 
+import static org.eclipse.core.runtime.Assert.isNotNull;
+
 import java.util.function.LongSupplier;
 
 import javax.annotation.Nonnull;
@@ -28,11 +30,11 @@ class ThrottledProgressMonitor implements IProgressMonitor {
     private final LongSupplier currentTimeMillis;
     private long lastRenamed = NOT_TRIGGERED;
     private long lastWorked = NOT_TRIGGERED;
-    private int accumulatedWork = 0;
+    private int accumulatedWork;
 
     ThrottledProgressMonitor(@Nonnull IProgressMonitor delegate, @Nonnull LongSupplier currentTimeMillis) {
-        assert delegate != null;
-        assert currentTimeMillis != null;
+        isNotNull(delegate);
+        isNotNull(currentTimeMillis);
 
         this.delegate = delegate;
         this.currentTimeMillis = currentTimeMillis;
@@ -41,7 +43,7 @@ class ThrottledProgressMonitor implements IProgressMonitor {
     @Override
     public void setTaskName(String name) {
         long currentTime = currentTimeMillis.getAsLong();
-        if (currentTime - lastRenamed >= THROTTLE_SPAN) {
+        if (lastRenamed == NOT_TRIGGERED || currentTime - lastRenamed >= THROTTLE_SPAN) {
             lastRenamed = currentTime;
             delegate.setTaskName(name);
         }
@@ -51,7 +53,7 @@ class ThrottledProgressMonitor implements IProgressMonitor {
     public void worked(int work) {
         long currentTime = currentTimeMillis.getAsLong();
         accumulatedWork += work;
-        if (currentTime - lastWorked >= THROTTLE_SPAN) {
+        if (lastWorked == NOT_TRIGGERED || currentTime - lastWorked >= THROTTLE_SPAN) {
             lastWorked = currentTime;
             delegate.worked(accumulatedWork);
             accumulatedWork = 0;
