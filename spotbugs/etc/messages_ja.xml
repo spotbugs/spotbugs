@@ -163,7 +163,7 @@
  より多くの誤検出を受け入れました。
 </p>
 <p>
-FindBugs の以前のバージョンでは、このカテゴリは Style として知られていました。
+FindBugs の以前のバージョンでは，このカテゴリは Style として知られていました。
 </p>
 ]]>
     </Details>
@@ -175,7 +175,7 @@ FindBugs の以前のバージョンでは、このカテゴリは Style とし�
     <Details>
 <![CDATA[
 <p>
-必ずしも間違っているというわけではないが、効率が悪いかもしれないコードです。
+必ずしも間違っているというわけではないが，効率が悪いかもしれないコードです。
 </p>
 ]]>
     </Details>
@@ -579,7 +579,7 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
     <Details>
 <![CDATA[
 <p>
-このディテクタは，クラスが別のパッケージのクラスによって拡張されるなら，予想外の結果をもたらす可能性がある <code>this.getClass().getResource(..)</code> の使用を探します。
+このディテクタは，クラスが別のパッケージのクラスによって拡張されるなら，予想外の結果をもたらす可能性がある <code>this.getClass().getResource(...)</code> の使用を探します。
 </p>
 ]]>
     </Details>
@@ -1431,7 +1431,7 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
     <Details>
 <![CDATA[
 <p>
-このディテクタは，JSR-166のロックで実行される通常の同期化を探します。
+このディテクタは，JSR-166 のロックで実行される通常の同期化を探します。
 </p>
 <p>
 中速ディテクタです。
@@ -2451,7 +2451,7 @@ XSS に関して心配しているなら商用の静的解析ツールかペネ�
     <Details>
 <![CDATA[
 <p>
-このクラスが別のパッケージによって拡張されるなら， <code>this.getClass().getResource(..)</code> の呼び出しは予想外の結果をもたらす可能性があります。
+このクラスが別のパッケージによって拡張されるなら， <code>this.getClass().getResource(...)</code> の呼び出しは予想外の結果をもたらす可能性があります。
 </p>
 ]]>
     </Details>
@@ -2820,8 +2820,7 @@ arr[0] = 1.0;
     </Details>
   </BugPattern>
 
-  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
-    <!-- misspelled for backward compatibility -->
+  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>invocation of {2}, which should be invoked from within a doPrivileged block, in {1}</LongDescription>
     <Details>
@@ -2907,21 +2906,21 @@ arr[0] = 1.0;
     <Details>
 <![CDATA[
 <p>
-アノテーションに <code>@Retention(RetentionPolicy.RUNTIME)</code> アノテーションが付いていなければ，リフレクション (たとえば， <code>isAnnotationPresent(..)</code> メソッド) を使用して観測することができません。
+アノテーションに <code>@Retention(RetentionPolicy.RUNTIME)</code> アノテーションが付いていなければ，リフレクション (たとえば， <code>isAnnotationPresent(...)</code> メソッド) を使用して観測することができません。
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="DM_EXIT">
-    <ShortDescription>System.exit(..) を呼び出しているメソッド</ShortDescription>
-    <LongDescription>{1} は，System.exit(..) を呼び出しています。これは Java 仮想マシン全体をシャットダウンさせてしまいます。</LongDescription>
+    <ShortDescription>System.exit(...) を呼び出しているメソッド</ShortDescription>
+    <LongDescription>{1} は，System.exit(...) を呼び出しています。これは Java 仮想マシン全体をシャットダウンさせてしまいます。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-<code>System.exit(..)</code> を呼び出すことは，Java 仮想マシン全体をシャットダウンさせてしまいます。
+<code>System.exit(...)</code> を呼び出すことは，Java 仮想マシン全体をシャットダウンさせてしまいます。
 それが適切な場合にだけ使用すべきです。
-<code>System.exit(..)</code> の呼び出しは，他のコードによる呼び出しを困難か不可能にします。
+<code>System.exit(...)</code> の呼び出しは，他のコードによる呼び出しを困難か不可能にします。
 その代わりに <code>RuntimeException</code> をスローすることを検討してください。
 </p>
 ]]>
@@ -3000,7 +2999,7 @@ Javaは，同一の文字列定数が同じ <code>String</code> オブジェク�
 
   <BugPattern type="DM_BOOLEAN_CTOR">
     <ShortDescription>効率が悪い Boolean コンストラクタを呼び出しているメソッド</ShortDescription>
-    <LongDescription>{1} は，効率が悪い Boolean コンストラクタを呼び出しています。その代わりに Boolean.valueOf(..) を使用してください。</LongDescription>
+    <LongDescription>{1} は，効率が悪い Boolean コンストラクタを呼び出しています。その代わりに Boolean.valueOf(...) を使用してください。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3757,12 +3756,12 @@ JDK はこのバグを解決してサイズを1MB減らすことができまし�
 (<code>hashCode</code> メソッドをオーバーライドすることは，オブジェクトの同一性が単純な参照等価性よりも複雑な規約に基づくことを意味します)。
 </p>
 <p>
-このクラスのインスタンスが HashMap/HashTable に決して代入されるだろうと思わないなら推奨される <code>hashCode</code> メソッドの実装は次のようになります。
+このクラスのインスタンスが <code>HashMap</code>/<code>HashTable</code> に決して代入されるだろうと思わないなら推奨される <code>hashCode</code> メソッドの実装は次のようになります。
 </p>
 <pre><code>
 public int hashCode() {
     assert false : "hashCodeが呼び出されることは想定されていません。";
-    return 42; // 適当な値 
+    return 42; // 任意の定数 
 }
 </code></pre>
 ]]>
@@ -3770,24 +3769,24 @@ public int hashCode() {
   </BugPattern>
 
   <BugPattern type="EQ_COMPARETO_USE_OBJECT_EQUALS">
-    <ShortDescription>compareTo(..) メソッドを定義して Object.equals() を使用しているクラス</ShortDescription>
+    <ShortDescription>compareTo(...) メソッドを定義して Object.equals() を使用しているクラス</ShortDescription>
     <LongDescription>{0} は，{1.givenClass} を定義して，Object.equals() を使用しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このクラスは， <code>compareTo(..)</code> メソッドを定義していますが， <code>equals</code> メソッドは <code>java.lang.Object</code> から継承しています。
+このクラスは， <code>compareTo(...)</code> メソッドを定義していますが， <code>equals</code> メソッドは <code>java.lang.Object</code> から継承しています。
 一般的に<code>equals</code> メソッドが <code>true</code> を返す場合に限り， <code>compareTo</code> メソッドは0を返すべきです。
 これが違反されるなら奇妙で予測できない失敗が <code>PriorityQueue</code> などのクラスで発生します。
 J2SE 5.0では， <code>PriorityQueue.remove()</code> は <code>compareTo</code> メソッドを使用しますが，Java SE 6では， <code>equals</code> メソッドを使用します。
 </p>
 <p>
-Comparable インタフェースの compareTo メソッドの JavaDoc を引用します。
+<code>Comparable</code> インタフェースの <code>compareTo</code> メソッドの JavaDoc を引用します。
 </p>
 <blockquote><p>
 必須というわけではありませんが， <code>(x.compareTo(y)==0) == (x.equals(y))</code> であることが強く推奨されます。
 一般的に<code>Comparable</code> インタフェースを実装しているクラスで，この条件に違反するクラスは明確にこの事実を示す必要があります。
 「注:このクラスは <code>equals</code> と一貫性のない自然順序付けを持ちます」などと明示することをお勧めします。
-</blockquote></p>
+</p></blockquote>
 ]]>
     </Details>
   </BugPattern>
@@ -3820,7 +3819,7 @@ Comparable インタフェースの compareTo メソッドの JavaDoc を引用�
 <pre><code>
 public int hashCode() {
     assert false : "hashCodeが呼び出されることは想定されていません。";
-    return 42; // 適当な値 
+    return 42; // 任意の定数 
 }
 </code></pre>
 ]]>
@@ -3837,7 +3836,7 @@ public int hashCode() {
 したがって，「等価なオブジェクトは等価なハッシュコードを保持する必要がある」という <code>hashCode</code> メソッドの汎用規約に違反するかもしれません。
 </p>
 <p>
-<code>hashCode</code> メソッドを定義したくないまたはオブジェクトが HashMap/Hashtable に決して格納されないだろうと思っているなら <code>UnsupportedOperationException</code> をスローする <code>hashCode()</code> メソッドを定義してください。
+<code>hashCode</code> メソッドを定義したくないまたはオブジェクトが <code>HashMap</code>/<code>Hashtable</code> に決して格納されないだろうと思っているなら <code>UnsupportedOperationException</code> をスローする <code>hashCode()</code> メソッドを定義してください。
 </p>
 ]]>
     </Details>
@@ -3874,7 +3873,7 @@ public int hashCode() {
 <![CDATA[
 <p>
 このコードは参照等価性のために <code>==</code> や <code>!=</code> を使用して <code>java.lang.String</code> オブジェクトを比較しています。
-両方の文字列がソースファイルの定数か， <code>String.intern()</code> を使用して正準化されていないかぎり，同じ文字列は2つの異なる String オブジェクトによって表されるかもしれません。
+両方の文字列がソースファイルの定数か， <code>String.intern()</code> を使用して正準化されていないかぎり，同じ文字列は2つの異なる <code>String</code> オブジェクトによって表されるかもしれません。
 その代わりに <code>equals(Object)</code> メソッドを使用することを検討してください。
 </p>
 ]]>
@@ -4112,8 +4111,7 @@ Web サーバは，一般的にサーブレットや JSP クラスのインス�
     </Details>
   </BugPattern>
 
-  <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
-  <!-- never generated -->
+  <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true"> <!-- never generated -->
     <ShortDescription>Notify with two locks held</ShortDescription>
     <LongDescription>notify() or notifyAll*() with two locks held in {1}</LongDescription>
     <Details>
@@ -4465,7 +4463,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 インタフェースに定義された <code>static final</code> フィールドが配列や <code>Hashtable</code> などの可変オブジェクトを参照しています。
-この可変オブジェクトは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+この可変オブジェクトは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドをクラスに移動して，パッケージプロテクテッドにする必要があります。
 </p>
 ]]>
@@ -4478,7 +4476,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この可変 <code>static</code> フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+この可変 <code>static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> および/またはパッケージプロテクテッドにします。
 </p>
 ]]>
@@ -4491,7 +4489,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 しかしながら，スタティックイニシャライザには複数のフィールドへの書き込みがあるので，何らかのリファクタリングを必要とするでしょう。
 </p>
@@ -4505,7 +4503,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+<code>final</code> ではない <code>public static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドを <code>final</code> にします。
 </p>
 ]]>
@@ -4518,7 +4516,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この可変 <code>static</code> フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+この可変 <code>static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を回避するためにフィールドをパッケージプロテクテッドにします。
 </p>
 ]]>
@@ -4531,7 +4529,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この <code>static final</code> フィールドは <code>Hashtable</code> を参照しているので，悪意のあるコードや偶然別のパッケージによってアクセスされる可能性があります。
+この <code>static final</code> フィールドは <code>Hashtable</code> を参照しているので，悪意のあるコードや別のパッケージによって思いがけずアクセスされる可能性があります。
 このコードは<code>Hashtable</code> の内容を自由に変更できます。
 </p>
 ]]>
@@ -4545,7 +4543,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 可変コレクションのインスタンスが <code>static final</code> フィールドに割り当てられています。
-したがって，悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+したがって，悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 脆弱性を避けるために <code>Collections.unmodifiableSet/List/Map</code> などでこのフィールドをラップすることを検討してください。
 </p>
 ]]>
@@ -4559,7 +4557,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 可変コレクションのインスタンスが <code>static final</code> フィールドに割り当てられています。
-したがって，悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+したがって，悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 フィールドは脆弱性を避けるためにパッケージプロテクテッドにできます。
 脆弱性を避けるために <code>Collections.unmodifiableSet/List/Map</code> などでこのフィールドをラップすることを検討してください。
 </p>
@@ -4573,7 +4571,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この <code>static final</code> フィールドは配列を参照しているので，悪意のあるコードや偶然別のパッケージによってアクセスされる可能性があります。
+この <code>static final</code> フィールドは配列を参照しているので，悪意のあるコードや別のパッケージによって思いがけずアクセスされる可能性があります。
 このコードは配列の内容を自由に変更できます。
 </p>
 ]]>
@@ -4586,7 +4584,7 @@ private Long getNotificationSequenceNumber() {
     <Details>
 <![CDATA[
 <p>
-この可変 <code>static</code> フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+この可変 <code>static</code> フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 残念ながらこのような使い方は簡単に解決できません。
 </p>
 ]]>
@@ -4600,7 +4598,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 可変 <code>public</code> フィールドが <code>public</code> 列挙型の中に定義されています。
-したがって，フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+したがって，フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 可変列挙型フィールドが遅延初期化で使用されるかもしれないとしても外界へ暴露するバッドプラクティスです。
 このメソッドを <code>final</code> およびパッケージプライベートとして宣言することを考えてください。
 </p>
@@ -4615,7 +4613,7 @@ private Long getNotificationSequenceNumber() {
 <![CDATA[
 <p>
 無条件に列挙型フィールドを設定している <code>public</code> 列挙型で <code>public</code> メソッドを宣言しています。
-したがって，フィールドは悪意のあるコードや偶然別のパッケージによって変更される可能性があります。
+したがって，フィールドは悪意のあるコードや別のパッケージによって思いがけず変更される可能性があります。
 可変列挙型フィールドが遅延初期化で使用されるかもしれないとしても外界へ暴露するバッドプラクティスです。
 このメソッドを除去するかパッケージプライベートとして宣言することを考えてください。
 </p>
@@ -4823,8 +4821,8 @@ public class B extends A {
 <![CDATA[
 <p>
 この正規のメソッドは定義しているクラスと同じ名前です。
-これはコンストラクタを意図していた可能性が高いです。もしそうなら <code>void</code> 戻り値の宣言を除去してください。
-偶然メソッドを定義したことが間違いだとわかり，適切なコンストラクタを定義したが，後方互換性のためにこのメソッドを除去できないならメソッドを非推奨にしてください。
+これはコンストラクタを意図していた可能性が高いです。もしそうなら <code>void</code> 戻り値の宣言を除去してください。<br>
+誤ってメソッドを定義したことが間違いだと気付き，適切なコンストラクタを定義したが，後方互換性のためにこのメソッドを除去できないならメソッドを非推奨にしてください。
 </p>
 ]]>
     </Details>
@@ -6238,8 +6236,7 @@ if (argv.length == 1);
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
-    <!-- deprecated in favor of two separate RCN_ patterns -->
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true"> <!-- deprecated in favor of two separate RCN_ patterns -->
     <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
     <LongDescription>Redundant comparison to null of previously checked {2} in {1}</LongDescription>
     <Details>
@@ -6267,7 +6264,7 @@ of defensive programming.</p>
 <![CDATA[
 <p>
 このメソッドは，JSR-166(java.util.concurrent) のロックを獲得していますが，メソッドからのすべての経路で解除していません。
-一般的に JSR-166のロックを使用するための正しいイディオムは次のようになります。
+一般的に JSR-166 のロックを使用するための正しいイディオムは次のようになります。
 </p>
 <pre><code>
 Lock l = ...;
@@ -6289,7 +6286,7 @@ try {
 <![CDATA[
 <p>
 このメソッドは，JSR-166(java.util.concurrent) のロックを獲得していますが，メソッドからのすべての例外経路で解除していません。
-一般的に JSR-166のロックを使用するための正しいイディオムは次のようになります。
+一般的に JSR-166 のロックを使用するための正しいイディオムは次のようになります。
 </p>
 <pre><code>
 Lock l = ...;
@@ -6340,11 +6337,11 @@ try {
     <Details>
 <![CDATA[
 <p>
-このメソッドは， <code>==</code> または <code>!=</code> 演算子を使用して2つの Boolean 値を比較しています。
+このメソッドは， <code>==</code> または <code>!=</code> 演算子を使用して2つの <code>Boolean</code> 値を比較しています。
 一般的には2つの <code>Boolean</code> 値 (<code>Boolean.TRUE</code> と <code>Boolean.FALSE</code>) だけですが，
 <code>new Boolean(b)</code> コンストラクタを使用して他の <code>Boolean</code> オブジェクトを作成する可能性があります。
 そのようなオブジェクトを回避することは最高です。
-しかし，それらが存在するなら， <code>Boolean</code> オブジェクトの等価性をチェックするために <code>.equals(..)</code> ではなく <code>==</code> または <code>!=</code> を使用しているなら異なる結果をもたらします。
+しかし，それらが存在するなら， <code>Boolean</code> オブジェクトの等価性をチェックするために <code>.equals(...)</code> ではなく <code>==</code> または <code>!=</code> を使用しているなら異なる結果をもたらします。
 </p>
 ]]>
     </Details>
@@ -6865,8 +6862,8 @@ for(int i = 0; i &lt; 4; i++)
     <Details>
 <![CDATA[
 <p>
-このメソッドは， <i>(e &amp; C)</i> 形式の式を <i>D</i> と比較しています。
-定数 <i>C</i> の特定の値と <i>D</i> ために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
+このメソッドは， <code>(e &amp; C)</code> 形式の式を <code>D</code> と比較しています。
+定数 <code>C</code> の特定の値と <code>D</code> ために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 ]]>
     </Details>
@@ -6902,8 +6899,8 @@ for(int i = 0; i &lt; 4; i++)
   </BugPattern>
 
   <BugPattern type="BIT_AND_ZZ">
-    <ShortDescription>((..) &amp; 0) == 0 なのか確かめている</ShortDescription>
-    <LongDescription>((..) &amp; 0) == 0 なのか確かめています。{1}</LongDescription>
+    <ShortDescription>((...) &amp; 0) == 0 なのか確かめている</ShortDescription>
+    <LongDescription>((...) &amp; 0) == 0 なのか確かめています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6919,8 +6916,8 @@ for(int i = 0; i &lt; 4; i++)
     <Details>
 <![CDATA[
 <p>
-このメソッドは， <code>(e | C)</code> 形式の式をDと比較しています。
-定数CとDの特定の値のために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
+このメソッドは， <code>(e | C)</code> 形式の式を <code>D</code> と比較しています。
+定数 <code>C</code> と <code>D</code> の特定の値のために常に等しくないことを比較します。論理エラーかタイプミスかもしれません。
 </p>
 <p>
 通常，このバグは，ビットセットで帰属関係のテストを実行したいコードで発生します。
@@ -6933,8 +6930,7 @@ for(int i = 0; i &lt; 4; i++)
     </Details>
   </BugPattern>
 
-  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
-    <!-- never generated? -->
+  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true"> <!-- never generated? -->
     <ShortDescription>Incorrect lazy initialization of instance field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
     <Details>
@@ -6992,7 +6988,7 @@ For more information, see the
 <![CDATA[
 <p>
 このメソッドは， <code>java.util.concurrent.locks.Lock</code> を実装したオブジェクトで同期化しています。
-そのようなオブジェクトは <code>synchronized (..)</code> 構文よりも <code>acquire()</code>/<code>release()</code> を使用してロックとロックの解除をします。
+そのようなオブジェクトは <code>synchronized (...)</code> 構文よりも <code>acquire()</code>/<code>release()</code> を使用してロックとロックの解除をします。
 </p>
 ]]>
     </Details>
@@ -7315,8 +7311,7 @@ JUnit の <code>TestCase</code> クラスで，どんなテストメソッドも
     </Details>
   </BugPattern>
 
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
-    <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true"> <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
     <LongDescription>{1} attempts to access a result set field with index 0</LongDescription>
     <Details>
@@ -7408,14 +7403,14 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
     </Details>
   </BugPattern>
   <BugPattern type="EC_INCOMPATIBLE_ARRAY_COMPARE">
-    <ShortDescription>equals(..) メソッドを使用して互換性のない配列を比較している</ShortDescription>
+    <ShortDescription>equals(...) メソッドを使用して互換性のない配列を比較している</ShortDescription>
     <LongDescription>{2.simpleClass} と {3.simpleClass} を比較するために equals メソッドを使用しています。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 このメソッドは，互換性のない型の配列を比較するために <code>.equals(Object o)</code> を呼び出しています (たとえば， <code>String[]</code> と <code>StringBuffer[]</code> ， <code>String[]</code> と <code>int[]</code>) 。
 それらは，決して等価ではありません。
-さらに， <code>equals(..)</code> を使用してが配列を比較すると，同じ配列なのか確かめるだけで，配列の内容は無視されます。
+さらに， <code>equals(...)</code> を使用してが配列を比較すると，同じ配列なのか確かめるだけで，配列の内容は無視されます。
 </p>
 ]]>
     </Details>
@@ -7810,7 +7805,7 @@ long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
 <p>
 このコードは32ビット int 値を64ビット long 値に変換して，絶対時間値を必要とするメソッドパラメータに渡しています。
 絶対時間値は，「エポック」（すなわち，1970年1月1日，00:00:00 GMT）としてわかっている標準的な基準時間からのミリ秒数です。<br>
-たとえば，エポックからの秒を Date へ変換することを意図した次のメソッド はひどく壊れています。
+たとえば，エポックからの秒を <code>Date</code> へ変換することを意図した次のメソッド はひどく壊れています。
 </p>
 <pre><code>
 Date getDate(int seconds) { return new Date(seconds * 1000); }
@@ -7974,7 +7969,7 @@ double value2 = x / (double) y;
 <p>
 書式文字列でフォーマットされている引数の1つは配列です。
 実際には配列の内容を表示しない [I@304282 のような，かなり役に立たない書式を使用してフォーマットされます。
-フォーマットで扱う前に <code>Arrays.asList(..)</code> を使用して配列をラップすることを検討してください。
+フォーマットで扱う前に <code>Arrays.asList(...)</code> を使用して配列をラップすることを検討してください。
 </p>
 ]]>
     </Details>
@@ -8157,7 +8152,7 @@ String[] getAsArray(Collection&lt;String&gt; c) {
 <code>Collection</code> オブジェクトは宣言された総称型コレクションの参照がないので，本当に何もできません。
 コレクションから特定の型の配列を得る正しい方法は， <code>c.toArray(new String[]);</code> または <code>c.toArray(new String[c.size()]);</code> (後者はわずかにより効率的です) を使用することです。
 これに対する1つの共通の知られている例外があります。
-<code>Arrays.asList(..)</code>によって返されるリストの <code>toArray()</code> メソッドは共変型配列を返します。
+<code>Arrays.asList(...)</code>によって返されるリストの <code>toArray()</code> メソッドは共変型配列を返します。
 たとえば， <code>Arrays.asArray(new String[] { "a" }).toArray()</code> は <code>String []</code> を返します。
 FindBugs はそのようなケースを検出して抑止しようとしますが，見落としているかもしれません。
 </p>
@@ -8178,8 +8173,7 @@ FindBugs はそのようなケースを検出して抑止しようとします�
     </Details>
   </BugPattern>
 
-  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
-    <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
+  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
     <Details>
@@ -8712,7 +8706,7 @@ APIのどれも文書化していないか，保証もしていないが， <cod
 このクラスは， <code>Iterator</code> と <code>Map.Entry</code> で基底 <code>Map</code> のビューを返すことを許可された両方の <code>entrySet</code> メソッドがあります。
 この巧妙なアイデアは， <code>Map</code> 実装で使用されましたが，厄介なコーディングミスの可能性を取り込みました。
 <code>Map m</code> が <code>entrySet</code> のためのそのような反復子を返すならば， <code>c.addAll(m.entrySet())</code> はひどく間違っているでしょう。
-OpenJDK 1.7 の すべての Map 実装はこれを回避するために書き直されました。
+OpenJDK 1.7 の すべての <code>Map</code> 実装はこれを回避するために書き直されました。
 </p>
 ]]>
     </Details>
@@ -8724,9 +8718,9 @@ OpenJDK 1.7 の すべての Map 実装はこれを回避するために書き�
     <Details>
 <![CDATA[
 <p>
-<code>entrySet</code> メソッドは，一つの <code>Entry</code> オブジェクトを再利用し，反復中に返される基底 Map のビューを返すことが許可されています。
+<code>entrySet</code> メソッドは，一つの <code>Entry</code> オブジェクトを再利用し，反復中に返される基底 <code>Map</code> のビューを返すことが許可されています。
 Java 1.6 の時点で， <code>IdentityHashMap</code> と <code>EnumMap</code> の両方がそうしました。
-そのような Map を通して繰り返すとき，エントリ値は次の繰り返しへ進むまでが有効です。
+そのような <code>Map</code> を通して繰り返すとき，エントリ値は次の繰り返しへ進むまでが有効です。
 たとえば， <code>addAll</code> メソッドにそのような <code>entrySet</code> を渡そうと試みるのは，ひどく間違っているでしょう。
 </p>
 ]]>
