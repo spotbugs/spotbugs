@@ -1,12 +1,11 @@
 package de.tobject.findbugs.reporter;
 
-import static org.eclipse.core.runtime.Assert.isNotNull;
-
 import java.util.function.LongSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
@@ -33,8 +32,8 @@ class ThrottledProgressMonitor implements IProgressMonitor {
     private int accumulatedWork;
 
     ThrottledProgressMonitor(@Nonnull IProgressMonitor delegate, @Nonnull LongSupplier currentTimeMillis) {
-        isNotNull(delegate);
-        isNotNull(currentTimeMillis);
+        Assert.isNotNull(delegate);
+        Assert.isNotNull(currentTimeMillis);
 
         this.delegate = delegate;
         this.currentTimeMillis = currentTimeMillis;
