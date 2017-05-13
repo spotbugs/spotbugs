@@ -34,6 +34,8 @@ saxon.home=path/to/saxon6-5-5
 xsl.stylesheet.home=path/to/docbook-xsl-1.71.1
 ```
 
+Use sourceforge to download [Saxon 6.5.5](https://sourceforge.net/projects/saxon/files/saxon6/6.5.5/) and [docbook-xsl 1.71.1](https://sourceforge.net/projects/docbook/files/docbook-xsl/1.71.1/).
+
 ## Release to ReadTheDocs
 
 Install `docker 1.13.1` or later in your local, and make sure `docs/build.sh` can run without error. This script should generate HTML pages under `docs/.build/html`. If there is no problem, ReadTheDocs should be possible to build and publish documents to their site. Simply merge your change to `master` then it will be used by [the `latest` document](http://spotbugs.readthedocs.io/en/latest/).
