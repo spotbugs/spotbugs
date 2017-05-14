@@ -93,146 +93,71 @@ This plugin contains all of the standard SpotBugs detectors.
   <BugCategory category="CORRECTNESS">
     <Description>Correctness</Description>
     <Abbreviation>C</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    Probable bug - an apparent coding mistake
+    <Details>Probable bug - an apparent coding mistake
             resulting in code that was probably not what the
-            developer intended.
-</p>
-<p>
-             We strive for a low false positive rate.
-</p>
-]]>
-    </Details>
+            developer intended. We strive for a low false positive rate.</Details>
   </BugCategory>
-  
   <BugCategory category="NOISE">
     <Description>Bogus random noise</Description>
     <Abbreviation>N</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    Bogus random noise: intended to be useful
+    <Details>Bogus random noise: intended to be useful
     as a control in data mining experiments, not in finding actual bugs in software
-</p>
-]]>
             </Details>
   </BugCategory>
-  
   <BugCategory category="SECURITY">
     <Description>Security</Description>
     <Abbreviation>S</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    A use of untrusted input in a way that could create a remotely exploitable security vulnerability.
-</p>
-]]>
+    <Details>A use of untrusted input in a way that could create a remotely exploitable security vulnerability.
     </Details>
   </BugCategory>
-  
   <BugCategory category="BAD_PRACTICE">
     <Description>Bad practice</Description>
     <Abbreviation>B</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    Violations of recommended and essential
+    <Details>Violations of recommended and essential
             coding practice. Examples include hash code and equals
             problems, cloneable idiom, dropped exceptions,
             Serializable problems, and misuse of finalize.
-</p>
-<p>
             We strive to make this analysis accurate,
             although some groups may
-            not care about some of the bad practices.
-</p>
-]]>
-            </Details>
+            not care about some of the bad practices.</Details>
   </BugCategory>
-  
   <BugCategory category="STYLE">
     <Description>Dodgy code</Description>
     <Abbreviation>D</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    code that is confusing, anomalous, or
+    <Details>code that is confusing, anomalous, or
             written in a way that leads itself to errors.
             Examples include dead local stores, switch fall through,
             unconfirmed casts, and redundant null check of value
             known to be null.
-</p>
-<p>
             More false positives accepted.
-</p>
-<p>
             In previous versions of FindBugs, this category was known as Style.
-</p>
-]]>
 </Details>
   </BugCategory>
-  
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
     <Abbreviation>P</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    code that is not necessarily incorrect but may be inefficient.
-</p>
-]]>
-    </Details>
+    <Details>code that is not necessarily incorrect but may be inefficient</Details>
   </BugCategory>
-  
   <BugCategory category="MALICIOUS_CODE">
     <Description>Malicious code vulnerability</Description>
     <Abbreviation>V</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    code that is vulnerable to attacks from untrusted code.
-</p>
-]]>
-    </Details>
+    <Details>code that is vulnerable to attacks from untrusted code</Details>
   </BugCategory>
-  
   <BugCategory category="MT_CORRECTNESS">
     <Description>Multithreaded correctness</Description>
     <Abbreviation>M</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    code flaws having to do with threads, locks, and volatiles.
-</p>
-]]>
-    </Details>
+    <Details>code flaws having to do with threads, locks, and volatiles</Details>
   </BugCategory>
-  
   <BugCategory category="I18N">
     <Description>Internationalization</Description>
     <Abbreviation>I</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    code flaws having to do with internationalization and locale.
-</p>
-]]>
-    </Details>
+    <Details>code flaws having to do with internationalization and locale</Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
-  
   <BugCategory category="EXPERIMENTAL">
     <Description>Experimental</Description>
     <Abbreviation>X</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-    Experimental and not fully vetted bug patterns.
-</p>
-]]>
-    </Details>
+    <Details>Experimental and not fully vetted bug patterns</Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
   
