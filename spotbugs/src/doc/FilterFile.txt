@@ -1,1 +1,1 @@
-Refer http://spotbugs.readthedocs.io/en/latest/filter.html instead of this page.
+Refer docs/filter.rst instead of this file, or visit http://spotbugs.readthedocs.io/en/latest/filter.html to see generated site.
