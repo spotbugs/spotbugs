@@ -20,7 +20,7 @@ def generatePatternTitle(findbugs, message) {
 task generateBugDescriptionPage {
   def findbugsXml = file("../spotbugs/etc/findbugs.xml")
   def messagesXml = file("../spotbugs/etc/messages.xml")
-  def bugDescriptionPage = file('bugDescriptionList.rst')
+  def bugDescriptionPage = file('generated/bugDescriptionList.rst')
 
   inputs.files findbugsXml, messagesXml
   outputs.file bugDescriptionPage
