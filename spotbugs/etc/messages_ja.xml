@@ -99,135 +99,70 @@
   <BugCategory category="CORRECTNESS">
     <Description>正確性</Description>
     <Abbreviation>C</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-バグの可能性 - おそらく，開発者が意図していなかったコードになっている明らかなコーディングミスです。
-</p>
-<p>
+    <Details>バグの可能性 - おそらく，開発者が意図していなかったコードになっている明らかなコーディングミスです。
 我々は低い誤検出率のために努力します。
-</p>
-]]>  
     </Details>
   </BugCategory>
 
   <BugCategory category="NOISE">
     <Description>偽のランダムノイズ</Description>
     <Abbreviation>N</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-偽のランダムノイズ: ソフトウェアで実際のバグを発見するのではなく，データマイニング実験のコントロールとして役に立つことを意図しています。
-</p>
-]]>
-    </Details>
+    <Details>偽のランダムノイズ: ソフトウェアで実際のバグを発見するのではなく，データマイニング実験のコントロールとして役に立つことを意図しています。</Details>
   </BugCategory>
 
   <BugCategory category="SECURITY">
     <Description>セキュリティ</Description>
     <Abbreviation>S</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-リモートから悪用可能なセキュリティ脆弱性を引き起こすかもしれない信頼できない入力を使用しています。
-</p>
-]]>
-    </Details>
+    <Details>リモートから悪用可能なセキュリティ脆弱性を引き起こすかもしれない信頼できない入力を使用しています。 </Details>
   </BugCategory>
 
   <BugCategory category="BAD_PRACTICE">
     <Description>バッドプラクティス</Description>
     <Abbreviation>B</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-推奨または必須のコーディングプラクティスへの違反です。たとえば， <code>hashCode</code> と <code>equals</code> の問題， <code>Cloneable</code> イディオム，捨てられた例外， <code>Serializable</code> の問題， <code>finalize</code> の誤用などです。
-</p>
-<p>
-いくつかのグループはバッドプラクティスを気にしないかもしれないが，我々は正確な解析をしようと努力します。
-</p>
-]]>
+    <Details>推奨または必須のコーディングプラクティスへの違反です。たとえば，hashCode と equals の問題，Cloneable イディオム，捨てられた例外，Serializable の問題，finalize の誤用などです。
+いくつかのグループはバッドプラクティスを気にしないかもしれないが，我々はこの解析が正確になるよう努力しています。
     </Details>
   </BugCategory>
 
   <BugCategory category="STYLE">
     <Description>危ないコード</Description>
     <Abbreviation>D</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-紛らわしいコード，異常なコード，またはエラーを引き起こす方法で書かれたコードです。
-たとえば，ローカル変数への無効な代入， <code>switch</code> 文のフォールスルー，未確認のキャスト， <code>null</code> とわかっている値の冗長な <code>null</code> チェックなどです。
-</p>
-<p>
- より多くの誤検出を受け入れました。
-</p>
-<p>
+    <Details>紛らわしいコード，異常なコード，またはエラーを引き起こす方法で書かれたコードです。
+たとえば，ローカル変数への無効な代入，switch 文のフォールスルー，未確認のキャスト，null とわかっている値の冗長な null チェックなどです。
+より多くの誤検出を受け入れました。
 FindBugs の以前のバージョンでは，このカテゴリは Style として知られていました。
-</p>
-]]>
     </Details>
   </BugCategory>
 
   <BugCategory category="PERFORMANCE">
     <Description>性能</Description>
     <Abbreviation>P</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-必ずしも間違っているというわけではないが，効率が悪いかもしれないコードです。
-</p>
-]]>
-    </Details>
+    <Details>必ずしも間違っているというわけではないが，効率が悪いかもしれないコードです。 </Details>
   </BugCategory>
 
   <BugCategory category="MALICIOUS_CODE">
     <Description>悪意のあるコード脆弱性</Description>
     <Abbreviation>V</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-信頼できないコードからの攻撃に対して脆弱なコードです。
-</p>
-]]>
-    </Details>
+    <Details>信頼できないコードからの攻撃に対して脆弱なコードです。</Details>
   </BugCategory>
 
   <BugCategory category="MT_CORRECTNESS">
     <Description>マルチスレッドの正確性</Description>
     <Abbreviation>M</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-スレッド，ロック， <code>volatile</code> に関係があるコードの欠陥です。
-</p>
-]]>
-    </Details>
+    <Details>スレッド，ロック，volatile に関係があるコードの欠陥です。 </Details>
   </BugCategory>
 
   <BugCategory category="I18N">
     <Description>国際化</Description>
     <Abbreviation>I</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-国際化とロケールに関係があるコードの欠陥です。
-</p>
-]]>
-    </Details>
+    <Details>国際化とロケールに関係があるコードの欠陥です。 </Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
   <BugCategory category="EXPERIMENTAL">
     <Description>実験用</Description>
     <Abbreviation>X</Abbreviation>
-    <Details>
-<![CDATA[
-<p>
-実験用で完全に精査されていないバグパターンです。
-</p>
-]]>
-    </Details>
+    <Details>実験用で完全に精査されていないバグパターンです。 </Details>
     <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
@@ -4269,10 +4204,11 @@ public class CircularClassInitialization {
 </p>
 <pre><code>
 private static String LOCK = "LOCK";
-
+...
 synchronized(LOCK) {
     ...
 }
+...
 </code></pre>
 <p>
 文字列定数は正準化され，Java 仮想マシンによってロードされたすべてのクラス全体で共有されます。
@@ -4297,13 +4233,14 @@ CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.
 </p>
 <pre><code>
 private static Boolean inited = Boolean.FALSE;
-
+...
 synchronized(inited) { 
     if (!inited) {
         init();
         inited = Boolean.TRUE;
     }
 }
+...
 </code></pre>
 <p>
 一般には2つの <code>Boolean</code> オブジェクトだけが存在しています。
@@ -4326,10 +4263,11 @@ CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.
 </p>
 <pre><code>
 private static final Integer fileLock = new Integer(1);
-
+...
 synchronized(fileLock) { 
     .. do something ..
 }
+...
 </code></pre>
 <p>
 このコードは fileLock を次のように宣言するとより良くなります。
@@ -4355,10 +4293,11 @@ private static final Object fileLock = new Object();
 </p>
 <pre><code>
 private static Integer count = 0;
-
+...
 synchronized(count) { 
     count++;
 }
+...
 </code></pre>
 <p>
 <code>Integer</code> オブジェクトはキャッシュして共有できます。

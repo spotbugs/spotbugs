@@ -26,4 +26,5 @@ Contents
    introduction
    installing
    bugDescriptions
+   filter
    migration

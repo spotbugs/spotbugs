@@ -93,7 +93,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         if (DEBUG) {
             printToStream("Eclipse FindBugs plugin REPORTER debugging enabled");
         }
-        this.monitor = monitor;
+        this.monitor = new ThrottledProgressMonitor(monitor, System::currentTimeMillis);
         this.project = project;
         // TODO we do not need to sort bugs, so we can optimize performance and
         // use just a list here
