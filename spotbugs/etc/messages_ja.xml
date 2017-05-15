@@ -4204,10 +4204,11 @@ public class CircularClassInitialization {
 </p>
 <pre><code>
 private static String LOCK = "LOCK";
-
+...
 synchronized(LOCK) {
     ...
 }
+...
 </code></pre>
 <p>
 文字列定数は正準化され，Java 仮想マシンによってロードされたすべてのクラス全体で共有されます。
@@ -4232,13 +4233,14 @@ CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.
 </p>
 <pre><code>
 private static Boolean inited = Boolean.FALSE;
-
+...
 synchronized(inited) { 
     if (!inited) {
         init();
         inited = Boolean.TRUE;
     }
 }
+...
 </code></pre>
 <p>
 一般には2つの <code>Boolean</code> オブジェクトだけが存在しています。
@@ -4261,10 +4263,11 @@ CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.
 </p>
 <pre><code>
 private static final Integer fileLock = new Integer(1);
-
+...
 synchronized(fileLock) { 
     .. do something ..
 }
+...
 </code></pre>
 <p>
 このコードは fileLock を次のように宣言するとより良くなります。
@@ -4290,10 +4293,11 @@ private static final Object fileLock = new Object();
 </p>
 <pre><code>
 private static Integer count = 0;
-
+...
 synchronized(count) { 
     count++;
 }
+...
 </code></pre>
 <p>
 <code>Integer</code> オブジェクトはキャッシュして共有できます。

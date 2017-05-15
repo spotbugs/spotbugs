@@ -3706,10 +3706,11 @@ public class CircularClassInitialization {
   <p> The code synchronizes on interned String.</p>
 <pre><code>
 private static String LOCK = "LOCK";
-
+...
 synchronized(LOCK) {
     ...
 }
+...
 </code></pre>
 <p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this code
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
@@ -3727,13 +3728,14 @@ blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forum
   <p> The code synchronizes on a boxed primitive constant, such as a Boolean.</p>
 <pre><code>
 private static Boolean inited = Boolean.FALSE;
-
+...
 synchronized(inited) { 
     if (!inited) {
         init();
         inited = Boolean.TRUE;
     }
 }
+...
 </code></pre>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
@@ -3750,10 +3752,11 @@ and possible deadlock.</p>
 such as an Integer.</p>
 <pre><code>
 private static final Integer fileLock = new Integer(1);
-
+...
 synchronized(fileLock) { 
     .. do something ..
 }
+...
 </code></pre>
 <p>It would be much better, in this code, to redeclare fileLock as</p>
 <pre><code>
@@ -3776,10 +3779,11 @@ throughout the JVM, leading to very confusing behavior and potential deadlock.
   <p> The code synchronizes on a boxed primitive constant, such as an Integer.</p>
 <pre><code>
 private static Integer count = 0;
-
+...
 synchronized(count) { 
     count++;
 }
+...
 </code></pre>
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
@@ -5538,15 +5542,15 @@ of defensive programming.</p>
 but does not release it on all paths out of the method.  In general, the correct idiom
 for using a JSR-166 lock is:
 </p>
-<pre>
-    Lock l = ...;
-    l.lock();
-    try {
-        // do something
-    } finally {
-        l.unlock();
-    }
-</pre>
+<pre><code>
+Lock l = ...;
+l.lock();
+try {
+    // do something
+} finally {
+    l.unlock();
+}
+</code></pre>
 ]]>
     </Details>
   </BugPattern>
