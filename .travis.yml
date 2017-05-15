@@ -11,9 +11,9 @@ env:
 #    - JDK_FOR_TEST=oraclejdk9
 
 # Java 9 is not currently officially supported, so install it manually
-matrix:
-  include:
-     env: JDK_FOR_TEST=oraclejdk9
+#matrix:
+#  include:
+#     env: JDK_FOR_TEST=oraclejdk9
 
 before_install:
   - mkdir -p deps
