@@ -1394,12 +1394,12 @@ La classe est annotée avec <code>net.jcip.annotations.Immutable</code>, et la r
 <![CDATA[
 <p>Cette classe définit une méthode <code>hashCode()</code> mais hérite la méthode <code>equals()</code> de <code>java.lang.Object</code> (qui définit l'égalité par comparaison des références des objets). Bien que cela satisfasse certainement le contrat indiquant que les objets égaux doivent avoir des codes de hachage égaux, ce n'est certainement pas ce qui était voulu lors de la surcharge de la méthode <code>hashCode()</code> (Surcharger <code>hashCode()</code> implique que l'identité des objets soit basée sur des critères plus compliqués qu'une simple égalités des références.)</p>
 <p>Si vous ne pensez pas que des instances de cette classe soient un jour insérées dans des <code>HashMap</code>/<code>HashTable</code>, l'implémentation recommendée de <code>hashCode</code> est :</p>
-<p><pre>
+<pre><code>
 public int hashCode() {
   assert false : "hashCode not designed";
   return 42; // any arbitrary constant will do 
   }
-</pre></p>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -1419,12 +1419,12 @@ public int hashCode() {
 <![CDATA[
 <p>Cette classe surcharge <code>equals(Object)</code>, pas <code>hashCode()</code>, et hérite de l'implémentation de <code>hashCode()</code> issue de <code>java.lang.Object</code> (qui renvoie le code de hachage d'identité, une valeur arbitraire assignée à l'objet par la JVM). C'est pourquoi la classe a des chances de violer le contrat impliquant que des objets égaux doivent avoir des codes de hachage identiques.</p>
 <p>Si vous ne pensez pas que des instances de cette classe soient un jour insérés dans des<code>HashMap</code>/<code>Hashtable</code>, l'implémentation recommendée est du type :</p>
-<p><pre>
+<pre><code>
 public int hashCode() {
   assert false : "hashCode not designed";
   return 42; // any arbitrary constant will do 
 }
-</pre></p>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -1634,14 +1634,14 @@ public int hashCode() {
   <Details>
 <![CDATA[
 <p>Durant l'intialisation, une classe utilise activement l'une de ses sous-classes. Cette sous-classe ne sera pas encore initialisée lors de la première utilisation. Par exemple, dans le code suivant, <code>foo</code> sera à <code>null</code>.</p>
-<p><code><pre>
+<pre><code>
 public class CircularClassInitialization {
     static class InnerClassSingleton extends CircularClassInitialization {
         static InnerClassSingleton singleton = new InnerClassSingleton();
     }
     static CircularClassInitialization foo = InnerClassSingleton.singleton;
 }
-</pre></code></p>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -1660,9 +1660,9 @@ public class CircularClassInitialization {
   <Details>
 <![CDATA[
 <p>Présence d'un bloc synchronisé vide:</p>
-<pre>
+<pre><code>
 synchronized() {}
-</pre>
+</code></pre>
 <p>L'utilisation de blocs synchronisés vides est bien plus subtile et dure à réaliser correctement que bien des gens ne le reconnaissent, et de plus ne correspond que rarement à la meilleure des solutions.</p>
 ]]>
   </Details>
@@ -2203,19 +2203,15 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
   <Details>
 <![CDATA[
 <p>La valeur renvoyée par cette méthode devrait-être vérifiée. Une cause habituelle de cette alarme est d'invoquer une méthode sur un objet constant en pensant que cela modifiera l'objet. Par exemple :</p>
-<blockquote>
-<pre>
+<pre><code>
 String dateString = getHeaderField(name);
 dateString.trim();
-</pre>
-</blockquote>
+</code></pre>
 <p>Le programmeur semble croire que la méthode <code>trim()</code> mettra à jour l'objet <code>String</code> référencé par <code>dateString</code>. Mais, les objets <code>String</code> étant constants, la fonction renvoi une nouvelle valeur qui est ici ignorée. Le code devrait être corrigé en :</p>
-<blockquote>
-<pre>
+<pre><code>
 String dateString = getHeaderField(name);
 dateString = dateString.trim();
-</pre>
-</blockquote>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -2373,10 +2369,10 @@ dateString = dateString.trim();
   <Details>
 <![CDATA[
 <p>Cette méthode contient une instruction de contrôle du flux inutile. Ceci est souvent provoqué par inadvertance, en utilisant un paragraphe vide comme corps d'une condition. Exemple :</p>
-<pre>
+<pre><code>
 if (argv.length == 1);
     System.out.println("Hello, " + argv[0]);
-</pre>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -2445,7 +2441,7 @@ if (argv.length == 1);
   <Details>
 <![CDATA[
 <p>Cette méthode acquière un verrou JSR-166 (<code>java.util.concurrent</code>), mais ne le libère pas dans tous les chemins d'exécution. En général, l'idiome correct pour utiliser un verrou JSR-166 est :</p>
-<pre>
+<pre><code>
 Lock l = ...;
 l.lock();
 try {
@@ -2453,7 +2449,7 @@ try {
 } finally {
     l.unlock();
 }
-</pre>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -2463,7 +2459,7 @@ try {
   <Details>
 <![CDATA[
 <p>Cette méthode acquière un verrou JSR-166 (<code>java.util.concurrent</code>), mais ne le libère pas dans tous les chemins d'exception. En général, l'idiome correct pour utiliser un verrou JSR-166 est :</p>
-<pre>
+<pre><code>
 Lock l = ...;
 l.lock();
 try {
@@ -2471,7 +2467,7 @@ try {
 } finally {
     l.unlock();
 }
-</pre>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -2544,12 +2540,12 @@ try {
   <Details>
 <![CDATA[
 <p>Cette méthode contient une auto-alimentation d'une variable locale, par exemple :</p>
-<pre>
+<pre><code>
 public vida foo() {
   int x = 3;
   x = x;
 }
-</pre>
+</code></pre>
 <p>De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou une erreur de logique.</p>
 ]]>
   </Details>
@@ -2560,12 +2556,12 @@ public vida foo() {
   <Details>
 <![CDATA[
 <p>Cette méthode contient un champ s'auto-alimentant; par exemple :</p>
-<pre>
+<pre><code>
 int x;
 public void foo() {
   x = x;
 }
-</pre>
+</code></pre>
 <p>De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou une erreur logique.</p>
 ]]>
   </Details>
@@ -2715,7 +2711,7 @@ public void foo() {
 <p>Cette méthode semble construire une <ocde>String</code> en utilisant une concaténation en boucle. A chaque itération, l'objet <code>String</code> est converti en <code>StringBuffer</code>/<code>StringBuilder</code>, complété, puis de nouveau converti en <code>String</code>. Ceci a un coût exponentiel en fonction du nombre d'itérations, puisque la chaîne est recopiée à chaque itération.</p>
 <p>De meilleurs performances peuvent être obtenues en utilisant explicitement <code>StringBuffer</code> (ou <code>StringBuilder</code> en Java 5).</p>
 <p>Par exemple :</p>
-<pre>
+<pre><code>
 // C'est mal !
 String s = "";
 for (int i = 0; i &lt; field.length; ++i) {
@@ -2728,7 +2724,7 @@ for (int i = 0; i &lt; field.length; ++i) {
   buf.append(field[i]);
 }
 String s = buf.toString();
-</pre>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -3045,10 +3041,11 @@ String s = buf.toString();
   <Details>
 <![CDATA[
 <p>Ce code effectue des multiplications entières et transtype le résultat en <code>long</code>, comme dans :
-<code>long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }</code>. Si la multiplication était réalisée en utilisant l'arithmétique <code>long</code>, vous pourriez éviter le risque de débordement de capacité du calcul. Vous pouvez par exemple corriger le code précédent par : <code>long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }</code> ou <code><pre>
+<code>long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }</code>. Si la multiplication était réalisée en utilisant l'arithmétique <code>long</code>, vous pourriez éviter le risque de débordement de capacité du calcul. Vous pouvez par exemple corriger le code précédent par : <code>long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }</code> ou</p>
+<pre><code>
 static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
 long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
-</pre></code></p>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
@@ -3076,8 +3073,7 @@ long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
   <Details>
 <![CDATA[
 <p>Ce code transtype le résultat d'une division entière en un nombre flottant à double précision. Effectuer une division sur des nombres entiers n'est pas précis. Le fait que le résultat soit transtypé en <code>double</code> suggère que cette précision était voulue dès le départ. Peut être l'un ou l'autre des opérandes, ou les deux opérandes, auraient du être transtypé avant d'effectuer la division. Voici un exemple :</p>
-<blockquote>
-<pre>
+<pre><code>
 int x = 2;
 int y = 5;
 // Faux: renvoi 0.0
@@ -3085,8 +3081,7 @@ double value1 =  x / y;
 
 // Juste: renvoi 0.4
 double value2 =  x / (double) y;
-</pre>
-</blockquote>
+</code></pre>
 ]]>
   </Details>
  </BugPattern>
