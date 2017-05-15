@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FindBugs Eclipse Plugin Test Plug-in
-Bundle-SymbolicName: edu.umd.cs.findbugs.plugin.eclipse.test;singleton:=true
-Bundle-Version: 2.0.0.qualifier
+Bundle-Name: SpotBugs Eclipse Plugin Test Plug-in
+Bundle-SymbolicName: com.github.spotbugs.plugin.eclipse.test;singleton:=true
+Bundle-Version: 3.1.0.qualifier
 Bundle-Activator: de.tobject.findbugs.FindbugsTestPlugin
 Bundle-Vendor: FindBugs Project
-Require-Bundle: edu.umd.cs.findbugs.plugin.eclipse,
+Require-Bundle: com.github.spotbugs.plugin.eclipse,
  org.eclipse.jdt.ui,
  org.eclipse.jdt.core,
  org.eclipse.jdt.junit,
@@ -15,6 +15,6 @@ Require-Bundle: edu.umd.cs.findbugs.plugin.eclipse,
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
