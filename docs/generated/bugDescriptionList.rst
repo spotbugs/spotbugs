@@ -349,14 +349,15 @@ Eq: Equals checks for incompatible operand (EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_
   the equals method). For example, the Foo class might have an equals method
   that looks like:
   </p>
-  <pre>
+  <pre><code>
   public boolean equals(Object o) {
-    if (o instanceof Foo)
-      return name.equals(((Foo)o).name);
-    else if (o instanceof String)
-      return name.equals(o);
-    else return false;
-  </pre>
+      if (o instanceof Foo)
+          return name.equals(((Foo)o).name);
+      else if (o instanceof String)
+          return name.equals(o);
+      else return false;
+  }
+  </code></pre>
   
   <p>This is considered bad practice, as it makes it very hard to implement an equals method that
   is symmetric and transitive. Without those properties, very unexpected behaviors are possible.
@@ -516,10 +517,12 @@ HE: Class defines hashCode() and uses Object.equals() (HE_HASHCODE_USE_OBJECT_EQ
     than simple reference equality.)</p>
   <p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
   the recommended <code>hashCode</code> implementation to use is:</p>
-  <pre>public int hashCode() {
-    assert false : "hashCode not designed";
-    return 42; // any arbitrary constant will do
-    }</pre>
+  <pre><code>
+  public int hashCode() {
+      assert false : "hashCode not designed";
+      return 42; // any arbitrary constant will do
+  }
+  </code></pre>
   
       
 
@@ -550,10 +553,12 @@ HE: Class defines equals() and uses Object.hashCode() (HE_EQUALS_USE_HASHCODE)
   
   <p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
   the recommended <code>hashCode</code> implementation to use is:</p>
-  <pre>public int hashCode() {
-    assert false : "hashCode not designed";
-    return 42; // any arbitrary constant will do
-    }</pre>
+  <pre><code>
+  public int hashCode() {
+      assert false : "hashCode not designed";
+      return 42; // any arbitrary constant will do
+  }
+  </code></pre>
   
       
 
@@ -624,17 +629,15 @@ IC: Superclass uses subclass during initialization (IC_SUPERCLASS_USES_SUBCLASS_
     <p> During the initialization of a class, the class makes an active use of a subclass.
   That subclass will not yet be initialized at the time of this use.
   For example, in the following code, <code>foo</code> will be null.</p>
-  
-  <pre>
+  <pre><code>
   public class CircularClassInitialization {
       static class InnerClassSingleton extends CircularClassInitialization {
           static InnerClassSingleton singleton = new InnerClassSingleton();
       }
-  
+      
       static CircularClassInitialization foo = InnerClassSingleton.singleton;
   }
-  </pre>
-  
+  </code></pre>
   
       
 
@@ -775,22 +778,20 @@ Nm: Method doesn't override method in superclass due to wrong package for parame
   
     <p> The method in the subclass doesn't override a similar method in a superclass because the type of a parameter doesn't exactly match
   the type of the corresponding parameter in the superclass. For example, if you have:</p>
-  
-  <blockquote>
-  <pre>
+  <pre><code>
   import alpha.Foo;
+  
   public class A {
-    public int f(Foo x) { return 17; }
+      public int f(Foo x) { return 17; }
   }
   ----
   import beta.Foo;
-  public class B extends A {
-    public int f(Foo x) { return 42; }
-    public int f(alpha.Foo x) { return 27; }
-  }
-  </pre>
-  </blockquote>
   
+  public class B extends A {
+      public int f(Foo x) { return 42; }
+      public int f(alpha.Foo x) { return 27; }
+  }
+  </code></pre>
   <p>The <code>f(Foo)</code> method defined in class <code>B</code> doesn't
   override the
   <code>f(Foo)</code> method defined in class <code>A</code>, because the argument
@@ -1653,9 +1654,11 @@ Eq: equals method always returns false (EQ_ALWAYS_FALSE)
   that equals is not reflexive, one of the requirements of the equals method.</p>
   <p>The likely intended semantics are object identity: that an object is equal to itself. This is the behavior inherited from class <code>Object</code>. If you need to override an equals inherited from a different
   superclass, you can use:</p>
-  <pre>
-  public boolean equals(Object o) { return this == o; }
-  </pre>
+  <pre><code>
+  public boolean equals(Object o) {
+      return this == o;
+  }
+  </code></pre>
   
       
 
@@ -1783,22 +1786,28 @@ UR: Uninitialized read of field method called from constructor of superclass (UR
     <p> This method is invoked in the constructor of the superclass. At this point,
       the fields of the class have not yet initialized.</p>
   <p>To make this more concrete, consider the following classes:</p>
-  <pre>abstract class A {
-    int hashCode;
-    abstract Object getValue();
-    A() {
-      hashCode = getValue().hashCode();
+  <pre><code>
+  abstract class A {
+      int hashCode;
+      abstract Object getValue();
+      
+      A() {
+          hashCode = getValue().hashCode();
       }
-    }
+  }
+  
   class B extends A {
-    Object value;
-    B(Object v) {
-      this.value = v;
+      Object value;
+  
+      B(Object v) {
+          this.value = v;
       }
-    Object getValue() {
-      return value;
-    }
-    }</pre>
+  
+      Object getValue() {
+          return value;
+      }
+  }
+  </code></pre>
   <p>When a <code>B</code> is constructed,
   the constructor for the <code>A</code> class is invoked
   <em>before</em> the constructor for <code>B</code> sets <code>value</code>.
@@ -1829,21 +1838,19 @@ Nm: Method doesn't override method in superclass due to wrong package for parame
   
     <p> The method in the subclass doesn't override a similar method in a superclass because the type of a parameter doesn't exactly match
   the type of the corresponding parameter in the superclass. For example, if you have:</p>
-  
-  <blockquote>
-  <pre>
+  <pre><code>
   import alpha.Foo;
+  
   public class A {
-    public int f(Foo x) { return 17; }
+      public int f(Foo x) { return 17; }
   }
   ----
   import beta.Foo;
-  public class B extends A {
-    public int f(Foo x) { return 42; }
-  }
-  </pre>
-  </blockquote>
   
+  public class B extends A {
+      public int f(Foo x) { return 42; }
+  }
+  </code></pre>
   <p>The <code>f(Foo)</code> method defined in class <code>B</code> doesn't
   override the
   <code>f(Foo)</code> method defined in class <code>A</code>, because the argument
@@ -2054,22 +2061,18 @@ RV: Method ignores return value (RV_RETURN_VALUE_IGNORED)
   cause of this warning is to invoke a method on an immutable object,
   thinking that it updates the object. For example, in the following code
   fragment,</p>
-  <blockquote>
-  <pre>
+  <pre><code>
   String dateString = getHeaderField(name);
   dateString.trim();
-  </pre>
-  </blockquote>
+  </code></pre>
   <p>the programmer seems to be thinking that the trim() method will update
   the String referenced by dateString. But since Strings are immutable, the trim()
   function returns a new String value, which is being ignored here. The code
   should be corrected to: </p>
-  <blockquote>
-  <pre>
+  <pre><code>
   String dateString = getHeaderField(name);
   dateString = dateString.trim();
-  </pre>
-  </blockquote>
+  </code></pre>
   
       
 
@@ -2081,19 +2084,17 @@ RV: Exception created and dropped rather than thrown (RV_EXCEPTION_NOT_THROWN)
   
      <p> This code creates an exception (or error) object, but doesn't do anything with it. For example,
   something like </p>
-  <blockquote>
-  <pre>
-  if (x &lt; 0)
-    new IllegalArgumentException("x must be nonnegative");
-  </pre>
-  </blockquote>
+  <pre><code>
+  if (x &lt; 0) {
+      new IllegalArgumentException("x must be nonnegative");
+  }
+  </code></pre>
   <p>It was probably the intent of the programmer to throw the created exception:</p>
-  <blockquote>
-  <pre>
-  if (x &lt; 0)
-    throw new IllegalArgumentException("x must be nonnegative");
-  </pre>
-  </blockquote>
+  <pre><code>
+  if (x &lt; 0) {
+      throw new IllegalArgumentException("x must be nonnegative");
+  }
+  </code></pre>
   
       
 
@@ -2610,12 +2611,12 @@ SA: Self assignment of local rather than assignment to field (SA_LOCAL_SELF_ASSI
   <p> This method contains a self assignment of a local variable, and there
   is a field with an identical name.
   assignment appears to have been ; e.g.</p>
-  <pre>
-    int foo;
-    public void setFoo(int foo) {
-      foo = foo;
-    }
-  </pre>
+  <pre><code>
+      int foo;
+      public void setFoo(int foo) {
+          foo = foo;
+      }
+  </code></pre>
   <p>The assignment is useless. Did you mean to assign to the field instead?</p>
   
       
@@ -2675,19 +2676,17 @@ BIT: Bitwise add of signed byte value (BIT_ADD_OF_SIGNED_BYTE)
   </p>
   
   <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
-  <pre>
+  <pre><code>
   int result = 0;
-  for(int i = 0; i &lt; 4; i++)
-    result = ((result &lt;&lt; 8) + b[i]);
-  </pre>
-  
+  for(int i = 0; i &lt; 4; i++) 
+      result = ((result &lt;&lt; 8) + b[i]);
+  </code></pre>
   <p>The following idiom will work instead: </p>
-  <pre>
+  <pre><code>
   int result = 0;
-  for(int i = 0; i &lt; 4; i++)
-    result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
-  </pre>
-  
+  for(int i = 0; i &lt; 4; i++) 
+      result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
+  </code></pre>
   
       
 
@@ -2709,19 +2708,19 @@ BIT: Bitwise OR of signed byte value (BIT_IOR_OF_SIGNED_BYTE)
   </p>
   
   <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
-  <pre>
+  <pre><code>
   int result = 0;
-  for(int i = 0; i &lt; 4; i++)
-    result = ((result &lt;&lt; 8) | b[i]);
-  </pre>
-  
+  for(int i = 0; i &lt; 4; i++) {
+      result = ((result &lt;&lt; 8) | b[i]);
+  }
+  </code></pre>
   <p>The following idiom will work instead: </p>
-  <pre>
+  <pre><code>
   int result = 0;
-  for(int i = 0; i &lt; 4; i++)
-    result = ((result &lt;&lt; 8) | (b[i] &amp; 0xff));
-  </pre>
-  
+  for(int i = 0; i &lt; 4; i++) {
+      result = ((result &lt;&lt; 8) | (b[i] &amp; 0xff));
+  }
+  </code></pre>
   
       
 
@@ -2793,12 +2792,12 @@ SA: Self assignment of field (SA_FIELD_SELF_ASSIGNMENT)
   
   <p> This method contains a self assignment of a field; e.g.
   </p>
-  <pre>
-    int x;
-    public void foo() {
+  <pre><code>
+  int x;
+  public void foo() {
       x = x;
-    }
-  </pre>
+  }
+  </code></pre>
   <p>Such assignments are useless, and may indicate a logic error or typo.</p>
   
       
@@ -2895,9 +2894,15 @@ IJU: TestCase declares a bad suite method  (IJU_BAD_SUITE_METHOD)
   
   <p> Class is a JUnit TestCase and defines a suite() method.
   However, the suite method needs to be declared as either</p>
-  <pre>public static junit.framework.Test suite()</pre>
+  <pre><code>
+  public static junit.framework.Test suite()
+  </code></pre>
+  <p>
   or
-  <pre>public static junit.framework.TestSuite suite()</pre>
+  </p>
+  <pre><code>
+  public static junit.framework.TestSuite suite()
+  </code></pre>
   
       
 
@@ -3180,22 +3185,21 @@ ICAST: int value converted to long and used as absolute time (ICAST_INT_2_LONG_A
   of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
   For example, the following method, intended to convert seconds since the epoch into a Date, is badly
   broken:</p>
-  <pre>
+  <pre><code>
   Date getDate(int seconds) { return new Date(seconds * 1000); }
-  </pre>
+  </code></pre>
   <p>The multiplication is done using 32-bit arithmetic, and then converted to a 64-bit value.
   When a 32-bit value is converted to 64-bits and used to express an absolute time
   value, only dates in December 1969 and January 1970 can be represented.</p>
   
   <p>Correct implementations for the above method are:</p>
-  
-  <pre>
+  <pre><code>
   // Fails for dates after 2037
   Date getDate(int seconds) { return new Date(seconds * 1000L); }
   
   // better, works for all dates
   Date getDate(long seconds) { return new Date(seconds * 1000); }
-  </pre>
+  </code></pre>
   
       
 
@@ -3336,11 +3340,11 @@ BC: Impossible downcast of toArray() result (BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY)
   <p>
   This code is casting the result of calling <code>toArray()</code> on a collection
   to a type more specific than <code>Object[]</code>, as in:</p>
-  <pre>
+  <pre><code>
   String[] getAsArray(Collection&lt;String&gt; c) {
-    return (String[]) c.toArray();
-    }
-  </pre>
+      return (String[]) c.toArray();
+  }
+  </code></pre>
   <p>This will usually fail by throwing a ClassCastException. The <code>toArray()</code>
   of almost all collections return an <code>Object[]</code>. They can't really do anything else,
   since the Collection object has no reference to the declared generic type of the collection.
@@ -3379,11 +3383,13 @@ RE: "." or "|" used for regular expression (RE_POSSIBLE_UNINTENDED_PATTERN)
   A String function is being invoked and "." or "|" is being passed
   to a parameter that takes a regular expression as an argument. Is this what you intended?
   For example
-  <li>s.replaceAll(".", "/") will return a String in which <em>every</em> character has been replaced by a '/' character
-  <li>s.split(".") <em>always</em> returns a zero length array of String
-  <li>"ab|cd".replaceAll("|", "/") will return "/a/b/|/c/d/"
-  <li>"ab|cd".split("|") will return array with six (!) elements: [, a, b, |, c, d]
   </p>
+  <ul>
+  <li>s.replaceAll(".", "/") will return a String in which <em>every</em> character has been replaced by a '/' character</li>
+  <li>s.split(".") <em>always</em> returns a zero length array of String</li>
+  <li>"ab|cd".replaceAll("|", "/") will return "/a/b/|/c/d/"</li>
+  <li>"ab|cd".split("|") will return array with six (!) elements: [, a, b, |, c, d]</li>
+  </ul>
   
       
 
@@ -3679,13 +3685,11 @@ TQ: Comparing values with incompatible type qualifiers (TQ_COMPARING_VALUES_WITH
           the return statement requires a @NonNegative value,
           but receives one that is marked as @Negative.
           </p>
-          <blockquote>
-  <pre>
+  <pre><code>
   public boolean example(@Negative Integer value1, @NonNegative Integer value2) {
       return value1.equals(value2);
   }
-  </pre>
-          </blockquote>
+  </code></pre>
         
       
 
@@ -3713,13 +3717,11 @@ TQ: Value annotated as carrying a type qualifier used where a value that must no
           the return statement requires a @NonNegative value,
           but receives one that is marked as @Negative.
           </p>
-          <blockquote>
-  <pre>
+  <pre><code>
   public @NonNegative Integer example(@Negative Integer value) {
       return value;
   }
-  </pre>
-          </blockquote>
+  </code></pre>
         
       
 
@@ -3978,23 +3980,24 @@ LG: Potential lost logger changes due to weak reference in OpenJDK (LG_LOST_LOGG
     that memory, which means that the logger configuration is lost. For example,
   consider:
   </p>
-  
-  <pre>public static void initLogging() throws Exception {
-   Logger logger = Logger.getLogger("edu.umd.cs");
-   logger.addHandler(new FileHandler()); // call to change logger configuration
-   logger.setUseParentHandlers(false); // another call to change logger configuration
-  }</pre>
-  
+  <pre><code>
+  public static void initLogging() throws Exception {
+      Logger logger = Logger.getLogger("edu.umd.cs");
+      logger.addHandler(new FileHandler()); // call to change logger configuration
+      logger.setUseParentHandlers(false); // another call to change logger configuration
+  }
+  </code></pre>
   <p>The logger reference is lost at the end of the method (it doesn't
   escape the method), so if you have a garbage collection cycle just
   after the call to initLogging, the logger configuration is lost
   (because Logger only keeps weak references).</p>
-  
-  <pre>public static void main(String[] args) throws Exception {
-   initLogging(); // adds a file handler to the logger
-   System.gc(); // logger configuration lost
-   Logger.getLogger("edu.umd.cs").info("Some message"); // this isn't logged to the file as expected
-  }</pre>
+  <pre><code>
+  public static void main(String[] args) throws Exception {
+      initLogging(); // adds a file handler to the logger
+      System.gc(); // logger configuration lost
+      Logger.getLogger("edu.umd.cs").info("Some message"); // this isn't logged to the file as expected
+  }
+  </code></pre>
   <p><em>Ulf Ochsenfahrt and Eric Fellheimer</em></p>
             
         
@@ -4457,12 +4460,14 @@ DL: Synchronization on interned String  (DL_SYNCHRONIZATION_ON_SHARED_CONSTANT)
   
   
     <p> The code synchronizes on interned String.</p>
-  <pre>
+  <pre><code>
   private static String LOCK = "LOCK";
   ...
-    synchronized(LOCK) { ...}
+  synchronized(LOCK) {
+      ...
+  }
   ...
-  </pre>
+  </code></pre>
   <p>Constant Strings are interned and shared across all other classes loaded by the JVM. Thus, this code
   is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
   blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
@@ -4478,17 +4483,17 @@ DL: Synchronization on Boolean (DL_SYNCHRONIZATION_ON_BOOLEAN)
   
         
     <p> The code synchronizes on a boxed primitive constant, such as a Boolean.</p>
-  <pre>
+  <pre><code>
   private static Boolean inited = Boolean.FALSE;
   ...
-    synchronized(inited) {
+  synchronized(inited) { 
       if (!inited) {
-         init();
-         inited = Boolean.TRUE;
-         }
-       }
+          init();
+          inited = Boolean.TRUE;
+      }
+  }
   ...
-  </pre>
+  </code></pre>
   <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
   and possible deadlock.</p>
   <p>See CERT <a href="https://www.securecoding.cert.org/confluence/display/java/CON08-J.+Do+not+synchronize+on+objects+that+may+be+reused">CON08-J. Do not synchronize on objects that may be reused</a> for more information.</p>
@@ -4502,14 +4507,14 @@ DL: Synchronization on boxed primitive (DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE)
   
         
     <p> The code synchronizes on a boxed primitive constant, such as an Integer.</p>
-  <pre>
+  <pre><code>
   private static Integer count = 0;
   ...
-    synchronized(count) {
-       count++;
-       }
+  synchronized(count) { 
+      count++;
+  }
   ...
-  </pre>
+  </code></pre>
   <p>Since Integer objects can be cached and shared,
   this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
   and possible deadlock.</p>
@@ -4525,18 +4530,18 @@ DL: Synchronization on boxed primitive values (DL_SYNCHRONIZATION_ON_UNSHARED_BO
         
     <p> The code synchronizes on an apparently unshared boxed primitive,
   such as an Integer.</p>
-  <pre>
+  <pre><code>
   private static final Integer fileLock = new Integer(1);
   ...
-    synchronized(fileLock) {
-       .. do something ..
-       }
+  synchronized(fileLock) { 
+      .. do something ..
+  }
   ...
-  </pre>
+  </code></pre>
   <p>It would be much better, in this code, to redeclare fileLock as</p>
-  <pre>
+  <pre><code>
   private static final Object fileLock = new Object();
-  </pre>
+  </code></pre>
   <p>
   The existing code might be OK, but it is confusing and a
   future refactoring, such as the "Remove Boxing" refactoring in IntelliJ,
@@ -4556,26 +4561,28 @@ WL: Synchronization on getClass rather than class literal (WL_USING_GETCLASS_RAT
        This instance method synchronizes on <code>this.getClass()</code>. If this class is subclassed,
        subclasses will synchronize on the class object for the subclass, which isn't likely what was intended.
        For example, consider this code from java.awt.Label:</p>
-       <pre>
-       private static final String base = "label";
-       private static int nameCounter = 0;
-       String constructComponentName() {
-          synchronized (getClass()) {
-              return base + nameCounter++;
-          }
-       }
-       </pre>
+  <pre><code>
+  private static final String base = "label";
+  private static int nameCounter = 0;
+  
+  String constructComponentName() {
+      synchronized (getClass()) {
+          return base + nameCounter++;
+      }
+  }
+  </code></pre>
        <p>Subclasses of <code>Label</code> won't synchronize on the same subclass, giving rise to a datarace.
        Instead, this code should be synchronizing on <code>Label.class</code></p>
-        <pre>
-       private static final String base = "label";
-       private static int nameCounter = 0;
-       String constructComponentName() {
-          synchronized (Label.class) {
-              return base + nameCounter++;
-          }
-       }
-       </pre>
+  <pre><code>
+  private static final String base = "label";
+  private static int nameCounter = 0;
+  
+  String constructComponentName() {
+      synchronized (Label.class) {
+          return base + nameCounter++;
+      }
+  }
+  </code></pre>
         <p>Bug pattern contributed by Jason Mehrens</p>
         
       
@@ -4587,9 +4594,10 @@ ESync: Empty synchronized block (ESync_EMPTY_SYNC)
   
   
     <p> The code contains an empty synchronized block:</p>
-  <pre>
-  synchronized() {}
-  </pre>
+  <pre><code>
+  synchronized() {
+  }
+  </code></pre>
   <p>Empty synchronized blocks are far more subtle and hard to use correctly
   than most people recognize, and empty synchronized blocks
   are almost never a better solution
@@ -4804,7 +4812,7 @@ ML: Synchronization on field in futile attempt to guard that field (ML_SYNC_ON_F
   provide the mutual exclusion you need, and other threads might
   be obtaining locks on the referenced objects (for other purposes). An example
   of this pattern would be:</p>
-  <pre>
+  <pre><code>
   private Long myNtfSeqNbrCounter = new Long(0);
   private Long getNotificationSequenceNumber() {
        Long result = null;
@@ -4813,8 +4821,8 @@ ML: Synchronization on field in futile attempt to guard that field (ML_SYNC_ON_F
            myNtfSeqNbrCounter = new Long(result.longValue());
        }
        return result;
-   }
-  </pre>
+  }
+  </code></pre>
   
       
 
@@ -4919,15 +4927,15 @@ UL: Method does not release lock on all paths (UL_UNRELEASED_LOCK)
   but does not release it on all paths out of the method.  In general, the correct idiom
   for using a JSR-166 lock is:
   </p>
-  <pre>
-      Lock l = ...;
-      l.lock();
-      try {
-          // do something
-      } finally {
-          l.unlock();
-      }
-  </pre>
+  <pre><code>
+  Lock l = ...;
+  l.lock();
+  try {
+      // do something
+  } finally {
+      l.unlock();
+  }
+  </code></pre>
   
       
 
@@ -4941,15 +4949,15 @@ UL: Method does not release lock on all exception paths (UL_UNRELEASED_LOCK_EXCE
   but does not release it on all exception paths out of the method.  In general, the correct idiom
   for using a JSR-166 lock is:
   </p>
-  <pre>
-      Lock l = ...;
-      l.lock();
-      try {
-          // do something
-      } finally {
-          l.unlock();
-      }
-  </pre>
+  <pre><code>
+  Lock l = ...;
+  l.lock();
+  try {
+      // do something
+  } finally {
+      l.unlock();
+  }
+  </code></pre>
   
       
 
@@ -5552,20 +5560,20 @@ SBSC: Method concatenates strings using + in a loop (SBSC_USE_STRINGBUFFER_CONCA
   a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
   
   <p> For example:</p>
-  <pre>
-    // This is bad
-    String s = "";
-    for (int i = 0; i &lt; field.length; ++i) {
+  <pre><code>
+  // This is bad
+  String s = "";
+  for (int i = 0; i &lt; field.length; ++i) {
       s = s + field[i];
-    }
+  }
   
-    // This is better
-    StringBuffer buf = new StringBuffer();
-    for (int i = 0; i &lt; field.length; ++i) {
+  // This is better
+  StringBuffer buf = new StringBuffer();
+  for (int i = 0; i &lt; field.length; ++i) {
       buf.append(field[i]);
-    }
-    String s = buf.toString();
-  </pre>
+  }
+  String s = buf.toString();
+  </code></pre>
   
       
 
@@ -5978,9 +5986,10 @@ CAA: Covariant array assignment to a field (CAA_COVARIANT_ARRAY_FIELD)
   <p>Array of covariant type is assigned to a field. This is confusing and may lead to ArrayStoreException at runtime
   if the reference of some other type will be stored in this array later like in the following code:
   </p>
-  <p><code>Number[] arr = new Integer[10];
+  <pre><code>
+  Number[] arr = new Integer[10];
   arr[0] = 1.0;
-  </code></p>
+  </code></pre>
   <p>Consider changing the type of created array or the field type.</p>   	
   
       
@@ -6007,9 +6016,10 @@ CAA: Covariant array assignment to a local variable (CAA_COVARIANT_ARRAY_LOCAL)
   <p>Array of covariant type is assigned to a local variable. This is confusing and may lead to ArrayStoreException at runtime
   if the reference of some other type will be stored in this array later like in the following code:
   </p>
-  <p><code>Number[] arr = new Integer[10];
+  <pre><code>
+  Number[] arr = new Integer[10];
   arr[0] = 1.0;
-  </code></p>
+  </code></pre>
   <p>Consider changing the type of created array or the local variable type.</p>   	
   
       
@@ -6359,8 +6369,10 @@ UC: Useless non-empty void method (UC_USELESS_VOID_METHOD)
   </p>
   <p>We are trying to reduce the false positives as much as possible, but in some cases this warning might be wrong.
   Common false-positive cases include:</p>
-  <p>- The method is intended to trigger loading of some class which may have a side effect.</p>
-  <p>- The method is intended to implicitly throw some obscure exception.</p>
+  <ul>
+  <li>The method is intended to trigger loading of some class which may have a side effect.</li>
+  <li>The method is intended to implicitly throw some obscure exception.</li>
+  </ul>
   
       
 
@@ -6567,11 +6579,11 @@ UCF: Useless control flow (UCF_USELESS_CONTROL_FLOW)
   the branch is taken. For example,
   this is caused by having an empty statement
   block for an <code>if</code> statement:</p>
-  <pre>
-      if (argv.length == 0) {
+  <pre><code>
+  if (argv.length == 0) {
       // TODO: handle this case
-      }
-  </pre>
+  }
+  </code></pre>
   
       
 
@@ -6586,10 +6598,10 @@ UCF: Useless control flow to next line (UCF_USELESS_CONTROL_FLOW_NEXT_LINE)
   the branch is taken.
   Often, this is caused by inadvertently using an empty statement as the
   body of an <code>if</code> statement, e.g.:</p>
-  <pre>
-      if (argv.length == 1);
-          System.out.println("Hello, " + argv[0]);
-  </pre>
+  <pre><code>
+  if (argv.length == 1);
+      System.out.println("Hello, " + argv[0]);
+  </code></pre>
   
       
 
@@ -6658,12 +6670,12 @@ SA: Self assignment of local variable (SA_LOCAL_SELF_ASSIGNMENT)
   
   
   <p> This method contains a self assignment of a local variable; e.g.</p>
-  <pre>
-    public void foo() {
+  <pre><code>
+  public void foo() {
       int x = 3;
       x = x;
-    }
-  </pre>
+  }
+  </code></pre>
   <p>
   Such assignments are useless, and may indicate a logic error or typo.
   </p>
@@ -6715,12 +6727,12 @@ SA: Double assignment of local variable  (SA_LOCAL_DOUBLE_ASSIGNMENT)
   
   <p> This method contains a double assignment of a local variable; e.g.
   </p>
-  <pre>
-    public void foo() {
+  <pre><code>
+  public void foo() {
       int x,y;
       x = x = 17;
-    }
-  </pre>
+  }
+  </code></pre>
   <p>Assigning the same value to a variable twice is useless, and may indicate a logic error or typo.</p>
   
       
@@ -6733,12 +6745,12 @@ SA: Double assignment of field (SA_FIELD_DOUBLE_ASSIGNMENT)
   
   <p> This method contains a double assignment of a field; e.g.
   </p>
-  <pre>
-    int x,y;
-    public void foo() {
+  <pre><code>
+  int x,y;
+  public void foo() {
       x = x = 17;
-    }
-  </pre>
+  }
+  </code></pre>
   <p>Assigning to a field twice is useless, and may indicate a logic error or typo.</p>
   
       
@@ -6820,14 +6832,15 @@ REC: Exception is caught when Exception is not thrown (REC_CATCH_EXCEPTION)
     </p>
     <p>A better approach is to either explicitly catch the specific exceptions that are thrown,
     or to explicitly catch RuntimeException exception, rethrow it, and then catch all non-Runtime Exceptions, as shown below:</p>
-    <pre>
-    try {
+  <pre><code>
+  try {
       ...
-    } catch (RuntimeException e) {
+  } catch (RuntimeException e) {
       throw e;
-    } catch (Exception e) {
+  } catch (Exception e) {
       ... deal with all non-runtime exceptions ...
-    }</pre>
+  }
+  </code></pre>
     
        
 
@@ -6937,21 +6950,23 @@ ICAST: Result of integer multiplication cast to long (ICAST_INTEGER_MULTIPLY_CAS
   <p>
   This code performs integer multiply and then converts the result to a long,
   as in:</p>
-  <pre>
-      long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }
-  </pre>
+  <pre><code>
+  long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
+  </code></pre>
   <p>
   If the multiplication is done using long arithmetic, you can avoid
   the possibility that the result will overflow. For example, you
   could fix the above code to:</p>
-  <pre>
-      long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }
-  </pre>
+  <pre><code>
+  long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
+  </code></pre>
+  <p>
   or
-  <pre>
-      static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
-      long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
-  </pre>
+  </p>
+  <pre><code>
+  static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
+  long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
+  </code></pre>
   
       
 
@@ -6971,17 +6986,15 @@ ICAST: Integral division result cast to double or float (ICAST_IDIV_CAST_TO_DOUB
   What was probably meant was to cast one or both of the operands to
   double <em>before</em> performing the division.  Here is an example:
   </p>
-  <blockquote>
-  <pre>
+  <pre><code>
   int x = 2;
   int y = 5;
   // Wrong: yields result 0.0
-  double value1 =  x / y;
+  double value1 = x / y;
   
   // Right: yields result 0.4
-  double value2 =  x / (double) y;
-  </pre>
-  </blockquote>
+  double value2 = x / (double) y;
+  </code></pre>
   
       
 
