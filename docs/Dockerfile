@@ -2,7 +2,7 @@
 # Run `docker build -t spotbugs-sphinx .` to build docker image,
 # and run `docker run -it -v $(pwd):/documents spotbugs-sphinx make html` to generate documents.
 
-FROM ubuntu:latest
+FROM ubuntu:xenial
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN mkdir documents
