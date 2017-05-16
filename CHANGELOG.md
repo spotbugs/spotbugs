@@ -2,6 +2,23 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
+## 3.1.0-RC2 (2017/??/??)
+
+### Added
+
+* First release for SpotBugs Gradle Plugin ([#142](https://github.com/spotbugs/spotbugs/pull/142))
+* Support plugin development by test harness ([#140](https://github.com/spotbugs/spotbugs/pull/140))
+
+### Changed
+
+* Change Eclipse Plugin ID to avoid conflict with FindBugs Eclipse Plugin ([#157](https://github.com/spotbugs/spotbugs/pull/157))
+
+### Fixed
+
+* Enhance performance of Eclipse Plugin ([#159]((https://github.com/spotbugs/spotbugs/pull/1579))
+* Fix HTML format in `messages.xml` and others ([#166](https://github.com/spotbugs/spotbugs/pull/166))
+* Fix Japanese message in `messages_ja.xml` ([#164](https://github.com/spotbugs/spotbugs/pull/164))
+
 ## 3.1.0-RC1 (2017/Feb/21)
 
 ### Added
