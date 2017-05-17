@@ -9,6 +9,7 @@
 
 [SpotBugs](https://spotbugs.github.io/) is the spiritual successor of [FindBugs](https://github.com/findbugsproject/findbugs), carrying on from the point where it left off with support of its community.
 
+SpotBugs is licensed under the [GNU LESSER GENERAL PUBLIC LICENSE](https://github.com/spotbugs/spotbugs/blob/master/spotbugs/licenses/LICENSE.txt).
 
 More information at the [official website](https://spotbugs.github.io/). A lot of things can still be found at the [old FindBugs website](http://findbugs.sourceforge.net).
 
