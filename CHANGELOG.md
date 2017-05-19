@@ -2,7 +2,13 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
-## 3.1.0-RC2 (2017/??/??)
+## Unreleased (2017/??/??)
+
+### Fixed
+
+* Fix wrong version in Eclipse Plugin ([#173](https://github.com/spotbugs/spotbugs/pull/173))
+
+## 3.1.0-RC2 (2017/May/16)
 
 ### Added
 

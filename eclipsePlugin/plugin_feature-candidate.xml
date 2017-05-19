@@ -7,7 +7,7 @@
       plugin="@PLUGIN_ID@">
 
    <description url="https://spotbugs.github.io/">
-      This feature is a wrapper for the FindBugs plugin for installation via the Eclipse Update Manager.
+      This feature is a wrapper for the SpotBugs plugin for installation via the Eclipse Update Manager.
    </description>
 
    <copyright>
