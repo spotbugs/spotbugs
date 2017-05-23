@@ -1,5 +1,4 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
 
 sourceSets {
   main {
@@ -48,15 +47,4 @@ test {
 
 artifacts {
   archives jar, sourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'Tests for SpotBugs Plugin'
-        description 'JUnit tests for SpotBugs library'
-      }
-    }
-  }
 }
