@@ -37,20 +37,12 @@ import java.lang.annotation.Target;
  * package, and then use @Nullable only on those parameters, methods or fields
  * that you want to allow to be null.
  *
- * @deprecated -  use the JSR305 annotations instead,
- * For example, you can use {@link javax.annotation.ParametersAreNonnullByDefault} instead
- * of @DefaultAnnotation(NonNull.class), and {@link javax.annotation.meta.TypeQualifierDefault}
- * in general to define a type qualifier default. The JSR305 {@link javax.annotation.CheckReturnValue}
- * annotation can be applied to a type or package, and it will act as a default for all methods
- * in that class or package unless otherwise overridden.
- *
  * @author William Pugh
  */
 
 @Documented
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)
-@Deprecated
 public @interface DefaultAnnotationForParameters {
     Class<? extends Annotation>[] value();
 

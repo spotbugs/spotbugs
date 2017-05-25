@@ -33,15 +33,12 @@ import javax.annotation.meta.When;
  *
  * When this annotation is applied to a method it applies to the method return
  * value.
- *
- * @deprecated - use {@link javax.annotation.CheckForNull} instead.
  **/
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)
 @javax.annotation.Nonnull(when = When.MAYBE)
 @TypeQualifierNickname
-@Deprecated
 public @interface CheckForNull {
 
 }
