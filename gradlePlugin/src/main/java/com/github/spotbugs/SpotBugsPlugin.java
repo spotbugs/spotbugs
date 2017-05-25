@@ -33,7 +33,7 @@ import com.google.common.util.concurrent.Callables;
  */
 public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
-    public static final String DEFAULT_FINDBUGS_VERSION = "3.0.1";
+    public static final String DEFAULT_FINDBUGS_VERSION = "3.1.0-RC2";
     private FindBugsExtension extension;
 
     @Override
@@ -78,7 +78,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
         configuration.defaultDependencies(new Action<DependencySet>() {
             @Override
             public void execute(DependencySet dependencies) {
-                dependencies.add(project.getDependencies().create("com.google.code.findbugs:findbugs:" + extension.getToolVersion()));
+                dependencies.add(project.getDependencies().create("com.github.spotbugs:spotbugs:" + extension.getToolVersion()));
             }
         });
     }
