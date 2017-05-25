@@ -156,6 +156,9 @@ task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
 }
+distSrcZip.onlyIf {
+  file("$rootDir/.git").isDirectory()
+}
 tasks['assembleDist'].finalizedBy distSrcZip
 
 test {
