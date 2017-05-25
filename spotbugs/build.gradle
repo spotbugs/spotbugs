@@ -295,7 +295,6 @@ uploadArchives {
 ext.moduleName = 'com.github.spotbugs.spotbugs'
 apply from: "$rootDir/gradle/jigsaw.gradle"
 
-// TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
 // TODO : bugdesc

@@ -29,13 +29,10 @@ import java.lang.annotation.Target;
  * be checked when invoking the method.
  *
  * The checker treats this annotation as inherited by overriding methods.
- *
- * @deprecated - use {@link javax.annotation.CheckReturnValue} instead.
  */
 @Documented
 @Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.CLASS)
-@Deprecated
 public @interface CheckReturnValue {
 
     @Deprecated
