@@ -45,6 +45,8 @@ dependencies {
   compile project(':spotbugs-annotations')
 
   compileOnly 'com.apple:AppleJavaExtensions:1.4'
+
+  testCompile 'junit:junit:4.12'
   testCompile 'org.apache.ant:ant:1.9.4'
 
   // TODO : Some of these can be extracted to actual dependencies
