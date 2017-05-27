@@ -6,7 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.JarURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,7 +44,7 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
  * auxClasspathEntries should be specified before you invoke {@link #run(Path...)}
  * method.
  * </p>
- * 
+ *
  * @since 3.1
  */
 @ParametersAreNonnullByDefault
@@ -133,17 +136,27 @@ public class AnalysisRunner {
      * Create a jar file which contains all resource files. This is necessary to
      * let {@link Plugin#loadCustomPlugin(File, Project)} load custom plugin to
      * test.
-     * 
+     *
      * @return a {@link File} instance which represent generated jar file
      * @throws IOException
      * @throws URISyntaxException
      */
     private static File createTempJar() throws IOException, URISyntaxException {
         ClassLoader cl = AnalysisRunner.class.getClassLoader();
+
+        URL resource = cl.getResource("findbugs.xml");
+        URI uri = resource.toURI();
+
+        if ("jar".equals(uri.getScheme())) {
+            JarURLConnection connection = (JarURLConnection) resource.openConnection();
+            URL url = connection.getJarFileURL();
+            return new File(url.getFile());
+        }
+
         Path tempJar = File.createTempFile("SpotBugsAnalysisRunner", ".jar").toPath();
         try (OutputStream output = Files.newOutputStream(tempJar, StandardOpenOption.WRITE);
                 JarOutputStream jar = new JarOutputStream(output)) {
-            Path resourceRoot = Paths.get(cl.getResource("findbugs.xml").toURI()).getParent();
+            Path resourceRoot = Paths.get(uri).getParent();
 
             byte[] data = new byte[4 * 1024];
             Files.walkFileTree(resourceRoot, new SimpleFileVisitor<Path>() {
