@@ -10,7 +10,7 @@ import static org.hamcrest.core.Is.is;
 /**
  * Verifies {@link NullnessAnnotation} parser.
  *
- * @author Kosta Zaikin
+ * @author kzaikin
  */
 @RunWith(Parameterized.class)
 public class NullnessAnnotationTest {
@@ -18,6 +18,9 @@ public class NullnessAnnotationTest {
     @Parameterized.Parameters(name = "{0} is {1}")
     public static Object[][] parameters() {
         return new Object[][]{
+                {"android.support.annotation.NonNull", NullnessAnnotation.NONNULL},
+                {"android.support.annotation.Nullable", NullnessAnnotation.CHECK_FOR_NULL},
+
                 // there is no such thing as com.google.common.base.NonNull
                 {"com.google.common.base.Nullable", NullnessAnnotation.CHECK_FOR_NULL},
 
