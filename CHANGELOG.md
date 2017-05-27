@@ -4,6 +4,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ## Unreleased (2017/??/??)
 
+### Added
+
+* Make TypeQualifierResolver recognize android.support.annotation.NonNull and Nullable ([#182](https://github.com/spotbugs/spotbugs/pull/182))
+
 ### Fixed
 
 * Fix wrong version in Eclipse Plugin ([#173](https://github.com/spotbugs/spotbugs/pull/173))
