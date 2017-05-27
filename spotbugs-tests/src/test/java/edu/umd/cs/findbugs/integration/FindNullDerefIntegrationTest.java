@@ -24,7 +24,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
@@ -34,7 +33,6 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
 
     @Test
-    @Ignore
     public void testNullFromReturnOnLambda() {
         performAnalysis("Elvis.class");
 
@@ -53,7 +51,6 @@ public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testLambdaIssue20() throws IOException, InterruptedException {
         performAnalysis("lambdas/Issue20.class");
 
