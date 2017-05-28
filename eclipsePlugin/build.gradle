@@ -75,7 +75,7 @@ def distManifestSpec = manifest {
 }
 
 task updateManifest {
-  dependsOn configurations.includedLibs
+  dependsOn configurations.includedLibs, ':spotbugs:updateManifest'
   doLast {
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
