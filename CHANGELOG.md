@@ -7,6 +7,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 ### Fixed
 
 * Fix wrong version in Eclipse Plugin ([#173](https://github.com/spotbugs/spotbugs/pull/173))
+* When AnalysisRunner has findbugs.xml in jar, don't create temp jar ([#183](https://github.com/spotbugs/spotbugs/pull/183))
 
 ## 3.1.0-RC2 (2017/May/16)
 
