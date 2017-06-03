@@ -1,5 +1,8 @@
 package com.github.spotbugs;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -39,5 +42,11 @@ public class SpotBugsPluginTest extends Assert{
     BuildResult result = GradleRunner.create().withProjectDir(folder.getRoot()).withArguments(Arrays.asList("tasks", "--all")).withPluginClasspath().build();
     assertTrue(result.getOutput().contains("findbugsMain"));
     assertTrue(result.getOutput().contains("findbugsTest"));
+  }
+
+  @Test
+  public void testLoadToolVersion() {
+    SpotBugsPlugin plugin = new SpotBugsPlugin();
+    assertThat(plugin.loadToolVersion(), is(notNullValue()));
   }
 }
