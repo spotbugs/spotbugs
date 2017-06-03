@@ -1,4 +1,9 @@
+plugins {
+  id "com.github.kt3k.coveralls" version "2.7.1"
+}
+
 apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/jacoco.gradle"
 
 dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
@@ -28,4 +33,13 @@ task sourcesJar(type: Jar) {
 
 artifacts {
   archives jar, sourcesJar
+}
+
+jacocoTestReport {
+  additionalSourceDirs = files(project(':spotbugs').sourceSets.main.java.srcDirs)
+  additionalClassDirs = files(project(':spotbugs').sourceSets.main.output.classesDir)
+}
+
+coveralls {
+  sourceDirs = new ArrayList(project(':spotbugs').sourceSets.main.java.srcDirs)
 }
