@@ -1,8 +1,15 @@
+plugins {
+  id "com.github.kt3k.coveralls" version "2.7.1"
+}
+apply plugin: 'java'
+apply from: "$rootDir/gradle/jacoco.gradle"
+
 subprojects {
   apply plugin: 'java'
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"
   apply from: "$rootDir/gradle/test.gradle"
+  apply from: "$rootDir/gradle/jacoco.gradle"
 
   group = 'com.github.spotbugs'
   version = '3.1.0-SNAPSHOT'
@@ -16,7 +23,36 @@ subprojects {
   }
 }
 
+repositories {
+  jcenter()
+}
+
 wrapper {
   gradleVersion = '3.2.1'
   distributionType = Wrapper.DistributionType.ALL
+}
+
+// https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
+task jacocoRootReport(type: JacocoReport) {
+  description = 'Merge all coverage reports before submit to coveralls'
+
+  executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+  sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(subprojects.sourceSets.main.output)
+
+  reports {
+    xml.enabled = true
+  }
+}
+
+coveralls {
+  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+  dependsOn jacocoRootReport
+  doFirst {
+    // set lazily to relect subproject specific config in each build.groovy
+    coveralls.sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+  }
 }

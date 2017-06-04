@@ -31,7 +31,7 @@ script:
   - ./gradlew build smoketest -S
 
 after_success:
-  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew jacocoTestReport coveralls; fi
+  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew coveralls; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
