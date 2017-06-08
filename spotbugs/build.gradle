@@ -54,6 +54,22 @@ tasks.withType(Jar).all {
   //destinationDir = file("$projectDir/lib")
 }
 
+def manifestSpec = manifest {
+  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+  attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
+             'Bundle-Version': project.version.replace('-', '.'),
+             'Bundle-ClassPath': (configurations.compile.files +
+        eclipse.classpath.defaultOutputDir).collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+}
+
+task updateManifest {
+  dependsOn configurations.compile
+  doLast {
+    // write manifests
+    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+  }
+}
+
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   from sourceSets.main.output

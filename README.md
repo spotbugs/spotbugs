@@ -19,4 +19,4 @@ SpotBugs is built using [Gradle](https://gradle.org). The recommended way to obt
 
 To see a list of build options, run `gradle tasks` (or `gradlew tasks`). The `build` task will perform a full build and test.
 
-To build the FindBugs plugin for Eclipse, you'll need to create the file `eclipsePlugin/local.properties`, containing a property `eclipsePlugin.dir` that points to an Eclipse installation's plugin directory (see `.travis.yml` for an example), then run the build.
+To build the FindBugs plugin for Eclipse, you'll need to create the file `eclipsePlugin/local.properties`, containing a property `eclipsePlugin.dir` that points to an Eclipse installation's plugin directory (see `.travis.yml` for an example), then run the build, or at least `./gradlew :eclipsePlugin:updateManifest` to setup the manifest / properties used by PDE.

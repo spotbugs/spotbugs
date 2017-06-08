@@ -5,8 +5,17 @@ build
 .settings
 .classpath
 *.iml
+*.swp
 classesEclipse
 .DS_Store
+deps/
+eclipse/
+
+# generated manifest files
+spotbugs/META-INF/MANIFEST.MF
+eclipsePlugin/META-INF/MANIFEST-DIST.MF
+eclipsePlugin/META-INF/MANIFEST.MF
+eclipsePlugin/build.properties
 
 # TODO : Clean up
 **/local.properties
