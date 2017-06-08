@@ -1,7 +1,12 @@
 package com.github.spotbugs;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.net.URL;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -15,6 +20,8 @@ import org.gradle.api.reporting.SingleFileReport;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.SourceSet;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Callables;
 
 /**
@@ -33,7 +40,6 @@ import com.google.common.util.concurrent.Callables;
  */
 public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
-    public static final String DEFAULT_FINDBUGS_VERSION = "3.1.0-RC2";
     private FindBugsExtension extension;
 
     @Override
@@ -61,8 +67,20 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
     @Override
     protected CodeQualityExtension createExtension() {
         extension = project.getExtensions().create("spotbugs", FindBugsExtension.class, project);
-        extension.setToolVersion(DEFAULT_FINDBUGS_VERSION);
+        extension.setToolVersion(loadToolVersion());
         return extension;
+    }
+
+    @VisibleForTesting
+    String loadToolVersion() {
+        URL url = Resources.getResource("spotbugs-gradle-plugin.properties");
+        try (InputStream input = url.openStream()) {
+            Properties prop = new Properties();
+            prop.load(input);
+            return prop.getProperty("spotbugs-version");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override

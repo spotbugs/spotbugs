@@ -32,9 +32,12 @@ tasks.withType(JavaCompile).all {
 
 task classesJava7(type:JavaCompile) {
   exclude '**/*jdk8.java'
+  exclude '**/lambdas/**'
   sourceCompatibility = '1.7'
   targetCompatibility = '1.7'
   destinationDir = file("$buildDir/classes-jdk7")
+  classpath = sourceSets.main.compileClasspath
+  source = sourceSets.main.java
 }
 
 tasks['build'].dependsOn classesJava7

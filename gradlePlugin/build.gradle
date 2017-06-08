@@ -38,3 +38,10 @@ pluginBundle {
     }
   }
 }
+
+task processVersionFile(type: WriteProperties) {
+  outputFile file('src/main/resources/spotbugs-gradle-plugin.properties')
+
+  property 'spotbugs-version', project(':spotbugs').version
+}
+tasks.processResources.dependsOn processVersionFile
