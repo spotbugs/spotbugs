@@ -11,7 +11,16 @@ dependencies {
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
 
+  compile 'com.google.code.gson:gson:2.8.1'
+  compile 'com.google.inject:guice:4.1.0'
+  compile 'com.google.inject.extensions:guice-assistedinject:4.1.0'
+  compile 'com.google.inject.extensions:guice-servlet:4.1.0'
+  compile 'joda-time:joda-time:2.9.9'
+  compile 'net.jcip:jcip-annotations:1.0'
+  compile 'org.springframework:spring-core:4.3.8.RELEASE'
+
   compile 'junit:junit:4.12'
+  compile 'org.testng:testng:6.11'
 
   compile project(':spotbugs')
   compile project(':spotbugs-annotations')
