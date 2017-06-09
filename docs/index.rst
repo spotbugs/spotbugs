@@ -25,6 +25,9 @@ Contents
 
    introduction
    installing
-   bugDescriptions
+   running
+   gui
    filter
+   analysisprops
+   bugDescriptions
    migration

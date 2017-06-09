@@ -1,0 +1,231 @@
+Running SpotBugs
+================
+
+SpotBugs has two user interfaces: a graphical user interface (GUI) and a command line user interface.
+This chapter describes how to run each of these user interfaces.
+
+Quick Start
+-----------
+
+If you are running SpotBugs on a Windows system, double-click on the file ``%SPOTBUGS_HOME%\lib\spotbugs.jar`` to start the SpotBugs GUI.
+
+On a Unix, Linux, or macOS system, run the ``$SPOTBUGS_HOME/bin/spotbugs`` script, or run the command ``java -jar $SPOTBUGS_HOME/lib/spotbugs.jar`` to run the SpotBugs GUI.
+
+Refer to :doc:`gui` for information on how to use the GUI.
+
+Executing SpotBugs
+------------------
+
+This section describes how to invoke the SpotBugs program.
+There are two ways to invoke SpotBugs: directly, or using a wrapper script.
+
+Direct invocation of SpotBugs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The preferred method of running SpotBugs is to directly execute ``$SPOTBUGS_HOME/lib/spotbugs.jar`` using the -jar command line switch of the JVM (java) executable.
+(Versions of SpotBugs prior to 1.3.5 required a wrapper script to invoke SpotBugs.)
+
+The general syntax of invoking SpotBugs directly is the following:
+
+.. code:: sh
+
+    java [JVM arguments] -jar $SPOTBUGS_HOME/lib/spotbugs.jar options...
+
+Choosing the User Interface
+***************************
+
+The first command line option chooses the SpotBugs user interface to execute. Possible values are:
+
+-gui:
+  runs the graphical user interface (GUI)
+
+-textui:
+  runs the command line user interface
+
+-version:
+  displays the SpotBugs version number
+
+-help:
+  displays help information for the SpotBugs command line user interface
+
+-gui1:
+  executes the original (obsolete) SpotBugs graphical user interface
+
+Java Virtual Machine (JVM) arguments
+************************************
+
+Several Java Virtual Machine arguments are useful when invoking SpotBugs.
+
+-XmxNNm:
+  Set the maximum Java heap size to NN megabytes.
+  SpotBugs generally requires a large amount of memory.
+  For a very large project, using 1500 megabytes is not unusual.
+
+-Dname=value:
+  Set a Java system property.
+  For example, you might use the argument ``-Duser.language=ja`` to display GUI messages in Japanese.
+
+Invocation of SpotBugs using a wrapper script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Another way to run SpotBugs is to use a wrapper script.
+
+On Unix-like systems, use the following command to invoke the wrapper script:
+
+.. code:: sh
+
+    $ $SPOTBUGS_HOME/bin/spotbugs options...
+
+On Windows systems, the command to invoke the wrapper script is
+
+.. code:: sh
+
+    C:\My Directory>%SPOTBUGS_HOME%\bin\spotbugs.bat options...
+
+On both Unix-like and Windows systems, you can simply add the ``$SPOTBUGS_HOME/bin`` directory to your ``PATH`` environment variable and then invoke SpotBugs using the ``spotbugs`` command.
+
+Wrapper script command line options
+***********************************
+
+The SpotBugs wrapper scripts support the following command-line options.
+Note that these command line options are not handled by the SpotBugs program per se; rather, they are handled by the wrapper script.
+
+-jvmArgs *args*:
+  Specifies arguments to pass to the JVM. For example, you might want to set a JVM property:
+
+  .. code:: sh
+
+      $ spotbugs -textui -jvmArgs "-Duser.language=ja" myApp.jar
+
+-javahome *directory*:
+  Specifies the directory containing the JRE (Java Runtime Environment) to use to execute FindBugs.
+
+-maxHeap *size*:
+  Specifies the maximum Java heap size in megabytes. The default is 256.
+  More memory may be required to analyze very large programs or libraries.
+
+-debug:
+  Prints a trace of detectors run and classes analyzed to standard output.
+  Useful for troubleshooting unexpected analysis failures.
+
+-property *name=value*:
+  This option sets a system property.
+  SpotBugs uses system properties to configure analysis options.
+  See :doc:`analysisprops`.
+  You can use this option multiple times in order to set multiple properties.
+  Note: In most versions of Windows, the name=value string must be in quotes.
+
+Command-line Options
+--------------------
+
+This section describes the command line options supported by SpotBugs.
+These command line options may be used when invoking SpotBugs directly, or when using a wrapper script.
+
+Common command-line options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These options may be used with both the GUI and command-line interfaces.
+
+-effort:min:
+  This option disables analyses that increase precision but also increase memory consumption.
+  You may want to try this option if you find that SpotBugs runs out of memory, or takes an unusually long time to complete its analysis.
+
+-effort:max:
+  Enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
+
+-project *project*:
+  Specify a project to be analyzed. The project file you specify should be one that was created using the GUI interface.
+  It will typically end in the extension .fb or .fbp.
+
+GUI Options
+^^^^^^^^^^^
+
+These options are only accepted by the Graphical User Interface.
+
+-look:plastic|gtk|native:
+  Set Swing look and feel.
+
+Text UI Options
+^^^^^^^^^^^^^^^
+
+These options are only accepted by the Text User Interface.
+
+-sortByClass:
+  Sort reported bug instances by class name.
+
+-include *filterFile.xml*:
+  Only report bug instances that match the filter specified by filterFile.xml.
+  See :doc:`filter`.
+
+-exclude *filterFile.xml*:
+  Report all bug instances except those matching the filter specified by filterFile.xml.
+  See :doc:`filter`.
+
+-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:
+  Restrict analysis to find bugs to given comma-separated list of classes and packages.
+  Unlike filtering, this option avoids running analysis on classes and packages that are not explicitly matched: for large projects, this may greatly reduce the amount of time needed to run the analysis.
+  (However, some detectors may produce inaccurate results if they aren't run on the entire application.)
+  Classes should be specified using their full classnames (including package), and packages should be specified in the same way they would in a Java import statement to import all classes in the package (i.e., add .* to the full name of the package).
+  Replace .* with .- to also analyze all subpackages.
+
+-low:
+  Report all bugs.
+
+-medium:
+  Report medium and high priority bugs. This is the default setting.
+
+-high:
+  Report only high priority bugs.
+
+-relaxed:
+  Relaxed reporting mode.
+  For many detectors, this option suppresses the heuristics used to avoid reporting false positives.
+
+-xml:
+  Produce the bug reports as XML.
+  The XML data produced may be viewed in the GUI at a later time.
+  You may also specify this option as ``-xml:withMessages``; when this variant of the option is used, the XML output will contain human-readable messages describing the warnings contained in the file.
+  XML files generated this way are easy to transform into reports.
+
+-html:
+  Generate HTML output. By default, SpotBugs will use the default.xsl XSLT stylesheet to generate the HTML: you can find this file in spotbugs.jar, or in the SpotBugs source or binary distributions.
+  Variants of this option include ``-html:plain.xsl``, ``-html:fancy.xsl`` and ``-html:fancy-hist.xsl``.
+  The ``plain.xsl`` stylesheet does not use Javascript or DOM, and may work better with older web browsers, or for printing.
+  The ``fancy.xsl`` stylesheet uses DOM and Javascript for navigation and CSS for visual presentation.
+  The ``fancy-hist.xsl`` an evolution of ``fancy.xsl`` stylesheet. It makes an extensive use of DOM and Javascript for dynamically filtering the lists of bugs.
+
+  If you want to specify your own XSLT stylesheet to perform the transformation to HTML, specify the option as ``-html:myStylesheet.xsl``, where ``myStylesheet.xsl`` is the filename of the stylesheet you want to use.
+
+-emacs:
+  Produce the bug reports in Emacs format.
+
+-xdocs:
+  Produce the bug reports in xdoc XML format for use with Apache Maven.
+
+-output *filename*:
+  Produce the output in the specified file.
+
+-outputFile *filename*:
+  This argument is deprecated. Use ``-output`` instead.
+
+-nested[:true|false]:
+  This option enables or disables scanning of nested jar and zip files found in the list of files and directories to be analyzed.
+  By default, scanning of nested jar/zip files is enabled. To disable it, add ``-nested:false`` to the command line arguments.
+
+-auxclasspath *classpath*:
+  Set the auxiliary classpath for analysis.
+  This classpath should include all jar files and directories containing classes that are part of the program being analyzed but you do not want to have analyzed for bugs.
+
+-auxclasspathFromInput:
+  Read the auxiliary classpath for analysis from standard input, each line adds new entry to the auxiliary classpath for analysis.
+
+-auxclasspathFromFile *filepath*:
+  Read the auxiliary classpath for analysis from file, each line adds new entry to the auxiliary classpath for analysis.
+
+-analyzeFromFile *filepath*:
+  Read the files to analyze from file, each line adds new entry to the classpath for analysis.
+
+-userPrefs *edu.umd.cs.findbugs.core.prefs*:
+  Set the path of the user preferences file to use, which might override some of the options above.
+  Specifying userPrefs as first argument would mean some later options will override them, as last argument would mean they will override some previous options).
+  This rationale behind this option is to reuse SpotBugs Eclipse project settings for command line execution.

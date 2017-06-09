@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-12 22:06+0000\n"
+"POT-Creation-Date: 2017-06-09 13:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,26 +82,28 @@ msgid "FindBugs Gradle plugin"
 msgstr ""
 
 #: ../../migration.rst:121
-msgid "Please use spotbugs plugin found on https://plugins.gradle.org"
+msgid ""
+"Please use spotbugs plugin found on "
+"https://plugins.gradle.org/plugin/com.github.spotbugs"
 msgstr ""
 
-#: ../../migration.rst:130
+#: ../../migration.rst:133
 msgid "FindBugs Eclipse plugin"
 msgstr ""
 
-#: ../../migration.rst:132
+#: ../../migration.rst:135
 msgid "Please use following update site instead."
 msgstr ""
 
-#: ../../migration.rst:134
+#: ../../migration.rst:137
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)"
 msgstr ""
 
-#: ../../migration.rst:135
+#: ../../migration.rst:138
 msgid "https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)"
 msgstr ""
 
-#: ../../migration.rst:137
+#: ../../migration.rst:140
 msgid "Currently the update site for daily built plugin isn't ready."
 msgstr ""
 
@@ -114,13 +116,9 @@ msgstr ""
 #~ msgid "TBU"
 #~ msgstr ""
 
-#~ msgid ""
-#~ "Please use findbugs plugin without the"
-#~ " dependency on findbugs. You need to"
-#~ " add the dependency on ``spotbugs`` "
-#~ "instead."
+#~ msgid "In near future we release SpotBugs Gradle plugin."
 #~ msgstr ""
 
-#~ msgid "In near future we release SpotBugs Gradle plugin."
+#~ msgid "Please use spotbugs plugin found on https://plugins.gradle.org"
 #~ msgstr ""
 
