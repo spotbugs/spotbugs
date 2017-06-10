@@ -12,13 +12,13 @@ Simply replace ``com.google.code.findbugs:findbugs`` with ``com.github.spotbugs:
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs</artifactId>
-    <version>3.1.0-RC1</version>
+    <version>3.1.0-RC3</version>
   </dependency>
 
 .. code-block:: groovy
 
   // for Gradle
-  compileOnly 'com.github.spotbugs:spotbugs:3.1.0-RC1'
+  compileOnly 'com.github.spotbugs:spotbugs:3.1.0-RC3'
 
 com.google.code.findbugs:jsr305
 -------------------------------
@@ -37,14 +37,14 @@ Please depend on ``spotbugs-annotations`` instead.
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-annotations</artifactId>
-    <version>3.1.0-RC1</version>
+    <version>3.1.0-RC3</version>
     <optional>true</optional>
   </dependency>
 
 .. code-block:: groovy
 
   // for Gradle
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC1'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC3'
 
 com.google.code.findbugs:annotations
 ------------------------------------
@@ -63,7 +63,7 @@ Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotation
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-annotations</artifactId>
-    <version>3.1.0-RC1</version>
+    <version>3.1.0-RC3</version>
     <optional>true</optional>
   </dependency>
 
@@ -71,7 +71,7 @@ Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotation
 
   // for Gradle
   compileOnly 'net.jcip:jcip-annotations:1.0'
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC1'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC3'
 
 FindBugs Ant task
 -----------------
@@ -110,7 +110,7 @@ Please add `com.github.spotbugs:spotbugs` to dependency of `org.codehaus.mojo.fi
       <dependency>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs</artifactId>
-        <version>3.1.0-RC1</version>
+        <version>3.1.0-RC3</version>
       </dependency>
     </dependencies>
   </plugin>
@@ -123,7 +123,10 @@ Please use spotbugs plugin found on https://plugins.gradle.org
 .. code-block:: groovy
 
   plugins {
-    id  'com.github.spotbugs' version "1.0"
+    id  'com.github.spotbugs' version '1.1'
+  }
+  spotbugs {
+    toolVersion = '3.1.0-RC3'
   }
 
 FindBugs Eclipse plugin
