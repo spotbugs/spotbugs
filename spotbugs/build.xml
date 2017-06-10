@@ -7,7 +7,7 @@
 <project name="findbugs" default="build">
 
     <!--
-            The local.properties properties file contains the location of eclipsePlugin.dir
+            The local.properties properties file contains the location of eclipseRoot.dir
 
             This value is likely to be different for each checkout of the plugin,
             so the local.properties file is not managed by cvs

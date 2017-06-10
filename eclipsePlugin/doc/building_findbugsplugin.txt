@@ -51,7 +51,7 @@ Setup target platform/findbugs libraries
 cd /home/%username%/git/findbugs/findbugs
 ant
 cd ../eclipsePlugin
-echo eclipsePlugin.dir=/home/user/bin/Eclipse36 > local.properties
+echo eclipseRoot.dir=/home/user/bin/Eclipse36 > local.properties
 ant
 10) In Eclipse, refresh all projects (hit F5 in Explorer view) => now all errors should disappear.
 

@@ -34,6 +34,16 @@ def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
 def localProps = new Properties()
 localProps.load(new FileInputStream("$projectDir/local.properties"))
 
+def eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
+// Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
+def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
+def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
+if (!eclipseExecutable.exists()) {
+   // Fall back to non-macOS directory layout.
+   eclipseExecutable = new File(eclipseRootDir, "eclipse")
+   eclipsePluginsDir = new File(eclipseRootDir, "plugins")
+}
+
 // TODO : convert these to external dependencies
 def requiredLibs = fileTree(dir:'lib', include:[
   'jsr305.jar',
@@ -46,7 +56,7 @@ def requiredLibs = fileTree(dir:'lib', include:[
 dependencies {
   includedLibs requiredLibs
 
-  compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
+  compile fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
     exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar', 'com.github.spotbugs.**/*.jar'])
 
   includedLibs project(':spotbugs-annotations')
@@ -198,7 +208,7 @@ task siteDailyXml(type:Copy) {
 task generateP2Metadata(type:Exec) {
   inputs.file 'local.properties'
   dependsOn pluginJar, featureJar, siteXml
-  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+  commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
@@ -208,7 +218,7 @@ task generateP2Metadata(type:Exec) {
 task generateCandidateP2Metadata(type:Exec) {
   inputs.file 'local.properties'
   dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml
-  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+  commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
@@ -218,7 +228,7 @@ task generateCandidateP2Metadata(type:Exec) {
 task generateP2MetadataDaily(type:Exec) {
   inputs.file 'local.properties'
   dependsOn pluginDailyJar, featureDailyJar, siteDailyXml
-  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+  commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
