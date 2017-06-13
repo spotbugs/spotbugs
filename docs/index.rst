@@ -28,6 +28,7 @@ Contents
    running
    gui
    eclipse
+   ant
    filter
    analysisprops
    faq
