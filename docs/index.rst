@@ -27,7 +27,9 @@ Contents
    installing
    running
    gui
+   eclipse
    filter
    analysisprops
+   faq
    bugDescriptions
    migration
