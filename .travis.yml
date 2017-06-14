@@ -23,7 +23,7 @@ before_install:
 install:
   - if [[ ! -e deps/eclipse.tar.gz ]]; then wget http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz -O deps/eclipse.tar.gz; fi
   - tar xzvf deps/eclipse.tar.gz eclipse
-  - echo eclipsePlugin.dir=$(pwd)/eclipse/plugins > eclipsePlugin/local.properties
+  - echo eclipseRoot.dir=$(pwd)/eclipse > eclipsePlugin/local.properties
 
 script:
   # Manually switch to JDK9 if needed
@@ -31,7 +31,7 @@ script:
   - ./gradlew build smoketest -S
 
 after_success:
-  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew jacocoTestReport coveralls; fi
+  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew coveralls; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock

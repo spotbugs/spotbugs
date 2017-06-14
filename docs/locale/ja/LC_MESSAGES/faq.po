@@ -1,0 +1,200 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-13 14:39+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: ../../faq.rst:2
+msgid "SpotBugs FAQ"
+msgstr ""
+
+#: ../../faq.rst:4
+msgid ""
+"This document contains answers to frequently asked questions about "
+"SpotBugs. If you just want general information about SpotBugs, have a "
+"look at the manual."
+msgstr ""
+
+#: ../../faq.rst:8
+msgid ""
+"Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run "
+"SpotBugs"
+msgstr ""
+
+#: ../../faq.rst:10
+msgid ""
+"SpotBugs requires JRE8 or later to run. If you use an earlier version, "
+"you will see an exception error message similar to the following:"
+msgstr ""
+
+#: ../../faq.rst:13
+msgid ""
+"Exception in thread \"main\" java.lang.UnsupportedClassVersionError: "
+"edu/umd/cs/findbugs/gui/FindBugsFrame (Unsupported major.minor version "
+"52.0)"
+msgstr ""
+
+#: ../../faq.rst:16
+msgid "The solution is to upgrade to JRE8 or later."
+msgstr ""
+
+#: ../../faq.rst:19
+msgid "Q2: SpotBugs is running out of memory, or is taking a long time to finish"
+msgstr ""
+
+#: ../../faq.rst:21
+msgid ""
+"In general, SpotBugs requires lots of memory and a relatively fast CPU. "
+"For large applications, 1024M or more of heap space may be required."
+msgstr ""
+
+#: ../../faq.rst:24
+msgid ""
+"By default, SpotBugs allocates 768M of heap space. You can increase this "
+"using the ``-maxHeap n`` option, where n is the number of megabytes of "
+"heap space to allocate."
+msgstr ""
+
+#: ../../faq.rst:28
+msgid "Q3: What is the \"auxiliary classpath\"? Why should I specify it?"
+msgstr ""
+
+#: ../../faq.rst:30
+msgid ""
+"Many important facts about a Java class require information about the "
+"classes that it references.  For example:"
+msgstr ""
+
+#: ../../faq.rst:32
+msgid "What other classes and interfaces the class inherits from"
+msgstr ""
+
+#: ../../faq.rst:33
+msgid ""
+"What exceptions can be thrown by methods in external classes and "
+"interfaces"
+msgstr ""
+
+#: ../../faq.rst:35
+msgid ""
+"The \"auxiliary classpath\" is a list of Jar files, directories, and "
+"class files containing classes that are used by the code you want "
+"SpotBugs to analyze, but should not themselves be analyzed by SpotBugs."
+msgstr ""
+
+#: ../../faq.rst:37
+msgid ""
+"If SpotBugs doesn't have complete information about referenced classes, "
+"it will not be able to produce results that are as accurate as possible. "
+"For example, having a complete repository of referenced classes allows "
+"SpotBugs to prune control flow information so it can concentrate on paths"
+" through methods that are most likely to be feasible at runtime. Also, "
+"some bug detectors (such as the suspicious reference comparison detector)"
+" rely on being able to perform type inference, which requires complete "
+"type hierarchy information."
+msgstr ""
+
+#: ../../faq.rst:41
+msgid ""
+"For these reasons, we strongly recommend that you completely specify the "
+"auxiliary classpath when you run SpotBugs. You can do this by using the "
+"``-auxclasspath`` command line option, or the \"Classpath entries\" list "
+"in the GUI project editor dialog."
+msgstr ""
+
+#: ../../faq.rst:44
+msgid ""
+"If SpotBugs cannot find a class referenced by your application, it will "
+"print out a message when the analysis completes, specifying the classes "
+"that were missing. You should modify the auxiliary classpath to specify "
+"how to find the missing classes, and then run SpotBugs again."
+msgstr ""
+
+#: ../../faq.rst:49
+msgid "Q4: The Eclipse plugin doesn't load"
+msgstr ""
+
+#: ../../faq.rst:51
+msgid ""
+"The symptom of this problem is that Eclipse fails to load the SpotBugs UI"
+" plugin with the message:"
+msgstr ""
+
+#: ../../faq.rst:53
+msgid ""
+"Plug-in \"edu.umd.cs.findbugs.plugin.eclipse\" was disabled due to "
+"missing or disabled prerequisite plug-in \"org.eclipse.ui.ide\""
+msgstr ""
+
+#: ../../faq.rst:55
+msgid ""
+"The reason for this problem is that the Eclipse plugin distributed with "
+"SpotBugs does not work with older 3.x versions of Eclipse. Please use "
+"Eclipse Neon (version 4.6) or newer."
+msgstr ""
+
+#: ../../faq.rst:59
+msgid "Q5: I'm getting a lot of false \"OS\" and \"ODR\" warnings"
+msgstr ""
+
+#: ../../faq.rst:61
+msgid ""
+"By default, SpotBugs assumes that any method invocation can throw an "
+"unchecked runtime exception. As a result, it may assume that an unchecked"
+" exception thrown out of the method could bypass a call to a ``close()`` "
+"method for a stream or database resource."
+msgstr ""
+
+#: ../../faq.rst:64
+msgid ""
+"You can use the ``-workHard`` command line argument or the "
+"``findbugs.workHard`` boolean analysis property to make SpotBugs work "
+"harder to prune unlikely exception edges. This generally reduces the "
+"number of false warnings, at the expense of slowing down the analysis."
+msgstr ""
+
+#: ../../faq.rst:68
+msgid "Q6: The Eclipse plugin loads, but doesn't work correctly"
+msgstr ""
+
+#: ../../faq.rst:70
+msgid ""
+"Make sure the Java code you trying to analyze is built properly and has "
+"no classpath or compile errors."
+msgstr ""
+
+#: ../../faq.rst:71
+msgid ""
+"Make sure the project and workspace SpotBugs settings are valid - in "
+"doubt, revert them to defaults."
+msgstr ""
+
+#: ../../faq.rst:72
+msgid "Make sure the Error log view does not show errors."
+msgstr ""
+
+#: ../../faq.rst:75
+msgid "Q7: Where is the Maven plugin for SpotBugs?"
+msgstr ""
+
+#: ../../faq.rst:77
+msgid ""
+"The Maven Plugin for SpotBugs may be found `here "
+"<https://github.com/gleclaire/findbugs-maven-plugin/>`_. Please note that"
+" the Maven plugin is not maintained by the SpotBugs developers, so we "
+"can't answer questions about it."
+msgstr ""
+

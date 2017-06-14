@@ -118,7 +118,7 @@ Please add `com.github.spotbugs:spotbugs` to dependency of `org.codehaus.mojo.fi
 FindBugs Gradle plugin
 ----------------------
 
-Please use spotbugs plugin found on https://plugins.gradle.org
+Please use spotbugs plugin found on https://plugins.gradle.org/plugin/com.github.spotbugs
 
 .. code-block:: groovy
 

@@ -267,3 +267,6 @@ texinfo_documents = [
 # http://www.sphinx-doc.org/en/latest/intl.html
 locale_dirs = ['locale/']
 gettext_compact = False
+
+def setup(app):
+  app.add_stylesheet('custom.css')

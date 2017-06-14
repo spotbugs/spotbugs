@@ -1319,7 +1319,13 @@
              class="de.tobject.findbugs.properties.FindbugsPropertyPage"
              id="FindBugsPreferencePage"
              name="SpotBugs">
+          <keywordReference id="com.github.spotbugs.plugin.eclipse.keywords"/>
        </page>
+    </extension>
+    <extension
+          point="org.eclipse.ui.keywords">
+       <keyword id="com.github.spotbugs.plugin.eclipse.keywords"
+             label="bugs findbugs"/>
     </extension>
 
    <extension
