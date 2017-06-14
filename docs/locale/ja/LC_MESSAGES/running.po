@@ -1,0 +1,619 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-09 13:58+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: ../../running.rst:2
+msgid "Running SpotBugs"
+msgstr ""
+
+#: ../../running.rst:4
+msgid ""
+"SpotBugs has two user interfaces: a graphical user interface (GUI) and a "
+"command line user interface. This chapter describes how to run each of "
+"these user interfaces."
+msgstr ""
+
+#: ../../running.rst:8
+msgid "Quick Start"
+msgstr ""
+
+#: ../../running.rst:10
+msgid ""
+"If you are running SpotBugs on a Windows system, double-click on the file"
+" ``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` to start the SpotBugs GUI."
+msgstr ""
+
+#: ../../running.rst:12
+msgid ""
+"On a Unix, Linux, or macOS system, run the "
+"``$SPOTBUGS_HOME/bin/spotbugs`` script, or run the command ``java -jar "
+"$SPOTBUGS_HOME/lib/spotbugs.jar`` to run the SpotBugs GUI."
+msgstr ""
+
+#: ../../running.rst:14
+msgid "Refer to :doc:`gui` for information on how to use the GUI."
+msgstr ""
+
+#: ../../running.rst:17
+msgid "Executing SpotBugs"
+msgstr ""
+
+#: ../../running.rst:19
+msgid ""
+"This section describes how to invoke the SpotBugs program. There are two "
+"ways to invoke SpotBugs: directly, or using a wrapper script."
+msgstr ""
+
+#: ../../running.rst:23
+msgid "Direct invocation of SpotBugs"
+msgstr ""
+
+#: ../../running.rst:25
+msgid ""
+"The preferred method of running SpotBugs is to directly execute "
+"``$SPOTBUGS_HOME/lib/spotbugs.jar`` using the -jar command line switch of"
+" the JVM (java) executable. (Versions of SpotBugs prior to 1.3.5 required"
+" a wrapper script to invoke SpotBugs.)"
+msgstr ""
+
+#: ../../running.rst:28
+msgid "The general syntax of invoking SpotBugs directly is the following:"
+msgstr ""
+
+#: ../../running.rst:35
+msgid "Choosing the User Interface"
+msgstr ""
+
+#: ../../running.rst:37
+msgid ""
+"The first command line option chooses the SpotBugs user interface to "
+"execute. Possible values are:"
+msgstr ""
+
+#: ../../running.rst:40
+msgid "-gui:"
+msgstr ""
+
+#: ../../running.rst:40
+msgid "runs the graphical user interface (GUI)"
+msgstr ""
+
+#: ../../running.rst:43
+msgid "-textui:"
+msgstr ""
+
+#: ../../running.rst:43
+msgid "runs the command line user interface"
+msgstr ""
+
+#: ../../running.rst:46
+msgid "-version:"
+msgstr ""
+
+#: ../../running.rst:46
+msgid "displays the SpotBugs version number"
+msgstr ""
+
+#: ../../running.rst:49
+msgid "-help:"
+msgstr ""
+
+#: ../../running.rst:49
+msgid "displays help information for the SpotBugs command line user interface"
+msgstr ""
+
+#: ../../running.rst:52
+msgid "-gui1:"
+msgstr ""
+
+#: ../../running.rst:52
+msgid "executes the original (obsolete) SpotBugs graphical user interface"
+msgstr ""
+
+#: ../../running.rst:55
+msgid "Java Virtual Machine (JVM) arguments"
+msgstr ""
+
+#: ../../running.rst:57
+msgid "Several Java Virtual Machine arguments are useful when invoking SpotBugs."
+msgstr ""
+
+#: ../../running.rst:62
+msgid "-XmxNNm:"
+msgstr ""
+
+#: ../../running.rst:60
+msgid ""
+"Set the maximum Java heap size to NN megabytes. SpotBugs generally "
+"requires a large amount of memory. For a very large project, using 1500 "
+"megabytes is not unusual."
+msgstr ""
+
+#: ../../running.rst:66
+msgid "-Dname=value:"
+msgstr ""
+
+#: ../../running.rst:65
+msgid ""
+"Set a Java system property. For example, you might use the argument "
+"``-Duser.language=ja`` to display GUI messages in Japanese."
+msgstr ""
+
+#: ../../running.rst:69
+msgid "Invocation of SpotBugs using a wrapper script"
+msgstr ""
+
+#: ../../running.rst:71
+msgid "Another way to run SpotBugs is to use a wrapper script."
+msgstr ""
+
+#: ../../running.rst:73
+msgid ""
+"On Unix-like systems, use the following command to invoke the wrapper "
+"script:"
+msgstr ""
+
+#: ../../running.rst:79
+msgid "On Windows systems, the command to invoke the wrapper script is"
+msgstr ""
+
+#: ../../running.rst:85
+msgid ""
+"On both Unix-like and Windows systems, you can simply add the "
+"``$SPOTBUGS_HOME/bin`` directory to your ``PATH`` environment variable "
+"and then invoke SpotBugs using the ``spotbugs`` command."
+msgstr ""
+
+#: ../../running.rst:88
+msgid "Wrapper script command line options"
+msgstr ""
+
+#: ../../running.rst:90
+msgid ""
+"The SpotBugs wrapper scripts support the following command-line options. "
+"Note that these command line options are not handled by the SpotBugs "
+"program per se; rather, they are handled by the wrapper script."
+msgstr ""
+
+#: ../../running.rst:98
+msgid "-jvmArgs *args*:"
+msgstr ""
+
+#: ../../running.rst:94
+msgid ""
+"Specifies arguments to pass to the JVM. For example, you might want to "
+"set a JVM property:"
+msgstr ""
+
+#: ../../running.rst:101
+msgid "-javahome *directory*:"
+msgstr ""
+
+#: ../../running.rst:101
+msgid ""
+"Specifies the directory containing the JRE (Java Runtime Environment) to "
+"use to execute FindBugs."
+msgstr ""
+
+#: ../../running.rst:105
+msgid "-maxHeap *size*:"
+msgstr ""
+
+#: ../../running.rst:104
+msgid ""
+"Specifies the maximum Java heap size in megabytes. The default is 256. "
+"More memory may be required to analyze very large programs or libraries."
+msgstr ""
+
+#: ../../running.rst:109
+msgid "-debug:"
+msgstr ""
+
+#: ../../running.rst:108
+msgid ""
+"Prints a trace of detectors run and classes analyzed to standard output. "
+"Useful for troubleshooting unexpected analysis failures."
+msgstr ""
+
+#: ../../running.rst:116
+msgid "-property *name=value*:"
+msgstr ""
+
+#: ../../running.rst:112
+msgid ""
+"This option sets a system property. SpotBugs uses system properties to "
+"configure analysis options. See :doc:`analysisprops`. You can use this "
+"option multiple times in order to set multiple properties. Note: In most "
+"versions of Windows, the name=value string must be in quotes."
+msgstr ""
+
+#: ../../running.rst:119
+msgid "Command-line Options"
+msgstr ""
+
+#: ../../running.rst:121
+msgid ""
+"This section describes the command line options supported by SpotBugs. "
+"These command line options may be used when invoking SpotBugs directly, "
+"or when using a wrapper script."
+msgstr ""
+
+#: ../../running.rst:125
+msgid "Common command-line options"
+msgstr ""
+
+#: ../../running.rst:127
+msgid "These options may be used with both the GUI and command-line interfaces."
+msgstr ""
+
+#: ../../running.rst:131
+msgid "-effort:min:"
+msgstr ""
+
+#: ../../running.rst:130
+msgid ""
+"This option disables analyses that increase precision but also increase "
+"memory consumption. You may want to try this option if you find that "
+"SpotBugs runs out of memory, or takes an unusually long time to complete "
+"its analysis."
+msgstr ""
+
+#: ../../running.rst:134
+msgid "-effort:max:"
+msgstr ""
+
+#: ../../running.rst:134
+msgid ""
+"Enable analyses which increase precision and find more bugs, but which "
+"may require more memory and take more time to complete."
+msgstr ""
+
+#: ../../running.rst:138
+msgid "-project *project*:"
+msgstr ""
+
+#: ../../running.rst:137
+msgid ""
+"Specify a project to be analyzed. The project file you specify should be "
+"one that was created using the GUI interface. It will typically end in "
+"the extension .fb or .fbp."
+msgstr ""
+
+#: ../../running.rst:141
+msgid "GUI Options"
+msgstr ""
+
+#: ../../running.rst:143
+msgid "These options are only accepted by the Graphical User Interface."
+msgstr ""
+
+#: ../../running.rst:146
+msgid "-look:plastic|gtk|native:"
+msgstr ""
+
+#: ../../running.rst:146
+msgid "Set Swing look and feel."
+msgstr ""
+
+#: ../../running.rst:149
+msgid "Text UI Options"
+msgstr ""
+
+#: ../../running.rst:151
+msgid "These options are only accepted by the Text User Interface."
+msgstr ""
+
+#: ../../running.rst:154
+msgid "-sortByClass:"
+msgstr ""
+
+#: ../../running.rst:154
+msgid "Sort reported bug instances by class name."
+msgstr ""
+
+#: ../../running.rst:158
+msgid "-include *filterFile.xml*:"
+msgstr ""
+
+#: ../../running.rst:157
+msgid ""
+"Only report bug instances that match the filter specified by "
+"filterFile.xml. See :doc:`filter`."
+msgstr ""
+
+#: ../../running.rst:162
+msgid "-exclude *filterFile.xml*:"
+msgstr ""
+
+#: ../../running.rst:161
+msgid ""
+"Report all bug instances except those matching the filter specified by "
+"filterFile.xml. See :doc:`filter`."
+msgstr ""
+
+#: ../../running.rst:169
+msgid "-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:"
+msgstr ""
+
+#: ../../running.rst:165
+msgid ""
+"Restrict analysis to find bugs to given comma-separated list of classes "
+"and packages. Unlike filtering, this option avoids running analysis on "
+"classes and packages that are not explicitly matched: for large projects,"
+" this may greatly reduce the amount of time needed to run the analysis. "
+"(However, some detectors may produce inaccurate results if they aren't "
+"run on the entire application.) Classes should be specified using their "
+"full classnames (including package), and packages should be specified in "
+"the same way they would in a Java import statement to import all classes "
+"in the package (i.e., add .* to the full name of the package). Replace .*"
+" with .- to also analyze all subpackages."
+msgstr ""
+
+#: ../../running.rst:172
+msgid "-low:"
+msgstr ""
+
+#: ../../running.rst:172
+msgid "Report all bugs."
+msgstr ""
+
+#: ../../running.rst:175
+msgid "-medium:"
+msgstr ""
+
+#: ../../running.rst:175
+msgid "Report medium and high priority bugs. This is the default setting."
+msgstr ""
+
+#: ../../running.rst:178
+msgid "-high:"
+msgstr ""
+
+#: ../../running.rst:178
+msgid "Report only high priority bugs."
+msgstr ""
+
+#: ../../running.rst:182
+msgid "-relaxed:"
+msgstr ""
+
+#: ../../running.rst:181
+msgid ""
+"Relaxed reporting mode. For many detectors, this option suppresses the "
+"heuristics used to avoid reporting false positives."
+msgstr ""
+
+#: ../../running.rst:188
+msgid "-xml:"
+msgstr ""
+
+#: ../../running.rst:185
+msgid ""
+"Produce the bug reports as XML. The XML data produced may be viewed in "
+"the GUI at a later time. You may also specify this option as "
+"``-xml:withMessages``; when this variant of the option is used, the XML "
+"output will contain human-readable messages describing the warnings "
+"contained in the file. XML files generated this way are easy to transform"
+" into reports."
+msgstr ""
+
+#: ../../running.rst:197
+msgid "-html:"
+msgstr ""
+
+#: ../../running.rst:191
+msgid ""
+"Generate HTML output. By default, SpotBugs will use the default.xsl XSLT "
+"stylesheet to generate the HTML: you can find this file in spotbugs.jar, "
+"or in the SpotBugs source or binary distributions. Variants of this "
+"option include ``-html:plain.xsl``, ``-html:fancy.xsl`` and ``-html"
+":fancy-hist.xsl``. The ``plain.xsl`` stylesheet does not use Javascript "
+"or DOM, and may work better with older web browsers, or for printing. The"
+" ``fancy.xsl`` stylesheet uses DOM and Javascript for navigation and CSS "
+"for visual presentation. The ``fancy-hist.xsl`` an evolution of "
+"``fancy.xsl`` stylesheet. It makes an extensive use of DOM and Javascript"
+" for dynamically filtering the lists of bugs."
+msgstr ""
+
+#: ../../running.rst:197
+msgid ""
+"If you want to specify your own XSLT stylesheet to perform the "
+"transformation to HTML, specify the option as ``-html:myStylesheet.xsl``,"
+" where ``myStylesheet.xsl`` is the filename of the stylesheet you want to"
+" use."
+msgstr ""
+
+#: ../../running.rst:200
+msgid "-emacs:"
+msgstr ""
+
+#: ../../running.rst:200
+msgid "Produce the bug reports in Emacs format."
+msgstr ""
+
+#: ../../running.rst:203
+msgid "-xdocs:"
+msgstr ""
+
+#: ../../running.rst:203
+msgid "Produce the bug reports in xdoc XML format for use with Apache Maven."
+msgstr ""
+
+#: ../../running.rst:206
+msgid "-output *filename*:"
+msgstr ""
+
+#: ../../running.rst:206
+msgid "Produce the output in the specified file."
+msgstr ""
+
+#: ../../running.rst:209
+msgid "-outputFile *filename*:"
+msgstr ""
+
+#: ../../running.rst:209
+msgid "This argument is deprecated. Use ``-output`` instead."
+msgstr ""
+
+#: ../../running.rst:213
+msgid "-nested[:true|false]:"
+msgstr ""
+
+#: ../../running.rst:212
+msgid ""
+"This option enables or disables scanning of nested jar and zip files "
+"found in the list of files and directories to be analyzed. By default, "
+"scanning of nested jar/zip files is enabled. To disable it, add "
+"``-nested:false`` to the command line arguments."
+msgstr ""
+
+#: ../../running.rst:217
+msgid "-auxclasspath *classpath*:"
+msgstr ""
+
+#: ../../running.rst:216
+msgid ""
+"Set the auxiliary classpath for analysis. This classpath should include "
+"all jar files and directories containing classes that are part of the "
+"program being analyzed but you do not want to have analyzed for bugs."
+msgstr ""
+
+#: ../../running.rst:220
+msgid "-auxclasspathFromInput:"
+msgstr ""
+
+#: ../../running.rst:220
+msgid ""
+"Read the auxiliary classpath for analysis from standard input, each line "
+"adds new entry to the auxiliary classpath for analysis."
+msgstr ""
+
+#: ../../running.rst:223
+msgid "-auxclasspathFromFile *filepath*:"
+msgstr ""
+
+#: ../../running.rst:223
+msgid ""
+"Read the auxiliary classpath for analysis from file, each line adds new "
+"entry to the auxiliary classpath for analysis."
+msgstr ""
+
+#: ../../running.rst:226
+msgid "-analyzeFromFile *filepath*:"
+msgstr ""
+
+#: ../../running.rst:226
+msgid ""
+"Read the files to analyze from file, each line adds new entry to the "
+"classpath for analysis."
+msgstr ""
+
+#: ../../running.rst:230
+msgid "-userPrefs *edu.umd.cs.findbugs.core.prefs*:"
+msgstr ""
+
+#: ../../running.rst:229
+msgid ""
+"Set the path of the user preferences file to use, which might override "
+"some of the options above. Specifying userPrefs as first argument would "
+"mean some later options will override them, as last argument would mean "
+"they will override some previous options). This rationale behind this "
+"option is to reuse SpotBugs Eclipse project settings for command line "
+"execution."
+msgstr ""
+
+#~ msgid "-Dname=value"
+#~ msgstr ""
+
+#~ msgid "-jvmArgs args"
+#~ msgstr ""
+
+#~ msgid "-javahome directory"
+#~ msgstr ""
+
+#~ msgid "-maxHeap size"
+#~ msgstr ""
+
+#~ msgid "-property name=value"
+#~ msgstr ""
+
+#~ msgid ""
+#~ msgstr ""
+
+#~ msgid "-low Report all bugs."
+#~ msgstr ""
+
+#~ msgid "-high Report only high priority bugs."
+#~ msgstr ""
+
+#~ msgid "-emacs Produce the bug reports in Emacs format."
+#~ msgstr ""
+
+#~ msgid "-output filename Produce the output in the specified file."
+#~ msgstr ""
+
+#~ msgid "-outputFile filename This argument is deprecated. Use -output instead."
+#~ msgstr ""
+
+#~ msgid "-include filterFile.xml:"
+#~ msgstr ""
+
+#~ msgid "-exclude filterFile.xml:"
+#~ msgstr ""
+
+#~ msgid "-onlyAnalyze com.foobar.MyClass,com.foobar.mypkg.*:"
+#~ msgstr ""
+
+#~ msgid "-output filename:"
+#~ msgstr ""
+
+#~ msgid "-outputFile filename:"
+#~ msgstr ""
+
+#~ msgid "-auxclasspath classpath:"
+#~ msgstr ""
+
+#~ msgid "-jvmArgs args:"
+#~ msgstr ""
+
+#~ msgid "-javahome directory:"
+#~ msgstr ""
+
+#~ msgid "-maxHeap size:"
+#~ msgstr ""
+
+#~ msgid "-property name=value:"
+#~ msgstr ""
+
+#~ msgid "-project project:"
+#~ msgstr ""
+
+#~ msgid "-sortByClass:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This option sets a system property. "
+#~ "SpotBugs uses system properties to "
+#~ "configure analysis options. See "
+#~ ":doc:`analysisProperties`. You can use this"
+#~ " option multiple times in order to"
+#~ " set multiple properties. Note: In "
+#~ "most versions of Windows, the name=value"
+#~ " string must be in quotes."
+#~ msgstr ""
+

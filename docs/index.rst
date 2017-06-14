@@ -25,6 +25,12 @@ Contents
 
    introduction
    installing
-   bugDescriptions
+   running
+   gui
+   eclipse
+   ant
    filter
+   analysisprops
+   faq
+   bugDescriptions
    migration

@@ -2,6 +2,13 @@
 
 When you release fixed version of SpotBugs, please follow these procedures.
 
+## Update version info
+
+* `version` in `build.gradle` and `gradlePlugin/build.gradle`
+* version number in `CHANGELOG.md` and `gradlePlugin/CHANGELOG.md`
+* `version` and `full_version` in `docs/conf.py`
+* version numbers in `docs/migration.rst`
+
 ## Release to Maven Central
 
 Add necessary properties to `~/.gradle/gradle.properties` and make sure that you have proper `eclipsePlugin/local.properties` file to release Eclipse plugin at the same time. Then run `./gradlew build smoketest uploadArchives`.
