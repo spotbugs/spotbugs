@@ -5,3 +5,8 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:2.7.22'
 }
+
+jacocoTestReport {
+  additionalSourceDirs = files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
+  additionalClassDirs = files(project(':eclipsePlugin').sourceSets.main.output.classesDir)
+}
