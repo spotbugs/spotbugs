@@ -41,3 +41,7 @@ task classesJava7(type:JavaCompile) {
 }
 
 tasks['build'].dependsOn classesJava7
+
+sonarqube {
+  skipProject true
+}
