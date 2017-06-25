@@ -1,0 +1,9 @@
+apply plugin: 'org.sonarqube'
+sonarqube {
+    properties {
+        property 'sonar.host.url', System.env.SONAR_HOST_URL
+        property 'sonar.projectKey', 'edu.umd.cs.findbugs'
+        property 'sonar.projectName', 'SpotBugs'
+        property 'sonar.projectVersion', rootProject.version
+    }
+}

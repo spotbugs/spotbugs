@@ -10,3 +10,11 @@ jacocoTestReport {
     html.enabled = true
   }
 }
+
+test {
+  jacoco {
+    append = true
+    destinationFile = project(':spotbugs').file('build/jacoco/test.exec')
+    includeNoLocationClasses = true
+  }
+}
