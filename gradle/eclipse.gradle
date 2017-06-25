@@ -2,11 +2,26 @@ import org.gradle.plugins.ide.eclipse.model.AccessRule
 
 apply plugin: 'eclipse'
 
+tasks.eclipse.dependsOn(cleanEclipse)
+
 eclipse {
+  project {
+//    natures = 'org.eclipse.jdt.core.javanature'
+    natures 'org.eclipse.pde.PluginNature'
+//    natures = 'edu.umd.cs.findbugs.plugin.eclipse.findbugsNature'
+
+//    buildCommand 'org.eclipse.jdt.core.javabuilder'
+
+    buildCommand 'org.eclipse.pde.ManifestBuilder'
+    buildCommand 'org.eclipse.pde.SchemaBuilder'
+//    buildCommand  = 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+  }
+
   classpath {
     defaultOutputDir = file('classesEclipse')
     downloadSources = true
     downloadJavadoc = true
+    containers 'org.eclipse.pde.core.requiredPlugins'
 
     file {
       whenMerged {

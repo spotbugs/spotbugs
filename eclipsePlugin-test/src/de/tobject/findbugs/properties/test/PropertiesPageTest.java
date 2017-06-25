@@ -495,11 +495,11 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     private String getBugsFileProjectRelativePath() {
-        return getProject().findMember(BUGS_XML_FILE).getProjectRelativePath().toOSString();
+        return getProject().findMember(BUGS_XML_FILE).getProjectRelativePath().toString();
     }
 
     private String getFilterFileProjectRelativePath() {
-        return getProject().findMember(FILTER_FILE).getProjectRelativePath().toOSString();
+        return getProject().findMember(FILTER_FILE).getProjectRelativePath().toString();
     }
 
     private Shell getParentShell() {
