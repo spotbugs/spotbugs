@@ -43,5 +43,7 @@ task classesJava7(type:JavaCompile) {
 tasks['build'].dependsOn classesJava7
 
 sonarqube {
+  // this project should not be analyzed with sonarqube
+  // as it is test data, not real code
   skipProject true
 }

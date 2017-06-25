@@ -1,9 +1,18 @@
 apply plugin: 'org.sonarqube'
+
+// disable sonar for pull request builds until
+// sonar plugin for pull request comments is available at sonarcloud.io
+def isMasterBuild = 'master'.equals(System.env.TRAVIS_BRANCH) &&
+        'false'.equals(System.env.TRAVIS_PULL_REQUEST);
+rootProject.tasks['sonarqube'].setEnabled(isMasterBuild)
+
 sonarqube {
     properties {
         property 'sonar.host.url', System.env.SONAR_HOST_URL
-        property 'sonar.projectKey', 'edu.umd.cs.findbugs'
+        property 'sonar.login', System.env.SONAR_LOGIN
+        property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
         property 'sonar.projectName', 'SpotBugs'
         property 'sonar.projectVersion', rootProject.version
+        property 'sonar.organization', 'spotbugs'
     }
 }
