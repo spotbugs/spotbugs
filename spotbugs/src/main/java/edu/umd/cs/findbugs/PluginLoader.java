@@ -1268,7 +1268,7 @@ public class PluginLoader {
         }
     }
 
-    private static DetectorFactorySelector getConstraintSelector(Element constraintElement, Plugin plugin,
+    private DetectorFactorySelector getConstraintSelector(Element constraintElement, Plugin plugin,
             String singleDetectorElementName/*
              * , String
              * detectorCategoryElementName
@@ -1305,7 +1305,7 @@ public class PluginLoader {
             String superName = node.valueOf("@super");
             if (!"".equals(superName)) {
                 try {
-                    Class<?> superClass = Class.forName(superName);
+                    Class<?> superClass = Class.forName(superName, true, classLoader);
                     return new ByInterfaceDetectorFactorySelector(spanPlugins ? null : plugin, superClass);
                 } catch (ClassNotFoundException e) {
                     throw new PluginException("Unknown class " + superName + " in constraint selector node");
