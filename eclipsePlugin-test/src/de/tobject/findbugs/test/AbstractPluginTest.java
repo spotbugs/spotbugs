@@ -249,7 +249,7 @@ public abstract class AbstractPluginTest {
      * @throws CoreException
      */
     protected void assertBugsCount(int expected, IProject project) throws CoreException {
-        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
+        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
         assertEquals(expected, bugs.getCollection().size());
     }
 
@@ -322,7 +322,7 @@ public abstract class AbstractPluginTest {
      */
     protected void assertReportedBugs(String expectedBugType, int expectedBugCount, IProject project) throws CoreException {
         int seenBugCount = 0;
-        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null, false);
+        SortedBugCollection bugs = FindbugsPlugin.getBugCollection(project, null);
         for (BugInstance bug : bugs) {
             if (expectedBugType.equals(bug.getType())) {
                 seenBugCount++;
@@ -334,7 +334,7 @@ public abstract class AbstractPluginTest {
 
     protected void clearBugsState() throws CoreException {
         MarkerUtil.removeMarkers(getProject());
-        FindbugsPlugin.getBugCollection(getProject(), null, false).clearBugInstances();
+        FindbugsPlugin.getBugCollection(getProject(), null).clearBugInstances();
     }
 
     protected FindBugsWorker createFindBugsWorker() throws CoreException {

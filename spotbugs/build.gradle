@@ -1,3 +1,4 @@
+apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 sourceSets {
@@ -52,6 +53,52 @@ tasks.withType(Jar).all {
   includeEmptyDirs = false
   // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
   //destinationDir = file("$projectDir/lib")
+}
+
+
+eclipse.classpath.file {
+    whenMerged {
+	    classpath ->
+	       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
+	       classpath.entries.forEach {
+	           entry ->
+		           if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')) {
+		               entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
+		               entry.exported = true
+		           }
+	    }
+    }
+}
+
+task copyLibsForEclipse (type: Copy) {
+    from configurations.compile.files
+    into ".libs"
+    include "*.jar"
+    exclude "*xml-apis*.jar"
+    exclude "*spotbugs-annotations*.jar"
+
+
+    from configurations.testCompile.files
+    into ".libs"
+    include "*.jar"
+
+    from configurations.compileOnly.files
+    into ".libs"
+    include "*.jar"
+}
+
+task updateManifest {
+  dependsOn configurations.compile, copyLibsForEclipse
+  doLast {
+    def manifestSpec = manifest {
+      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
+               'Bundle-Version': project.version.replace('-', '.'),
+               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+    }
+    // write manifests
+    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+  }
 }
 
 // Manually define what goes into the default jar, since it's not only main sourceset
@@ -189,6 +236,10 @@ task smokeTest {
       configurations.compile.each { File file -> auxClasspath(path:file.path) }
     }
   }
+}
+
+coveralls {
+  jacocoReportPath = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
 }
 
 uploadArchives {

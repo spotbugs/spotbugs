@@ -64,6 +64,13 @@ uploadArchives {
             timezone '+8'
           }
           developer {
+            id 'iloveeclipse'
+            name 'Andrey Loskutov'
+            email 'loskutov@gmx.de'
+            url 'https://plus.google.com/+AndreyLoskutov'
+            timezone '+2'
+          }
+          developer {
             id 'ThrawnCA'
             url 'https://github.com/ThrawnCA'
           }

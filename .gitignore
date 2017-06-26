@@ -5,8 +5,22 @@ build
 .settings
 .classpath
 *.iml
+*.swp
 classesEclipse
 .DS_Store
+deps/
+eclipse/
+
+# generated manifest files
+spotbugs/META-INF/MANIFEST.MF
+spotbugs-annotations/META-INF/MANIFEST.MF
+eclipsePlugin/META-INF/MANIFEST-DIST.MF
+eclipsePlugin/META-INF/MANIFEST.MF
+eclipsePlugin/build.properties
+
+# Libraries are copied to this directory
+spotbugs/.libs/
+eclipsePlugin/lib/
 
 # TODO : Clean up
 **/local.properties

@@ -1,0 +1,50 @@
+apply from: "$rootDir/gradle/checkstyle.gradle"
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ['src', 'defaultScenario']
+    }
+    resources {
+      srcDirs = ['src']
+      include '**/*.properties'
+      include '**/*.xml'
+    }
+  }
+}
+
+dependencies {
+  compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+  compile 'net.jcip:jcip-annotations:1.0'
+  compile 'dom4j:dom4j:1.6.1'
+  compile 'commons-lang:commons-lang:2.6'
+  compile 'jaxen:jaxen:1.1.6'
+  compile 'jdepend:jdepend:2.9.1'
+  compile 'com.google.code.findbugs:jFormatString:3.0.0'
+
+  compile project(':spotbugs')
+  compile project(':eclipsePlugin')
+  // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
+  // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
+  compile project(':spotbugs-annotations')
+  compile project(':spotbugsTestCases')
+  compile project(':test-harness')
+
+  compileOnly 'com.apple:AppleJavaExtensions:1.4'
+  compile 'org.hamcrest:hamcrest-all:1.3'
+  compile 'org.apache.ant:ant:1.9.4'
+}
+
+task sourcesJar(type: Jar) {
+  classifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+artifacts {
+  archives jar, sourcesJar
+}
+
+jacocoTestReport {
+  additionalSourceDirs = files(project(':spotbugs').sourceSets.main.java.srcDirs)
+  additionalClassDirs = files(project(':spotbugs').sourceSets.main.output.classesDir)
+}

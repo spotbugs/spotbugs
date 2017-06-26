@@ -1,5 +1,6 @@
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
 // apply from: "$rootDir/gradle/maven.gradle"
+apply plugin: 'eclipse'
 
 if (version.endsWith('-SNAPSHOT')) {
   // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
@@ -24,9 +25,7 @@ sourceSets {
 
 configurations {
   embeddedLibs
-  includedLibs
   compile.extendsFrom embeddedLibs
-  compile.extendsFrom includedLibs
 }
 
 def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
@@ -54,26 +53,108 @@ def requiredLibs = fileTree(dir:'lib', include:[
 ])
 
 dependencies {
-  includedLibs requiredLibs
-
+  // List below includes all Eclipse SDK plugins except few causing troubles.
+  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
   compile fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
-    exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar', 'com.github.spotbugs.**/*.jar'])
-
-  includedLibs project(':spotbugs-annotations')
-  includedLibs 'net.jcip:jcip-annotations:1.0'
-  includedLibs fileTree(dir: '../findbugs/lib', include: 'bcel-6.1*.jar')
-  includedLibs 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+    exclude:[
+        '**/datanucleus-enhancer*.jar',
+        'edu.umd.cs.findbugs.**/*.jar',
+        'org.mockito*.jar',
+        'com.github.spotbugs.**/*.jar'
+        ])
 
   embeddedLibs(project(':spotbugs')) {
-    transitive = false
+    transitive = true
   }
+}
+
+task copyLibsForEclipse (type: Copy) {
+    dependsOn configurations.embeddedLibs
+    from configurations.embeddedLibs.files
+    into "lib"
+    include "*.jar"
+    exclude "*xml-apis*.jar"
 }
 
 task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
 }
 
+
+task updateManifest {
+  dependsOn configurations.embeddedLibs, ':spotbugs:updateManifest', copyLibsForEclipse
+  doLast {
+	def manifestSpec = manifest {
+	  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+	  attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+	             'Bundle-Version': project.version,
+	             'Bundle-ClassPath': ".,spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
+	                    projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+	}
+
+	def distManifestSpec = manifest {
+	  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+	  attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+	             'Bundle-Version': project.version,
+	             'Bundle-ClassPath': "spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
+	                    projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+	}
+    // write manifests
+    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+    distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
+
+    // write build.properties
+    def propsTemplate = file('build-template.properties')
+    def props = new Properties()
+    props.load(propsTemplate.newDataInputStream())
+    props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
+        fileTree(dir: 'lib').collect { projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(','))
+    props.store(file('build.properties').newWriter(), null)
+  }
+}
+
+// create manifest when importing to eclipse
+tasks.eclipse.dependsOn copyLibsForEclipse, updateManifest
+
+class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
+    def file;
+    def FileRef(File file){
+        this.file = file
+    }
+    def File getFile(){
+        return file;
+    }
+    def String getJarURL(){
+        return "jar:" + file
+    }
+    def String getPath(){
+        return file.toString().replace('\\', '/')
+    }
+    def boolean isRelativeToPathVariable(){
+        return false
+    }
+}
+
+eclipse.classpath.file {
+    whenMerged {
+        classpath ->
+           classpath.entries.removeAll {
+               entry -> entry.kind == 'lib'
+           }
+           copyLibsForEclipse
+           fileTree(dir: 'lib').forEach {
+                file ->
+                    def rel = projectDir.toPath().relativize(java.nio.file.Paths.get(file.toString())).toFile()
+                    org.gradle.plugins.ide.eclipse.model.ClasspathEntry entry =
+                        new org.gradle.plugins.ide.eclipse.model.Library(new FileRef(rel))
+                    classpath.entries.add(entry)
+           }
+    }
+}
+
 jar {
+  // Make sure we always update the manifest when building
+  dependsOn updateManifest
   includeEmptyDirs = false
   from(configurations.embeddedLibs.collect { zipTree(it) }) {
     exclude 'edu/umd/cs/findbugs/gui/**/*.*'
@@ -87,7 +168,7 @@ jar {
     exclude 'META-INF/**.*'
   }
   exclude 'de/tobject/findbugs/tools/**'
-  archiveName 'findbugs-plugin.jar' // TODO : Change this
+  archiveName 'spotbugs-plugin.jar'
 }
 
 def distSpec = copySpec {
@@ -102,18 +183,15 @@ def distSpec = copySpec {
     include 'doc/*.*'
     include 'plugin/*.*'
     include 'icons/*.*'
+    include 'lib/'
   }
-  from('../findbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
+  from('../spotbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
     include 'plugin/**'
   }
-  from('../findbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
+  from('../spotbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
     into 'plugin/'
   }
-  from(configurations.includedLibs) {
-    into 'lib/'
-    rename 'annotations-.*', 'annotations.jar'
-  }
-  from('META-INF/MANIFEST.MF') {
+  from('META-INF/MANIFEST-DIST.MF') {
     filter { line ->
       if (line.startsWith('Bundle-Version:')) {
         return "Bundle-Version: ${project.version}"
@@ -122,6 +200,9 @@ def distSpec = copySpec {
       line
     }
     into 'META-INF/'
+    rename {
+      'MANIFEST.MF'
+    }
   }
 }
 

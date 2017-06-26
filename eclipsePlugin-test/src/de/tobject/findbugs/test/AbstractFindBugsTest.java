@@ -74,7 +74,7 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
      */
     protected String getFilterFileLocation() {
         IResource filterFile = getProject().findMember(FILTER_FILE);
-        return filterFile.getLocation().toOSString();
+        return filterFile.getLocation().toString();
     }
 
     @Override
