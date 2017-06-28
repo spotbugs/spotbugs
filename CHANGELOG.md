@@ -2,6 +2,12 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
+## Unreleased (2017/??/??)
+
+### Added
+
+* `<EarlierSubtypes>` and `<LaterSubtypes>` can now refer to supertypes from custom plug-ins ([#215](https://github.com/spotbugs/spotbugs/issues/215))
+
 ## 3.1.0-RC3 (2017/Jun/10)
 
 ### Added
