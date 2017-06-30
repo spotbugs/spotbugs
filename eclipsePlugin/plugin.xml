@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
+<?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="findbugsPlugins" name="Custom SpotBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
-   <extension-point id="findbugsQuickFixes" name="Custom SpotBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
+   <extension-point id="edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins" name="Custom FindBugs/SpotBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
+   <extension-point id="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes" name="Custom FindBugs/SpotBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
@@ -1383,7 +1383,7 @@
 
 
    <extension
-         point="com.github.spotbugs.plugin.eclipse.findbugsQuickFixes">
+         point="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes">
 
     <quickFix
         pattern="DM_BOOLEAN_CTOR"

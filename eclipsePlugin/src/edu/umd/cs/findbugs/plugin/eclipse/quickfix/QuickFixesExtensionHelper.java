@@ -42,7 +42,10 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class QuickFixesExtensionHelper {
 
-    private static final String EXTENSION_POINT_ID = FindbugsPlugin.PLUGIN_ID + ".findbugsQuickFixes";
+    /**
+     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility reasons.
+     */
+    private static final String EXTENSION_POINT_ID = "edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes";
 
     private static final String ARGUMENTS = "arguments";
     private static final String PATTERN = "pattern";

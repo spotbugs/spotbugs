@@ -47,7 +47,10 @@ public class DetectorsExtensionHelper {
 
     private static final String DEFAULT_USE_PLUGIN_JAR = ".";
 
-    private static final String EXTENSION_POINT_ID = FindbugsPlugin.PLUGIN_ID + ".findbugsPlugins";
+    /**
+     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility reasons.
+     */
+    private static final String EXTENSION_POINT_ID = "edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins";
 
     private static final String LIBRARY_PATH = "libraryPath";
     private static final String PLUGIN_ID = "fbPluginId";
