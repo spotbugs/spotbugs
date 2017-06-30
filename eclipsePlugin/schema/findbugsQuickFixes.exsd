@@ -3,10 +3,10 @@
 <schema targetNamespace="com.github.spotbugs.plugin.eclipse" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="com.github.spotbugs.plugin.eclipse" id="findbugsQuickFixes" name="Custom SpotBugs quick fixes"/>
+         <meta.schema plugin="com.github.spotbugs.plugin.eclipse" id="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes" name="Custom FindBugs/SpotBugs quick fixes"/>
       </appInfo>
       <documentation>
-         Extension point can be used to contribute custom quick fix resolutions for the SpotBugs plugin.
+         Extension point can be used to contribute custom quick fix resolutions for the FindBugs/SpotBugs plugin.
       </documentation>
    </annotation>
 
