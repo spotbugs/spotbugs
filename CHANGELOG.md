@@ -32,7 +32,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ### Fixed
 
-* Enhance performance of Eclipse Plugin ([#159]((https://github.com/spotbugs/spotbugs/pull/1579))
+* Enhance performance of Eclipse Plugin ([#159](https://github.com/spotbugs/spotbugs/pull/1579))
 * Fix HTML format in `messages.xml` and others ([#166](https://github.com/spotbugs/spotbugs/pull/166))
 * Fix Japanese message in `messages_ja.xml` ([#164](https://github.com/spotbugs/spotbugs/pull/164))
 
