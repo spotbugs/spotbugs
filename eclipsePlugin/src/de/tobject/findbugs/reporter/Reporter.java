@@ -149,7 +149,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
             });
 
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.ERROR,
-                    "The following errors occurred during FindBugs analysis:", null);
+                    "The following errors occurred during SpotBugs analysis:", null);
 
             for (Error error : errorList) {
                 status.add(FindbugsPlugin.createErrorStatus(error.getMessage(), error.getCause()));
@@ -161,7 +161,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         if (missingClasses.size() > 0) {
             FindBugs2Eclipse.cleanClassClache(project.getProject());
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
-                    "The following classes needed for FindBugs analysis on project " + project.getElementName()
+                    "The following classes needed for SpotBugs analysis on project " + project.getElementName()
                             + " were missing:", null);
             for (String missingClass : missingClasses) {
                 status.add(new Status(IStatus.WARNING, FindbugsPlugin.PLUGIN_ID, missingClass));
@@ -288,7 +288,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
     @Override
     public void reportNumberOfArchives(int numArchives) {
-        printToStream("\nStarting FindBugs analysis on file(s) from: " + project.getElementName());
+        printToStream("\nStarting SpotBugs analysis on file(s) from: " + project.getElementName());
         List<String> classpathEntryList = new ArrayList<String>(bugCollection.getProject().getAuxClasspathEntryList());
         printToStream("\nResolved auxiliary classpath (" + classpathEntryList.size() + " entries):");
         for (String path : classpathEntryList) {

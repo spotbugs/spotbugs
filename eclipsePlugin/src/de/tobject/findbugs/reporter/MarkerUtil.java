@@ -124,7 +124,7 @@ public final class MarkerUtil {
         if (monitor.isCanceled()) {
             return;
         }
-        WorkspaceJob wsJob = new WorkspaceJob("Creating FindBugs markers") {
+        WorkspaceJob wsJob = new WorkspaceJob("Creating SpotBugs markers") {
 
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor1) throws CoreException {
@@ -220,7 +220,7 @@ public final class MarkerUtil {
                     }
                 } catch (JavaModelException e1) {
                     FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
-                            + "for FindBugs warning: " + bug);
+                            + "for SpotBugs warning: " + bug);
                 }
             }
         }
@@ -551,7 +551,7 @@ public final class MarkerUtil {
      */
     public static void redisplayMarkers(final IJavaProject javaProject) {
         final IProject project = javaProject.getProject();
-        FindBugsJob job = new FindBugsJob("Refreshing FindBugs markers", project) {
+        FindBugsJob job = new FindBugsJob("Refreshing SpotBugs markers", project) {
             @Override
             protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
                 // TODO in case we removed some of previously available
@@ -778,7 +778,7 @@ public final class MarkerUtil {
         try {
             BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, null);
             if (bugCollection == null) {
-                FindbugsPlugin.getDefault().logError("Could not get BugCollection for FindBugs marker");
+                FindbugsPlugin.getDefault().logError("Could not get BugCollection for SpotBugs marker");
                 return null;
             }
 
@@ -803,7 +803,7 @@ public final class MarkerUtil {
             }
             return new BugCollectionAndInstance(bugCollection, bug);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
+            FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for SpotBugs marker");
             return null;
         }
     }
@@ -957,7 +957,7 @@ public final class MarkerUtil {
                     marker.exists() &&
                     marker.isSubtypeOf(FindBugsMarker.NAME);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Exception while checking FindBugs type on marker.");
+            FindbugsPlugin.getDefault().logException(e, "Exception while checking SpotBugs type on marker.");
         }
         return false;
     }
@@ -1000,7 +1000,7 @@ public final class MarkerUtil {
         try {
             return fileOrFolder.findMarkers(FindBugsMarker.NAME, true, depth);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Cannot collect FindBugs warnings from: " + fileOrFolder);
+            FindbugsPlugin.getDefault().logException(e, "Cannot collect SpotBugs warnings from: " + fileOrFolder);
         }
         return EMPTY;
     }

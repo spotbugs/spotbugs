@@ -1320,7 +1320,7 @@
     <extension
           point="org.eclipse.ui.keywords">
        <keyword id="com.github.spotbugs.plugin.eclipse.keywords"
-             label="bugs findbugs"/>
+             label="bugs findbugs spotbugs"/>
     </extension>
 
    <extension

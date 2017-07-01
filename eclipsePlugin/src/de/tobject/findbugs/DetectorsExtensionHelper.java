@@ -152,7 +152,7 @@ public class DetectorsExtensionHelper {
         IllegalArgumentException e = new IllegalArgumentException("Failed to resolve detector library for "
                 + bundle.getSymbolicName());
         String message = "Failed to resolve detector library. '" + bundleFile
-                + "' is a directory and can't be used as FindBugs detector package." + " Please specify '" + LIBRARY_PATH
+                + "' is a directory and can't be used as SpotBugs detector package." + " Please specify '" + LIBRARY_PATH
                 + "' argument as a relative path to the detectors jar file.";
         FindbugsPlugin.getDefault().logException(e, message);
         return null;

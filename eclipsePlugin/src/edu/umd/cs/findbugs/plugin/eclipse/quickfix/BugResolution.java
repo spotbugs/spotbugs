@@ -66,7 +66,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
 
     static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. "
             + "The bugs somehow got out of sync with the memory representation. "
-            + "Try running FindBugs again. If that does not work, check the error log.";
+            + "Try running SpotBugs again. If that does not work, check the error log.";
 
     protected static final String PLACEHOLDER_STRING = "YYY";
 
