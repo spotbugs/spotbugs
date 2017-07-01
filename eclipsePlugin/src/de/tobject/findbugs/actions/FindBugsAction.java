@@ -196,10 +196,10 @@ public class FindBugsAction implements IObjectActionDelegate {
 
     protected static void askUserToSwitch(IWorkbenchPart part, int warningsNumber) {
         final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-        String message = "FindBugs analysis finished, " + warningsNumber
-                + " warnings found.\n\nSwitch to the FindBugs perspective?";
+        String message = "SpotBugs analysis finished, " + warningsNumber
+                + " warnings found.\n\nSwitch to the SpotBugs perspective?";
 
-        MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(null, "FindBugs analysis finished",
+        MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(null, "SpotBugs analysis finished",
                 message, "Remember the choice and do not ask me in the future", false, store,
                 FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
 
@@ -241,7 +241,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         try {
             PlatformUI.getWorkbench().showPerspective(FindBugsPerspectiveFactory.ID, window, input);
         } catch (WorkbenchException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to open FindBugs Perspective");
+            FindbugsPlugin.getDefault().logException(e, "Failed to open SpotBugs Perspective");
         }
     }
 
