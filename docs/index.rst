@@ -14,7 +14,6 @@ The name FindBugs and the FindBugs logo are trademarked by the University of Mar
 Indices and tables
 ==================
 
-* :ref:`genindex`
 * :ref:`search`
 
 Contents
