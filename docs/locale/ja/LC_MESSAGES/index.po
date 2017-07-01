@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 22:04+0000\n"
+"POT-Creation-Date: 2017-06-28 18:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: ../../source/index.rst:7
+#: ../../index.rst:7
 msgid "SpotBugs manual"
 msgstr ""
 
-#: ../../source/index.rst:9
+#: ../../index.rst:9
 msgid ""
 "This manual is licensed under the Creative Commons Attribution-"
 "NonCommercial-ShareAlike License. To view a copy of this license, visit "
@@ -29,25 +29,24 @@ msgid ""
 "Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA."
 msgstr ""
 
-#: ../../source/index.rst:12
+#: ../../index.rst:12
 msgid ""
 "The name FindBugs and the FindBugs logo are trademarked by the University"
 " of Maryland."
 msgstr ""
 
-#: ../../source/index.rst:15
+#: ../../index.rst:15
 msgid "Indices and tables"
 msgstr ""
 
-#: ../../source/index.rst:17
-msgid ":ref:`genindex`"
-msgstr ""
-
-#: ../../source/index.rst:18
+#: ../../index.rst:17
 msgid ":ref:`search`"
 msgstr ""
 
-#: ../../source/index.rst:21
+#: ../../index.rst:20
 msgid "Contents"
 msgstr ""
+
+#~ msgid ":ref:`genindex`"
+#~ msgstr ""
 
