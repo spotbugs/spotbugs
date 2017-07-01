@@ -30,6 +30,7 @@ Contents
    ant
    filter
    analysisprops
+   implement-plugin
    faq
    links
    bugDescriptions
