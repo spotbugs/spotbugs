@@ -32,5 +32,6 @@ Contents
    filter
    analysisprops
    faq
+   links
    bugDescriptions
    migration
