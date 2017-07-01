@@ -61,7 +61,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
     @SuppressWarnings("rawtypes")
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-        monitor.subTask("Running FindBugs...");
+        monitor.subTask("Running SpotBugs...");
         switch (kind) {
         case IncrementalProjectBuilder.FULL_BUILD: {
             FindBugs2Eclipse.cleanClassClache(getProject());

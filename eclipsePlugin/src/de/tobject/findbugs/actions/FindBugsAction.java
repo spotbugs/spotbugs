@@ -105,9 +105,9 @@ public class FindBugsAction implements IObjectActionDelegate {
         IWorkspaceDescription description = workspace.getDescription();
         if (!description.isAutoBuilding() && getClass().equals(FindBugsAction.class)) {
             boolean confirm = MessageDialog.openConfirm(null, "Project -> 'Build Automatically' disabled",
-                    "You are going to run FindBugs analysis on a not compiled or partially compiled project.\n\n"
+                    "You are going to run SpotBugs analysis on a not compiled or partially compiled project.\n\n"
                             + "To get reliable analysis results, you should make sure that project is compiled first.\n\n"
-                            + "Continue with FindBugs analysis?");
+                            + "Continue with SpotBugs analysis?");
             if (!confirm) {
                 return;
             }

@@ -167,7 +167,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
                 showPerspective();
             }
         };
-        configureAction(actionShowPerspective, "Switch to FindBugs Perspective", "Switch to FindBugs Perspective",
+        configureAction(actionShowPerspective, "Switch to SpotBugs Perspective", "Switch to SpotBugs Perspective",
                 PERSPECTIVE_IMG);
     }
 
@@ -260,7 +260,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         try {
             PlatformUI.getWorkbench().showPerspective(FindBugsPerspectiveFactory.ID, window, input);
         } catch (WorkbenchException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to open FindBugs Perspective");
+            FindbugsPlugin.getDefault().logException(e, "Failed to open SpotBugs Perspective");
         }
     }
 

@@ -846,7 +846,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         try {
             project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error setting FindBugs session property for project");
+            FindbugsPlugin.getDefault().logException(e, "Error setting SpotBugs session property for project");
         }
         if (store != null) {
             store.setValue(FindBugsConstants.PROJECT_PROPS_DISABLED, !enabled);
@@ -916,7 +916,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
             return prefs;
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error getting FindBugs preferences for project");
+            FindbugsPlugin.getDefault().logException(e, "Error getting SpotBugs preferences for project");
             return getWorkspacePreferences().clone();
         }
     }
@@ -934,7 +934,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             in = new FileInputStream(prefsFile);
             userPrefs.read(in);
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error reading custom FindBugs preferences for workspace");
+            FindbugsPlugin.getDefault().logException(e, "Error reading custom SpotBugs preferences for workspace");
         }
         return userPrefs;
     }

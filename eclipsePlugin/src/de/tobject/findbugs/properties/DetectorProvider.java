@@ -174,6 +174,6 @@ public class DetectorProvider extends PathsProvider {
     @Override
     protected void configureDialog(FileDialog dialog) {
         dialog.setFilterExtensions(new String[] { "*.jar" });
-        dialog.setText("Select FindBugs plugins (file must have '.jar' extension)");
+        dialog.setText("Select SpotBugs plugin (file must have '.jar' extension)");
     }
 }

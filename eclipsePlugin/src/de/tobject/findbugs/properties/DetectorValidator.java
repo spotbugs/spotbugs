@@ -81,13 +81,13 @@ public class DetectorValidator {
                 e.printStackTrace();
             }
             return new ValidationStatus(IStatus.ERROR,
-                    "Invalid FindBugs plugin archive: " + e.getMessage(), sum, e);
+                    "Invalid SpotBugs plugin archive: " + e.getMessage(), sum, e);
         }
         Plugin loadedPlugin = Plugin.getByPluginId(sum.id);
         URI uri = file.toURI();
         if(loadedPlugin != null && !uri.equals(loadedPlugin.getPluginLoader().getURI())
                 && loadedPlugin.isGloballyEnabled()) {
-            return new ValidationStatus(IStatus.ERROR, "Duplicated FindBugs plugin: " + sum.id + ", already loaded from: "
+            return new ValidationStatus(IStatus.ERROR, "Duplicated SpotBugs plugin: " + sum.id + ", already loaded from: "
                     + loadedPlugin.getPluginLoader().getURI(), sum, null);
         }
         return new ValidationStatus(IStatus.OK, Status.OK_STATUS.getMessage(), sum, null);
