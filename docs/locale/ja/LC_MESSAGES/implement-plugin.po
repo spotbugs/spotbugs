@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-28 19:04+0000\n"
+"POT-Creation-Date: 2017-07-02 06:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Now you have tests to ensure that your detector can work as expected."
 msgstr ""
 
-#: ../../implement-plugin.rst:55 ../../implement-plugin.rst:76
+#: ../../implement-plugin.rst:55
 msgid "TBU"
 msgstr ""
 
@@ -152,22 +152,107 @@ msgid ""
 msgstr ""
 
 #: ../../implement-plugin.rst:72
-msgid "Update findbugs.xml and messages.xml"
+msgid "Update findbugs.xml"
+msgstr ""
+
+#: ../../implement-plugin.rst:74
+msgid ""
+"SpotBugs reads ``findbugs.xml`` in each plugin to find detectors and "
+"bugs. So when you add new detector, you need to add new ``<Detector>`` "
+"element like below:"
+msgstr ""
+
+#: ../../implement-plugin.rst:81
+msgid ""
+"It is also necessary to add ``<BugPattern>``, to describe type and "
+"category of your bug pattern."
+msgstr ""
+
+#: ../../implement-plugin.rst:87
+msgid ""
+"You can find ``findbugs.xml`` in ``src/main/resources`` directory of "
+"generated Maven project."
+msgstr ""
+
+#: ../../implement-plugin.rst:92
+msgid "Update messages.xml"
+msgstr ""
+
+#: ../../implement-plugin.rst:94
+msgid ""
+"SpotBugs reads ``messages.xml`` in each plugin to construct human "
+"readable message to report detected bug. It also supports reading "
+"localized messages from ``messages_ja.xml``, ``messages_fr.xml`` and so "
+"on."
+msgstr ""
+
+#: ../../implement-plugin.rst:97
+msgid ""
+"You can find ``messages.xml`` in ``src/main/resources`` directory of "
+"generated Maven project."
+msgstr ""
+
+#: ../../implement-plugin.rst:100
+msgid "Update message of Detector"
+msgstr ""
+
+#: ../../implement-plugin.rst:102
+msgid ""
+"In ``<Detector>`` element, you can add detector's description message. "
+"Note that it should be plain text, HTML is not supported."
+msgstr ""
+
+#: ../../implement-plugin.rst:113
+msgid "Update message of Bug Pattern"
+msgstr ""
+
+#: ../../implement-plugin.rst:115
+msgid ""
+"In ``<BugPattern>`` element, you can add bug pattern's description "
+"message. There are three kinds of messages:"
+msgstr ""
+
+#: ../../implement-plugin.rst:120
+msgid "ShortDescription"
+msgstr ""
+
+#: ../../implement-plugin.rst:119
+msgid ""
+"Short description for bug pattern. Useful to tell its intent and "
+"character for users. It should be plain text, HTML is not supported."
+msgstr ""
+
+#: ../../implement-plugin.rst:127
+msgid "LongDescription"
+msgstr ""
+
+#: ../../implement-plugin.rst:123
+msgid ""
+"Longer description for bug pattern. You can use placeholder like ``{0}`` "
+"(0-indexed), then added data into `BugInstance "
+"<https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_"
+" will be inserted at there. So this ``LongDescription`` is useful to tell"
+" detailed information about detected bug."
+msgstr ""
+
+#: ../../implement-plugin.rst:127
+msgid "It should be plain text, HTML is not supported."
+msgstr ""
+
+#: ../../implement-plugin.rst:130
+msgid "Details"
+msgstr ""
+
+#: ../../implement-plugin.rst:130
+msgid ""
+"Detailed description for bug pattern. It should be HTML format, so this "
+"is useful to tell detailed specs/examples with table, list and code "
+"snippets."
 msgstr ""
 
 #~ msgid ""
 #~ msgstr ""
 
-#~ msgid ""
-#~ "In generated project, you can find "
-#~ "another file named as `MyDetectorTest.java "
-#~ "<https://github.com/spotbugs/spotbugs-archetype/blob"
-#~ "/spotbugs-archetype-0.1.0/src/main/resources/archetype-"
-#~ "resources/src/test/java/MyDetectorTest.java>`_. The "
-#~ "``spotbugs.performAnalysis(Path)`` in this test "
-#~ "runs SpotBugs with your plugin, and "
-#~ "return all found bugs (here 1st "
-#~ "argument is a path of class file"
-#~ " compiled from ``BadCase.java``)."
+#~ msgid "Update findbugs.xml and messages.xml"
 #~ msgstr ""
 
