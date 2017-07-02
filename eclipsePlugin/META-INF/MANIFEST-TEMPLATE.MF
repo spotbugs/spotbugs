@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SpotBugs Plug-in
+Bundle-Name: SpotBugs
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: SpotBugs Project
 Bundle-Localization: plugin

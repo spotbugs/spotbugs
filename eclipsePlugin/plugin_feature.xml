@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="@FEATURE_ID@"
-      label="SpotBugs Feature"
+      label="SpotBugs"
       version="@FEATURE_VERSION@"
       provider-name="SpotBugs Project"
       plugin="@PLUGIN_ID@">
 
    <description url="https://spotbugs.github.io/">
-      This feature is a wrapper for the SpotBugs plugin for installation via the Eclipse Update Manager.
+      SpotBugs is a program which uses static analysis to look for bugs in Java code, a spiritual successor of FindBugs.
    </description>
 
    <copyright>
-      (c) 2006-2011, University of Maryland
+      (c) 2017, SpotBugs Project
    </copyright>
 
    <license url="https://opensource.org/licenses/LGPL-2.1">
@@ -21,7 +21,6 @@ http://www.gnu.org/licenses/lgpl.html
 
    <url>
       <update label="SpotBugs update site" url="https://spotbugs.github.io/eclipse/"/>
-      <!-- <discovery label="Findbugs home page" url="http://findbugs.sourceforge.net/"/> -->
    </url>
 
    <requires>
