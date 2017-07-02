@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-02 06:33+0000\n"
+"POT-Creation-Date: 2017-07-02 06:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgid ""
 msgstr ""
 
 #: ../../implement-plugin.rst:18
-msgid "Write java codes to represent bug to find"
+msgid "Write java code to represent bug to find"
 msgstr ""
 
 #: ../../implement-plugin.rst:20
@@ -82,7 +82,7 @@ msgid ""
 msgstr ""
 
 #: ../../implement-plugin.rst:38
-msgid "Write java codes to avoid false-positive"
+msgid "Write java code to avoid false-positive"
 msgstr ""
 
 #: ../../implement-plugin.rst:40
@@ -254,5 +254,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Update findbugs.xml and messages.xml"
+#~ msgstr ""
+
+#~ msgid "Write java codes to represent bug to find"
+#~ msgstr ""
+
+#~ msgid "Write java codes to avoid false-positive"
 #~ msgstr ""
 
