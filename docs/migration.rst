@@ -98,15 +98,16 @@ Please replace ``findbugs-ant.jar`` with ``spotbugs-ant.jar``.
 FindBugs Maven plugin
 ---------------------
 
-Please add `com.github.spotbugs:spotbugs` to dependency of `org.codehaus.mojo.findbugs-maven-plugin`.
+Please use `com.github.hazendaz.spotbugs:spotbugs-maven-plugin` instead of `org.codehaus.mojo:findbugs-maven-plugin`.
 
 .. code-block:: xml
 
   <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>findbugs-maven-plugin</artifactId>
-    <version>3.0.4</version>
+    <groupId>com.github.hazendaz.spotbugs</groupId>
+    <artifactId>spotbugs-maven-plugin</artifactId>
+    <version>3.0.6</version>
     <dependencies>
+      <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
       <dependency>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs</artifactId>
