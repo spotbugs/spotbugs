@@ -14,8 +14,8 @@ Then Maven archetype plugin will ask you to decide plugin's groupId, artifactId,
         -DarchetypeGroupId=com.github.spotbugs \
         -DarchetypeVersion=0.1.0
 
-Write java codes to represent bug to find
------------------------------------------
+Write java code to represent bug to find
+----------------------------------------
 
 In generated project, you can find a file named as `BadCase.java <https://github.com/spotbugs/spotbugs-archetype/blob/spotbugs-archetype-0.1.0/src/main/resources/archetype-resources/src/test/java/BadCase.java>`_.
 Update this file to represent the target bug to find.
@@ -34,8 +34,8 @@ You can use `BugInstanceMatcher <https://github.com/spotbugs/spotbugs/blob/maste
 Currently this test should fail, because we've not updated detector itself yet.
 
 
-Write java codes to avoid false-positive
-----------------------------------------
+Write java code to avoid false-positive
+---------------------------------------
 
 To avoid false-positive, it is good to ensure that in which case detector should NOT find bug.
 
