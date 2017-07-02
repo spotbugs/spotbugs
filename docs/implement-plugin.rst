@@ -68,9 +68,77 @@ Which super class you should choose
   Sub class of ``BytecodeScanningDetector``, which can scan the bytecode of a method and use an `operand stack <https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.2>`_.
 
 
-Update findbugs.xml and messages.xml
-------------------------------------
+Update findbugs.xml
+-------------------
 
-.. note::
+SpotBugs reads ``findbugs.xml`` in each plugin to find detectors and bugs.
+So when you add new detector, you need to add new ``<Detector>`` element like below:
 
-  TBU
+.. code-block:: xml
+
+  <Detector class="com.github.plugin.MyDetector" reports="MY_BUG" speed="fast" />
+
+It is also necessary to add ``<BugPattern>``, to describe type and category of your bug pattern.
+
+.. code-block:: xml
+
+  <BugPattern type="MY_BUG" category="CORRECTNESS" />
+
+You can find ``findbugs.xml`` in ``src/main/resources`` directory of generated Maven project.
+
+
+
+Update messages.xml
+-------------------
+
+SpotBugs reads ``messages.xml`` in each plugin to construct human readable message to report detected bug.
+It also supports reading localized messages from ``messages_ja.xml``, ``messages_fr.xml`` and so on.
+
+You can find ``messages.xml`` in ``src/main/resources`` directory of generated Maven project.
+
+Update message of Detector
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In ``<Detector>`` element, you can add detector's description message. Note that it should be plain text, HTML is not supported.
+
+.. code-block:: xml
+
+  <Detector class="com.github.plugin.MyDetector">
+    <Details>
+      Original detector to detect MY_BUG bug pattern.
+    </Details>
+  </Detector>
+
+Update message of Bug Pattern
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In ``<BugPattern>`` element, you can add bug pattern's description message.
+There are three kinds of messages:
+
+ShortDescription
+  Short description for bug pattern. Useful to tell its intent and character for users.
+  It should be plain text, HTML is not supported.
+
+LongDescription
+  Longer description for bug pattern.
+  You can use placeholder like ``{0}`` (0-indexed), then added data into `BugInstance <https://javadoc.io/page/com.github.spotbugs/spotbugs/latest/edu/umd/cs/findbugs/BugInstance.html>`_ will be inserted at there.
+  So this ``LongDescription`` is useful to tell detailed information about detected bug.
+
+  It should be plain text, HTML is not supported.
+
+Details
+  Detailed description for bug pattern. It should be HTML format, so this is useful to tell detailed specs/examples with table, list and code snippets.
+
+.. code-block:: xml
+
+  <BugPattern type="MY_BUG">
+    <ShortDescription>Explain bug pattern shortly.</ShortDescription>
+    <LongDescription>
+      Explain existing problem in code, and how developer should improve their implementation.
+    </LongDescription>
+    <Details>
+      <![CDATA[
+        <p>Explain existing problem in code, and how developer should improve their implementation.</p>
+      ]]>
+    </Details>
+  </BugPattern>
