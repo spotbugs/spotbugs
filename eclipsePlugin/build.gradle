@@ -242,6 +242,10 @@ task featureJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
+  }
   destinationDir = file("${buildDir}/site/eclipse/features/")
 }
 
@@ -252,6 +256,10 @@ task featureCandidateJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
+  }
   destinationDir = file("${buildDir}/site/eclipse-candidate/features/")
 }
 
@@ -261,6 +269,10 @@ task featureDailyJar(type:Zip) {
   from('plugin_feature-daily.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
+  }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
   }
   destinationDir = file("${buildDir}/site/eclipse-daily/features/")
 }
