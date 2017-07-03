@@ -7,9 +7,9 @@
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
  		encoding="UTF-8"/>
 
-<xsl:param name="PAGE.TITLE" select="'Findbugs Summary Statistics'" />
+<xsl:param name="PAGE.TITLE" select="'SpotBugs Summary Statistics'" />
 <xsl:param name="PAGE.FONT" select="'Arial'" />
-<xsl:param name="SUMMARY.HEADER" select="'Findbugs Summary Report'" />
+<xsl:param name="SUMMARY.HEADER" select="'SpotBugs Summary Report'" />
 <xsl:param name="SUMMARY.LABEL" select="'Summary Analysis Generated at: '" />
 <xsl:param name="PACKAGE.HEADER" select="'Bugs By Package'" />
 <xsl:param name="PACKAGE.SORT.LABEL" select="'Sorted by Total Bugs'" />
@@ -44,7 +44,7 @@
 	 -->
    <head><title><xsl:value-of select="$PAGE.TITLE" /></title></head>
   <body>
-    <h1 align="center"><a href="http://findbugs.sourceforge.net"><xsl:value-of select="$SUMMARY.HEADER" /></a></h1>
+    <h1 align="center"><a href="https://spotbugs.github.io"><xsl:value-of select="$SUMMARY.HEADER" /></a></h1>
     <h2 align="center"> Analysis for 
     <xsl:choose>
       <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'>
