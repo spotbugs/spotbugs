@@ -1,11 +1,3 @@
 #! /bin/sh
 
-@GET_FBHOME@
-
-@SET_DEFAULT_JAVA@
-
-fb_mainclass=edu.umd.cs.findbugs.xml.XPathFind
-
-@WRAP_JAVA@
-
-# vim:ts=3
+"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.xml.XPathFind
