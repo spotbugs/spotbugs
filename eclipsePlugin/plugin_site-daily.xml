@@ -2,7 +2,7 @@
 <site>
 
    <description url="https://spotbugs.github.io/eclipse-daily">
-      This is the Eclipse update site for SpotBugs features.
+      Eclipse update site for SpotBugs.
    </description>
 
    <feature url="features/@FEATURE_ID@_@FEATURE_VERSION@.jar"
@@ -13,7 +13,7 @@
 
    <category-def name="SpotBugs" label="SpotBugs">
       <description>
-         This is the Eclipse category for SpotBugs features.
+         SpotBugs is a program which uses static analysis to look for bugs in Java code.
       </description>
    </category-def>
 
