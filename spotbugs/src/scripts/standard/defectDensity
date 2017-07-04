@@ -2,12 +2,4 @@
 
 # Generate a defect density table from a bug collection
 
-@GET_FBHOME@
-
-@SET_DEFAULT_JAVA@
-
-fb_mainclass=edu.umd.cs.findbugs.workflow.DefectDensity
-
-@WRAP_JAVA@
-
-# vim:ts=3
+"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.DefectDensity
