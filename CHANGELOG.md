@@ -8,6 +8,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 * `<EarlierSubtypes>` and `<LaterSubtypes>` can now refer to supertypes from custom plug-ins ([#215](https://github.com/spotbugs/spotbugs/issues/215))
 
+### Changed
+
+* `jdepend:jdepend:2.9.1` is no longer a compile-scoped dependency but only test-scoped. ([#242](https://github.com/spotbugs/spotbugs/issues/242))
+
 ## 3.1.0-RC3 (2017/Jun/10)
 
 ### Added
