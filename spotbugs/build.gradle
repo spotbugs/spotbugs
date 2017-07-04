@@ -31,9 +31,8 @@ dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
+  compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
   compile 'commons-lang:commons-lang:2.6'
-  compile 'jaxen:jaxen:1.1.6'
-  compile 'jdepend:jdepend:2.9.1'
   compile 'com.google.code.findbugs:jFormatString:3.0.0'
 
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
@@ -43,6 +42,7 @@ dependencies {
   compileOnly 'com.apple:AppleJavaExtensions:1.4'
 
   testCompile 'junit:junit:4.12'
+  testCompile 'jdepend:jdepend:2.9.1'
   testCompile 'org.apache.ant:ant:1.9.4'
 
   // TODO : Some of these can be extracted to actual dependencies
