@@ -32,7 +32,7 @@
       </page>
    </extension>
    <extension
-         id="findbugsBuilder"
+         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder"
          name="%findbugsBuilderName"
          point="org.eclipse.core.resources.builders">
       <builder>
@@ -42,7 +42,7 @@
       </builder>
    </extension>
    <extension
-         id="findbugsNature"
+         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsNature"
          name="%findbugsNatureName"
          point="org.eclipse.core.resources.natures">
       <runtime>

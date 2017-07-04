@@ -36,7 +36,7 @@
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <title>
-         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
+         SpotBugs (<xsl:value-of select="/BugCollection/@version" />) 
          Analysis for 
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
@@ -1028,7 +1028,7 @@
    </head>
    <body>
       <h3>
-         <a href="http://findbugs.sourceforge.net">FindBugs</a> (<xsl:value-of select="/BugCollection/@version" />) 
+         <a href="https://spotbugs.github.io">SpotBugs</a> (<xsl:value-of select="/BugCollection/@version" />) 
          Analysis for 
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>

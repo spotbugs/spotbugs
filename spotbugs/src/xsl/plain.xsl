@@ -42,7 +42,7 @@
 <xsl:template match="/">
 	<html>
 	<head>
-		<title>FindBugs Report</title>
+		<title>SpotBugs Report</title>
 		<style type="text/css">
 		.tablerow0 {
 			background: #EEEEEE;
@@ -71,8 +71,8 @@
 
 	<body>
 
-	<h1>FindBugs Report</h1>
-		<p>Produced using <a href="http://findbugs.sourceforge.net">FindBugs</a> <xsl:value-of select="/BugCollection/@version"/>.</p>
+	<h1>SpotBugs Report</h1>
+		<p>Produced using <a href="https://spotbugs.github.io">SpotBugs</a> <xsl:value-of select="/BugCollection/@version"/>.</p>
 		<p>Project: 
 			<xsl:choose>
 				<xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>

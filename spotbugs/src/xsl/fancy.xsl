@@ -43,7 +43,7 @@
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <title>
-        FindBugs (<xsl:value-of select="/BugCollection/@version" />)
+        SpotBugs (<xsl:value-of select="/BugCollection/@version" />)
          Analysis for
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
@@ -310,7 +310,7 @@
    <body>
    <div id='content'>
       <h1>
-         FindBugs (<xsl:value-of select="/BugCollection/@version" />)
+         SpotBugs (<xsl:value-of select="/BugCollection/@version" />)
          Analysis for
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
@@ -388,7 +388,7 @@
 <!-- generate summary report from stats -->
 <xsl:template name="generateSummary" >
 <div class='summary' id='bug-summary'>
-   <h2>FindBugs Analysis generated at: <xsl:value-of select="/BugCollection/FindBugsSummary/@timestamp" /></h2>
+   <h2>SpotBugs Analysis generated at: <xsl:value-of select="/BugCollection/FindBugsSummary/@timestamp" /></h2>
    <table>
       <tr>
          <th>Package</th>
