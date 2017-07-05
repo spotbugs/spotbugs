@@ -28,6 +28,7 @@ dependencies {
 
 tasks.withType(JavaCompile).all {
   options.compilerArgs << '-Xlint:none'
+  options.encoding = 'UTF-8'
 }
 
 task classesJava7(type:JavaCompile) {
