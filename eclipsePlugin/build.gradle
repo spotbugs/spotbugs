@@ -74,6 +74,7 @@ task copyLibsForEclipse (type: Copy) {
     into "lib"
     include "*.jar"
     exclude "*xml-apis*.jar"
+    exclude "jdepend*.jar"
 }
 
 task distSrcZip(type:Exec) {
