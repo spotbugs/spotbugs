@@ -68,6 +68,10 @@ dependencies {
   }
 }
 
+clean {
+	delete "lib"
+}
+
 task copyLibsForEclipse (type: Copy) {
     dependsOn configurations.embeddedLibs
     from configurations.embeddedLibs.files
