@@ -265,7 +265,7 @@
             objectClass="org.eclipse.jdt.core.IOpenable">
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
@@ -279,7 +279,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
          <visibility>
@@ -300,7 +300,7 @@
             objectClass="org.eclipse.ui.IWorkingSet">
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
@@ -314,7 +314,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugsOnWorkingSet"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
       </objectContribution>
@@ -329,7 +329,7 @@
             objectClass="org.eclipse.core.resources.IProject">
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build">
             <separator name="doit" />
             <separator name="save" />
@@ -369,7 +369,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
            </action>
@@ -416,7 +416,7 @@
             targetID="#CompilationUnitEditorContext">
          <menu
                id="findbugs"
-               label="Find Bugs"
+               label="SpotBugs"
                path="additions"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
@@ -429,7 +429,7 @@
                class="de.tobject.findbugs.actions.FindBugsEditorAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
       </viewerContribution>
@@ -446,7 +446,7 @@
             enablesFor="1"
             icon="icons/runFindbugs.png"
             id="de.tobject.findbugs.findBugs"
-            label="&amp;Spot Bugs"
+            label="&amp;Find Bugs"
             menubarPath="additions"
             tooltip="%menu.findBugsPopup">
       </action>
@@ -580,7 +580,7 @@
          </action>
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build">
          </menu>
       </objectContribution>
@@ -644,7 +644,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
          </action>
