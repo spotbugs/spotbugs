@@ -3,30 +3,21 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Iterator;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class SignatureParserTest {
 
-    SignatureParser noParams;
-
-    SignatureParser manyParams;
-
-    @Before
-    public void setUp() {
-        noParams = new SignatureParser("()V");
-        manyParams = new SignatureParser("(IJFDZLjava/lang/String;B)Ljava/lang/Object;");
-    }
-
     @Test
     public void testNoParams() {
-        Iterator<String> i = noParams.parameterSignatureIterator();
+        SignatureParser sut = new SignatureParser("()V");
+        Iterator<String> i = sut.parameterSignatureIterator();
         Assert.assertFalse(i.hasNext());
     }
 
     @Test
     public void testManyParams() {
-        Iterator<String> i = manyParams.parameterSignatureIterator();
+        SignatureParser sut = new SignatureParser("(IJFDZLjava/lang/String;B)Ljava/lang/Object;");
+        Iterator<String> i = sut.parameterSignatureIterator();
         Assert.assertTrue(i.hasNext());
         Assert.assertEquals(i.next(), "I");
         Assert.assertTrue(i.hasNext());
