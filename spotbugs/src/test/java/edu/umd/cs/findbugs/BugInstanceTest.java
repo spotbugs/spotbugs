@@ -1,42 +1,50 @@
 package edu.umd.cs.findbugs;
 
+import static org.junit.Assert.fail;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class BugInstanceTest extends TestCase {
+public class BugInstanceTest {
 
-    BugInstance b;
+    private BugInstance b;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
         b = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
         b.setProperty("A", "a");
         b.setProperty("B", "b");
         b.setProperty("C", "c");
     }
 
+    @Test
     public void testPropertyIterator() {
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "C" }, new String[] { "a", "b", "c" });
     }
 
+    @Test
     public void testRemoveThroughIterator1() {
         removeThroughIterator(b.propertyIterator(), "A");
         checkPropertyIterator(b.propertyIterator(), new String[] { "B", "C" }, new String[] { "b", "c" });
     }
 
+    @Test
     public void testRemoveThroughIterator2() {
         removeThroughIterator(b.propertyIterator(), "B");
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "C" }, new String[] { "a", "c" });
     }
 
+    @Test
     public void testRemoveThroughIterator3() {
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B" }, new String[] { "a", "b" });
     }
 
+    @Test
     public void testIterateTooFar() {
         Iterator<BugProperty> iter = b.propertyIterator();
         get(iter);
@@ -45,6 +53,7 @@ public class BugInstanceTest extends TestCase {
         noMore(iter);
     }
 
+    @Test
     public void testMultipleRemove() {
         Iterator<BugProperty> iter = b.propertyIterator();
         iter.next();
@@ -57,6 +66,7 @@ public class BugInstanceTest extends TestCase {
         }
     }
 
+    @Test
     public void testRemoveBeforeNext() {
         Iterator<BugProperty> iter = b.propertyIterator();
         try {
@@ -67,6 +77,7 @@ public class BugInstanceTest extends TestCase {
         }
     }
 
+    @Test
     public void testRemoveAndAdd() {
         removeThroughIterator(b.propertyIterator(), "C");
         b.setProperty("D", "d");
@@ -75,6 +86,7 @@ public class BugInstanceTest extends TestCase {
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B", "D", "E" }, new String[] { "a", "b", "d", "e" });
     }
 
+    @Test
     public void testRemoveAll1() {
         removeThroughIterator(b.propertyIterator(), "A");
         checkPropertyIterator(b.propertyIterator(), new String[] { "B", "C" }, new String[] { "b", "c" });

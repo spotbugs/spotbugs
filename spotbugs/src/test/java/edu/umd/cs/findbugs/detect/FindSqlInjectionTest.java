@@ -19,13 +19,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class FindSqlInjectionTest extends TestCase {
+public class FindSqlInjectionTest {
 
+    @Test
     public void testOpenQuote() {
         assertTrue(FindSqlInjection.isOpenQuote("'"));
         assertTrue(FindSqlInjection.isOpenQuote(" '"));
@@ -37,6 +41,7 @@ public class FindSqlInjectionTest extends TestCase {
         assertFalse(FindSqlInjection.isOpenQuote("='abc'"));
     }
 
+    @Test
     public void testCloseQuote() {
         assertTrue(FindSqlInjection.isCloseQuote("'"));
         assertTrue(FindSqlInjection.isCloseQuote("' "));
@@ -47,5 +52,4 @@ public class FindSqlInjectionTest extends TestCase {
         assertFalse(FindSqlInjection.isCloseQuote("'abc'"));
         assertFalse(FindSqlInjection.isCloseQuote("='abc'"));
     }
-
 }

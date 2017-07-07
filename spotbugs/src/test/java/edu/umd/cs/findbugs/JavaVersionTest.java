@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class JavaVersionTest extends TestCase {
+import org.junit.Test;
+
+public class JavaVersionTest {
 
     private static void testJavaVersionString(String version, int maj, int min, String rest)
             throws JavaVersionException {
@@ -35,6 +37,7 @@ public class JavaVersionTest extends TestCase {
      * Test method for {@link edu.umd.cs.findbugs.JavaVersion#JavaVersion(java.lang.String)}.
      * @throws JavaVersionException if version string cannot be parsed
      */
+    @Test
     public void testJavaVersionString() throws JavaVersionException {
         // Historical versions (up to Java 8)
         testJavaVersionString("1.7", 1, 7, "");

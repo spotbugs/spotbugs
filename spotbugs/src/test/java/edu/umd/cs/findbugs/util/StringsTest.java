@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.util;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class StringsTest extends TestCase {
+import org.junit.Test;
+
+public class StringsTest {
 
     public static String[] escapedStrings = {
         // mixed entities/unicode escape sequences
@@ -46,6 +48,7 @@ public class StringsTest extends TestCase {
         "a b c \\\\\\\\u0005", "a b c \\\\\u0005 \\\\\\\\u0013", "\\\\\\",
         "a b c 1 2 3 & < > \" ' \u0005 \u0013 \u03BB \\\\u0007 a b c 1 2 3", null, "", };
 
+    @Test
     public void testEscapeXml() {
         assert (escapedStrings.length == unescapedStrings.length);
         for (int i = 0; i < unescapedStrings.length; i++) {
@@ -57,6 +60,7 @@ public class StringsTest extends TestCase {
         }
     }
 
+    @Test
     public void testUnescapeXml() {
         assert (escapedStrings.length == unescapedStrings.length);
         for (int i = 0; i < escapedStrings.length; i++) {
@@ -70,15 +74,13 @@ public class StringsTest extends TestCase {
 
     public void checkEscapeLFCRBackSlash(String expected, String argument) {
         assertEquals(argument, expected, Strings.escapeLFCRBackSlash(argument));
-
     }
 
+    @Test
     public void testEscapeLFCRBackSlash() {
-
         checkEscapeLFCRBackSlash("abc", "abc");
         checkEscapeLFCRBackSlash("\\n", "\n");
         checkEscapeLFCRBackSlash("\\r", "\r");
         checkEscapeLFCRBackSlash("\\\\a\\r", "\\a\r");
     }
-
 }

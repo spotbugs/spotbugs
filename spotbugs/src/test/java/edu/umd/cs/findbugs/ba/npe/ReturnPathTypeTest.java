@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 
 /**
@@ -28,20 +30,16 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
  *
  * @author David Hovemeyer
  */
-public class ReturnPathTypeTest extends TestCase {
+public class ReturnPathTypeTest {
+
     ReturnPathType top;
 
     ReturnPathType normal;
 
     ReturnPathType abnormal;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
         top = new ReturnPathType();
         normal = new ReturnPathType();
         normal.setCanReturnNormally(true);
@@ -49,6 +47,7 @@ public class ReturnPathTypeTest extends TestCase {
         abnormal.setCanReturnNormally(false);
     }
 
+    @Test
     public void testTop() throws Exception {
         Assert.assertFalse(top.isValid());
         Assert.assertTrue(top.isTop());
@@ -60,16 +59,19 @@ public class ReturnPathTypeTest extends TestCase {
         }
     }
 
+    @Test
     public void testCanReturnNormally() throws Exception {
         Assert.assertTrue(normal.isValid());
         Assert.assertTrue(normal.canReturnNormally());
     }
 
+    @Test
     public void testCannotReturnNormally() throws Exception {
         Assert.assertTrue(abnormal.isValid());
         Assert.assertFalse(abnormal.canReturnNormally());
     }
 
+    @Test
     public void testMergeWithTop() throws Exception {
         normal.mergeWith(top);
         Assert.assertTrue(normal.canReturnNormally());
@@ -77,26 +79,31 @@ public class ReturnPathTypeTest extends TestCase {
         Assert.assertFalse(abnormal.canReturnNormally());
     }
 
+    @Test
     public void testTopMergeWithNormalReturn() throws Exception {
         top.mergeWith(normal);
         Assert.assertTrue(top.canReturnNormally());
     }
 
+    @Test
     public void testTopMergeWithAbnormalReturn() throws Exception {
         top.mergeWith(abnormal);
         Assert.assertFalse(top.canReturnNormally());
     }
 
+    @Test
     public void testNormalMergeWIthAbnormal() throws Exception {
         normal.mergeWith(abnormal);
         Assert.assertTrue(normal.canReturnNormally());
     }
 
+    @Test
     public void testAbnormalMergeWithNormal() throws Exception {
         abnormal.mergeWith(normal);
         Assert.assertTrue(abnormal.canReturnNormally());
     }
 
+    @Test
     public void testNormalMergeWithNormal() throws Exception {
         ReturnPathType otherNormal = new ReturnPathType();
         otherNormal.setCanReturnNormally(true);
@@ -105,6 +112,7 @@ public class ReturnPathTypeTest extends TestCase {
         Assert.assertTrue(normal.canReturnNormally());
     }
 
+    @Test
     public void testAbnormalMergeWithAbnormal() throws Exception {
         ReturnPathType otherAbnormal = new ReturnPathType();
         otherAbnormal.setCanReturnNormally(false);

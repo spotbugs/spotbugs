@@ -19,13 +19,16 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author bill.pugh
  */
-public class PreorderVisitorTest extends TestCase {
+public class PreorderVisitorTest {
 
+    @Test
     public void testGetNumberArguments() {
         assertEquals(0, PreorderVisitor.getNumberArguments("()V"));
         assertEquals(0, PreorderVisitor.getNumberArguments("()I"));
@@ -37,5 +40,4 @@ public class PreorderVisitorTest extends TestCase {
         assertEquals(1, PreorderVisitor.getNumberArguments("([Ljava/lang/String;)I"));
         assertEquals(3, PreorderVisitor.getNumberArguments("(J[Ljava/lang/String;J)I"));
     }
-
 }

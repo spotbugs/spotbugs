@@ -23,18 +23,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-import junit.framework.TestCase;
-
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 
 /**
  * @author Nat Ayewah
  */
-public class TestGenericObjectType extends TestCase {
+public class TestGenericObjectType {
 
     GenericObjectType obj;
 
@@ -102,6 +106,7 @@ public class TestGenericObjectType extends TestCase {
         }
     }
 
+    @Test
     public void testParameterizedList() {
         initTest("Ljava/util/List<Ljava/lang/Comparable;>;", "java.util.List<java.lang.Comparable>", "java.util.List",
                 GenericUtilities.TypeCategory.PARAMETERIZED, null, null,
@@ -135,6 +140,5 @@ public class TestGenericObjectType extends TestCase {
         initTest("-[TE;", "? super E[]", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
                 GenericUtilities.getType("[TE;"), null);
         processTest();
-
     }
 }

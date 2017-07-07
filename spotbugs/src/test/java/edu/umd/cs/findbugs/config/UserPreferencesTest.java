@@ -1,16 +1,19 @@
 package edu.umd.cs.findbugs.config;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class UserPreferencesTest extends TestCase {
+public class UserPreferencesTest {
+
     UserPreferences prefs;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
         prefs = UserPreferences.createDefaultUserPreferences();
     }
 
+    @Test
     public void testClone() {
         UserPreferences clone = prefs.clone();
 

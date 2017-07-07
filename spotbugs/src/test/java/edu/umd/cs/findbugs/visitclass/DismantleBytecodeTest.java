@@ -19,15 +19,17 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import org.apache.bcel.Const;
+import static org.junit.Assert.assertTrue;
 
-import junit.framework.TestCase;
+import org.apache.bcel.Const;
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class DismantleBytecodeTest extends TestCase {
+public class DismantleBytecodeTest {
 
+    @Test
     public void testAreOppositeBranches() {
         assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ACMPEQ, Const.IF_ACMPNE));
         assertTrue(DismantleBytecode.areOppositeBranches(Const.IF_ICMPEQ, Const.IF_ICMPNE));

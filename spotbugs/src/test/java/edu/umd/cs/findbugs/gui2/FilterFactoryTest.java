@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -55,5 +55,4 @@ public class FilterFactoryTest {
         assertSame("Should return the originally wrapped matcher.", originalMatcher, notNotMatcher);
         assertTrue("Original matcher should now not match.", notNotMatcher.match(bug));
     }
-
 }

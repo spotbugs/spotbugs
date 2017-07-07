@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.config;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Priorities;
 
-public class ProjectFilterSettingsTest extends TestCase {
+public class ProjectFilterSettingsTest {
+
     ProjectFilterSettings plain;
 
     ProjectFilterSettings otherPlain;
@@ -37,8 +40,8 @@ public class ProjectFilterSettingsTest extends TestCase {
 
     ProjectFilterSettings changed4;
 
-    @Override
-    protected void setUp() {
+    @Before
+    public void setUp() {
         plain = ProjectFilterSettings.createDefault();
 
         otherPlain = ProjectFilterSettings.createDefault();
@@ -59,10 +62,12 @@ public class ProjectFilterSettingsTest extends TestCase {
 
     }
 
+    @Test
     public void testPlainPrio() {
         Assert.assertTrue(plain.getMinPriority().equals(ProjectFilterSettings.DEFAULT_PRIORITY));
     }
 
+    @Test
     public void testPlainCategories() {
         int count = 0;
         for (String category : DetectorFactoryCollection.instance().getBugCategories()) {
@@ -74,6 +79,7 @@ public class ProjectFilterSettingsTest extends TestCase {
         Assert.assertEquals(count, plain.getActiveCategorySet().size());
     }
 
+    @Test
     public void testAddCategory() {
         Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unknown
         // categories
@@ -85,12 +91,14 @@ public class ProjectFilterSettingsTest extends TestCase {
         Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
     }
 
+    @Test
     public void testRemoveCategory() {
         Assert.assertTrue(plain.containsCategory("MALICIOUS_CODE"));
         plain.removeCategory("MALICIOUS_CODE");
         Assert.assertFalse(plain.containsCategory("MALICIOUS_CODE"));
     }
 
+    @Test
     public void testSetMinPriority() {
         plain.setMinPriority("High");
         Assert.assertTrue(plain.getMinPriority().equals("High"));
@@ -103,6 +111,7 @@ public class ProjectFilterSettingsTest extends TestCase {
         Assert.assertTrue(plain.getMinPriorityAsInt() == Priorities.LOW_PRIORITY);
     }
 
+    @Test
     public void testEquals() {
         Assert.assertEquals(plain, otherPlain);
 
@@ -122,6 +131,7 @@ public class ProjectFilterSettingsTest extends TestCase {
         Assert.assertFalse(changed4.equals(plain));
     }
 
+    @Test
     public void testEncodeDecode() {
         ProjectFilterSettings copyOfPlain = ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
         ProjectFilterSettings.hiddenFromEncodedString(copyOfPlain, plain.hiddenToEncodedString());
@@ -132,6 +142,7 @@ public class ProjectFilterSettingsTest extends TestCase {
         Assert.assertEquals(changed4, copyOfChanged4);
     }
 
+    @Test
     public void testDisplayFalseWarnings() {
         Assert.assertEquals(plain, otherPlain);
 
@@ -147,4 +158,3 @@ public class ProjectFilterSettingsTest extends TestCase {
         Assert.assertEquals(plain, copyOfPlain);
     }
 }
-

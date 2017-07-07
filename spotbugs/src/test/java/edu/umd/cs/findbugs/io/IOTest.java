@@ -38,6 +38,7 @@ public class IOTest {
         r.nextBytes(result);
         return result;
     }
+
     @Test
     public void testReadAllWithCorrectSize() throws IOException {
 
@@ -47,6 +48,7 @@ public class IOTest {
             Assert.assertArrayEquals(input, output);
         }
     }
+
     @Test
     public void testReadAllWithSmallSize() throws IOException {
 
@@ -56,6 +58,7 @@ public class IOTest {
             Assert.assertArrayEquals(input, output);
         }
     }
+
     @Test
     public void testReadAllWithLargeSize() throws IOException {
 
@@ -65,6 +68,7 @@ public class IOTest {
             Assert.assertArrayEquals(input, output);
         }
     }
+
     @Test
     public void testReadAllWithoutSize() throws IOException {
 

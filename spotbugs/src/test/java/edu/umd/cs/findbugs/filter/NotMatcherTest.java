@@ -94,7 +94,6 @@ public class NotMatcherTest {
         return xmlOutputCreated;
     }
 
-
     private static class TestMatcher implements Matcher {
 
         private final boolean alwaysMatches;
@@ -113,6 +112,5 @@ public class NotMatcherTest {
             xmlOutput.openTag("TestMatch");
             xmlOutput.closeTag("TestMatch");
         }
-
     }
 }

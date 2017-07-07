@@ -18,11 +18,16 @@
  */
 package edu.umd.cs.findbugs.architecture;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 
 import jdepend.framework.JDepend;
 import jdepend.framework.JavaPackage;
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Verifies the package dependencies.
@@ -30,9 +35,11 @@ import junit.framework.TestCase;
  * @author Tom\u00e1s Pollak
  * @author Andrei Loskutov
  */
-public class PackageDependenciesTest extends TestCase {
+public class PackageDependenciesTest {
+
     private JDepend engine;
 
+    @Test
     public void testGui2Dependencies() {
         String expectedNotEfferent = "edu.umd.cs.findbugs.gui2";
 
@@ -52,10 +59,8 @@ public class PackageDependenciesTest extends TestCase {
         assertPackageConstraint("edu.umd.cs.findbugs.xml", expectedNotEfferent);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         engine = new JDepend();
 
         // Get the classes root directory
@@ -77,11 +82,9 @@ public class PackageDependenciesTest extends TestCase {
         engine.analyze();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         engine = null;
-
-        super.tearDown();
     }
 
     private void assertPackageConstraint(String afferent, String expectedNotEfferent) {

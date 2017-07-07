@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-public class OpcodeStackItemTest extends TestCase {
+import org.junit.Test;
+
+public class OpcodeStackItemTest {
+
+    @Test
     public void testMergeIntAndZero() {
         OpcodeStack.Item intItem = new OpcodeStack.Item("I");
         OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
@@ -31,6 +37,7 @@ public class OpcodeStackItemTest extends TestCase {
         assertNull(m2.getConstant());
     }
 
+    @Test
     public void testMergeTypeOnly() {
         OpcodeStack.Item intOnly =  OpcodeStack.Item.typeOnly("I");
         OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
@@ -42,12 +49,14 @@ public class OpcodeStackItemTest extends TestCase {
     }
 
     private static final String NEW_ITEM_KIND_NAME = "newItemKindName";
+    @Test
     public void testDefineNewItemKind() {
         int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);
         assertEquals(NEW_ITEM_KIND_NAME,
                 OpcodeStack.Item.getSpecialKindName(defined).get());
     }
 
+    @Test
     public void testDefinedItemKindIsUsedInToStringMethod() {
         int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);
         OpcodeStack.Item intItem = new OpcodeStack.Item("I");

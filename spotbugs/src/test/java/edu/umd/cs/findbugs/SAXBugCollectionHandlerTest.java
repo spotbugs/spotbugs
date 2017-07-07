@@ -1,11 +1,14 @@
 package edu.umd.cs.findbugs;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+public class SAXBugCollectionHandlerTest {
 
-public class SAXBugCollectionHandlerTest extends TestCase {
+    @Test
     public void testBugInstanceXmlPropsNoReviews() throws Exception {
         SortedBugCollection bc = new SortedBugCollection();
         bc.readXML(new StringReader(
@@ -38,6 +41,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals(16, bug.getBugRank());
     }
 
+    @Test
     public void testBugInstanceXmlPropsWithReviews() throws Exception {
         SortedBugCollection bc = new SortedBugCollection();
         bc.readXML(new StringReader(
@@ -69,6 +73,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals(16, bug.getBugRank());
     }
 
+    @Test
     public void testBugInstanceXmlPropsWithReviewsShouldFix() throws Exception {
         SortedBugCollection bc = new SortedBugCollection();
         bc.readXML(new StringReader(
@@ -100,6 +105,7 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals(16, bug.getBugRank());
     }
 
+    @Test
     public void testReadAndThenStoreXmlProps() throws Exception {
         SortedBugCollection origBC = new SortedBugCollection();
         // read it in
@@ -139,6 +145,5 @@ public class SAXBugCollectionHandlerTest extends TestCase {
         assertEquals("MS_MUTABLE_ARRAY", bug.getBugPattern().getType());
         assertEquals("1acc5c5b9b7ab9efacede805afe1e53a", bug.getInstanceHash());
         assertEquals(16, bug.getBugRank());
-
     }
 }
