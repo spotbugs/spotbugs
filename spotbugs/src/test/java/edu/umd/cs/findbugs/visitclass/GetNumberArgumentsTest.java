@@ -19,28 +19,33 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author pugh
  */
 
-public class GetNumberArgumentsTest extends TestCase {
+public class GetNumberArgumentsTest {
 
     static String[] simpleTypes = "I J B C D F I S Z".split(" ");
 
+    @Test
     public void testSimpleWithVoidReturnType() {
         for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")V"));
         }
     }
 
+    @Test
     public void testSimpleWithVoidIntegerType() {
         for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("(" + s + ")I"));
         }
     }
 
+    @Test
     public void testArrays() {
         for (String s : simpleTypes) {
             assertEquals(1, PreorderVisitor.getNumberArguments("([" + s + ")V"));
@@ -48,6 +53,7 @@ public class GetNumberArgumentsTest extends TestCase {
         }
     }
 
+    @Test
     public void testStringArguments() {
         for (String s : simpleTypes) {
             assertEquals(2, PreorderVisitor.getNumberArguments("([Ljava/lang/String;" + s + ")V"));
@@ -55,8 +61,8 @@ public class GetNumberArgumentsTest extends TestCase {
         }
     }
 
+    @Test
     public void testSimpleObjectArgument() {
         assertEquals(1, PreorderVisitor.getNumberArguments("(Ledu/umd/cs/findbugs/ba/ClassContext;)V"));
     }
-
 }

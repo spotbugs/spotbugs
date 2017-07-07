@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class IncompatMaskTest extends TestCase {
+public class IncompatMaskTest {
 
     void check(long value) {
         assertEquals(1, IncompatMask.populationCount(value));
@@ -37,6 +39,7 @@ public class IncompatMaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetFlagBits() {
         check(1);
         check(4);
@@ -46,7 +49,5 @@ public class IncompatMaskTest extends TestCase {
         check(0x10000000000L);
         check(Long.MIN_VALUE >>> 1);
         check(Long.MIN_VALUE);
-
     }
-
 }

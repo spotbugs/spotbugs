@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ClassScreenerTest extends TestCase {
+public class ClassScreenerTest {
+
     private IClassScreener emptyScreener;
 
     private ClassScreener particularClassScreener;
@@ -63,8 +65,8 @@ public class ClassScreenerTest extends TestCase {
 
     private static final String UNRELATED_THING_CLASS_JARFILENAME = makeJarURL(UNRELATED_THING_CLASS_FILENAME);
 
-    @Override
-    protected void setUp() {
+    @Before
+    public void setUp() {
         emptyScreener = new ClassScreener();
 
         particularClassScreener = new ClassScreener();
@@ -77,6 +79,7 @@ public class ClassScreenerTest extends TestCase {
         particularPackageScreener2.addAllowedPackage(FOOBAR_PACKAGE_WITH_TRAILING_DOT);
     }
 
+    @Test
     public void testEmptyClassScreener() {
         Assert.assertTrue(emptyScreener.matches(SOME_CLASS_FILENAME));
         Assert.assertTrue(emptyScreener.matches(SOME_OTHER_CLASS_FILENAME));
@@ -87,6 +90,7 @@ public class ClassScreenerTest extends TestCase {
         Assert.assertTrue(emptyScreener.matches(UNRELATED_THING_CLASS_JARFILENAME));
     }
 
+    @Test
     public void testParticularClassScreener() {
         Assert.assertTrue(particularClassScreener.matches(SOME_CLASS_FILENAME));
         Assert.assertFalse(particularClassScreener.matches(SOME_OTHER_CLASS_FILENAME));
@@ -97,6 +101,7 @@ public class ClassScreenerTest extends TestCase {
         Assert.assertFalse(particularClassScreener.matches(UNRELATED_THING_CLASS_JARFILENAME));
     }
 
+    @Test
     public void testParticularPackageScreener() {
         testPackageScreener(particularPackageScreener);
         testPackageScreener(particularPackageScreener2);
@@ -111,4 +116,3 @@ public class ClassScreenerTest extends TestCase {
         Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_JARFILENAME));
     }
 }
-

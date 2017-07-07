@@ -21,13 +21,14 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author David Hovemeyer
  */
-public class MethodHashTest extends TestCase {
+public class MethodHashTest {
 
     byte[] hash;
 
@@ -49,8 +50,8 @@ public class MethodHashTest extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() {
         hash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
         s = "0604deadbeef";
         sameHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF };
@@ -60,33 +61,40 @@ public class MethodHashTest extends TestCase {
         longerHash = new byte[] { 0x06, 0x04, (byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF, (byte) 0x01 };
     }
 
+    @Test
     public void testHashToString() {
         String s2 = ClassHash.hashToString(hash);
         Assert.assertEquals(s, s2);
     }
 
+    @Test
     public void testStringToHash() {
         byte[] hash2 = ClassHash.stringToHash(s);
         Assert.assertTrue(Arrays.equals(hash, hash2));
     }
 
+    @Test
     public void testSame() {
         Assert.assertTrue(MethodHash.compareHashes(hash, sameHash) == 0);
         Assert.assertTrue(MethodHash.compareHashes(sameHash, hash) == 0);
     }
 
+    @Test
     public void testGreater() {
         Assert.assertTrue(MethodHash.compareHashes(hash, greaterHash) < 0);
     }
 
+    @Test
     public void testLesser() {
         Assert.assertTrue(MethodHash.compareHashes(hash, lesserHash) > 0);
     }
 
+    @Test
     public void testShorter() {
         Assert.assertTrue(MethodHash.compareHashes(hash, shorterHash) > 0);
     }
 
+    @Test
     public void testLonger() {
         Assert.assertTrue(MethodHash.compareHashes(hash, longerHash) < 0);
     }

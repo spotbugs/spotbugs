@@ -8,20 +8,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import edu.umd.cs.findbugs.AppVersion;
 
-public class FindSeqNumTest extends TestCase {
+public class FindSeqNumTest {
 
     Map<String, AppVersion> versionNames;
 
     SortedMap<Long, AppVersion> timeStamps;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         versionNames = new HashMap<String, AppVersion>();
         timeStamps = new TreeMap<Long, AppVersion>();
         Set<AppVersion> versions = new HashSet<AppVersion>();
@@ -36,42 +38,52 @@ public class FindSeqNumTest extends TestCase {
         }
     }
 
+    @Test
     public void test0() {
         assertEquals(0, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "0", true, 3));
     }
 
+    @Test
     public void testminusOne() {
         assertEquals(3, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 3));
     }
 
+    @Test
     public void testminusTwo() {
         assertEquals(2, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-2", true, 3));
     }
 
+    @Test
     public void testLast() {
         assertEquals(3, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "last", true, 3));
     }
 
+    @Test
     public void testlastVersion() {
         assertEquals(3, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "lastVersion", true, 3));
     }
 
+    @Test
     public void test1() {
         assertEquals(1, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "1", true, 3));
     }
 
+    @Test
     public void testV1_0() {
         assertEquals(0, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v1.0", true, 3));
     }
 
+    @Test
     public void testV1_1() {
         assertEquals(1, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v1.1", true, 3));
     }
 
+    @Test
     public void testV2_0() {
         assertEquals(2, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.0", true, 3));
     }
 
+    @Test
     public void testV2_1() {
         try {
             Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.1", true, 0);
@@ -81,36 +93,43 @@ public class FindSeqNumTest extends TestCase {
         }
     }
 
+    @Test
     public void testAfterMay5() {
         assertEquals(0, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "5/5/2005", true, 3));
     }
 
+    @Test
     public void testAfterJune5() {
         assertEquals(1, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "6/5/2005", true, 3));
     }
 
+    @Test
     public void testAfterJune15() {
         assertEquals(2, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 15, 2005", true, 3));
     }
 
+    @Test
     public void testAfterJune25() {
         assertEquals(Long.MAX_VALUE, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 25, 2005", true, 3));
     }
 
+    @Test
     public void testBeforeMay5() {
         assertEquals(Long.MIN_VALUE, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "5/5/2005", false, 3));
     }
 
+    @Test
     public void testBeforeJune5() {
         assertEquals(0, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "6/5/2005", false, 3));
     }
 
+    @Test
     public void testBeforeJune15() {
         assertEquals(1, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 15, 2005", false, 3));
     }
 
+    @Test
     public void testBeforeJune25() {
         assertEquals(2, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 25, 2005", false, 3));
     }
-
 }

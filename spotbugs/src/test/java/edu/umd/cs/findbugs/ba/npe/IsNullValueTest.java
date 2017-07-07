@@ -1,8 +1,15 @@
 package edu.umd.cs.findbugs.ba.npe;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class IsNullValueTest extends TestCase {
+import org.junit.Ignore;
+import org.junit.Test;
+
+public class IsNullValueTest {
+
+    @Test
     public void testMerge1() {
         IsNullValue nullValue = IsNullValue.nullValue();
         IsNullValue nullExceptionValue = IsNullValue.nullValue().toExceptionValue();
@@ -11,6 +18,7 @@ public class IsNullValueTest extends TestCase {
         assertFalse(result.isException());
     }
 
+    @Test
     public void testMerge2() {
         IsNullValue nullExceptionValue = IsNullValue.nullValue().toExceptionValue();
         IsNullValue nonNullValue = IsNullValue.nonNullValue();
@@ -20,6 +28,7 @@ public class IsNullValueTest extends TestCase {
         assertEquals(nsp_e, IsNullValue.nullOnSimplePathValue().toExceptionValue());
     }
 
+    @Test
     public void testMerge3() {
         IsNullValue nullValue = IsNullValue.nullValue();
         IsNullValue nsp_e = IsNullValue.nullOnSimplePathValue().toExceptionValue();
@@ -28,14 +37,17 @@ public class IsNullValueTest extends TestCase {
         assertFalse(nsp.isException());
     }
 
-    // public void testMerge4() {
-    // IsNullValue noKaboom = IsNullValue.noKaboomNonNullValue(null);
-    // IsNullValue nsp_e =
-    // IsNullValue.nullOnSimplePathValue().toExceptionValue();
-    // IsNullValue nsp_e2 = IsNullValue.merge(noKaboom, nsp_e);
-    // assertTrue(nsp_e2.isNullOnSomePath());
-    // assertTrue(nsp_e2.isException());
-    // }
+    @Ignore
+    @Test
+    public void testMerge4() {
+        IsNullValue noKaboom = IsNullValue.noKaboomNonNullValue(null);
+        IsNullValue nsp_e = IsNullValue.nullOnSimplePathValue().toExceptionValue();
+        IsNullValue nsp_e2 = IsNullValue.merge(noKaboom, nsp_e);
+        assertTrue(nsp_e2.isNullOnSomePath());
+        assertTrue(nsp_e2.isException());
+    }
+
+    @Test
     public void testMerge5() {
         IsNullValue checkedNonNull = IsNullValue.checkedNonNullValue();
         IsNullValue nsp_e = IsNullValue.nullOnSimplePathValue().toExceptionValue();
@@ -44,6 +56,7 @@ public class IsNullValueTest extends TestCase {
         assertTrue(nsp_e2.isException());
     }
 
+    @Test
     public void testMerge6() {
         IsNullValue checkedNull_e = IsNullValue.checkedNullValue().toExceptionValue();
         IsNullValue unknown = IsNullValue.nonReportingNotNullValue();

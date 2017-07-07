@@ -19,13 +19,18 @@
 
 package edu.umd.cs.findbugs.util;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class ClassNameTest extends TestCase {
+public class ClassNameTest {
 
+    @Test
     public void testExtractPackagePrefix() {
         assertEquals("", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 0));
         assertEquals("org", ClassName.extractPackagePrefix("org", 1));
@@ -34,6 +39,7 @@ public class ClassNameTest extends TestCase {
         assertEquals("org.apache.ant.subpkg.sub2", ClassName.extractPackagePrefix("org.apache.ant.subpkg.sub2", 6));
     }
 
+    @Test
     public void testExtractClassName() {
         assertEquals("java/lang/Integer", ClassName.extractClassName("Ljava/lang/Integer;"));
         assertEquals("java/lang/Integer", ClassName.extractClassName("[Ljava/lang/Integer;"));
@@ -42,6 +48,7 @@ public class ClassNameTest extends TestCase {
         assertEquals("java/lang/Integer", ClassName.extractClassName("java/lang/Integer"));
     }
 
+    @Test
     public void testGetPrimitiveType() {
         assertEquals("I", ClassName.getPrimitiveType("java/lang/Integer"));
         assertEquals("F", ClassName.getPrimitiveType("java/lang/Float"));
@@ -55,6 +62,7 @@ public class ClassNameTest extends TestCase {
         assertNull(ClassName.getPrimitiveType("java/util/HashMap"));
     }
 
+    @Test
     public void testExtractClassNameBad() {
         try {
             ClassName.extractClassName("L[Ljava/lang/Integer;");
@@ -62,7 +70,5 @@ public class ClassNameTest extends TestCase {
         } catch (IllegalArgumentException e) {
             assert true;
         }
-
     }
-
 }

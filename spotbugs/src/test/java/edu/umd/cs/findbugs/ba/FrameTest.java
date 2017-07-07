@@ -18,5 +18,4 @@ public class FrameTest {
         };
         assertThat(frame.toString(), is(equalTo("[value]")));
     }
-
 }

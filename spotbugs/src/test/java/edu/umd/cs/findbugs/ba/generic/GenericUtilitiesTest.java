@@ -20,24 +20,24 @@
 package edu.umd.cs.findbugs.ba.generic;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class GenericUtilitiesTest extends TestCase {
-    /**
-     *
-     */
+public class GenericUtilitiesTest {
+
     private static final String SAMPLE_SIGNATURE = "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
 
+    @Test
     public void testUnmatchedRightAngleBracket() {
         assertEquals(3, GenericUtilities.nextUnmatchedRightAngleBracket("<I>>", 0));
         assertEquals(1, GenericUtilities.nextUnmatchedRightAngleBracket("I><I>", 0));
@@ -58,23 +58,27 @@ public class GenericUtilitiesTest extends TestCase {
         assertEquals("com.google.common.util.WeakIdentityHashMap$IdentityWeakReference", t.toString());
     }
 
+    @Test
     public void testMapSignature() {
         GenericObjectType t = (GenericObjectType) GenericUtilities
                 .getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
         assertEquals(2, t.getNumParameters());
     }
 
+    @Test
     public void testNestedSignatureParser() {
         GenericSignatureParser parser = new GenericSignatureParser("(" + SAMPLE_SIGNATURE + ")V");
         assertEquals(1, parser.getNumParameters());
     }
 
+    @Test
     public void testOKSignaturesThatHaveCausedProblems() {
         GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;");
         GenericUtilities.getType("[Ljava/util/Map<Ljava/lang/String;[Ljava/lang/String;>;");
         GenericUtilities.getType("Lcom/palantir/finance/commons/service/calculator/Call<-Ljava/util/List<!*>;+Ljava/util/List<Ljava/lang/String;>;>;");
     }
 
+    @Test
     public void testEclipseJDTInvalidUpperBoundSignature() {
         final Type type = GenericUtilities.getType("!+LHasUniqueKey<Ljava/lang/Integer;>;");
         assertThat(type, instanceOf(GenericObjectType.class));
@@ -82,6 +86,7 @@ public class GenericUtilitiesTest extends TestCase {
         assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
     }
 
+    @Test
     public void testEclipseJDTInvalidLowerBoundSignature() {
         final Type type = GenericUtilities.getType("!-LHasUniqueKey<Ljava/lang/Integer;>;");
         assertThat(type, instanceOf(GenericObjectType.class));
@@ -89,6 +94,7 @@ public class GenericUtilitiesTest extends TestCase {
         assertEquals("HasUniqueKey<java.lang.Integer>", ((GenericObjectType) type).getExtension().toString());
     }
 
+    @Test
     public void testEclipseJDTInvalidWildcardSignature() {
         final Type type = GenericUtilities.getType("!*");
         assertThat(type, instanceOf(GenericObjectType.class));

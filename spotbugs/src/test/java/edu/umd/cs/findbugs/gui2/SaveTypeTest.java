@@ -19,19 +19,21 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.TestCase;
+import java.io.File;
+import org.junit.Test;
 
 /**
  * @author Bill Pugh
  */
-public class SaveTypeTest extends TestCase {
+public class SaveTypeTest {
 
     private void check(SaveType type, String file) {
         assertEquals(type, SaveType.forFile(new File(file)));
     }
 
+    @Test
     public void testSaveTypes() {
         check(SaveType.HTML_OUTPUT, "/home/pugh/bugs.html");
         check(SaveType.HTML_OUTPUT, "/home/pugh/bugs.htm");
@@ -42,5 +44,4 @@ public class SaveTypeTest extends TestCase {
         check(SaveType.FBP_FILE, "/home/pugh/bugs.fbp");
         check(SaveType.FBA_FILE, "/home/pugh/bugs.fba");
     }
-
 }

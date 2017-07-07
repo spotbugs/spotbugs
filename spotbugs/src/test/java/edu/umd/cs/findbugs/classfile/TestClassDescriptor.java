@@ -51,5 +51,4 @@ public class TestClassDescriptor {
         assertEquals("com.bla", a.getPackageName());
         assertEquals("1", a.getSimpleName());
     }
-
 }

@@ -19,13 +19,17 @@
 
 package edu.umd.cs.findbugs;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class ObfuscateTest extends TestCase {
+public class ObfuscateTest {
 
+    @Test
     public void testMethodSignature() {
         String sig = "([Lcom.google.Search;I)Lcom.google.Money;";
         String result = Obfuscate.hashMethodSignature(sig);
@@ -33,10 +37,10 @@ public class ObfuscateTest extends TestCase {
         System.out.println(result);
     }
 
+    @Test
     public void testMethodSignatureDoesntChangeForCoreTypes() {
         String sig = "([Ljava/lang/String;I)Ljava/util/Map;";
         String result = Obfuscate.hashMethodSignature(sig);
         assertEquals(sig, result);
     }
-
 }

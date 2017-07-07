@@ -19,20 +19,24 @@
 
 package edu.umd.cs.findbugs.internalAnnotations;
 
-import java.util.regex.Matcher;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import junit.framework.TestCase;
+import java.util.regex.Matcher;
+import org.junit.Test;
 
 /**
  * @author pugh
  */
-public class SlashedClassNameTest extends TestCase {
+public class SlashedClassNameTest {
 
+    @Test
     public void testFoo() {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("Foo");
         assertTrue(m.matches());
     }
 
+    @Test
     public void testFooBar() {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo.Bar");
         assertFalse(m.matches());
@@ -40,6 +44,7 @@ public class SlashedClassNameTest extends TestCase {
         assertTrue(!m.matches());
     }
 
+    @Test
     public void testFoo1Bar2() {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo1.Bar2");
         assertFalse(m.matches());
