@@ -24,6 +24,7 @@ dependencies {
 
   compile project(':spotbugs')
   compile project(':eclipsePlugin')
+  compile project(path: ':eclipsePlugin', configuration: 'compileOnly')
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   compile project(':spotbugs-annotations')
