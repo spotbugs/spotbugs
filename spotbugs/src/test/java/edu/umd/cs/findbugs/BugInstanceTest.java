@@ -1,7 +1,5 @@
 package edu.umd.cs.findbugs;
 
-import static org.junit.Assert.fail;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -44,37 +42,27 @@ public class BugInstanceTest {
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B" }, new String[] { "a", "b" });
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testIterateTooFar() {
         Iterator<BugProperty> iter = b.propertyIterator();
         get(iter);
         get(iter);
         get(iter);
-        noMore(iter);
+        iter.next();
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void testMultipleRemove() {
         Iterator<BugProperty> iter = b.propertyIterator();
         iter.next();
         iter.remove();
-        try {
-            iter.remove();
-            fail();
-        } catch (IllegalStateException e) {
-            assert true;
-        }
+        iter.remove();
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void testRemoveBeforeNext() {
         Iterator<BugProperty> iter = b.propertyIterator();
-        try {
-            iter.remove();
-            Assert.fail();
-        } catch (IllegalStateException e) {
-            assert true;
-        }
+        iter.remove();
     }
 
     @Test
@@ -102,15 +90,6 @@ public class BugInstanceTest {
             // Good
         } catch (NoSuchElementException e) {
             Assert.assertTrue(false);
-        }
-    }
-
-    private void noMore(Iterator<BugProperty> iter) {
-        try {
-            iter.next();
-            Assert.fail();
-        } catch (NoSuchElementException e) {
-            assert true;
         }
     }
 

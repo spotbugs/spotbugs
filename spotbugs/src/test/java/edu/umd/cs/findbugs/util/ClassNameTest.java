@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -62,13 +61,8 @@ public class ClassNameTest {
         assertNull(ClassName.getPrimitiveType("java/util/HashMap"));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testExtractClassNameBad() {
-        try {
-            ClassName.extractClassName("L[Ljava/lang/Integer;");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assert true;
-        }
+        ClassName.extractClassName("L[Ljava/lang/Integer;");
     }
 }
