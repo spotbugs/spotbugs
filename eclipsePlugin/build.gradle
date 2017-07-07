@@ -23,11 +23,6 @@ sourceSets {
   }
 }
 
-configurations {
-  embeddedLibs
-  compile.extendsFrom embeddedLibs
-}
-
 def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
 
 def localProps = new Properties()
@@ -43,19 +38,10 @@ if (!eclipseExecutable.exists()) {
    eclipsePluginsDir = new File(eclipseRootDir, "plugins")
 }
 
-// TODO : convert these to external dependencies
-def requiredLibs = fileTree(dir:'lib', include:[
-  'jsr305.jar',
-  'jFormatString.jar',
-  'commons-lang-2.6.jar',
-  'dom4j-1.6.1.jar',
-  'jaxen-1.1.6.jar'
-])
-
 dependencies {
   // List below includes all Eclipse SDK plugins except few causing troubles.
   // TODO: it should include what is required in the MANIFEST.MF, and nothing else
-  compile fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
+  compileOnly fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
     exclude:[
         '**/datanucleus-enhancer*.jar',
         'edu.umd.cs.findbugs.**/*.jar',
@@ -63,47 +49,45 @@ dependencies {
         'com.github.spotbugs.**/*.jar'
         ])
 
-  embeddedLibs(project(':spotbugs')) {
+  compile(project(':spotbugs')) {
     transitive = true
   }
 }
 
 clean {
-	delete "lib"
+    delete "lib"
 }
 
-task copyLibsForEclipse (type: Copy) {
-    dependsOn configurations.embeddedLibs
-    from configurations.embeddedLibs.files
+task copyLibsForEclipse(type: Copy) {
+    dependsOn configurations.compile
+    from configurations.compile.files
     into "lib"
     include "*.jar"
     exclude "*xml-apis*.jar"
-    exclude "jdepend*.jar"
 }
 
 task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
 }
 
-
 task updateManifest {
-  dependsOn configurations.embeddedLibs, ':spotbugs:updateManifest', copyLibsForEclipse
+  dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   doLast {
-	def manifestSpec = manifest {
-	  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-	  attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
-	             'Bundle-Version': project.version,
-	             'Bundle-ClassPath': ".,spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
-	                    projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
-	}
+    def manifestSpec = manifest {
+      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+                 'Bundle-Version': project.version,
+                 'Bundle-ClassPath': ".,spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
+                      projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+    }
 
-	def distManifestSpec = manifest {
-	  from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-	  attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
-	             'Bundle-Version': project.version,
-	             'Bundle-ClassPath': "spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
-	                    projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
-	}
+    def distManifestSpec = manifest {
+      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+                 'Bundle-Version': project.version,
+                 'Bundle-ClassPath': "spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
+                        projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+    }
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
     distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
@@ -161,7 +145,7 @@ jar {
   // Make sure we always update the manifest when building
   dependsOn updateManifest
   includeEmptyDirs = false
-  from(configurations.embeddedLibs.collect { zipTree(it) }) {
+  from(configurations.compile.collect { zipTree(it) }) {
     exclude 'edu/umd/cs/findbugs/gui/**/*.*'
     exclude 'edu/umd/cs/findbugs/gui2/**/*.*'
     exclude 'edu/umd/cs/findbugs/userAnnotations/ri/**/*.*'
@@ -192,9 +176,6 @@ def distSpec = copySpec {
   }
   from('../spotbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
     include 'plugin/**'
-  }
-  from('../spotbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
-    into 'plugin/'
   }
   from('META-INF/MANIFEST-DIST.MF') {
     filter { line ->
