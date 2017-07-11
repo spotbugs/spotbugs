@@ -179,9 +179,9 @@ public class SetBugDatabaseInfo {
         if (commandLine.resetSource) {
             project.getSourceDirList().clear();
         }
-        for (String source : commandLine.sourcePaths) {
-            project.addSourceDir(source);
-        }
+
+        project.addSourceDirs(commandLine.sourcePaths);
+
         if (commandLine.purgeStats) {
             origCollection.getProjectStats().getPackageStats().clear();
         }
@@ -253,8 +253,8 @@ public class SetBugDatabaseInfo {
             }
             foundPaths.removeAll(toRemove);
 
+            project.addSourceDirs(foundPaths);
             for (String dir : foundPaths) {
-                project.addSourceDir(dir);
                 if (argCount < args.length) {
                     System.out.println("Found " + dir);
                 }

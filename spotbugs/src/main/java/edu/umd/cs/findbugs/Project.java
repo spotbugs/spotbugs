@@ -237,18 +237,26 @@ public class Project implements XMLWriteable {
     }
 
     /**
-     * Add a source directory to the project.
+     * Add source directories to the project.
      *
-     * @param dirName
-     *            the directory to add
-     * @return true if the source directory was added, or false if the source
-     *         directory was already present
+     * @param dirNames
+     *            the directories to add
+     * @return true if a source directory was added, or false if all source
+     *         directory were already present
      */
-    public boolean addSourceDir(String dirName) {
+    public boolean addSourceDirs(Collection<String> dirNames) {
         boolean isNew = false;
-        for (String dir : makeAbsoluteCwdCandidates(dirName)) {
-            isNew = addToListInternal(srcDirList, dir) || isNew;
+
+        if (dirNames == null || dirNames.isEmpty()) {
+            return isNew;
         }
+
+        for (String dirName : dirNames) {
+	        for (String dir : makeAbsoluteCwdCandidates(dirName)) {
+	            isNew = addToListInternal(srcDirList, dir) || isNew;
+	        }
+        }
+
         sourceFinder = new SourceFinder(this);
         return isNew;
     }
