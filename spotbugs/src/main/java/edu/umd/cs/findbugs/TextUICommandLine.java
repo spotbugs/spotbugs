@@ -27,9 +27,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -549,9 +551,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
             addAuxClassPathEntries(argument);
         } else if ("-sourcepath".equals(option)) {
             StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
+            List<String> sourceDirs = new ArrayList<>();
             while (tok.hasMoreTokens()) {
-                project.addSourceDir(new File(tok.nextToken()).getAbsolutePath());
+                sourceDirs.add(new File(tok.nextToken()).getAbsolutePath());
             }
+            project.addSourceDirs(sourceDirs);
         } else if("-userPrefs".equals(option)){
             UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
             prefs.read(new FileInputStream(argument));

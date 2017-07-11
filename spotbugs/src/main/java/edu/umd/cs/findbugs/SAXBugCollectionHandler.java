@@ -25,6 +25,7 @@ import static java.util.Collections.unmodifiableSet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -652,6 +653,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         }
     }
 
+    List<String> sourceDirs = new ArrayList<>();
+
     @Override
     public void endElement(String uri, String name, String qName) throws SAXException {
         // URI should always be empty.
@@ -662,7 +665,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if (nestingOfIgnoredElements > 0) {
             // ignore it
         } else if ("Project".equals(qName)) {
-            // noop
+            Project project = this.project;
+            assert project != null;
+            project.addSourceDirs(sourceDirs);
         } else if (elementStack.size() > 1) {
             String outerElement = elementStack.get(elementStack.size() - 2);
 
@@ -684,7 +689,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 if ("Jar".equals(qName)) {
                     project.addFile(makeAbsolute(getTextContents()));
                 } else if ("SrcDir".equals(qName)) {
-                    project.addSourceDir(makeAbsolute(getTextContents()));
+                    sourceDirs.add(makeAbsolute(getTextContents()));
                 } else if ("AuxClasspathEntry".equals(qName)) {
                     project.addAuxClasspathEntry(makeAbsolute(getTextContents()));
                 }
