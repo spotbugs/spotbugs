@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Collections;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -59,7 +60,7 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen != INVOKESPECIAL) {
+        if (seen != Const.INVOKESPECIAL) {
             sawOpenInAppendMode = false;
             return;
         }

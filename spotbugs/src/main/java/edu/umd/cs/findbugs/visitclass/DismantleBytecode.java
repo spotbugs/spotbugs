@@ -26,6 +26,7 @@ import java.text.NumberFormat;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
@@ -201,10 +202,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     public boolean isMethodCall() {
         switch(opcode) {
         default: return false;
-        case INVOKEINTERFACE:
-        case INVOKESPECIAL:
-        case INVOKEVIRTUAL:
-        case INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESTATIC:
             return true;
 
         }
@@ -218,7 +219,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
         if (referencedMethod == null) {
             referencedMethod = DescriptorFactory.instance().getMethodDescriptor(classConstantOperand, nameConstantOperand,
-                    sigConstantOperand, opcode == INVOKESTATIC);
+                    sigConstantOperand, opcode == Const.INVOKESTATIC);
         }
         return referencedMethod;
     }
@@ -232,7 +233,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
         if (getReferencedXClass() != null && referencedXMethod == null) {
             referencedXMethod = Hierarchy2.findInvocationLeastUpperBound(getReferencedXClass(), nameConstantOperand,
-                    sigConstantOperand, opcode == INVOKESTATIC, opcode == INVOKEINTERFACE);
+                    sigConstantOperand, opcode == Const.INVOKESTATIC, opcode == Const.INVOKEINTERFACE);
         }
 
         return referencedXMethod;
@@ -246,7 +247,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
         if (referencedField == null) {
             referencedField = DescriptorFactory.instance().getFieldDescriptor(classConstantOperand, nameConstantOperand,
-                    sigConstantOperand, opcode == GETSTATIC || opcode == PUTSTATIC);
+                    sigConstantOperand, opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
         }
         return referencedField;
     }
@@ -255,7 +256,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     XField getXFieldOperand() {
         if (getReferencedXClass() != null && referencedXField == null) {
             referencedXField = getReferencedXClass().findField(nameConstantOperand, sigConstantOperand,
-                    opcode == GETSTATIC || opcode == PUTSTATIC);
+                    opcode == Const.GETSTATIC || opcode == Const.PUTSTATIC);
         }
 
         return referencedXField;
@@ -365,11 +366,11 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public int getIntConstant() {
-        assert getOpcode() != LDC || getConstantRefOperand() instanceof ConstantInteger;
+        assert getOpcode() != Const.LDC || getConstantRefOperand() instanceof ConstantInteger;
         return intConstant;
     }
     public long getLongConstant() {
-        assert getOpcode() != LDC2_W || getConstantRefOperand() instanceof ConstantLong;
+        assert getOpcode() != Const.LDC2_W || getConstantRefOperand() instanceof ConstantLong;
         return longConstant;
     }
     public int getBranchOffset() {
@@ -419,7 +420,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             throw new IllegalArgumentException("offset (" + offset + ") must be nonnegative");
         }
         if (offset >= prevOpcode.length || offset > sizePrevOpcodeBuffer) {
-            return NOP;
+            return Const.NOP;
         }
         int pos = currentPosInPrevOpcodeBuffer - offset;
         if (pos < 0) {
@@ -452,7 +453,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
      * @return true if instruction is a switch, false if not
      */
     public static boolean isSwitch(int opcode) {
-        return opcode == LOOKUPSWITCH || opcode == TABLESWITCH;
+        return opcode == Const.LOOKUPSWITCH || opcode == Const.TABLESWITCH;
     }
 
     @SuppressFBWarnings("EI")
@@ -562,10 +563,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 prevOpcode[currentPosInPrevOpcodeBuffer] = opcode;
                 i++;
                 // System.out.println(OPCODE_NAMES[opCode]);
-                int byteStreamArgCount = NO_OF_OPERANDS[opcode];
-                if (byteStreamArgCount == UNPREDICTABLE) {
+                int byteStreamArgCount = Const.getNoOfOperands(opcode);
+                if (byteStreamArgCount == Const.UNPREDICTABLE) {
 
-                    if (opcode == LOOKUPSWITCH) {
+                    if (opcode == Const.LOOKUPSWITCH) {
                         int pad = 4 - (i & 3);
                         if (pad == 4) {
                             pad = 0;
@@ -589,7 +590,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             i += 8;
                         }
                         sortByOffset(switchOffsets, switchLabels);
-                    } else if (opcode == TABLESWITCH) {
+                    } else if (opcode == Const.TABLESWITCH) {
                         int pad = 4 - (i & 3);
                         if (pad == 4) {
                             pad = 0;
@@ -616,49 +617,49 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             i += 4;
                         }
                         sortByOffset(switchOffsets, switchLabels);
-                    } else if (opcode == WIDE) {
+                    } else if (opcode == Const.WIDE) {
                         opcodeIsWide = true;
                         opcode = byteStream.readUnsignedByte();
                         i++;
                         switch (opcode) {
-                        case ILOAD:
-                        case FLOAD:
-                        case ALOAD:
-                        case LLOAD:
-                        case DLOAD:
-                        case ISTORE:
-                        case FSTORE:
-                        case ASTORE:
-                        case LSTORE:
-                        case DSTORE:
-                        case RET:
+                        case Const.ILOAD:
+                        case Const.FLOAD:
+                        case Const.ALOAD:
+                        case Const.LLOAD:
+                        case Const.DLOAD:
+                        case Const.ISTORE:
+                        case Const.FSTORE:
+                        case Const.ASTORE:
+                        case Const.LSTORE:
+                        case Const.DSTORE:
+                        case Const.RET:
                             registerOperand = byteStream.readUnsignedShort();
                             i += 2;
                             break;
-                        case IINC:
+                        case Const.IINC:
                             registerOperand = byteStream.readUnsignedShort();
                             i += 2;
                             intConstant = byteStream.readShort();
                             i += 2;
                             break;
                         default:
-                            throw new IllegalStateException(String.format("bad wide bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
+                            throw new IllegalStateException(String.format("bad wide bytecode %d: %s" , opcode, Const.getOpcodeName(opcode)));
                         }
                     } else {
-                        throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
+                        throw new IllegalStateException(String.format("bad unpredicatable bytecode %d: %s" , opcode, Const.getOpcodeName(opcode)));
                     }
                 } else {
                     if (byteStreamArgCount < 0) {
-                        throw new IllegalStateException(String.format("bad length for bytecode %d: %s" , opcode, OPCODE_NAMES[opcode]));
+                        throw new IllegalStateException(String.format("bad length for bytecode %d: %s" , opcode, Const.getOpcodeName(opcode)));
                     }
-                    for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
+                    for (int k = 0; k < Const.getOperandTypeCount(opcode); k++) {
 
                         int v;
-                        int t = TYPE_OF_OPERANDS[opcode][k];
+                        int t = Const.getOperandType(opcode, k);
                         int m = MEANING_OF_OPERANDS[opcode][k];
                         boolean unsigned = (m == M_CP || m == M_R || m == M_UINT);
                         switch (t) {
-                        case T_BYTE:
+                        case Const.T_BYTE:
                             if (unsigned) {
                                 v = byteStream.readUnsignedByte();
                             } else {
@@ -670,7 +671,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                              */
                             i++;
                             break;
-                        case T_SHORT:
+                        case Const.T_SHORT:
                             if (unsigned) {
                                 v = byteStream.readUnsignedShort();
                             } else {
@@ -678,7 +679,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                             }
                             i += 2;
                             break;
-                        case T_INT:
+                        case Const.T_INT:
                             v = byteStream.readInt();
                             i += 4;
                             break;
@@ -745,101 +746,101 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
                 }
                 switch (opcode) {
-                case IINC:
+                case Const.IINC:
                     isRegisterLoad = true;
                     isRegisterStore = true;
                     break;
-                case ILOAD_0:
-                case ILOAD_1:
-                case ILOAD_2:
-                case ILOAD_3:
-                    registerOperand = opcode - ILOAD_0;
+                case Const.ILOAD_0:
+                case Const.ILOAD_1:
+                case Const.ILOAD_2:
+                case Const.ILOAD_3:
+                    registerOperand = opcode - Const.ILOAD_0;
                     isRegisterLoad = true;
                     break;
 
-                case ALOAD_0:
-                case ALOAD_1:
-                case ALOAD_2:
-                case ALOAD_3:
-                    registerOperand = opcode - ALOAD_0;
+                case Const.ALOAD_0:
+                case Const.ALOAD_1:
+                case Const.ALOAD_2:
+                case Const.ALOAD_3:
+                    registerOperand = opcode - Const.ALOAD_0;
                     isRegisterLoad = true;
                     break;
 
-                case FLOAD_0:
-                case FLOAD_1:
-                case FLOAD_2:
-                case FLOAD_3:
-                    registerOperand = opcode - FLOAD_0;
+                case Const.FLOAD_0:
+                case Const.FLOAD_1:
+                case Const.FLOAD_2:
+                case Const.FLOAD_3:
+                    registerOperand = opcode - Const.FLOAD_0;
                     isRegisterLoad = true;
                     break;
 
-                case DLOAD_0:
-                case DLOAD_1:
-                case DLOAD_2:
-                case DLOAD_3:
-                    registerOperand = opcode - DLOAD_0;
+                case Const.DLOAD_0:
+                case Const.DLOAD_1:
+                case Const.DLOAD_2:
+                case Const.DLOAD_3:
+                    registerOperand = opcode - Const.DLOAD_0;
                     isRegisterLoad = true;
                     break;
 
-                case LLOAD_0:
-                case LLOAD_1:
-                case LLOAD_2:
-                case LLOAD_3:
-                    registerOperand = opcode - LLOAD_0;
+                case Const.LLOAD_0:
+                case Const.LLOAD_1:
+                case Const.LLOAD_2:
+                case Const.LLOAD_3:
+                    registerOperand = opcode - Const.LLOAD_0;
                     isRegisterLoad = true;
                     break;
-                case ILOAD:
-                case FLOAD:
-                case ALOAD:
-                case LLOAD:
-                case DLOAD:
+                case Const.ILOAD:
+                case Const.FLOAD:
+                case Const.ALOAD:
+                case Const.LLOAD:
+                case Const.DLOAD:
                     isRegisterLoad = true;
                     break;
 
-                case ISTORE_0:
-                case ISTORE_1:
-                case ISTORE_2:
-                case ISTORE_3:
-                    registerOperand = opcode - ISTORE_0;
+                case Const.ISTORE_0:
+                case Const.ISTORE_1:
+                case Const.ISTORE_2:
+                case Const.ISTORE_3:
+                    registerOperand = opcode - Const.ISTORE_0;
                     isRegisterStore = true;
                     break;
 
-                case ASTORE_0:
-                case ASTORE_1:
-                case ASTORE_2:
-                case ASTORE_3:
-                    registerOperand = opcode - ASTORE_0;
+                case Const.ASTORE_0:
+                case Const.ASTORE_1:
+                case Const.ASTORE_2:
+                case Const.ASTORE_3:
+                    registerOperand = opcode - Const.ASTORE_0;
                     isRegisterStore = true;
                     break;
 
-                case FSTORE_0:
-                case FSTORE_1:
-                case FSTORE_2:
-                case FSTORE_3:
-                    registerOperand = opcode - FSTORE_0;
+                case Const.FSTORE_0:
+                case Const.FSTORE_1:
+                case Const.FSTORE_2:
+                case Const.FSTORE_3:
+                    registerOperand = opcode - Const.FSTORE_0;
                     isRegisterStore = true;
                     break;
 
-                case DSTORE_0:
-                case DSTORE_1:
-                case DSTORE_2:
-                case DSTORE_3:
-                    registerOperand = opcode - DSTORE_0;
+                case Const.DSTORE_0:
+                case Const.DSTORE_1:
+                case Const.DSTORE_2:
+                case Const.DSTORE_3:
+                    registerOperand = opcode - Const.DSTORE_0;
                     isRegisterStore = true;
                     break;
 
-                case LSTORE_0:
-                case LSTORE_1:
-                case LSTORE_2:
-                case LSTORE_3:
-                    registerOperand = opcode - LSTORE_0;
+                case Const.LSTORE_0:
+                case Const.LSTORE_1:
+                case Const.LSTORE_2:
+                case Const.LSTORE_3:
+                    registerOperand = opcode - Const.LSTORE_0;
                     isRegisterStore = true;
                     break;
-                case ISTORE:
-                case FSTORE:
-                case ASTORE:
-                case LSTORE:
-                case DSTORE:
+                case Const.ISTORE:
+                case Const.FSTORE:
+                case Const.ASTORE:
+                case Const.LSTORE:
+                case Const.DSTORE:
                     isRegisterStore = true;
                     break;
                 default:
@@ -847,29 +848,29 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 }
 
                 switch (opcode) {
-                case ILOAD:
-                case FLOAD:
-                case ALOAD:
-                case LLOAD:
-                case DLOAD:
+                case Const.ILOAD:
+                case Const.FLOAD:
+                case Const.ALOAD:
+                case Const.LLOAD:
+                case Const.DLOAD:
                     // registerKind = opcode - ILOAD;
                     break;
-                case ISTORE:
-                case FSTORE:
-                case ASTORE:
-                case LSTORE:
-                case DSTORE:
+                case Const.ISTORE:
+                case Const.FSTORE:
+                case Const.ASTORE:
+                case Const.LSTORE:
+                case Const.DSTORE:
                     // registerKind = opcode - ISTORE;
                     break;
-                case RET:
+                case Const.RET:
                     // registerKind = R_REF;
                     break;
-                case GETSTATIC:
-                case PUTSTATIC:
+                case Const.GETSTATIC:
+                case Const.PUTSTATIC:
                     refFieldIsStatic = true;
                     break;
-                case GETFIELD:
-                case PUTFIELD:
+                case Const.GETFIELD:
+                case Const.PUTFIELD:
                     refFieldIsStatic = false;
                     break;
                 default:
@@ -882,7 +883,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 }
                 afterOpcode(opcode);
 
-                if (opcode == TABLESWITCH) {
+                if (opcode == Const.TABLESWITCH) {
                     sawInt(switchLow);
                     sawInt(switchHigh);
                     //                    int prevOffset = i - PC;
@@ -891,7 +892,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                         //                        prevOffset = switchOffsets[o];
                     }
                     sawBranchTo(defaultSwitchOffset + PC);
-                } else if (opcode == LOOKUPSWITCH) {
+                } else if (opcode == Const.LOOKUPSWITCH) {
                     sawInt(switchOffsets.length);
                     //                    int prevOffset = i - PC;
                     for (int o = 0; o < switchOffsets.length; o++) {
@@ -901,7 +902,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                     }
                     sawBranchTo(defaultSwitchOffset + PC);
                 } else {
-                    for (int k = 0; k < TYPE_OF_OPERANDS[opcode].length; k++) {
+                    for (int k = 0; k < Const.getOperandTypeCount(opcode); k++) {
                         int m = MEANING_OF_OPERANDS[opcode][k];
                         switch (m) {
                         case M_BR:
@@ -1003,10 +1004,10 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
 
     public void printOpCode(int seen) {
-        System.out.print("  " + this.getClass().getSimpleName() + ": [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
-        if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
+        System.out.print("  " + this.getClass().getSimpleName() + ": [" + formatter.format(getPC()) + "]  " + Const.getOpcodeName(seen));
+        if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESTATIC)) {
             System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
-        } else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+        } else if (seen == Const.LDC || seen == Const.LDC_W || seen == Const.LDC2_W) {
             Constant c = getConstantRefOperand();
             if (c instanceof ConstantString) {
                 System.out.print("   \"" + getStringConstantOperand() + "\"");
@@ -1015,16 +1016,16 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
             } else {
                 System.out.print("   " + c);
             }
-        } else if ((seen == ALOAD) || (seen == ASTORE)) {
+        } else if ((seen == Const.ALOAD) || (seen == Const.ASTORE)) {
             System.out.print("   " + getRegisterOperand());
-        } else if ((seen == GOTO) || (seen == GOTO_W) || (seen == IF_ACMPEQ) || (seen == IF_ACMPNE) || (seen == IF_ICMPEQ)
-                || (seen == IF_ICMPGE) || (seen == IF_ICMPGT) || (seen == IF_ICMPLE) || (seen == IF_ICMPLT)
-                || (seen == IF_ICMPNE) || (seen == IFEQ) || (seen == IFGE) || (seen == IFGT) || (seen == IFLE) || (seen == IFLT)
-                || (seen == IFNE) || (seen == IFNONNULL) || (seen == IFNULL)) {
+        } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W) || (seen == Const.IF_ACMPEQ) || (seen == Const.IF_ACMPNE) || (seen == Const.IF_ICMPEQ)
+                || (seen == Const.IF_ICMPGE) || (seen == Const.IF_ICMPGT) || (seen == Const.IF_ICMPLE) || (seen == Const.IF_ICMPLT)
+                || (seen == Const.IF_ICMPNE) || (seen == Const.IFEQ) || (seen == Const.IFGE) || (seen == Const.IFGT) || (seen == Const.IFLE) || (seen == Const.IFLT)
+                || (seen == Const.IFNE) || (seen == Const.IFNONNULL) || (seen == Const.IFNULL)) {
             System.out.print("   " + getBranchTarget());
-        } else if ((seen == NEW) || (seen == INSTANCEOF)) {
+        } else if ((seen == Const.NEW) || (seen == Const.INSTANCEOF)) {
             System.out.print("   " + getClassConstantOperand());
-        } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+        } else if ((seen == Const.TABLESWITCH) || (seen == Const.LOOKUPSWITCH)) {
             System.out.print("    [");
             int switchPC = getPC();
             int[] offsets = getSwitchOffsets();
@@ -1053,12 +1054,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
     public boolean isReturn(int opcode) {
         switch (opcode) {
-        case IRETURN:
-        case ARETURN:
-        case LRETURN:
-        case DRETURN:
-        case FRETURN:
-        case RETURN:
+        case Const.IRETURN:
+        case Const.ARETURN:
+        case Const.LRETURN:
+        case Const.DRETURN:
+        case Const.FRETURN:
+        case Const.RETURN:
             return true;
         default:
             return false;
@@ -1066,12 +1067,12 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
     }
     public boolean isShift(int opcode) {
         switch (opcode) {
-        case IUSHR:
-        case ISHR:
-        case ISHL:
-        case LUSHR:
-        case LSHR:
-        case LSHL:
+        case Const.IUSHR:
+        case Const.ISHR:
+        case Const.ISHL:
+        case Const.LUSHR:
+        case Const.LSHR:
+        case Const.LSHL:
             return true;
         default:
             return false;
@@ -1080,31 +1081,31 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public static boolean areOppositeBranches(int opcode1, int opcode2) {
         if (!isBranch(opcode1)) {
-            throw new IllegalArgumentException(OPCODE_NAMES[opcode1] + " isn't a branch");
+            throw new IllegalArgumentException(Const.getOpcodeName(opcode1) + " isn't a branch");
         }
         if (!isBranch(opcode2)) {
-            throw new IllegalArgumentException(OPCODE_NAMES[opcode2] + " isn't a branch");
+            throw new IllegalArgumentException(Const.getOpcodeName(opcode2) + " isn't a branch");
         }
         switch (opcode1) {
-        case IF_ACMPEQ:
-        case IF_ACMPNE:
-        case IF_ICMPEQ:
-        case IF_ICMPNE:
-        case IF_ICMPLT:
-        case IF_ICMPLE:
-        case IF_ICMPGT:
-        case IF_ICMPGE:
-        case IFNE:
-        case IFEQ:
-        case IFLT:
-        case IFLE:
-        case IFGT:
-        case IFGE:
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPNE:
+        case Const.IF_ICMPLT:
+        case Const.IF_ICMPLE:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPGE:
+        case Const.IFNE:
+        case Const.IFEQ:
+        case Const.IFLT:
+        case Const.IFLE:
+        case Const.IFGT:
+        case Const.IFGE:
             return ((opcode1 + 1) ^ 1) == opcode2 + 1;
-        case IFNONNULL:
-            return opcode2 == IFNULL;
-        case IFNULL:
-            return opcode2 == IFNONNULL;
+        case Const.IFNONNULL:
+            return opcode2 == Const.IFNULL;
+        case Const.IFNULL:
+            return opcode2 == Const.IFNONNULL;
         default:
             return false;
 
@@ -1113,36 +1114,36 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 
     public boolean isRegisterStore(int opcode) {
         switch (opcode) {
-        case ISTORE_0:
-        case ISTORE_1:
-        case ISTORE_2:
-        case ISTORE_3:
+        case Const.ISTORE_0:
+        case Const.ISTORE_1:
+        case Const.ISTORE_2:
+        case Const.ISTORE_3:
 
-        case ASTORE_0:
-        case ASTORE_1:
-        case ASTORE_2:
-        case ASTORE_3:
+        case Const.ASTORE_0:
+        case Const.ASTORE_1:
+        case Const.ASTORE_2:
+        case Const.ASTORE_3:
 
-        case FSTORE_0:
-        case FSTORE_1:
-        case FSTORE_2:
-        case FSTORE_3:
+        case Const.FSTORE_0:
+        case Const.FSTORE_1:
+        case Const.FSTORE_2:
+        case Const.FSTORE_3:
 
-        case DSTORE_0:
-        case DSTORE_1:
-        case DSTORE_2:
-        case DSTORE_3:
+        case Const.DSTORE_0:
+        case Const.DSTORE_1:
+        case Const.DSTORE_2:
+        case Const.DSTORE_3:
 
-        case LSTORE_0:
-        case LSTORE_1:
-        case LSTORE_2:
-        case LSTORE_3:
+        case Const.LSTORE_0:
+        case Const.LSTORE_1:
+        case Const.LSTORE_2:
+        case Const.LSTORE_3:
 
-        case ISTORE:
-        case FSTORE:
-        case ASTORE:
-        case LSTORE:
-        case DSTORE:
+        case Const.ISTORE:
+        case Const.FSTORE:
+        case Const.ASTORE:
+        case Const.LSTORE:
+        case Const.DSTORE:
             return true;
         default:
             return false;

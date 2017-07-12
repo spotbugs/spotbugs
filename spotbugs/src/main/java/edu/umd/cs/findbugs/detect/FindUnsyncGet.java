@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -36,7 +37,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
 
-    static final int doNotConsider = ACC_PRIVATE | ACC_STATIC | ACC_NATIVE;
+    static final int doNotConsider = Const.ACC_PRIVATE | Const.ACC_STATIC | Const.ACC_NATIVE;
 
     // Maps of property names to get and set methods
     private final HashMap<String, MethodAnnotation> getMethods = new HashMap<String, MethodAnnotation>();
@@ -79,7 +80,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
             return;
         }
         String name = obj.getName();
-        boolean isSynchronized = (flags & ACC_SYNCHRONIZED) != 0;
+        boolean isSynchronized = (flags & Const.ACC_SYNCHRONIZED) != 0;
         /*
          * String sig = obj.getSignature(); char firstArg = sig.charAt(1); char
          * returnValue = sig.charAt(1 + sig.indexOf(')')); boolean firstArgIsRef

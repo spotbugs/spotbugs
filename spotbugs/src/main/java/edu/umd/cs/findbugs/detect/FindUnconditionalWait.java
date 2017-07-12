@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -58,12 +59,12 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
     public void sawOpcode(int seen) {
         switch (stage) {
         case 0:
-            if (seen == MONITORENTER) {
+            if (seen == Const.MONITORENTER) {
                 stage = 1;
             }
             break;
         case 1:
-            if (seen == INVOKEVIRTUAL && "wait".equals(getNameConstantOperand())) {
+            if (seen == Const.INVOKEVIRTUAL && "wait".equals(getNameConstantOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "UW_UNCOND_WAIT",
                         "()V".equals(getSigConstantOperand()) ? NORMAL_PRIORITY : LOW_PRIORITY).addClassAndMethod(this)
                         .addSourceLine(this));

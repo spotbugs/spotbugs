@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Collections;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -77,11 +78,11 @@ public class AtomicityProblem extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.println(getPC() + " " + OPCODE_NAMES[seen]);
+            System.out.println(getPC() + " " + Const.getOpcodeName(seen));
         }
         switch (seen) {
-        case IFNE:
-        case IFEQ: {
+        case Const.IFNE:
+        case Const.IFEQ: {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (DEBUG) {
                 System.out.println("Stack top: " + top);
@@ -90,16 +91,16 @@ public class AtomicityProblem extends OpcodeStackDetector {
             if (m != null && "java.util.concurrent.ConcurrentHashMap".equals(m.getClassName())
                     && "containsKey".equals(m.getName())) {
                 lastQuestionableCheckTarget = getBranchTarget();
-                if (seen == IFEQ) {
+                if (seen == Const.IFEQ) {
                     priority = LOW_PRIORITY;
-                } else if (seen == IFNE) {
+                } else if (seen == Const.IFNE) {
                     priority = NORMAL_PRIORITY;
                 }
             }
             break;
         }
-        case IFNULL:
-        case IFNONNULL: {
+        case Const.IFNULL:
+        case Const.IFNONNULL: {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (DEBUG) {
                 System.out.println("Stack top: " + top);
@@ -110,16 +111,16 @@ public class AtomicityProblem extends OpcodeStackDetector {
             }
             if (m != null && "java.util.concurrent.ConcurrentHashMap".equals(m.getClassName()) && "get".equals(m.getName())) {
                 lastQuestionableCheckTarget = getBranchTarget();
-                if (seen == IFNULL) {
+                if (seen == Const.IFNULL) {
                     priority = LOW_PRIORITY;
-                } else if (seen == IFNONNULL) {
+                } else if (seen == Const.IFNONNULL) {
                     priority = NORMAL_PRIORITY;
                 }
             }
             break;
         }
-        case INVOKEVIRTUAL:
-        case INVOKEINTERFACE: {
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE: {
             if ("java.util.concurrent.ConcurrentHashMap".equals(getDottedClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 XClass xClass = getXClassOperand();

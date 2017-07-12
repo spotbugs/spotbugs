@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -92,7 +93,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESPECIAL) {
+        if (seen == Const.INVOKESPECIAL) {
             XMethod m = getXMethodOperand();
             if (m == null) {
                 return;

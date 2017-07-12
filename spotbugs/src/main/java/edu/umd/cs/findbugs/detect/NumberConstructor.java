@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -104,7 +105,7 @@ public class NumberConstructor extends OpcodeStackDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         int majorVersion = classContext.getJavaClass().getMajor();
-        if (majorVersion >= MAJOR_1_5 && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+        if (majorVersion >= Const.MAJOR_1_5 && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             super.visitClassContext(classContext);
         }
     }
@@ -147,7 +148,7 @@ public class NumberConstructor extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         // only acts on constructor invoke
-        if (seen != INVOKESPECIAL) {
+        if (seen != Const.INVOKESPECIAL) {
             return;
         }
 

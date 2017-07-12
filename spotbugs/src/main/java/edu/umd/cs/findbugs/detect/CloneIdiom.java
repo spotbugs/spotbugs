@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.JavaClass;
@@ -86,7 +87,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESPECIAL && "clone".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("()")) {
+        if (seen == Const.INVOKESPECIAL && "clone".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("()")) {
             /*
              * System.out.println("Saw call to " + nameConstant + ":" +
              * sigConstant + " in " + betterMethodName);

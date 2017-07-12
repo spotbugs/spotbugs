@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -68,10 +69,10 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
     public void sawOpcode(int seen) {
 
         switch (seen) {
-        case ACONST_NULL:
+        case Const.ACONST_NULL:
             nullOnTOS = true;
             return;
-        case ARETURN:
+        case Const.ARETURN:
             if (nullOnTOS) {
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
                         getPC());

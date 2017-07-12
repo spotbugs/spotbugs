@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
@@ -97,13 +98,13 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     }
 
     private String getClassName(JavaClass c, int classIndex) {
-        String name = c.getConstantPool().getConstantString(classIndex, CONSTANT_Class);
+        String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
         return ClassName.extractClassName(name).replace('/', '.');
     }
 
     private String getMemberName(JavaClass c, String className, int memberNameIndex, int signatureIndex) {
-        return className + "." + ((ConstantUtf8) c.getConstantPool().getConstant(memberNameIndex, CONSTANT_Utf8)).getBytes()
-                + " : " + ((ConstantUtf8) c.getConstantPool().getConstant(signatureIndex, CONSTANT_Utf8)).getBytes();
+        return className + "." + ((ConstantUtf8) c.getConstantPool().getConstant(memberNameIndex, Const.CONSTANT_Utf8)).getBytes()
+                + " : " + ((ConstantUtf8) c.getConstantPool().getConstant(signatureIndex, Const.CONSTANT_Utf8)).getBytes();
     }
 
     private String getMemberName(String className, String memberName, String signature) {
@@ -159,8 +160,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
                     continue checkConstant;
                 }
                 ConstantNameAndType nt = (ConstantNameAndType) cp.getConstant(co2.getNameAndTypeIndex());
-                String name = ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getNameIndex(), CONSTANT_Utf8)).getBytes();
-                String signature = ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getSignatureIndex(), CONSTANT_Utf8))
+                String name = ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
+                String signature = ((ConstantUtf8) obj.getConstantPool().getConstant(nt.getSignatureIndex(), Const.CONSTANT_Utf8))
                         .getBytes();
 
                 try {

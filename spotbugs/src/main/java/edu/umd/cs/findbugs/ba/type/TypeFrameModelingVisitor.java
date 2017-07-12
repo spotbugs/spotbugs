@@ -238,14 +238,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
      * method ensures that we push two types for each double or long value.
      */
     protected void pushValue(Type type) {
-        if (type.getType() == T_VOID) {
+        if (type.getType() == Const.T_VOID) {
             throw new IllegalArgumentException("Can't push void");
         }
         TypeFrame frame = getFrame();
-        if (type.getType() == T_LONG) {
+        if (type.getType() == Const.T_LONG) {
             frame.pushValue(Type.LONG);
             frame.pushValue(TypeFrame.getLongExtraType());
-        } else if (type.getType() == T_DOUBLE) {
+        } else if (type.getType() == Const.T_DOUBLE) {
             frame.pushValue(Type.DOUBLE);
             frame.pushValue(TypeFrame.getDoubleExtraType());
         } else {
@@ -259,7 +259,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
     protected void pushReturnType(InvokeInstruction ins) {
         ConstantPoolGen cpg = getCPG();
         Type type = ins.getType(cpg);
-        if (type.getType() != T_VOID) {
+        if (type.getType() != Const.T_VOID) {
             pushValue(type);
         }
     }
@@ -682,7 +682,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                         try {
                             Type t = GenericUtilities.getType(rv);
                             if (t != null) {
-                                assert t.getType() != T_VOID;
+                                assert t.getType() != Const.T_VOID;
                                 result = merge(result, t);
                                 foundSomething = true;
                             }

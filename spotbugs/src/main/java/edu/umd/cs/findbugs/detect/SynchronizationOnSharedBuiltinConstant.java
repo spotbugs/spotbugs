@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -79,7 +80,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case MONITORENTER:
+        case Const.MONITORENTER:
             OpcodeStack.Item top = stack.getStackItem(0);
 
             if (pendingBug != null) {
@@ -122,7 +123,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
                 }
             }
             break;
-        case MONITOREXIT:
+        case Const.MONITOREXIT:
             accumulateBug();
             break;
         default:

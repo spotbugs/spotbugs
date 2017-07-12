@@ -19,6 +19,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -81,13 +82,13 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
 
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ALOAD_0) {
+            if (seen == Const.ALOAD_0) {
                 state = SEEN_ALOAD_0;
             }
             break;
 
         case SEEN_ALOAD_0:
-            if ((seen == INVOKEVIRTUAL) && "java/lang/Object".equals(getClassConstantOperand())) {
+            if ((seen == Const.INVOKEVIRTUAL) && "java/lang/Object".equals(getClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 if ("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) {
                     bugReporter.reportBug(new BugInstance(this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY).addClassAndMethod(this)

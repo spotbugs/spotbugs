@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -92,7 +93,7 @@ public class OpcodeStackScanner {
         @Override
         public void afterOpcode(int seen) {
             if(DEBUG) {
-                System.out.printf("%3d: %8s %s%n", getPC(), OPCODE_NAMES[seen], getStack());
+                System.out.printf("%3d: %8s %s%n", getPC(), Const.getOpcodeName(seen), getStack());
             }
             if (getPC() == targetPC) {
                 throw new EarlyExitException(stack);

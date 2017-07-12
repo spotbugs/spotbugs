@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -149,18 +150,18 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         boolean isCaseOffset = switchHdlr.isOnSwitchOffset(this);
 
         if (DEBUG) {
-            if (seen == GOTO) {
+            if (seen == Const.GOTO) {
                 System.out.printf("%4d: goto %-7d %s %s %s %d%n", getPC(), getBranchTarget(), reachable, isCaseOffset,
                         isDefaultOffset, switchHdlr.stackSize());
             } else {
-                System.out.printf("%4d: %-12s %s %s %s %d%n", getPC(), OPCODE_NAMES[seen], reachable, isCaseOffset,
+                System.out.printf("%4d: %-12s %s %s %s %d%n", getPC(), Const.getOpcodeName(seen), reachable, isCaseOffset,
                         isDefaultOffset, switchHdlr.stackSize());
             }
         }
 
         if (reachable && (isDefaultOffset || isCaseOffset)) {
             if (DEBUG) {
-                System.out.println("Fallthrough at : " + getPC() + ": " + OPCODE_NAMES[seen]);
+                System.out.println("Fallthrough at : " + getPC() + ": " + Const.getOpcodeName(seen));
             }
             fallthroughDistance = 0;
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
@@ -182,19 +183,19 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         }
 
-        if (isBranch(seen) || isSwitch(seen) || seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN
-                || seen == LRETURN || seen == DRETURN || seen == FRETURN) {
+        if (isBranch(seen) || isSwitch(seen) || seen == Const.GOTO || seen == Const.ARETURN || seen == Const.IRETURN || seen == Const.RETURN
+                || seen == Const.LRETURN || seen == Const.DRETURN || seen == Const.FRETURN) {
             clearAllDeadStores();
         }
 
-        if (seen == GETFIELD && stack.getStackDepth() > 0) {
+        if (seen == Const.GETFIELD && stack.getStackDepth() > 0) {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (top.getRegisterNumber() == 0) {
                 potentiallyDeadFields.remove(getXFieldOperand());
             }
         }
 
-        else if (seen == PUTFIELD && stack.getStackDepth() >= 2) {
+        else if (seen == Const.PUTFIELD && stack.getStackDepth() >= 2) {
             OpcodeStack.Item obj = stack.getStackItem(1);
             if (obj.getRegisterNumber() == 0) {
                 XField f = getXFieldOperand();
@@ -209,7 +210,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             }
         }
 
-        if (seen == ATHROW) {
+        if (seen == Const.ATHROW) {
             int sz = edu.umd.cs.findbugs.visitclass.Util.getSizeOfSurroundingTryBlock(getMethod(), (String) null, getPC());
             if (sz == Integer.MAX_VALUE) {
 
@@ -243,7 +244,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         }
 
 
-        if (seen == INVOKEVIRTUAL && "ordinal".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && "ordinal".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())) {
             XClass c = getXClassOperand();
             if (c != null) {
                 ClassDescriptor superclassDescriptor = c.getSuperclassDescriptor();
@@ -254,13 +255,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     System.out.println("Saw " + enumType + ".ordinal()");
                 }
             }
-        } else if (seen != TABLESWITCH && seen != LOOKUPSWITCH && seen != IALOAD) {
+        } else if (seen != Const.TABLESWITCH && seen != Const.LOOKUPSWITCH && seen != Const.IALOAD) {
             enumType = null;
         }
 
         switch (seen) {
-        case TABLESWITCH:
-        case LOOKUPSWITCH:
+        case Const.TABLESWITCH:
+        case Const.LOOKUPSWITCH:
             if (justSawHashcode)
             {
                 break; // javac compiled switch statement
@@ -273,8 +274,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             }
             break;
 
-        case GOTO_W:
-        case GOTO:
+        case Const.GOTO_W:
+        case Const.GOTO:
             if (biggestJumpTarget < getBranchTarget()) {
                 biggestJumpTarget = getBranchTarget();
                 if (DEBUG) {
@@ -285,17 +286,17 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             reachable = false;
             break;
 
-        case ATHROW:
-        case RETURN:
-        case ARETURN:
-        case IRETURN:
-        case LRETURN:
-        case DRETURN:
-        case FRETURN:
+        case Const.ATHROW:
+        case Const.RETURN:
+        case Const.ARETURN:
+        case Const.IRETURN:
+        case Const.LRETURN:
+        case Const.DRETURN:
+        case Const.FRETURN:
             reachable = false;
             break;
 
-        case INVOKESTATIC:
+        case Const.INVOKESTATIC:
             reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
             break;
 
@@ -303,7 +304,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             reachable = true;
         }
 
-        justSawHashcode =   seen == INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
+        justSawHashcode =   seen == Const.INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
         lastPC = getPC();
         fallthroughDistance++;
     }

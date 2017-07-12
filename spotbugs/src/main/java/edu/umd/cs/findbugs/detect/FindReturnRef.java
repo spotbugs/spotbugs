@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -74,11 +75,11 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
+        check = publicClass && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0;
         if (!check) {
             return;
         }
-        staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
+        staticMethod = (obj.getAccessFlags() & (Const.ACC_STATIC)) != 0;
         // variableNames = obj.getLocalVariableTable();
         parameterCount = getNumberMethodArguments();
 
@@ -107,7 +108,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             return;
         }
 
-        if (staticMethod && seen == PUTSTATIC && nonPublicFieldOperand()
+        if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
                 && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (isPotentialCapture(top)) {
@@ -119,7 +120,7 @@ public class FindReturnRef extends OpcodeStackDetector {
                                 getPC(), getPC() - 1)), this);
             }
         }
-        if (!staticMethod && seen == PUTFIELD && nonPublicFieldOperand()
+        if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
                 && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item target = stack.getStackItem(1);
@@ -133,13 +134,13 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         }
 
-        if (seen == ALOAD_0 && !staticMethod) {
+        if (seen == Const.ALOAD_0 && !staticMethod) {
             thisOnTOS = true;
             fieldOnTOS = false;
             return;
         }
 
-        if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
+        if (thisOnTOS && seen == Const.GETFIELD && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
                 && !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
             fieldOnTOS = true;
             thisOnTOS = false;
@@ -149,7 +150,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             fieldIsStatic = false;
             return;
         }
-        if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
+        if (seen == Const.GETSTATIC && getClassConstantOperand().equals(getClassName()) && nonPublicFieldOperand()
                 && !AnalysisContext.currentXFactory().isEmptyArrayField(getXFieldOperand())) {
             fieldOnTOS = true;
             thisOnTOS = false;
@@ -161,7 +162,7 @@ public class FindReturnRef extends OpcodeStackDetector {
             return;
         }
         thisOnTOS = false;
-        if (check && fieldOnTOS && seen == ARETURN
+        if (check && fieldOnTOS && seen == Const.ARETURN
                 /*
                  * && !sigOnStack.equals("Ljava/lang/String;") &&
                  * sigOnStack.indexOf("Exception") == -1 && sigOnStack.indexOf("[") >= 0
@@ -184,7 +185,7 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (!top.isInitialParameter()) {
             return false;
         }
-        if ((getMethod().getAccessFlags() & ACC_VARARGS) == 0) {
+        if ((getMethod().getAccessFlags() & Const.ACC_VARARGS) == 0) {
             return true;
         }
         if (top.getRegisterNumber() == parameterCount - 1)

@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Field;
@@ -95,16 +96,16 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     // Usual implementation of stub methods which are expected to be more complex in derived classes
     private static final byte[][] STUB_METHODS = new byte[][] {
-        {(byte) RETURN},
-        {ICONST_0, (byte) IRETURN},
-        {ICONST_1, (byte) IRETURN},
-        {ICONST_M1, (byte) IRETURN},
-        {LCONST_0, (byte) LRETURN},
-        {FCONST_0, (byte) FRETURN},
-        {DCONST_0, (byte) DRETURN},
-        {ACONST_NULL, (byte) ARETURN},
-        {ALOAD_0, (byte) ARETURN},
-        {ALOAD_1, (byte) ARETURN},
+        {(byte) Const.RETURN},
+        {Const.ICONST_0, (byte) Const.IRETURN},
+        {Const.ICONST_1, (byte) Const.IRETURN},
+        {Const.ICONST_M1, (byte) Const.IRETURN},
+        {Const.LCONST_0, (byte) Const.LRETURN},
+        {Const.FCONST_0, (byte) Const.FRETURN},
+        {Const.DCONST_0, (byte) Const.DRETURN},
+        {Const.ACONST_NULL, (byte) Const.ARETURN},
+        {Const.ALOAD_0, (byte) Const.ARETURN},
+        {Const.ALOAD_1, (byte) Const.ARETURN},
     };
 
     /**
@@ -459,7 +460,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     public void visit(Code obj) {
         uselessVoidCandidate = !classInit && !constructor && !getXMethod().isSynthetic() && Type.getReturnType(getMethodSig()) == Type.VOID;
         byte[] code = obj.getCode();
-        if(code.length == 4 && (code[0] & 0xFF) == GETSTATIC && (code[3] & 0xFF) == ARETURN) {
+        if(code.length == 4 && (code[0] & 0xFF) == Const.GETSTATIC && (code[3] & 0xFF) == Const.ARETURN) {
             getStaticMethods.add(getMethodDescriptor());
             handleStatus();
             return;
@@ -501,7 +502,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     @Override
     public void sawOpcode(int seen) {
-        if (!allowedFields.isEmpty() && seen == PUTFIELD) {
+        if (!allowedFields.isEmpty() && seen == Const.PUTFIELD) {
             Item objItem = getStack().getStackItem(1);
             if (objItem.getRegisterNumber() == 0) {
                 if (allowedFields.contains(getFieldDescriptorOperand())) {
@@ -520,16 +521,16 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             return;
         }
         switch (seen) {
-        case ASTORE:
-        case ASTORE_0:
-        case ASTORE_1:
-        case ASTORE_2:
-        case ASTORE_3:
+        case Const.ASTORE:
+        case Const.ASTORE_0:
+        case Const.ASTORE_1:
+        case Const.ASTORE_2:
+        case Const.ASTORE_3:
             if(finallyTargets.contains(getPC())) {
                 finallyExceptionRegisters.add(getRegisterOperand());
             }
             break;
-        case ATHROW: {
+        case Const.ATHROW: {
             Item exceptionItem = getStack().getStackItem(0);
             if(!finallyExceptionRegisters.remove(exceptionItem.getRegisterNumber())) {
                 uselessVoidCandidate = false;
@@ -544,7 +545,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             }
             break;
         }
-        case PUTSTATIC:
+        case Const.PUTSTATIC:
             if(classInit) {
                 if(getClassConstantOperand().equals(getClassName())) {
                     break;
@@ -552,31 +553,31 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             }
             status = SideEffectStatus.SIDE_EFFECT;
             break;
-        case INVOKEDYNAMIC:
+        case Const.INVOKEDYNAMIC:
             status = SideEffectStatus.SIDE_EFFECT;
             break;
-        case PUTFIELD:
+        case Const.PUTFIELD:
             sawCall(getMethodCall(FIELD_STORE_STUB_METHOD), false);
             break;
-        case AASTORE:
-        case DASTORE:
-        case CASTORE:
-        case BASTORE:
-        case IASTORE:
-        case LASTORE:
-        case FASTORE:
-        case SASTORE:
+        case Const.AASTORE:
+        case Const.DASTORE:
+        case Const.CASTORE:
+        case Const.BASTORE:
+        case Const.IASTORE:
+        case Const.LASTORE:
+        case Const.FASTORE:
+        case Const.SASTORE:
             sawCall(getMethodCall(ARRAY_STORE_STUB_METHOD), false);
             break;
-        case INVOKESTATIC:
+        case Const.INVOKESTATIC:
             if (changesOnlyNewObjects(getMethodDescriptorOperand())) {
                 break;
             }
             sawCall(new MethodCall(getMethodDescriptorOperand(), TARGET_OTHER), false);
             break;
-        case INVOKESPECIAL:
-        case INVOKEINTERFACE:
-        case INVOKEVIRTUAL: {
+        case Const.INVOKESPECIAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL: {
             XMethod xMethodOperand = getXMethodOperand();
             MethodDescriptor methodDescriptorOperand = xMethodOperand == null ? getMethodDescriptorOperand() : xMethodOperand
                     .getMethodDescriptor();

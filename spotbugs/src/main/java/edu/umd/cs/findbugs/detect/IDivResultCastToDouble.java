@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -44,16 +45,16 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 
         if (DEBUG) {
-            System.out.println("Saw opcode " + OPCODE_NAMES[seen] + " " + pendingIdivCastToDivBugLocation);
+            System.out.println("Saw opcode " + Const.getOpcodeName(seen) + " " + pendingIdivCastToDivBugLocation);
         }
 
-        if ((prevOpCode == I2D || prevOpCode == L2D) && seen == INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand())
+        if ((prevOpCode == Const.I2D || prevOpCode == Const.L2D) && seen == Const.INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand())
                 && "ceil".equals(getNameConstantOperand())) {
             bugAccumulator
             .accumulateBug(new BugInstance(this, "ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL", HIGH_PRIORITY)
             .addClassAndMethod(this), this);
             pendingIdivCastToDivBugLocation = null;
-        } else if ((prevOpCode == I2F || prevOpCode == L2F) && seen == INVOKESTATIC
+        } else if ((prevOpCode == Const.I2F || prevOpCode == Const.L2F) && seen == Const.INVOKESTATIC
                 && ClassName.isMathClass(getClassConstantOperand()) && "round".equals(getNameConstantOperand())) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND", NORMAL_PRIORITY).addClassAndMethod(this),
@@ -66,7 +67,7 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
             pendingIdivCastToDivBugLocation = null;
         }
 
-        if (prevOpCode == IDIV && (seen == I2D || seen == I2F) || prevOpCode == LDIV && (seen == L2D || seen == L2F)) {
+        if (prevOpCode == Const.IDIV && (seen == Const.I2D || seen == Const.I2F) || prevOpCode == Const.LDIV && (seen == Const.L2D || seen == Const.L2F)) {
             pendingIdivCastToDivBugLocation = SourceLineAnnotation.fromVisitedInstruction(this);
         }
         prevOpCode = seen;

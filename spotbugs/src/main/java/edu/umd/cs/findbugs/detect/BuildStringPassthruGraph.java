@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -276,10 +277,10 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
             }
         }
         switch (seen) {
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
-        case INVOKEINTERFACE:
-        case INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
             MethodDescriptor md = getMethodDescriptorOperand();
             int callArgs = getNumberArguments(md.getSignature());
             for (int i = 0; i < callArgs; i++) {

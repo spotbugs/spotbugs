@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Signature;
@@ -127,13 +128,13 @@ public class URLProblems extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             check("Ljava/util/HashSet;", HASHSET_KEY_METHODS, 1, 0);
             check("Ljava/util/HashMap;", HASHMAP_KEY_METHODS, 1, 0);
             check("Ljava/util/HashMap;", HASHMAP_TWO_ARG_KEY_METHODS, 2, 1);
         }
 
-        if (seen == INVOKEVIRTUAL && (getMethodDescriptorOperand().equals(URL_EQUALS)
+        if (seen == Const.INVOKEVIRTUAL && (getMethodDescriptorOperand().equals(URL_EQUALS)
                 || getMethodDescriptorOperand().equals(URL_HASHCODE))) {
             accumulator.accumulateBug(
                     new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY).addClassAndMethod(this)

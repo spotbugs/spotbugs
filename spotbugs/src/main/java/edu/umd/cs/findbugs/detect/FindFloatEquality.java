@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -105,10 +106,10 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case FCMPG:
-        case FCMPL:
-        case DCMPG:
-        case DCMPL:
+        case Const.FCMPG:
+        case Const.FCMPL:
+        case Const.DCMPG:
+        case Const.DCMPL:
             if (stack.getStackDepth() >= 2) {
                 OpcodeStack.Item first = stack.getStackItem(0);
                 OpcodeStack.Item second = stack.getStackItem(1);
@@ -168,8 +169,8 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
             }
             break;
 
-        case IFEQ:
-        case IFNE:
+        case Const.IFEQ:
+        case Const.IFNE:
             if (state == SAW_COMP) {
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this,
                         getPC());

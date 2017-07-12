@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -131,7 +132,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             return;
         }
         int accessFlags = obj.getAccessFlags();
-        if ((accessFlags & ACC_INTERFACE) != 0) {
+        if ((accessFlags & Const.ACC_INTERFACE) != 0) {
             return;
         }
         visibleOutsidePackage = obj.isPublic() || obj.isProtected();
@@ -380,7 +381,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
     @Override
     public void visit(Field obj) {
         int accessFlags = obj.getAccessFlags();
-        if ((accessFlags & ACC_STATIC) != 0) {
+        if ((accessFlags & Const.ACC_STATIC) != 0) {
             return;
         }
         if (!obj.getName().startsWith("this$") && !BCELUtil.isSynthetic(obj) && !obj.isTransient()) {
@@ -392,12 +393,12 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
     public void visit(Method obj) {
 
         int accessFlags = obj.getAccessFlags();
-        if ((accessFlags & ACC_STATIC) != 0) {
+        if ((accessFlags & Const.ACC_STATIC) != 0) {
             return;
         }
         String name = obj.getName();
         String sig = obj.getSignature();
-        if ((accessFlags & ACC_ABSTRACT) != 0) {
+        if ((accessFlags & Const.ACC_ABSTRACT) != 0) {
             if ("equals".equals(name) && sig.equals("(L" + getClassName() + ";)Z")) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_ABSTRACT_SELF", LOW_PRIORITY).addClass(getDottedClassName()));
                 return;
@@ -433,9 +434,9 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                             int op6 = opcode(codeBytes, 6);
                             int op7 = opcode(codeBytes, 7);
                             int op8 = opcode(codeBytes, 8);
-                            if ((op0 == ALOAD_0 && op1 == ALOAD_1 || op0 == ALOAD_1 && op1 == ALOAD_0)
-                                    && (op2 == IF_ACMPEQ || op2 == IF_ACMPNE) && (op5 == ICONST_0 || op5 == ICONST_1)
-                                    && op6 == IRETURN && (op7 == ICONST_0 || op7 == ICONST_1) && op8 == IRETURN) {
+                            if ((op0 == Const.ALOAD_0 && op1 == Const.ALOAD_1 || op0 == Const.ALOAD_1 && op1 == Const.ALOAD_0)
+                                    && (op2 == Const.IF_ACMPEQ || op2 == Const.IF_ACMPNE) && (op5 == Const.ICONST_0 || op5 == Const.ICONST_1)
+                                    && op6 == Const.IRETURN && (op7 == Const.ICONST_0 || op7 == Const.ICONST_1) && op8 == Const.IRETURN) {
                                 equalsMethodIsInstanceOfEquals = true;
                             }
                         } else if (codeBytes.length == 11) {
@@ -446,14 +447,14 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
                             int op6 = opcode(codeBytes, 6);
                             int op9 = opcode(codeBytes, 9);
                             int op10 = opcode(codeBytes, 10);
-                            if ((op0 == ALOAD_0 && op1 == ALOAD_1 || op0 == ALOAD_1 && op1 == ALOAD_0)
-                                    && (op2 == IF_ACMPEQ || op2 == IF_ACMPNE) && (op5 == ICONST_0 || op5 == ICONST_1)
-                                    && op6 == GOTO && (op9 == ICONST_0 || op9 == ICONST_1) && op10 == IRETURN) {
+                            if ((op0 == Const.ALOAD_0 && op1 == Const.ALOAD_1 || op0 == Const.ALOAD_1 && op1 == Const.ALOAD_0)
+                                    && (op2 == Const.IF_ACMPEQ || op2 == Const.IF_ACMPNE) && (op5 == Const.ICONST_0 || op5 == Const.ICONST_1)
+                                    && op6 == Const.GOTO && (op9 == Const.ICONST_0 || op9 == Const.ICONST_1) && op10 == Const.IRETURN) {
                                 equalsMethodIsInstanceOfEquals = true;
                             }
 
-                        } else if ((codeBytes.length == 5 && (codeBytes[1] & 0xff) == INSTANCEOF)
-                                || (codeBytes.length == 15 && (codeBytes[1] & 0xff) == INSTANCEOF && (codeBytes[11] & 0xff) == INVOKESPECIAL)) {
+                        } else if ((codeBytes.length == 5 && (codeBytes[1] & 0xff) == Const.INSTANCEOF)
+                                || (codeBytes.length == 15 && (codeBytes[1] & 0xff) == Const.INSTANCEOF && (codeBytes[11] & 0xff) == Const.INVOKESPECIAL)) {
                             equalsMethodIsInstanceOfEquals = true;
                         }
                     }
@@ -502,7 +503,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             String className = getClassConstantOperand();
             if ("java/util/Map".equals(className) || "java/util/HashMap".equals(className)
                     || "java/util/LinkedHashMap".equals(className) || "java/util/concurrent/ConcurrentHashMap".equals(className)

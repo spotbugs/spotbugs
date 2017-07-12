@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -106,18 +107,18 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
+            System.out.println("State: " + state + "  Opcode: " + Const.getOpcodeName(seen));
         }
 
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ICONST_0) {
+            if (seen == Const.ICONST_0) {
                 state = SEEN_ICONST_0;
             }
             break;
 
         case SEEN_ICONST_0:
-            if (seen == ANEWARRAY) {
+            if (seen == Const.ANEWARRAY) {
                 state = SEEN_ANEWARRAY;
             } else {
                 state = SEEN_NOTHING;
@@ -125,7 +126,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
             break;
 
         case SEEN_ANEWARRAY:
-            if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && ("toArray".equals(getNameConstantOperand()))
+            if (((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) && ("toArray".equals(getNameConstantOperand()))
                     && ("([Ljava/lang/Object;)[Ljava/lang/Object;".equals(getSigConstantOperand()))) {
                 try {
                     String clsName = getDottedClassConstantOperand();

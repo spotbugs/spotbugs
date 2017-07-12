@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.type;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
@@ -119,7 +120,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
      * defined new object types with different type codes.
      */
     protected boolean isReferenceType(byte type) {
-        return type == T_OBJECT || type == T_ARRAY || type == T_NULL || type == T_EXCEPTION;
+        return type == Const.T_OBJECT || type == Const.T_ARRAY || type == T_NULL || type == T_EXCEPTION;
     }
 
     /**
@@ -127,7 +128,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
      * should override with any new object types.
      */
     protected boolean isObjectType(byte type) {
-        return type == T_OBJECT || type == T_EXCEPTION;
+        return type == Const.T_OBJECT || type == T_EXCEPTION;
     }
 
     /**
@@ -137,7 +138,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
      * have defined new integer types with different type codes.
      */
     protected boolean isIntegerType(byte type) {
-        return type == T_INT || type == T_BYTE || type == T_BOOLEAN || type == T_CHAR || type == T_SHORT;
+        return type == Const.T_INT || type == Const.T_BYTE || type == Const.T_BOOLEAN || type == Const.T_CHAR || type == Const.T_SHORT;
     }
 
     private static void updateExceptionSet(ExceptionSet exceptionSet, ObjectType type) {
@@ -172,10 +173,10 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
             if (isObjectType(aType) && isObjectType(bType)
                     && ((aType == T_EXCEPTION || isThrowable(aRef))  && (bType == T_EXCEPTION ||   isThrowable(bRef)))) {
                 ExceptionSet union = exceptionSetFactory.createExceptionSet();
-                if (aType == T_OBJECT && "Ljava/lang/Throwable;".equals(aRef.getSignature())) {
+                if (aType == Const.T_OBJECT && "Ljava/lang/Throwable;".equals(aRef.getSignature())) {
                     return aRef;
                 }
-                if (bType == T_OBJECT && "Ljava/lang/Throwable;".equals(bRef.getSignature())) {
+                if (bType == Const.T_OBJECT && "Ljava/lang/Throwable;".equals(bRef.getSignature())) {
                     return bRef;
                 }
 

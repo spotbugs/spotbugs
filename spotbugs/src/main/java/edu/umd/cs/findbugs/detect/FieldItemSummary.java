@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -59,7 +60,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
     @Override
     public void sawOpcode(int seen) {
-        if ("<init>".equals(getMethodName()) && seen == INVOKEVIRTUAL) {
+        if ("<init>".equals(getMethodName()) && seen == Const.INVOKEVIRTUAL) {
             XMethod m = getXMethodOperand();
             if (m != null && !m.isPrivate() && !m.isFinal()) {
                 int args = PreorderVisitor.getNumberArguments(m.getSignature());
@@ -85,7 +86,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
         }
 
-        if (seen == INVOKESPECIAL && "<init>".equals(getMethodName()) && "<init>".equals(getNameConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && "<init>".equals(getMethodName()) && "<init>".equals(getNameConstantOperand())) {
 
             String classOperand = getClassConstantOperand();
             OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
@@ -99,7 +100,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
         }
 
-        if (seen == PUTFIELD || seen == PUTSTATIC) {
+        if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
             XField fieldOperand = getXFieldOperand();
             if (fieldOperand == null) {
                 return;
@@ -107,14 +108,14 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
             touched.add(fieldOperand);
             if (!fieldOperand.getClassDescriptor().getClassName().equals(getClassName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
-            } else if (seen == PUTFIELD) {
+            } else if (seen == Const.PUTFIELD) {
                 OpcodeStack.Item addr = stack.getStackItem(1);
                 {
                     if (addr.getRegisterNumber() != 0 || !"<init>".equals(getMethodName())) {
                         fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
                     }
                 }
-            } else if (seen == PUTSTATIC && !"<clinit>".equals(getMethodName())) {
+            } else if (seen == Const.PUTSTATIC && !"<clinit>".equals(getMethodName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             }
             OpcodeStack.Item top = stack.getStackItem(0);

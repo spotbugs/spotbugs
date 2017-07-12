@@ -24,6 +24,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Constant;
@@ -117,10 +118,10 @@ public class AssertionMethods implements Constants {
                 if (c instanceof ConstantMethodref) {
                     ConstantMethodref cmr = (ConstantMethodref) c;
                     ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(),
-                            CONSTANT_NameAndType);
-                    String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
-                    String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
-                    String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), CONSTANT_Utf8)).getBytes();
+                            Const.CONSTANT_NameAndType);
+                    String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
+                    String className = cp.getConstantString(cmr.getClassIndex(), Const.CONSTANT_Class).replace('/', '.');
+                    String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), Const.CONSTANT_Utf8)).getBytes();
 
                     String classNameLC = className.toLowerCase();
                     String methodNameLC = methodName.toLowerCase();

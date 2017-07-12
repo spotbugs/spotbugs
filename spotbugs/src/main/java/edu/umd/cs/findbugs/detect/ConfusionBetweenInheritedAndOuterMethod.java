@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -92,7 +93,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
             }
             iteratorBug = null;
         }
-        if (seen != INVOKEVIRTUAL) {
+        if (seen != Const.INVOKEVIRTUAL) {
             return;
         }
         if (!getClassName().equals(getClassConstantOperand())) {
