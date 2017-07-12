@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;

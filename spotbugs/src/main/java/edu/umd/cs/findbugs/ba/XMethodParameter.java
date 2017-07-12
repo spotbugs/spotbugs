@@ -63,7 +63,6 @@ public class XMethodParameter implements Comparable<XMethodParameter> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public int compareTo(XMethodParameter mp2) {
         int result = method.compareTo(mp2.method);
         if (result != 0) {
