@@ -252,9 +252,9 @@ public class Project implements XMLWriteable {
         }
 
         for (String dirName : dirNames) {
-	        for (String dir : makeAbsoluteCwdCandidates(dirName)) {
-	            isNew = addToListInternal(srcDirList, dir) || isNew;
-	        }
+            for (String dir : makeAbsoluteCwdCandidates(dirName)) {
+                isNew = addToListInternal(srcDirList, dir) || isNew;
+            }
         }
 
         sourceFinder = new SourceFinder(this);
