@@ -61,9 +61,6 @@ public class StringAnnotation implements BugAnnotation {
 
     private String description;
 
-    static class QuotedStringMarker {
-    }
-
     /**
      * Constructor.
      *
