@@ -48,7 +48,6 @@ public abstract class XPathFind {
         this.document = document;
     }
 
-    @SuppressWarnings("unchecked")
     public void find(String xpath) {
         List<Node> nodes =  XMLUtil.selectNodes(document, xpath);
         for (Node node : nodes) {

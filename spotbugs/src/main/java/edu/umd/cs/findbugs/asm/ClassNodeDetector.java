@@ -58,7 +58,6 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 
         FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
