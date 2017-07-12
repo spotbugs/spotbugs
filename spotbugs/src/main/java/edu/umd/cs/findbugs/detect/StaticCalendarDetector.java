@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -252,7 +253,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (seen == GETSTATIC) {
+        if (seen == Const.GETSTATIC) {
             XField f = getXFieldOperand();
             if (pendingBugs.containsKey(f)) {
                 if (!isLocked()) {
@@ -263,7 +264,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
             }
         }
         // we are only interested in method calls
-        if (seen != INVOKEVIRTUAL) {
+        if (seen != Const.INVOKEVIRTUAL) {
             return;
         }
 

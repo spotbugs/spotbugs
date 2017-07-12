@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -309,13 +310,13 @@ public class InfiniteLoop extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.printf("%3d %-15s %s%n", getPC(),  OPCODE_NAMES[seen], stack);
+            System.out.printf("%3d %-15s %s%n", getPC(),  Const.getOpcodeName(seen), stack);
         }
         if (isRegisterStore()) {
             regModifiedAt(getRegisterOperand(), getPC());
         }
         switch (seen) {
-        case GOTO:
+        case Const.GOTO:
             if (getBranchOffset() < 0) {
                 BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
                 if (bb.invariantRegisters.size() > 0) {
@@ -337,18 +338,18 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
             break;
-        case ARETURN:
-        case IRETURN:
-        case RETURN:
-        case DRETURN:
-        case FRETURN:
-        case LRETURN:
-        case ATHROW:
+        case Const.ARETURN:
+        case Const.IRETURN:
+        case Const.RETURN:
+        case Const.DRETURN:
+        case Const.FRETURN:
+        case Const.LRETURN:
+        case Const.ATHROW:
             addForwardJump(getPC(), Integer.MAX_VALUE);
             break;
 
-        case LOOKUPSWITCH:
-        case TABLESWITCH: {
+        case Const.LOOKUPSWITCH:
+        case Const.TABLESWITCH: {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             if (getDefaultSwitchOffset() > 0) {
                 forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC()
@@ -361,14 +362,14 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
             break;
         }
-        case IFNE:
-        case IFEQ:
-        case IFLE:
-        case IFLT:
-        case IFGE:
-        case IFGT:
-        case IFNONNULL:
-        case IFNULL: {
+        case Const.IFNE:
+        case Const.IFEQ:
+        case Const.IFLE:
+        case Const.IFLT:
+        case Const.IFGE:
+        case Const.IFGT:
+        case Const.IFNONNULL:
+        case Const.IFNULL: {
             addBackwardsReach();
             OpcodeStack.Item item0 = stack.getStackItem(0);
             int target = getBranchTarget();
@@ -396,14 +397,14 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
         }
         break;
-        case IF_ACMPEQ:
-        case IF_ACMPNE:
-        case IF_ICMPNE:
-        case IF_ICMPEQ:
-        case IF_ICMPGT:
-        case IF_ICMPLE:
-        case IF_ICMPLT:
-        case IF_ICMPGE: {
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE:
+        case Const.IF_ICMPNE:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPLE:
+        case Const.IF_ICMPLT:
+        case Const.IF_ICMPGE: {
             addBackwardsReach();
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);

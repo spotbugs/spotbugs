@@ -20,6 +20,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -81,7 +82,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
             stackDepth = 0;
             arguments = null;
         }
-        if (seen == ANEWARRAY && stack.getStackDepth() >= 2) {
+        if (seen == Const.ANEWARRAY && stack.getStackDepth() >= 2) {
             Object size = stack.getStackItem(0).getConstant();
             Object formatStr = stack.getStackItem(1).getConstant();
             if (size instanceof Integer && formatStr instanceof String) {
@@ -90,9 +91,9 @@ public class FormatStringChecker extends OpcodeStackDetector {
                 state = FormatState.READY_FOR_FORMAT;
                 stackDepth = stack.getStackDepth();
             }
-        } else if (state == FormatState.READY_FOR_FORMAT && seen == DUP) {
+        } else if (state == FormatState.READY_FOR_FORMAT && seen == Const.DUP) {
             state = FormatState.EXPECTING_ASSIGNMENT;
-        } else if (state == FormatState.EXPECTING_ASSIGNMENT && stack.getStackDepth() == stackDepth + 3 && seen == AASTORE) {
+        } else if (state == FormatState.EXPECTING_ASSIGNMENT && stack.getStackDepth() == stackDepth + 3 && seen == Const.AASTORE) {
             Object pos = stack.getStackItem(1).getConstant();
             OpcodeStack.Item value = stack.getStackItem(0);
             if (pos instanceof Integer) {
@@ -107,7 +108,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
                 state = FormatState.NONE;
             }
         } else if (state == FormatState.READY_FOR_FORMAT
-                && (seen == INVOKESPECIAL || seen == INVOKEVIRTUAL || seen == INVOKESTATIC || seen == INVOKEINTERFACE)
+                && (seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE)
                 && stack.getStackDepth() == stackDepth) {
 
             String cl = getClassConstantOperand();

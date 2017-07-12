@@ -22,6 +22,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Method;
@@ -81,17 +82,17 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (state == 0 && seen == ALOAD_0) {
+        if (state == 0 && seen == Const.ALOAD_0) {
             state++;
-        } else if (state == 1 && seen == ACONST_NULL) {
+        } else if (state == 1 && seen == Const.ACONST_NULL) {
             state++;
-        } else if (state == 2 && seen == PUTFIELD) {
+        } else if (state == 2 && seen == Const.PUTFIELD) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addReferencedField(this), this);
             sawFieldNulling = true;
             state = 0;
-        } else if (seen == RETURN) {
+        } else if (seen == Const.RETURN) {
             state = 0;
         } else {
             state = 0;

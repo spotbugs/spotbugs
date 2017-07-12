@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -202,8 +203,8 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL: {
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL: {
             if (getMethod().isStatic() || !hasNonFinalFields) {
                 break;
             }
@@ -222,7 +223,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             break;
         }
 
-        case ARETURN: {
+        case Const.ARETURN: {
             OpcodeStack.Item rv = stack.getStackItem(0);
             if (rv.isNull()) {
                 break;
@@ -289,7 +290,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
         }
         break;
-        case PUTFIELD: {
+        case Const.PUTFIELD: {
 
             OpcodeStack.Item rv = stack.getStackItem(1);
             if (rv.getRegisterNumber() == 0 && rv.isInitialParameter()) {

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -69,7 +70,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (seen == INVOKESPECIAL) {
+            if (seen == Const.INVOKESPECIAL) {
                 String newClsName = getClassConstantOperand();
                 if (rejectedXMLClasses.contains(newClsName)) {
                     return;

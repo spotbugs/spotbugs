@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -68,10 +69,10 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == IAND || seen == IOR) {
+        if (seen == Const.IAND || seen == Const.IOR) {
 
             int nextOpcode = getCodeByte(getPC() + 1);
-            if (nextOpcode == IFEQ || nextOpcode == IFNE) {
+            if (nextOpcode == Const.IFEQ || nextOpcode == Const.IFNE) {
                 OpcodeStack.Item left = stack.getStackItem(1);
                 OpcodeStack.Item right = stack.getStackItem(0);
                 checkForNullForcingABranch(seen, nextOpcode, left);
@@ -84,8 +85,8 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
     private void checkForNullForcingABranch(int seen, int nextOpcode, OpcodeStack.Item item) {
         if (nullGuaranteesBranch(seen, item)) {
             // null guarantees a branch
-            boolean nullGuaranteesZero = seen == IAND;
-            boolean nullGuaranteesBranch = nullGuaranteesZero ^ (nextOpcode == IFNE);
+            boolean nullGuaranteesZero = seen == Const.IAND;
+            boolean nullGuaranteesBranch = nullGuaranteesZero ^ (nextOpcode == Const.IFNE);
             if (DEBUG) {
                 System.out.println(item.getPC() + " null guarantees " + nullGuaranteesBranch + " branch");
             }
@@ -193,8 +194,8 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
     }
 
     private boolean nullGuaranteesBranch(int seen, OpcodeStack.Item item) {
-        return item.getSpecialKind() == OpcodeStack.Item.ZERO_MEANS_NULL && seen == IAND
-                || item.getSpecialKind() == OpcodeStack.Item.NONZERO_MEANS_NULL && seen == IOR;
+        return item.getSpecialKind() == OpcodeStack.Item.ZERO_MEANS_NULL && seen == Const.IAND
+                || item.getSpecialKind() == OpcodeStack.Item.NONZERO_MEANS_NULL && seen == Const.IOR;
     }
 
     /*

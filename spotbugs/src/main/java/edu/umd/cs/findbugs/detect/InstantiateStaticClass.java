@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.List;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -40,7 +42,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == INVOKESPECIAL) && "<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if ((seen == Const.INVOKESPECIAL) && "<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             XClass xClass = getXClassOperand();
             if (xClass == null) {
                 return;

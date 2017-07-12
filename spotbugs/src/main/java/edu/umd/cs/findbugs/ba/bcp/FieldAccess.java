@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Type;
@@ -93,7 +94,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
     protected static boolean isLongOrDouble(FieldInstruction fieldIns, ConstantPoolGen cpg) {
         Type type = fieldIns.getFieldType(cpg);
         int code = type.getType();
-        return code == T_LONG || code == T_DOUBLE;
+        return code == Const.T_LONG || code == Const.T_DOUBLE;
     }
 
     /**

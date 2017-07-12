@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 
@@ -97,13 +98,13 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
     @Override
     public void sawOpcode(int seen) {
 
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             lastCallClass = getDottedClassConstantOperand();
             lastCallMethod = getNameConstantOperand();
             lastCallSig = getSigConstantOperand();
         }
 
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             if ("available".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand())
                     || getNameConstantOperand().startsWith("get") && getNameConstantOperand().endsWith("Length")
                     && "()I".equals(getSigConstantOperand()) || "java/io/File".equals(getClassConstantOperand())
@@ -113,7 +114,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             }
         }
         sawAvailable--;
-        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
                 && "read".equals(getNameConstantOperand())
 
                 && ("([B)I".equals(getSigConstantOperand()) || "([BII)I".equals(getSigConstantOperand())
@@ -124,7 +125,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             locationOfCall = getPC();
             return;
         }
-        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
                 && ("skip".equals(getNameConstantOperand()) && "(J)J".equals(getSigConstantOperand()) || "skipBytes".equals(getNameConstantOperand()) && "(I)I".equals(getSigConstantOperand())) && isInputStream()
                         && !isImageIOInputStream()) {
             // if not ByteArrayInput Stream
@@ -139,7 +140,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
         }
 
-        if ((seen == POP) || (seen == POP2)) {
+        if ((seen == Const.POP) || (seen == Const.POP2)) {
 
             if (sawRead) {
                 accumulator.accumulateBug(

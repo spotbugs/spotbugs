@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -71,9 +72,9 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     public void sawOpcode(int seen) {
 
         if (DEBUG) {
-            System.out.printf("%5d %12s %s%n", getPC(), OPCODE_NAMES[seen],stack);
+            System.out.printf("%5d %12s %s%n", getPC(), Const.getOpcodeName(seen),stack);
         }
-        if (seen == PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
             OpcodeStack.Item top = stack.getStackItem(0);
             OpcodeStack.Item next = stack.getStackItem(1);
 
@@ -84,7 +85,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
             }
             possibleOverwrite = null;
 
-            if (stack.getStackDepth() >= 4 && getNextOpcode() == PUTFIELD) {
+            if (stack.getStackDepth() >= 4 && getNextOpcode() == Const.PUTFIELD) {
                 OpcodeStack.Item third = stack.getStackItem(2);
                 OpcodeStack.Item fourth = stack.getStackItem(3);
                 XField f2 = third.getXField();
@@ -135,7 +136,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
         }
         switch (state) {
         case 0:
-            if (seen == DUP) {
+            if (seen == Const.DUP) {
                 state = 6;
             }
             break;

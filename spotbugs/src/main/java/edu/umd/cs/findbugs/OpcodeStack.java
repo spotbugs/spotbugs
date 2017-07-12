@@ -38,6 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -1300,7 +1301,7 @@ public class OpcodeStack implements Constants2 {
                 return;
             }
 
-            if (seen == GOTO) {
+            if (seen == Const.GOTO) {
                 int nextPC = dbc.getPC() + 3;
                 if (nextPC <= dbc.getMaxPC()) {
 
@@ -1309,11 +1310,11 @@ public class OpcodeStack implements Constants2 {
                     try {
                         int nextOpcode = dbc.getCodeByte(dbc.getPC() + 3);
 
-                        if ((prevOpcode1 == ICONST_0 || prevOpcode1 == ICONST_1)
-                                && (prevOpcode2 == IFNULL || prevOpcode2 == IFNONNULL)
-                                && (nextOpcode == ICONST_0 || nextOpcode == ICONST_1) && prevOpcode1 != nextOpcode) {
-                            oneMeansNull = prevOpcode1 == ICONST_0;
-                            if (prevOpcode2 != IFNULL) {
+                        if ((prevOpcode1 == Const.ICONST_0 || prevOpcode1 == Const.ICONST_1)
+                                && (prevOpcode2 == Const.IFNULL || prevOpcode2 == Const.IFNONNULL)
+                                && (nextOpcode == Const.ICONST_0 || nextOpcode == Const.ICONST_1) && prevOpcode1 != nextOpcode) {
+                            oneMeansNull = prevOpcode1 == Const.ICONST_0;
+                            if (prevOpcode2 != Const.IFNULL) {
                                 oneMeansNull = !oneMeansNull;
                             }
                             zeroOneComing = nextPC + 1;
@@ -1328,17 +1329,17 @@ public class OpcodeStack implements Constants2 {
             }
 
             switch (seen) {
-            case ICONST_1:
+            case Const.ICONST_1:
                 convertJumpToOneZeroState = 1;
                 break;
-            case GOTO:
+            case Const.GOTO:
                 if (convertJumpToOneZeroState == 1 && dbc.getBranchOffset() == 4) {
                     convertJumpToOneZeroState = 2;
                 } else {
                     convertJumpToOneZeroState = 0;
                 }
                 break;
-            case ICONST_0:
+            case Const.ICONST_0:
                 if (convertJumpToOneZeroState == 2) {
                     convertJumpToOneZeroState = 3;
                 } else {
@@ -1350,17 +1351,17 @@ public class OpcodeStack implements Constants2 {
 
             }
             switch (seen) {
-            case ICONST_0:
+            case Const.ICONST_0:
                 convertJumpToZeroOneState = 1;
                 break;
-            case GOTO:
+            case Const.GOTO:
                 if (convertJumpToZeroOneState == 1 && dbc.getBranchOffset() == 4) {
                     convertJumpToZeroOneState = 2;
                 } else {
                     convertJumpToZeroOneState = 0;
                 }
                 break;
-            case ICONST_1:
+            case Const.ICONST_1:
                 if (convertJumpToZeroOneState == 2) {
                     convertJumpToZeroOneState = 3;
                 } else {
@@ -1372,62 +1373,62 @@ public class OpcodeStack implements Constants2 {
             }
 
             switch (seen) {
-            case ALOAD:
+            case Const.ALOAD:
                 pushByLocalObjectLoad(dbc, dbc.getRegisterOperand());
                 break;
 
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-                pushByLocalObjectLoad(dbc, seen - ALOAD_0);
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3:
+                pushByLocalObjectLoad(dbc, seen - Const.ALOAD_0);
                 break;
 
-            case DLOAD:
+            case Const.DLOAD:
                 pushByLocalLoad("D", dbc.getRegisterOperand());
                 break;
 
-            case DLOAD_0:
-            case DLOAD_1:
-            case DLOAD_2:
-            case DLOAD_3:
-                pushByLocalLoad("D", seen - DLOAD_0);
+            case Const.DLOAD_0:
+            case Const.DLOAD_1:
+            case Const.DLOAD_2:
+            case Const.DLOAD_3:
+                pushByLocalLoad("D", seen - Const.DLOAD_0);
                 break;
 
-            case FLOAD:
+            case Const.FLOAD:
                 pushByLocalLoad("F", dbc.getRegisterOperand());
                 break;
 
-            case FLOAD_0:
-            case FLOAD_1:
-            case FLOAD_2:
-            case FLOAD_3:
-                pushByLocalLoad("F", seen - FLOAD_0);
+            case Const.FLOAD_0:
+            case Const.FLOAD_1:
+            case Const.FLOAD_2:
+            case Const.FLOAD_3:
+                pushByLocalLoad("F", seen - Const.FLOAD_0);
                 break;
 
-            case ILOAD:
+            case Const.ILOAD:
                 pushByLocalLoad("I", dbc.getRegisterOperand());
                 break;
 
-            case ILOAD_0:
-            case ILOAD_1:
-            case ILOAD_2:
-            case ILOAD_3:
-                pushByLocalLoad("I", seen - ILOAD_0);
+            case Const.ILOAD_0:
+            case Const.ILOAD_1:
+            case Const.ILOAD_2:
+            case Const.ILOAD_3:
+                pushByLocalLoad("I", seen - Const.ILOAD_0);
                 break;
 
-            case LLOAD:
+            case Const.LLOAD:
                 pushByLocalLoad("J", dbc.getRegisterOperand());
                 break;
 
-            case LLOAD_0:
-            case LLOAD_1:
-            case LLOAD_2:
-            case LLOAD_3:
-                pushByLocalLoad("J", seen - LLOAD_0);
+            case Const.LLOAD_0:
+            case Const.LLOAD_1:
+            case Const.LLOAD_2:
+            case Const.LLOAD_3:
+                pushByLocalLoad("J", seen - Const.LLOAD_0);
                 break;
 
-            case GETSTATIC: {
+            case Const.GETSTATIC: {
                 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                 XField fieldOperand = dbc.getXFieldOperand();
 
@@ -1451,20 +1452,20 @@ public class OpcodeStack implements Constants2 {
                 break;
             }
 
-            case LDC:
-            case LDC_W:
-            case LDC2_W:
+            case Const.LDC:
+            case Const.LDC_W:
+            case Const.LDC2_W:
                 cons = dbc.getConstantRefOperand();
                 pushByConstant(dbc, cons);
                 break;
 
-            case INSTANCEOF:
+            case Const.INSTANCEOF:
                 pop();
                 push(new Item("I"));
                 break;
 
-            case IFNONNULL:
-            case IFNULL:
+            case Const.IFNONNULL:
+            case Const.IFNULL:
                 // {
                 // Item topItem = pop();
                 // if (seen == IFNONNULL && topItem.isNull())
@@ -1475,12 +1476,12 @@ public class OpcodeStack implements Constants2 {
                 // break;
                 // }
 
-            case IFEQ:
-            case IFNE:
-            case IFLT:
-            case IFLE:
-            case IFGT:
-            case IFGE:
+            case Const.IFEQ:
+            case Const.IFNE:
+            case Const.IFLT:
+            case Const.IFLE:
+            case Const.IFGT:
+            case Const.IFGE:
 
                 seenTransferOfControl = true;
                 {
@@ -1488,13 +1489,13 @@ public class OpcodeStack implements Constants2 {
 
                     // System.out.printf("%4d %10s %s%n",
                     // dbc.getPC(),OPCODE_NAMES[seen], topItem);
-                    if (seen == IFLT || seen == IFLE) {
+                    if (seen == Const.IFLT || seen == Const.IFLE) {
                         registerTestedFoundToBeNonnegative = topItem.registerNumber;
                     }
                     // if we see a test comparing a special negative value with
                     // 0,
                     // reset all other such values on the opcode stack
-                    if (topItem.valueCouldBeNegative() && (seen == IFLT || seen == IFLE || seen == IFGT || seen == IFGE)) {
+                    if (topItem.valueCouldBeNegative() && (seen == Const.IFLT || seen == Const.IFLE || seen == Const.IFGT || seen == Const.IFGE)) {
                         int specialKind = topItem.getSpecialKind();
                         for (Item item : stack) {
                             if (item != null && item.getSpecialKind() == specialKind) {
@@ -1512,9 +1513,9 @@ public class OpcodeStack implements Constants2 {
                 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
 
                 break;
-            case LOOKUPSWITCH:
+            case Const.LOOKUPSWITCH:
 
-            case TABLESWITCH:
+            case Const.TABLESWITCH:
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(true);
                 pop();
@@ -1525,40 +1526,40 @@ public class OpcodeStack implements Constants2 {
                 }
 
                 break;
-            case ARETURN:
-            case DRETURN:
-            case FRETURN:
+            case Const.ARETURN:
+            case Const.DRETURN:
+            case Const.FRETURN:
 
-            case IRETURN:
-            case LRETURN:
+            case Const.IRETURN:
+            case Const.LRETURN:
 
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(true);
                 pop();
                 break;
-            case MONITORENTER:
-            case MONITOREXIT:
-            case POP:
+            case Const.MONITORENTER:
+            case Const.MONITOREXIT:
+            case Const.POP:
                 pop();
                 break;
 
-            case PUTSTATIC:
+            case Const.PUTSTATIC:
                 pop();
                 eraseKnowledgeOf(dbc.getXFieldOperand());
                 break;
-            case PUTFIELD:
+            case Const.PUTFIELD:
                 pop(2);
                 eraseKnowledgeOf(dbc.getXFieldOperand());
                 break;
 
-            case IF_ACMPEQ:
-            case IF_ACMPNE:
-            case IF_ICMPEQ:
-            case IF_ICMPNE:
-            case IF_ICMPLT:
-            case IF_ICMPLE:
-            case IF_ICMPGT:
-            case IF_ICMPGE:
+            case Const.IF_ACMPEQ:
+            case Const.IF_ACMPNE:
+            case Const.IF_ICMPEQ:
+            case Const.IF_ICMPNE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPLE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPGE:
 
             {
                 seenTransferOfControl = true;
@@ -1569,37 +1570,37 @@ public class OpcodeStack implements Constants2 {
                 Object rConstant = right.getConstant();
                 boolean takeJump = false;
                 boolean handled = false;
-                if (seen == IF_ACMPNE || seen == IF_ACMPEQ) {
+                if (seen == Const.IF_ACMPNE || seen == Const.IF_ACMPEQ) {
                     if (lConstant != null && rConstant != null && !lConstant.equals(rConstant) || lConstant != null
                             && right.isNull() || rConstant != null && left.isNull()) {
                         handled = true;
-                        takeJump = seen == IF_ACMPNE;
+                        takeJump = seen == Const.IF_ACMPNE;
                     }
                 } else if (lConstant instanceof Integer && rConstant instanceof Integer) {
                     int lC = ((Integer) lConstant).intValue();
                     int rC = ((Integer) rConstant).intValue();
                     switch (seen) {
-                    case IF_ICMPEQ:
+                    case Const.IF_ICMPEQ:
                         takeJump = lC == rC;
                         handled = true;
                         break;
-                    case IF_ICMPNE:
+                    case Const.IF_ICMPNE:
                         takeJump = lC != rC;
                         handled = true;
                         break;
-                    case IF_ICMPGE:
+                    case Const.IF_ICMPGE:
                         takeJump = lC >= rC;
                         handled = true;
                         break;
-                    case IF_ICMPGT:
+                    case Const.IF_ICMPGT:
                         takeJump = lC > rC;
                         handled = true;
                         break;
-                    case IF_ICMPLE:
+                    case Const.IF_ICMPLE:
                         takeJump = lC <= rC;
                         handled = true;
                         break;
-                    case IF_ICMPLT:
+                    case Const.IF_ICMPLT:
                         takeJump = lC < rC;
                         handled = true;
                         break;
@@ -1636,7 +1637,7 @@ public class OpcodeStack implements Constants2 {
                 break;
             }
 
-            case POP2:
+            case Const.POP2:
                 it = pop();
                 if (it.getSize() == 1) {
                     pop();
@@ -1644,53 +1645,53 @@ public class OpcodeStack implements Constants2 {
                 break;
 
 
-            case IALOAD:
-            case SALOAD:
+            case Const.IALOAD:
+            case Const.SALOAD:
                 pop(2);
                 push(new Item("I"));
                 break;
 
-            case DUP:
+            case Const.DUP:
                 handleDup();
                 break;
 
-            case DUP2:
+            case Const.DUP2:
                 handleDup2();
                 break;
 
-            case DUP_X1:
+            case Const.DUP_X1:
                 handleDupX1();
                 break;
 
-            case DUP_X2:
+            case Const.DUP_X2:
 
                 handleDupX2();
                 break;
 
-            case DUP2_X1:
+            case Const.DUP2_X1:
                 handleDup2X1();
                 break;
 
-            case DUP2_X2:
+            case Const.DUP2_X2:
                 handleDup2X2();
                 break;
 
-            case IINC:
+            case Const.IINC:
                 register = dbc.getRegisterOperand();
                 it = getLVValue(register);
                 it2 = new Item("I", dbc.getIntConstant());
-                pushByIntMath(dbc, IADD, it2, it);
+                pushByIntMath(dbc, Const.IADD, it2, it);
                 pushByLocalStore(register);
                 break;
 
-            case ATHROW:
+            case Const.ATHROW:
                 pop();
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(true);
                 setTop(true);
                 break;
 
-            case CHECKCAST: {
+            case Const.CHECKCAST: {
                 String castTo = dbc.getClassConstantOperand();
 
                 if (castTo.charAt(0) != '[') {
@@ -1705,16 +1706,16 @@ public class OpcodeStack implements Constants2 {
                 break;
 
             }
-            case NOP:
+            case Const.NOP:
                 break;
-            case RET:
-            case RETURN:
+            case Const.RET:
+            case Const.RETURN:
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(true);
                 break;
 
-            case GOTO:
-            case GOTO_W:
+            case Const.GOTO:
+            case Const.GOTO_W:
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(true);
                 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
@@ -1723,84 +1724,84 @@ public class OpcodeStack implements Constants2 {
 
                 break;
 
-            case SWAP:
+            case Const.SWAP:
                 handleSwap();
                 break;
 
-            case ICONST_M1:
-            case ICONST_0:
-            case ICONST_1:
-            case ICONST_2:
-            case ICONST_3:
-            case ICONST_4:
-            case ICONST_5:
-                push(new Item("I", (seen - ICONST_0)));
+            case Const.ICONST_M1:
+            case Const.ICONST_0:
+            case Const.ICONST_1:
+            case Const.ICONST_2:
+            case Const.ICONST_3:
+            case Const.ICONST_4:
+            case Const.ICONST_5:
+                push(new Item("I", (seen - Const.ICONST_0)));
                 break;
 
-            case LCONST_0:
-            case LCONST_1:
-                push(new Item("J", Long.valueOf(seen - LCONST_0)));
+            case Const.LCONST_0:
+            case Const.LCONST_1:
+                push(new Item("J", Long.valueOf(seen - Const.LCONST_0)));
                 break;
 
-            case DCONST_0:
-            case DCONST_1:
-                push(new Item("D", Double.valueOf(seen - DCONST_0)));
+            case Const.DCONST_0:
+            case Const.DCONST_1:
+                push(new Item("D", Double.valueOf(seen - Const.DCONST_0)));
                 break;
 
-            case FCONST_0:
-            case FCONST_1:
-            case FCONST_2:
-                push(new Item("F", Float.valueOf(seen - FCONST_0)));
+            case Const.FCONST_0:
+            case Const.FCONST_1:
+            case Const.FCONST_2:
+                push(new Item("F", Float.valueOf(seen - Const.FCONST_0)));
                 break;
 
-            case ACONST_NULL:
+            case Const.ACONST_NULL:
                 push(new Item());
                 break;
 
-            case ASTORE:
-            case DSTORE:
-            case FSTORE:
-            case ISTORE:
-            case LSTORE:
+            case Const.ASTORE:
+            case Const.DSTORE:
+            case Const.FSTORE:
+            case Const.ISTORE:
+            case Const.LSTORE:
                 pushByLocalStore(dbc.getRegisterOperand());
                 break;
 
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3:
-                pushByLocalStore(seen - ASTORE_0);
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3:
+                pushByLocalStore(seen - Const.ASTORE_0);
                 break;
 
-            case DSTORE_0:
-            case DSTORE_1:
-            case DSTORE_2:
-            case DSTORE_3:
-                pushByLocalStore(seen - DSTORE_0);
+            case Const.DSTORE_0:
+            case Const.DSTORE_1:
+            case Const.DSTORE_2:
+            case Const.DSTORE_3:
+                pushByLocalStore(seen - Const.DSTORE_0);
                 break;
 
-            case FSTORE_0:
-            case FSTORE_1:
-            case FSTORE_2:
-            case FSTORE_3:
-                pushByLocalStore(seen - FSTORE_0);
+            case Const.FSTORE_0:
+            case Const.FSTORE_1:
+            case Const.FSTORE_2:
+            case Const.FSTORE_3:
+                pushByLocalStore(seen - Const.FSTORE_0);
                 break;
 
-            case ISTORE_0:
-            case ISTORE_1:
-            case ISTORE_2:
-            case ISTORE_3:
-                pushByLocalStore(seen - ISTORE_0);
+            case Const.ISTORE_0:
+            case Const.ISTORE_1:
+            case Const.ISTORE_2:
+            case Const.ISTORE_3:
+                pushByLocalStore(seen - Const.ISTORE_0);
                 break;
 
-            case LSTORE_0:
-            case LSTORE_1:
-            case LSTORE_2:
-            case LSTORE_3:
-                pushByLocalStore(seen - LSTORE_0);
+            case Const.LSTORE_0:
+            case Const.LSTORE_1:
+            case Const.LSTORE_2:
+            case Const.LSTORE_3:
+                pushByLocalStore(seen - Const.LSTORE_0);
                 break;
 
-            case GETFIELD: {
+            case Const.GETFIELD: {
                 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                 XField fieldOperand = dbc.getXFieldOperand();
                 if (fieldOperand != null && fieldSummary.isComplete() && !fieldOperand.isPublic()) {
@@ -1823,7 +1824,7 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case ARRAYLENGTH: {
+            case Const.ARRAYLENGTH: {
                 Item array = pop();
                 Item newItem = new Item("I", array.getConstant());
                 newItem.setSpecialKind(Item.NON_NEGATIVE);
@@ -1831,68 +1832,68 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case BALOAD: {
+            case Const.BALOAD: {
                 pop(2);
                 Item newItem = new Item("I");
                 newItem.setSpecialKind(Item.SIGNED_BYTE);
                 push(newItem);
                 break;
             }
-            case CALOAD: {
+            case Const.CALOAD: {
                 pop(2);
                 Item newItem = new Item("I");
                 newItem.setSpecialKind(Item.NON_NEGATIVE);
                 push(newItem);
                 break;
             }
-            case DALOAD:
+            case Const.DALOAD:
                 pop(2);
                 push(new Item("D"));
                 break;
 
-            case FALOAD:
+            case Const.FALOAD:
                 pop(2);
                 push(new Item("F"));
                 break;
 
-            case LALOAD:
+            case Const.LALOAD:
                 pop(2);
                 push(new Item("J"));
                 break;
 
-            case AASTORE:
-            case BASTORE:
-            case CASTORE:
-            case DASTORE:
-            case FASTORE:
-            case IASTORE:
-            case LASTORE:
-            case SASTORE:
+            case Const.AASTORE:
+            case Const.BASTORE:
+            case Const.CASTORE:
+            case Const.DASTORE:
+            case Const.FASTORE:
+            case Const.IASTORE:
+            case Const.LASTORE:
+            case Const.SASTORE:
                 pop(3);
                 break;
 
-            case BIPUSH:
-            case SIPUSH:
+            case Const.BIPUSH:
+            case Const.SIPUSH:
                 push(new Item("I", Integer.valueOf(dbc.getIntConstant())));
                 break;
 
-            case IADD:
-            case ISUB:
-            case IMUL:
-            case IDIV:
-            case IAND:
-            case IOR:
-            case IXOR:
-            case ISHL:
-            case ISHR:
-            case IREM:
-            case IUSHR:
+            case Const.IADD:
+            case Const.ISUB:
+            case Const.IMUL:
+            case Const.IDIV:
+            case Const.IAND:
+            case Const.IOR:
+            case Const.IXOR:
+            case Const.ISHL:
+            case Const.ISHR:
+            case Const.IREM:
+            case Const.IUSHR:
                 it = pop();
                 it2 = pop();
                 pushByIntMath(dbc, seen, it2, it);
                 break;
 
-            case INEG:
+            case Const.INEG:
                 it = pop();
                 if (it.getConstant() instanceof Integer) {
                     push(new Item("I", Integer.valueOf(-constantToInt(it))));
@@ -1901,7 +1902,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 break;
 
-            case LNEG:
+            case Const.LNEG:
                 it = pop();
                 if (it.getConstant() instanceof Long) {
                     push(new Item("J", Long.valueOf(-constantToLong(it))));
@@ -1909,7 +1910,7 @@ public class OpcodeStack implements Constants2 {
                     push(new Item("J"));
                 }
                 break;
-            case FNEG:
+            case Const.FNEG:
                 it = pop();
                 if (it.getConstant() instanceof Float) {
                     push(new Item("F", Float.valueOf(-constantToFloat(it))));
@@ -1917,7 +1918,7 @@ public class OpcodeStack implements Constants2 {
                     push(new Item("F"));
                 }
                 break;
-            case DNEG:
+            case Const.DNEG:
                 it = pop();
                 if (it.getConstant() instanceof Double) {
                     push(new Item("D", Double.valueOf(-constantToDouble(it))));
@@ -1926,58 +1927,58 @@ public class OpcodeStack implements Constants2 {
                 }
                 break;
 
-            case LADD:
-            case LSUB:
-            case LMUL:
-            case LDIV:
-            case LAND:
-            case LOR:
-            case LXOR:
-            case LSHL:
-            case LSHR:
-            case LREM:
-            case LUSHR:
+            case Const.LADD:
+            case Const.LSUB:
+            case Const.LMUL:
+            case Const.LDIV:
+            case Const.LAND:
+            case Const.LOR:
+            case Const.LXOR:
+            case Const.LSHL:
+            case Const.LSHR:
+            case Const.LREM:
+            case Const.LUSHR:
 
                 it = pop();
                 it2 = pop();
                 pushByLongMath(seen, it2, it);
                 break;
 
-            case LCMP:
+            case Const.LCMP:
                 handleLcmp();
                 break;
 
-            case FCMPG:
-            case FCMPL:
+            case Const.FCMPG:
+            case Const.FCMPL:
                 handleFcmp(seen);
                 break;
 
-            case DCMPG:
-            case DCMPL:
+            case Const.DCMPG:
+            case Const.DCMPL:
                 handleDcmp(seen);
                 break;
 
-            case FADD:
-            case FSUB:
-            case FMUL:
-            case FDIV:
-            case FREM:
+            case Const.FADD:
+            case Const.FSUB:
+            case Const.FMUL:
+            case Const.FDIV:
+            case Const.FREM:
                 it = pop();
                 it2 = pop();
                 pushByFloatMath(seen, it, it2);
                 break;
 
-            case DADD:
-            case DSUB:
-            case DMUL:
-            case DDIV:
-            case DREM:
+            case Const.DADD:
+            case Const.DSUB:
+            case Const.DMUL:
+            case Const.DDIV:
+            case Const.DREM:
                 it = pop();
                 it2 = pop();
                 pushByDoubleMath(seen, it, it2);
                 break;
 
-            case I2B: {
+            case Const.I2B: {
                 it = pop();
                 Item newValue = new Item(it, "B");
                 newValue.setCouldBeNegative();
@@ -1988,7 +1989,7 @@ public class OpcodeStack implements Constants2 {
 
 
 
-            case I2C: {
+            case Const.I2C: {
                 it = pop();
                 Item newValue = new Item(it, "C");
 
@@ -1996,15 +1997,15 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case I2L:
-            case D2L:
-            case F2L: {
+            case Const.I2L:
+            case Const.D2L:
+            case Const.F2L: {
                 it = pop();
                 Item newValue = new Item(it, "J");
 
                 int specialKind = it.getSpecialKind();
 
-                if (specialKind != Item.SIGNED_BYTE && seen == I2L) {
+                if (specialKind != Item.SIGNED_BYTE && seen == Const.I2L) {
                     newValue.setSpecialKind(Item.RESULT_OF_I2L);
                 }
 
@@ -2012,7 +2013,7 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case I2S:
+            case Const.I2S:
             {
                 Item item1 = pop();
                 Item newValue = new Item(item1, "S");
@@ -2021,9 +2022,9 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case L2I:
-            case D2I:
-            case F2I:
+            case Const.L2I:
+            case Const.D2I:
+            case Const.F2I:
                 it = pop();
                 int oldSpecialKind = it.getSpecialKind();
                 it = new Item(it, "I");
@@ -2035,9 +2036,9 @@ public class OpcodeStack implements Constants2 {
 
                 break;
 
-            case L2F:
-            case D2F:
-            case I2F:
+            case Const.L2F:
+            case Const.D2F:
+            case Const.I2F:
                 it = pop();
                 if (it.getConstant() != null) {
                     push(new Item("F", Float.valueOf(constantToFloat(it))));
@@ -2046,9 +2047,9 @@ public class OpcodeStack implements Constants2 {
                 }
                 break;
 
-            case F2D:
-            case I2D:
-            case L2D:
+            case Const.F2D:
+            case Const.I2D:
+            case Const.L2D:
                 it = pop();
                 if (it.getConstant() != null) {
                     push(new Item("D", Double.valueOf(constantToDouble(it))));
@@ -2057,14 +2058,14 @@ public class OpcodeStack implements Constants2 {
                 }
                 break;
 
-            case NEW: {
+            case Const.NEW: {
                 Item item = new Item("L" + dbc.getClassConstantOperand() + ";", (Object) null);
                 item.setSpecialKind(Item.NEWLY_ALLOCATED);
                 push(item);
             }
             break;
 
-            case NEWARRAY: {
+            case Const.NEWARRAY: {
                 Item length = pop();
                 signature = "[" + BasicType.getType((byte) dbc.getIntConstant()).getSignature();
                 Item item = new Item(signature, length.getConstant());
@@ -2079,7 +2080,7 @@ public class OpcodeStack implements Constants2 {
             // "internal form"), or array classes (encoded as signatures
             // beginning with "[").
 
-            case ANEWARRAY: {
+            case Const.ANEWARRAY: {
                 Item length = pop();
                 signature = dbc.getClassConstantOperand();
                 if (signature.charAt(0) == '[') {
@@ -2094,7 +2095,7 @@ public class OpcodeStack implements Constants2 {
                 break;
             }
 
-            case MULTIANEWARRAY:
+            case Const.MULTIANEWARRAY:
                 int dims = dbc.getIntConstant();
                 for (int i = 0; i < dims; i++) {
                     pop();
@@ -2105,7 +2106,7 @@ public class OpcodeStack implements Constants2 {
                 getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
                 break;
 
-            case AALOAD: {
+            case Const.AALOAD: {
                 pop();
                 it = pop();
                 String arraySig = it.getSignature();
@@ -2117,7 +2118,7 @@ public class OpcodeStack implements Constants2 {
             }
             break;
 
-            case JSR:
+            case Const.JSR:
                 seenTransferOfControl = true;
                 setReachOnlyByBranch(false);
                 push(new Item("")); // push return address on stack
@@ -2134,17 +2135,17 @@ public class OpcodeStack implements Constants2 {
                 setTop(false);
                 break;
 
-            case INVOKEINTERFACE:
-            case INVOKESPECIAL:
-            case INVOKESTATIC:
-            case INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC:
+            case Const.INVOKEVIRTUAL:
                 processMethodCall(dbc, seen);
                 break;
-            case INVOKEDYNAMIC:
+            case Const.INVOKEDYNAMIC:
                 processInvokeDynamic(dbc);
                 break;
             default:
-                throw new UnsupportedOperationException("OpCode " + seen + ":" + OPCODE_NAMES[seen] + " not supported ");
+                throw new UnsupportedOperationException("OpCode " + seen + ":" + Const.getOpcodeName(seen) + " not supported ");
             }
         }
 
@@ -2156,7 +2157,7 @@ public class OpcodeStack implements Constants2 {
             // or the stack will resync with the code. But hopefully not false
             // positives
 
-            String msg = "Error processing opcode " + OPCODE_NAMES[seen] + " @ " + dbc.getPC() + " in "
+            String msg = "Error processing opcode " + Const.getOpcodeName(seen) + " @ " + dbc.getPC() + " in "
                     + dbc.getFullyQualifiedMethodName();
             AnalysisContext.logError(msg, e);
             if (DEBUG) {
@@ -2166,7 +2167,7 @@ public class OpcodeStack implements Constants2 {
             setTop(true);
         } finally {
             if (DEBUG) {
-                System.out.printf("%4d: %14s %s%n", dbc.getPC(), OPCODE_NAMES[seen] ,  this);
+                System.out.printf("%4d: %14s %s%n", dbc.getPC(), Const.getOpcodeName(seen) ,  this);
             }
         }
     }
@@ -2237,7 +2238,7 @@ public class OpcodeStack implements Constants2 {
             double d = constantToDouble(it);
             double d2 = constantToDouble(it2);
             if (Double.isNaN(d) || Double.isNaN(d2)) {
-                if (opcode == DCMPG) {
+                if (opcode == Const.DCMPG) {
                     push(new Item("I", Integer.valueOf(1)));
                 } else {
                     push(new Item("I", Integer.valueOf(-1)));
@@ -2262,7 +2263,7 @@ public class OpcodeStack implements Constants2 {
             float f = constantToFloat(it);
             float f2 = constantToFloat(it2);
             if (Float.isNaN(f) || Float.isNaN(f2)) {
-                if (opcode == FCMPG) {
+                if (opcode == Const.FCMPG) {
                     push(new Item("I", Integer.valueOf(1)));
                 } else {
                     push(new Item("I", Integer.valueOf(-1)));
@@ -2484,7 +2485,7 @@ public class OpcodeStack implements Constants2 {
             return;
         }
 
-        int firstArgument = seen == INVOKESTATIC ? 0 : 1;
+        int firstArgument = seen == Const.INVOKESTATIC ? 0 : 1;
         for (int i = firstArgument; i < firstArgument + numberArguments; i++) {
             if (i >= getStackDepth()) {
                 break;
@@ -2496,7 +2497,7 @@ public class OpcodeStack implements Constants2 {
             }
         }
         boolean initializingServletWriter = false;
-        if (seen == INVOKESPECIAL && "<init>".equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+        if (seen == Const.INVOKESPECIAL && "<init>".equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
                 && numberArguments > 0) {
             Item firstArg = getStackItem(numberArguments-1);
             if (firstArg.isServletWriter()) {
@@ -2550,7 +2551,7 @@ public class OpcodeStack implements Constants2 {
                     sawUnknownAppend = true;
                 }
             }
-        } else if (seen == INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && "<init>".equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && "<init>".equals(methodName)
                 && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
@@ -2564,7 +2565,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 return;
             }
-        } else if (seen == INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && "<init>".equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && "<init>".equals(methodName)
                 && "(Ljava/io/OutputStream;)V".equals(signature)) {
 
             if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE
@@ -2577,7 +2578,7 @@ public class OpcodeStack implements Constants2 {
                 newTop.setPC(dbc.getPC());
                 return;
             }
-        } else if (seen == INVOKEINTERFACE && "getParameter".equals(methodName)
+        } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(methodName)
                 && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             Item requestParameter = pop();
             pop();
@@ -2593,7 +2594,7 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == INVOKEINTERFACE && "getQueryString".equals(methodName)
+        } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(methodName)
                 && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2602,7 +2603,7 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == INVOKEINTERFACE && "getHeader".equals(methodName)
+        } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(methodName)
                 && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
             /* Item requestParameter = */pop();
             pop();
@@ -2612,12 +2613,12 @@ public class OpcodeStack implements Constants2 {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == INVOKESTATIC && "asList".equals(methodName) && "java/util/Arrays".equals(clsName)) {
+        } else if (seen == Const.INVOKESTATIC && "asList".equals(methodName) && "java/util/Arrays".equals(clsName)) {
             /* Item requestParameter = */pop();
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
+        } else if (seen == Const.INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
                 && "java/util/Collections".equals(clsName)) {
             Item requestParameter = pop();
             if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
@@ -2628,7 +2629,7 @@ public class OpcodeStack implements Constants2 {
             push(requestParameter); // fall back to standard logic
         }
 
-        pushByInvoke(dbc, seen != INVOKESTATIC);
+        pushByInvoke(dbc, seen != Const.INVOKESTATIC);
 
         if (sbItem != null && sbItem.isNewlyAllocated()) {
             this.getStackItem(0).setSpecialKind(Item.NEWLY_ALLOCATED);
@@ -2705,7 +2706,7 @@ public class OpcodeStack implements Constants2 {
                 i.setSpecialKind(Item.MATH_ABS);
             }
             push(i);
-        } else if (seen == INVOKEVIRTUAL && "hashCode".equals(methodName) && "()I".equals(signature) || seen == INVOKESTATIC
+        } else if (seen == Const.INVOKEVIRTUAL && "hashCode".equals(methodName) && "()I".equals(signature) || seen == Const.INVOKESTATIC
                 && "java/lang/System".equals(clsName) && "identityHashCode".equals(methodName)
                 && "(Ljava/lang/Object;)I".equals(signature)) {
             Item i = new Item(pop());
@@ -2879,7 +2880,7 @@ public class OpcodeStack implements Constants2 {
                 stack.precomputation(this);
 
                 if (DEBUG1) {
-                    System.out.printf("%4d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
+                    System.out.printf("%4d %-15s %s%n", getPC(), Const.getOpcodeName(seen), stack);
                 }
                 try {
                     stack.sawOpcode(this, seen);
@@ -3229,68 +3230,68 @@ public class OpcodeStack implements Constants2 {
         try {
             if (DEBUG) {
                 System.out.println("pushByIntMath " + dbc.getFullyQualifiedMethodName() + " @ " + dbc.getPC() + " : " + lhs
-                        + OPCODE_NAMES[seen] + rhs);
+                        + Const.getOpcodeName(seen) + rhs);
             }
 
             if (rhs.getConstant() != null && lhs.getConstant() != null) {
                 int lhsValue = constantToInt(lhs);
                 int rhsValue = constantToInt(rhs);
-                if ((seen == IDIV || seen == IREM) && rhsValue == 0) {
+                if ((seen == Const.IDIV || seen == Const.IREM) && rhsValue == 0) {
                     push(newValue);
                     return;
                 }
                 switch (seen) {
 
-                case IADD:
+                case Const.IADD:
                     newValue = new Item("I", lhsValue + rhsValue);
                     break;
-                case ISUB:
+                case Const.ISUB:
                     newValue = new Item("I", lhsValue - rhsValue);
                     break;
-                case IMUL:
+                case Const.IMUL:
                     newValue = new Item("I", lhsValue * rhsValue);
                     break;
-                case IDIV:
+                case Const.IDIV:
                     newValue = new Item("I", lhsValue / rhsValue);
                     break;
-                case IREM:
+                case Const.IREM:
                     newValue = new Item("I", lhsValue % rhsValue);
                     break;
-                case IAND:
+                case Const.IAND:
                     newValue = new Item("I", lhsValue & rhsValue);
                     if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0) {
                         newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                     }
 
                     break;
-                case IOR:
+                case Const.IOR:
                     newValue = new Item("I", lhsValue | rhsValue);
                     break;
-                case IXOR:
+                case Const.IXOR:
                     newValue = new Item("I", lhsValue ^ rhsValue);
                     break;
-                case ISHL:
+                case Const.ISHL:
                     newValue = new Item("I", lhsValue << rhsValue);
                     if (rhsValue >= 8) {
                         newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                     }
 
                     break;
-                case ISHR:
+                case Const.ISHR:
                     newValue = new Item("I", lhsValue >> rhsValue);
 
                     break;
-                case IUSHR:
+                case Const.IUSHR:
                     newValue = new Item("I", lhsValue >>> rhsValue);
 
                 }
 
-            } else if ((seen == ISHL || seen == ISHR || seen == IUSHR)) {
+            } else if ((seen == Const.ISHL || seen == Const.ISHR || seen == Const.IUSHR)) {
                 if (rhs.getConstant() != null) {
                     int constant = constantToInt(rhs);
                     if ((constant & 0x1f) == 0) {
                         newValue = new Item(lhs);
-                    } else if (seen == ISHL && (constant & 0x1f) >= 8) {
+                    } else if (seen == Const.ISHL && (constant & 0x1f) >= 8) {
                         newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                     }
                 } else if (lhs.getConstant() != null) {
@@ -3299,7 +3300,7 @@ public class OpcodeStack implements Constants2 {
                         newValue = new Item("I", 0);
                     }
                 }
-            } else if (lhs.getConstant() != null && seen == IAND) {
+            } else if (lhs.getConstant() != null && seen == Const.IAND) {
                 int value = constantToInt(lhs);
                 if (value == 0) {
                     newValue = new Item("I", 0);
@@ -3308,7 +3309,7 @@ public class OpcodeStack implements Constants2 {
                 } else if (value >= 0) {
                     newValue.setSpecialKind(Item.NON_NEGATIVE);
                 }
-            } else if (rhs.getConstant() != null && seen == IAND) {
+            } else if (rhs.getConstant() != null && seen == Const.IAND) {
                 int value = constantToInt(rhs);
                 if (value == 0) {
                     newValue = new Item("I", 0);
@@ -3317,44 +3318,44 @@ public class OpcodeStack implements Constants2 {
                 } else if (value >= 0) {
                     newValue.setSpecialKind(Item.NON_NEGATIVE);
                 }
-            } else if (seen == IAND && lhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
+            } else if (seen == Const.IAND && lhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
                 newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
                 newValue.setPC(lhs.getPC());
-            } else if (seen == IAND && rhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
+            } else if (seen == Const.IAND && rhs.getSpecialKind() == Item.ZERO_MEANS_NULL) {
                 newValue.setSpecialKind(Item.ZERO_MEANS_NULL);
                 newValue.setPC(rhs.getPC());
-            } else if (seen == IOR && lhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
+            } else if (seen == Const.IOR && lhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
                 newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
                 newValue.setPC(lhs.getPC());
-            } else if (seen == IOR && rhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
+            } else if (seen == Const.IOR && rhs.getSpecialKind() == Item.NONZERO_MEANS_NULL) {
                 newValue.setSpecialKind(Item.NONZERO_MEANS_NULL);
                 newValue.setPC(rhs.getPC());
             }
         } catch (ArithmeticException e) {
             assert true; // ignore it
         } catch (RuntimeException e) {
-            String msg = "Error processing2 " + lhs + OPCODE_NAMES[seen] + rhs + " @ " + dbc.getPC() + " in "
+            String msg = "Error processing2 " + lhs + Const.getOpcodeName(seen) + rhs + " @ " + dbc.getPC() + " in "
                     + dbc.getFullyQualifiedMethodName();
             AnalysisContext.logError(msg, e);
 
         }
         if (lhs.getSpecialKind() == Item.INTEGER_SUM && rhs.getConstant() != null) {
             int rhsValue = constantToInt(rhs);
-            if (seen == IDIV && rhsValue == 2 || seen == ISHR && rhsValue == 1) {
+            if (seen == Const.IDIV && rhsValue == 2 || seen == Const.ISHR && rhsValue == 1) {
                 newValue.setSpecialKind(Item.AVERAGE_COMPUTED_USING_DIVISION);
             }
         }
-        if (seen == IADD && newValue.getSpecialKind() == Item.NOT_SPECIAL && lhs.getConstant() == null
+        if (seen == Const.IADD && newValue.getSpecialKind() == Item.NOT_SPECIAL && lhs.getConstant() == null
                 && rhs.getConstant() == null) {
             newValue.setSpecialKind(Item.INTEGER_SUM);
         }
-        if (seen == IREM && lhs.getSpecialKind() == Item.HASHCODE_INT) {
+        if (seen == Const.IREM && lhs.getSpecialKind() == Item.HASHCODE_INT) {
             newValue.setSpecialKind(Item.HASHCODE_INT_REMAINDER);
         }
-        if (seen == IREM && lhs.getSpecialKind() == Item.RANDOM_INT) {
+        if (seen == Const.IREM && lhs.getSpecialKind() == Item.RANDOM_INT) {
             newValue.setSpecialKind(Item.RANDOM_INT_REMAINDER);
         }
-        if (seen == IREM && lhs.checkForIntegerMinValue()) {
+        if (seen == Const.IREM && lhs.checkForIntegerMinValue()) {
             if (rhs.getConstant() != null) {
                 int rhsValue = constantToInt(rhs);
                 if (!Util.isPowerOfTwo(rhsValue)) {
@@ -3378,43 +3379,43 @@ public class OpcodeStack implements Constants2 {
             if ((rhs.getConstant() != null) && lhs.getConstant() != null) {
 
                 long lhsValue = constantToLong(lhs);
-                if (seen == LSHL) {
+                if (seen == Const.LSHL) {
                     newValue = new Item("J", Long.valueOf(lhsValue << constantToInt(rhs)));
                     if (constantToInt(rhs) >= 8) {
                         newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                     }
-                } else if (seen == LSHR) {
+                } else if (seen == Const.LSHR) {
                     newValue = new Item("J", Long.valueOf(lhsValue >> constantToInt(rhs)));
-                } else if (seen == LUSHR) {
+                } else if (seen == Const.LUSHR) {
                     newValue = new Item("J", Long.valueOf(lhsValue >>> constantToInt(rhs)));
                 } else {
                     long rhsValue = constantToLong(rhs);
-                    if (seen == LADD) {
+                    if (seen == Const.LADD) {
                         newValue = new Item("J", Long.valueOf(lhsValue + rhsValue));
-                    } else if (seen == LSUB) {
+                    } else if (seen == Const.LSUB) {
                         newValue = new Item("J", Long.valueOf(lhsValue - rhsValue));
-                    } else if (seen == LMUL) {
+                    } else if (seen == Const.LMUL) {
                         newValue = new Item("J", Long.valueOf(lhsValue * rhsValue));
-                    } else if (seen == LDIV) {
+                    } else if (seen == Const.LDIV) {
                         newValue = new Item("J", Long.valueOf(lhsValue / rhsValue));
-                    } else if (seen == LAND) {
+                    } else if (seen == Const.LAND) {
                         newValue = new Item("J", Long.valueOf(lhsValue & rhsValue));
                         if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0) {
                             newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
                         }
-                    } else if (seen == LOR) {
+                    } else if (seen == Const.LOR) {
                         newValue = new Item("J", Long.valueOf(lhsValue | rhsValue));
-                    } else if (seen == LXOR) {
+                    } else if (seen == Const.LXOR) {
                         newValue = new Item("J", Long.valueOf(lhsValue ^ rhsValue));
-                    } else if (seen == LREM) {
+                    } else if (seen == Const.LREM) {
                         newValue = new Item("J", Long.valueOf(lhsValue % rhsValue));
                     }
                 }
-            } else if (rhs.getConstant() != null && seen == LSHL && constantToInt(rhs) >= 8) {
+            } else if (rhs.getConstant() != null && seen == Const.LSHL && constantToInt(rhs) >= 8) {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-            } else if (lhs.getConstant() != null && seen == LAND && (constantToLong(lhs) & 0xff) == 0) {
+            } else if (lhs.getConstant() != null && seen == Const.LAND && (constantToLong(lhs) & 0xff) == 0) {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
-            } else if (rhs.getConstant() != null && seen == LAND && (constantToLong(rhs) & 0xff) == 0) {
+            } else if (rhs.getConstant() != null && seen == Const.LAND && (constantToLong(rhs) & 0xff) == 0) {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
             }
         } catch (RuntimeException e) {
@@ -3427,22 +3428,22 @@ public class OpcodeStack implements Constants2 {
         Item result;
         @SpecialKind int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Float) && it2.getConstant() instanceof Float) {
-            if (seen == FADD) {
+            if (seen == Const.FADD) {
                 result = new Item("F", Float.valueOf(constantToFloat(it2) + constantToFloat(it)));
-            } else if (seen == FSUB) {
+            } else if (seen == Const.FSUB) {
                 result = new Item("F", Float.valueOf(constantToFloat(it2) - constantToFloat(it)));
-            } else if (seen == FMUL) {
+            } else if (seen == Const.FMUL) {
                 result = new Item("F", Float.valueOf(constantToFloat(it2) * constantToFloat(it)));
-            } else if (seen == FDIV) {
+            } else if (seen == Const.FDIV) {
                 result = new Item("F", Float.valueOf(constantToFloat(it2) / constantToFloat(it)));
-            } else if (seen == FREM) {
+            } else if (seen == Const.FREM) {
                 result = new Item("F", Float.valueOf(constantToFloat(it2) % constantToFloat(it)));
             } else {
                 result = new Item("F");
             }
         } else {
             result = new Item("F");
-            if (seen == DDIV) {
+            if (seen == Const.DDIV) {
                 specialKind = Item.NASTY_FLOAT_MATH;
             }
         }
@@ -3454,15 +3455,15 @@ public class OpcodeStack implements Constants2 {
         Item result;
         @SpecialKind int specialKind = Item.FLOAT_MATH;
         if ((it.getConstant() instanceof Double) && it2.getConstant() instanceof Double) {
-            if (seen == DADD) {
+            if (seen == Const.DADD) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) + constantToDouble(it)));
-            } else if (seen == DSUB) {
+            } else if (seen == Const.DSUB) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) - constantToDouble(it)));
-            } else if (seen == DMUL) {
+            } else if (seen == Const.DMUL) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) * constantToDouble(it)));
-            } else if (seen == DDIV) {
+            } else if (seen == Const.DDIV) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) / constantToDouble(it)));
-            } else if (seen == DREM) {
+            } else if (seen == Const.DREM) {
                 result = new Item("D", Double.valueOf(constantToDouble(it2) % constantToDouble(it)));
             }
             else {
@@ -3470,7 +3471,7 @@ public class OpcodeStack implements Constants2 {
             }
         } else {
             result = new Item("D");
-            if (seen == DDIV) {
+            if (seen == Const.DDIV) {
                 specialKind = Item.NASTY_FLOAT_MATH;
             }
         }
@@ -3501,9 +3502,9 @@ public class OpcodeStack implements Constants2 {
     public Item getItemMethodInvokedOn(DismantleBytecode dbc) {
         int opcode = dbc.getOpcode();
         switch (opcode) {
-        case INVOKEVIRTUAL:
-        case INVOKEINTERFACE:
-        case INVOKESPECIAL:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
             String signature = dbc.getSigConstantOperand();
             int stackOffset = PreorderVisitor.getNumberArguments(signature);
 

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -44,7 +45,7 @@ public class TestingGround extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        System.out.printf("%3d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
+        System.out.printf("%3d %-15s %s%n", getPC(), Const.getOpcodeName(seen), stack);
 
     }
 

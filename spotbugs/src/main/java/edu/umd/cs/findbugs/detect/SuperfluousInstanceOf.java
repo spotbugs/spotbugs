@@ -20,6 +20,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -76,10 +77,10 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
     public void sawOpcode(int seen) {
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ALOAD) {
+            if (seen == Const.ALOAD) {
                 register = getRegisterOperand();
-            } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
-                register = seen - ALOAD_0;
+            } else if ((seen >= Const.ALOAD_0) && (seen <= Const.ALOAD_3)) {
+                register = seen - Const.ALOAD_0;
             } else {
                 return;
             }
@@ -88,7 +89,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 
         case SEEN_ALOAD:
             try {
-                if (seen == INSTANCEOF) {
+                if (seen == Const.INSTANCEOF) {
                     LocalVariable lv = LVTHelper.getLocalVariableAtPC(varTable, register, getPC());
                     if (lv != null) {
                         String objSignature = lv.getSignature();

@@ -20,6 +20,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -78,7 +79,7 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEVIRTUAL) {
             String method = getNameConstantOperand();
             String signature = getSigConstantOperand();
             if ((("getDocumentBase".equals(method) || "getCodeBase".equals(method)) && "()Ljava/net/URL;".equals(signature))

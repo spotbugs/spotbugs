@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumberTable;
 
@@ -90,7 +91,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.printf("%3d %-15s %s%n", getPC(), OPCODE_NAMES[seen], stack);
+            System.out.printf("%3d %-15s %s%n", getPC(), Const.getOpcodeName(seen), stack);
         }
 
 
@@ -98,7 +99,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
             resetDoubleAssignmentState();
         }
 
-        if (seen == PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
             OpcodeStack.Item obj = stack.getStackItem(1);
             OpcodeStack.Item value = stack.getStackItem(0);
             XField f = getXFieldOperand();
@@ -167,7 +168,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
         } else if (isReturn(seen)) {
             resetDoubleAssignmentState();
-        } else if (seen == GETFIELD && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
+        } else if (seen == Const.GETFIELD && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
             OpcodeStack.Item obj = stack.getStackItem(0);
             if (obj.sameValue(putFieldObj)) {
                 resetDoubleAssignmentState();
@@ -175,8 +176,8 @@ public class FindSelfComparison extends OpcodeStackDetector {
         }
 
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
             //        case INVOKESTATIC:
             if (getClassName().toLowerCase().indexOf("test") >= 0) {
                 break;
@@ -187,7 +188,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
             if (getSuperclassName().toLowerCase().indexOf("test") >= 0) {
                 break;
             }
-            if (getNextOpcode() == POP) {
+            if (getNextOpcode() == Const.POP) {
                 break;
             }
             String name = getNameConstantOperand();
@@ -197,7 +198,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 String sig = getSigConstantOperand();
                 SignatureParser parser = new SignatureParser(sig);
                 int numParameters = parser.getNumParameters();
-                if ((numParameters == 1 ||  seen == INVOKESTATIC && numParameters  == 2)
+                if ((numParameters == 1 ||  seen == Const.INVOKESTATIC && numParameters  == 2)
                         && (booleanComparisonMethod && sig.endsWith(";)Z")
                                 ||  FindSelfComparison2.comparatorMethod(name) && sig.endsWith(";)I"))) {
                     checkForSelfOperation(seen, "COMPARISON");
@@ -205,36 +206,36 @@ public class FindSelfComparison extends OpcodeStackDetector {
             }
             break;
 
-        case LOR:
-        case LAND:
-        case LXOR:
-        case LSUB:
-        case IOR:
-        case IAND:
-        case IXOR:
-        case ISUB:
+        case Const.LOR:
+        case Const.LAND:
+        case Const.LXOR:
+        case Const.LSUB:
+        case Const.IOR:
+        case Const.IAND:
+        case Const.IXOR:
+        case Const.ISUB:
             checkForSelfOperation(seen, "COMPUTATION");
             break;
-        case FCMPG:
-        case DCMPG:
-        case DCMPL:
-        case FCMPL:
+        case Const.FCMPG:
+        case Const.DCMPG:
+        case Const.DCMPL:
+        case Const.FCMPL:
             break;
-        case LCMP:
-        case IF_ACMPEQ:
-        case IF_ACMPNE:
-        case IF_ICMPNE:
-        case IF_ICMPEQ:
-        case IF_ICMPGT:
-        case IF_ICMPLE:
-        case IF_ICMPLT:
-        case IF_ICMPGE:
+        case Const.LCMP:
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE:
+        case Const.IF_ICMPNE:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPLE:
+        case Const.IF_ICMPLT:
+        case Const.IF_ICMPGE:
             checkForSelfOperation(seen, "COMPARISON");
             break;
         default:
             break;
         }
-        if (isRegisterLoad() && seen != IINC) {
+        if (isRegisterLoad() && seen != Const.IINC) {
             if (getRegisterOperand() == whichRegister) {
                 registerLoadCount++;
             } else {
@@ -320,7 +321,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(bug, this);
             }
 
-            else if (opCode == IXOR && item0.sameValue(item1)) {
+            else if (opCode == Const.IXOR && item0.sameValue(item1)) {
                 LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
                 if (localVariableAnnotation != null) {
                     bugAccumulator.accumulateBug(

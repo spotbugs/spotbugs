@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -156,10 +157,10 @@ public class Noise extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         int priority;
         switch (seen) {
-        case INVOKEINTERFACE:
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             hq.pushHash(getClassConstantOperand());
             if (getNameConstantOperand().indexOf('$') == -1) {
                 hq.pushHash(getNameConstantOperand());
@@ -172,10 +173,10 @@ public class Noise extends OpcodeStackDetector {
                         .addCalledMethod(this), this);
             }
             break;
-        case GETFIELD:
-        case PUTFIELD:
-        case GETSTATIC:
-        case PUTSTATIC:
+        case Const.GETFIELD:
+        case Const.PUTFIELD:
+        case Const.GETSTATIC:
+        case Const.PUTSTATIC:
             hq.pushHash(getClassConstantOperand());
             if (getNameConstantOperand().indexOf('$') == -1) {
                 hq.pushHash(getNameConstantOperand());
@@ -187,65 +188,65 @@ public class Noise extends OpcodeStackDetector {
                         .addReferencedField(this), this);
             }
             break;
-        case CHECKCAST:
-        case INSTANCEOF:
-        case NEW:
+        case Const.CHECKCAST:
+        case Const.INSTANCEOF:
+        case Const.NEW:
             hq.pushHash(getClassConstantOperand());
             break;
-        case IFEQ:
-        case IFNE:
-        case IFNONNULL:
-        case IFNULL:
-        case IF_ICMPEQ:
-        case IF_ICMPNE:
-        case IF_ICMPLE:
-        case IF_ICMPGE:
-        case IF_ICMPGT:
-        case IF_ICMPLT:
-        case IF_ACMPEQ:
-        case IF_ACMPNE:
-        case RETURN:
-        case ARETURN:
-        case IRETURN:
-        case MONITORENTER:
-        case MONITOREXIT:
-        case IINC:
-        case NEWARRAY:
-        case TABLESWITCH:
-        case LOOKUPSWITCH:
-        case LCMP:
-        case INEG:
-        case IADD:
-        case IMUL:
-        case ISUB:
-        case IDIV:
-        case IREM:
-        case IXOR:
-        case ISHL:
-        case ISHR:
-        case IUSHR:
-        case IAND:
-        case IOR:
-        case LAND:
-        case LOR:
-        case LADD:
-        case LMUL:
-        case LSUB:
-        case LDIV:
-        case LSHL:
-        case LSHR:
-        case LUSHR:
-        case AALOAD:
-        case AASTORE:
-        case IALOAD:
-        case IASTORE:
-        case BALOAD:
-        case BASTORE:
+        case Const.IFEQ:
+        case Const.IFNE:
+        case Const.IFNONNULL:
+        case Const.IFNULL:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPNE:
+        case Const.IF_ICMPLE:
+        case Const.IF_ICMPGE:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPLT:
+        case Const.IF_ACMPEQ:
+        case Const.IF_ACMPNE:
+        case Const.RETURN:
+        case Const.ARETURN:
+        case Const.IRETURN:
+        case Const.MONITORENTER:
+        case Const.MONITOREXIT:
+        case Const.IINC:
+        case Const.NEWARRAY:
+        case Const.TABLESWITCH:
+        case Const.LOOKUPSWITCH:
+        case Const.LCMP:
+        case Const.INEG:
+        case Const.IADD:
+        case Const.IMUL:
+        case Const.ISUB:
+        case Const.IDIV:
+        case Const.IREM:
+        case Const.IXOR:
+        case Const.ISHL:
+        case Const.ISHR:
+        case Const.IUSHR:
+        case Const.IAND:
+        case Const.IOR:
+        case Const.LAND:
+        case Const.LOR:
+        case Const.LADD:
+        case Const.LMUL:
+        case Const.LSUB:
+        case Const.LDIV:
+        case Const.LSHL:
+        case Const.LSHR:
+        case Const.LUSHR:
+        case Const.AALOAD:
+        case Const.AASTORE:
+        case Const.IALOAD:
+        case Const.IASTORE:
+        case Const.BALOAD:
+        case Const.BASTORE:
             hq.push(seen);
             priority = hq.getPriority();
             if (priority <= Priorities.LOW_PRIORITY) {
                 accumulator.accumulateBug(
-                        new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this).addString(OPCODE_NAMES[seen]),
+                        new BugInstance(this, "NOISE_OPERATION", priority).addClassAndMethod(this).addString(Const.getOpcodeName(seen)),
                         this);
             }
             break;

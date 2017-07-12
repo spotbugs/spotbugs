@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -205,25 +206,25 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     @Override
     public void sawOpcode(int seen) {
-        if (getPC() == 2 && seen != IF_ACMPEQ && seen != IF_ACMPNE) {
+        if (getPC() == 2 && seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
             // System.out.println(OPCODE_NAMES[seen]);
             sawInitialIdentityCheck = false;
         }
         if (getPC() == 2
-                && seen == INVOKESTATIC
+                && seen == Const.INVOKESTATIC
                 && getCode().getCode().length == 6
-                && (getPrevOpcode(1) == ALOAD_0 && getPrevOpcode(2) == ALOAD_1 || getPrevOpcode(1) == ALOAD_1
-                && getPrevOpcode(2) == ALOAD_0)) {
+                && (getPrevOpcode(1) == Const.ALOAD_0 && getPrevOpcode(2) == Const.ALOAD_1 || getPrevOpcode(1) == Const.ALOAD_1
+                && getPrevOpcode(2) == Const.ALOAD_0)) {
             sawStaticDelegate = true;
         }
 
-        if ((seen == INVOKESTATIC || seen == INVOKESPECIAL || seen == INVOKEVIRTUAL)
+        if ((seen == Const.INVOKESTATIC || seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL)
                 && ("org/apache/commons/lang/builder/EqualsBuilder".equals(getClassConstantOperand())
                         || "org/apache/commons/lang3/builder/EqualsBuilder".equals(getClassConstantOperand()))) {
             sawEqualsBuilder = true;
         }
 
-        if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_0) {
+        if (seen == Const.IRETURN && getPC() == 1 && getPrevOpcode(1) == Const.ICONST_0) {
             alwaysFalse = true;
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_FALSE", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
@@ -231,7 +232,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
         }
-        if (seen == IRETURN && getPC() == 1 && getPrevOpcode(1) == ICONST_1) {
+        if (seen == Const.IRETURN && getPC() == 1 && getPrevOpcode(1) == Const.ICONST_1) {
             alwaysTrue = true;
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
@@ -239,7 +240,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
         }
-        if (seen == IF_ACMPEQ || seen == IF_ACMPNE) {
+        if (seen == Const.IF_ACMPEQ || seen == Const.IF_ACMPNE) {
             checkForComparingClasses();
         }
         if (callToInvoke(seen)) {
@@ -251,7 +252,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
         }
 
-        if ((seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) && "compare".equals(getNameConstantOperand())
+        if ((seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) && "compare".equals(getNameConstantOperand())
                 && stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
             Item right = stack.getStackItem(0);
@@ -261,7 +262,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         }
         dangerDanger = false;
 
-        if (seen == INVOKEVIRTUAL && "java/lang/Class".equals(getClassConstantOperand())
+        if (seen == Const.INVOKEVIRTUAL && "java/lang/Class".equals(getClassConstantOperand())
                 && "getName".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
                 && stack.getStackDepth() >= 2) {
             Item left = stack.getStackItem(1);
@@ -273,11 +274,11 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
         }
-        if (seen == INVOKESPECIAL && EQUALS_NAME.equals(getNameConstantOperand())
+        if (seen == Const.INVOKESPECIAL && EQUALS_NAME.equals(getNameConstantOperand())
                 && EQUALS_SIGNATURE.equals(getSigConstantOperand())) {
             sawSuperEquals = prevWasSuperEquals = true;
         } else {
-            if (seen == IRETURN) {
+            if (seen == Const.IRETURN) {
                 if (prevWasSuperEquals) {
                     sawReturnSuper = true;
                 } else {
@@ -287,7 +288,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             prevWasSuperEquals = false;
         }
 
-        if (seen == INSTANCEOF && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
+        if (seen == Const.INSTANCEOF && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
             ClassDescriptor instanceOfCheck = getClassDescriptorOperand();
             if (instanceOfCheck.equals(getClassDescriptor())) {
                 sawInstanceOf = true;
@@ -302,7 +303,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
         }
 
-        if (seen == CHECKCAST && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
+        if (seen == Const.CHECKCAST && stack.getStackDepth() > 0 && stack.getStackItem(0).getRegisterNumber() == 1) {
             ClassDescriptor castTo = getClassDescriptorOperand();
             if (castTo.equals(getClassDescriptor())) {
                 sawCheckedCast = true;
@@ -315,7 +316,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 sawCheckedCast = true;
             }
         }
-        if (seen == INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
+        if (seen == Const.INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
                 && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
             sawGetClass = true;
         }
@@ -323,10 +324,10 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
     }
 
     private boolean callToInvoke(int seen) {
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL) {
+        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL) {
             return invokesMethodWithEqualLikeName() && EQUALS_SIGNATURE.equals(getSigConstantOperand());
         }
-        if (seen == INVOKESTATIC) {
+        if (seen == Const.INVOKESTATIC) {
             String sig = getSigConstantOperand();
             return invokesMethodWithEqualLikeName() && sig.endsWith("Ljava/lang/Object;)Z");
         }

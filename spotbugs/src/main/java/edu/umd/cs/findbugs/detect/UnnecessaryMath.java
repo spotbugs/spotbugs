@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantDouble;
@@ -132,10 +133,10 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
     @Override
     public void sawOpcode(int seen) {
         if (state == SEEN_NOTHING) {
-            if ((seen == DCONST_0) || (seen == DCONST_1)) {
-                constValue = seen - DCONST_0;
+            if ((seen == Const.DCONST_0) || (seen == Const.DCONST_1)) {
+                constValue = seen - Const.DCONST_0;
                 state = SEEN_DCONST;
-            } else if ((seen == LDC2_W) || (seen == LDC_W)) {
+            } else if ((seen == Const.LDC2_W) || (seen == Const.LDC_W)) {
                 state = SEEN_DCONST;
                 Constant c = this.getConstantRefOperand();
                 if (c instanceof ConstantDouble) {
@@ -149,7 +150,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
                 }
             }
         } else if (state == SEEN_DCONST) {
-            if (seen == INVOKESTATIC) {
+            if (seen == Const.INVOKESTATIC) {
                 state = SEEN_NOTHING;
                 if ("java.lang.Math".equals(getDottedClassConstantOperand())) {
                     String methodName = getNameConstantOperand();

@@ -13,6 +13,12 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 * `jdepend:jdepend:2.9.1` is no longer a compile-scoped dependency but only test-scoped. ([#242](https://github.com/spotbugs/spotbugs/issues/242))
 
+### Deprecated
+
+* In future versions of SpotBugs, classes currently implementing the deprecated `org.apache.bcel.Constants` interface may no longer do so.
+  Subclasses should either implement this interface themselves or, preferably, use the constants defined in the (non-deprecated) `org.apache.bcel.Const` class instead.
+  ([#262](https://github.com/spotbugs/spotbugs/issues/262))
+
 ## 3.1.0-RC3 (2017/Jun/10)
 
 ### Added

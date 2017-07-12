@@ -24,6 +24,7 @@ import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
@@ -127,7 +128,7 @@ public class FindRoughConstants extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+        if (seen == Const.LDC || seen == Const.LDC_W || seen == Const.LDC2_W) {
             Constant c = getConstantRefOperand();
             if (c instanceof ConstantFloat) {
                 checkConst(((ConstantFloat) c).getBytes());
@@ -138,8 +139,8 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         }
         // Lower priority if the constant is put into array immediately or after the boxing:
         // this is likely to be just similar number in some predefined dataset (like lookup table)
-        if(seen == INVOKESTATIC && lastBug != null) {
-            if (getNextOpcode() == AASTORE
+        if(seen == Const.INVOKESTATIC && lastBug != null) {
+            if (getNextOpcode() == Const.AASTORE
                     && getNameConstantOperand().equals("valueOf")
                     && (getClassConstantOperand().equals("java/lang/Double") || getClassConstantOperand().equals(
                             "java/lang/Float"))) {
@@ -204,7 +205,7 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         }
         for (BadConstant badConstant : badConstants) {
             int priority = getPriority(badConstant, constValue, candidate);
-            if(getNextOpcode() == FASTORE || getNextOpcode() == DASTORE) {
+            if(getNextOpcode() == Const.FASTORE || getNextOpcode() == Const.DASTORE) {
                 priority++;
             }
             if(priority < IGNORE_PRIORITY) {

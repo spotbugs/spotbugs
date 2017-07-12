@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -179,13 +180,13 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == MONITORENTER) {
+        if (seen == Const.MONITORENTER) {
             monitorCount++;
-        } else if (seen == MONITOREXIT) {
+        } else if (seen == Const.MONITOREXIT) {
             monitorCount--;
         }
 
-        writingField = ((seen == PUTFIELD) || (seen == PUTFIELD_QUICK) || (seen == PUTFIELD_QUICK_W));
+        writingField = ((seen == Const.PUTFIELD) || (seen == Const.PUTFIELD_QUICK) || (seen == Const.PUTFIELD_QUICK_W));
     }
 
 }

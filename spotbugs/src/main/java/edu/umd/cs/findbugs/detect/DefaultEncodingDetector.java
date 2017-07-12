@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -165,9 +166,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             XMethod callSeen = XFactory.createXMethod(MethodAnnotation.fromCalledMethod(this));
             DefaultEncodingAnnotation annotation = defaultEncodingAnnotationDatabase.getDirectAnnotation(callSeen);
             if (annotation != null) {

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -59,7 +60,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == GOTO) {
+        if (seen == Const.GOTO) {
             previousGotoTarget = getBranchTarget();
             gotoCount++;
             if (previousGotoTarget < getPC()) {

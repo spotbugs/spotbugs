@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -80,7 +81,7 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen != INVOKESPECIAL) {
+        if (seen != Const.INVOKESPECIAL) {
             return;
         }
 

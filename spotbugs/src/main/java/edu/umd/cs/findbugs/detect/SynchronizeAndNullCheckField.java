@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -61,34 +62,34 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
         // currState);
         switch (currState) {
         case 0:
-            if (seen == GETFIELD || seen == GETSTATIC) {
+            if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
                 syncField = FieldAnnotation.fromReferencedField(this);
                 currState = 1;
             }
             break;
         case 1:
-            if (seen == DUP) {
+            if (seen == Const.DUP) {
                 currState = 2;
             } else {
                 currState = 0;
             }
             break;
         case 2:
-            if (seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3) {
+            if (seen == Const.ASTORE || seen == Const.ASTORE_0 || seen == Const.ASTORE_1 || seen == Const.ASTORE_2 || seen == Const.ASTORE_3) {
                 currState = 3;
             } else {
                 currState = 0;
             }
             break;
         case 3:
-            if (seen == MONITORENTER) {
+            if (seen == Const.MONITORENTER) {
                 currState = 4;
             } else {
                 currState = 0;
             }
             break;
         case 4:
-            if (seen == GETFIELD || seen == GETSTATIC) {
+            if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
                 gottenField = FieldAnnotation.fromReferencedField(this);
                 currState = 5;
             } else {
@@ -96,7 +97,7 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
             }
             break;
         case 5:
-            if ((seen == IFNONNULL || seen == IFNULL) && gottenField.equals(syncField)) {
+            if ((seen == Const.IFNONNULL || seen == Const.IFNULL) && gottenField.equals(syncField)) {
                 BugInstance bug = new BugInstance(this, "NP_SYNC_AND_NULL_CHECK_FIELD", NORMAL_PRIORITY).addClass(this)
                         .addMethod(this).addField(syncField).addSourceLine(this);
                 bugReporter.reportBug(bug);

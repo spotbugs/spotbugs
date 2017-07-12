@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -67,7 +68,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         switch (state) {
         case START:
-            if (seen == GETFIELD) {
+            if (seen == Const.GETFIELD) {
                 XField f = getXFieldOperand();
                 if (isVolatile(f)) {
                     incrementField = f;
@@ -76,7 +77,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             }
             break;
         case GETFIELD:
-            if (seen == ICONST_1 || seen == LCONST_1 || seen == ICONST_M1) {
+            if (seen == Const.ICONST_1 || seen == Const.LCONST_1 || seen == Const.ICONST_M1) {
                 state = IncrementState.LOADCONSTANT;
             } else {
                 resetIncrementState();
@@ -84,14 +85,14 @@ public class VolatileUsage extends BytecodeScanningDetector {
 
             break;
         case LOADCONSTANT:
-            if (seen == IADD || seen == ISUB || seen == LADD || seen == LSUB) {
+            if (seen == Const.IADD || seen == Const.ISUB || seen == Const.LADD || seen == Const.LSUB) {
                 state = IncrementState.ADD;
             } else {
                 resetIncrementState();
             }
             break;
         case ADD:
-            if (seen == PUTFIELD && incrementField.equals(getXFieldOperand())) {
+            if (seen == Const.PUTFIELD && incrementField.equals(getXFieldOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT",
                         "J".equals(incrementField.getSignature()) ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
                 .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
@@ -100,7 +101,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             break;
         }
         switch (seen) {
-        case PUTSTATIC: {
+        case Const.PUTSTATIC: {
             XField f = getXFieldOperand();
             if (!isVolatileArray(f)) {
                 return;
@@ -112,7 +113,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             }
             break;
         }
-        case PUTFIELD: {
+        case Const.PUTFIELD: {
             XField f = getXFieldOperand();
             if (!isVolatileArray(f)) {
                 return;
