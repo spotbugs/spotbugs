@@ -630,7 +630,7 @@ public class OpcodeStack implements Constants2 {
 
         public Item(Item it, String signature) {
             this(it);
-            this.signature = DescriptorFactory.canonicalizeString(signature);
+            this.signature = signature;
             if (constValue instanceof Number) {
                 Number constantNumericValue = (Number) constValue;
                 if ("B".equals(signature)) {
@@ -662,7 +662,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         public Item(String signature, FieldAnnotation f) {
-            this.signature = DescriptorFactory.canonicalizeString(signature);
+            this.signature = signature;
             setSpecialKindFromSignature();
             if (f != null) {
                 source = XFactory.createXField(f);
@@ -671,7 +671,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         public Item(String signature, FieldAnnotation f, int fieldLoadedFromRegister) {
-            this.signature = DescriptorFactory.canonicalizeString(signature);
+            this.signature = signature;
             if (f != null) {
                 source = XFactory.createXField(f);
             }
@@ -717,7 +717,7 @@ public class OpcodeStack implements Constants2 {
         }
 
         public Item(String signature, Object constantValue) {
-            this.signature = DescriptorFactory.canonicalizeString(signature);
+            this.signature = signature;
             setSpecialKindFromSignature();
             constValue = constantValue;
             if (constantValue instanceof Integer) {
