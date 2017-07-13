@@ -115,7 +115,7 @@ public abstract class ClassName {
     @SuppressFBWarnings("TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_ALWAYS_SINK")
     public static String toSlashedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
         if (className.indexOf('.') >= 0) {
-            return DescriptorFactory.canonicalizeString(className.replace('.', '/'));
+            return className.replace('.', '/');
         }
         return className;
     }
@@ -132,7 +132,7 @@ public abstract class ClassName {
     @SuppressFBWarnings("TQ_EXPLICIT_UNKNOWN_SOURCE_VALUE_REACHES_NEVER_SINK")
     public static String toDottedClassName(@SlashedClassName(when = When.UNKNOWN) String className) {
         if (className.indexOf('/') >= 0) {
-            return DescriptorFactory.canonicalizeString(className.replace('/', '.'));
+            return className.replace('/', '.');
         }
         return className;
     }

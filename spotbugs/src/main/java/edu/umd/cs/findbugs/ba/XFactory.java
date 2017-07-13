@@ -232,8 +232,12 @@ public class XFactory {
         return m.isResolved();
     }
 
+    /**
+     * @see DescriptorFactory#canonicalizeString(String)
+     */
+    @Deprecated
     public static String canonicalizeString(String s) {
-        return DescriptorFactory.canonicalizeString(s);
+        return s;
     }
 
     /**

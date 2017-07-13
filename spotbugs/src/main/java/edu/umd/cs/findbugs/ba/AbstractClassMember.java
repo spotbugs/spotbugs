@@ -61,9 +61,9 @@ public abstract class AbstractClassMember implements ClassMember {
         // else if (signature.indexOf('/') >= 0) {
         //     slashCountSignature++;
         // }
-        this.className = DescriptorFactory.canonicalizeString(className);
-        this.name = DescriptorFactory.canonicalizeString(name);
-        this.signature = DescriptorFactory.canonicalizeString(signature);
+        this.className = className;
+        this.name = name;
+        this.signature = signature;
         this.accessFlags = accessFlags;
     }
 

@@ -51,9 +51,9 @@ public abstract class FieldPropertyDatabase<Property> extends PropertyDatabase<F
             throw new PropertyDatabaseFormatException("Invalid field tuple: " + s);
         }
 
-        String className = XFactory.canonicalizeString(tuple[0]);
-        String fieldName = XFactory.canonicalizeString(tuple[1]);
-        String signature = XFactory.canonicalizeString(tuple[2]);
+        String className = tuple[0];
+        String fieldName = tuple[1];
+        String signature = tuple[2];
         int accessFlags;
         try {
             accessFlags = Integer.parseInt(tuple[3]);

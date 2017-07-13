@@ -50,9 +50,9 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
             // XFactory.createMethodDescriptor(XFactory.canonicalizeString(tuple[0]),
             // XFactory.canonicalizeString( tuple[1]),
             // XFactory.canonicalizeString(tuple[2]), accessFlags);
-            String className = XFactory.canonicalizeString(tuple[0]);
-            String methodName = XFactory.canonicalizeString(tuple[1]);
-            String methodSig = XFactory.canonicalizeString(tuple[2]);
+            String className = tuple[0];
+            String methodName = tuple[1];
+            String methodSig = tuple[2];
             return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(className), methodName,
                     methodSig, (accessFlags & Const.ACC_STATIC) != 0);
 
