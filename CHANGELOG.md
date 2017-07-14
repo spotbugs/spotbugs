@@ -12,6 +12,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 ### Changed
 
 * `jdepend:jdepend:2.9.1` is no longer a compile-scoped dependency but only test-scoped. ([#242](https://github.com/spotbugs/spotbugs/issues/242))
+* `ICodeBase`, `IClassPath`, and `URLClassPath` now implement `AutoCloseable` ([#258](https://github.com/spotbugs/spotbugs/issues/258))
 
 ### Deprecated
 

@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author David Hovemeyer
  */
-public interface IClassPath {
+public interface IClassPath extends AutoCloseable {
     /**
      * Add a codebase. The object will be interrogated to determine whether it
      * is an application codebase or an auxiliary codebase. Application
@@ -77,16 +77,16 @@ public interface IClassPath {
     public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry);
 
     /**
-     * Close all of the code bases that are part of this class path. This should
-     * be done once the client is finished with the classpath.
-     */
-    public void close();
-
-    /**
      * Returns all of the application code base entries that are part of this class path.
      *
      * @return map where the key is slashed (VM) class name with ".class" suffix
      */
     public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries();
 
+    /**
+     * Close all of the code bases that are part of this class path. This should
+     * be done once the client is finished with the classpath.
+     */
+    @Override
+    public void close();
 }

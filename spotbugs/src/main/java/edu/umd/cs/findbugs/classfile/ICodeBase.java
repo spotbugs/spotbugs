@@ -25,7 +25,7 @@ package edu.umd.cs.findbugs.classfile;
  *
  * @author David Hovemeyer
  */
-public interface ICodeBase {
+public interface ICodeBase extends AutoCloseable {
 
     enum Discovered {
 
@@ -132,5 +132,6 @@ public interface ICodeBase {
     /**
      * This method should be called when done using the code base.
      */
+    @Override
     public void close();
 }
