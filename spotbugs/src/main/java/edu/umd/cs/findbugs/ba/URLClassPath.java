@@ -45,13 +45,13 @@ import edu.umd.cs.findbugs.util.Archive;
  *
  * @author David Hovemeyer
  */
-public class URLClassPath implements Serializable {
+public class URLClassPath implements AutoCloseable, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * Interface describing a single classpath entry.
      */
-    private interface Entry {
+    private interface Entry extends AutoCloseable {
         /**
          * Open an input stream to read a resource in the codebase described by
          * this classpath entry.
@@ -72,6 +72,7 @@ public class URLClassPath implements Serializable {
         /**
          * Close the underlying resource.
          */
+        @Override
         public void close();
     }
 
