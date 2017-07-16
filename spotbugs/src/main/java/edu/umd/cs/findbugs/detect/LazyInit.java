@@ -122,7 +122,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
     @Override
     public boolean prescreen(Method method, ClassContext classContext) {
-        if ("<clinit>".equals(method.getName())) {
+        if (Const.STATIC_INITIALIZER_NAME.equals(method.getName())) {
             return false;
         }
 

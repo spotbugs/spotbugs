@@ -55,7 +55,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 
     @Override
     public void visit(Code obj) {
-        if ("<init>".equals(getMethodName()) && (getMethod().isPublic() || getMethod().isProtected())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (getMethod().isPublic() || getMethod().isProtected())) {
             super.visit(obj);
             bugAccumulator.reportAccumulatedBugs();
         }

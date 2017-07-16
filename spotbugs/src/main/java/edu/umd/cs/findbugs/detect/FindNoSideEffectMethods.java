@@ -332,8 +332,8 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     @Override
     public void visit(Method method) {
-        constructor = method.getName().equals("<init>");
-        classInit = method.getName().equals("<clinit>");
+        constructor = method.getName().equals(Const.CONSTRUCTOR_NAME);
+        classInit = method.getName().equals(Const.STATIC_INITIALIZER_NAME);
         calledMethods = new ArrayList<>();
         status = SideEffectStatus.NO_SIDE_EFFECT;
         if (hasNoSideEffect(getMethodDescriptor())) {
@@ -426,7 +426,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                 callGraph.remove(method);
             }
         }
-        MethodDescriptor clinit = new MethodDescriptor(getClassName(), "<clinit>", "()V", true);
+        MethodDescriptor clinit = new MethodDescriptor(getClassName(), Const.STATIC_INITIALIZER_NAME, "()V", true);
         if(!statusMap.containsKey(clinit)) {
             status = SideEffectStatus.NO_SIDE_EFFECT;
             calledMethods = new ArrayList<>();
@@ -442,7 +442,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private void superClinitCall() {
         ClassDescriptor superclassDescriptor = getXClass().getSuperclassDescriptor();
         if(superclassDescriptor != null && !superclassDescriptor.getClassName().equals("java/lang/Object")) {
-            sawCall(new MethodCall(new MethodDescriptor(superclassDescriptor.getClassName(), "<clinit>", "()V", true), TARGET_THIS), false);
+            sawCall(new MethodCall(new MethodDescriptor(superclassDescriptor.getClassName(), Const.STATIC_INITIALIZER_NAME, "()V", true), TARGET_THIS), false);
         }
     }
 
@@ -669,7 +669,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      */
     private void sawNoSideEffectCall(MethodDescriptor methodDescriptor) {
         if(uselessVoidCandidate && Type.getReturnType(methodDescriptor.getSignature()) == Type.VOID
-                && !methodDescriptor.getName().equals("<init>")) {
+                && !methodDescriptor.getName().equals(Const.CONSTRUCTOR_NAME)) {
             /* To reduce false-positives we do not mark method as useless void if it calls
              * another useless void method. If that another method also in the scope of our project
              * then we will report it instead. If there's a cycle of no-side-effect calls, then
@@ -764,12 +764,12 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if("java/lang/Class".equals(className) && m.getName().startsWith("is")) {
             return true;
         }
-        if("java/awt/Color".equals(className) && m.getName().equals("<init>")) {
+        if("java/awt/Color".equals(className) && m.getName().equals(Const.CONSTRUCTOR_NAME)) {
             return true;
         }
         if("java/util/regex/Pattern".contains(className)) {
             // Pattern.compile is often used to check the PatternSyntaxException, thus we consider it as side-effect method
-            return !m.getName().equals("compile") && !m.getName().equals("<init>");
+            return !m.getName().equals("compile") && !m.getName().equals(Const.CONSTRUCTOR_NAME);
         }
         if(className.startsWith("[") && m.getName().equals("clone")) {
             return true;
@@ -795,7 +795,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if(m.getName().startsWith("$SWITCH_TABLE$")) {
             return true;
         }
-        if(m.getName().equals("<init>") && isObjectOnlyClass(className)) {
+        if(m.getName().equals(Const.CONSTRUCTOR_NAME) && isObjectOnlyClass(className)) {
             return true;
         }
         if(m.getName().equals("toString") && m.getSignature().equals("()Ljava/lang/String;") && m.getSlashedClassName().startsWith("java/")) {
@@ -819,7 +819,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      * @return true if we may assume that given unseen method has no side effect
      */
     private static boolean hasNoSideEffectUnknown(MethodDescriptor m) {
-        if(m.isStatic() && m.getName().equals("<clinit>")) {
+        if(m.isStatic() && m.getName().equals(Const.STATIC_INITIALIZER_NAME)) {
             // No side effect for class initializer of unseen class
             return true;
         }
@@ -843,7 +843,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      * @return true if given method is known to change its object only
      */
     private static boolean isObjectOnlyMethod(MethodDescriptor m) {
-        if (m.isStatic() || m.getName().equals("<init>") || m.getName().equals("forEach")) {
+        if (m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME) || m.getName().equals("forEach")) {
             return false;
         }
         String className = m.getSlashedClassName();
@@ -885,7 +885,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         computeFinalStatus();
         Set<String> sideEffectClinit = new HashSet<>();
         for(Entry<MethodDescriptor, SideEffectStatus> entry : statusMap.entrySet()) {
-            if (entry.getValue() == SideEffectStatus.SIDE_EFFECT && entry.getKey().isStatic() && entry.getKey().getName().equals("<clinit>")) {
+            if (entry.getValue() == SideEffectStatus.SIDE_EFFECT && entry.getKey().isStatic() && entry.getKey().getName().equals(Const.STATIC_INITIALIZER_NAME)) {
                 sideEffectClinit.add(entry.getKey().getSlashedClassName());
             }
         }
@@ -893,7 +893,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             MethodDescriptor m = entry.getKey();
             if (entry.getValue() == SideEffectStatus.NO_SIDE_EFFECT) {
                 String returnType = new SignatureParser(m.getSignature()).getReturnTypeSignature();
-                if (!returnType.equals("V") || m.getName().equals("<init>")) {
+                if (!returnType.equals("V") || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
                     if(m.equals(GET_CLASS)) {
                         /* We do not mark getClass() call as pure, because it can appear in code like this:
                             public class Outer {
@@ -906,7 +906,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                                4: dup
                                5: invokevirtual #18                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
                                8: pop
-                               9: invokespecial #22                 // Method a/Outer$Inner."<init>":(La/Outer;)V
+                               9: invokespecial #22                 // Method a/Outer$Inner.Const.CONSTRUCTOR_NAME:(La/Outer;)V
                               12: return
                             So we would have a false-positive here
                          */
@@ -924,7 +924,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                          */
                         continue;
                     }
-                    if (m.isStatic() || m.getName().equals("<init>")) {
+                    if (m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
                         if(sideEffectClinit.contains(m.getSlashedClassName())) {
                             /* Skip static methods and constructors for classes which have
                              * side-effect class initializer

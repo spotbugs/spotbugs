@@ -98,7 +98,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         initializedFields.clear();
 
         thisOnTOS = false;
-        inConstructor = "<init>".equals(getMethodName()) && getMethodSig().indexOf(getClassName()) == -1;
+        inConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) && getMethodSig().indexOf(getClassName()) == -1;
 
     }
 
@@ -182,7 +182,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                 }
                 initializedFields.add(f);
             }
-        } else if ((seen == Const.INVOKESPECIAL && !("<init>".equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
+        } else if ((seen == Const.INVOKESPECIAL && !(Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
                 getClassName())))
                 || (seen == Const.INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(getClassConstantOperand()))
                         || (seen == Const.INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))

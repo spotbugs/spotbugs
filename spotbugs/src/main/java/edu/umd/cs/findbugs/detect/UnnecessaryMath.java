@@ -122,7 +122,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
     public void visit(Code obj) {
         // Don't complain about unnecessary math calls in class initializers,
         // since they may be there to improve readability.
-        if ("<clinit>".equals(getMethod().getName())) {
+        if (Const.STATIC_INITIALIZER_NAME.equals(getMethod().getName())) {
             return;
         }
 

@@ -148,7 +148,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     public void visit(Method obj) {
         zeroOnTOS = false;
         // System.out.println(methodName);
-        inStaticInitializer = getMethodName().equals("<clinit>");
+        inStaticInitializer = getMethodName().equals(Const.STATIC_INITIALIZER_NAME);
     }
 
     @Override
@@ -227,7 +227,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             emptyArrayOnTOS = false;
             return;
         case Const.INVOKESPECIAL:
-            if (inStaticInitializer && "<init>".equals(getMethodDescriptorOperand().getName())) {
+            if (inStaticInitializer && Const.CONSTRUCTOR_NAME.equals(getMethodDescriptorOperand().getName())) {
                 ClassDescriptor classDescriptor = getClassDescriptorOperand();
                 if (MUTABLE_COLLECTION_CLASSES.contains(classDescriptor.getClassName())) {
                     mutableCollectionJustCreated = true;
@@ -245,7 +245,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                             && MUTABLE_COLLECTION_CLASSES.contains(superclassDescriptor.getClassName())) {
                         mutableCollectionJustCreated = true;
                         for (XMethod xMethod : xClass.getXMethods()) {
-                            if (xMethod != null && !"<init>".equals(xMethod.getName()) && !"<clinit>".equals(xMethod.getName())) {
+                            if (xMethod != null && !Const.CONSTRUCTOR_NAME.equals(xMethod.getName()) && !Const.STATIC_INITIALIZER_NAME.equals(xMethod.getName())) {
                                 mutableCollectionJustCreated = false;
                                 break;
                             }

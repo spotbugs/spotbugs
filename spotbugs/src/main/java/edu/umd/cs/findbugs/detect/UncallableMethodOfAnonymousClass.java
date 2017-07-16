@@ -158,10 +158,10 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
         String methodName = obj.getName();
         String sig = obj.getSignature();
-        if ("<init>".equals(methodName)) {
+        if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
             return true;
         }
-        if ("<clinit>".equals(methodName)) {
+        if (Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             return true;
         }
         if ("()Ljava/lang/Object;".equals(sig) && ("readResolve".equals(methodName) || "writeReplace".equals(methodName))) {

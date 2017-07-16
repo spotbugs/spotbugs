@@ -67,7 +67,7 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
 
     @Override
     public void visit(Method obj) {
-        inConstructor = "<init>".equals(obj.getName());
+        inConstructor = Const.CONSTRUCTOR_NAME.equals(obj.getName());
     }
 
     @Override

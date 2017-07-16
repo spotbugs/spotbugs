@@ -60,7 +60,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
     @Override
     public void sawOpcode(int seen) {
-        if ("<init>".equals(getMethodName()) && seen == Const.INVOKEVIRTUAL) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && seen == Const.INVOKEVIRTUAL) {
             XMethod m = getXMethodOperand();
             if (m != null && !m.isPrivate() && !m.isFinal()) {
                 int args = PreorderVisitor.getNumberArguments(m.getSignature());
@@ -86,7 +86,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
 
         }
 
-        if (seen == Const.INVOKESPECIAL && "<init>".equals(getMethodName()) && "<init>".equals(getNameConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getMethodName()) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
 
             String classOperand = getClassConstantOperand();
             OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
@@ -111,11 +111,11 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
             } else if (seen == Const.PUTFIELD) {
                 OpcodeStack.Item addr = stack.getStackItem(1);
                 {
-                    if (addr.getRegisterNumber() != 0 || !"<init>".equals(getMethodName())) {
+                    if (addr.getRegisterNumber() != 0 || !Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                         fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
                     }
                 }
-            } else if (seen == Const.PUTSTATIC && !"<clinit>".equals(getMethodName())) {
+            } else if (seen == Const.PUTSTATIC && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
                 fieldSummary.addWrittenOutsideOfConstructor(fieldOperand);
             }
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -129,7 +129,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
         sawInitializeSuper = false;
         super.visit(obj);
         fieldSummary.setFieldsWritten(getXMethod(), touched);
-        if ("<init>".equals(getMethodName()) && sawInitializeSuper) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && sawInitializeSuper) {
             XClass thisClass = getXClass();
             for (XField f : thisClass.getXFields()) {
                 if (!f.isStatic() && !f.isFinal() && !touched.contains(f)) {

@@ -74,7 +74,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
                     if (previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget) {
                         int priority = NORMAL_PRIORITY;
                         String methodName = getMethodName();
-                        if ("<init>".equals(methodName) || methodName.startsWith("set") && getCode().getCode().length <= 5
+                        if (Const.CONSTRUCTOR_NAME.equals(methodName) || methodName.startsWith("set") && getCode().getCode().length <= 5
                                 || !previousStores.get(getRegisterOperand())) {
                             priority = HIGH_PRIORITY;
                         }

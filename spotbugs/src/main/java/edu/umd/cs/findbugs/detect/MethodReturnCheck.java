@@ -175,10 +175,10 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             break;
         }
 
-        checkForInitWithoutCopyOnStack: if (seen == Const.INVOKESPECIAL && "<init>".equals(getNameConstantOperand())) {
+        checkForInitWithoutCopyOnStack: if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
             int arguments = PreorderVisitor.getNumberArguments(getSigConstantOperand());
             OpcodeStack.Item invokedOn = stack.getStackItem(arguments);
-            if (invokedOn.isNewlyAllocated() && (!"<init>".equals(getMethodName()) || invokedOn.getRegisterNumber() != 0)) {
+            if (invokedOn.isNewlyAllocated() && (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) || invokedOn.getRegisterNumber() != 0)) {
 
                 for (int i = arguments + 1; i < stack.getStackDepth(); i++) {
                     OpcodeStack.Item item = stack.getStackItem(i);
@@ -248,7 +248,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                     if(callReturnType.equals(methodReturnType) && callReturnType != Type.BOOLEAN && callReturnType != Type.VOID) {
                         priority = HIGH_PRIORITY;
                     } else {
-                        String callReturnClass = callSeen.getName().equals("<init>") ?
+                        String callReturnClass = callSeen.getName().equals(Const.CONSTRUCTOR_NAME) ?
                                 callSeen.getClassDescriptor().getClassName() :
                                     ClassName.fromFieldSignature(callReturnType.getSignature());
 
@@ -297,7 +297,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                     priority++;
                 }
                 String pattern = annotation.getPattern();
-                if ("<init>".equals(callSeen.getName())
+                if (Const.CONSTRUCTOR_NAME.equals(callSeen.getName())
                         && (callSeen.getClassName().endsWith("Exception") || callSeen.getClassName().endsWith("Error"))) {
                     pattern = "RV_EXCEPTION_NOT_THROWN";
                 }

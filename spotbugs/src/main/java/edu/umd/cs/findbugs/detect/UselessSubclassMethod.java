@@ -112,7 +112,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         try {
             String methodName = getMethodName();
 
-            if (!"<init>".equals(methodName) && !"clone".equals(methodName)
+            if (!Const.CONSTRUCTOR_NAME.equals(methodName) && !"clone".equals(methodName)
                     && ((getMethod().getAccessFlags() & (Const.ACC_STATIC | Const.ACC_SYNTHETIC)) == 0)) {
 
                 /*

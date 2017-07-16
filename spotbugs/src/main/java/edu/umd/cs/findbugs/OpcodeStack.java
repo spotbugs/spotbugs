@@ -2497,7 +2497,7 @@ public class OpcodeStack implements Constants2 {
             }
         }
         boolean initializingServletWriter = false;
-        if (seen == Const.INVOKESPECIAL && "<init>".equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
                 && numberArguments > 0) {
             Item firstArg = getStackItem(numberArguments-1);
             if (firstArg.isServletWriter()) {
@@ -2513,7 +2513,7 @@ public class OpcodeStack implements Constants2 {
         // TODO: stack merging for trinaries kills the constant.. would be nice
         // to maintain.
         if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
-            if ("<init>".equals(methodName)) {
+            if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
                 if ("(Ljava/lang/String;)V".equals(signature)) {
                     Item i = getStackItem(0);
                     appenderValue = (String) i.getConstant();
@@ -2551,7 +2551,7 @@ public class OpcodeStack implements Constants2 {
                     sawUnknownAppend = true;
                 }
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && "<init>".equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
                 && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
@@ -2565,7 +2565,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 return;
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && "<init>".equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
                 && "(Ljava/io/OutputStream;)V".equals(signature)) {
 
             if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE
@@ -3481,7 +3481,7 @@ public class OpcodeStack implements Constants2 {
 
     private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
         String signature = dbc.getSigConstantOperand();
-        if ("<init>".equals(dbc.getNameConstantOperand()) && signature.endsWith(")V") && popThis) {
+        if (Const.CONSTRUCTOR_NAME.equals(dbc.getNameConstantOperand()) && signature.endsWith(")V") && popThis) {
             pop(PreorderVisitor.getNumberArguments(signature));
             Item constructed = pop();
             if (getStackDepth() > 0) {

@@ -84,9 +84,9 @@ public class InitializationChain extends BytecodeScanningDetector {
         Method staticInitializer = null;
         for(Method m : obj.getMethods()) {
             String name = m.getName();
-            if ("<clinit>".equals(name)) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(name)) {
                 staticInitializer = m;
-            } else if ("<init>".equals(name)) {
+            } else if (Const.CONSTRUCTOR_NAME.equals(name)) {
                 visitOrder.add(m);
             }
 
@@ -135,7 +135,7 @@ public class InitializationChain extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         InvocationInfo prev = lastInvocation;
         lastInvocation = null;
-        if ("<init>".equals(getMethodName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
             if (seen == Const.GETSTATIC && getClassConstantOperand().equals(getClassName())) {
                 staticFieldsReadInAnyConstructor.add(getXFieldOperand());
                 fieldsReadInThisConstructor.add(getXFieldOperand());
@@ -143,7 +143,7 @@ public class InitializationChain extends BytecodeScanningDetector {
             return;
         }
 
-        if (seen == Const.INVOKESPECIAL && "<init>".equals(getNameConstantOperand()) &&  getClassConstantOperand().equals(getClassName())) {
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) &&  getClassConstantOperand().equals(getClassName())) {
 
             XMethod m = getXMethodOperand();
             Set<XField> read = staticFieldsRead.get(m);

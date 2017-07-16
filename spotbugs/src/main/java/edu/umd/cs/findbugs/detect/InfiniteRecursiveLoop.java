@@ -110,7 +110,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 && getNameConstantOperand().equals(getMethodName())
                 && getSigConstantOperand().equals(getMethodSig())
                 && (seen == Const.INVOKESTATIC) == getMethod().isStatic()
-                && (seen == Const.INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || "<init>".equals(getMethodName()))) {
+                && (seen == Const.INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || Const.CONSTRUCTOR_NAME.equals(getMethodName()))) {
             Type arguments[] = getMethod().getArgumentTypes();
             // stack.getStackDepth() >= parameters
             int parameters = arguments.length;
@@ -128,7 +128,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 // Invocation of same method
                 // Now need to see if parameters are the same
                 int firstParameter = 0;
-                if ("<init>".equals(getMethodName())) {
+                if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                     firstParameter = 1;
                 }
 
@@ -148,7 +148,7 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                     }
                 }
 
-                boolean sameMethod = seen == Const.INVOKESTATIC || "<init>".equals(getNameConstantOperand());
+                boolean sameMethod = seen == Const.INVOKESTATIC || Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
                 if (!sameMethod) {
                     // Have to check if first parmeter is the same
                     // know there must be a this argument

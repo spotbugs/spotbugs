@@ -85,7 +85,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
                     return;
                 }
 
-                if (!"<init>".equals(getNameConstantOperand())) {
+                if (!Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
                     return;
                 }
 

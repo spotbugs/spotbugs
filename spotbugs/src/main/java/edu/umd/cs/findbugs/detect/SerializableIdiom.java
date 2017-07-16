@@ -241,7 +241,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                     DescriptorFactory.createClassDescriptor(java.io.Serializable.class));
                     superClassHasVoidConstructor = false;
                     for (XMethod m : superXClass.getXMethods()) {
-                        if ("<init>".equals(m.getName()) && "()V".equals(m.getSignature()) && !m.isPrivate()) {
+                        if (Const.CONSTRUCTOR_NAME.equals(m.getName()) && "()V".equals(m.getSignature()) && !m.isPrivate()) {
                             superClassHasVoidConstructor = true;
                         }
                         if ("readObject".equals(m.getName()) && "(Ljava/io/ObjectInputStream;)V".equals(m.getSignature())
@@ -425,10 +425,10 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
         int accessFlags = obj.getAccessFlags();
         boolean isSynchronized = (accessFlags & Const.ACC_SYNCHRONIZED) != 0;
-        if ("<init>".equals(getMethodName()) && "()V".equals(getMethodSig()) && (accessFlags & Const.ACC_PUBLIC) != 0) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && "()V".equals(getMethodSig()) && (accessFlags & Const.ACC_PUBLIC) != 0) {
             hasPublicVoidConstructor = true;
         }
-        if (!"<init>".equals(getMethodName()) && isSynthetic(obj))
+        if (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) && isSynthetic(obj))
         {
             foundSynthetic = true;
             // System.out.println(methodName + isSynchronized);
@@ -552,14 +552,14 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 }
 
                 if (isPutOfDefaultValue) {
-                    if ("<init>".equals(getMethodName())) {
+                    if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                         transientFieldsSetToDefaultValueInConstructor.add(xField);
                     }
                 } else {
                     String nameOfField = getNameConstantOperand();
 
                     if (transientFieldsUpdates.containsKey(xField)) {
-                        if ("<init>".equals(getMethodName())) {
+                        if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                             transientFieldsSetInConstructor.add(xField);
                         } else {
                             transientFieldsUpdates.put(xField, transientFieldsUpdates.get(xField) + 1);
@@ -583,7 +583,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 String genSig = "L" + classStored.getClassName().replace('.', '/') + ";";
                                 if (!sig.equals(genSig)) {
                                     double bias = 0.0;
-                                    if (!"<init>".equals(getMethodName())) {
+                                    if (!Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                                         bias = 1.0;
                                     }
                                     int priority = computePriority(isSerializable, bias);

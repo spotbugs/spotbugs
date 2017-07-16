@@ -57,7 +57,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
         if (method == null) {
             return false;
         }
-        return "<init>".equals(method.getName());
+        return Const.CONSTRUCTOR_NAME.equals(method.getName());
     }
 
     private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
