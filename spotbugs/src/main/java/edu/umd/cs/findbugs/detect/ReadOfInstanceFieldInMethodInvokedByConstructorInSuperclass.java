@@ -170,7 +170,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 
         XMethod lookfor = "()V".equals(superConstructor.getSignature()) ? null : superConstructor;
         for (XMethod m : getXClass().getXMethods()) {
-            if ("<init>".equals(m.getName())) {
+            if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
                 if (fieldSummary.getSuperCall(m) == lookfor) {
                     return m;
                 }

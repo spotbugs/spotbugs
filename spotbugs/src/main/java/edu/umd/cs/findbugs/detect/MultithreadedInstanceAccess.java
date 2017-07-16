@@ -130,7 +130,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
 
     @Override
     public boolean shouldVisitCode(Code code) {
-        return !"<init>".equals(getMethodName()) && !"init".equals(getMethodName());
+        return !Const.CONSTRUCTOR_NAME.equals(getMethodName()) && !"init".equals(getMethodName());
 
     }
 

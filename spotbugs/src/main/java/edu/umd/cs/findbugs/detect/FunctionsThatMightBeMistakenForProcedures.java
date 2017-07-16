@@ -245,7 +245,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnSelf++;
                 break;
             }
-            if ("<init>".equals(xMethod.getName())) {
+            if (Const.CONSTRUCTOR_NAME.equals(xMethod.getName())) {
                 String sig = xMethod.getSignature();
                 // returning a newly constructed value
                 boolean voidConstructor;
@@ -270,12 +270,12 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 returnUnknown++;
                 break;
             }
-            if ("<init>".equals(xMethod.getName()) || doNotIgnoreHigh.contains(xMethod)) {
+            if (Const.CONSTRUCTOR_NAME.equals(xMethod.getName()) || doNotIgnoreHigh.contains(xMethod)) {
                 returnOther++;
                 // System.out.println("  calls " + xMethod);
                 // System.out.println("  at " +
                 // MethodAnnotation.fromXMethod(xMethod).getSourceLines());
-                if ("<init>".equals(xMethod.getName()) || doNotIgnore.contains(xMethod)) {
+                if (Const.CONSTRUCTOR_NAME.equals(xMethod.getName()) || doNotIgnore.contains(xMethod)) {
                     returnNew++;
                 }
             } else if (doNotIgnore.contains(xMethod)) {

@@ -67,7 +67,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 && !"writeObject".equals(methodName)
                 && methodName.indexOf("debug") == -1 && methodName.indexOf("Debug") == -1
                 && methodName.indexOf("trace") == -1 && methodName.indexOf("Trace") == -1
-                && !"<init>".equals(methodName) && !"<clinit>".equals(methodName)) {
+                && !Const.CONSTRUCTOR_NAME.equals(methodName) && !Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             for(AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName =  a.getAnnotationType();
                 if ("Ljavax/annotation/PostConstruct;".equals(typeName)

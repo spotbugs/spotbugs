@@ -147,7 +147,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (m.isStatic()) {
             return false;
         }
-        if ("<init>".equals(m.getName()) || "<clinit>".equals(m.getName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(m.getName()) || Const.STATIC_INITIALIZER_NAME.equals(m.getName())) {
             return false;
         }
         for (XMethod m2 : others) {
@@ -251,7 +251,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (m.isStatic()) {
             return false;
         }
-        if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) {
+        if (m.getName().startsWith(Const.CONSTRUCTOR_NAME) || m.getName().startsWith(Const.STATIC_INITIALIZER_NAME)) {
             return false;
         }
         for (XMethod m2 : others) {
@@ -591,7 +591,7 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if (obj.isPrivate() || obj.isStatic() || "<init>".equals(mName)) {
+        if (obj.isPrivate() || obj.isStatic() || Const.CONSTRUCTOR_NAME.equals(mName)) {
             return;
         }
 
@@ -615,7 +615,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (outerClassSignature == null) {
             outerClassSignature = "";
         }
-        return "<init>".equals(m.getName()) && m.getSignature().equals("(" + outerClassSignature + ")V");
+        return Const.CONSTRUCTOR_NAME.equals(m.getName()) && m.getSignature().equals("(" + outerClassSignature + ")V");
     }
 
     private boolean badMethodName(String mName) {

@@ -191,7 +191,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
         }
         becameTop = -1;
 
-        if (seen == Const.INVOKESPECIAL && "<init>".equals(getNameConstantOperand()) && "(Ljava/util/Collection;)V".equals(getSigConstantOperand())
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "(Ljava/util/Collection;)V".equals(getSigConstantOperand())
                 && getClassConstantOperand().contains("Set")
                 || (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) && "addAll".equals(getNameConstantOperand()) && "(Ljava/util/Collection;)Z".equals(getSigConstantOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -269,7 +269,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
             }
         }
 
-        if ("<clinit>".equals(getMethodName()) && (seen == Const.PUTSTATIC || seen == Const.GETSTATIC || seen == Const.INVOKESTATIC)) {
+        if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName()) && (seen == Const.PUTSTATIC || seen == Const.GETSTATIC || seen == Const.INVOKESTATIC)) {
             String clazz = getClassConstantOperand();
             if (!clazz.equals(getClassName())) {
                 try {
@@ -419,7 +419,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 && "set".equals(getNameConstantOperand())
 
                 || seen == Const.INVOKESPECIAL && stack.getStackDepth() > 1
-                && "java/util/GregorianCalendar".equals(getClassConstantOperand()) && "<init>".equals(getNameConstantOperand())
+                && "java/util/GregorianCalendar".equals(getClassConstantOperand()) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
 
                 ) {
             String sig = getSigConstantOperand();
@@ -664,7 +664,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
             }
         }
         if (seen == Const.INVOKESPECIAL && getClassConstantOperand().startsWith("java/lang/")
-                && "<init>".equals(getNameConstantOperand()) && getSigConstantOperand().length() == 4) {
+                && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && getSigConstantOperand().length() == 4) {
             previousMethodInvocation = XFactory.createReferencedXMethod(this);
         } else if (seen == Const.INVOKESTATIC && getClassConstantOperand().startsWith("java/lang/")
                 && "valueOf".equals(getNameConstantOperand()) && getSigConstantOperand().length() == 4) {

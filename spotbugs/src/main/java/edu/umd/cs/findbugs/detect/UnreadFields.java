@@ -360,7 +360,7 @@ public class UnreadFields extends OpcodeStackDetector {
         seenMonitorEnter = getMethod().isSynchronized();
         data.staticFieldsReadInThisMethod.clear();
         super.visit(obj);
-        if ("<init>".equals(getMethodName()) && count_aload_1 > 1
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && count_aload_1 > 1
                 && (getClassName().indexOf('$') >= 0 || getClassName().indexOf('+') >= 0)) {
             data.needsOuterObjectInConstructor.add(getDottedClassName());
             // System.out.println(betterClassName +
@@ -374,7 +374,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (DEBUG) {
             System.out.println("Checking " + getClassName() + "." + obj.getName());
         }
-        if ("<init>".equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
         pendingGetField = null;
@@ -584,7 +584,7 @@ public class UnreadFields extends OpcodeStackDetector {
         }
 
         // Store annotation for the anonymous class creation
-        if (seen == Const.INVOKESPECIAL && getMethodDescriptorOperand().getName().equals("<init>") && ClassName.isAnonymous(getClassConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && getMethodDescriptorOperand().getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(getClassConstantOperand())) {
             List<BugAnnotation> annotation = new ArrayList<>();
             annotation.add(ClassAnnotation.fromClassDescriptor(getClassDescriptor()));
             annotation.add(MethodAnnotation.fromVisitedMethod(this));
@@ -595,7 +595,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (seen == Const.PUTFIELD || seen == Const.ASTORE || seen == Const.ASTORE_0 || seen == Const.ASTORE_1 || seen == Const.ASTORE_2 || seen == Const.ASTORE_3) {
             Item item = stack.getStackItem(0);
             XMethod xMethod = item.getReturnValueOf();
-            if(xMethod != null && xMethod.getName().equals("<init>") && ClassName.isAnonymous(xMethod.getClassName())) {
+            if(xMethod != null && xMethod.getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(xMethod.getClassName())) {
                 List<BugAnnotation> annotations = anonymousClassAnnotation.get(xMethod.getClassName());
                 if(annotations == null) {
                     annotations = new ArrayList<>();
@@ -614,7 +614,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String sig = getSigConstantOperand();
             String invokedClassName = getClassConstantOperand();
             if (invokedClassName.equals(getClassName())
-                    && ("<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName()))) {
+                    && (Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName()))) {
 
                 data.calledFromConstructors.add(getNameConstantOperand() + ":" + sig);
             }
@@ -628,7 +628,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
 
                 boolean selfCall = item.getRegisterNumber() == 0 && !superCall;
-                if (selfCall && "<init>".equals(getMethodName())) {
+                if (selfCall && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                     sawSelfCallInConstructor = true;
                     if (DEBUG) {
                         System.out.println("Saw self call in " + getFullyQualifiedMethodName() + " to " + invokedClassName + "."
@@ -779,7 +779,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
             }
 
-            boolean isConstructor = "<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName());
+            boolean isConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
             if (getMethod().isStatic() == f.isStatic()
                     && (isConstructor || data.calledFromConstructors.contains(getMethodName() + ":" + getMethodSig())
                             || "init".equals(getMethodName()) || "initialize".equals(getMethodName())

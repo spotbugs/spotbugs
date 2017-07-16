@@ -106,7 +106,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             if (!isVolatileArray(f)) {
                 return;
             }
-            if ("<clinit>".equals(getMethodName())) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName())) {
                 initializationWrites.add(f);
             } else {
                 otherWrites.add(f);
@@ -119,7 +119,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
                 return;
             }
 
-            if ("<init>".equals(getMethodName())) {
+            if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                 initializationWrites.add(f);
             } else {
                 otherWrites.add(f);

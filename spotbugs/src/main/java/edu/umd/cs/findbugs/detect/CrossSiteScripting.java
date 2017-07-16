@@ -120,7 +120,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
 
-            if ("javax/servlet/http/Cookie".equals(calledClassName) && "<init>".equals(calledMethodName)
+            if ("javax/servlet/http/Cookie".equals(calledClassName) && Const.CONSTRUCTOR_NAME.equals(calledMethodName)
                     && "(Ljava/lang/String;Ljava/lang/String;)V".equals(calledMethodSig)) {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);

@@ -353,7 +353,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 }
                 if ((m.getSignature().startsWith("([BII)") || m.getSignature().startsWith("([CII)") || m.getSignature().startsWith("([III)"))
                         && (((m.getName().equals("write") || m.getName().equals("read")) && m.getSlashedClassName().startsWith(
-                                "java/io/")) || (m.getName().equals("<init>") && m.getSlashedClassName().equals("java/lang/String")))) {
+                                "java/io/")) || (m.getName().equals(Const.CONSTRUCTOR_NAME) && m.getSlashedClassName().equals("java/lang/String")))) {
                     Item arrayArg = stack.getStackItem(2);
                     Item offsetArg = stack.getStackItem(1);
                     Item lengthArg = stack.getStackItem(0);
@@ -499,7 +499,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
             freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
             freshRandomOnTos = seen == Const.INVOKESPECIAL && "java/util/Random".equals(getClassConstantOperand())
-                    && "<init>".equals(getNameConstantOperand());
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
         }
     }
 
@@ -663,7 +663,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 }  else if ("intValue".equals(called.getName())
                         && "java/lang/Integer".equals(called.getClassDescriptor().getClassName())
                         && "java/lang/Integer".equals(previousMethodCall.getSlashedClassName())
-                        && ("<init>".equals(previousMethodCall.getName())
+                        && (Const.CONSTRUCTOR_NAME.equals(previousMethodCall.getName())
                                 && "(Ljava/lang/String;)V".equals(previousMethodCall.getSignature())
                                 || "valueOf".equals(previousMethodCall.getName())
                                 && "(Ljava/lang/String;)Ljava/lang/Integer;".equals(previousMethodCall.getSignature())
@@ -677,7 +677,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 }  else if ("longValue".equals(called.getName())
                         && "java/lang/Long".equals(called.getClassDescriptor().getClassName())
                         && "java/lang/Long".equals(previousMethodCall.getSlashedClassName())
-                        && ( "<init>".equals(previousMethodCall.getName())
+                        && ( Const.CONSTRUCTOR_NAME.equals(previousMethodCall.getName())
                                 && "(Ljava/lang/String;)V".equals(previousMethodCall.getSignature())
                                 ||  "valueOf".equals(previousMethodCall.getName())
                                 && "(Ljava/lang/String;)Ljava/lang/Long;".equals(previousMethodCall.getSignature()))
@@ -856,7 +856,7 @@ public class DumbMethods extends OpcodeStackDetector {
          *
         if (false && seen == INVOKESPECIAL
                 && getClassConstantOperand().equals("java/util/concurrent/ScheduledThreadPoolExecutor")
-                && getNameConstantOperand().equals("<init>")) {
+                && getNameConstantOperand().equals(Const.CONSTRUCTOR_NAME)) {
 
             int arguments = getNumberArguments(getSigConstantOperand());
             OpcodeStack.Item item = stack.getStackItem(arguments - 1);
@@ -1248,7 +1248,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if ((seen == Const.INVOKESPECIAL) && "java/lang/String".equals(getClassConstantOperand())
-                    && "<init>".equals(getNameConstantOperand()) && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
                     && !Subtypes2.isJSP(getThisClass())) {
 
                 accumulator.accumulateBug(new BugInstance(this, "DM_STRING_CTOR", NORMAL_PRIORITY).addClassAndMethod(this), this);
@@ -1264,7 +1264,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if ((seen == Const.INVOKESPECIAL) && "java/lang/String".equals(getClassConstantOperand())
-                    && "<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
 
                 accumulator.accumulateBug(new BugInstance(this, "DM_STRING_VOID_CTOR", NORMAL_PRIORITY).addClassAndMethod(this),
                         this);
@@ -1304,7 +1304,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 }
             }
             if (!isSynthetic && (seen == Const.INVOKESPECIAL) && "java/lang/Boolean".equals(getClassConstantOperand())
-                    && "<init>".equals(getNameConstantOperand()) && !"java/lang/Boolean".equals(getClassName())) {
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && !"java/lang/Boolean".equals(getClassName())) {
                 int majorVersion = getThisClass().getMajor();
                 if (majorVersion >= Const.MAJOR_1_4) {
                     accumulator.accumulateBug(new BugInstance(this, "DM_BOOLEAN_CTOR", NORMAL_PRIORITY).addClassAndMethod(this),
@@ -1332,7 +1332,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
             }
 
-            if ((seen == Const.INVOKESPECIAL) && "<init>".equals(getNameConstantOperand())) {
+            if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
                 String cls = getClassConstantOperand();
                 String sig = getSigConstantOperand();
                 String primitiveType = ClassName.getPrimitiveType(cls);
@@ -1356,7 +1356,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 primitiveObjCtorSeen = null;
             }
 
-            if ((seen == Const.INVOKESPECIAL) && "<init>".equals(getNameConstantOperand())) {
+            if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
                 ctorSeen = true;
             } else if (ctorSeen && (seen == Const.INVOKEVIRTUAL) && "java/lang/Object".equals(getClassConstantOperand())
                     && "getClass".equals(getNameConstantOperand()) && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
@@ -1371,13 +1371,13 @@ public class DumbMethods extends OpcodeStackDetector {
                 checkMonitorWait();
             }
 
-            if ((seen == Const.INVOKESPECIAL) && "<init>".equals(getNameConstantOperand())
+            if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
                     && "java/lang/Thread".equals(getClassConstantOperand())) {
                 String sig = getSigConstantOperand();
                 if ("()V".equals(sig) || "(Ljava/lang/String;)V".equals(sig)
                         || "(Ljava/lang/ThreadGroup;Ljava/lang/String;)V".equals(sig)) {
                     OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
-                    if (!"<init>".equals(getMethodName()) || invokedOn.getRegisterNumber() != 0) {
+                    if (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) || invokedOn.getRegisterNumber() != 0) {
                         accumulator.accumulateBug(
                                 new BugInstance(this, "DM_USELESS_THREAD", LOW_PRIORITY).addClassAndMethod(this), this);
 
@@ -1386,7 +1386,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
 
             if (seen == Const.INVOKESPECIAL && "java/math/BigDecimal".equals(getClassConstantOperand())
-                    && "<init>".equals(getNameConstantOperand()) && "(D)V".equals(getSigConstantOperand())) {
+                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "(D)V".equals(getSigConstantOperand())) {
                 OpcodeStack.Item top = stack.getStackItem(0);
                 Object value = top.getConstant();
                 if (value instanceof Double && !((Double)value).isInfinite() && !((Double)value).isNaN()) {

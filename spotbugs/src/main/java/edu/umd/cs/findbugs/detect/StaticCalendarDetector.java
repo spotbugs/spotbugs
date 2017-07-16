@@ -296,7 +296,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 return;
             }
 
-            if ("<clinit>".equals(getMethodName()) && field.getClassName().equals(getDottedClassName())) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName()) && field.getClassName().equals(getDottedClassName())) {
                 return;
             }
             String invokedName = getNameConstantOperand();

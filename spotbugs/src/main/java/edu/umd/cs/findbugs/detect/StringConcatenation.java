@@ -165,7 +165,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             break;
 
         case SEEN_NEW:
-            if (seen == Const.INVOKESPECIAL && "<init>".equals(getNameConstantOperand())
+            if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
             && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
             && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
                 state = SEEN_APPEND1;
