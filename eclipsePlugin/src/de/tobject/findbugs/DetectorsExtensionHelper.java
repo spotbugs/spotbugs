@@ -31,8 +31,6 @@ import javax.annotation.Nonnull;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -66,35 +64,24 @@ public class DetectorsExtensionHelper {
         TreeMap<String, String> set = new TreeMap<String, String>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
-        IExtensionPoint point = registry.getExtensionPoint(EXTENSION_POINT_ID);
-        if (point == null) {
-            return set;
-        }
-        IExtension[] extensions = point.getExtensions();
-        for (IExtension extension : extensions) {
-            IConfigurationElement[] elements = extension.getConfigurationElements();
-            for (IConfigurationElement configElt : elements) {
-                addContribution(set, configElt);
-            }
+        for (IConfigurationElement configElt : registry.getConfigurationElementsFor(EXTENSION_POINT_ID)) {
+            addContribution(set, configElt);
         }
         contributedDetectors = set;
         return new TreeMap<String, String>(contributedDetectors);
     }
 
     private static void addContribution(TreeMap<String, String> set, IConfigurationElement configElt) {
-        String libPathAsString;
-        String pluginId;
-        IContributor contributor = null;
+        IContributor contributor = configElt.getContributor();
         try {
-            contributor = configElt.getContributor();
             if (contributor == null) {
                 throw new IllegalArgumentException("Null contributor");
             }
-            pluginId = configElt.getAttribute(PLUGIN_ID);
+            String pluginId = configElt.getAttribute(PLUGIN_ID);
             if (pluginId == null) {
                 throw new IllegalArgumentException("Missing '" + PLUGIN_ID + "'");
             }
-            libPathAsString = configElt.getAttribute(LIBRARY_PATH);
+            String libPathAsString = configElt.getAttribute(LIBRARY_PATH);
             if (libPathAsString == null) {
                 throw new IllegalArgumentException("Missing '" + LIBRARY_PATH + "'");
             }
@@ -218,5 +205,4 @@ public class DetectorsExtensionHelper {
         // any external libraries
         return props.getProperty("output..", "");
     }
-
 }
