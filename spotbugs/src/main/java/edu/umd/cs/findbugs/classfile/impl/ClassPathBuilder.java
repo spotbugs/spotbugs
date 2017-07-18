@@ -401,7 +401,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         }
 
         if(isJava9orLater()){
-            Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "jrt-fs.jar");
+            Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "lib/jrt-fs.jar");
             if(Files.isRegularFile(jrtFsJar)){
                 addWorkListItemsForClasspath(workList, jrtFsJar.toString());
             }
