@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.integration;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
@@ -39,7 +40,7 @@ public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
         // There should only be 1 issue of this type
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("SI_INSTANCE_BEFORE_FINALS_ASSIGNED").build();
-        assertThat(getBugCollection(), containsExactly(bugTypeMatcher, 1));
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
 
         // It must be on the INSTANCE field
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
@@ -57,7 +58,7 @@ public class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
         // There should only be 1 issue of this type
         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
-        assertThat(getBugCollection(), containsExactly(bugTypeMatcher, 1));
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
 
         // It must be on the lambda method, checking by line number
         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
