@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.nio.file.Paths;
 
-import static edu.umd.cs.findbugs.test.SpotBugsRule.containsExactly;
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.junit.Assert.assertThat;
 
@@ -34,7 +34,7 @@ public class AndroidNullabilityTest {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/main/androidAnnotations/NullForNonNullParam.class"));
 
-        assertThat(bugCollection, containsExactly(bug("NP_NONNULL_PARAM_VIOLATION"), 1));
+        assertThat(bugCollection, containsExactly(1, bug("NP_NONNULL_PARAM_VIOLATION")));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class AndroidNullabilityTest {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/main/androidAnnotations/UncheckedNullableReturn.class"));
 
-        assertThat(bugCollection, containsExactly(bug("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"), 1));
+        assertThat(bugCollection, containsExactly(1, bug("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")));
     }
 
     private BugInstanceMatcher bug(String type) {

@@ -89,10 +89,6 @@ public class AbstractIntegrationTest {
         return bugReporter.getBugCollection();
     }
 
-    protected static <T> Matcher<Iterable<T>> containsExactly(final Matcher<T> matcher, final int count) {
-        return new CountMatcher<T>(count, matcher);
-    }
-
     /**
      * Sets up a FB engine to run on the 'spotbugsTestCases' project. It enables
      * all the available detectors and reports all the bug categories. Uses a
