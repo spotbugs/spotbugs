@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.BugCollection;
  *         // There should only be exactly 1 issue of this type
  *         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
  *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
- *         assertThat(bugCollection, containsExactly(bugTypeMatcher, 1));
+ *         assertThat(bugCollection, CountMatcher.containsExactly(1, bugTypeMatcher));
  *
  *         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
  *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
