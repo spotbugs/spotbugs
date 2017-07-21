@@ -31,6 +31,11 @@ If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse
 
 Add necessary properties to `~/.gradle/gradle.properties` and run `./gradlew publishPlugins`.
 
+## Update installation manual
+
+`docs/installing.rst` includes link to released binaries, update them.
+It is also necessary to change filename in command line example.
+
 ## Release old manuals
 
 Send pull-request to spotbugs/spotbugs.github.io, to update contents.
