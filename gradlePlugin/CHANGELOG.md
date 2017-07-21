@@ -2,6 +2,8 @@
 
 This is the changelog for SpotBugs Gradle Plugin. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
+## Unreleased (2017/??/??)
+
 ## 1.2 (2017/Jul/21)
 
 * Use SpotBugs 3.1.0-RC4
