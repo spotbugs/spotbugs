@@ -124,10 +124,18 @@ Please use spotbugs plugin found on https://plugins.gradle.org/plugin/com.github
 .. code-block:: groovy
 
   plugins {
-    id  'com.github.spotbugs' version '1.1'
+    id  'com.github.spotbugs' version '1.2'
   }
   spotbugs {
-    toolVersion = '3.1.0-RC3'
+    toolVersion = '3.1.0-RC4'
+  }
+
+  // To generate an HTML report instead of XML
+  tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+      xml.enabled = false
+      html.enabled = true
+    }
   }
 
 FindBugs Eclipse plugin
