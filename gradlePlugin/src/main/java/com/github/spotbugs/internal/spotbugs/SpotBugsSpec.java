@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.google.common.base.MoreObjects;
 
-public class FindBugsSpec implements Serializable {
+public class SpotBugsSpec implements Serializable {
   private static final long serialVersionUID = 1L;
   private List<String> arguments;
   private String maxHeapSize;
   private boolean debugEnabled;
 
-  public FindBugsSpec(List<String> arguments, String maxHeapSize, boolean debugEnabled) {
+  public SpotBugsSpec(List<String> arguments, String maxHeapSize, boolean debugEnabled) {
       this.debugEnabled = debugEnabled;
       this.maxHeapSize = maxHeapSize;
       this.arguments = arguments;
