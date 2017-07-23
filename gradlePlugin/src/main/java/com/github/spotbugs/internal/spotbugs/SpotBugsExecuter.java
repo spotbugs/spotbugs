@@ -8,9 +8,9 @@ import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.TextUICommandLine;
 
-public class FindBugsExecuter implements FindBugsWorker {
+public class SpotBugsExecuter implements SpotBugsWorker {
   @Override
-  public FindBugsResult runFindbugs(FindBugsSpec spec) throws IOException, InterruptedException {
+  public SpotBugsResult runSpotbugs(SpotBugsSpec spec) throws IOException, InterruptedException {
       final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
       try {
           final List<String> args = spec.getArguments();
@@ -22,16 +22,16 @@ public class FindBugsExecuter implements FindBugsWorker {
           FindBugs.processCommandLine(commandLine, strArray, findBugs2);
           findBugs2.execute();
 
-          return createFindbugsResult(findBugs2);
+          return createSpotbugsResult(findBugs2);
       } finally {
           Thread.currentThread().setContextClassLoader(contextClassLoader);
       }
   }
 
-  FindBugsResult createFindbugsResult(IFindBugsEngine findBugs) {
+  SpotBugsResult createSpotbugsResult(IFindBugsEngine findBugs) {
           int bugCount = findBugs.getBugCount();
           int missingClassCount = findBugs.getMissingClassCount();
           int errorCount = findBugs.getErrorCount();
-          return new FindBugsResult(bugCount, missingClassCount, errorCount);
+          return new SpotBugsResult(bugCount, missingClassCount, errorCount);
       }
 }
