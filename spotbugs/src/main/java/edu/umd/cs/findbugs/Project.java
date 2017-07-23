@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -236,6 +237,18 @@ public class Project implements XMLWriteable {
         return addToListInternal(analysisTargets, makeAbsoluteCWD(fileName));
     }
 
+    /**
+     * Add a source directory to the project.
+     *
+     * @param dirName
+     *            the directory to add
+     * @return true if the source directory was added, or false if the source
+     *         directory was already present
+     */
+    public boolean addSourceDir(String dirName) {
+        return addSourceDirs(Collections.singletonList(dirName));
+    }
+    
     /**
      * Add source directories to the project.
      *

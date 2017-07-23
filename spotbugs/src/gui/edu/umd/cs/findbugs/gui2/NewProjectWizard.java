@@ -208,7 +208,7 @@ public class NewProjectWizard extends FBDialog {
                 for (int i = 0; i < auxModel.getSize(); i++) {
                     p.addAuxClasspathEntry(auxModel.get(i));
                 }
-                List<String> sourceDirs = new ArrayList<>();
+                List<String> sourceDirs = new ArrayList<>(sourceModel.getSize());
                 for (int i = 0; i < sourceModel.getSize(); i++) {
                     sourceDirs.add(sourceModel.get(i));
                 }
