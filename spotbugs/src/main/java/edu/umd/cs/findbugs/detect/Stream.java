@@ -194,7 +194,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         INVOKESPECIAL inv = (INVOKESPECIAL) ins;
 
         return frame.isValid() && getInstanceValue(frame, inv, cpg).isInstance()
-                && matchMethod(inv, cpg, this.getResourceClass(), "<init>");
+                && matchMethod(inv, cpg, this.getResourceClass(), Const.CONSTRUCTOR_NAME);
     }
 
     public static boolean mightCloseStream(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg) {

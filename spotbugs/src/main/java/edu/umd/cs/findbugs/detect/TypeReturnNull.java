@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -72,7 +73,7 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == ARETURN && getPrevOpcode(1) == ACONST_NULL){
+        if (seen == Const.ARETURN && getPrevOpcode(1) == Const.ACONST_NULL){
             accumulateBug();
         }
     }

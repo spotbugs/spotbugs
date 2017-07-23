@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantString;
@@ -82,7 +83,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
         }
 
         switch (seen) {
-        case LDC:
+        case Const.LDC:
             Constant constantValue = getConstantRefOperand();
             if (constantValue instanceof ConstantClass) {
                 sawGetClass = -100;
@@ -91,15 +92,15 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
             }
             break;
 
-        case ALOAD_0:
+        case Const.ALOAD_0:
             state = 1;
             break;
-        case INVOKEVIRTUAL:
+        case Const.INVOKEVIRTUAL:
             if ("java/lang/Class".equals(getClassConstantOperand())
                     && ("getResource".equals(getNameConstantOperand()) || "getResourceAsStream".equals(getNameConstantOperand()))
                     && sawGetClass + 10 >= getPC()) {
                 int priority = NORMAL_PRIORITY;
-                if (prevOpcode == LDC && stringConstant != null && stringConstant.length() > 0 && stringConstant.charAt(0) == '/') {
+                if (prevOpcode == Const.LDC && stringConstant != null && stringConstant.length() > 0 && stringConstant.charAt(0) == '/') {
                     priority = LOW_PRIORITY;
                 } else {
                     priority = adjustPriority(priority);
@@ -118,7 +119,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
             state = 0;
             break;
         }
-        if (seen != LDC) {
+        if (seen != Const.LDC) {
             stringConstant = null;
         }
         prevOpcode = seen;

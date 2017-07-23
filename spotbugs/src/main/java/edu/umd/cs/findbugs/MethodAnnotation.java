@@ -283,11 +283,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 
     public String getJavaSourceMethodName() {
-        if ("<clinit>".equals(methodName)) {
+        if (Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             return "<static initializer for " + getSimpleClassName() + ">";
         }
 
-        if ("<init>".equals(methodName)) {
+        if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
             return getSimpleClassName();
         }
         return methodName;
@@ -332,7 +332,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         if ("".equals(key)) {
             return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
         } else if ("givenClass".equals(key)) {
-            if ("<init>".equals(methodName)) {
+            if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
                 return "new " + shorten(primaryClass.getPackageName(), className) + getSignatureInClass(primaryClass);
             }
             if (className.equals(primaryClass.getClassName())) {
@@ -437,7 +437,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
      */
     public String getFullMethod(ClassAnnotation primaryClass) {
         if (fullMethod == null) {
-            if ("<init>".equals(methodName)) {
+            if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
                 fullMethod = "new " + stripJavaLang(className) + getSignatureInClass(primaryClass);
             } else {
                 fullMethod = stripJavaLang(className) + "." + getNameInClass(primaryClass);

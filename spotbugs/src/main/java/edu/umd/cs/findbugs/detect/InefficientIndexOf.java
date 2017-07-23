@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -59,7 +61,7 @@ public class InefficientIndexOf extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 0 && "java/lang/String".equals(getClassConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && stack.getStackDepth() > 0 && "java/lang/String".equals(getClassConstantOperand())) {
 
             boolean lastIndexOf = "lastIndexOf".equals(getNameConstantOperand());
             if (lastIndexOf || "indexOf".equals(getNameConstantOperand())) {

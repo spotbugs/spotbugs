@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -84,57 +85,57 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
         @Override
         public void loadAuxiliaryAnnotations() {
             addMethodAnnotation("java.lang.String", "getBytes", "()[B", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.lang.String", "<init>", "([B)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.lang.String", "<init>", "([BII)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([B)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([BII)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.ByteArrayOutputStream", "toString", "()Ljava/lang/String;", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileReader", "<init>", "(Ljava/lang/String;)V", false,
+            addMethodAnnotation("java.io.FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileReader", "<init>", "(Ljava/io/File;)V", false,
+            addMethodAnnotation("java.io.FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileReader", "<init>", "(Ljava/io/FileDescriptor;)V", false,
+            addMethodAnnotation("java.io.FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/io/FileDescriptor;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/lang/String;)V", false,
+            addMethodAnnotation("java.io.FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/lang/String;Z)V", false,
+            addMethodAnnotation("java.io.FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/io/File;)V", false,
+            addMethodAnnotation("java.io.FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/io/File;Z)V", false,
+            addMethodAnnotation("java.io.FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;Z)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.FileWriter", "<init>", "(Ljava/io/FileDescriptor;)V", false,
+            addMethodAnnotation("java.io.FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/FileDescriptor;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.InputStreamReader", "<init>", "(Ljava/io/InputStream;)V", false,
+            addMethodAnnotation("java.io.InputStreamReader", Const.CONSTRUCTOR_NAME, "(Ljava/io/InputStream;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.OutputStreamWriter", "<init>", "(Ljava/io/OutputStream;)V", false,
+            addMethodAnnotation("java.io.OutputStreamWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintStream", "<init>", "(Ljava/io/File;)V", false,
+            addMethodAnnotation("java.io.PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintStream", "<init>", "(Ljava/io/OutputStream;)V", false,
+            addMethodAnnotation("java.io.PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintStream", "<init>", "(Ljava/io/OutputStream;Z)V", false,
+            addMethodAnnotation("java.io.PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;Z)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintStream", "<init>", "(Ljava/lang/String;)V", false,
+            addMethodAnnotation("java.io.PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintWriter", "<init>", "(Ljava/io/File;)V", false,
+            addMethodAnnotation("java.io.PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintWriter", "<init>", "(Ljava/io/OutputStream;)V", false,
+            addMethodAnnotation("java.io.PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintWriter", "<init>", "(Ljava/io/OutputStream;Z)V", false,
+            addMethodAnnotation("java.io.PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;Z)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.io.PrintWriter", "<init>", "(Ljava/lang/String;)V", false,
+            addMethodAnnotation("java.io.PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.util.Scanner", "<init>", "(Ljava/io/File;)V", false,
+            addMethodAnnotation("java.util.Scanner", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.util.Scanner", "<init>", "(Ljava/io/InputStream;)V", false,
+            addMethodAnnotation("java.util.Scanner", Const.CONSTRUCTOR_NAME, "(Ljava/io/InputStream;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.util.Scanner", "<init>", "(Ljava/nio/channels/ReadableByteChannel;)V", false,
+            addMethodAnnotation("java.util.Scanner", Const.CONSTRUCTOR_NAME, "(Ljava/nio/channels/ReadableByteChannel;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.util.Formatter", "<init>", "(Ljava/lang/String;)V", false,
+            addMethodAnnotation("java.util.Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.util.Formatter", "<init>", "(Ljava/io/File;)V", false,
+            addMethodAnnotation("java.util.Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/io/File;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.util.Formatter", "<init>", "(Ljava/io/OutputStream;)V", false,
+            addMethodAnnotation("java.util.Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/io/OutputStream;)V", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
         }
 
@@ -165,9 +166,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             XMethod callSeen = XFactory.createXMethod(MethodAnnotation.fromCalledMethod(this));
             DefaultEncodingAnnotation annotation = defaultEncodingAnnotationDatabase.getDirectAnnotation(callSeen);
             if (annotation != null) {

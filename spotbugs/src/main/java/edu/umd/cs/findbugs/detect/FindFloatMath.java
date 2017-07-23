@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -34,20 +36,20 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case FMUL:
-        case FDIV:
+        case Const.FMUL:
+        case Const.FDIV:
             if (getFullyQualifiedMethodName().indexOf("float") == -1 && getFullyQualifiedMethodName().indexOf("Float") == -1
             && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
                 bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", LOW_PRIORITY)
                 .addClassAndMethod(this).addSourceLine(this));
             }
             break;
-        case FCMPG:
-        case FCMPL:
+        case Const.FCMPG:
+        case Const.FCMPL:
             break;
-        case FADD:
-        case FSUB:
-        case FREM:
+        case Const.FADD:
+        case Const.FSUB:
+        case Const.FREM:
             if (getFullyQualifiedMethodName().indexOf("float") == -1 && getFullyQualifiedMethodName().indexOf("Float") == -1
             && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
                 bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", NORMAL_PRIORITY).addClassAndMethod(

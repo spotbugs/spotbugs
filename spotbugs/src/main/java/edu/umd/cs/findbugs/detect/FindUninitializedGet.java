@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.Field;
@@ -97,7 +98,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
         initializedFields.clear();
 
         thisOnTOS = false;
-        inConstructor = "<init>".equals(getMethodName()) && getMethodSig().indexOf(getClassName()) == -1;
+        inConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) && getMethodSig().indexOf(getClassName()) == -1;
 
     }
 
@@ -131,25 +132,25 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
             return;
         }
         if (uninitializedFieldReadAndCheckedForNonnull != null) {
-            if (seen == NEW && getClassConstantOperand().endsWith("Exception")) {
+            if (seen == Const.NEW && getClassConstantOperand().endsWith("Exception")) {
                 uninitializedFieldReadAndCheckedForNonnull.raisePriority();
             }
             uninitializedFieldReadAndCheckedForNonnull = null;
         }
 
-        if (seen == ALOAD_0) {
+        if (seen == Const.ALOAD_0) {
             thisOnTOS = true;
             return;
         }
 
-        if (seen == PUTFIELD && getClassConstantOperand().equals(getClassName())) {
+        if (seen == Const.PUTFIELD && getClassConstantOperand().equals(getClassName())) {
             initializedFields.add(FieldAnnotation.fromReferencedField(this));
-        } else if (thisOnTOS && seen == GETFIELD && getClassConstantOperand().equals(getClassName())) {
+        } else if (thisOnTOS && seen == Const.GETFIELD && getClassConstantOperand().equals(getClassName())) {
             UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
             XField xField = XFactory.createReferencedXField(this);
             FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
             int nextOpcode = 0xff & codeBytes[getPC() + 3];
-            if (nextOpcode != POP && !initializedFields.contains(f) && declaredFields.contains(f) && !containerFields.contains(f)
+            if (nextOpcode != Const.POP && !initializedFields.contains(f) && declaredFields.contains(f) && !containerFields.contains(f)
                     && !unreadFields.isContainerField(xField)) {
                 // System.out.println("Next opcode: " +
                 // OPCODE_NAMES[nextOpcode]);
@@ -167,7 +168,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                     FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                     if (fieldSummary.callsOverriddenMethodsFromSuperConstructor(getClassDescriptor())) {
                         priority++;
-                    } else if (nextOpcode == IFNONNULL) {
+                    } else if (nextOpcode == Const.IFNONNULL) {
                         priority++;
                         priorityLoweredBecauseOfIfNonnullTest = true;
                     }
@@ -181,11 +182,11 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
                 }
                 initializedFields.add(f);
             }
-        } else if ((seen == INVOKESPECIAL && !("<init>".equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
+        } else if ((seen == Const.INVOKESPECIAL && !(Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
                 getClassName())))
-                || (seen == INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(getClassConstantOperand()))
-                        || (seen == INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
-                        || (seen == INVOKEVIRTUAL && "start".equals(getNameConstantOperand()))) {
+                || (seen == Const.INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(getClassConstantOperand()))
+                        || (seen == Const.INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
+                        || (seen == Const.INVOKEVIRTUAL && "start".equals(getNameConstantOperand()))) {
 
             inConstructor = false;
         }

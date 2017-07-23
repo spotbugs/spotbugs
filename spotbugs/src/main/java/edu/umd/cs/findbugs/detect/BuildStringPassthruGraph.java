@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -107,27 +108,27 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
 
     public static class StringPassthruDatabase {
         private static final List<MethodDescriptor> FILENAME_STRING_METHODS = Arrays.asList(
-                new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/File", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/RandomAccessFile", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/RandomAccessFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
                 new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
-                new MethodDescriptor("java/io/FileReader", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileWriter", "<init>", "(Ljava/lang/String;Z)V"),
-                new MethodDescriptor("java/io/FileInputStream", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/FileOutputStream", "<init>", "(Ljava/lang/String;Z)V"),
-                new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
-                new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/jar/JarFile", "<init>", "(Ljava/lang/String;Z)V"),
-                new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/util/zip/ZipFile", "<init>", "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
-                new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V")
+                new MethodDescriptor("java/io/FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
+                new MethodDescriptor("java/io/FileInputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileOutputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/FileOutputStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
+                new MethodDescriptor("java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/Formatter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"),
+                new MethodDescriptor("java/util/jar/JarFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/jar/JarFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Z)V"),
+                new MethodDescriptor("java/util/zip/ZipFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/util/zip/ZipFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/nio/charset/Charset;)V"),
+                new MethodDescriptor("java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
+                new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V")
                 );
 
         private final Map<MethodParameter, Set<MethodParameter>> graph = new HashMap<>();
@@ -276,10 +277,10 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
             }
         }
         switch (seen) {
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
-        case INVOKEINTERFACE:
-        case INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
             MethodDescriptor md = getMethodDescriptorOperand();
             int callArgs = getNumberArguments(md.getSignature());
             for (int i = 0; i < callArgs; i++) {

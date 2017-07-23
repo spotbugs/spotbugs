@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -56,18 +57,18 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
 
         // System.out.println("PC: " + PC + ", stage: " + stage1);
         switch (seen) {
-        case ALOAD_0:
-        case ALOAD_1:
-        case ALOAD_2:
-        case ALOAD_3:
-        case ALOAD:
+        case Const.ALOAD_0:
+        case Const.ALOAD_1:
+        case Const.ALOAD_2:
+        case Const.ALOAD_3:
+        case Const.ALOAD:
             if (DEBUG) {
                 System.out.println("   ALOAD at PC " + getPC());
             }
             start = getPC();
             stage = 1;
             break;
-        case GETSTATIC:
+        case Const.GETSTATIC:
             if (DEBUG) {
                 System.out.println("   getfield in stage " + stage);
             }
@@ -75,7 +76,7 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
             start = getPC();
             stage = 2;
             break;
-        case GETFIELD:
+        case Const.GETFIELD:
             if (DEBUG) {
                 System.out.println("   getfield in stage " + stage);
             }
@@ -86,11 +87,11 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
                 stage = 0;
             }
             break;
-        case GOTO:
-        case IFNE:
-        case IFEQ:
-        case IFNULL:
-        case IFNONNULL:
+        case Const.GOTO:
+        case Const.IFNE:
+        case Const.IFEQ:
+        case Const.IFNULL:
+        case Const.IFNONNULL:
             if (DEBUG) {
                 System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
             }

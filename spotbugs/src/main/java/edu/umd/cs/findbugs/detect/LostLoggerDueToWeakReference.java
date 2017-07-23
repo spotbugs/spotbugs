@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -102,7 +103,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             return;
         }
         switch (seen) {
-        case INVOKESTATIC:
+        case Const.INVOKESTATIC:
             if ("java/util/logging/Logger".equals(getClassConstantOperand()) && "getLogger".equals(getNameConstantOperand())) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (!"".equals(item.getConstant())) {
@@ -112,7 +113,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             }
             checkForImport();
             break;
-        case INVOKEVIRTUAL:
+        case Const.INVOKEVIRTUAL:
             if ("java/util/logging/Logger".equals(getClassConstantOperand())
                     && namesOfSetterMethods.contains(getNameConstantOperand())) {
                 int priority = HIGH_PRIORITY;
@@ -130,25 +131,25 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             checkForMethodExportImport();
             break;
 
-        case INVOKEINTERFACE:
-        case INVOKESPECIAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
             checkForImport();
             checkForMethodExportImport();
             break;
 
-        case CHECKCAST:
+        case Const.CHECKCAST:
             String sig = getClassConstantOperand();
             if (sig.indexOf("Logger") >= 0) {
                 loggerImported = true;
             }
             break;
 
-        case GETFIELD:
-        case GETSTATIC:
+        case Const.GETFIELD:
+        case Const.GETSTATIC:
             checkForImport();
             break;
-        case PUTFIELD:
-        case PUTSTATIC:
+        case Const.PUTFIELD:
+        case Const.PUTSTATIC:
             checkForFieldEscape();
             break;
         default:

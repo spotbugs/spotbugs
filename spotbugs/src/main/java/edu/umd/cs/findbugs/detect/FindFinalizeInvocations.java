@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -49,7 +50,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         if (DEBUG) {
             System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
         }
-        if ("finalize".equals(getMethodName()) && "()V".equals(getMethodSig()) && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0) {
+        if ("finalize".equals(getMethodName()) && "()V".equals(getMethodSig()) && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0) {
             bugReporter
             .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
         }
@@ -85,14 +86,14 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && "finalize".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && "finalize".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "FI_EXPLICIT_INVOCATION", "finalize".equals(getMethodName())
                             && "()V".equals(getMethodSig()) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this), this);
 
         }
-        if (seen == INVOKESPECIAL && "finalize".equals(getNameConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && "finalize".equals(getNameConstantOperand())) {
             sawSuperFinalize = true;
         }
     }

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Annotations;
@@ -267,7 +268,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         for (int i = 1; i < constant_pool.length; i++) {
             constant_pool[i].accept(this);
             byte tag = constant_pool[i].getTag();
-            if ((tag == CONSTANT_Double) || (tag == CONSTANT_Long)) {
+            if ((tag == Const.CONSTANT_Double) || (tag == Const.CONSTANT_Long)) {
                 i++;
             }
         }
@@ -641,7 +642,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
             if(c instanceof ConstantMethodref || c instanceof ConstantInterfaceMethodref) {
                 ConstantCP desc = (ConstantCP)c;
                 ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(desc.getNameAndTypeIndex());
-                String className = cp.getConstantString(desc.getClassIndex(), CONSTANT_Class);
+                String className = cp.getConstantString(desc.getClassIndex(), Const.CONSTANT_Class);
                 String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
                 String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
                 // We don't know whether method is static thus cannot use equals

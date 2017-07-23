@@ -26,11 +26,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.hamcrest.Matcher;
-
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
-import edu.umd.cs.findbugs.test.CountMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
@@ -49,7 +46,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  *         // There should only be exactly 1 issue of this type
  *         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
  *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
- *         assertThat(getBugCollection(), AbstractIntegrationTest.containsExactly(bugTypeMatcher, 1));
+ *         assertThat(getBugCollection(), CountMatcher.containsExactly(1, bugTypeMatcher));
  *
  *         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
  *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -87,10 +84,6 @@ public class AbstractIntegrationTest {
 
     protected BugCollection getBugCollection() {
         return bugReporter.getBugCollection();
-    }
-
-    protected static <T> Matcher<Iterable<T>> containsExactly(final Matcher<T> matcher, final int count) {
-        return new CountMatcher<T>(count, matcher);
     }
 
     /**

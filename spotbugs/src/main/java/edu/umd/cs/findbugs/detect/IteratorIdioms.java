@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -88,9 +89,9 @@ public class IteratorIdioms extends BytecodeScanningDetector implements Stateles
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == NEW && "java/util/NoSuchElementException".equals(getClassConstantOperand())) {
+        if (seen == Const.NEW && "java/util/NoSuchElementException".equals(getClassConstantOperand())) {
             sawNoSuchElement = true;
-        } else if (seen == INVOKESPECIAL || seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+        } else if (seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             sawCall = true;
             String name = getNameConstantOperand().toLowerCase();
             if (name.indexOf("next") >= 0

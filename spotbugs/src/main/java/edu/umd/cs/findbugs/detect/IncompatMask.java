@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -72,39 +73,39 @@ public class IncompatMask extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case IAND:
-        case LAND:
+        case Const.IAND:
+        case Const.LAND:
             arg1 = getArg();
-            bitop = IAND;
+            bitop = Const.IAND;
             return;
-        case IOR:
-        case LOR:
+        case Const.IOR:
+        case Const.LOR:
             arg1 = getArg();
-            bitop = IOR;
+            bitop = Const.IOR;
             return;
-        case LCMP:
+        case Const.LCMP:
             if (checkItem(2)) {
                 arg2 = getArg();
             }
             return;
-        case IF_ICMPEQ:
-        case IF_ICMPNE:
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPNE:
             if (checkItem(2)) {
                 arg2 = getArg();
                 equality = true;
             }
             break;
-        case IFEQ:
-        case IFNE:
+        case Const.IFEQ:
+        case Const.IFNE:
             if (arg1 instanceof Integer && checkItem(1)) {
                 arg2 = 0;
             }
             equality = true;
             break;
-        case IFLE:
-        case IFLT:
-        case IFGT:
-        case IFGE:
+        case Const.IFLE:
+        case Const.IFLT:
+        case Const.IFGT:
+        case Const.IFGE:
             if (arg1 instanceof Integer && checkItem(1)) {
                 arg2 = 0;
             }
@@ -123,7 +124,7 @@ public class IncompatMask extends OpcodeStackDetector {
             boolean onlyLowBits = bits >>> 12 == 0;
             BugInstance bug;
             if (highbit) {
-                bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == IFLE || seen == IFGT) ? HIGH_PRIORITY
+                bug = new BugInstance(this, "BIT_SIGNED_CHECK_HIGH_BIT", (seen == Const.IFLE || seen == Const.IFGT) ? HIGH_PRIORITY
                         : NORMAL_PRIORITY);
             } else {
                 bug = new BugInstance(this, "BIT_SIGNED_CHECK", onlyLowBits ? LOW_PRIORITY : NORMAL_PRIORITY);
@@ -138,7 +139,7 @@ public class IncompatMask extends OpcodeStackDetector {
             long val1 = arg1.longValue();
             long val2 = arg2.longValue();
 
-            if (bitop == IOR) {
+            if (bitop == Const.IOR) {
                 dif = val1 & ~val2;
                 t = "BIT_IOR";
             } else if (val1 != 0 || val2 != 0) {
@@ -182,10 +183,10 @@ public class IncompatMask extends OpcodeStackDetector {
     public void afterOpcode(int seen) {
         super.afterOpcode(seen);
         switch (seen) {
-        case IAND:
-        case LAND:
-        case IOR:
-        case LOR:
+        case Const.IAND:
+        case Const.LAND:
+        case Const.IOR:
+        case Const.LOR:
             if(stack.getStackDepth() > 0) {
                 bitresultItem = stack.getStackItem(0);
             }

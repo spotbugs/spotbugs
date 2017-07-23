@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -137,7 +138,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     public void visit(JavaClass obj) {
         super.visit(obj);
         int flags = obj.getAccessFlags();
-        publicClass = (flags & ACC_PUBLIC) != 0 && !getDottedClassName().startsWith("sun.");
+        publicClass = (flags & Const.ACC_PUBLIC) != 0 && !getDottedClassName().startsWith("sun.");
 
         packageName = extractPackage(getClassName());
         isEclipseNLS = "org.eclipse.osgi.util.NLS".equals(obj.getSuperclassName());
@@ -147,7 +148,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     public void visit(Method obj) {
         zeroOnTOS = false;
         // System.out.println(methodName);
-        inStaticInitializer = getMethodName().equals("<clinit>");
+        inStaticInitializer = getMethodName().equals(Const.STATIC_INITIALIZER_NAME);
     }
 
     @Override
@@ -166,8 +167,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         // System.out.println("saw\t" + OPCODE_NAMES[seen] + "\t" + zeroOnTOS);
         switch (seen) {
-        case GETSTATIC:
-        case PUTSTATIC:
+        case Const.GETSTATIC:
+        case Const.PUTSTATIC:
 
             XField xField = getXFieldOperand();
             if (xField == null) {
@@ -178,14 +179,14 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             }
 
             boolean samePackage = packageName.equals(extractPackage(xField.getFieldDescriptor().getSlashedClassName()));
-            boolean initOnly = seen == GETSTATIC || getClassName().equals(getClassConstantOperand()) && inStaticInitializer;
-            boolean safeValue = seen == GETSTATIC || emptyArrayOnTOS
+            boolean initOnly = seen == Const.GETSTATIC || getClassName().equals(getClassConstantOperand()) && inStaticInitializer;
+            boolean safeValue = seen == Const.GETSTATIC || emptyArrayOnTOS
                     || AnalysisContext.currentXFactory().isEmptyArrayField(xField) || !mutableSignature(getSigConstantOperand());
 
-            if (seen == GETSTATIC) {
+            if (seen == Const.GETSTATIC) {
                 readAnywhere.add(xField);
             }
-            if (seen == PUTSTATIC) {
+            if (seen == Const.PUTSTATIC) {
                 if (xField.isFinal() && mutableCollectionJustCreated) {
                     mutableCollection.add(xField);
                 }
@@ -214,19 +215,19 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 firstFieldUse.put(xField, sla);
             }
             break;
-        case ANEWARRAY:
-        case NEWARRAY:
+        case Const.ANEWARRAY:
+        case Const.NEWARRAY:
             if (zeroOnTOS) {
                 emptyArrayOnTOS = true;
             }
             zeroOnTOS = false;
             return;
-        case ICONST_0:
+        case Const.ICONST_0:
             zeroOnTOS = true;
             emptyArrayOnTOS = false;
             return;
-        case INVOKESPECIAL:
-            if (inStaticInitializer && "<init>".equals(getMethodDescriptorOperand().getName())) {
+        case Const.INVOKESPECIAL:
+            if (inStaticInitializer && Const.CONSTRUCTOR_NAME.equals(getMethodDescriptorOperand().getName())) {
                 ClassDescriptor classDescriptor = getClassDescriptorOperand();
                 if (MUTABLE_COLLECTION_CLASSES.contains(classDescriptor.getClassName())) {
                     mutableCollectionJustCreated = true;
@@ -244,7 +245,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                             && MUTABLE_COLLECTION_CLASSES.contains(superclassDescriptor.getClassName())) {
                         mutableCollectionJustCreated = true;
                         for (XMethod xMethod : xClass.getXMethods()) {
-                            if (xMethod != null && !"<init>".equals(xMethod.getName()) && !"<clinit>".equals(xMethod.getName())) {
+                            if (xMethod != null && !Const.CONSTRUCTOR_NAME.equals(xMethod.getName()) && !Const.STATIC_INITIALIZER_NAME.equals(xMethod.getName())) {
                                 mutableCollectionJustCreated = false;
                                 break;
                             }
@@ -256,7 +257,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 }
             }
             break;
-        case INVOKESTATIC:
+        case Const.INVOKESTATIC:
             if (inStaticInitializer) {
                 Map<String, AllowedParameter> methods = MUTABLE_COLLECTION_METHODS.get(getMethodDescriptorOperand()
                         .getSlashedClassName());
@@ -307,17 +308,17 @@ public class MutableStaticFields extends BytecodeScanningDetector {
     public void visit(Field obj) {
         super.visit(obj);
         int flags = obj.getAccessFlags();
-        boolean isStatic = (flags & ACC_STATIC) != 0;
+        boolean isStatic = (flags & Const.ACC_STATIC) != 0;
         if (!isStatic) {
             return;
         }
-        boolean isVolatile = (flags & ACC_VOLATILE) != 0;
+        boolean isVolatile = (flags & Const.ACC_VOLATILE) != 0;
         if (isVolatile) {
             return;
         }
-        boolean isFinal = (flags & ACC_FINAL) != 0;
-        boolean isPublic = publicClass && (flags & ACC_PUBLIC) != 0;
-        boolean isProtected = publicClass && (flags & ACC_PROTECTED) != 0;
+        boolean isFinal = (flags & Const.ACC_FINAL) != 0;
+        boolean isPublic = publicClass && (flags & Const.ACC_PUBLIC) != 0;
+        boolean isProtected = publicClass && (flags & Const.ACC_PROTECTED) != 0;
         if (!isPublic && !isProtected) {
             return;
         }

@@ -134,7 +134,7 @@ public class XFactory {
     }
 
     public boolean isCalled(XMethod m) {
-        if ("<clinit>".equals(m.getName())) {
+        if (Const.STATIC_INITIALIZER_NAME.equals(m.getName())) {
             return true;
         }
         return calledMethods.contains(m);
@@ -167,7 +167,7 @@ public class XFactory {
         if (isCalled(m)) {
             return true;
         }
-        if (m.isStatic() || m.isPrivate() || "<init>".equals(m.getName())) {
+        if (m.isStatic() || m.isPrivate() || Const.CONSTRUCTOR_NAME.equals(m.getName())) {
             return false;
         }
         try {
@@ -232,8 +232,12 @@ public class XFactory {
         return m.isResolved();
     }
 
+    /**
+     * @see DescriptorFactory#canonicalizeString(String)
+     */
+    @Deprecated
     public static String canonicalizeString(String s) {
-        return DescriptorFactory.canonicalizeString(s);
+        return s;
     }
 
     /**
@@ -406,7 +410,7 @@ public class XFactory {
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if ("<init>".equals(methodName) || methodName.startsWith("access$") || xmethod.isStatic()
+                    if (Const.CONSTRUCTOR_NAME.equals(methodName) || methodName.startsWith("access$") || xmethod.isStatic()
                             || methodName.toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
                         ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,

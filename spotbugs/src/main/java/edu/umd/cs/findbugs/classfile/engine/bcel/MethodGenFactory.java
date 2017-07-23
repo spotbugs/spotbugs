@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -74,13 +75,13 @@ public class MethodGenFactory extends AnalysisFactory<MethodGen> {
             String methodName = method.getName();
             int codeLength = method.getCode().getCode().length;
             String superclassName = jclass.getSuperclassName();
-            if (codeLength > 6000 && "<clinit>".equals(methodName) && "java.lang.Enum".equals(superclassName)) {
+            if (codeLength > 6000 && Const.STATIC_INITIALIZER_NAME.equals(methodName) && "java.lang.Enum".equals(superclassName)) {
                 analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
                         new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                 return null;
             }
             if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-                if (codeLength > 6000 || ("<clinit>".equals(methodName) || "getContents".equals(methodName)) && codeLength > 2000) {
+                if (codeLength > 6000 || (Const.STATIC_INITIALIZER_NAME.equals(methodName) || "getContents".equals(methodName)) && codeLength > 2000) {
                     analysisContext.getLookupFailureCallback().reportSkippedAnalysis(
                             new JavaClassAndMethod(jclass, method).toMethodDescriptor());
                     return null;

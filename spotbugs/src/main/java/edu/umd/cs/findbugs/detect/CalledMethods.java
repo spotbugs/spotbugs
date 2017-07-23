@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -49,7 +51,7 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == PUTFIELD || seen == PUTSTATIC)) {
+        if ((seen == Const.PUTFIELD || seen == Const.PUTSTATIC)) {
             XField f = getXFieldOperand();
             if (f != null) {
                 if (f.isFinal() || !f.isProtected() && !f.isPublic()) {
@@ -62,20 +64,20 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
             }
 
         }
-        emptyArrayOnTOS = (seen == ANEWARRAY || seen == NEWARRAY || seen == MULTIANEWARRAY && getIntConstant() == 1)
-                && getPrevOpcode(1) == ICONST_0;
+        emptyArrayOnTOS = (seen == Const.ANEWARRAY || seen == Const.NEWARRAY || seen == Const.MULTIANEWARRAY && getIntConstant() == 1)
+                && getPrevOpcode(1) == Const.ICONST_0;
 
-        if (seen == GETSTATIC || seen == GETFIELD) {
+        if (seen == Const.GETSTATIC || seen == Const.GETFIELD) {
             XField f = getXFieldOperand();
             if (emptyArray.contains(f) && !nonEmptyArray.contains(f) && f.isFinal()) {
                 emptyArrayOnTOS = true;
             }
         }
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
-        case INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
             ClassDescriptor c = getClassDescriptorOperand();
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             if (subtypes2.isApplicationClass(c)) {

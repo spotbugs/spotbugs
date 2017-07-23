@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -164,7 +165,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
             return;
         }
         int flags = obj.getAccessFlags();
-        isAbstract = (flags & ACC_ABSTRACT) != 0 || (flags & ACC_INTERFACE) != 0;
+        isAbstract = (flags & Const.ACC_ABSTRACT) != 0 || (flags & Const.ACC_INTERFACE) != 0;
         isAnonymousInnerClass = anonymousInnerClassNamePattern.matcher(getClassName()).matches();
         innerClassHasOuterInstance = false;
         for (Field f : obj.getFields()) {
@@ -240,7 +241,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                     DescriptorFactory.createClassDescriptor(java.io.Serializable.class));
                     superClassHasVoidConstructor = false;
                     for (XMethod m : superXClass.getXMethods()) {
-                        if ("<init>".equals(m.getName()) && "()V".equals(m.getSignature()) && !m.isPrivate()) {
+                        if (Const.CONSTRUCTOR_NAME.equals(m.getName()) && "()V".equals(m.getSignature()) && !m.isPrivate()) {
                             superClassHasVoidConstructor = true;
                         }
                         if ("readObject".equals(m.getName()) && "(Ljava/io/ObjectInputStream;)V".equals(m.getSignature())
@@ -423,11 +424,11 @@ public class SerializableIdiom extends OpcodeStackDetector {
     public void visit(Method obj) {
 
         int accessFlags = obj.getAccessFlags();
-        boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
-        if ("<init>".equals(getMethodName()) && "()V".equals(getMethodSig()) && (accessFlags & ACC_PUBLIC) != 0) {
+        boolean isSynchronized = (accessFlags & Const.ACC_SYNCHRONIZED) != 0;
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && "()V".equals(getMethodSig()) && (accessFlags & Const.ACC_PUBLIC) != 0) {
             hasPublicVoidConstructor = true;
         }
-        if (!"<init>".equals(getMethodName()) && isSynthetic(obj))
+        if (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) && isSynthetic(obj))
         {
             foundSynthetic = true;
             // System.out.println(methodName + isSynchronized);
@@ -536,7 +537,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
             XField xField = getXFieldOperand();
             if (xField != null && xField.getClassDescriptor().equals(getClassDescriptor())) {
                 Item first = stack.getStackItem(0);
@@ -551,14 +552,14 @@ public class SerializableIdiom extends OpcodeStackDetector {
                 }
 
                 if (isPutOfDefaultValue) {
-                    if ("<init>".equals(getMethodName())) {
+                    if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                         transientFieldsSetToDefaultValueInConstructor.add(xField);
                     }
                 } else {
                     String nameOfField = getNameConstantOperand();
 
                     if (transientFieldsUpdates.containsKey(xField)) {
-                        if ("<init>".equals(getMethodName())) {
+                        if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                             transientFieldsSetInConstructor.add(xField);
                         } else {
                             transientFieldsUpdates.put(xField, transientFieldsUpdates.get(xField) + 1);
@@ -582,7 +583,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
                                 String genSig = "L" + classStored.getClassName().replace('.', '/') + ";";
                                 if (!sig.equals(genSig)) {
                                     double bias = 0.0;
-                                    if (!"<init>".equals(getMethodName())) {
+                                    if (!Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                                         bias = 1.0;
                                     }
                                     int priority = computePriority(isSerializable, bias);
@@ -720,7 +721,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
         if (!"serialVersionUID".equals(getFieldName())) {
             return;
         }
-        int mask = ACC_STATIC | ACC_FINAL;
+        int mask = Const.ACC_STATIC | Const.ACC_FINAL;
         if (!"I".equals(fieldSig) && !"J".equals(fieldSig)) {
             return;
         }
@@ -729,11 +730,11 @@ public class SerializableIdiom extends OpcodeStackDetector {
                     .addVisitedField(this));
             sawSerialVersionUID = true;
             return;
-        } else if ((flags & ACC_STATIC) == 0) {
+        } else if ((flags & Const.ACC_STATIC) == 0) {
             bugReporter.reportBug(new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this)
                     .addVisitedField(this));
             return;
-        } else if ((flags & ACC_FINAL) == 0) {
+        } else if ((flags & Const.ACC_FINAL) == 0) {
             bugReporter.reportBug(new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY).addClass(this)
                     .addVisitedField(this));
             return;

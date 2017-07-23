@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -45,10 +47,10 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == SIPUSH) {
+        if (seen == Const.SIPUSH) {
             lastConstantForSIPUSH = getIntConstant();
         }
-        if (seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
+        if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC) {
             String signature = getSigConstantOperand();
 
             int numberArguments = PreorderVisitor.getNumberArguments(signature);
@@ -60,11 +62,11 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
                     if (property != null && property.hasProperty(i)) {
                         int priority = NORMAL_PRIORITY;
 
-                        if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(3) == SIPUSH
+                        if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL && getPrevOpcode(3) == Const.SIPUSH
                                 && lastConstantForSIPUSH == 1000) {
                             priority = HIGH_PRIORITY;
 
-                        } else if (getPrevOpcode(1) == I2L && getPrevOpcode(2) == IMUL && getPrevOpcode(4) == SIPUSH
+                        } else if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL && getPrevOpcode(4) == Const.SIPUSH
                                 && lastConstantForSIPUSH == 1000) {
                             priority = HIGH_PRIORITY;
                         }

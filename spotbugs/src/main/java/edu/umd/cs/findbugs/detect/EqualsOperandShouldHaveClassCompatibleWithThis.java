@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
@@ -71,7 +72,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEVIRTUAL) {
             if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
                 OpcodeStack.Item item = stack.getStackItem(1);
                 ClassDescriptor c = DescriptorFactory.createClassDescriptorFromSignature(item.getSignature());
@@ -90,7 +91,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
 
             }
 
-        } else if (seen == INSTANCEOF || seen == CHECKCAST) {
+        } else if (seen == Const.INSTANCEOF || seen == Const.CHECKCAST) {
             check(getClassDescriptorOperand());
         }
 

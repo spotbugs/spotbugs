@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -59,7 +60,7 @@ public class PutfieldScanner {
 
         @Override
         public void sawOpcode(int seen) {
-            if (seen != PUTFIELD) {
+            if (seen != Const.PUTFIELD) {
                 return;
             }
             XField xFieldOperand = getXFieldOperand();

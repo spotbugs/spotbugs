@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -103,15 +104,15 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
     private boolean storeIntoRegister(int seen, int reg) {
         switch (seen) {
-        case ASTORE_0:
+        case Const.ASTORE_0:
             return reg == 0;
-        case ASTORE_1:
+        case Const.ASTORE_1:
             return reg == 1;
-        case ASTORE_2:
+        case Const.ASTORE_2:
             return reg == 2;
-        case ASTORE_3:
+        case Const.ASTORE_3:
             return reg == 3;
-        case ASTORE:
+        case Const.ASTORE:
             return reg == getRegisterOperand();
         default:
             return false;
@@ -133,19 +134,19 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         // not including stores due to string concatenations
         int storeTo = -1;
         switch (seen) {
-        case ASTORE_0:
+        case Const.ASTORE_0:
             storeTo = 0;
             break;
-        case ASTORE_1:
+        case Const.ASTORE_1:
             storeTo = 1;
             break;
-        case ASTORE_2:
+        case Const.ASTORE_2:
             storeTo = 2;
             break;
-        case ASTORE_3:
+        case Const.ASTORE_3:
             storeTo = 3;
             break;
-        case ASTORE:
+        case Const.ASTORE:
             storeTo = getRegisterOperand();
             break;
         default:
@@ -157,19 +158,19 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
         switch (state) {
         case SEEN_NOTHING:
-            if ((seen == NEW) && getClassConstantOperand().startsWith("java/lang/StringBu")) {
+            if ((seen == Const.NEW) && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_NEW;
                 createPC = getPC();
             }
             break;
 
         case SEEN_NEW:
-            if (seen == INVOKESPECIAL && "<init>".equals(getNameConstantOperand())
+            if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
             && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
             && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
                 state = SEEN_APPEND1;
                 stringSource = registerOnStack;
-            } else if (seen == INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
+            } else if (seen == Const.INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 if (DEBUG) {
                     System.out.println("Saw string being appended from register " + registerOnStack);
@@ -188,7 +189,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         case SEEN_APPEND1:
             if (storeIntoRegister(seen, stringSource)) {
                 reset();
-            } else if (seen == INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
+            } else if (seen == Const.INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_APPEND2;
             }
@@ -197,7 +198,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         case SEEN_APPEND2:
             if (storeIntoRegister(seen, stringSource)) {
                 reset();
-            } else if (seen == INVOKEVIRTUAL && "toString".equals(getNameConstantOperand())
+            } else if (seen == Const.INVOKEVIRTUAL && "toString".equals(getNameConstantOperand())
                     && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = CONSTRUCTED_STRING_ON_STACK;
             }
@@ -243,7 +244,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
                 // getBranchTarget()));
                 reset();
                 reportedThisMethod = true;
-            } else if ((seen == NEW) && getClassConstantOperand().startsWith("java/lang/StringBu")) {
+            } else if ((seen == Const.NEW) && getClassConstantOperand().startsWith("java/lang/StringBu")) {
                 state = SEEN_NEW;
                 createPC = getPC();
             } else {
@@ -259,26 +260,26 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             break;
         }
 
-        if (seen == INVOKESTATIC && "valueOf".equals(getNameConstantOperand())
+        if (seen == Const.INVOKESTATIC && "valueOf".equals(getNameConstantOperand())
                 && "java/lang/String".equals(getClassConstantOperand())
                 && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())) {
             // leave registerOnStack unchanged
         } else {
             registerOnStack = -1;
             switch (seen) {
-            case ALOAD_0:
+            case Const.ALOAD_0:
                 registerOnStack = 0;
                 break;
-            case ALOAD_1:
+            case Const.ALOAD_1:
                 registerOnStack = 1;
                 break;
-            case ALOAD_2:
+            case Const.ALOAD_2:
                 registerOnStack = 2;
                 break;
-            case ALOAD_3:
+            case Const.ALOAD_3:
                 registerOnStack = 3;
                 break;
-            case ALOAD:
+            case Const.ALOAD:
                 registerOnStack = getRegisterOperand();
                 break;
             default:

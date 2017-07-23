@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -56,7 +57,7 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && "putNextEntry".equals(getNameConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && "putNextEntry".equals(getNameConstantOperand())) {
             streamType = getClassConstantOperand();
             if ("java/util/zip/ZipOutputStream".equals(streamType) || "java/util/jar/JarOutputStream".equals(streamType)) {
                 sawPutEntry = getPC();
@@ -64,7 +65,7 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
                 streamType = "";
             }
         } else {
-            if (getPC() - sawPutEntry <= 7 && seen == INVOKEVIRTUAL && "closeEntry".equals(getNameConstantOperand())
+            if (getPC() - sawPutEntry <= 7 && seen == Const.INVOKEVIRTUAL && "closeEntry".equals(getNameConstantOperand())
                     && getClassConstantOperand().equals(streamType)) {
                 bugReporter
                 .reportBug(new BugInstance(this,

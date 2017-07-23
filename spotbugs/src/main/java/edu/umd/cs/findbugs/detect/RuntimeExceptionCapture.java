@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.JavaClass;
@@ -218,7 +219,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case ATHROW:
+        case Const.ATHROW:
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 String signature = item.getSignature();
@@ -233,16 +234,16 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             }
             break;
 
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             String className = getClassConstantOperand();
             if (!className.startsWith("[")) {
                 try {
                     XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                             DescriptorFactory.createClassDescriptor(className));
                     XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),
-                            seen == INVOKESTATIC, seen == INVOKEINTERFACE);
+                            seen == Const.INVOKESTATIC, seen == Const.INVOKEINTERFACE);
                     if (m == null) {
                         break;
                     }

@@ -170,7 +170,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         if (typeQualifierAnnotation.when != When.UNKNOWN) {
                             priority--;
                         }
-                        if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || "<init>".equals(xmethod.getName())
+                        if (xmethod.isStatic() || xmethod.isFinal() || xmethod.isPrivate() || Const.CONSTRUCTOR_NAME.equals(xmethod.getName())
                                 || jclass.isFinal()) {
                             priority--;
                         }

@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -67,7 +68,7 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && writeObject.equals(getXMethodOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && writeObject.equals(getXMethodOperand())) {
             OpcodeStack.Item top = stack.getStackItem(0);
             String signature = top.getSignature();
             while (signature.charAt(0) == '[') {
@@ -95,7 +96,7 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
             }
 
         }
-        if (seen == CHECKCAST) {
+        if (seen == Const.CHECKCAST) {
             OpcodeStack.Item top = stack.getStackItem(0);
             if (readObject.equals(top.getReturnValueOf())) {
                 ClassDescriptor c = getClassDescriptorOperand();

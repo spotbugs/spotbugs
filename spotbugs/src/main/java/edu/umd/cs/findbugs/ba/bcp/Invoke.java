@@ -201,7 +201,7 @@ public class Invoke extends PatternElement {
 
         String methodName = inv.getMethodName(cpg);
         boolean isStatic = inv.getOpcode() == Const.INVOKESTATIC;
-        boolean isCtor = "<init>".equals(methodName);
+        boolean isCtor = Const.CONSTRUCTOR_NAME.equals(methodName);
 
         int actualMode = 0;
 

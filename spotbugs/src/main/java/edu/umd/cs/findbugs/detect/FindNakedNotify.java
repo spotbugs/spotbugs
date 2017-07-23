@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -50,7 +51,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     @Override
     public void visit(Method obj) {
         int flags = obj.getAccessFlags();
-        synchronizedMethod = (flags & ACC_SYNCHRONIZED) != 0;
+        synchronizedMethod = (flags & Const.ACC_SYNCHRONIZED) != 0;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     public void sawOpcode(int seen) {
         switch (stage) {
         case 0:
-            if (seen == MONITORENTER) {
+            if (seen == Const.MONITORENTER) {
                 stage = 1;
             }
             break;
@@ -75,7 +76,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             stage = 2;
             break;
         case 2:
-            if (seen == INVOKEVIRTUAL
+            if (seen == Const.INVOKEVIRTUAL
             && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))
             && "()V".equals(getSigConstantOperand())) {
                 stage = 3;
@@ -88,7 +89,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             stage = 4;
             break;
         case 4:
-            if (seen == MONITOREXIT) {
+            if (seen == Const.MONITOREXIT) {
                 bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addSourceLine(this, notifyPC));
                 stage = 5;

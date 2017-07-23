@@ -5,13 +5,9 @@ import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.hamcrest.Matcher;
 import org.junit.rules.ExternalResource;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * <p>
@@ -30,7 +26,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  *         // There should only be exactly 1 issue of this type
  *         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
  *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
- *         assertThat(bugCollection, containsExactly(bugTypeMatcher, 1));
+ *         assertThat(bugCollection, CountMatcher.containsExactly(1, bugTypeMatcher));
  *
  *         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
  *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -55,31 +51,6 @@ public class SpotBugsRule extends ExternalResource {
     @Override
     protected void after() {
         runner = null;
-    }
-
-    /**
-     * <p>
-     * A factory method to build a {@link Matcher} instance to check how many
-     * {@link BugInstance} matches in {@link BugCollection}. Basic usage:
-     * </p>
-     * <pre>
-     * <code>
-     * BugCollection bugCollection = spotBugsRule.performAnalysis(...);
-     * assertThat(
-     *     bugCollection,
-     *     containsExactly(bugInstanceMatcher, 1));
-     * </code>
-     * </pre>
-     * @param matcher
-     *            A matcher to match {@link BugInstance}. non-null.
-     * @param count
-     *            How many times you expect that specified matcher matches.
-     * @return A matcher which matches specified times
-     * @see BugInstanceMatcher
-     * @see BugInstanceMatcherBuilder
-     */
-    public static <T> Matcher<Iterable<T>> containsExactly(final Matcher<T> matcher, final int count) {
-        return new CountMatcher<T>(count, matcher);
     }
 
     /**

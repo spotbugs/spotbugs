@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -216,11 +217,11 @@ public class RepeatedConditionals extends OpcodeStackDetector {
     }
 
     private boolean hasSideEffect(int seen) {
-        if(seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE || seen == INVOKESTATIC) {
+        if(seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESTATIC) {
             return noSideEffectMethods.is(getMethodDescriptorOperand(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ);
         }
-        return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == INVOKEDYNAMIC || seen == PUTFIELD
-                || seen == PUTSTATIC;
+        return isRegisterStore() || isReturn(seen) || isSwitch(seen) || seen == Const.INVOKEDYNAMIC || seen == Const.PUTFIELD
+                || seen == Const.PUTSTATIC;
     }
 
     private void reset() {

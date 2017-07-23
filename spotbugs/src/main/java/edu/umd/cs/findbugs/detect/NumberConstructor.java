@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -91,8 +92,8 @@ public class NumberConstructor extends OpcodeStackDetector {
         MethodDescriptor boxingMethod = new MethodDescriptor(className, "valueOf", sig + "L" + className +";", true);
         MethodDescriptor parsingMethod = new MethodDescriptor(className, "valueOf", "(Ljava/lang/String;)" + "L" + className +";", true);
         boxClasses.put(className, new Pair(boxingMethod, parsingMethod));
-        methods.add(new MethodDescriptor(className, "<init>", "(Ljava/lang/String;)V"));
-        methods.add(new MethodDescriptor(className, "<init>", sig+"V"));
+        methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"));
+        methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, sig+"V"));
     }
 
     /**
@@ -104,7 +105,7 @@ public class NumberConstructor extends OpcodeStackDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         int majorVersion = classContext.getJavaClass().getMajor();
-        if (majorVersion >= MAJOR_1_5 && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+        if (majorVersion >= Const.MAJOR_1_5 && hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             super.visitClassContext(classContext);
         }
     }
@@ -147,11 +148,11 @@ public class NumberConstructor extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         // only acts on constructor invoke
-        if (seen != INVOKESPECIAL) {
+        if (seen != Const.INVOKESPECIAL) {
             return;
         }
 
-        if (!"<init>".equals(getNameConstantOperand())) {
+        if (!Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
             return;
         }
         @SlashedClassName String cls = getClassConstantOperand();

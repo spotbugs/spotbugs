@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -99,7 +100,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
         OpcodeStack.Item oldTop = top;
         top = null;
-        if (seen == INVOKESPECIAL || seen == INVOKESTATIC || seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) {
+        if (seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             int[] params = allFileNameStringMethods.get(getMethodDescriptorOperand());
             if(params != null) {
                 int numArgs = getNumberArguments(getSigConstantOperand());
@@ -114,12 +115,12 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 }
             }
         }
-        if (seen == INVOKESPECIAL) {
+        if (seen == Const.INVOKESPECIAL) {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
 
-            if ("javax/servlet/http/Cookie".equals(calledClassName) && "<init>".equals(calledMethodName)
+            if ("javax/servlet/http/Cookie".equals(calledClassName) && Const.CONSTRUCTOR_NAME.equals(calledMethodName)
                     && "(Ljava/lang/String;Ljava/lang/String;)V".equals(calledMethodSig)) {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);
@@ -131,7 +132,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
 
             }
 
-        } else if (seen == INVOKEINTERFACE) {
+        } else if (seen == Const.INVOKEINTERFACE) {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
@@ -178,7 +179,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 }
             }
 
-        } else if (seen == INVOKEVIRTUAL && !isPlainText) {
+        } else if (seen == Const.INVOKEVIRTUAL && !isPlainText) {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();

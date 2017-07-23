@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -83,9 +84,9 @@ public class InitializationChain extends BytecodeScanningDetector {
         Method staticInitializer = null;
         for(Method m : obj.getMethods()) {
             String name = m.getName();
-            if ("<clinit>".equals(name)) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(name)) {
                 staticInitializer = m;
-            } else if ("<init>".equals(name)) {
+            } else if (Const.CONSTRUCTOR_NAME.equals(name)) {
                 visitOrder.add(m);
             }
 
@@ -134,15 +135,15 @@ public class InitializationChain extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         InvocationInfo prev = lastInvocation;
         lastInvocation = null;
-        if ("<init>".equals(getMethodName())) {
-            if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
+            if (seen == Const.GETSTATIC && getClassConstantOperand().equals(getClassName())) {
                 staticFieldsReadInAnyConstructor.add(getXFieldOperand());
                 fieldsReadInThisConstructor.add(getXFieldOperand());
             }
             return;
         }
 
-        if (seen == INVOKESPECIAL && "<init>".equals(getNameConstantOperand()) &&  getClassConstantOperand().equals(getClassName())) {
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) &&  getClassConstantOperand().equals(getClassName())) {
 
             XMethod m = getXMethodOperand();
             Set<XField> read = staticFieldsRead.get(m);
@@ -153,7 +154,7 @@ public class InitializationChain extends BytecodeScanningDetector {
             }
 
         }
-        if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
+        if (seen == Const.PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
             XField f = getXFieldOperand();
             if (prev != null) {
                 prev.field = f;
@@ -176,7 +177,7 @@ public class InitializationChain extends BytecodeScanningDetector {
                 }
             }
 
-        } else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC || seen == NEW) {
+        } else if (seen == Const.PUTSTATIC || seen == Const.GETSTATIC || seen == Const.INVOKESTATIC || seen == Const.NEW) {
             if (getPC() + 6 < codeBytes.length) {
                 requires.add(getDottedClassConstantOperand());
             }

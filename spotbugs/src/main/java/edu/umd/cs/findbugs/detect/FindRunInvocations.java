@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -62,7 +63,7 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
         if (alreadySawStart) {
             return;
         }
-        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && "()V".equals(getSigConstantOperand())
+        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) && "()V".equals(getSigConstantOperand())
                 && isThread(getDottedClassConstantOperand())) {
             if ("start".equals(getNameConstantOperand())) {
                 alreadySawStart = true;

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
@@ -66,7 +67,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 && !"writeObject".equals(methodName)
                 && methodName.indexOf("debug") == -1 && methodName.indexOf("Debug") == -1
                 && methodName.indexOf("trace") == -1 && methodName.indexOf("Trace") == -1
-                && !"<init>".equals(methodName) && !"<clinit>".equals(methodName)) {
+                && !Const.CONSTRUCTOR_NAME.equals(methodName) && !Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             for(AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName =  a.getAnnotationType();
                 if ("Ljavax/annotation/PostConstruct;".equals(typeName)
@@ -81,13 +82,13 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             if (getDottedClassConstantOperand().equals(className)) {
                 String className = getDottedClassConstantOperand();
                 MethodAnnotation called = new MethodAnnotation(className, getNameConstantOperand(), getSigConstantOperand(),
-                        seen == INVOKESTATIC);
+                        seen == Const.INVOKESTATIC);
                 calledMethods.add(called);
                 calledMethodNames.add(getNameConstantOperand().toLowerCase());
             }
@@ -113,7 +114,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 if(kind >= 5 && kind <= 9) {
                     Constant ref = cp.getConstant(((ConstantMethodHandle)constant).getReferenceIndex());
                     if(ref instanceof ConstantCP) {
-                        String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), CONSTANT_Class);
+                        String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
                         ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
                         String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
                         String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();

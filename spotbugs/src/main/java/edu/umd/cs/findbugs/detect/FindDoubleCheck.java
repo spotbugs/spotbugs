@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -86,13 +87,13 @@ public class FindDoubleCheck extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.println(getPC() + "\t" + OPCODE_NAMES[seen] + "\t" + stage + "\t" + count + "\t" + countSinceGetReference);
+            System.out.println(getPC() + "\t" + Const.getOpcodeName(seen) + "\t" + stage + "\t" + count + "\t" + countSinceGetReference);
         }
 
-        if (seen == MONITORENTER) {
+        if (seen == Const.MONITORENTER) {
             sawMonitorEnter = true;
         }
-        if (seen == GETFIELD || seen == GETSTATIC) {
+        if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
             pendingFieldLoad = FieldAnnotation.fromReferencedField(this);
             if (DEBUG) {
                 System.out.println("\t" + pendingFieldLoad);
@@ -110,14 +111,14 @@ public class FindDoubleCheck extends OpcodeStackDetector {
         }
         switch (stage) {
         case 0:
-            if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
-                    || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
+            if (((seen == Const.IFNULL || seen == Const.IFNONNULL) && countSinceGetReference < 5)
+                    || ((seen == Const.IFEQ || seen == Const.IFNE) && countSinceGetBoolean < 5)) {
                 int b = getBranchOffset();
                 if (DEBUG) {
                     System.out.println("branch offset is : " + b);
                 }
-                if (b > 0 && !(seen == IFNULL && b > 9) && !(seen == IFEQ && (b > 9 && b < 34))
-                        && !(seen == IFNE && (b > 9 && b < 34)) && (!sawMonitorEnter)) {
+                if (b > 0 && !(seen == Const.IFNULL && b > 9) && !(seen == Const.IFEQ && (b > 9 && b < 34))
+                        && !(seen == Const.IFNE && (b > 9 && b < 34)) && (!sawMonitorEnter)) {
                     fields.add(pendingFieldLoad);
                     startPC = getPC();
                     stage = 1;
@@ -126,13 +127,13 @@ public class FindDoubleCheck extends OpcodeStackDetector {
             count = 0;
             break;
         case 1:
-            if (seen == MONITORENTER) {
+            if (seen == Const.MONITORENTER) {
                 stage = 2;
                 count = 0;
-            } else if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
-                    || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
+            } else if (((seen == Const.IFNULL || seen == Const.IFNONNULL) && countSinceGetReference < 5)
+                    || ((seen == Const.IFEQ || seen == Const.IFNE) && countSinceGetBoolean < 5)) {
                 int b = getBranchOffset();
-                if (b > 0 && (seen == IFNONNULL || b < 10)) {
+                if (b > 0 && (seen == Const.IFNONNULL || b < 10)) {
                     fields.add(pendingFieldLoad);
                     startPC = getPC();
                     count = 0;
@@ -145,8 +146,8 @@ public class FindDoubleCheck extends OpcodeStackDetector {
             }
             break;
         case 2:
-            if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
-                    || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
+            if (((seen == Const.IFNULL || seen == Const.IFNONNULL) && countSinceGetReference < 5)
+                    || ((seen == Const.IFEQ || seen == Const.IFNE) && countSinceGetBoolean < 5)) {
                 if (getBranchOffset() >= 0 && fields.contains(pendingFieldLoad)) {
                     endPC = getPC();
                     stage++;
@@ -160,7 +161,7 @@ public class FindDoubleCheck extends OpcodeStackDetector {
             }
             break;
         case 3:
-            if (seen == PUTFIELD || seen == PUTSTATIC) {
+            if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
                 FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
                 if (DEBUG) {
                     System.out.println("\t" + f);
@@ -184,27 +185,27 @@ public class FindDoubleCheck extends OpcodeStackDetector {
         case 4:
             if(currentDoubleCheckField != null) {
                 switch(seen) {
-                case MONITOREXIT:
+                case Const.MONITOREXIT:
                     stage++;
                     break;
-                case INVOKEINTERFACE:
-                case INVOKESPECIAL:
-                case INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESPECIAL:
+                case Const.INVOKEVIRTUAL:
                     if(nse.is(getMethodDescriptorOperand(), MethodSideEffectStatus.OBJ, MethodSideEffectStatus.SE)) {
                         checkStackValue(getNumberArguments(getMethodDescriptorOperand().getSignature()));
                     }
                     break;
-                case PUTFIELD:
+                case Const.PUTFIELD:
                     checkStackValue(1);
                     break;
-                case DASTORE:
-                case FASTORE:
-                case SASTORE:
-                case LASTORE:
-                case BASTORE:
-                case CASTORE:
-                case AASTORE:
-                case IASTORE:
+                case Const.DASTORE:
+                case Const.FASTORE:
+                case Const.SASTORE:
+                case Const.LASTORE:
+                case Const.BASTORE:
+                case Const.CASTORE:
+                case Const.AASTORE:
+                case Const.IASTORE:
                     checkStackValue(2);
                     break;
                 }

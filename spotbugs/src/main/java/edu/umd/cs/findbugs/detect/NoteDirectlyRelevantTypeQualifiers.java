@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -87,10 +88,10 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case INVOKEINTERFACE:
-        case INVOKEVIRTUAL:
-        case INVOKESTATIC:
-        case INVOKESPECIAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESTATIC:
+        case Const.INVOKESPECIAL:
             // We don't need to look for method invocations
             // if Analysis.FIND_EFFECTIVE_RELEVANT_QUALIFIERS is enabled -
             // that will build an interprocedural call graph which
@@ -105,10 +106,10 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
             }
             break;
 
-        case GETSTATIC:
-        case PUTSTATIC:
-        case GETFIELD:
-        case PUTFIELD: {
+        case Const.GETSTATIC:
+        case Const.PUTSTATIC:
+        case Const.GETFIELD:
+        case Const.PUTFIELD: {
             XField f = getXFieldOperand();
             if (f != null) {
                 Collection<TypeQualifierAnnotation> annotations = TypeQualifierApplications.getApplicableApplications(f);
