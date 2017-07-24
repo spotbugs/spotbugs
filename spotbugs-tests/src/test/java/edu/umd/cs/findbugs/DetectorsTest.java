@@ -98,7 +98,7 @@ public class DetectorsTest {
      */
     @Test
     public void testAllRegressionFilesJavac() throws IOException, InterruptedException {
-        setUpEngine("build/classes/main/");
+        setUpEngine("build/classes/java/main/");
 
         engine.execute();
 

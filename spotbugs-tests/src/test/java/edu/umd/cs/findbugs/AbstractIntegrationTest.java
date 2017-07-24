@@ -104,7 +104,7 @@ public class AbstractIntegrationTest {
 
         // TODO : Unwire this once we move bug samples to a proper sourceset
         Path[] paths = Arrays.stream(analyzeMe)
-                .map(s -> getFindbugsTestCasesFile("/build/classes/main/" + s).toPath())
+                .map(s -> getFindbugsTestCasesFile("/build/classes/java/main/" + s).toPath())
                 .collect(Collectors.toList())
                 .toArray(new Path[analyzeMe.length]);
         this.bugReporter = runner.run(paths);
