@@ -6,6 +6,8 @@ build
 .classpath
 *.iml
 *.swp
+*.ipr
+*.iws
 classesEclipse
 .DS_Store
 deps/
