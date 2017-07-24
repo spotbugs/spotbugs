@@ -166,7 +166,7 @@ def distSpec = copySpec {
     include 'RELEASENOTES'
     include 'plugin.xml'
     include '.options'
-    include 'plugin*.properties' // match plugin.properties and plugin_ja.properties
+    include 'OSGI-INF/l10n/*.properties'
     include '*.png'
     include 'about.*'
     include 'doc/*.*'

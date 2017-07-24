@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
@@ -233,9 +234,7 @@ public class FindBugsWorker {
 
     private void configureSourceDirectories(Project findBugsProject, Map<IPath, IPath> outLocations) {
         Set<IPath> srcDirs = outLocations.keySet();
-        for (IPath iPath : srcDirs) {
-            findBugsProject.addSourceDir(iPath.toOSString());
-        }
+        findBugsProject.addSourceDirs(srcDirs.stream().map(IPath::toOSString).collect(Collectors.toList()));
     }
 
     /**

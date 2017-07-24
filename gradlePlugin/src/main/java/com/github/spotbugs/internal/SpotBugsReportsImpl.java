@@ -6,22 +6,22 @@ import org.gradle.api.reporting.internal.CustomizableHtmlReportImpl;
 import org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport;
 import org.gradle.api.reporting.internal.TaskReportContainer;
 
-import com.github.spotbugs.FindBugsXmlReport;
-import com.github.spotbugs.internal.spotbugs.FindBugsXmlReportImpl;
+import com.github.spotbugs.SpotBugsXmlReport;
+import com.github.spotbugs.internal.spotbugs.SpotBugsXmlReportImpl;
 
-public class FindBugsReportsImpl extends TaskReportContainer<SingleFileReport> implements FindBugsReportsInternal {
+public class SpotBugsReportsImpl extends TaskReportContainer<SingleFileReport> implements SpotBugsReportsInternal {
 
-  public FindBugsReportsImpl(Task task) {
+  public SpotBugsReportsImpl(Task task) {
       super(SingleFileReport.class, task);
 
-      add(FindBugsXmlReportImpl.class, "xml", task);
+      add(SpotBugsXmlReportImpl.class, "xml", task);
       add(CustomizableHtmlReportImpl.class, "html", task);
       add(TaskGeneratedSingleFileReport.class, "text", task);
       add(TaskGeneratedSingleFileReport.class, "emacs", task);
   }
 
-  public FindBugsXmlReport getXml() {
-      return (FindBugsXmlReport) getByName("xml");
+  public SpotBugsXmlReport getXml() {
+      return (SpotBugsXmlReport) getByName("xml");
   }
 
   public SingleFileReport getHtml() {
@@ -38,7 +38,7 @@ public class FindBugsReportsImpl extends TaskReportContainer<SingleFileReport> i
 
   @Override
   public Boolean getWithMessagesFlag() {
-      FindBugsXmlReport report = (FindBugsXmlReport)getEnabled().findByName("xml");
+      SpotBugsXmlReport report = (SpotBugsXmlReport)getEnabled().findByName("xml");
       return report != null ? report.isWithMessages() : Boolean.FALSE;
   }
 }

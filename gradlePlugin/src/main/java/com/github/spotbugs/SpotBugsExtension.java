@@ -6,37 +6,36 @@ import java.util.Collection;
 import org.gradle.api.Incubating;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.quality.CodeQualityExtension;
-import org.gradle.api.plugins.quality.FindBugsPlugin;
 import org.gradle.api.resources.TextResource;
 
 /**
- * Configuration options for the FindBugs plugin. All options have sensible defaults.
- * See the <a href="http://findbugs.sourceforge.net/manual/">FindBugs Manual</a> for additional information
- * on these options.
+ * Configuration options for the SpotBugs plugin. All options have sensible defaults.
+ * See the <a href="https://spotbugs.readthedocs.io/en/latest/">SpotBugs Manual</a> for additional
+ * information on these options.
  *
  * <p>Below is a full configuration example. Since all properties have sensible defaults,
  * typically only selected properties will be configured.
  *
  *     apply plugin: "java"
- *     apply plugin: "findbugs"
+ *     apply plugin: "spotbugs"
  *
- *     findbugs {
+ *     spotbugs {
  *         toolVersion = "2.0.1"
  *         sourceSets = [sourceSets.main]
  *         ignoreFailures = true
- *         reportsDir = file("$project.buildDir/findbugsReports")
+ *         reportsDir = file("$project.buildDir/spotbugsReports")
  *         effort = "max"
  *         reportLevel = "high"
  *         visitors = ["FindSqlInjection", "SwitchFallthrough"]
  *         omitVisitors = ["FindNonShortCircuit"]
- *         includeFilter = file("$rootProject.projectDir/config/findbugs/includeFilter.xml")
- *         excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
- *         excludeBugsFilter = file("$rootProject.projectDir/config/findbugs/excludeBugsFilter.xml")
+ *         includeFilter = file("$rootProject.projectDir/config/spotbugs/includeFilter.xml")
+ *         excludeFilter = file("$rootProject.projectDir/config/spotbugs/excludeFilter.xml")
+ *         excludeBugsFilter = file("$rootProject.projectDir/config/spotbugs/excludeBugsFilter.xml")
  *     }
  *
  * @see SpotBugsPlugin
  */
-public class FindBugsExtension extends CodeQualityExtension {
+public class SpotBugsExtension extends CodeQualityExtension {
 
     private final Project project;
 
@@ -49,7 +48,7 @@ public class FindBugsExtension extends CodeQualityExtension {
     private TextResource excludeBugsFilterConfig;
     private Collection<String> extraArgs;
 
-    public FindBugsExtension(Project project) {
+    public SpotBugsExtension(Project project) {
         this.project = project;
     }
 
@@ -205,13 +204,13 @@ public class FindBugsExtension extends CodeQualityExtension {
     }
 
     /**
-     * Any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to FindBugs.
+     * Any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to SpotBugs.
      * <p>
-     * Extra arguments are passed to FindBugs after the arguments Gradle understands (like {@code effort} but before the list of classes to analyze.
+     * Extra arguments are passed to SpotBugs after the arguments Gradle understands (like {@code effort} but before the list of classes to analyze.
      * This should only be used for arguments that cannot be provided by Gradle directly.
-     * Gradle does not try to interpret or validate the arguments before passing them to FindBugs.
+     * Gradle does not try to interpret or validate the arguments before passing them to SpotBugs.
      * <p>
-     * See the <a href="https://code.google.com/p/findbugs/source/browse/findbugs/src/java/edu/umd/cs/findbugs/TextUICommandLine.java">FindBugs
+     * See the <a href="https://github.com/spotbugs/spotbugs/blob/master/spotbugs/src/main/java/edu/umd/cs/findbugs/TextUICommandLine.java">SpotBugs
      * TextUICommandLine source</a> for available options.
      *
      * @since 2.6

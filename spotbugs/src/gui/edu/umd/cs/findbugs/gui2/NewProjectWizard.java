@@ -34,6 +34,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -206,9 +208,11 @@ public class NewProjectWizard extends FBDialog {
                 for (int i = 0; i < auxModel.getSize(); i++) {
                     p.addAuxClasspathEntry(auxModel.get(i));
                 }
+                List<String> sourceDirs = new ArrayList<>(sourceModel.getSize());
                 for (int i = 0; i < sourceModel.getSize(); i++) {
-                    p.addSourceDir(sourceModel.get(i));
+                    sourceDirs.add(sourceModel.get(i));
                 }
+                p.addSourceDirs(sourceDirs);
                 p.setProjectName(projectName.getText());
 
                 MainFrame mainFrame = MainFrame.getInstance();

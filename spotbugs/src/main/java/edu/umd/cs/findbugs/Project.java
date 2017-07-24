@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -239,16 +240,40 @@ public class Project implements XMLWriteable {
     /**
      * Add a source directory to the project.
      *
-     * @param dirName
-     *            the directory to add
-     * @return true if the source directory was added, or false if the source
-     *         directory was already present
+     * @param sourceDir
+     *            The source directory to add. These can be either an absolute path 
+     *            or relative to any of the working directories in this project object.
+     * @return true if the source directory was added or false if it was already present
+     * @deprecated Calling this method repeatedly performs poorly because a SourceFinder is created each time, 
+     *              which checks all files for existence each time. Use {@link #addSourceDirs} instead.
      */
-    public boolean addSourceDir(String dirName) {
+    @Deprecated
+    public boolean addSourceDir(String sourceDir) {
+        return addSourceDirs(Collections.singletonList(sourceDir));
+    }
+    
+    /**
+     * Add source directories to the project.
+     *
+     * @param sourceDirs
+     *            The source directories to add. These can be either absolute paths 
+     *            or relative to any of the working directories in this project object.
+     * @return true if a source directory was added or false if all source
+     *         directories were already present
+     */
+    public boolean addSourceDirs(Collection<String> sourceDirs) {
         boolean isNew = false;
-        for (String dir : makeAbsoluteCwdCandidates(dirName)) {
-            isNew = addToListInternal(srcDirList, dir) || isNew;
+
+        if (sourceDirs == null || sourceDirs.isEmpty()) {
+            return isNew;
         }
+
+        for (String dirName : sourceDirs) {
+            for (String dir : makeAbsoluteCwdCandidates(dirName)) {
+                isNew = addToListInternal(srcDirList, dir) || isNew;
+            }
+        }
+
         sourceFinder = new SourceFinder(this);
         return isNew;
     }

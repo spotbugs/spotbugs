@@ -3,13 +3,13 @@ package com.github.spotbugs.internal.spotbugs;
 import org.gradle.api.Task;
 import org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport;
 
-import com.github.spotbugs.FindBugsXmlReport;
+import com.github.spotbugs.SpotBugsXmlReport;
 
-public class FindBugsXmlReportImpl extends TaskGeneratedSingleFileReport implements FindBugsXmlReport {
+public class SpotBugsXmlReportImpl extends TaskGeneratedSingleFileReport implements SpotBugsXmlReport {
   private static final long serialVersionUID = 1L;
   private boolean withMessages;
   
-  public FindBugsXmlReportImpl(String name, Task task) {
+  public SpotBugsXmlReportImpl(String name, Task task) {
       super(name, task);
   }
 

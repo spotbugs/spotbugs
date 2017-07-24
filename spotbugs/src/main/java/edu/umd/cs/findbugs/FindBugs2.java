@@ -686,19 +686,21 @@ public class FindBugs2 implements IFindBugsEngine {
         // add them to the source path.
         // Also, use the last modified time of application codebases
         // to set the project timestamp.
+        List<String> pathNames = new ArrayList<>();
         for (Iterator<? extends ICodeBase> i = classPath.appCodeBaseIterator(); i.hasNext();) {
             ICodeBase appCodeBase = i.next();
 
             if (appCodeBase.containsSourceFiles()) {
                 String pathName = appCodeBase.getPathName();
                 if (pathName != null) {
-                    project.addSourceDir(pathName);
+                    pathNames.add(pathName);
                 }
             }
 
             project.addTimestamp(appCodeBase.getLastModifiedTime());
         }
 
+        project.addSourceDirs(pathNames);
     }
 
     private void buildReferencedClassSet() throws InterruptedException {

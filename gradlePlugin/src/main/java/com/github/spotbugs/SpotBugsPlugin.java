@@ -25,26 +25,26 @@ import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Callables;
 
 /**
- * A plugin for the <a href="http://findbugs.sourceforge.net">FindBugs</a> byte code analyzer.
+ * A plugin for the <a href="https://spotbugs.github.io">SpotBugs</a> byte code analyzer.
  *
  * <p>
- * Declares a <tt>findbugs</tt> configuration which needs to be configured with the FindBugs library to be used.
- * Additional plugins can be added to the <tt>findbugsPlugins</tt> configuration.
+ * Declares a <tt>spotbugs</tt> configuration which needs to be configured with the SpotBugs library to be used.
+ * Additional plugins can be added to the <tt>spotbugsPlugins</tt> configuration.
  *
  * <p>
  * For projects that have the Java (base) plugin applied, a {@link SpotBugsTask} task is
  * created for each source set.
  *
  * @see SpotBugsTask
- * @see FindBugsExtension
+ * @see SpotBugsExtension
  */
 public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
-    private FindBugsExtension extension;
+    private SpotBugsExtension extension;
 
     @Override
     protected String getToolName() {
-        return "FindBugs";
+        return "SpotBugs";
     }
 
     @Override
@@ -54,19 +54,19 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     @Override
     protected void beforeApply() {
-        configureFindBugsConfigurations();
+        configureSpotBugsConfigurations();
     }
 
-    private void configureFindBugsConfigurations() {
-        Configuration configuration = project.getConfigurations().create("findbugsPlugins");
+    private void configureSpotBugsConfigurations() {
+        Configuration configuration = project.getConfigurations().create("spotbugsPlugins");
         configuration.setVisible(false);
         configuration.setTransitive(true);
-        configuration.setDescription("The FindBugs plugins to be used for this project.");
+        configuration.setDescription("The SpotBugs plugins to be used for this project.");
     }
 
     @Override
     protected CodeQualityExtension createExtension() {
-        extension = project.getExtensions().create("spotbugs", FindBugsExtension.class, project);
+        extension = project.getExtensions().create("spotbugs", SpotBugsExtension.class, project);
         extension.setToolVersion(loadToolVersion());
         return extension;
     }
@@ -85,8 +85,8 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     @Override
     protected void configureTaskDefaults(SpotBugsTask task, String baseName) {
-        task.setPluginClasspath(project.getConfigurations().getAt("findbugsPlugins"));
-        Configuration configuration = project.getConfigurations().getAt("findbugs");
+        task.setPluginClasspath(project.getConfigurations().getAt("spotbugsPlugins"));
+        Configuration configuration = project.getConfigurations().getAt("spotbugs");
         configureDefaultDependencies(configuration);
         configureTaskConventionMapping(configuration, task);
         configureReportsConventionMapping(task, baseName);
@@ -103,7 +103,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     private void configureTaskConventionMapping(Configuration configuration, SpotBugsTask task) {
         ConventionMapping taskMapping = task.getConventionMapping();
-        taskMapping.map("findbugsClasspath", Callables.returning(configuration));
+        taskMapping.map("spotbugsClasspath", Callables.returning(configuration));
         taskMapping.map("ignoreFailures", new Callable<Boolean>() {
             @Override
             public Boolean call() {
@@ -185,14 +185,14 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     @Override
     protected void configureForSourceSet(final SourceSet sourceSet, SpotBugsTask task) {
-        task.setDescription("Run FindBugs analysis for " + sourceSet.getName() + " classes");
+        task.setDescription("Run SpotBugs analysis for " + sourceSet.getName() + " classes");
         task.setSource(sourceSet.getAllJava());
         ConventionMapping taskMapping = task.getConventionMapping();
         taskMapping.map("classes", new Callable<FileCollection>() {
             @Override
             public FileCollection call() {
                 // the simple "classes = sourceSet.output" may lead to non-existing resources directory
-                // being passed to FindBugs Ant task, resulting in an error
+                // being passed to SpotBugs Ant task, resulting in an error
                 return project.fileTree(sourceSet.getOutput().getClassesDir()).builtBy(sourceSet.getOutput());
             }
         });

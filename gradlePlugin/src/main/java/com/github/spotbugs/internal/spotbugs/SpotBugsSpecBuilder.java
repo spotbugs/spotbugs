@@ -11,11 +11,11 @@ import org.gradle.api.reporting.internal.CustomizableHtmlReportImpl;
 import org.gradle.api.specs.Spec;
 import org.gradle.util.CollectionUtils;
 
-import com.github.spotbugs.FindBugsReports;
-import com.github.spotbugs.internal.FindBugsReportsImpl;
+import com.github.spotbugs.SpotBugsReports;
+import com.github.spotbugs.internal.SpotBugsReportsImpl;
 import com.google.common.collect.ImmutableSet;
 
-public class FindBugsSpecBuilder {
+public class SpotBugsSpecBuilder {
     private static final Set<String> VALID_EFFORTS = ImmutableSet.of("min", "default", "max");
     private static final Set<String> VALID_REPORT_LEVELS = ImmutableSet.of("experimental", "low", "medium", "high");
 
@@ -23,7 +23,7 @@ public class FindBugsSpecBuilder {
     private FileCollection sources;
     private FileCollection classpath;
     private FileCollection classes;
-    private FindBugsReports reports;
+    private SpotBugsReports reports;
 
     private String effort;
     private String reportLevel;
@@ -36,68 +36,68 @@ public class FindBugsSpecBuilder {
     private Collection<String> extraArgs;
     private boolean debugEnabled;
 
-    public FindBugsSpecBuilder(FileCollection classes) {
+    public SpotBugsSpecBuilder(FileCollection classes) {
         if(classes == null || classes.isEmpty()){
-            throw new InvalidUserDataException("No classes configured for FindBugs analysis.");
+            throw new InvalidUserDataException("No classes configured for SpotBugs analysis.");
         }
         this.classes = classes;
     }
 
-    public FindBugsSpecBuilder withPluginsList(FileCollection pluginsClasspath) {
+    public SpotBugsSpecBuilder withPluginsList(FileCollection pluginsClasspath) {
         this.pluginsList = pluginsClasspath;
         return this;
     }
 
-    public FindBugsSpecBuilder withSources(FileCollection sources) {
+    public SpotBugsSpecBuilder withSources(FileCollection sources) {
         this.sources = sources;
         return this;
     }
 
-    public FindBugsSpecBuilder withClasspath(FileCollection classpath) {
+    public SpotBugsSpecBuilder withClasspath(FileCollection classpath) {
         this.classpath = classpath;
         return this;
     }
 
-    public FindBugsSpecBuilder configureReports(FindBugsReports reports) {
+    public SpotBugsSpecBuilder configureReports(SpotBugsReports reports) {
         this.reports = reports;
         return this;
     }
 
 
-    public FindBugsSpecBuilder withEffort(String effort) {
+    public SpotBugsSpecBuilder withEffort(String effort) {
         if (effort != null && !VALID_EFFORTS.contains(effort)) {
-            throw new InvalidUserDataException("Invalid value for FindBugs 'effort' property: " + effort);
+            throw new InvalidUserDataException("Invalid value for SpotBugs 'effort' property: " + effort);
         }
         this.effort = effort;
         return this;
     }
 
-    public FindBugsSpecBuilder withReportLevel(String reportLevel) {
+    public SpotBugsSpecBuilder withReportLevel(String reportLevel) {
         if (reportLevel != null && !VALID_REPORT_LEVELS.contains(reportLevel)) {
-            throw new InvalidUserDataException("Invalid value for FindBugs 'reportLevel' property: " + reportLevel);
+            throw new InvalidUserDataException("Invalid value for SpotBugs 'reportLevel' property: " + reportLevel);
         }
         this.reportLevel = reportLevel;
         return this;
     }
 
-    public FindBugsSpecBuilder withMaxHeapSize(String maxHeapSize) {
+    public SpotBugsSpecBuilder withMaxHeapSize(String maxHeapSize) {
         this.maxHeapSize = maxHeapSize;
         return this;
     }
 
-    public FindBugsSpecBuilder withVisitors(Collection<String> visitors) {
+    public SpotBugsSpecBuilder withVisitors(Collection<String> visitors) {
         this.visitors = visitors;
         return this;
     }
 
-    public FindBugsSpecBuilder withOmitVisitors(Collection<String> omitVisitors) {
+    public SpotBugsSpecBuilder withOmitVisitors(Collection<String> omitVisitors) {
         this.omitVisitors = omitVisitors;
         return this;
     }
 
-    public FindBugsSpecBuilder withExcludeFilter(File excludeFilter) {
+    public SpotBugsSpecBuilder withExcludeFilter(File excludeFilter) {
         if (excludeFilter != null && !excludeFilter.canRead()) {
-            String errorStr = String.format("Cannot read file specified for FindBugs 'excludeFilter' property: %s", excludeFilter);
+            String errorStr = String.format("Cannot read file specified for SpotBugs 'excludeFilter' property: %s", excludeFilter);
             throw new InvalidUserDataException(errorStr);
         }
 
@@ -105,9 +105,9 @@ public class FindBugsSpecBuilder {
         return this;
     }
 
-    public FindBugsSpecBuilder withIncludeFilter(File includeFilter) {
+    public SpotBugsSpecBuilder withIncludeFilter(File includeFilter) {
         if (includeFilter != null && !includeFilter.canRead()) {
-            String errorStr = String.format("Cannot read file specified for FindBugs 'includeFilter' property: %s", includeFilter);
+            String errorStr = String.format("Cannot read file specified for SpotBugs 'includeFilter' property: %s", includeFilter);
             throw new InvalidUserDataException(errorStr);
         }
 
@@ -115,9 +115,9 @@ public class FindBugsSpecBuilder {
         return this;
     }
 
-    public FindBugsSpecBuilder withExcludeBugsFilter(File excludeBugsFilter) {
+    public SpotBugsSpecBuilder withExcludeBugsFilter(File excludeBugsFilter) {
         if (excludeBugsFilter != null && !excludeBugsFilter.canRead()) {
-            String errorStr = String.format("Cannot read file specified for FindBugs 'excludeBugsFilter' property: %s", excludeBugsFilter);
+            String errorStr = String.format("Cannot read file specified for SpotBugs 'excludeBugsFilter' property: %s", excludeBugsFilter);
             throw new InvalidUserDataException(errorStr);
         }
 
@@ -126,17 +126,17 @@ public class FindBugsSpecBuilder {
         return this;
     }
 
-    public FindBugsSpecBuilder withExtraArgs(Collection<String> extraArgs) {
+    public SpotBugsSpecBuilder withExtraArgs(Collection<String> extraArgs) {
         this.extraArgs = extraArgs;
         return this;
     }
 
-    public FindBugsSpecBuilder withDebugging(boolean debugEnabled){
+    public SpotBugsSpecBuilder withDebugging(boolean debugEnabled){
         this.debugEnabled = debugEnabled;
         return this;
     }
 
-    public FindBugsSpec build() {
+    public SpotBugsSpec build() {
         ArrayList<String> args = new ArrayList<String>();
         args.add("-pluginList");
         args.add(pluginsList==null ? "" : pluginsList.getAsPath());
@@ -146,10 +146,10 @@ public class FindBugsSpecBuilder {
 
         if (reports != null && !reports.getEnabled().isEmpty()) {
             if (reports.getEnabled().size() == 1) {
-                FindBugsReportsImpl reportsImpl = (FindBugsReportsImpl) reports;
+                SpotBugsReportsImpl reportsImpl = (SpotBugsReportsImpl) reports;
                 String outputArg = "-" + reportsImpl.getFirstEnabled().getName();
-                if (reportsImpl.getFirstEnabled() instanceof FindBugsXmlReportImpl) {
-                    FindBugsXmlReportImpl r = (FindBugsXmlReportImpl) reportsImpl.getFirstEnabled();
+                if (reportsImpl.getFirstEnabled() instanceof SpotBugsXmlReportImpl) {
+                    SpotBugsXmlReportImpl r = (SpotBugsXmlReportImpl) reportsImpl.getFirstEnabled();
                     if (r.isWithMessages()) {
                         outputArg += ":withMessages";
                     }
@@ -163,7 +163,7 @@ public class FindBugsSpecBuilder {
                 args.add("-outputFile");
                 args.add(reportsImpl.getFirstEnabled().getDestination().getAbsolutePath());
             } else {
-                throw new InvalidUserDataException("FindBugs tasks can only have one report enabled, however more than one report was enabled. You need to disable all but one of them.");
+                throw new InvalidUserDataException("SpotBugs tasks can only have one report enabled, however more than one report was enabled. You need to disable all but one of them.");
             }
         }
 
@@ -175,7 +175,7 @@ public class FindBugsSpecBuilder {
         if (has(classpath)) {
             args.add("-auxclasspath");
 
-            // Filter unexisting files as FindBugs can't handle them.
+            // Filter unexisting files as SpotBugs can't handle them.
             args.add(classpath.filter(new Spec<File>() {
                 public boolean isSatisfiedBy(File element) {
                     return element.exists();
@@ -224,7 +224,7 @@ public class FindBugsSpecBuilder {
             args.add(classFile.getAbsolutePath());
         }
 
-        return new FindBugsSpec(args, maxHeapSize, debugEnabled);
+        return new SpotBugsSpec(args, maxHeapSize, debugEnabled);
     }
 
     private boolean has(String str) {
