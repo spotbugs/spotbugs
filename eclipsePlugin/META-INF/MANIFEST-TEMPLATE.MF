@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SpotBugs
 Bundle-Activator: de.tobject.findbugs.FindbugsPlugin
 Bundle-Vendor: SpotBugs Project
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui;bundle-version="3.6.0",
  org.eclipse.ant.core,
