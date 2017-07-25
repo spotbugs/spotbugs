@@ -6,6 +6,8 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs)
 [![Javadocs](http://javadoc.io/badge/com.github.spotbugs/spotbugs.svg)](http://javadoc.io/doc/com.github.spotbugs/spotbugs)
 
+[![Coverage on New Code](https://sonarcloud.io/api/badges/measure?key=com.github.spotbugs.spotbugs&metric=new_coverage&template=FLAT)](https://sonarcloud.io/dashboard?id=com.github.spotbugs.spotbugs)
+[![New Debt](https://sonarcloud.io/api/badges/measure?key=com.github.spotbugs.spotbugs&metric=new_sqale_debt_ratio&template=FLAT)](https://sonarcloud.io/component_measures/domain/Maintainability?id=com.github.spotbugs.spotbugs)
 
 [SpotBugs](https://spotbugs.github.io/) is the spiritual successor of [FindBugs](https://github.com/findbugsproject/findbugs), carrying on from the point where it left off with support of its community.
 
