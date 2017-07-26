@@ -427,8 +427,8 @@ Co: compareTo()/compare() incorrectly handles float or double value (CO_COMPARET
   
   
     <p>This method compares double or float values using pattern like this: val1 &gt; val2 ? 1 : val1 &lt; val2 ? -1 : 0.
-  This pattern works incorrectly for -0.0 and NaN values which may result in incorrect sorting result or broken collection 
-  (if compared values are used as keys). Consider using Double.compare or Float.compare static methods which handle all 
+  This pattern works incorrectly for -0.0 and NaN values which may result in incorrect sorting result or broken collection
+  (if compared values are used as keys). Consider using Double.compare or Float.compare static methods which handle all
   the special cases correctly.</p>
   
       
@@ -634,7 +634,7 @@ IC: Superclass uses subclass during initialization (IC_SUPERCLASS_USES_SUBCLASS_
       static class InnerClassSingleton extends CircularClassInitialization {
           static InnerClassSingleton singleton = new InnerClassSingleton();
       }
-      
+  
       static CircularClassInitialization foo = InnerClassSingleton.singleton;
   }
   </code></pre>
@@ -684,7 +684,7 @@ ME: Public enum method unconditionally sets its field (ME_ENUM_FIELD_SETTER)
 .. raw:: html
   
   
-    <p>This public method declared in public enum unconditionally sets enum field, thus this field can be changed by malicious code 
+    <p>This public method declared in public enum unconditionally sets enum field, thus this field can be changed by malicious code
     or by accident from another package. Though mutable enum fields may be used for lazy initialization, it's a bad practice to expose them to the outer world.
     Consider removing this method or declaring it package-private.</p>
   
@@ -1790,7 +1790,7 @@ UR: Uninitialized read of field method called from constructor of superclass (UR
   abstract class A {
       int hashCode;
       abstract Object getValue();
-      
+  
       A() {
           hashCode = getValue().hashCode();
       }
@@ -2152,10 +2152,10 @@ NP: Null pointer dereference in method on exception path (NP_ALWAYS_NULL_EXCEPTI
   
   <p> A pointer which is null on an exception path is dereferenced here.&nbsp;
   This will lead to a <code>NullPointerException</code> when the code is executed.&nbsp;
-  Note that because FindBugs currently does not prune infeasible exception paths,
+  Note that because SpotBugs currently does not prune infeasible exception paths,
   this may be a false warning.</p>
   
-  <p> Also note that FindBugs considers the default case of a switch statement to
+  <p> Also note that SpotBugs considers the default case of a switch statement to
   be an exception path, since the default case is often infeasible.</p>
   
       
@@ -2170,7 +2170,7 @@ NP: Possible null pointer dereference (NP_NULL_ON_SOME_PATH)
   a null value will be dereferenced, which
   would generate a <code>NullPointerException</code> when the code is executed.
   Of course, the problem might be that the branch or statement is infeasible and that
-  the null pointer exception can't ever be executed; deciding that is beyond the ability of FindBugs.
+  the null pointer exception can't ever be executed; deciding that is beyond the ability of SpotBugs.
   </p>
   
       
@@ -2184,10 +2184,10 @@ NP: Possible null pointer dereference in method on exception path (NP_NULL_ON_SO
   <p> A reference value which is null on some exception control path is
   dereferenced here.&nbsp; This may lead to a <code>NullPointerException</code>
   when the code is executed.&nbsp;
-  Note that because FindBugs currently does not prune infeasible exception paths,
+  Note that because SpotBugs currently does not prune infeasible exception paths,
   this may be a false warning.</p>
   
-  <p> Also note that FindBugs considers the default case of a switch statement to
+  <p> Also note that SpotBugs considers the default case of a switch statement to
   be an exception path, since the default case is often infeasible.</p>
   
       
@@ -2519,11 +2519,11 @@ EC: Call to equals() comparing different types (EC_UNRELATED_TYPES)
   
   
   <p> This method calls equals(Object) on two references of different
-  class types and analysis suggests they will be to objects of different classes 
+  class types and analysis suggests they will be to objects of different classes
   at runtime. Further, examination of the equals methods that would be invoked suggest that either
-  this call will always return false, or else the equals method is not be symmetric (which is 
+  this call will always return false, or else the equals method is not be symmetric (which is
   a property required by the contract
-  for equals in class Object). 
+  for equals in class Object).
   </p>
   
       
@@ -2678,13 +2678,13 @@ BIT: Bitwise add of signed byte value (BIT_ADD_OF_SIGNED_BYTE)
   <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
   <pre><code>
   int result = 0;
-  for(int i = 0; i &lt; 4; i++) 
+  for(int i = 0; i &lt; 4; i++)
       result = ((result &lt;&lt; 8) + b[i]);
   </code></pre>
   <p>The following idiom will work instead: </p>
   <pre><code>
   int result = 0;
-  for(int i = 0; i &lt; 4; i++) 
+  for(int i = 0; i &lt; 4; i++)
       result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
   </code></pre>
   
@@ -3305,7 +3305,7 @@ BC: Impossible cast (BC_IMPOSSIBLE_CAST)
   
   <p>
   This cast will always throw a ClassCastException.
-  FindBugs tracks type information from instanceof checks,
+  SpotBugs tracks type information from instanceof checks,
   and also uses more precise information about the types
   of values returned from methods and loaded from fields.
   Thus, it may have more precise information that just
@@ -3354,7 +3354,7 @@ BC: Impossible downcast of toArray() result (BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY)
   <p>There is one common/known exception to this. The <code>toArray()</code>
   method of lists returned by <code>Arrays.asList(...)</code> will return a covariantly
   typed array. For example, <code>Arrays.asArray(new String[] { "a" }).toArray()</code>
-  will return a <code>String []</code>. FindBugs attempts to detect and suppress
+  will return a <code>String []</code>. SpotBugs attempts to detect and suppress
   such cases, but may miss some.
   </p>
   
@@ -3463,7 +3463,7 @@ BSHIFT: Possible bad parsing of shift operation (BSHIFT_WRONG_ADD_PRIORITY)
   
   
   <p>
-  The code performs an operation like (x &lt;&lt; 8 + y). Although this might be correct, probably it was meant 
+  The code performs an operation like (x &lt;&lt; 8 + y). Although this might be correct, probably it was meant
   to perform (x &lt;&lt; 8) + y, but shift operation has
   a lower precedence, so it's actually parsed as x &lt;&lt; (8 + y).
   </p>
@@ -3776,24 +3776,24 @@ TQ: Value that might carry a type qualifier is always used in a way prohibits it
         
       
 
-FB: Unexpected/undesired warning from FindBugs (FB_UNEXPECTED_WARNING)
+FB: Unexpected/undesired warning from SpotBugs (FB_UNEXPECTED_WARNING)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
   
             
-            <p>FindBugs generated a warning that, according to a @NoWarning annotated,
+            <p>SpotBugs generated a warning that, according to a @NoWarning annotated,
               is unexpected or undesired.</p>
             
         
 
-FB: Missing expected or desired warning from FindBugs (FB_MISSING_EXPECTED_WARNING)
+FB: Missing expected or desired warning from SpotBugs (FB_MISSING_EXPECTED_WARNING)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. raw:: html
   
             
-            <p>FindBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
+            <p>SpotBugs didn't generate generated a warning that, according to a @ExpectedWarning annotated,
               is expected or desired.</p>
             
         
@@ -3821,8 +3821,8 @@ TEST: Unknown bug pattern (UNKNOWN)
 .. raw:: html
   
   
-  <p>A warning was recorded, but FindBugs can't find the description of this bug pattern
-  and so can't describe it. This should occur only in cases of a bug in FindBugs or its configuration,
+  <p>A warning was recorded, but SpotBugs can't find the description of this bug pattern
+  and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration,
   or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded.
   .</p>
   
@@ -4246,7 +4246,7 @@ MS: Field is a mutable collection (MS_MUTABLE_COLLECTION)
 .. raw:: html
   
   
-   <p>A mutable collection instance is assigned to a final static field, 
+   <p>A mutable collection instance is assigned to a final static field,
      thus can be changed by malicious code or by accident from another package.
      Consider wrapping this field into Collections.unmodifiableSet/List/Map/etc.
      to avoid this vulnerability.</p>
@@ -4259,9 +4259,9 @@ MS: Field is a mutable collection which should be package protected (MS_MUTABLE_
 .. raw:: html
   
   
-   <p>A mutable collection instance is assigned to a final static field, 
+   <p>A mutable collection instance is assigned to a final static field,
      thus can be changed by malicious code or by accident from another package.
-     The field could be made package protected to avoid this vulnerability. 
+     The field could be made package protected to avoid this vulnerability.
      Alternatively you may wrap this field into Collections.unmodifiableSet/List/Map/etc.
      to avoid this vulnerability.</p>
   
@@ -4486,7 +4486,7 @@ DL: Synchronization on Boolean (DL_SYNCHRONIZATION_ON_BOOLEAN)
   <pre><code>
   private static Boolean inited = Boolean.FALSE;
   ...
-  synchronized(inited) { 
+  synchronized(inited) {
       if (!inited) {
           init();
           inited = Boolean.TRUE;
@@ -4510,7 +4510,7 @@ DL: Synchronization on boxed primitive (DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE)
   <pre><code>
   private static Integer count = 0;
   ...
-  synchronized(count) { 
+  synchronized(count) {
       count++;
   }
   ...
@@ -4533,7 +4533,7 @@ DL: Synchronization on boxed primitive values (DL_SYNCHRONIZATION_ON_UNSHARED_BO
   <pre><code>
   private static final Integer fileLock = new Integer(1);
   ...
-  synchronized(fileLock) { 
+  synchronized(fileLock) {
       .. do something ..
   }
   ...
@@ -5365,7 +5365,7 @@ Bx: Boxing a primitive to compare (DM_BOXED_PRIMITIVE_FOR_COMPARE)
 .. raw:: html
   
   
-    <p>A boxed primitive is created just to call compareTo method. It's more efficient to use static compare method 
+    <p>A boxed primitive is created just to call compareTo method. It's more efficient to use static compare method
     (for double and float since Java 1.4, for other primitive types since Java 1.7) which works on primitives directly.
     </p>
   
@@ -5795,9 +5795,9 @@ XSS: Servlet reflected cross site scripting vulnerability in error page (XSS_REQ
   for a reflected cross site scripting
   vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of cross site scripting.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
-  vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of cross site scripting.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5813,9 +5813,9 @@ XSS: Servlet reflected cross site scripting vulnerability (XSS_REQUEST_PARAMETER
       <p>This code directly writes an HTTP parameter to Servlet output, which allows for a reflected cross site scripting
   vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of cross site scripting.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
-  vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of cross site scripting.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5831,9 +5831,9 @@ XSS: JSP reflected cross site scripting vulnerability (XSS_REQUEST_PARAMETER_TO_
       <p>This code directly writes an HTTP parameter to JSP output, which allows for a cross site scripting
   vulnerability. See <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of cross site scripting.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
-  vulnerabilities that FindBugs doesn't report. If you are concerned about cross site scripting, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of cross site scripting.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5848,9 +5848,9 @@ HRS: HTTP Response splitting vulnerability (HRS_REQUEST_PARAMETER_TO_HTTP_HEADER
       <p>This code directly writes an HTTP parameter to an HTTP header, which allows for a HTTP response splitting
   vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of HTTP response splitting.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more
-  vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of HTTP response splitting.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5866,9 +5866,9 @@ HRS: HTTP cookie formed from untrusted input (HRS_REQUEST_PARAMETER_TO_COOKIE)
       <p>This code constructs an HTTP Cookie using an untrusted HTTP parameter. If this cookie is added to an HTTP response, it will allow a HTTP response splitting
   vulnerability. See <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of HTTP response splitting.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more
-  vulnerabilities that FindBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of HTTP response splitting.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5886,9 +5886,9 @@ PT: Absolute path traversal in servlet (PT_ABSOLUTE_PATH_TRAVERSAL)
   
   See <a href="http://cwe.mitre.org/data/definitions/36.html">http://cwe.mitre.org/data/definitions/36.html</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of absolute path traversal.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more
-  vulnerabilities that FindBugs doesn't report. If you are concerned about absolute path traversal, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of absolute path traversal.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about absolute path traversal, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5905,9 +5905,9 @@ PT: Relative path traversal in servlet (PT_RELATIVE_PATH_TRAVERSAL)
   
   See <a href="http://cwe.mitre.org/data/definitions/23.html">http://cwe.mitre.org/data/definitions/23.html</a>
   for more information.</p>
-  <p>FindBugs looks only for the most blatant, obvious cases of relative path traversal.
-  If FindBugs found <em>any</em>, you <em>almost certainly</em> have more
-  vulnerabilities that FindBugs doesn't report. If you are concerned about relative path traversal, you should seriously
+  <p>SpotBugs looks only for the most blatant, obvious cases of relative path traversal.
+  If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
+  vulnerabilities that SpotBugs doesn't report. If you are concerned about relative path traversal, you should seriously
   consider using a commercial static analysis or pen-testing tool.
   </p>
   
@@ -5974,7 +5974,7 @@ Examples include dead local stores, switch fall through,
 unconfirmed casts, and redundant null check of value
 known to be null.
 More false positives accepted.
-In previous versions of FindBugs, this category was known as Style.
+In previous versions of SpotBugs, this category was known as Style.
 
 
 CAA: Covariant array assignment to a field (CAA_COVARIANT_ARRAY_FIELD)
@@ -5990,7 +5990,7 @@ CAA: Covariant array assignment to a field (CAA_COVARIANT_ARRAY_FIELD)
   Number[] arr = new Integer[10];
   arr[0] = 1.0;
   </code></pre>
-  <p>Consider changing the type of created array or the field type.</p>   	
+  <p>Consider changing the type of created array or the field type.</p>
   
       
 
@@ -6003,7 +6003,7 @@ CAA: Covariant array is returned from the method (CAA_COVARIANT_ARRAY_RETURN)
   <p>Array of covariant type is returned from the method. This is confusing and may lead to ArrayStoreException at runtime
   if the calling code will try to store the reference of some other type in the returned array.
   </p>
-  <p>Consider changing the type of created array or the method return type.</p>   	
+  <p>Consider changing the type of created array or the method return type.</p>
   
       
 
@@ -6020,7 +6020,7 @@ CAA: Covariant array assignment to a local variable (CAA_COVARIANT_ARRAY_LOCAL)
   Number[] arr = new Integer[10];
   arr[0] = 1.0;
   </code></pre>
-  <p>Consider changing the type of created array or the local variable type.</p>   	
+  <p>Consider changing the type of created array or the local variable type.</p>
   
       
 
@@ -6217,10 +6217,10 @@ IA: Potentially ambiguous invocation of either an inherited or outer method (IA_
   </p>
   <p>If you really intend to invoke the inherited method,
   invoke it by invoking the method on super (e.g., invoke super.foo(17)), and
-  thus it will be clear to other readers of your code and to FindBugs
+  thus it will be clear to other readers of your code and to SpotBugs
   that you want to invoke the inherited method, not the method in the outer class.
   </p>
-  <p>If you call <code>this.foo(17)</code>, then the inherited method will be invoked. However, since FindBugs only looks at
+  <p>If you call <code>this.foo(17)</code>, then the inherited method will be invoked. However, since SpotBugs only looks at
   classfiles, it
   can't tell the difference between an invocation of <code>this.foo(17)</code> and <code>foo(17)</code>, it will still
   complain about a potential ambiguous invocation.
@@ -6393,7 +6393,7 @@ UC: Condition has no effect due to the variable type (UC_USELESS_CONDITION_TYPE)
 .. raw:: html
   
   
-  <p>This condition always produces the same result due to the type range of the involved variable. 
+  <p>This condition always produces the same result due to the type range of the involved variable.
   Probably something else was meant or the condition can be removed.</p>
   
       
@@ -6404,7 +6404,7 @@ UC: Useless object created (UC_USELESS_OBJECT)
 .. raw:: html
   
   
-  <p>Our analysis shows that this object is useless. 
+  <p>Our analysis shows that this object is useless.
   It's created and modified, but its value never go outside of the method or produce any side-effect.
   Either there is a mistake and object was intended to be used or it can be removed.</p>
   <p>This analysis rarely produces false-positives. Common false-positive cases include:</p>
@@ -6438,7 +6438,7 @@ RV: Method ignores return value, is this OK? (RV_RETURN_VALUE_IGNORED_INFERRED)
   </p>
   <p>We are guessing that ignoring the return value might be a bad idea just from
   a simple analysis of the body of the method. You can use a @CheckReturnValue annotation
-  to instruct FindBugs as to whether ignoring the return value of this method
+  to instruct SpotBugs as to whether ignoring the return value of this method
   is important or acceptable.
   </p>
   <p>Please investigate this closely to decide whether it is OK to ignore the return value.
@@ -6453,7 +6453,7 @@ RV: Return value of method without side effect is ignored (RV_RETURN_VALUE_IGNOR
   
   
   <p>This code calls a method and ignores the return value. However our analysis shows that
-  the method (including its implementations in subclasses if any) does not produce any effect 
+  the method (including its implementations in subclasses if any) does not produce any effect
   other than return value. Thus this call can be removed.
   </p>
   <p>We are trying to reduce the false positives as much as possible, but in some cases this warning might be wrong.
@@ -6462,7 +6462,7 @@ RV: Return value of method without side effect is ignored (RV_RETURN_VALUE_IGNOR
   <p>- The method is called to trigger the class loading which may have a side effect.</p>
   <p>- The method is called just to get some exception.</p>
   <p>If you feel that our assumption is incorrect, you can use a @CheckReturnValue annotation
-  to instruct FindBugs that ignoring the return value of this method is acceptable.
+  to instruct SpotBugs that ignoring the return value of this method is acceptable.
   </p>
   
       
@@ -6528,7 +6528,7 @@ NP: Possible null pointer dereference on branch that might be infeasible (NP_NUL
   a null value will be dereferenced, which
   would generate a <code>NullPointerException</code> when the code is executed.
   Of course, the problem might be that the branch or statement is infeasible and that
-  the null pointer exception can't ever be executed; deciding that is beyond the ability of FindBugs.
+  the null pointer exception can't ever be executed; deciding that is beyond the ability of SpotBugs.
   Due to the fact that this value had been previously tested for nullness,
   this is a definite possibility.
   </p>
@@ -6782,7 +6782,7 @@ DLS: Dead store to local variable (DLS_DEAD_LOCAL_STORE)
   </p>
   <p>
   Note that Sun's javac compiler often generates dead stores for
-  final local variables.  Because FindBugs is a bytecode-based tool,
+  final local variables.  Because SpotBugs is a bytecode-based tool,
   there is no easy way to eliminate these false positives.
   </p>
   
@@ -6951,21 +6951,21 @@ ICAST: Result of integer multiplication cast to long (ICAST_INTEGER_MULTIPLY_CAS
   This code performs integer multiply and then converts the result to a long,
   as in:</p>
   <pre><code>
-  long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
+  long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }
   </code></pre>
   <p>
   If the multiplication is done using long arithmetic, you can avoid
   the possibility that the result will overflow. For example, you
   could fix the above code to:</p>
   <pre><code>
-  long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
+  long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }
   </code></pre>
   <p>
   or
   </p>
   <pre><code>
   static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
-  long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
+  long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
   </code></pre>
   
       
@@ -7038,7 +7038,7 @@ BC: Unchecked/unconfirmed cast of return value from method (BC_UNCONFIRMED_CAST_
   <p>
   This code performs an unchecked cast of the return value of a method.
   The code might be calling the method in such a way that the cast is guaranteed to be
-  safe, but FindBugs is unable to verify that the cast is safe.  Check that your program logic ensures that this
+  safe, but SpotBugs is unable to verify that the cast is safe.  Check that your program logic ensures that this
   cast will not fail.
   </p>
   
