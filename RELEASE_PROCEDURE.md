@@ -7,7 +7,7 @@ When you release fixed version of SpotBugs, please follow these procedures.
 * `version` in `build.gradle` and `gradlePlugin/build.gradle`
 * version number in `CHANGELOG.md` and `gradlePlugin/CHANGELOG.md`
 * `version` and `full_version` in `docs/conf.py`
-* version numbers in `docs/migration.rst`
+* version numbers in `docs/migration.rst` and `docs/introduction.rst`
 
 ## Release to Maven Central
 
@@ -30,6 +30,11 @@ If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse
 ## Release to Gradle Plugin Portal
 
 Add necessary properties to `~/.gradle/gradle.properties` and run `./gradlew publishPlugins`.
+
+## Update installation manual
+
+`docs/installing.rst` includes link to released binaries, update them.
+It is also necessary to change filename in command line example.
 
 ## Release old manuals
 

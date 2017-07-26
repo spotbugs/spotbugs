@@ -4,6 +4,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ## Unreleased (2017/??/??)
 
+
+## 3.1.0-RC4 (2017/Jul/21)
+
 ### Added
 
 * The Eclipse SpotBugs plugin is eligible as an update for FindBugs 3.0.2 and earlier ([#209](https://github.com/spotbugs/spotbugs/issues/209))
