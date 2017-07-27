@@ -4,6 +4,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ## Unreleased (2017/??/??)
 
+### Removed
+
+* The `YourKitProfiler` class has been removed and the `findbugs.yourkit.enabled` system property is no longer supported ([#289](https://github.com/spotbugs/spotbugs/issues/289))
 
 ## 3.1.0-RC4 (2017/Jul/21)
 
