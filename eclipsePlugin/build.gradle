@@ -55,7 +55,7 @@ dependencies {
 }
 
 clean {
-    delete "lib"
+    delete "lib", "build"
 }
 
 task copyLibsForEclipse(type: Copy) {
@@ -285,6 +285,7 @@ task siteDailyXml(type:Copy) {
 }
 
 task generateP2Metadata(type:Exec) {
+  project.delete 'build/site/eclipse'
   inputs.file 'local.properties'
   dependsOn pluginJar, featureJar, siteXml
   commandLine "${eclipseExecutable}", '-nosplash',
@@ -295,6 +296,7 @@ task generateP2Metadata(type:Exec) {
 }
 
 task generateCandidateP2Metadata(type:Exec) {
+  project.delete "build/site/eclipse-candidate"
   inputs.file 'local.properties'
   dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml
   commandLine "${eclipseExecutable}", '-nosplash',
@@ -305,6 +307,7 @@ task generateCandidateP2Metadata(type:Exec) {
 }
 
 task generateP2MetadataDaily(type:Exec) {
+  project.delete "build/site/eclipse-daily"
   inputs.file 'local.properties'
   dependsOn pluginDailyJar, featureDailyJar, siteDailyXml
   commandLine "${eclipseExecutable}", '-nosplash',
