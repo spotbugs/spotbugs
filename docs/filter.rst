@@ -307,7 +307,11 @@ Complete Example
 
 .. code:: xml
 
-  <FindBugsFilter>
+    <?xml version="1.0" encoding="UTF-8"?>
+    <FindBugsFilter
+		xmlns="https://github.com/spotbugs/filter/3.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/master/spotbugs/etc/findbugsfilter.xsd">
     <Match>
       <Class name="com.foobar.ClassNotToBeAnalyzed" />
     </Match>
