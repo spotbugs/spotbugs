@@ -14,7 +14,7 @@ sourceSets {
 }
 
 dependencies {
-  compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+  compile 'org.ow2.asm:asm-debug-all:6.0_BETA'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
   compile 'commons-lang:commons-lang:2.6'

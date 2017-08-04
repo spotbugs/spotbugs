@@ -28,7 +28,7 @@ sourceSets {
 }
 
 dependencies {
-  compile 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
+  compile 'org.ow2.asm:asm-debug-all:6.0_BETA'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
   compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
@@ -116,7 +116,7 @@ jar {
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': 'dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_ALPHA.jar jsr305-3.0.1.jar jFormatString-3.0.0.jar commons-lang-2.6.jar'
+               'Class-Path': 'dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_BETA.jar jsr305-3.0.1.jar jFormatString-3.0.0.jar commons-lang-2.6.jar'
   }
 }
 

@@ -8,6 +8,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 * The `YourKitProfiler` class has been removed and the `findbugs.yourkit.enabled` system property is no longer supported ([#289](https://github.com/spotbugs/spotbugs/issues/289))
 
+### Changed
+
+* SpotBugs now consumes ASM 6.0 *beta* rather than *alpha* ([#268](https://github.com/spotbugs/spotbugs/issues/268))
+
 ## 3.1.0-RC4 (2017/Jul/21)
 
 ### Added
