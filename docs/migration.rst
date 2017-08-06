@@ -145,5 +145,4 @@ Please use following update site instead.
 
 * https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)
 * https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)
-
-Currently the update site for daily built plugin isn't ready.
+* https://spotbugs.github.io/eclipse-latest/ (to use latest build)
