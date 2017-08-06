@@ -28,7 +28,7 @@ before_install:
   - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then sudo dpkg -i deps/oracle-java9-installer.deb; fi
 
 install:
-  - if [[ ! -e deps/eclipse.tar.gz ]]; then wget https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1 -O deps/eclipse.tar.gz; fi
+  - if [[ ! -e deps/eclipse.tar.gz ]]; then wget 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O deps/eclipse.tar.gz; fi
   - tar xzvf deps/eclipse.tar.gz eclipse
   - echo eclipseRoot.dir=$(pwd)/eclipse > eclipsePlugin/local.properties
 
