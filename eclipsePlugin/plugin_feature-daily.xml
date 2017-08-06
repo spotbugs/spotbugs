@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/lgpl.html
    </license>
 
    <url>
-      <update label="SpotBugs daily update site" url="https://spotbugs.github.io/eclipse-daily/"/>
+      <update label="SpotBugs latest update site" url="https://spotbugs.github.io/eclipse-latest/"/>
    </url>
 
    <requires>
