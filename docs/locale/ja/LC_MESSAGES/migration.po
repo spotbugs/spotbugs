@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-02 05:45+0000\n"
+"POT-Creation-Date: 2017-08-06 19:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,24 +87,24 @@ msgid ""
 "https://plugins.gradle.org/plugin/com.github.spotbugs"
 msgstr ""
 
-#: ../../migration.rst:134
+#: ../../migration.rst:142
 msgid "FindBugs Eclipse plugin"
 msgstr ""
 
-#: ../../migration.rst:136
+#: ../../migration.rst:144
 msgid "Please use following update site instead."
 msgstr ""
 
-#: ../../migration.rst:138
+#: ../../migration.rst:146
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)"
 msgstr ""
 
-#: ../../migration.rst:139
+#: ../../migration.rst:147
 msgid "https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)"
 msgstr ""
 
-#: ../../migration.rst:141
-msgid "Currently the update site for daily built plugin isn't ready."
+#: ../../migration.rst:148
+msgid "https://spotbugs.github.io/eclipse-latest/ (to use latest build)"
 msgstr ""
 
 #~ msgid ""
@@ -122,9 +122,6 @@ msgstr ""
 #~ msgid "Please use spotbugs plugin found on https://plugins.gradle.org"
 #~ msgstr ""
 
-#~ msgid ""
-#~ "Please add `com.github.spotbugs:spotbugs` to "
-#~ "dependency of `org.codehaus.mojo.findbugs-maven-"
-#~ "plugin`."
+#~ msgid "Currently the update site for daily built plugin isn't ready."
 #~ msgstr ""
 

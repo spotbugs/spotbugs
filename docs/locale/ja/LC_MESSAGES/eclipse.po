@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-13 14:46+0000\n"
+"POT-Creation-Date: 2017-08-06 19:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,17 +68,25 @@ msgid ""
 "plugin."
 msgstr ""
 
-#: ../../eclipse.rst:25
+#: ../../eclipse.rst:26
+msgid "https://spotbugs.github.io/eclipse-latest/"
+msgstr ""
+
+#: ../../eclipse.rst:26
+msgid "Provides latest SpotBugs Eclipse plugin built from master branch."
+msgstr ""
+
+#: ../../eclipse.rst:28
 msgid ""
 "Or just use `Eclipse marketplace <https://marketplace.eclipse.org/content"
 "/spotbugs-eclipse-plugin>`_ to install SpotBugs Eclipse plugin."
 msgstr ""
 
-#: ../../eclipse.rst:28
+#: ../../eclipse.rst:31
 msgid "Using the Plugin"
 msgstr ""
 
-#: ../../eclipse.rst:30
+#: ../../eclipse.rst:33
 msgid ""
 "To get started, right click on a Java project in Package Explorer, and "
 "select the option labeled \"Spot Bugs\". SpotBugs will run, and problem "
@@ -87,7 +95,7 @@ msgid ""
 "potential instances of bug patterns."
 msgstr ""
 
-#: ../../eclipse.rst:33
+#: ../../eclipse.rst:36
 msgid ""
 "You can also run SpotBugs on existing java archives (jar, ear, zip, war "
 "etc). Simply create an empty Java project and attach archives to the "
@@ -97,21 +105,21 @@ msgid ""
 "SpotBugs will also link the generated warnings to the right source files."
 msgstr ""
 
-#: ../../eclipse.rst:38
+#: ../../eclipse.rst:41
 msgid ""
 "You may customize how SpotBugs runs by opening the Properties dialog for "
 "a Java project, and choosing the \"SpotBugs\" property page. Options you "
 "may choose include:"
 msgstr ""
 
-#: ../../eclipse.rst:41
+#: ../../eclipse.rst:44
 msgid ""
 "Enable or disable the \"Run SpotBugs Automatically\" checkbox. When "
 "enabled, SpotBugs will run every time you modify a Java class within the "
 "project."
 msgstr ""
 
-#: ../../eclipse.rst:43
+#: ../../eclipse.rst:46
 msgid ""
 "Choose minimum warning priority and enabled bug categories. These options"
 " will choose which warnings are shown. For example, if you select the "
@@ -120,24 +128,24 @@ msgid ""
 "in the Style category will be displayed."
 msgstr ""
 
-#: ../../eclipse.rst:45
+#: ../../eclipse.rst:48
 msgid ""
 "Select detectors. The table allows you to select which detectors you want"
 " to enable for your project."
 msgstr ""
 
-#: ../../eclipse.rst:48
+#: ../../eclipse.rst:51
 msgid "Extending the Eclipse Plugin (since 2.0.0)"
 msgstr ""
 
-#: ../../eclipse.rst:50
+#: ../../eclipse.rst:53
 msgid ""
 "Eclipse plugin supports contribution of custom SpotBugs detectors (see "
 "also AddingDetectors.txt for more information). There are two ways to "
 "contribute custom plugins to the Eclipse:"
 msgstr ""
 
-#: ../../eclipse.rst:52
+#: ../../eclipse.rst:55
 msgid ""
 "Existing standard SpotBugs detector packages can be configured via "
 "``Window → Preferences → Java → FindBugs → Misc. Settings → Custom "
@@ -149,13 +157,13 @@ msgid ""
 "shared between team members."
 msgstr ""
 
-#: ../../eclipse.rst:55
+#: ../../eclipse.rst:58
 msgid ""
 "It is possible to contribute custom detectors via standard Eclipse "
 "extensions mechanism."
 msgstr ""
 
-#: ../../eclipse.rst:57
+#: ../../eclipse.rst:60
 msgid ""
 "Please check the documentation of the "
 "``eclipsePlugin/schema/detectorPlugins.exsd`` extension point how to "
@@ -166,7 +174,7 @@ msgid ""
 "``MANIFEST.MF`` during the build."
 msgstr ""
 
-#: ../../eclipse.rst:61
+#: ../../eclipse.rst:64
 msgid ""
 "The benefit of this solution is that for given (shared) Eclipse "
 "installation each team member has exactly same detectors set, and there "
@@ -178,31 +186,31 @@ msgid ""
 "AddingDetectors.txt for more information)."
 msgstr ""
 
-#: ../../eclipse.rst:66
+#: ../../eclipse.rst:69
 msgid "Troubleshooting"
 msgstr ""
 
-#: ../../eclipse.rst:68
+#: ../../eclipse.rst:71
 msgid ""
 "This section lists common problems with the plugin and (if known) how to "
 "resolve them."
 msgstr ""
 
-#: ../../eclipse.rst:70
+#: ../../eclipse.rst:73
 msgid ""
 "If you see OutOfMemory error dialogs after starting SpotBugs analysis in "
 "Eclipse, please increase JVM available memory: change ``eclipse.ini`` and"
 " add the lines below to the end of the file:"
 msgstr ""
 
-#: ../../eclipse.rst:78
+#: ../../eclipse.rst:81
 msgid ""
 "Important: the configuration arguments starting with the line ``-vmargs``"
 " must be last lines in the ``eclipse.ini`` file, and only one argument "
 "per line is allowed!"
 msgstr ""
 
-#: ../../eclipse.rst:80
+#: ../../eclipse.rst:83
 msgid ""
 "If you do not see any SpotBugs problem markers (in your source windows or"
 " in the Problems View), you may need to change your ``Problems View`` "
