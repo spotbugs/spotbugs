@@ -9,5 +9,5 @@ dependencies {
 
 jacocoTestReport {
   additionalSourceDirs = files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
-  additionalClassDirs = files(project(':eclipsePlugin').sourceSets.main.output.classesDir)
+  additionalClassDirs = files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
 }

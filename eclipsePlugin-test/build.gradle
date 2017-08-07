@@ -47,5 +47,5 @@ artifacts {
 
 jacocoTestReport {
   additionalSourceDirs = files(project(':spotbugs').sourceSets.main.java.srcDirs)
-  additionalClassDirs = files(project(':spotbugs').sourceSets.main.output.classesDir)
+  additionalClassDirs = files(project(':spotbugs').sourceSets.main.output.classesDirs)
 }
