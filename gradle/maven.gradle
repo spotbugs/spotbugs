@@ -74,6 +74,13 @@ uploadArchives {
             id 'ThrawnCA'
             url 'https://github.com/ThrawnCA'
           }
+          developer {
+            id 'sewe'
+            name 'Andreas Sewe'
+            email 'andreas.sewe@codetrails.com'
+            url 'https://github.com/sewe'
+            timezone '+1'
+          }
         }
       }
     }
