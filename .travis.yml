@@ -42,7 +42,7 @@ script:
   - ./gradlew build smoketest sonarqube -S
 
 after_success:
-  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew --stacktrace coveralls; fi
+  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew coveralls; fi
   # Coveralls task above deletes generated site data, so we should re-generate it
   # to deploy the daily build on the update site, see "deploy" task below
   - ./gradlew eclipsePlugin:generateP2MetadataDaily
@@ -58,17 +58,17 @@ cache:
     - deps/
 
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
-    on:
-      branch: master
-      condition: "$JDK_FOR_TEST = oraclejdk8"
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
     local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse-daily
     repo: spotbugs/eclipse-latest
+    on:
+      branch: master
+      condition: "$JDK_FOR_TEST = oraclejdk8"
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
     on:
       branch: master
       condition: "$JDK_FOR_TEST = oraclejdk8"
