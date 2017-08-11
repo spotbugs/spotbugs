@@ -74,6 +74,14 @@ deploy:
     on:
       tags: true
       condition: "$JDK_FOR_TEST = oraclejdk8"
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse
+    repo: spotbugs/eclipse
+    on:
+      tags: true
+      condition: "$JDK_FOR_TEST = oraclejdk8 && $TRAVIS_TAG != *'_RC'*"
   - provider: script
     skip_cleanup: true
     script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
