@@ -1,10 +1,23 @@
 apply plugin: 'org.sonarqube'
 
-// disable sonar for pull request builds until
-// sonar plugin for pull request comments is available at sonarcloud.io
-def isMasterBuild = 'master'.equals(System.env.TRAVIS_BRANCH) &&
-        'false'.equals(System.env.TRAVIS_PULL_REQUEST);
-rootProject.tasks['sonarqube'].setEnabled(isMasterBuild)
+// sonar should analyze project with single target branch only
+// In case feature branch should be analyzed, then sonar.branch variable should be specified
+def isMaster = 'master'.equals(System.env.TRAVIS_BRANCH)
+
+// for security reasons travis secure variables are defined when build is
+// initiated by a pull request from same repository only
+// so pull requests from external repositories can not be analysed by sonar
+def isSecure = 'true'.equals(System.env.TRAVIS_SECURE_ENV_VARS)
+
+if (!isSecure || !isMaster) {
+    rootProject.tasks['sonarqube'].setEnabled(false)
+    return
+}
+
+def isPush = 'push'.equals(System.env.TRAVIS_EVENT_TYPE);
+def isPullRequest = 'pull_request'.equals(System.env.TRAVIS_EVENT_TYPE);
+
+rootProject.tasks['sonarqube'].setEnabled(isPush || isPullRequest)
 
 sonarqube {
     properties {
@@ -14,5 +27,16 @@ sonarqube {
         property 'sonar.projectName', 'SpotBugs'
         property 'sonar.projectVersion', rootProject.version
         property 'sonar.organization', 'spotbugs'
+    }
+}
+
+if (isPullRequest) {
+    sonarqube {
+        properties {
+            property 'sonar.analysis.mode', 'preview'
+            property 'sonar.github.oauth', System.env.GITHUB_TOKEN
+            property 'sonar.github.pullRequest', System.env.TRAVIS_PULL_REQUEST
+            property 'sonar.github.repository', System.env.TRAVIS_REPO_SLUG
+        }
     }
 }
