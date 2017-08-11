@@ -17,10 +17,12 @@ Check [SonaType official page](http://central.sonatype.org/pages/gradle.html) fo
 
 ## Release to Eclipse Update Site
 
-Send pull-request to spotbugs/spotbugs.github.io, to update contents.
-As files to upload, you can use the zip file which is uploaded to Maven Central when you release to there.
+It's automated by Travis CI.
 
-See [this pull-request](https://github.com/spotbugs/spotbugs.github.io/pull/12) as example.
+When we push tag, the build result will be deployed to [eclipse-candidate repository](https://github.com/spotbugs/eclipse-candidate).
+When we push tag and its name doesn't contain `_RC`, the build result will be deployed to [eclipse repository](https://github.com/spotbugs/eclipse).
+
+See `deploy` phase in `.travis.yml` for detail.
 
 ## Release to Eclipse Marketplace
 
