@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author Tagir Valeev
  */
 public class BuildStringPassthruGraph extends OpcodeStackDetector implements NonReportingDetector {
+    private static final int PRIME = 31;
 
     public static class MethodParameter {
         final MethodDescriptor md;
@@ -73,10 +74,9 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
 
         @Override
         public int hashCode() {
-            final int prime = 31;
             int result = 1;
-            result = prime * result + ((md == null) ? 0 : md.hashCode());
-            result = prime * result + parameterNumber;
+            result = PRIME * result + ((md == null) ? 0 : md.hashCode());
+            result = PRIME * result + parameterNumber;
             return result;
         }
 

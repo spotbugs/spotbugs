@@ -55,6 +55,8 @@ public class BlockType extends BitSet {
      */
     private static final long serialVersionUID = 1L;
 
+    private static final int PRIME = 31;
+
     public static final boolean CATCH = false;
 
     public static final boolean FINALLY = true;
@@ -73,11 +75,10 @@ public class BlockType extends BitSet {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + depth;
-        result = prime * result + (isTop ? 1231 : 1237);
-        result = prime * result + (isValid ? 1231 : 1237);
+        result = PRIME * result + depth;
+        result = PRIME * result + (isTop ? 1231 : 1237);
+        result = PRIME * result + (isValid ? 1231 : 1237);
         return result;
     }
 

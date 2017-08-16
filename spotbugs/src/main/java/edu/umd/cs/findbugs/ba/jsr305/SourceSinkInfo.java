@@ -30,6 +30,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  * @author David Hovemeyer
  */
 public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
+    private static final int PRIME = 31;
+
     private final SourceSinkType type;
 
     private final Location location;
@@ -172,16 +174,15 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = 1;
-        result = prime * result + ((constantValue == null) ? 0 : constantValue.hashCode());
-        result = prime * result + (interproc ? 1231 : 1237);
-        result = prime * result + local;
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + parameter;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((vn == null) ? 0 : vn.hashCode());
-        result = prime * result + ((when == null) ? 0 : when.hashCode());
+        result = PRIME * result + ((constantValue == null) ? 0 : constantValue.hashCode());
+        result = PRIME * result + (interproc ? 1231 : 1237);
+        result = PRIME * result + local;
+        result = PRIME * result + ((location == null) ? 0 : location.hashCode());
+        result = PRIME * result + parameter;
+        result = PRIME * result + ((type == null) ? 0 : type.hashCode());
+        result = PRIME * result + ((vn == null) ? 0 : vn.hashCode());
+        result = PRIME * result + ((when == null) ? 0 : when.hashCode());
         return result;
     }
 
