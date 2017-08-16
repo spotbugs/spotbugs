@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class Filter extends OrMatcher {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
+    private static final int PRIME = 31;
 
     private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<Matcher, Boolean>();
 
@@ -64,9 +65,8 @@ public class Filter extends OrMatcher {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((disabled == null) ? 0 : disabled.hashCode());
+        result = PRIME * result + ((disabled == null) ? 0 : disabled.hashCode());
         return result;
     }
 

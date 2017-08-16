@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author andrey
  */
 public class JrtfsCodeBase extends AbstractScannableCodeBase {
+    private static final int PRIME = 31;
 
     private FileSystem fs;
     private final String fileName;
@@ -163,7 +164,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
 
     @Override
     public int hashCode() {
-        return 31 + fileName.hashCode();
+        return PRIME + fileName.hashCode();
     }
 
     @Override
@@ -288,9 +289,8 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = prime + codebase.hashCode();
-            result = prime * result + path.hashCode();
+            int result = PRIME + codebase.hashCode();
+            result = PRIME * result + path.hashCode();
             return result;
         }
 

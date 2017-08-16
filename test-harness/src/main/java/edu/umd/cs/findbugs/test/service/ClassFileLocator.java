@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class ClassFileLocator {
+    private static final String PREFIX = "file:";
 
     /**
      * @param path
@@ -69,9 +70,8 @@ public class ClassFileLocator {
             return null;
         }
 
-        final String prefix = "file:";
-        if (filename.startsWith(prefix)) {
-            filename = filename.substring(prefix.length());
+        if (filename.startsWith(PREFIX)) {
+            filename = filename.substring(PREFIX.length());
         }
         return filename;
     }

@@ -9,6 +9,8 @@ import java.util.Arrays;
  * @author David Hovemeyer
  */
 public class AnalysisError {
+    private static final int PRIME = 31;
+
     private String message;
 
     private String exceptionMessage;
@@ -24,13 +26,12 @@ public class AnalysisError {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = 1;
-        result = prime * result + ((exceptionMessage == null) ? 0 : exceptionMessage.hashCode());
-        result = prime * result + ((message == null) ? 0 : message.hashCode());
-        result = prime * result + ((nestedExceptionMessage == null) ? 0 : nestedExceptionMessage.hashCode());
-        result = prime * result + Arrays.hashCode(nestedStackTrace);
-        result = prime * result + Arrays.hashCode(stackTrace);
+        result = PRIME * result + ((exceptionMessage == null) ? 0 : exceptionMessage.hashCode());
+        result = PRIME * result + ((message == null) ? 0 : message.hashCode());
+        result = PRIME * result + ((nestedExceptionMessage == null) ? 0 : nestedExceptionMessage.hashCode());
+        result = PRIME * result + Arrays.hashCode(nestedStackTrace);
+        result = PRIME * result + Arrays.hashCode(stackTrace);
         return result;
     }
 

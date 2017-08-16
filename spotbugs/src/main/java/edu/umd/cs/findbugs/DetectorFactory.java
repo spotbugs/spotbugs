@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @see Detector
  */
 public class DetectorFactory {
+    private static final int PRIME = 31;
     private static final boolean DEBUG_JAVA_VERSION = SystemProperties.getBoolean("findbugs.debug.javaversion");
 
     // Backwards-compatibility: if the Detector has a setAnalysisContext()
@@ -419,10 +420,9 @@ public class DetectorFactory {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = 1;
-        result = prime * result + className.hashCode();
-        result = prime * result + plugin.hashCode();
+        result = PRIME * result + className.hashCode();
+        result = PRIME * result + plugin.hashCode();
         return result;
     }
 
