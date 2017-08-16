@@ -2,6 +2,8 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
+## Unreleased (2017/??/??)
+
 ## 3.1.0-RC5 (2017/Aug/16)
 
 ### Removed
