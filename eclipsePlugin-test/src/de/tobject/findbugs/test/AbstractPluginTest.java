@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * all tests in the same class, if the tests don't modify the project or are
  * independent from the modifications.</li>
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public abstract class AbstractPluginTest {
 

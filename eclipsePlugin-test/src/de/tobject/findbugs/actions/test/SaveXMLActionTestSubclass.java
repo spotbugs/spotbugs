@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom·s Pollak
+ * Copyright (C) 2009, Tom√°s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import de.tobject.findbugs.actions.SaveXmlAction;
  * Test subclass of SaveXmlAction that overrides the opening of the FileDialog
  * for testing purposes.
  * 
- * @author Tom·s Pollak
+ * @author Tom√°s Pollak
  */
 public class SaveXMLActionTestSubclass extends SaveXmlAction {
     private final String filePath;

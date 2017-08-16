@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom·s Pollak
+ * Copyright (C) 2009, Tom√°s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 /**
  * Dialog class to open the properties page.
  * 
- * @author Tom·s Pollak
+ * @author Tom√°s Pollak
  */
 public class PropertiesTestDialog extends Dialog {
     private final IWorkbenchPropertyPage page;

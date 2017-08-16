@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom·s Pollak
+ * Copyright (C) 2009, Tom√°s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
  * created by a test case that sets the expectations and compares itself to an
  * actual element, asserting some desired characteristics.
  * 
- * @author Tom·s Pollak
+ * @author Tom√°s Pollak
  */
 public interface ExpectedViewElement {
     void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException;

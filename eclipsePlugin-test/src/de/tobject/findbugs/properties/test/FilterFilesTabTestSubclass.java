@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,7 @@ import de.tobject.findbugs.properties.IPathElement;
 /**
  * Test subclass of FilterFilesTab that provides methods for testing purposes.
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public class FilterFilesTabTestSubclass extends FilterFilesTab {
 

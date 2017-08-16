@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import java.util.Set;
  * Enum for the different test scenarios in FindBugs. Each test scenario has
  * information of the input files, the expected bugs and markers, and so on.
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public enum TestScenario {
     DEFAULT(new String[] { "/defaultScenario" }, false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2),

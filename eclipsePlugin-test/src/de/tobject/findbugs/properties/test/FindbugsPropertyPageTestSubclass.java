@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom·s Pollak
+ * Copyright (C) 2009, Tom√°s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ import de.tobject.findbugs.properties.ReportConfigurationTab;
  * Test subclass of FindbugsPropertyPage that provides methods for handling the
  * properties page for testing purposes.
  * 
- * @author Tom·s Pollak
+ * @author Tom√°s Pollak
  */
 public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 

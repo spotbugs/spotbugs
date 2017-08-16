@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,7 +55,7 @@ import org.junit.Before;
 /**
  * Base class for FindBugs quickfix tests.
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
