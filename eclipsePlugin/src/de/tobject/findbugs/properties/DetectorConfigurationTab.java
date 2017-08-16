@@ -180,10 +180,12 @@ public class DetectorConfigurationTab extends Composite {
     }
 
     private static final class DetectorFactoriesContentProvider implements IStructuredContentProvider {
+        @Override
         public void dispose() {
             // ignored
         }
 
+        @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
             // ignored
         }
