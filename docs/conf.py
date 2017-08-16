@@ -17,7 +17,7 @@ import os
 
 html_context = {
   'version' : '3.1',
-  'full_version' : '3.1.0-RC4'
+  'full_version' : '3.1.0-RC5'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
