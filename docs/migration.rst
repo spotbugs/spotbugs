@@ -12,13 +12,13 @@ Simply replace ``com.google.code.findbugs:findbugs`` with ``com.github.spotbugs:
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs</artifactId>
-    <version>3.1.0-RC4</version>
+    <version>3.1.0-RC5</version>
   </dependency>
 
 .. code-block:: groovy
 
   // for Gradle
-  compileOnly 'com.github.spotbugs:spotbugs:3.1.0-RC4'
+  compileOnly 'com.github.spotbugs:spotbugs:3.1.0-RC5'
 
 com.google.code.findbugs:jsr305
 -------------------------------
@@ -37,14 +37,14 @@ Please depend on ``spotbugs-annotations`` instead.
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-annotations</artifactId>
-    <version>3.1.0-RC4</version>
+    <version>3.1.0-RC5</version>
     <optional>true</optional>
   </dependency>
 
 .. code-block:: groovy
 
   // for Gradle
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC4'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC5'
 
 com.google.code.findbugs:annotations
 ------------------------------------
@@ -63,7 +63,7 @@ Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotation
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-annotations</artifactId>
-    <version>3.1.0-RC4</version>
+    <version>3.1.0-RC5</version>
     <optional>true</optional>
   </dependency>
 
@@ -71,7 +71,7 @@ Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotation
 
   // for Gradle
   compileOnly 'net.jcip:jcip-annotations:1.0'
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC4'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC5'
 
 FindBugs Ant task
 -----------------
@@ -111,7 +111,7 @@ Please use `com.github.hazendaz.spotbugs:spotbugs-maven-plugin` instead of `org.
       <dependency>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs</artifactId>
-        <version>3.1.0-RC4</version>
+        <version>3.1.0-RC5</version>
       </dependency>
     </dependencies>
   </plugin>
@@ -124,10 +124,10 @@ Please use spotbugs plugin found on https://plugins.gradle.org/plugin/com.github
 .. code-block:: groovy
 
   plugins {
-    id  'com.github.spotbugs' version '1.2'
+    id  'com.github.spotbugs' version '1.3'
   }
   spotbugs {
-    toolVersion = '3.1.0-RC4'
+    toolVersion = '3.1.0-RC5'
   }
 
   // To generate an HTML report instead of XML
