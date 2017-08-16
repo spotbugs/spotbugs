@@ -43,7 +43,7 @@ task jacocoRootReport(type: JacocoReport) {
 
   executionData project(':spotbugs').file('build/jacoco/test.exec')
   sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-  
+
   // Only enable class directories related to non-test project
   classDirectories = files(subprojects.sourceSets.main.output).filter {
     !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")

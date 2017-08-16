@@ -4,6 +4,9 @@ This is the changelog for SpotBugs Gradle Plugin. This follows [Keep a Changelog
 
 ## Unreleased (2017/??/??)
 
+## 1.3 (2017/Aug/16)
+
+* Use SpotBugs 3.1.0-RC5
 * Stop using [single class directory](https://docs.gradle.org/4.0.2/release-notes.html#multiple-class-directories-for-a-single-source-set) to prepare for Gradle v5 ([#299](https://github.com/spotbugs/spotbugs/issues/299))
 * Print 'SpotBugs' instead of 'FindBugs' ([#291](https://github.com/spotbugs/spotbugs/issues/291))
 
