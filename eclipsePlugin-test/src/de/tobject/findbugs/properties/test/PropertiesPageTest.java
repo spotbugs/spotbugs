@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 /**
  * This class tests the FindbugsPropertyPage and related classes.
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public class PropertiesPageTest extends AbstractFindBugsTest {
     @BeforeClass
