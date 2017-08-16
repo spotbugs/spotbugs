@@ -197,6 +197,7 @@ public class BugContentProvider implements ICommonContentProvider {
         return getChildren(inputElement);
     }
 
+    @Override
     public void dispose() {
         if (DEBUG) {
             System.out.println("Disposing content provider!");
@@ -212,6 +213,7 @@ public class BugContentProvider implements ICommonContentProvider {
         store.setValue(FindBugsConstants.LAST_USED_WORKING_SET, name);
     }
 
+    @Override
     public void inputChanged(Viewer newViewer, Object oldInput, Object newInput) {
         viewer = (CommonViewer) newViewer;
         if (newInput == null || newInput instanceof IWorkingSet || newInput instanceof IWorkspaceRoot) {
