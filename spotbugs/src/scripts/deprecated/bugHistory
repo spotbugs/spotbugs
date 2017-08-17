@@ -1,11 +1,5 @@
 #! /bin/sh
 
-@GET_FBHOME@
+# Deprecated
 
-@SET_DEFAULT_JAVA@
-
-fb_mainclass=edu.umd.cs.findbugs.workflow.BugHistory
-
-@WRAP_JAVA@
-
-# vim:ts=3
+exec "$(dirname $0)/../fbwrap" edu.umd.cs.findbugs.workflow.BugHistory "$@"

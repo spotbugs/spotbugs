@@ -2,4 +2,4 @@
 
 # Generate a defect density table from a bug collection
 
-"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.DefectDensity
+exec "$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.DefectDensity "$@"

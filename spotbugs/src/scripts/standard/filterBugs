@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# General purpose utility for filtering/transforming
-# bug collection and/or historical bug collections
+# General purpose utility for filtering/transforming bug collection and/or
+# historical bug collections
 
-"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.Filter
+exec "$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.Filter "$@"
