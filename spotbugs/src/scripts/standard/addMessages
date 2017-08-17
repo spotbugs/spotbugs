@@ -1,3 +1,3 @@
 #! /bin/sh
 
-"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.AddMessages
+exec "$(dirname $0)/fbwrap" edu.umd.cs.findbugs.AddMessages "$@"

@@ -2,7 +2,7 @@
 
 # Deprecated
 
-# Create the union of two results files, preserving
-# annotations in both files in the result.
+# Create the union of two results files, preserving annotations in both files
+# in the result.
 
-"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.UnionResults
+exec "$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.UnionResults "$@"

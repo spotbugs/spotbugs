@@ -3,4 +3,4 @@
 # Merge a historical bug collection and a bug collection, producing an updated
 # historical bug collection
 
-"$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.Update
+exec "$(dirname $0)/fbwrap" edu.umd.cs.findbugs.workflow.Update "$@"
