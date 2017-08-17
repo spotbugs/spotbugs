@@ -193,7 +193,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
             public FileCollection call() {
                 // the simple "classes = sourceSet.output" may lead to non-existing resources directory
                 // being passed to SpotBugs Ant task, resulting in an error
-                return project.fileTree(sourceSet.getOutput().getClassesDirs()).builtBy(sourceSet.getOutput());
+                return project.fileTree(sourceSet.getOutput().getClassesDir()).builtBy(sourceSet.getOutput());
             }
         });
         taskMapping.map("classpath", new Callable<FileCollection>() {
