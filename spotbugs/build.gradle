@@ -108,7 +108,9 @@ task updateManifest {
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   from sourceSets.main.output
-  from project(':spotbugs-annotations').sourceSets.main.output
+  
+  // Workaround for missing released BCEL maven artifact, see https://github.com/spotbugs/spotbugs/issues/327
+  // Should be removed after #327 is fixed.
   from zipTree("$projectDir/lib/bcel-6.1-20161207.023659-9.jar").matching {
     exclude 'META-INF/**'
   }
@@ -116,7 +118,7 @@ jar {
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': 'dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_BETA.jar jsr305-3.0.1.jar jFormatString-3.0.0.jar commons-lang-2.6.jar'
+               'Class-Path': 'spotbugs-annotations.jar dom4j-1.6.1.jar jaxen-1.1.6.jar asm-debug-all-6.0_BETA.jar jsr305-3.0.1.jar jFormatString-3.0.0.jar commons-lang-2.6.jar'
   }
 }
 
