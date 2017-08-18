@@ -60,10 +60,15 @@ clean {
 
 task copyLibsForEclipse(type: Copy) {
     dependsOn configurations.compile
-    from configurations.compile.files
+    from configurations.compile.files {
+    	include "*.jar"
+    	exclude "*xml-apis*.jar"
+    	// Workaround due https://github.com/spotbugs/spotbugs/issues/327 
+    	// BCEL classes are already included into the main spotbugs.jar
+    	// Should be removed after #327 is fixed.
+    	exclude "bcel-*.jar"
+    }
     into "lib"
-    include "*.jar"
-    exclude "*xml-apis*.jar"
 }
 
 task distSrcZip(type:Exec) {
@@ -145,18 +150,7 @@ jar {
   // Make sure we always update the manifest when building
   dependsOn updateManifest
   includeEmptyDirs = false
-  from(configurations.compile.collect { zipTree(it) }) {
-    exclude 'edu/umd/cs/findbugs/gui/**/*.*'
-    exclude 'edu/umd/cs/findbugs/gui2/**/*.*'
-    exclude 'edu/umd/cs/findbugs/userAnnotations/ri/**/*.*'
-    exclude 'edu/umd/cs/findbugs/sourceViewer/**/*.*'
-    exclude 'edu/umd/cs/findbugs/anttask/**/*.*'
-    exclude 'edu/umd/cs/findbugs/tools/**/*.*'
-    exclude 'edu/umd/cs/findbugs/annotations/**/*.*'
-    exclude 'net/jcip/annotations/**/*.*'
-    exclude 'META-INF/**.*'
-  }
-  exclude 'de/tobject/findbugs/tools/**'
+  from sourceSets.main.output
   archiveName 'spotbugs-plugin.jar'
 }
 
