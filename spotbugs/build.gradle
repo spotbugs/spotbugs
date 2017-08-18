@@ -179,6 +179,10 @@ distributions {
         into 'bin'
       }
       from 'README.txt'
+      from ('plugin') {
+         into 'plugin'
+         include 'README'
+      }
       from 'licenses'
       from(configurations.compile) {
         into 'lib'
