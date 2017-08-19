@@ -43,9 +43,6 @@ script:
 
 after_success:
   - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew coveralls; fi
-  # Coveralls task above deletes generated site data, so we should re-generate it
-  # to deploy the daily build on the update site, see "deploy" task below
-  - ./gradlew eclipsePlugin:eclipseSite
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
