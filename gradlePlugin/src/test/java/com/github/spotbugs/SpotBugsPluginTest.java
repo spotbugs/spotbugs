@@ -55,6 +55,7 @@ public class SpotBugsPluginTest extends Assert{
         "}\n" + 
         "version = 1.0\n" +
         "repositories {\n" + 
+        "  mavenCentral()\n" + 
         "  mavenLocal()\n" + 
         "}";
     File root = folder.newFolder();
