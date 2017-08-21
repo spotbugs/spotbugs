@@ -35,12 +35,12 @@ install:
   - rm -rf eclipse
   - tar xzvf deps/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
   - echo eclipseRoot.dir=$(pwd)/eclipse > eclipsePlugin/local.properties
+  # To run gradlePlugin:test, we need to install spotbugs and its dependencies into local repository
+  - ./gradlew install -x test
 
 script:
   # Manually switch to JDK9 if needed
   - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then remove_dir_from_path $JAVA_HOME/bin; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; fi
-  # To run gradlePlugin:test, we need to install spotbugs and its dependencies into local repository
-  - ./gradlew install -x test
   - ./gradlew build smoketest sonarqube -S
 
 after_success:
