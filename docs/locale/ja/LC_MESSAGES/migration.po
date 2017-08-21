@@ -95,7 +95,7 @@ msgstr "代わりに次の更新サイトをご利用ください。"
 
 #: ../../migration.rst:146
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)"
-msgstr "https://spotbugs.github.io/eclipse/ (まだ安定していないバージョンを使用する)"
+msgstr "https://spotbugs.github.io/eclipse/ (安定バージョンを使用する (まだ利用できない))"
 
 #: ../../migration.rst:147
 msgid "https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)"

@@ -274,7 +274,7 @@ msgid ""
 "This element inverts the included child ``Match``. I.e., you can put a "
 "``Bug`` element in a ``Not`` clause in order to match any bug excluding "
 "the given one."
-msgstr "この要素は，含まれている子要素の ``Match``を反転させます。つまり与えられたバグ以外のバグと照合させるために ``Bug`` 要素を ``Not`` 節に入れられます。"
+msgstr "この要素は，含まれている子要素の ``Match`` を反転させます。つまり与えられたバグ以外のバグと照合させるために ``Bug`` 要素を ``Not`` 節に入れられます。"
 
 #: ../../filter.rst:110
 msgid "Java element name matching"
