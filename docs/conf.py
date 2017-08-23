@@ -269,4 +269,7 @@ locale_dirs = ['locale/']
 gettext_compact = False
 
 def setup(app):
-  app.add_stylesheet('custom.css')
+    app.add_stylesheet('custom.css')
+
+sys.path.append(os.path.abspath('extensions'))
+extensions += ['generate_bug_description']

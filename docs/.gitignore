@@ -1,1 +1,4 @@
 .build
+*.pyc
+generated/*.rst
+locale/ja/LC_MESSAGES/generated/*.po
