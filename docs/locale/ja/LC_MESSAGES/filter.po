@@ -60,7 +60,7 @@ msgstr "``Match`` 要素には，述語を結合した子要素が含まれま�
 
 #: ../../filter.rst:26
 msgid "Types of Match clauses"
-msgstr "Match節の種類"
+msgstr "マッチング条件の種類"
 
 #: ../../filter.rst:29
 msgid "<Bug>"
@@ -97,7 +97,7 @@ msgid ""
 " may be used instead of <Bug> element. Each of these uses a name "
 "attribute for specifying accepted values list. Support for these elements"
 " may be removed in a future release."
-msgstr "下位互換の対策として，<Bug> 要素の代わりに <BugPattern> と <BugCode> 要素を使用できます。それぞれの要素は，受け入れられた値のリストを指定するための ``name`` 属性を使用します。\n"
+msgstr "下位互換性のために，<Bug> 要素の代わりに <BugPattern> と <BugCode> 要素を使用できます。それぞれの要素は，受け入れられた値のリストを指定するための ``name`` 属性を使用します。\n"
 "これらの要素のサポートは，将来のリリースで削除される可能性があります。"
 
 #: ../../filter.rst:41
@@ -111,7 +111,7 @@ msgid ""
 "confidence warnings, 2 to match normal-confidence warnings, or 3 to match"
 " low-confidence warnings. ``<Confidence>`` replaced ``<Priority>`` in "
 "2.0.0 release."
-msgstr "この要素は，警告を特定のバグ信頼度と照合します。``value`` 属性は，整数値でなければなりません。1 は信頼度 (高)，2 は信頼度 (中)，3 は信頼度 (低) の警告と一致します。2.0.0 リリースで，``<Confidence>`` は ``<Priority>`` に換えられました。"
+msgstr "この要素は，警告を特定のバグ信頼度と照合します。``value`` 属性は，整数値でなければなりません。1 は信頼度 (High)，2 は信頼度 (Medium)，3 は信頼度 (Low) の警告と一致します。2.0.0 リリースで，``<Confidence>`` は ``<Priority>`` に換えられました。"
 
 #: ../../filter.rst:46
 msgid "<Priority>"
@@ -119,7 +119,7 @@ msgstr ""
 
 #: ../../filter.rst:48
 msgid "Same as ``<Confidence>``, exists for backward compatibility."
-msgstr "``<Confidence>`` と同じですが，下位互換のために存在します。"
+msgstr "``<Confidence>`` と同じです。下位互換性を保つために残されています。"
 
 #: ../../filter.rst:51
 msgid "<Rank>"
@@ -130,7 +130,7 @@ msgid ""
 "This element matches warnings with a particular bug rank. The ``value`` "
 "attribute should be an integer value between 1 and 20, where 1 to 4 are "
 "scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs."
-msgstr "この要素は，警告を特定のバグランクと照合します。``value`` 属性は，1 から 20 までの整数値でなければなりません。1 から 4 は最も恐ろしいバグ， 5 から 9 は恐ろしいバグ， 10 から 14 は厄介なバグ， 15 から 20 は不安なバグを表します。"
+msgstr "この要素は，警告を特定のバグランクと照合します。``value`` 属性は，1 から 20 までの整数値でなければなりません。1 から 4 は恐るべきバグ， 5 から 9 は恐ろしいバグ， 10 から 14 は厄介なバグ， 15 から 20 は心配なバグを表します。"
 
 #: ../../filter.rst:56
 msgid "<Package>"
@@ -161,7 +161,7 @@ msgid ""
 " can use ``class`` attribute on a ``Match`` element to specify exact an "
 "class name or ``classregex`` attribute to specify a regular expression to"
 " match the class name against."
-msgstr "下位互換の対策として，この型の要素ではなく，``Match`` 要素の ``class`` 属性を使用して厳密なクラス名を指定したり，``classregex`` 属性を使用してクラス名と一致する正規表現を指定することもできます。"
+msgstr "下位互換性のために，<Class> 要素の代わりに ``Match`` 要素の ``class`` 属性を使用して厳密なクラス名を指定できます。また， ``classregex`` 属性を使用してクラス名と一致する正規表現を指定することもできます。"
 
 #: ../../filter.rst:67
 msgid ""
@@ -251,7 +251,7 @@ msgid ""
 "This element combines ``Match`` clauses as disjuncts. I.e., you can put "
 "two ``Method`` elements in an ``Or`` clause in order to match either "
 "method."
-msgstr "この要素は，``Match`` 節を論理和として組み合わせます。つまり，いずれかのメソッドと照合させるために 2 つの ``Method`` 要素を ``Or`` 節に入れられます。"
+msgstr "この要素は，マッチング条件を論理和として組み合わせます。つまり，いずれかのメソッドと照合させるために 2 つの ``Method`` 要素を ``Or`` 要素に入れられます。"
 
 #: ../../filter.rst:100
 msgid "<And>"
@@ -263,7 +263,7 @@ msgid ""
 "``true``. I.e., you can put ``Bug`` and ``Confidence`` elements in an "
 "``And`` clause in order to match specific bugs with given confidence "
 "only."
-msgstr "この要素は，``Match`` 節を論理積として組み合わせます。つまり特定のバグに与えられた信頼度だけと照合させるために  ``Bug`` と ``Confidence`` 要素を ``And`` 節に入れられます。"
+msgstr "この要素は，マッチング条件を論理積として組み合わせます。つまり，特定のバグに与えられた信頼度だけと照合させるために  ``Bug`` 要素と ``Confidence`` 要素を ``And`` 要素に入れられます。"
 
 #: ../../filter.rst:105
 msgid "<Not>"
@@ -274,7 +274,7 @@ msgid ""
 "This element inverts the included child ``Match``. I.e., you can put a "
 "``Bug`` element in a ``Not`` clause in order to match any bug excluding "
 "the given one."
-msgstr "この要素は，含まれている子要素の ``Match`` を反転させます。つまり与えられたバグ以外のバグと照合させるために ``Bug`` 要素を ``Not`` 節に入れられます。"
+msgstr "この要素は，含まれている子要素の ``Match`` を反転させます。つまり，与えられたバグ以外のバグと照合させるために ``Bug`` 要素を ``Not`` 要素に入れられます。"
 
 #: ../../filter.rst:110
 msgid "Java element name matching"
@@ -293,7 +293,7 @@ msgid ""
 "Note that the pattern is matched against whole element name and therefore"
 " ``.*`` clauses need to be used at pattern beginning and/or end to "
 "perform substring matching."
-msgstr "パターンは，要素名全体と照合されるので，部分文字列で照合をしたいときは，パターンの先頭や最後に ``.*`` 節を使用する必要があることに注意してください。"
+msgstr "パターンは，要素名全体と照合されるので，部分文字列で照合をしたいときは，パターンの先頭や最後に ``.*`` を使用する必要があることに注意してください。"
 
 #: ../../filter.rst:116
 msgid ""
@@ -323,7 +323,7 @@ msgid ""
 "suppress IC (initialization circularity) reports for classes "
 "\"com.foobar.A\" and \"com.foobar.B\", you would use two ``Match`` "
 "clauses:"
-msgstr "幾つかのバグインスタンスは 2 つか，それ以上のクラスを持っています。たとえば，DE (無視された例外) バグは，無視された例外が発生するメソッドを含むクラスと無視された例外の型を表すクラスの両方を報告します。*一番目* (主) のクラスだけが ``Match`` 節とマッチします。たとえば，クラス 「com.foobar.A」と「com.foobar.B」の IC (初期化時の循環) レポートを抑制したいときは，2 つの ``Match`` 節を使います。clauses:"
+msgstr "いくつかのバグインスタンスは 2 つか，それ以上のクラスを持っています。たとえば，DE (無視された例外) バグは，無視された例外が発生するメソッドを含むクラスと無視された例外の型を表すクラスの両方を報告します。*一番目* (主) のクラスだけがマッチング条件とマッチします。たとえば，クラス 「com.foobar.A」と「com.foobar.B」の IC (初期化時の循環) レポートを抑制したいときは，2 つの ``Match`` 要素を使用してマッチング条件を指定します。"
 
 #: ../../filter.rst:140
 msgid ""

@@ -67,7 +67,7 @@ msgid ""
 "``$SPOTBUGS_HOME/lib/spotbugs.jar`` using the -jar command line switch of"
 " the JVM (java) executable. (Versions of SpotBugs prior to 1.3.5 required"
 " a wrapper script to invoke SpotBugs.)"
-msgstr "SpotBugs を実行するための推奨方法は，JVM (Java) 実行可能ファイルの -jar コマンドラインスイッチを使用して ``$SPOTBUGS_HOME/lib/spotbugs.jar`` を直接実行することです。(バージョン 1.3.5 以前の SpotBugs では，SpotBugs を起動するためのラッパースクリプトが必要でした。)"
+msgstr "SpotBugs を実行するためには，JVM (Java) 実行可能ファイルの -jar コマンドラインスイッチを使用して ``$SPOTBUGS_HOME/lib/spotbugs.jar`` を直接実行する方法を推奨します。(バージョン 1.3.5 以前の SpotBugs では，SpotBugs を起動するためのラッパースクリプトが必要でした。)"
 
 #: ../../running.rst:28
 msgid "The general syntax of invoking SpotBugs directly is the following:"
