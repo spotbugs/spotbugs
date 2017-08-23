@@ -39,7 +39,7 @@ msgstr "Ant タスクのインストール"
 msgid ""
 "To install the Ant task, simply copy ``$SPOTBUGS_HOME/lib/spotbugs-"
 "ant.jar`` into the lib subdirectory of your Ant installation."
-msgstr "Ant タスクをインストールするには，Ant インストールの lib サブディレクトリに `$SPOTBUGS_HOME/lib/spotbugs-ant.jar`` をコピーします。"
+msgstr "Ant タスクをインストールするには，Ant インストールの lib サブディレクトリに ``$SPOTBUGS_HOME/lib/spotbugs-ant.jar`` をコピーします。"
 
 #: ../../ant.rst:16
 msgid ""
@@ -192,7 +192,7 @@ msgid ""
 " reporting issues. If set to ``low``, confidence is not used to filter "
 "bugs. If set to ``medium`` (the default), low confidence issues are "
 "supressed. If set to ``high``, only high confidence bugs are reported."
-msgstr "オプション属性です。問題を報告するための信頼度/優先度を指定します。``low`` に設定すると，信頼度はバグをフィルタリングするために使われません。``medium`` (デフォルト) に設定すると，信頼度 (低) の問題が抑制されます。``high`` に設定すると，信頼度 (高) のバグだけが報告されます。"
+msgstr "オプション属性です。問題を報告するための信頼度/優先度を指定します。``low`` に設定すると，信頼度はバグをフィルタリングするために使われません。``medium`` (デフォルト) に設定すると，信頼度が低い問題が抑制されます。``high`` に設定すると，信頼度が高いバグだけが報告されます。"
 
 #: ../../ant.rst:120
 msgid "output"
@@ -266,7 +266,7 @@ msgid ""
 "``min``, ``default``, or ``max``. See `Command-line Options <running.html"
 "#command-line-options>`: for more information about setting the analysis "
 "level."
-msgstr "分析の活動レベルを設定します。指定する値は，``min``，``default``，``max`` のいずれかでなければなりません。解析レベル設定の詳細については `コマンドラインオプション <running.html#command-line-options>`__ を参照してください。"
+msgstr "解析力を設定します。指定する値は，``min``，``default``，``max`` のいずれかでなければなりません。解析力の詳細については `コマンドラインオプション <running.html#command-line-options>`__ を参照してください。"
 
 #: ../../ant.rst:141
 msgid "conserveSpace"
