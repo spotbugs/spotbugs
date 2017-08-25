@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-25 02:42+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: ../../gradle.rst:2
+msgid "Using the SpotBugs Gradle Plugin"
+msgstr ""
+
+#: ../../gradle.rst:4
+msgid ""
+"This chapter describes how to integrate SpotBugs into a build script for "
+"Gradle."
+msgstr ""
+
+#: ../../gradle.rst:7
+msgid "Use SpotBugs Gradle Plugin"
+msgstr ""
+
+#: ../../gradle.rst:9
+msgid ""
+"Please follow instruction found on `official Gradple Plugin page "
+"<https://plugins.gradle.org/plugin/com.github.spotbugs>`_."
+msgstr ""
+
+#: ../../gradle.rst:12
+msgid "Tasks introduced by this Gradle Plugin"
+msgstr ""
+
+#: ../../gradle.rst:14
+msgid "This Gradle Plugin introduces two tasks: `spotbugsMain and `spotbugsTest."
+msgstr ""
+
+#: ../../gradle.rst:16
+msgid ""
+"`spotbugsMain` task runs SpotBugs for your production Java source files. "
+"This task depends on `classes` task. `spotbugsTest` task runs SpotBugs "
+"for your test Java source files. This task depends on `testClasses` task."
+msgstr ""
+
+#: ../../gradle.rst:19
+msgid ""
+"SpotBugs Gradle Plugin adds task dependency from `check` to these these "
+"tasks, so you can simly run ``./gradlew check`` to run SpotBugs."
+msgstr ""
+
+#: ../../gradle.rst:22
+msgid "Configure Gradle Plugin"
+msgstr ""
+
+#: ../../gradle.rst:24
+msgid ""
+"Current version of SpotBugs Gradle Plugin uses the same way to configure."
+" Please check the document for `FindBugsExtension "
+"<http://gradle.monochromeroad.com/docs/dsl/org.gradle.api.plugins.quality.FindBugsExtension.html>`_."
+msgstr ""
+
+#: ../../gradle.rst:26
+msgid ""
+"For instance, to specify the version of SpotBugs, you can configure like "
+"below:"
+msgstr ""
