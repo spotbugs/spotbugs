@@ -262,6 +262,10 @@ task siteXml(type:Copy) {
   from 'plugin_site.xml'
   destinationDir = file("${buildDir}/site/eclipse")
   rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
 }
 
 task siteCandidateXml(type:Copy) {
@@ -269,6 +273,10 @@ task siteCandidateXml(type:Copy) {
   from 'plugin_site-candidate.xml'
   destinationDir = file("${buildDir}/site/eclipse-candidate")
   rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
 }
 
 task siteDailyXml(type:Copy) {
@@ -276,10 +284,17 @@ task siteDailyXml(type:Copy) {
   from 'plugin_site-daily.xml'
   destinationDir = file("${buildDir}/site/eclipse-daily")
   rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
 }
 
 task generateP2Metadata(type:Exec) {
-  project.delete 'build/site/eclipse'
+  doFirst {
+    project.delete "${buildDir}/site/eclipse/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse/content.xml"
+  }
   inputs.file 'local.properties'
   dependsOn pluginJar, featureJar, siteXml
   commandLine "${eclipseExecutable}", '-nosplash',
@@ -290,7 +305,10 @@ task generateP2Metadata(type:Exec) {
 }
 
 task generateCandidateP2Metadata(type:Exec) {
-  project.delete "build/site/eclipse-candidate"
+  doFirst {
+    project.delete "${buildDir}/site/eclipse-candidate/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse-candidate/content.xml"
+  }
   inputs.file 'local.properties'
   dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml
   commandLine "${eclipseExecutable}", '-nosplash',
@@ -301,7 +319,10 @@ task generateCandidateP2Metadata(type:Exec) {
 }
 
 task generateP2MetadataDaily(type:Exec) {
-  project.delete "build/site/eclipse-daily"
+  doFirst {
+    project.delete "${buildDir}/site/eclipse-daily/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse-daily/content.xml"
+  }
   inputs.file 'local.properties'
   dependsOn pluginDailyJar, featureDailyJar, siteDailyXml
   commandLine "${eclipseExecutable}", '-nosplash',

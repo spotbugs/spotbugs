@@ -12,7 +12,7 @@ RUN curl -kL https://bootstrap.pypa.io/get-pip.py | python
 
 RUN pip install sphinx-intl
 
-WORKDIR /documents
+WORKDIR /documents/docs
 VOLUME /documents
 
 CMD ["/bin/bash"]
