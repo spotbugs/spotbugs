@@ -34,6 +34,8 @@ def generate_bug_description(language):
             bug_description_page.write('\n\n')
 
             for bug_pattern in findbugs.findall(".//BugPattern[@category='%s']" % category):
+                if (bug_pattern.get('deprecated') == 'true'):
+                    continue
                 type = bug_pattern.get('type')
                 message = messages.find(".//BugPattern[@type='%s']" % type)
                 pattern_title = generate_pattern_title(bug_pattern, message)
