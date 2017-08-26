@@ -14,6 +14,10 @@ env:
     - SONATYPE_USERNAME="eller86"
     - secure: "bNbHxR43FHIWX/im5GUZD52UF0FszM5kxhw/3DFqpaOWEpf3BtvSTDpHvOdbVmcD+HtC8cCaXViCQaSIsDWuP2LrxxGlULl/a9yF5FLq+BxyTx28+Xi6c+mXSeava82poWEbF6whiLrn8GIIC+z2xwpphT+bBXj/3UmOmPj/cxfsuzb6gH95Xk1OhQJjhJ0Lt6muO0YmxA4dAtNDJHHwTU/GVn25+41WiAO1P4tDHRnPdAZFXnbM5kPV41KmYw4/0YbPgr5aJuAyrUD86ufwJR0Zp+TR4JJB+miw9+XYUgjRMgPBSS3VChOnYugKClfwVq8MwxRpUpBjG5eszt64TxgeEX0sTLBv9JwxUu5R+uCYgQvSdVKduyQYVTdJnMqTsVFCeOQlF0XHXvRXK7+SSNjkpaV/TMlfZ0vY+BAUnBIUAsMjvpX9RNMvDYx5D/5/cqj9WiEsaBLBLuQX90bZA0B8xbA1IHj9pRSxm9N8VAWMTzxhZzuqqMAi2IszBRZicKKYd66z83T1k9SFcTY4mvg0W2uVvZsoaBMIYmhvBZXPOLEgwadTbeiqFW2vox16k6k8xRlKzH+IIYQAChFPqxDxBtP8b7LZDa6ahreBMKtp3xBPbbCgbrviE647CwyPwb+DxOihua5GNfgxXby4kxiXcuglUXZ5NWCmvks2KIE="
 
+    - SIGNING_KEY_ID="EECF0E90"
+    # SIGNING_PASSWORD value
+    - secure: "nzYrbmtBrexfFoKVKtqcBrjjRUoyGWQQYsbx4Z+BZN6F1QLEo+bVFmMe8SaKACSbTUqCI5gvFFOAk/2ZOvv8yPqj0lUvqgVc9oqNuuT1N+csbJlF1NJ6weQMuktC1njVhnujR5UPsngwfLrgGb9fUmgE5P1VvPNqv5Qc9idHXkjq4c+ynuJzjnPZ5EwjDFBLbuOqG7C1pRltis3NObxui27VNQphQ55aGsOSSwrHdIoSePZlBBNDGqVlJPSL6u+Odu2It7q2RDRa2594ADbljcRE1F2MjYEJeGFL3t0uOy9QvxKHRq2fJyPLWBmMKpifsR8ronyEceWV1IlZB7LzuzwSDZxjoUAvPK7FFw1KS94rvIMhch0UNhbeuJUGn0SHzRns+aRHEE2dV9Bd3i+iPmDpLuOslTTOEiUA3yMO0aWR95qeXLSgqglLJvhDSkuZy1xxW6eERo8RfrC1pPwW9xPulDRMoDxebeXHEyIbG85ZiKnyKWzYsuJ1qZNrc1ZbBBtyRjpaIh8aQmn3zdR5BiUlDCVXB4lnCtx5vpPfJGr/Oc/zt5KWFmzED9VxsrdssfAupmSCVMRAO6O57VI7T2hrL89CdBBBCkn/6wsVC97iPO752mglHWLZfZDkUVqxX5+KJRGclAliQSBjFYJG8Ci61aoYslzn6HUwgi/OlQI="
+
     # GITHUB_TOKEN value to push changes to GitHub; Currently it is ued to update gh-pages branch of spotbugs/eclipse-latest etc.
     - secure: "dFmNTEiYr0XHd2Zoj95j1xqoawNIrN63pgvHwKWf5ngNkncxLukKu1nGvvt9Fbw4/Embgzvz2GRwxWJBu5//yKrUHD9ILBS78Sn8nxpba7wHE6r8k6m+u7dOeN4jEH1fzyzsniSq939S6uB8gvfhhikddh9oZzwZnMq1YVyHQaWzbcaUnom+cwndKfK+YXg5mkt5Z92uXkJjGqd36FPA3GrlGJH7kXgWhVXI7Vds2hHsX/IBG0/2ZDhKNSZ8AiaDU4g2pSBlqA7F/noFW68hpohz9AAjku2COmpK0Ojd/iE0bVclXHYzs2aZq3lvYb3gv0dTEJrcIwPlDKQZWaEV/SxX9nIOqL5Q6XeVigTmnKkivQQ/b0hMPEpeHVvipMETYVzDvFT0qatLX/gUsiLgRPilWu0imFvNY4YAPZK3UPBSL5g+/8DzDPmTMZiOqJTMuMr+r/c7ch8qfjoaibc6LqUSJYLxyfk3NeturoviPLiBBtoadNsLPddtsNE8MZhr9lwRefNXY/VPBUxi7Bpxo7KfZ0BDSTzKeW7AEm/9E4CDmbd25eYGdvfVFeElGt5iTAfwIBYhj/GDkqnjesNCyDeNry/NywnEigkZQ4gzIvkHDkevUFs19nSspBmxiK82doY/j9Q0/TAK30mIdhg8VQwmkq5AYVIcN8kCu8WBhxw="
   matrix:
@@ -29,6 +33,7 @@ before_install:
   - mkdir -p deps
   - if [[ $JDK_FOR_TEST == "oraclejdk9" && ! -e deps/oracle-java9-installer.deb ]]; then wget -O deps/oracle-java9-installer.deb http://ppa.launchpad.net/webupd8team/java/ubuntu/pool/main/o/oracle-java9-installer/oracle-java9-installer_9b140+9b140arm-1~webupd8~3_all.deb; fi
   - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then sudo dpkg -i deps/oracle-java9-installer.deb; fi
+  - openssl aes-256-cbc -K $encrypted_05a1b17af1e9_key -iv $encrypted_05a1b17af1e9_iv -in secring.gpg.enc -out secring.gpg -d
 
 install:
   - if [[ ! -e deps/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz ]]; then wget 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O deps/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz; fi
@@ -87,4 +92,10 @@ deploy:
     script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
     on:
       branch: master
+      condition: "$JDK_FOR_TEST = oraclejdk8"
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD" -Psigning.keyId="$SIGNING_KEY_ID" -Psigning.password="$SIGNING_PASSWORD" -Psigning.secretKeyRingFile="./secring.gpg"
+    on:
+      tags: true
       condition: "$JDK_FOR_TEST = oraclejdk8"
