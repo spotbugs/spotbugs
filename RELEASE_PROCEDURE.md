@@ -31,7 +31,9 @@ If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse
 
 ## Release to Gradle Plugin Portal
 
-Add necessary properties to `~/.gradle/gradle.properties` and run `./gradlew publishPlugins`.
+No action necessary. When we push tag, the build result on Travis CI will be deployed to Gradle Plugin Portal.
+
+See `deploy` phase in `.travis.yml` for detail.
 
 ## Update installation manual
 

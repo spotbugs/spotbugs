@@ -39,9 +39,19 @@ pluginBundle {
   }
 }
 
+def spotBugsVersion = project(':spotbugs').version
 task processVersionFile(type: WriteProperties) {
   outputFile file('src/main/resources/spotbugs-gradle-plugin.properties')
 
-  property 'spotbugs-version', project(':spotbugs').version
+  property 'spotbugs-version', spotBugsVersion
 }
 tasks.processResources.dependsOn processVersionFile
+
+tasks.publishPlugins.doFirst {
+  if (version.endsWith('-SNAPSHOT')) {
+    throw new StopExecutionException("Skip publishing Gradle plugin because its version is not stable: ${version}")
+  }
+  if (spotBugsVersion.endsWith('-SNAPSHOT')) {
+    throw new StopExecutionException("Skip publishing Gradle plugin because SpotBugs version is not stable: ${spotBugsVersion}")
+  }
+}
