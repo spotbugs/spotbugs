@@ -1005,7 +1005,7 @@
            </action>
            <action
                  class="de.tobject.findbugs.actions.GoIntoAction"
-                 icon="icons/next_nav_into.gif"
+                 icon="icons/next_nav_into.png"
                  id="findBugsEclipsePlugin.action4"
                  label="Go Into"
                  style="push"
@@ -1014,7 +1014,7 @@
            </action>
          <action
                class="de.tobject.findbugs.actions.RefreshAction"
-               icon="icons/refresh.gif"
+               icon="icons/refresh.png"
                id="findBugsEclipsePlugin.action1"
                label="Refresh"
                style="push"
