@@ -12,6 +12,7 @@ classesEclipse
 .DS_Store
 deps/
 eclipse/
+bin/
 
 # generated manifest files
 spotbugs/META-INF/MANIFEST.MF
