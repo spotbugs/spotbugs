@@ -6,6 +6,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -18,8 +21,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.common.io.Files;
 
 public class SpotBugsPluginTest extends Assert{
   @Rule
@@ -37,12 +38,12 @@ public class SpotBugsPluginTest extends Assert{
       "  mavenLocal()\n" +
       "}";
     File buildFile = folder.newFile("build.gradle");
-    Files.write(buildScript.getBytes(StandardCharsets.UTF_8), buildFile);
+    Files.write(buildFile.toPath(), buildScript.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
 
     File sourceDir = folder.newFolder("src", "main", "java");
     File to = new File(sourceDir, "Foo.java");
     File from = new File("src/test/java/com/github/spotbugs/Foo.java");
-    Files.copy(from, to);
+    Files.copy(from.toPath(), to.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
   }
 
   @Test
