@@ -25,10 +25,6 @@ import org.gradle.api.reporting.SingleFileReport;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.SourceSet;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Resources;
-import com.google.common.util.concurrent.Callables;
-
 /**
  * A plugin for the <a href="https://spotbugs.github.io">SpotBugs</a> byte code analyzer.
  *
@@ -76,9 +72,8 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
         return extension;
     }
 
-    @VisibleForTesting
     String loadToolVersion() {
-        URL url = Resources.getResource("spotbugs-gradle-plugin.properties");
+        URL url = SpotBugsPlugin.class.getClassLoader().getResource("spotbugs-gradle-plugin.properties");
         try (InputStream input = url.openStream()) {
             Properties prop = new Properties();
             prop.load(input);
@@ -108,7 +103,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     private void configureTaskConventionMapping(Configuration configuration, SpotBugsTask task) {
         ConventionMapping taskMapping = task.getConventionMapping();
-        taskMapping.map("spotbugsClasspath", Callables.returning(configuration));
+        taskMapping.map("spotbugsClasspath", () -> configuration);
         taskMapping.map("ignoreFailures", new Callable<Boolean>() {
             @Override
             public Boolean call() {

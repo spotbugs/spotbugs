@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -43,9 +44,6 @@ import com.github.spotbugs.internal.spotbugs.SpotBugsResult;
 import com.github.spotbugs.internal.spotbugs.SpotBugsSpec;
 import com.github.spotbugs.internal.spotbugs.SpotBugsSpecBuilder;
 import com.github.spotbugs.internal.spotbugs.SpotBugsWorkerManager;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 
 import groovy.lang.Closure;
 
@@ -207,12 +205,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
   @TaskAction
   public void run() throws IOException, InterruptedException {
       new SpotBugsClasspathValidator(JavaVersion.current()).validateClasspath(
-          Iterables.transform(getSpotbugsClasspath().getFiles(), new Function<File, String>() {
-              @Override
-              public String apply(File input) {
-                  return input.getName();
-              }
-          }));
+          getSpotbugsClasspath().getFiles().stream().map(File::getName).collect(Collectors.toSet()));
       SpotBugsSpec spec = generateSpec();
       SpotBugsWorkerManager manager = new SpotBugsWorkerManager();
 
@@ -223,7 +216,6 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
       evaluateResult(result);
   }
 
-  @VisibleForTesting
   SpotBugsSpec generateSpec() {
       SpotBugsSpecBuilder specBuilder = new SpotBugsSpecBuilder(getClasses())
           .withPluginsList(getPluginClasspath())
@@ -244,7 +236,6 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
       return specBuilder.build();
   }
 
-  @VisibleForTesting
   void evaluateResult(SpotBugsResult result) {
       if (result.getException() != null) {
           throw new GradleException("SpotBugs encountered an error. Run with --debug to get more information.", result.getException());

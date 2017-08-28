@@ -2,8 +2,11 @@ package com.github.spotbugs.internal.spotbugs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.file.FileCollection;
@@ -13,11 +16,10 @@ import org.gradle.util.CollectionUtils;
 
 import com.github.spotbugs.SpotBugsReports;
 import com.github.spotbugs.internal.SpotBugsReportsImpl;
-import com.google.common.collect.ImmutableSet;
 
 public class SpotBugsSpecBuilder {
-    private static final Set<String> VALID_EFFORTS = ImmutableSet.of("min", "default", "max");
-    private static final Set<String> VALID_REPORT_LEVELS = ImmutableSet.of("experimental", "low", "medium", "high");
+    private static final Set<String> VALID_EFFORTS = createImmutableSet("min", "default", "max");
+    private static final Set<String> VALID_REPORT_LEVELS = createImmutableSet("experimental", "low", "medium", "high");
 
     private FileCollection pluginsList;
     private FileCollection sources;
@@ -241,5 +243,10 @@ public class SpotBugsSpecBuilder {
 
     private boolean has(FileCollection fileCollection) {
         return fileCollection != null && !fileCollection.isEmpty();
+    }
+
+    private static final Set<String> createImmutableSet(String... strings) {
+        Set<String> set = Arrays.asList(strings).stream().collect(Collectors.toSet());
+        return Collections.unmodifiableSet(set);
     }
 }

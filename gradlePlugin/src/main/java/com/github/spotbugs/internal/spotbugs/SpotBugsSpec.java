@@ -3,7 +3,7 @@ package com.github.spotbugs.internal.spotbugs;
 import java.io.Serializable;
 import java.util.List;
 
-import com.google.common.base.MoreObjects;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class SpotBugsSpec implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -30,6 +30,6 @@ public class SpotBugsSpec implements Serializable {
   }
   
   public String toString() {
-      return MoreObjects.toStringHelper(this).add("arguments", arguments).add("debugEnabled", debugEnabled).toString();
+      return new ToStringBuilder(this).append("arguments", arguments).append("debugEnabled", debugEnabled).toString();
   }
 }
