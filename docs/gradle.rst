@@ -6,7 +6,7 @@ This chapter describes how to integrate SpotBugs into a build script for Gradle.
 Use SpotBugs Gradle Plugin
 --------------------------
 
-Please follow instruction found on `official Gradple Plugin page <https://plugins.gradle.org/plugin/com.github.spotbugs>`_.
+Please follow instruction found on `official Gradle Plugin page <https://plugins.gradle.org/plugin/com.github.spotbugs>`_.
 
 Tasks introduced by this Gradle Plugin
 --------------------------------------
