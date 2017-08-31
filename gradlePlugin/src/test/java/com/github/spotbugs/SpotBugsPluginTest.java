@@ -65,11 +65,36 @@ public class SpotBugsPluginTest extends Assert{
             .withProjectDir(root)
             .withArguments(Arrays.asList("compileJava", "spotbugsMain"))
             .withPluginClasspath().build();
-    Optional<BuildTask> spotbugsMain = result.getTasks().stream()
-            .filter(task -> task.getPath().equals(":spotbugsMain"))
-            .findAny();
+    Optional<BuildTask> spotbugsMain = findTask(result, ":spotbugsMain");
     assertTrue(spotbugsMain.isPresent());
     assertThat(spotbugsMain.get().getOutcome(), is(TaskOutcome.SUCCESS));
+  }
+
+  @Test
+  public void testSpotBugsTestTaskCanRun() throws Exception {
+    BuildResult result = GradleRunner.create()
+            .withProjectDir(root)
+            .withArguments(Arrays.asList("compileTestJava", "spotbugsTest"))
+            .withPluginClasspath().build();
+    Optional<BuildTask> spotbugsTest = findTask(result, ":spotbugsTest");
+    assertTrue(spotbugsTest.isPresent());
+    assertThat(spotbugsTest.get().getOutcome(), is(TaskOutcome.NO_SOURCE));
+  }
+
+  @Test
+  public void testCheckTaskDependsOnSpotBugsTasks() throws Exception {
+    BuildResult result = GradleRunner.create()
+            .withProjectDir(root)
+            .withArguments(Arrays.asList("compileJava", "compileTestJava", "check"))
+            .withPluginClasspath().build();
+    assertTrue(findTask(result, ":spotbugsMain").isPresent());
+    assertTrue(findTask(result, ":spotbugsTest").isPresent());
+  }
+
+  private Optional<BuildTask> findTask(BuildResult result, String taskName) {
+    return result.getTasks().stream()
+          .filter(task -> task.getPath().equals(taskName))
+          .findAny();
   }
 
   @Test
