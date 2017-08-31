@@ -33,7 +33,7 @@ msgstr ""
 
 #: ../../gradle.rst:9
 msgid ""
-"Please follow instruction found on `official Gradple Plugin page "
+"Please follow instruction found on `official Gradle Plugin page "
 "<https://plugins.gradle.org/plugin/com.github.spotbugs>`_."
 msgstr ""
 
