@@ -19,6 +19,19 @@ dependencies {
     testCompile 'junit:junit:4.12'//, 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
 
+// list up URLs of all runtime classpath, to use them in Gradle Test Kit
+task createClasspathManifest {
+  def outputDir = sourceSets.main.output.resourcesDir
+
+  inputs.files sourceSets.main.runtimeClasspath
+  outputs.dir sourceSets.test.output.resourcesDir
+
+  doLast {
+    file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+  }
+}
+tasks.testClasses.dependsOn createClasspathManifest
+
 test { //show test output
   testLogging.showStandardStreams = true
 }
