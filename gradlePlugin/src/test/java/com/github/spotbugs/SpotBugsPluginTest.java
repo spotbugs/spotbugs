@@ -5,14 +5,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
@@ -29,8 +23,6 @@ import com.google.common.io.Files;
 public class SpotBugsPluginTest extends Assert{
   @Rule
   public TemporaryFolder folder= new TemporaryFolder();
-
-  private List<File> pluginClasspath;
 
   @Before
   public void createProject() throws IOException {
@@ -52,22 +44,9 @@ public class SpotBugsPluginTest extends Assert{
     Files.copy(from, to);
   }
 
-  @Before
-  public void createPluginClasspath() throws IOException, URISyntaxException {
-    URL pluginClasspathResource = getClass().getClassLoader().getResource("plugin-classpath.txt");
-    if (pluginClasspathResource == null) {
-      throw new IllegalStateException("Did not find plugin classpath resource, run `testClasses` build task.");
-    }
-
-    pluginClasspath = Files.readLines(Paths.get(pluginClasspathResource.toURI()).toFile(), StandardCharsets.UTF_8)
-      .stream()
-      .map(File::new)
-      .collect(Collectors.toList());
-  }
-
   @Test
   public void TestSpotBugsTasksExist() throws Exception{
-    BuildResult result = GradleRunner.create().withProjectDir(folder.getRoot()).withArguments(Arrays.asList("tasks", "--all")).withPluginClasspath(pluginClasspath).build();
+    BuildResult result = GradleRunner.create().withProjectDir(folder.getRoot()).withArguments(Arrays.asList("tasks", "--all")).withPluginClasspath().build();
     assertTrue(result.getOutput().contains("spotbugsMain"));
     assertTrue(result.getOutput().contains("spotbugsTest"));
   }
@@ -77,7 +56,7 @@ public class SpotBugsPluginTest extends Assert{
     BuildResult result = GradleRunner.create()
             .withProjectDir(folder.getRoot())
             .withArguments(Arrays.asList("compileJava", "spotbugsMain"))
-            .withPluginClasspath(pluginClasspath).build();
+            .withPluginClasspath().build();
     Optional<BuildTask> spotbugsMain = findTask(result, ":spotbugsMain");
     assertTrue(spotbugsMain.isPresent());
     assertThat(spotbugsMain.get().getOutcome(), is(TaskOutcome.SUCCESS));
@@ -88,7 +67,7 @@ public class SpotBugsPluginTest extends Assert{
     BuildResult result = GradleRunner.create()
             .withProjectDir(folder.getRoot())
             .withArguments(Arrays.asList("compileTestJava", "spotbugsTest"))
-            .withPluginClasspath(pluginClasspath).build();
+            .withPluginClasspath().build();
     Optional<BuildTask> spotbugsTest = findTask(result, ":spotbugsTest");
     assertTrue(spotbugsTest.isPresent());
     assertThat(spotbugsTest.get().getOutcome(), is(TaskOutcome.NO_SOURCE));
@@ -99,7 +78,7 @@ public class SpotBugsPluginTest extends Assert{
     BuildResult result = GradleRunner.create()
             .withProjectDir(folder.getRoot())
             .withArguments(Arrays.asList("compileJava", "compileTestJava", "check"))
-            .withPluginClasspath(pluginClasspath).build();
+            .withPluginClasspath().build();
     assertTrue(findTask(result, ":spotbugsMain").isPresent());
     assertTrue(findTask(result, ":spotbugsTest").isPresent());
   }
