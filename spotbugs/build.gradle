@@ -6,6 +6,10 @@ sourceSets {
   main {
     java {
       srcDirs = ['src/main/java', 'src/gui']
+      exclude '**/*.properties'
+      exclude '**/*.db'
+      exclude '**/*.html'
+      exclude '**/*.png'
     }
     resources {
       /*
