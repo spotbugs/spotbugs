@@ -21,7 +21,7 @@ SpotBugs Gradle Plugin adds task dependency from `check` to these these tasks, s
 Configure Gradle Plugin
 -----------------------
 
-Current version of SpotBugs Gradle Plugin uses the same way to configure. Please check the document for `FindBugsExtension <http://gradle.monochromeroad.com/docs/dsl/org.gradle.api.plugins.quality.FindBugsExtension.html>`_.
+Current version of SpotBugs Gradle Plugin uses the same way with FindBugs Gradle Plugin to configure. Please check the document for `FindBugsExtension <http://gradle.monochromeroad.com/docs/dsl/org.gradle.api.plugins.quality.FindBugsExtension.html>`_.
 
 For instance, to specify the version of SpotBugs, you can configure like below:
 
