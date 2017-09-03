@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/lgpl.html
 
    <requires>
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.12.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.jdt.launching"/>
