@@ -6,12 +6,10 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import edu.umd.cs.findbugs.test.SpotBugsRule;
 
 public class FindUnsatisfiedObligationTest {
@@ -23,9 +21,8 @@ public class FindUnsatisfiedObligationTest {
      *      issue</a>
      */
     @Test
-    @Ignore
     public void testIssue60() {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/main/Issue60.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/lambdas/Issue60.class"));
         assertThat(bugCollection, is(emptyIterable()));
     }
 }

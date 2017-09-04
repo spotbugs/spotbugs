@@ -69,7 +69,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>pluginList (list of plugin Jar files to load)</li>
  * <li>projectFile (project filename)</li>
  * <li>projectName (project name, for display in generated HTML)</li>
- * <li>userPrefs (user preferences filename)</li>
+ * <li>userPreferencesFile (user preferences filename)</li>
  * <li>quietErrors (boolean - default false)</li>
  * <li>relaxed (boolean - default false)</li>
  * <li>reportLevel (enum experimental|low|medium|high)</li>

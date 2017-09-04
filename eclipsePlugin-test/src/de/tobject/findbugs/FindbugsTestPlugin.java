@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom·s Pollak
+ * Copyright (C) 2009, Tom√°s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ import org.osgi.framework.BundleContext;
 public class FindbugsTestPlugin extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse.test";
+    public static final String PLUGIN_ID = "com.github.spotbugs.plugin.eclipse.test";
 
     // The shared instance
     private static FindbugsTestPlugin plugin;
@@ -49,7 +49,7 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
      * )
@@ -62,7 +62,7 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
      * )
@@ -75,7 +75,7 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
 
     /**
      * Returns the shared instance
-     * 
+     *
      * @return the shared instance
      */
     public static FindbugsTestPlugin getDefault() {

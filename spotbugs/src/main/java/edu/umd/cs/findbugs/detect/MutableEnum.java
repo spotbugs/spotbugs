@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -75,10 +76,10 @@ public class MutableEnum extends OpcodeStackDetector {
         if(skip) {
             return;
         }
-        if(isBranch(seen) || seen == ATHROW || isReturn(seen)) {
+        if(isBranch(seen) || seen == Const.ATHROW || isReturn(seen)) {
             skip = true;
         }
-        if(seen == PUTFIELD) {
+        if(seen == Const.PUTFIELD) {
             XField xField = getXFieldOperand();
             if(xField != null && xField.getClassDescriptor().getClassName().equals(getClassName())) {
                 Item val = getStack().getStackItem(0);

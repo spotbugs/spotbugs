@@ -508,7 +508,7 @@ public class FindDeadLocalStores implements Detector {
                     // Look for objects created but never used
 
                     Instruction prevIns = prev.getInstruction();
-                    if ((prevIns instanceof INVOKESPECIAL && "<init>".equals(((INVOKESPECIAL) prevIns).getMethodName(methodGen.getConstantPool())))
+                    if ((prevIns instanceof INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(((INVOKESPECIAL) prevIns).getMethodName(methodGen.getConstantPool())))
                             || prevIns instanceof ANEWARRAY
                             || prevIns instanceof NEWARRAY
                             || prevIns instanceof MULTIANEWARRAY) {

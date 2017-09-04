@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -76,9 +77,9 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                 return new LoadedVariable(LoadedVariableState.LOCAL, getRegisterOperand(), null);
             }
             switch(opcode) {
-            case GETSTATIC:
+            case Const.GETSTATIC:
                 return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
-            case GETFIELD:
+            case Const.GETFIELD:
                 if(lvState == LoadedVariableState.LOCAL && num == 0) {
                     // Ignore fields from other classes
                     return new LoadedVariable(LoadedVariableState.FIELD, 0, getFieldDescriptorOperand());
@@ -227,8 +228,8 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
             handleStore(getRegisterOperand());
         } else {
             switch (seen) {
-            case INVOKEINTERFACE:
-            case INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
                 if (!loadedVariable.none() &&
                         "keySet".equals(getNameConstantOperand()) && "()Ljava/util/Set;".equals(getSigConstantOperand())
                         // Following check solves sourceforge bug 1830576
@@ -271,7 +272,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                     removedFromStack(true);
                 }
                 break;
-            case INVOKESTATIC:
+            case Const.INVOKESTATIC:
                 if ("valueOf".equals(getNameConstantOperand())
                         && ("java/lang/Integer".equals(getClassConstantOperand())
                                 || "java/lang/Long".equals(getClassConstantOperand())
@@ -281,7 +282,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                 }
                 removedFromStack(true);
                 break;
-            case CHECKCAST:
+            case Const.CHECKCAST:
                 removedFromStack(false);
                 break;
             default:

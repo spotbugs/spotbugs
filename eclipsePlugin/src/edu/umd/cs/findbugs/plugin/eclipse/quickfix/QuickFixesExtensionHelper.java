@@ -30,8 +30,6 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
@@ -42,7 +40,10 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class QuickFixesExtensionHelper {
 
-    private static final String EXTENSION_POINT_ID = FindbugsPlugin.PLUGIN_ID + ".findbugsQuickFixes";
+    /**
+     * The extension point ID defined by <strong>FindBugs</strong>, unchanged for compatibility reasons.
+     */
+    private static final String EXTENSION_POINT_ID = "edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes";
 
     private static final String ARGUMENTS = "arguments";
     private static final String PATTERN = "pattern";
@@ -60,16 +61,8 @@ public class QuickFixesExtensionHelper {
         HashMap<String, List<QuickFixContribution>> set = new HashMap<>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
-        IExtensionPoint point = registry.getExtensionPoint(EXTENSION_POINT_ID);
-        if (point == null) {
-            return Collections.EMPTY_MAP;
-        }
-        IExtension[] extensions = point.getExtensions();
-        for (IExtension extension : extensions) {
-            IConfigurationElement[] elements = extension.getConfigurationElements();
-            for (IConfigurationElement configElt : elements) {
-                addContribution(set, configElt);
-            }
+        for (IConfigurationElement configElt : registry.getConfigurationElementsFor(EXTENSION_POINT_ID)) {
+            addContribution(set, configElt);
         }
         Set<Entry<String, List<QuickFixContribution>>> entrySet = set.entrySet();
         for (Entry<String, List<QuickFixContribution>> entry : entrySet) {
@@ -98,16 +91,13 @@ public class QuickFixesExtensionHelper {
             if (isEmpty(pattern)) {
                 throw new IllegalArgumentException("Missing '" + PATTERN + "' attribute");
             }
-
-
             String arg = configElt.getAttribute(ARGUMENTS);
             Set<String> args;
             if (arg == null) {
-                args = Collections.EMPTY_SET;
+                args = Collections.emptySet();
             } else {
-                String[] strings = arg.split(",\\s*");
                 args = new HashSet<>();
-                for (String string : strings) {
+                for (String string : arg.split(",\\s*")) {
                     args.add(string);
                 }
             }
@@ -140,10 +130,7 @@ public class QuickFixesExtensionHelper {
         });
     }
 
-
     static boolean isEmpty(String s){
         return s == null || s.isEmpty();
     }
-
-
 }

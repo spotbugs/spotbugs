@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LineNumber;
@@ -126,12 +127,12 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
             for (int j = start; j <= end && j < code.length;) {
                 int opcode = asUnsignedByte(code[j]);
-                if (NO_OF_OPERANDS[opcode] < 0) {
+                if (Const.getNoOfOperands(opcode) < 0) {
                     exitInTryBlock = true;
                     break;
                 }
-                j += 1 + NO_OF_OPERANDS[opcode];
-                if (opcode >= IRETURN && opcode <= RETURN || opcode >= IFEQ && opcode <= GOTO && (opcode != GOTO || j < end)) {
+                j += 1 + Const.getNoOfOperands(opcode);
+                if (opcode >= Const.IRETURN && opcode <= Const.RETURN || opcode >= Const.IFEQ && opcode <= Const.GOTO && (opcode != Const.GOTO || j < end)) {
                     exitInTryBlock = true;
                     if (DEBUG) {
                         System.out.println("\texit: " + opcode + " in " + getFullyQualifiedMethodName());
@@ -154,14 +155,14 @@ public class DroppedException extends PreorderVisitor implements Detector {
             if (cause == 0) {
                 causeName = "java.lang.Throwable";
             } else {
-                causeName = Utility.compactClassName(getConstantPool().getConstantString(cause, CONSTANT_Class), false);
+                causeName = Utility.compactClassName(getConstantPool().getConstantString(cause, Const.CONSTANT_Class), false);
                 if (!isChecked(causeName)) {
                     continue;
                 }
             }
 
             int jumpAtEnd = 0;
-            if (end < code.length && asUnsignedByte(code[end]) == GOTO) {
+            if (end < code.length && asUnsignedByte(code[end]) == Const.GOTO) {
                 jumpAtEnd = getUnsignedShort(code, end + 1);
                 if (jumpAtEnd < handled) {
                     jumpAtEnd = 0;
@@ -171,18 +172,18 @@ public class DroppedException extends PreorderVisitor implements Detector {
             int opcode = asUnsignedByte(code[handled]);
             int afterHandler = 0;
             if (DEBUG) {
-                System.out.println("DE:\topcode is " + OPCODE_NAMES[opcode] + ", " + asUnsignedByte(code[handled + 1]));
+                System.out.println("DE:\topcode is " + Const.getOpcodeName(opcode) + ", " + asUnsignedByte(code[handled + 1]));
             }
             boolean drops = false;
-            boolean startsWithASTORE03 = opcode >= ASTORE_0 && opcode <= ASTORE_3;
-            if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == RETURN) {
+            boolean startsWithASTORE03 = opcode >= Const.ASTORE_0 && opcode <= Const.ASTORE_3;
+            if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == Const.RETURN) {
                 if (DEBUG) {
                     System.out.println("Drop 1");
                 }
                 drops = true;
                 afterHandler = handled + 1;
             }
-            if (handled + 2 < code.length && opcode == ASTORE && asUnsignedByte(code[handled + 2]) == RETURN) {
+            if (handled + 2 < code.length && opcode == Const.ASTORE && asUnsignedByte(code[handled + 2]) == Const.RETURN) {
                 drops = true;
                 afterHandler = handled + 2;
                 if (DEBUG) {
@@ -193,7 +194,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 if (DEBUG) {
                     System.out.println("DE: checking for jumps");
                 }
-                if (startsWithASTORE03 && asUnsignedByte(code[handled - 3]) == GOTO) {
+                if (startsWithASTORE03 && asUnsignedByte(code[handled - 3]) == Const.GOTO) {
                     int offsetBefore = getUnsignedShort(code, handled - 2);
                     if (DEBUG) {
                         System.out.println("offset before = " + offsetBefore);
@@ -206,7 +207,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                         }
                     }
                 }
-                if (opcode == ASTORE && asUnsignedByte(code[handled - 3]) == GOTO) {
+                if (opcode == Const.ASTORE && asUnsignedByte(code[handled - 3]) == Const.GOTO) {
                     int offsetBefore = getUnsignedShort(code, handled - 2);
                     if (offsetBefore == 5) {
                         drops = true;
@@ -216,7 +217,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                         }
                     }
                 }
-                if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == GOTO && asUnsignedByte(code[handled - 3]) == GOTO) {
+                if (startsWithASTORE03 && asUnsignedByte(code[handled + 1]) == Const.GOTO && asUnsignedByte(code[handled - 3]) == Const.GOTO) {
                     int offsetBefore = getUnsignedShort(code, handled - 2);
                     int offsetAfter = getUnsignedShort(code, handled + 2);
 
@@ -229,7 +230,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     }
                 }
 
-                if (opcode == ASTORE && asUnsignedByte(code[handled + 2]) == GOTO && asUnsignedByte(code[handled - 3]) == GOTO) {
+                if (opcode == Const.ASTORE && asUnsignedByte(code[handled + 2]) == Const.GOTO && asUnsignedByte(code[handled - 3]) == Const.GOTO) {
                     int offsetBefore = getUnsignedShort(code, handled - 2);
                     int offsetAfter = getUnsignedShort(code, handled + 3);
 
@@ -295,8 +296,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
                 int register = -1;
                 if (startsWithASTORE03) {
-                    register = opcode - ASTORE_0;
-                } else if (opcode == ASTORE) {
+                    register = opcode - Const.ASTORE_0;
+                } else if (opcode == Const.ASTORE) {
                     register =  asUnsignedByte(code[handled + 1]);
                 }
                 if (register >= 0) {

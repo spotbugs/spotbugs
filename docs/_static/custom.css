@@ -1,0 +1,11 @@
+/*
+ * To display all entries in <table>. Default value is `nowrap` which makes wide table hard to read.
+ */
+.wy-table-responsive table td, .wy-table-responsive table th {
+  white-space: normal;
+}
+
+.rst-content pre > code {
+  white-space: pre;
+  display: block;
+}

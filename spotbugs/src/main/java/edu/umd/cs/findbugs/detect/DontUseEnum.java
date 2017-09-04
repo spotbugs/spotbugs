@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.LocalVariable;
@@ -48,7 +49,7 @@ public class DontUseEnum extends PreorderDetector {
     }
 
     private boolean isVisible(FieldOrMethod obj) {
-        return (obj.getAccessFlags() & ACC_PUBLIC) != 0 || (obj.getAccessFlags() & ACC_PROTECTED) != 0;
+        return (obj.getAccessFlags() & Const.ACC_PUBLIC) != 0 || (obj.getAccessFlags() & Const.ACC_PROTECTED) != 0;
     }
 
     private boolean isReservedName(String name) {

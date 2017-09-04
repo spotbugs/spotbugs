@@ -190,8 +190,8 @@ public class GenericObjectType extends ObjectType {
      *            the type variable e.g. <code>T</code>
      */
     GenericObjectType(@Nonnull String wildcard, @CheckForNull ReferenceType extension) {
-        super(DescriptorFactory.canonicalizeString(Type.OBJECT.getClassName()));
-        this.variable = DescriptorFactory.canonicalizeString(wildcard);
+        super(Type.OBJECT.getClassName());
+        this.variable = wildcard;
         this.extension = extension;
         parameters = null;
     }
@@ -206,7 +206,7 @@ public class GenericObjectType extends ObjectType {
      *            the parameters of this class, must be at least 1 parameter
      */
     GenericObjectType(@DottedClassName String class_name, List<? extends ReferenceType> parameters) {
-        super(DescriptorFactory.canonicalizeString(class_name));
+        super(class_name);
         variable = null;
         extension = null;
         if (parameters == null || parameters.size() == 0) {

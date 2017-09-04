@@ -89,7 +89,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
     @Override
     public void visit(Code code) {
-        boolean interesting = "<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName());
+        boolean interesting = Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
         if (!interesting) {
             return;
         }
@@ -133,7 +133,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
         switch (seen) {
         case Const.INVOKESPECIAL:
-            if (!getMethod().isStatic() && "<init>".equals(getNameConstantOperand()) && isSelfOperation()) {
+            if (!getMethod().isStatic() && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && isSelfOperation()) {
                 OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
                 if (invokedOn.isInitialParameter() && invokedOn.getRegisterNumber() == 0) {
                     secondaryConstructor = true;

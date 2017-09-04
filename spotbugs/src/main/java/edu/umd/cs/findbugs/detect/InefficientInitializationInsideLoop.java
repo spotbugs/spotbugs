@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -110,11 +111,11 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEINTERFACE && getClassConstantOperand().equals("java/sql/Connection")
+        if (seen == Const.INVOKEINTERFACE && getClassConstantOperand().equals("java/sql/Connection")
                 && getMethodDescriptorOperand().getName().equals("prepareStatement") && hasConstantArguments()) {
             matched.put(getPC(), new BugInstance(this, "IIL_PREPARE_STATEMENT_IN_LOOP", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, getPC()).addCalledMethod(this));
-        } else if (seen == INVOKEINTERFACE && getMethodDescriptorOperand().equals(NODELIST_GET_LENGTH)) {
+        } else if (seen == Const.INVOKEINTERFACE && getMethodDescriptorOperand().equals(NODELIST_GET_LENGTH)) {
             Item item = getStack().getStackItem(0);
             XMethod returnValueOf = item.getReturnValueOf();
             if(returnValueOf != null && returnValueOf.getClassName().startsWith("org.w3c.dom.") && returnValueOf.getName().startsWith("getElementsByTagName")) {
@@ -123,13 +124,13 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
                         .addSourceLine(this, getPC()).addCalledMethod(this));
                 sources.put(getPC(), item.getPC());
             }
-        } else if (seen == INVOKESTATIC
+        } else if (seen == Const.INVOKESTATIC
                 && (getMethodDescriptorOperand().equals(PATTERN_COMPILE) || getMethodDescriptorOperand()
                         .equals(PATTERN_COMPILE_2)) && hasConstantArguments()) {
             String regex = getFirstArgument();
             matched.put(getPC(), new BugInstance(this, "IIL_PATTERN_COMPILE_IN_LOOP", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, getPC()).addCalledMethod(this).addString(regex).describe(StringAnnotation.REGEX_ROLE));
-        } else if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL) && implicitPatternMethods.contains(getMethodDescriptorOperand())) {
+        } else if ((seen == Const.INVOKESTATIC || seen == Const.INVOKEVIRTUAL) && implicitPatternMethods.contains(getMethodDescriptorOperand())) {
             String regex = getFirstArgument();
             if (regex != null && !(getNameConstantOperand().equals("split") && isFastPath(regex))) {
                 BugInstance bug = new BugInstance(this, "IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT", LOW_PRIORITY)

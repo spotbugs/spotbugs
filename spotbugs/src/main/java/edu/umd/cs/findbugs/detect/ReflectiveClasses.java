@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -47,14 +49,14 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
     @Override
     public void sawClass() {
         int opcode = getOpcode();
-        if ((opcode == LDC) || (opcode == LDC_W)) {
+        if ((opcode == Const.LDC) || (opcode == Const.LDC_W)) {
             process(getClassConstantOperand());
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESTATIC) {
+        if (seen == Const.INVOKESTATIC) {
             // System.out.println(getClassConstantOperand()+ "." +
             // getNameConstantOperand());
             if (constantString != null && "java/lang/Class".equals(getClassConstantOperand())

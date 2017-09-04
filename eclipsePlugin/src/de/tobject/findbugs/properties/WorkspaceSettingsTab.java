@@ -72,7 +72,7 @@ public class WorkspaceSettingsTab extends Composite {
 
         runAsExtraJob = new Button(this, SWT.CHECK);
         runAsExtraJob.setSelection(store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB));
-        runAsExtraJob.setText("Run FB analysis as extra job (independent from build job)");
+        runAsExtraJob.setText("Run SpotBugs analysis as extra job (independent from build job)");
         runAsExtraJob.setToolTipText("Should improve user experience especially for the incremented compile");
 
         cacheClassData = new Button(this, SWT.CHECK);
@@ -87,7 +87,7 @@ public class WorkspaceSettingsTab extends Composite {
             return;
         }
         ManagePathsWidget pathsWidget = new ManagePathsWidget(this);
-        CheckboxTableViewer viewer = pathsWidget.createViewer("FindBugs Plugins",
+        CheckboxTableViewer viewer = pathsWidget.createViewer("SpotBugs Plugins",
                 "See: <a href=\"http://www.ibm.com/developerworks/library/j-findbug2/\">'Writing custom plugins'</a>"
                         + " and <a href=\"http://fb-contrib.sourceforge.net/\">fb-contrib</a>: additional bug detectors package",
                         true); // set true to enable checkbox to allow enable/disable detectors without removing them
@@ -96,7 +96,7 @@ public class WorkspaceSettingsTab extends Composite {
         detectorProvider.refresh();
 
         switchTo = new Button(this, SWT.CHECK);
-        switchTo.setText("Switch to the FindBugs perspective after analysis");
+        switchTo.setText("Switch to the SpotBugs perspective after analysis");
         switchTo.setSelection(store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS));
         switchTo.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -106,7 +106,7 @@ public class WorkspaceSettingsTab extends Composite {
         });
 
         confirmSwitch = new Button(this, SWT.CHECK);
-        confirmSwitch.setText("Ask before switching to the FindBugs perspective");
+        confirmSwitch.setText("Ask before switching to the SpotBugs perspective");
         confirmSwitch.setSelection(store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH));
         confirmSwitch.addSelectionListener(new SelectionAdapter() {
             @Override

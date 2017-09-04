@@ -183,10 +183,12 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         }
     }
 
+    @Override
     public void dispose() {
         //
     }
 
+    @Override
     public void inputChanged(Viewer viewer1, Object oldInput, Object newInput) {
         //
     }

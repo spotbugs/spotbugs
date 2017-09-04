@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -64,7 +65,7 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
     @Override
     public void visit(Method obj) {
         clearAll();
-        prevOpcode = NOP;
+        prevOpcode = Const.NOP;
     }
 
     private void clearAll() {
@@ -103,40 +104,40 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     private void scanForDanger(int seen) {
         switch (seen) {
-        case AALOAD:
-        case BALOAD:
-        case SALOAD:
-        case CALOAD:
-        case IALOAD:
-        case LALOAD:
-        case FALOAD:
-        case DALOAD:
+        case Const.AALOAD:
+        case Const.BALOAD:
+        case Const.SALOAD:
+        case Const.CALOAD:
+        case Const.IALOAD:
+        case Const.LALOAD:
+        case Const.FALOAD:
+        case Const.DALOAD:
             sawArrayDanger = true;
             sawDanger = true;
             break;
 
-        case INVOKEVIRTUAL:
+        case Const.INVOKEVIRTUAL:
             if ("length".equals(getNameConstantOperand()) && "java/lang/String".equals(getClassConstantOperand())) {
                 break;
             }
             sawDanger = true;
             sawMethodCall = true;
             break;
-        case INVOKEINTERFACE:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             sawDanger = true;
             sawMethodCall = true;
             break;
-        case IDIV:
-        case IREM:
-        case LDIV:
-        case LREM:
+        case Const.IDIV:
+        case Const.IREM:
+        case Const.LDIV:
+        case Const.LREM:
             sawDanger = true;
             break;
 
-        case ARRAYLENGTH:
-        case GETFIELD:
+        case Const.ARRAYLENGTH:
+        case Const.GETFIELD:
             // null pointer detector will handle these
             break;
         default:
@@ -147,8 +148,8 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     private void scanForShortCircuit(int seen) {
         switch (seen) {
-        case IAND:
-        case IOR:
+        case Const.IAND:
+        case Const.IOR:
 
             // System.out.println("Saw IOR or IAND at distance " + distance);
             OpcodeStack.Item item0 = stack.getStackItem(0);
@@ -165,18 +166,18 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
                 stage2 = 0;
             }
             break;
-        case IFEQ:
-        case IFNE:
+        case Const.IFEQ:
+        case Const.IFNE:
             if (stage2 == 1) {
                 // System.out.println("Found nsc");
                 reportBug();
             }
             stage2 = 0;
             break;
-        case PUTFIELD:
-        case PUTSTATIC:
-        case IRETURN:
-            if (operator == IAND && stage2 == 1) {
+        case Const.PUTFIELD:
+        case Const.PUTSTATIC:
+        case Const.IRETURN:
+            if (operator == Const.IAND && stage2 == 1) {
                 reportBug();
             }
             stage2 = 0;
@@ -209,37 +210,37 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
     private void scanForBooleanValue(int seen) {
         switch (seen) {
 
-        case IAND:
-        case IOR:
+        case Const.IAND:
+        case Const.IOR:
             switch (prevOpcode) {
-            case ILOAD:
-            case ILOAD_0:
-            case ILOAD_1:
-            case ILOAD_2:
-            case ILOAD_3:
+            case Const.ILOAD:
+            case Const.ILOAD_0:
+            case Const.ILOAD_1:
+            case Const.ILOAD_2:
+            case Const.ILOAD_3:
                 clearAll();
                 break;
             default:
                 break;
             }
             break;
-        case ICONST_1:
+        case Const.ICONST_1:
             stage1 = 1;
             switch (prevOpcode) {
-            case IFNONNULL:
-            case IFNULL:
+            case Const.IFNONNULL:
+            case Const.IFNULL:
                 sawNullTest = true;
                 break;
-            case IF_ICMPGT:
-            case IF_ICMPGE:
-            case IF_ICMPLT:
-            case IF_ICMPLE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPGE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPLE:
                 sawNumericTest = true;
                 break;
             }
 
             break;
-        case GOTO:
+        case Const.GOTO:
             if (stage1 == 1) {
                 stage1 = 2;
             } else {
@@ -247,16 +248,16 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
                 clearAll();
             }
             break;
-        case ICONST_0:
+        case Const.ICONST_0:
             if (stage1 == 2) {
                 sawBooleanValue();
             }
             stage1 = 0;
             break;
-        case INVOKEINTERFACE:
-        case INVOKEVIRTUAL:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
             String sig = getSigConstantOperand();
             if (sig.endsWith(")Z")) {
                 sawBooleanValue();

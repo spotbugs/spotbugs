@@ -321,7 +321,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 return;
             }
 
-            if (methodDescriptor.getName().equals("<init>")) {
+            if (methodDescriptor.getName().equals(Const.CONSTRUCTOR_NAME)) {
                 try {
 
                     if (subtypes2.isSubtype(methodDescriptor.getClassDescriptor(), DescriptorFactory.createClassDescriptorFromDottedClassName(obligation.getClassName()))) {
@@ -528,7 +528,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 }
 
                 String methodName = inv.getMethodName(cpg);
-                Type producedType = "<init>".equals(methodName) ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
+                Type producedType = Const.CONSTRUCTOR_NAME.equals(methodName) ? inv.getReferenceType(cpg) : inv.getReturnType(cpg);
 
                 if (DEBUG_FP && !(producedType instanceof ObjectType)) {
                     System.out.println("Produced type " + producedType + " not an ObjectType");

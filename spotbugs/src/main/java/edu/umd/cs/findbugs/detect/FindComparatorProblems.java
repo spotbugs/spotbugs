@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -82,7 +83,7 @@ public class FindComparatorProblems extends OpcodeStackDetector {
         if(getStack().getStackDepth() == 0) {
             this.lastEmptyStackPC = getPC();
         }
-        if((seen == DCMPG || seen == DCMPL || seen == FCMPL || seen == FCMPG) && getStack().getStackDepth() == 2) {
+        if((seen == Const.DCMPG || seen == Const.DCMPL || seen == Const.FCMPL || seen == Const.FCMPG) && getStack().getStackDepth() == 2) {
             int[] startEnd = new int[] {this.lastEmptyStackPC, getPC()};
             for(Iterator<int[]> iterator = twoDoublesInStack.iterator(); iterator.hasNext(); ) {
                 int[] oldStartEnd = iterator.next();
@@ -101,7 +102,7 @@ public class FindComparatorProblems extends OpcodeStackDetector {
             }
             twoDoublesInStack.add(startEnd);
         }
-        if (seen == IRETURN) {
+        if (seen == Const.IRETURN) {
             OpcodeStack.Item top = stack.getStackItem(0);
             Object o = top.getConstant();
             if (o instanceof Integer && ((Integer)o).intValue() == Integer.MIN_VALUE) {

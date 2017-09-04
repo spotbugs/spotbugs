@@ -17,7 +17,7 @@ import os
 
 html_context = {
   'version' : '3.1',
-  'full_version' : '3.1.0-RC1'
+  'full_version' : '3.1.0-RC5'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -267,3 +267,10 @@ texinfo_documents = [
 # http://www.sphinx-doc.org/en/latest/intl.html
 locale_dirs = ['locale/']
 gettext_compact = False
+gettext_additional_targets = ['raw']
+
+def setup(app):
+    app.add_stylesheet('custom.css')
+
+sys.path.append(os.path.abspath('extensions'))
+extensions += ['generate_bug_description']

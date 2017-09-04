@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
+<?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="findbugsPlugins" name="Custom SpotBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
-   <extension-point id="findbugsQuickFixes" name="Custom SpotBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
+   <extension-point id="edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins" name="Custom FindBugs/SpotBugs detector plugins" schema="schema/detectorPlugins.exsd"/>
+   <extension-point id="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes" name="Custom FindBugs/SpotBugs quick fixes" schema="schema/findbugsQuickFixes.exsd"/>
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
@@ -32,7 +32,7 @@
       </page>
    </extension>
    <extension
-         id="findbugsBuilder"
+         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder"
          name="%findbugsBuilderName"
          point="org.eclipse.core.resources.builders">
       <builder>
@@ -42,7 +42,7 @@
       </builder>
    </extension>
    <extension
-         id="findbugsNature"
+         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsNature"
          name="%findbugsNatureName"
          point="org.eclipse.core.resources.natures">
       <runtime>
@@ -265,7 +265,7 @@
             objectClass="org.eclipse.jdt.core.IOpenable">
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
@@ -279,7 +279,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
          <visibility>
@@ -300,7 +300,7 @@
             objectClass="org.eclipse.ui.IWorkingSet">
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
@@ -314,7 +314,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugsOnWorkingSet"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
       </objectContribution>
@@ -329,7 +329,7 @@
             objectClass="org.eclipse.core.resources.IProject">
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build">
             <separator name="doit" />
             <separator name="save" />
@@ -369,7 +369,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
            </action>
@@ -416,7 +416,7 @@
             targetID="#CompilationUnitEditorContext">
          <menu
                id="findbugs"
-               label="Find Bugs"
+               label="SpotBugs"
                path="additions"/>
          <action
                class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
@@ -429,7 +429,7 @@
                class="de.tobject.findbugs.actions.FindBugsEditorAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
                tooltip="%menu.findBugsPopup"/>
       </viewerContribution>
@@ -446,7 +446,7 @@
             enablesFor="1"
             icon="icons/runFindbugs.png"
             id="de.tobject.findbugs.findBugs"
-            label="&amp;Spot Bugs"
+            label="&amp;Find Bugs"
             menubarPath="additions"
             tooltip="%menu.findBugsPopup">
       </action>
@@ -459,11 +459,13 @@
             menubarPath="additions"
             tooltip="%menu.clearMarkersPopup">
       </action>
+      <!--
       <enablement>
              <adapt type="org.eclipse.team.internal.core.subscribers.ChangeSet">
                  <instanceof value="org.eclipse.team.internal.core.subscribers.ActiveChangeSet"/>
              </adapt>
       </enablement>
+      -->
    </objectContribution>
 
    </extension>
@@ -578,7 +580,7 @@
          </action>
          <menu
                id="findbugs"
-               label="Spot Bugs"
+               label="SpotBugs"
                path="group.build">
          </menu>
       </objectContribution>
@@ -642,7 +644,7 @@
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/runFindbugs.png"
                id="de.tobject.findbugs.findBugs"
-               label="&amp;Spot Bugs"
+               label="&amp;Find Bugs"
                menubarPath="findbugs/doit"
                tooltip="Scan selected element for bugs.">
          </action>
@@ -713,17 +715,17 @@
          point="org.eclipse.ui.ide.markerResolution">
       <markerResolutionGenerator
             markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerScariest"
-            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"/>
       <markerResolutionGenerator
-            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
             markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerScary">
       </markerResolutionGenerator>
       <markerResolutionGenerator
-            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
             markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerTroubling">
       </markerResolutionGenerator>
       <markerResolutionGenerator
-            class="com.github.spotbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator"
             markerType="com.github.spotbugs.plugin.eclipse.findbugsMarkerOfConcern">
       </markerResolutionGenerator>
    </extension>
@@ -1003,7 +1005,7 @@
            </action>
            <action
                  class="de.tobject.findbugs.actions.GoIntoAction"
-                 icon="icons/next_nav_into.gif"
+                 icon="icons/next_nav_into.png"
                  id="findBugsEclipsePlugin.action4"
                  label="Go Into"
                  style="push"
@@ -1012,7 +1014,7 @@
            </action>
          <action
                class="de.tobject.findbugs.actions.RefreshAction"
-               icon="icons/refresh.gif"
+               icon="icons/refresh.png"
                id="findBugsEclipsePlugin.action1"
                label="Refresh"
                style="push"
@@ -1210,13 +1212,6 @@
           </adapter>
        </factory>
        <factory
-             adaptableType="edu.umd.cs.findbugs.BugInstance$XmlProps"
-             class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
-          <adapter
-                type="org.eclipse.ui.views.properties.IPropertySource">
-          </adapter>
-       </factory>
-       <factory
              adaptableType="edu.umd.cs.findbugs.DetectorFactory"
              class="de.tobject.findbugs.view.properties.PropertyPageAdapterFactory">
           <adapter
@@ -1319,7 +1314,13 @@
              class="de.tobject.findbugs.properties.FindbugsPropertyPage"
              id="FindBugsPreferencePage"
              name="SpotBugs">
+          <keywordReference id="com.github.spotbugs.plugin.eclipse.keywords"/>
        </page>
+    </extension>
+    <extension
+          point="org.eclipse.ui.keywords">
+       <keyword id="com.github.spotbugs.plugin.eclipse.keywords"
+             label="bugs findbugs spotbugs"/>
     </extension>
 
    <extension
@@ -1382,111 +1383,111 @@
 
 
    <extension
-         point="com.github.spotbugs.plugin.eclipse.findbugsQuickFixes">
+         point="edu.umd.cs.findbugs.plugin.eclipse.findbugsQuickFixes">
 
     <quickFix
         pattern="DM_BOOLEAN_CTOR"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Boolean.valueOf(YYY) instead"
     />
     <quickFix
         arguments="isFloatingPoint=true,isDouble=false"
         pattern="DM_FP_NUMBER_CTOR"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Float.valueOf(YYY) instead"
     />
     <quickFix
             arguments="isFloatingPoint=true,isDouble=true"
         pattern="DM_FP_NUMBER_CTOR"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Double.valueOf(YYY) instead"
     />
     <quickFix
         pattern="DM_NUMBER_CTOR"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.UseValueOfResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution"
         label="Use Integer.valueOf(YYY) instead"
     />
     <quickFix
         pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateDoPrivilegedBlockResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateDoPrivilegedBlockResolution"
         label="Create doPrivileged() block."
     />
     <quickFix
         pattern="EI_EXPOSE_REP"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution"
         label="Clone the field (think about performance first!)"
     />
     <quickFix
         pattern="ES_COMPARING_STRINGS_WITH_EQ"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.UseEqualsResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution"
         label="Use equals(...) instead"
     />
     <quickFix
         pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.UseEqualsResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution"
         label="Use equals(...) instead"
     />
     <quickFix
         pattern="ESync_EMPTY_SYNC"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution"
         label="Remove empty synchronized block"
     />
     <quickFix
         pattern="FI_EMPTY"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
         label="Remove empty finalizer."
     />
     <quickFix
         pattern="FI_USELESS"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution"
         label="Remove useless finalizer."
     />
     <quickFix
         pattern="FI_PUBLIC_SHOULD_BE_PROTECTED"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.ChangePublicToProtectedResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.ChangePublicToProtectedResolution"
         label="Change public to protected."
     />
     <quickFix
         pattern="FI_MISSING_SUPER_CALL"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
         label="Add super.finalize() call."
         arguments="insertFirst=false"
     />
     <quickFix
         pattern="IJU_SETUP_NO_SUPER"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
         label="Add super.setUp() call."
         arguments="insertFirst=true"
     />
     <quickFix
         pattern="IJU_TEARDOWN_NO_SUPER"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution"
         label="Add super.tearDown() call."
         arguments="insertFirst=false"
     />
     <quickFix
         pattern="IM_BAD_CHECK_FOR_ODD"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution"
         label="Replace if-condition by 'x % 2 != 0'"
     />
     <quickFix
         pattern="IM_BAD_CHECK_FOR_ODD"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution"
         label="Replace if-condition by '(x &amp; 1) == 1'"
     />
     <quickFix
         pattern="MS_SHOULD_BE_FINAL"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.MakeFieldFinalResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldFinalResolution"
         label="Add 'final' modifier to field"
     />
     <quickFix
         pattern="SIC_INNER_SHOULD_BE_STATIC"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.MakeInnerTypeStaticResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeInnerTypeStaticResolution"
         label="Make inner class static"
     />
     <quickFix
         pattern="SS_SHOULD_BE_STATIC"
-        class="com.github.spotbugs.plugin.eclipse.quickfix.MakeFieldStaticResolution"
+        class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldStaticResolution"
         label="Change to a static field"
     />
    </extension>

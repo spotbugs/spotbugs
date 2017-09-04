@@ -147,11 +147,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static boolean DEBUG;
 
 
+    public static final String OLD_PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse";
+    
     /**
      * The identifier for the FindBugs builder (value
      * <code>"com.github.spotbugs.plugin.eclipse.findbugsbuilder"</code>).
      */
-    public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
+    public static final String BUILDER_ID = OLD_PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
 
     /**
      * The identifier for the FindBugs nature (value
@@ -159,7 +161,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *
      * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
      */
-    public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
+    public static final String NATURE_ID = OLD_PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
 
     // Debugging options
     private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug"; //$NON-NLS-1$
@@ -846,7 +848,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         try {
             project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error setting FindBugs session property for project");
+            FindbugsPlugin.getDefault().logException(e, "Error setting SpotBugs session property for project");
         }
         if (store != null) {
             store.setValue(FindBugsConstants.PROJECT_PROPS_DISABLED, !enabled);
@@ -916,7 +918,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
             return prefs;
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error getting FindBugs preferences for project");
+            FindbugsPlugin.getDefault().logException(e, "Error getting SpotBugs preferences for project");
             return getWorkspacePreferences().clone();
         }
     }
@@ -934,7 +936,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             in = new FileInputStream(prefsFile);
             userPrefs.read(in);
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error reading custom FindBugs preferences for workspace");
+            FindbugsPlugin.getDefault().logException(e, "Error reading custom SpotBugs preferences for workspace");
         }
         return userPrefs;
     }

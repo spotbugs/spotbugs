@@ -19,6 +19,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
@@ -55,7 +56,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
     @Override
     public void sawOpcode(int seen) {
 
-        if (seen == INVOKESTATIC) {
+        if (seen == Const.INVOKESTATIC) {
             String methodName = getNameConstantOperand();
             if (!methodName.startsWith(ACCESS_PREFIX)) {
                 return;

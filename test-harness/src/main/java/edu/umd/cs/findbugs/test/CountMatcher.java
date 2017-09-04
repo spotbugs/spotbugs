@@ -1,40 +1,50 @@
 package edu.umd.cs.findbugs.test;
 
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
-public final class CountMatcher<T> extends BaseMatcher<Iterable<T>> {
+public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
+
     private final int count;
     private final Matcher<T> matcher;
 
-    /**
-     * @param count
-     * @param matcher
-     */
     public CountMatcher(int count, Matcher<T> matcher) {
         this.count = count;
         this.matcher = matcher;
     }
 
-    @Override
-    public boolean matches(final Object obj) {
-        int matches = 0;
+    /**
+     * Creates a matcher for {@link Iterable}s that only matches if exactly
+     * {@code count} items match the specified {@code matcher}.
+     * 
+     * @param matcher
+     *            A non-{@code null} matcher that must match exactly {@code count}
+     *            times.
+     * @param count
+     *            How many times the {@code matcher} must match.
+     */
+    @Factory
+    public static <T> Matcher<Iterable<T>> containsExactly(final int count, final Matcher<T> matcher) {
+        return new CountMatcher<T>(count, matcher);
+    }
 
-        if (obj instanceof Iterable<?>) {
-            final Iterable<?> it = (Iterable<?>) obj;
-            for (final Object o : it) {
-                if (matcher.matches(o)) {
-                    matches++;
-                }
+    @Override
+    protected boolean matchesSafely(Iterable<T> iterable) {
+        int numberOfmatches = 0;
+
+        for (final Object item : iterable) {
+            if (matcher.matches(item)) {
+                numberOfmatches++;
             }
         }
 
-        return matches == count;
+        return numberOfmatches == count;
     }
 
     @Override
     public void describeTo(final Description desc) {
-        desc.appendText("Iterable containing exactly " + count + " ").appendDescriptionOf(matcher);
+        desc.appendText("Iterable containing exactly ").appendValue(count).appendText(" ").appendDescriptionOf(matcher);
     }
 }

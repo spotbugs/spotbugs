@@ -60,6 +60,7 @@ import edu.umd.cs.findbugs.util.Archive;
  * @author Andrei
  */
 public class WorkItem {
+    private static final int PRIME = 31;
 
     private final IJavaElement javaElt;
 
@@ -391,10 +392,9 @@ public class WorkItem {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = 1;
-        result = prime * result + ((javaElt == null) ? 0 : javaElt.hashCode());
-        result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+        result = PRIME * result + ((javaElt == null) ? 0 : javaElt.hashCode());
+        result = PRIME * result + ((resource == null) ? 0 : resource.hashCode());
         return result;
     }
 

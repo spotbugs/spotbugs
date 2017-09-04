@@ -37,7 +37,6 @@ import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Factory for creating ClassDescriptors, MethodDescriptors, and
@@ -119,7 +118,7 @@ public class DescriptorFactory {
     public @Nonnull
     ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
         assert className.indexOf('.') == -1;
-        className = canonicalizeString(className);
+        className = className;
         ClassDescriptor classDescriptor = classDescriptorMap.get(className);
         if (classDescriptor == null) {
             classDescriptor = new ClassDescriptor(className);

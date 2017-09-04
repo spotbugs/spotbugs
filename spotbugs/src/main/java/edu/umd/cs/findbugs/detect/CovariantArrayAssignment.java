@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -89,7 +90,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if ((isRegisterStore() && !isRegisterLoad()) || seen == PUTFIELD || seen == PUTSTATIC || seen == ARETURN) {
+        if ((isRegisterStore() && !isRegisterLoad()) || seen == Const.PUTFIELD || seen == Const.PUTSTATIC || seen == Const.ARETURN) {
             Item valueItem = getStack().getStackItem(0);
             if(!valueItem.isNull() && valueItem.isNewlyAllocated() && valueItem.getSignature().startsWith("[L")
                     && !((Integer)0).equals(valueItem.getConstant())) {
@@ -98,7 +99,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                 int priority = LOW_PRIORITY;
                 String pattern = null;
                 FieldDescriptor field = null;
-                if(seen == PUTFIELD || seen == PUTSTATIC) {
+                if(seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
                     arraySignature = getSigConstantOperand();
                     pattern = "CAA_COVARIANT_ARRAY_FIELD";
                     field = getFieldDescriptorOperand();
@@ -111,7 +112,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                             }
                         }
                     }
-                } else if(seen == ARETURN) {
+                } else if(seen == Const.ARETURN) {
                     if(getXMethod().bridgeFrom() == null) {
                         pattern = "CAA_COVARIANT_ARRAY_RETURN";
                         arraySignature = new SignatureParser(getMethodSig()).getReturnTypeSignature();
@@ -148,7 +149,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
             }
         }
 
-        if (seen == AASTORE) {
+        if (seen == Const.AASTORE) {
             Item valueItem = getStack().getStackItem(0);
             if(!valueItem.isNull()) {
                 Item arrayItem = getStack().getStackItem(2);

@@ -21,6 +21,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -67,7 +68,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
             if (!isJunit3TestCase(xClass)) {
                 return;
             }
-            if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
+            if ((jClass.getAccessFlags() & Const.ACC_ABSTRACT) == 0) {
                 if (!hasTestMethods(jClass)) {
                     bugReporter.reportBug(new BugInstance(this, "IJU_NO_TESTS", LOW_PRIORITY).addClass(jClass));
                 }
@@ -205,13 +206,13 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         switch (state) {
         case SEEN_NOTHING:
-            if (seen == ALOAD_0) {
+            if (seen == Const.ALOAD_0) {
                 state = SEEN_ALOAD_0;
             }
             break;
 
         case SEEN_ALOAD_0:
-            if ((seen == INVOKESPECIAL) && (getNameConstantOperand().equals(getMethodName()))
+            if ((seen == Const.INVOKESPECIAL) && (getNameConstantOperand().equals(getMethodName()))
                     && (getSigConstantOperand().equals("()V"))) {
                 sawSuperCall = true;
             }

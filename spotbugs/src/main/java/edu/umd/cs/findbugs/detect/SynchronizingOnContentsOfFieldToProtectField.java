@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 
@@ -62,7 +63,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
     @Override
     public void sawOpcode(int seen) {
         // System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
-        if (countDown == 2 && seen == GOTO) {
+        if (countDown == 2 && seen == Const.GOTO) {
             CodeException tryBlock = getSurroundingTryBlock(getPC());
             if (tryBlock != null && tryBlock.getEndPC() == getPC()) {
                 pendingBug.lowerPriority();
@@ -71,7 +72,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
         if (countDown > 0) {
             countDown--;
             if (countDown == 0) {
-                if (seen == MONITOREXIT) {
+                if (seen == Const.MONITOREXIT) {
                     pendingBug.lowerPriority();
                 }
 
@@ -79,9 +80,9 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
                 pendingBug = null;
             }
         }
-        if (seen == PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
 
-            if (syncField != null && getPrevOpcode(1) != ALOAD_0 && syncField.equals(getXFieldOperand())) {
+            if (syncField != null && getPrevOpcode(1) != Const.ALOAD_0 && syncField.equals(getXFieldOperand())) {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 int priority = Priorities.HIGH_PRIORITY;
                 if (value.isNull()) {
@@ -94,23 +95,23 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
             }
 
         }
-        if (seen == MONITOREXIT) {
+        if (seen == Const.MONITOREXIT) {
             pendingBug = null;
             countDown = 0;
         }
 
-        if (seen == MONITORENTER) {
+        if (seen == Const.MONITORENTER) {
             syncField = null;
         }
 
         switch (state) {
         case 0:
-            if (seen == ALOAD_0) {
+            if (seen == Const.ALOAD_0) {
                 state = 1;
             }
             break;
         case 1:
-            if (seen == GETFIELD) {
+            if (seen == Const.GETFIELD) {
                 state = 2;
                 field = getXFieldOperand();
             } else {
@@ -118,7 +119,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
             }
             break;
         case 2:
-            if (seen == DUP) {
+            if (seen == Const.DUP) {
                 state = 3;
             } else {
                 state = 0;
@@ -132,7 +133,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
             }
             break;
         case 4:
-            if (seen == MONITORENTER) {
+            if (seen == Const.MONITORENTER) {
                 state = 0;
                 syncField = field;
             } else {

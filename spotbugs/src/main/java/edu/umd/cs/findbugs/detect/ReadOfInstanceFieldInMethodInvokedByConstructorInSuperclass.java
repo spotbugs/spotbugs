@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -67,7 +68,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 
     @Override
     public void sawOpcode(int opcode) {
-        if (opcode == PUTFIELD) {
+        if (opcode == Const.PUTFIELD) {
             XField f = getXFieldOperand();
             OpcodeStack.Item item = stack.getStackItem(1);
             if (item.getRegisterNumber() != 0) {
@@ -76,7 +77,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
             initializedFields.add(f);
             return;
         }
-        if (opcode != GETFIELD) {
+        if (opcode != Const.GETFIELD) {
             return;
         }
         OpcodeStack.Item item = stack.getStackItem(0);
@@ -117,8 +118,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         }
 
         int nextOpcode = getNextOpcode();
-        if (nullCheckedFields.contains(f) || nextOpcode == IFNULL || nextOpcode == IFNONNULL || nextOpcode == IFEQ
-                || nextOpcode == IFNE) {
+        if (nullCheckedFields.contains(f) || nextOpcode == Const.IFNULL || nextOpcode == Const.IFNONNULL || nextOpcode == Const.IFEQ
+                || nextOpcode == Const.IFNE) {
             priority++;
             nullCheckedFields.add(f);
         }
@@ -169,7 +170,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 
         XMethod lookfor = "()V".equals(superConstructor.getSignature()) ? null : superConstructor;
         for (XMethod m : getXClass().getXMethods()) {
-            if ("<init>".equals(m.getName())) {
+            if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
                 if (fieldSummary.getSuperCall(m) == lookfor) {
                     return m;
                 }

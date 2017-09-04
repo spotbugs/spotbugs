@@ -20,17 +20,40 @@
 package edu.umd.cs.findbugs.ba;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
+ * Nullness annotation detector.
+ *
  * @author pugh
+ * @author Kosta Zaikin
  */
+@ParametersAreNonnullByDefault
 public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation> {
-    public final static NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3);
+    public final static NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3) {
+        @Override
+        boolean match(@DottedClassName String className) {
+            return "android.support.annotation.Nullable".equals(className)
+                    || "com.google.common.base.Nullable".equals(className)
+                    || "org.eclipse.jdt.annotation.Nullable".equals(className)
+                    || "org.jetbrains.annotations.Nullable".equals(className)
+                    || className.endsWith("PossiblyNull")
+                    || super.match(className);
+        }
+    };
 
-    public final static NullnessAnnotation NONNULL = new NullnessAnnotation("NonNull", 1);
+    public final static NullnessAnnotation NONNULL = new NullnessAnnotation("NonNull", 1) {
+        @Override
+        boolean match(@DottedClassName String className) {
+            // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
+            return "org.jetbrains.annotations.NotNull".equals(className)
+                    || className.endsWith("Nonnull")
+                    || super.match(className);
+        }
+    };
 
     public final static NullnessAnnotation NULLABLE = new NullnessAnnotation("Nullable", 2);
 
@@ -42,25 +65,24 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
         @CheckForNull
         public static NullnessAnnotation parse(@DottedClassName String className) {
             className = ClassName.toDottedClassName(className);
-            if ("com.google.common.base.Nullable".equals(className)
-                    || "org.eclipse.jdt.annotation.Nullable".equals(className)
-                    || "org.jetbrains.annotations.Nullable".equals(className)) {
-                return CHECK_FOR_NULL;
+            if (UNKNOWN_NULLNESS.match(className)) {
+                return UNKNOWN_NULLNESS;
             }
-            // Unfortunately there are mixed case Nonnull and NonNull annotations (JSR305, FB and JDT)
-            if (className.endsWith("Nonnull") || className.equals("org.jetbrains.annotations.NotNull")) {
+            if (NONNULL.match(className)) {
                 return NONNULL;
             }
-            for (NullnessAnnotation v : myValues) {
-                if (className.endsWith(v.name)) {
-                    return v;
-                }
-            }
-            if (className.endsWith("PossiblyNull")) {
+            if (CHECK_FOR_NULL.match(className)) {
                 return CHECK_FOR_NULL;
+            }
+            if (NULLABLE.match(className)) {
+                return NULLABLE;
             }
             return null;
         }
+    }
+
+    boolean match(@DottedClassName String className) {
+        return className.endsWith(name);
     }
 
     public static NullnessAnnotation[] values() {

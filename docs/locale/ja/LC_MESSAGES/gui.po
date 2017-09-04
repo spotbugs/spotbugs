@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr "Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-17 15:12+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../gui.rst:2
+msgid "Using the SpotBugs GUI"
+msgstr "SpotBugs GUI の使い方"
+
+#: ../../gui.rst:4
+msgid ""
+"This chapter describes how to use the SpotBugs graphical user interface "
+"(GUI)."
+msgstr "この章では，SpotBugs グラフィカルユーザインタフェース (GUI) の使い方について説明します。"
+
+#: ../../gui.rst:7
+msgid "Creating a Project"
+msgstr "プロジェクトの作成"
+
+#: ../../gui.rst:9
+msgid ""
+"After you have started SpotBugs using the ``spotbugs`` command, choose "
+"the ``File → New Project`` menu item. You will see a dialog which looks "
+"like this:"
+msgstr "``spotbugs`` コマンドを使って SpotBugs を起動したら，``File → New Project`` メニュー項目を選択します。次のようなダイアログが表示されます。"
+
+#: ../../gui.rst:14
+msgid ""
+"Use the \"Add\" button next to \"Classpath to analyze\" to select a Java "
+"archive file (zip, jar, ear, or war file) or directory containing java "
+"classes to analyze for bugs. You may add multiple archives/directories."
+msgstr "「Classpath to analyze」の横にある「Add」ボタンを使用して，バグを解析する Java アーカイブファイル (zip，jar，ear，war ファイル) または Java クラスを含むディレクトリを選択します。複数のアーカイブ/ディレクトリを追加できます。"
+
+#: ../../gui.rst:16
+msgid ""
+"You can also add the source directories which contain the source code for"
+" the Java archives you are analyzing. This will enable SpotBugs to "
+"highlight the source code which contains a possible error. The source "
+"directories you add should be the roots of the Java package hierarchy. "
+"For example, if your application is contained in the ``org.foobar.myapp``"
+" package, you should add the parent directory of the org directory to the"
+" source directory list for the project."
+msgstr "また，解析をする Java アーカイブのソースコードを含むディレクトリを追加することもできます。そうすると，SpotBugs は発生する可能性があるエラーを含むソースコードを強調表示できます。追加するソースディレクトリは，Java パッケージ階層のルートにする必要があります。たとえば，アプリケーションが ``org.foobar.myapp`` パッケージに含まれているときは，org ディレクトリの親ディレクトリをプロジェクトのソースディレクトリに追加する必要があります。"
+
+#: ../../gui.rst:18
+msgid ""
+"Another optional step is to add additional Jar files or directories as "
+"\"Auxiliary classpath locations\" entries. You should do this if the "
+"archives and directories you are analyzing have references to other "
+"classes which are not included in the analyzed archives/directories and "
+"are not in the standard runtime classpath. Some of the bug pattern "
+"detectors in FindBugs make use of class hierarchy information, so you "
+"will get more accurate results if the entire class hierarchy is available"
+" which FindBugs performs its analysis."
+msgstr "もうひとつのオプションの手順は，追加する jar ファイルやディレクトリを「Auxiliary classpath locations」エントリとして追加することです。解析するアーカイブ/ディレクトリにも標準のランタイムクラスパスにも含まれていないクラスをアーカイブ/ディレクトリが参照しているときは追加する必要があります。SpotBugs のバグパターンディテクタの中には，クラス階層情報を利用するものがあるため，SpotBugs が解析を行うクラス階層全体が利用可能なら，より正確な結果が得られます。"
+
+#: ../../gui.rst:21
+msgid "Running the Analysis"
+msgstr "解析の実行"
+
+#: ../../gui.rst:23
+msgid ""
+"Once you have added all of the archives, directories, and source "
+"directories, click the \"Analyze\" button to analyze the classes "
+"contained in the Jar files. Note that for a very large program on an "
+"older computer, this may take quite a while (tens of minutes). A recent "
+"computer with ample memory will typically be able to analyze a large "
+"program in only a few minutes."
+msgstr "すべてのアーカイブ，ディレクトリ，ソースディレクトリを追加したら，「Analyze」ボタンをクリックして jar ファイルに含まれるクラスを解析します。古いコンピュータ上の巨大プロジェクトでは，かなりの時間 (数 10 分) かかることに注意してください。十分なメモリを備えた最近のコンピュータなら，大きなプログラムを数分で解析できます。"
+
+#: ../../gui.rst:26
+msgid "Browsing Results"
+msgstr "結果の閲覧"
+
+#: ../../gui.rst:28
+msgid "When the analysis completes, you will see a screen like the following:"
+msgstr "解析が完了すると，次のような画面が表示されます。"
+
+#: ../../gui.rst:32
+msgid ""
+"The upper left-hand pane of the window shows the bug tree; this is a "
+"hierarchical representation of all of the potential bugs detected in the "
+"analyzed Jar files."
+msgstr "ウィンドウの左上のペインにバグツリーが表示されます。これは，解析された jar ファイルで検出されたすべての潜在的なバグを階層的に表したものです。"
+
+#: ../../gui.rst:34
+msgid ""
+"When you select a particular bug instance in the top pane, you will see a"
+" description of the bug in the \"Details\" tab of the bottom pane. In "
+"addition, the source code pane on the upper-right will show the program "
+"source code where the potential bug occurs, if source is available. In "
+"the above example, the bug is a stream object that is not closed. The "
+"source code window highlights the line where the stream object is "
+"created."
+msgstr "上部ペインで特定のバグインスタンスを選択すると，下部ペインの「Details」タブにバグの説明が表示されます。さらに，右上のソースコードペインには，ソースが利用可能であれば，潜在的なバグが発生する場所のプログラムソースコードが表示されます。上記の例では，バグはクローズされていないストリームオブジェクトです。ソースコードウィンドウは，ストリームオブジェクトが作成された行を強調表示します。"
+
+#: ../../gui.rst:36
+msgid ""
+"You may add a textual annotations to bug instances. To do so, type them "
+"into the text box just below the hierarchical view. You can type any "
+"information which you would like to record. When you load and save bug "
+"results files, the annotations are preserved."
+msgstr "バグインスタンスにテキストで注釈を追加できます。階層ビューのすぐ下にあるテキストボックスに注釈を入力します。記録しておきたい情報を入力できます。バグ結果ファイルをロード，保存したときに，注釈も保存されます。"
+
+#: ../../gui.rst:39
+msgid "Saving and Opening"
+msgstr "保存と開く"
+
+#: ../../gui.rst:41
+msgid ""
+"You may use the ``File → Save as...`` menu option to save your work. To "
+"save your work, including the jar file lists you specified and all bug "
+"results, choose \"FindBugs analysis results (.xml)\" from the drop-down "
+"list in the \"Save as...\" dialog. There are also options for saving just"
+" the jar file lists (\"FindBugs project file (.fbp)\") or just the "
+"results (\"FindBugs analysis file (.fba)\"). A saved file may be loaded "
+"with the ``File → Open...`` menu option."
+msgstr "``File → Save as...`` メニューオプションを使用するとユーザ作業を保存できます。指定した jar ファイルリストとすべてのバグ結果を含むユーザ作業を保存したいときは「Save as...」ダイアログのドロップダウンリストから「SpotBugs analysis results (.xml)」を選択します。jar ファイルリストだけを保存する (「FindBugs project file (.fbp)」)，結果だけを保存する (「FindBugs analysis file (.fba)」) オプションもあります。保存されたファイルは ``File → Open...`` メニューオプションでロードできます。"
+

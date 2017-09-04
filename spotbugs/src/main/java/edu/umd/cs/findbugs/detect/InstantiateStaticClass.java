@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.List;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -40,7 +42,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == INVOKESPECIAL) && "<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             XClass xClass = getXClassOperand();
             if (xClass == null) {
                 return;
@@ -51,12 +53,12 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             }
 
             // ignore superclass synthesized ctor calls
-            if ("<init>".equals(getMethodName()) && (getPC() == 1)) {
+            if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (getPC() == 1)) {
                 return;
             }
 
             // ignore the typesafe enumerated constant pattern
-            if ("<clinit>".equals(getMethodName()) && (getClassName().equals(clsName))) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(getMethodName()) && (getClassName().equals(clsName))) {
                 return;
             }
 
@@ -88,7 +90,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             // !m.isSynthetic(): bug #1282: No warning should be generated if only static methods are synthetic
             if (m.isStatic() && !m.isSynthetic()) {
                 staticCount++;
-            } else if (!"<init>".equals(m.getName()) || !"()V".equals(m.getSignature())) {
+            } else if (!Const.CONSTRUCTOR_NAME.equals(m.getName()) || !"()V".equals(m.getSignature())) {
                 return false;
             }
         }

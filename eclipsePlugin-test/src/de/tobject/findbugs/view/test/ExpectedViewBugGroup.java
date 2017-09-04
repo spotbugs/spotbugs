@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom·s Pollak
+ * Copyright (C) 2009, Tom√°s Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 /**
  * Expected object for a bug group.
  * 
- * @author Tom·s Pollak
+ * @author Tom√°s Pollak
  */
 public class ExpectedViewBugGroup implements ExpectedViewElement {
 

@@ -291,12 +291,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         super(className, methodName, methodSignature, (accessFlags & Const.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
-        if (exceptions != null) {
-            for (int i = 0; i < exceptions.length; i++) {
-                exceptions[i] = DescriptorFactory.canonicalizeString(exceptions[i]);
-            }
-        }
-        this.methodSourceSignature = DescriptorFactory.canonicalizeString(methodSourceSignature);
+        this.methodSourceSignature = methodSourceSignature;
         this.methodAnnotations = Util.immutableMap(methodAnnotations);
         this.methodParameterAnnotations = Util.immutableMap(methodParameterAnnotations);
         if (isUnconditionalThrower) {
@@ -621,7 +616,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public ElementType getElementType() {
-        if ("<init>".equals(getName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getName())) {
             return ElementType.CONSTRUCTOR;
         }
         return ElementType.METHOD;

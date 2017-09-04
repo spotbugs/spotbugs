@@ -1,0 +1,5 @@
+# Consider this feature to be an update of both earlier versions of SpotBugs
+# and all versions of FindBugs up to 3.0.2, the last release prior to the fork.
+update.matchExp = providedCapabilities.exists(iu | iu.namespace == 'org.eclipse.equinox.p2.iu' && \
+ ((iu.name == '@FEATURE_ID@.feature.group' && iu.version ~= range('[0, $version$)')) || \
+  (iu.name == 'edu.umd.cs.findbugs.plugin.eclipse.feature.group' && iu.version ~= range('[0, 3.0.3)'))))

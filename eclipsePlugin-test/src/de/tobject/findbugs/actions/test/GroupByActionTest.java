@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@ import org.junit.Test;
 /**
  * This class tests the GroupByAction.
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public class GroupByActionTest extends AbstractFindBugsTest {
     @BeforeClass

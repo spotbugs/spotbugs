@@ -1,0 +1,128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr "Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-17 15:12+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../links.rst:2
+msgid "SpotBugs Links"
+msgstr "SpotBugs リンク"
+
+#: ../../links.rst:4
+msgid ""
+"This page contains links to related projects, including tools that are "
+"similar to SpotBugs."
+msgstr "このページには，SpotBugs に似たツールを含む関連プロジェクトへのリンクが含まれています。."
+
+#: ../../links.rst:7
+msgid "SpotBugs Plugins"
+msgstr "SpotBugs プラグイン"
+
+#: ../../links.rst:10
+msgid "`fb-contrib <http://fb-contrib.sourceforge.net/>`_"
+msgstr ""
+
+#: ../../links.rst:10
+msgid ""
+"A FindBugs/SpotBugs plugin for doing static code analysis on java byte "
+"code."
+msgstr "Java バイトコードの静的コード解析を行う FindBugs/SpotBugs プラグインです。"
+
+#: ../../links.rst:13
+msgid "`Find Security Bugs <http://find-sec-bugs.github.io/>`_"
+msgstr ""
+
+#: ../../links.rst:13
+msgid "A FindBugs/SpotBugs plugin for security audits of Java web applications."
+msgstr "Java ウェブアプリケーションのセキュリティ監査用のFindBugs/SpotBugs プラグインです。"
+
+#: ../../links.rst:16
+msgid "`findbugs-slf4j <https://github.com/KengoTODA/findbugs-slf4j>`_"
+msgstr ""
+
+#: ../../links.rst:16
+msgid ""
+"A FindBugs/SpotBugs plugin to verify usage of `SLF4J "
+"<https://www.slf4j.org/>`_."
+msgstr "`SLF4J <https://www.slf4j.org/>`_ の使い方を検証するためのFindBugs/SpotBugs プラグインです。"
+
+#: ../../links.rst:19
+msgid "Similar/Related Tools"
+msgstr "類似/関連ツール"
+
+#: ../../links.rst:22
+msgid "`FindBugs-IDEA <https://plugins.jetbrains.com/plugin/3847-findbugs-idea>`_"
+msgstr ""
+
+#: ../../links.rst:22
+msgid ""
+"The FindBugs plugin for `IntelliJ IDEA "
+"<https://www.jetbrains.com/idea/>`_."
+msgstr "`IntelliJ IDEA <https://www.jetbrains.com/idea/>`_ のための FindBugs プラグインです。"
+
+#: ../../links.rst:25
+msgid "`sonar-findbugs <https://github.com/SonarQubeCommunity/sonar-findbugs>`_"
+msgstr ""
+
+#: ../../links.rst:25
+msgid ""
+"A `SonarQube <https://www.sonarqube.org/>`_ plugin which provides rules "
+"based on SpotBugs and its major plugins."
+msgstr "SpotBugs とその主要なプラグインに基づいたルールを提供する `SonarQube <https://www.sonarqube.org/>`_ プラグインです。"
+
+#: ../../links.rst:28
+msgid "`Checkstyle <http://checkstyle.sourceforge.net/>`_"
+msgstr ""
+
+#: ../../links.rst:28
+msgid "A style checker for Java."
+msgstr "Java 用のスタイルチェッカーです。"
+
+#: ../../links.rst:31
+msgid "`PMD <https://pmd.github.io/>`_"
+msgstr ""
+
+#: ../../links.rst:31
+msgid "An extensible cross-language static code analyzer."
+msgstr "拡張可能な言語間静的コード解析ツールです。"
+
+#: ../../links.rst:34
+msgid "`huntbugs <https://github.com/amaembo/huntbugs>`_"
+msgstr ""
+
+#: ../../links.rst:34
+msgid ""
+"New Java bytecode static analyzer tool based on `Procyon Compiler Tools "
+"<https://bitbucket.org/mstrobel/procyon/overview>`_ aimed to supersede "
+"the FindBugs."
+msgstr "`Procyon Compiler Tools <https://bitbucket.org/mstrobel/procyon/overview>`_ に基づいた新しいバイトコード静的解析ツールで，FindBugs を置き換えることを目指しています。"
+
+#: ../../links.rst:37
+msgid "`Google Error Prone <http://errorprone.info/>`_"
+msgstr ""
+
+#: ../../links.rst:37
+msgid ""
+"A static analysis tool for Java that catches common programming mistakes "
+"at compile-time."
+msgstr "コンパイル時に一般的なプログラミングミスをキャッチする Java 用静的解析ツールです。"
+
+#: ../../links.rst:39
+msgid "`Checker Framework <https://checkerframework.org/>`_"
+msgstr ""
+
+#: ../../links.rst:40
+msgid "A pluggable type-checking for Java."
+msgstr "プラグイン可能な Java の型チェックツールです。"
+

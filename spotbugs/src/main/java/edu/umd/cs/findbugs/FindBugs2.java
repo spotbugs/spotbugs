@@ -69,7 +69,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.log.Profiler;
-import edu.umd.cs.findbugs.log.YourKitController;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
@@ -117,8 +116,6 @@ public class FindBugs2 implements IFindBugsEngine {
     private DetectorFactoryCollection detectorFactoryCollection;
 
     private ExecutionPlan executionPlan;
-
-    private final YourKitController yourkitController = new YourKitController();
 
     private String currentClassName;
 
@@ -686,19 +683,21 @@ public class FindBugs2 implements IFindBugsEngine {
         // add them to the source path.
         // Also, use the last modified time of application codebases
         // to set the project timestamp.
+        List<String> pathNames = new ArrayList<>();
         for (Iterator<? extends ICodeBase> i = classPath.appCodeBaseIterator(); i.hasNext();) {
             ICodeBase appCodeBase = i.next();
 
             if (appCodeBase.containsSourceFiles()) {
                 String pathName = appCodeBase.getPathName();
                 if (pathName != null) {
-                    project.addSourceDir(pathName);
+                    pathNames.add(pathName);
                 }
             }
 
             project.addTimestamp(appCodeBase.getLastModifiedTime());
         }
 
+        project.addSourceDirs(pathNames);
     }
 
     private void buildReferencedClassSet() throws InterruptedException {
@@ -984,7 +983,6 @@ public class FindBugs2 implements IFindBugsEngine {
             bugReporter.getProjectStats().setReferencedClasses(referencedClassSet.size());
             for (Iterator<AnalysisPass> passIterator = executionPlan.passIterator(); passIterator.hasNext();) {
                 AnalysisPass pass = passIterator.next();
-                yourkitController.advanceGeneration("Pass " + passCount);
                 // The first pass is generally a non-reporting pass which
                 // gathers information about referenced classes.
                 boolean isNonReportingFirstPass = multiplePasses && passCount == 0;
@@ -1045,10 +1043,6 @@ public class FindBugs2 implements IFindBugsEngine {
                                 classCollection.size(), classDescriptor);
                     }
                     count++;
-                    if (!isNonReportingFirstPass && count % 1000 == 0) {
-                        yourkitController.advanceGeneration(String.format("Pass %d.%02d", passCount, count/1000));
-                    }
-
 
                     // Check to see if class is excluded by the class screener.
                     // In general, we do not want to screen classes from the
@@ -1119,9 +1113,6 @@ public class FindBugs2 implements IFindBugsEngine {
                     }
                 }
 
-                if (!passIterator.hasNext()) {
-                    yourkitController.captureMemorySnapshot();
-                }
                 // Call finishPass on each detector
                 for (Detector2 detector : detectorList) {
                     detector.finishPass();

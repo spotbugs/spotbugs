@@ -27,6 +27,7 @@ import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 
 public class QuickFixContribution {
+    private static final int PRIME = 31;
 
     final String clazzFqn;
 
@@ -60,12 +61,11 @@ public class QuickFixContribution {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = 1;
-        result = prime * result + clazzFqn.hashCode();
-        result = prime * result + label.hashCode();
-        result = prime * result + pattern.hashCode();
-        result = prime * result + args.hashCode();
+        result = PRIME * result + clazzFqn.hashCode();
+        result = PRIME * result + label.hashCode();
+        result = PRIME * result + pattern.hashCode();
+        result = PRIME * result + args.hashCode();
         return result;
     }
 

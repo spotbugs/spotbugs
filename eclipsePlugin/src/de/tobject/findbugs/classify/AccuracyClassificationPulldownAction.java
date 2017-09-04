@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 /**
  * Pulldown toolbar action for classifying a FindBugs warning as "bug" or
  * "not a bug".
- * 
+ *
  * @author David Hovemeyer
  */
 public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPulldownDelegate2 {
@@ -66,7 +66,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.
      * swt.widgets.Menu)
@@ -77,7 +77,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt
      * .widgets.Control)
@@ -102,7 +102,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
         isBugItem.addSelectionListener(new SelectionAdapter() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
              * .swt.events.SelectionEvent)
@@ -118,7 +118,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
         notBugItem.addSelectionListener(new SelectionAdapter() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
              * .swt.events.SelectionEvent)
@@ -179,14 +179,14 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
                     marker.delete();
                 }
             } catch (CoreException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not get FindBugs preferences for project");
+                FindbugsPlugin.getDefault().logException(e, "Could not get SpotBugs preferences for project");
             }
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
      */
     public void dispose() {
@@ -198,7 +198,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.
      * IWorkbenchWindow)
      */
@@ -208,7 +208,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run(IAction action) {
@@ -217,7 +217,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action
      * .IAction, org.eclipse.jface.viewers.ISelection)
@@ -240,7 +240,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
         bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
         if (bugInstance != null) {
             if (DEBUG) {
-                System.out.println("Found BugInstance for FindBugs warning marker!");
+                System.out.println("Found BugInstance for SpotBugs warning marker!");
             }
         }
     }

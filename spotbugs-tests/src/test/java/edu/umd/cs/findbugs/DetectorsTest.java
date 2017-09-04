@@ -98,7 +98,7 @@ public class DetectorsTest {
      */
     @Test
     public void testAllRegressionFilesJavac() throws IOException, InterruptedException {
-        setUpEngine("build/classes/main/");
+        setUpEngine("build/classes/java/main/");
 
         engine.execute();
 
@@ -214,7 +214,6 @@ public class DetectorsTest {
             }
         }
 
-        project.addAuxClasspathEntry("lib/junit.jar");
         File lib = getFindbugsTestCasesFile("lib");
         for(File f : lib.listFiles()) {
             String path = f.getPath();
@@ -236,7 +235,9 @@ public class DetectorsTest {
             String[] cpParts = classpath.split(File.pathSeparator);
             for (String cpStr : cpParts) {
                 File file = new File(cpStr);
-                project.addAuxClasspathEntry(file.getCanonicalPath());
+                if (file.exists()) {
+                    project.addAuxClasspathEntry(file.getCanonicalPath());
+                }
             }
         }
     }

@@ -1,9 +1,3 @@
 #! /bin/sh
 
-@GET_FBHOME@
-
-@SET_DEFAULT_JAVA@
-
-fb_mainclass=edu.umd.cs.findbugs.visitclass.PrintClass
-
-@WRAP_JAVA@
+exec "$(dirname $0)/fbwrap" edu.umd.cs.findbugs.visitclass.PrintClass "$@"

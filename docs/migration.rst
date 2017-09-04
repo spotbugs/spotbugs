@@ -12,13 +12,13 @@ Simply replace ``com.google.code.findbugs:findbugs`` with ``com.github.spotbugs:
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs</artifactId>
-    <version>3.1.0-RC1</version>
+    <version>3.1.0-RC5</version>
   </dependency>
 
 .. code-block:: groovy
 
   // for Gradle
-  compileOnly 'com.github.spotbugs:spotbugs:3.1.0-RC1'
+  compileOnly 'com.github.spotbugs:spotbugs:3.1.0-RC5'
 
 com.google.code.findbugs:jsr305
 -------------------------------
@@ -37,14 +37,14 @@ Please depend on ``spotbugs-annotations`` instead.
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-annotations</artifactId>
-    <version>3.1.0-RC1</version>
+    <version>3.1.0-RC5</version>
     <optional>true</optional>
   </dependency>
 
 .. code-block:: groovy
 
   // for Gradle
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC1'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC5'
 
 com.google.code.findbugs:annotations
 ------------------------------------
@@ -63,7 +63,7 @@ Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotation
   <dependency>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-annotations</artifactId>
-    <version>3.1.0-RC1</version>
+    <version>3.1.0-RC5</version>
     <optional>true</optional>
   </dependency>
 
@@ -71,7 +71,7 @@ Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotation
 
   // for Gradle
   compileOnly 'net.jcip:jcip-annotations:1.0'
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC1'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.0-RC5'
 
 FindBugs Ant task
 -----------------
@@ -98,19 +98,20 @@ Please replace ``findbugs-ant.jar`` with ``spotbugs-ant.jar``.
 FindBugs Maven plugin
 ---------------------
 
-Please add `com.github.spotbugs:spotbugs` to dependency of `org.codehaus.mojo.findbugs-maven-plugin`.
+Please use `com.github.hazendaz.spotbugs:spotbugs-maven-plugin` instead of `org.codehaus.mojo:findbugs-maven-plugin`.
 
 .. code-block:: xml
 
   <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>findbugs-maven-plugin</artifactId>
-    <version>3.0.4</version>
+    <groupId>com.github.hazendaz.spotbugs</groupId>
+    <artifactId>spotbugs-maven-plugin</artifactId>
+    <version>3.0.6</version>
     <dependencies>
+      <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
       <dependency>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs</artifactId>
-        <version>3.1.0-RC1</version>
+        <version>3.1.0-RC5</version>
       </dependency>
     </dependencies>
   </plugin>
@@ -118,12 +119,23 @@ Please add `com.github.spotbugs:spotbugs` to dependency of `org.codehaus.mojo.fi
 FindBugs Gradle plugin
 ----------------------
 
-Please use spotbugs plugin found on https://plugins.gradle.org
+Please use spotbugs plugin found on https://plugins.gradle.org/plugin/com.github.spotbugs
 
 .. code-block:: groovy
 
   plugins {
-    id  'com.github.spotbugs' version "1.0"
+    id  'com.github.spotbugs' version '1.3'
+  }
+  spotbugs {
+    toolVersion = '3.1.0-RC5'
+  }
+
+  // To generate an HTML report instead of XML
+  tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+      xml.enabled = false
+      html.enabled = true
+    }
   }
 
 FindBugs Eclipse plugin
@@ -133,5 +145,4 @@ Please use following update site instead.
 
 * https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)
 * https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)
-
-Currently the update site for daily built plugin isn't ready.
+* https://spotbugs.github.io/eclipse-latest/ (to use latest build)

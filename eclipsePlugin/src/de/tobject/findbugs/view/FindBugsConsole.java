@@ -37,6 +37,8 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.part.IPageBookViewPage;
 import org.eclipse.ui.themes.ITheme;
 
+import de.tobject.findbugs.FindbugsPlugin;
+
 /**
  * @author Andrei
  */
@@ -116,7 +118,8 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
                 }
             }
         } else {
-            console = new FindBugsConsole("SpotBugs", null, true);
+            console = new FindBugsConsole("SpotBugs",
+            		FindbugsPlugin.getDefault().getImageDescriptor(AbstractFindbugsView.PERSPECTIVE_IMG), true);
         }
         if (!exists) {
             manager.addConsoles(new IConsole[] { console });

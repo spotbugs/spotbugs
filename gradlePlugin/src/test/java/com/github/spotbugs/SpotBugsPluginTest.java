@@ -1,5 +1,8 @@
 package com.github.spotbugs;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -17,7 +20,7 @@ public class SpotBugsPluginTest extends Assert{
   public TemporaryFolder folder= new TemporaryFolder();
   
   @Test
-  public void TestFindBugsTasksExist() throws Exception{
+  public void TestSpotBugsTasksExist() throws Exception{
     String buildScript = "plugins {\n" + 
         "  id 'java'\n" +
         "  id 'com.github.spotbugs'\n" + 
@@ -37,7 +40,13 @@ public class SpotBugsPluginTest extends Assert{
     
     
     BuildResult result = GradleRunner.create().withProjectDir(folder.getRoot()).withArguments(Arrays.asList("tasks", "--all")).withPluginClasspath().build();
-    assertTrue(result.getOutput().contains("findbugsMain"));
-    assertTrue(result.getOutput().contains("findbugsTest"));
+    assertTrue(result.getOutput().contains("spotbugsMain"));
+    assertTrue(result.getOutput().contains("spotbugsTest"));
+  }
+
+  @Test
+  public void testLoadToolVersion() {
+    SpotBugsPlugin plugin = new SpotBugsPlugin();
+    assertThat(plugin.loadToolVersion(), is(notNullValue()));
   }
 }

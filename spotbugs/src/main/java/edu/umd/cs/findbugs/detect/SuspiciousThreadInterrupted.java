@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Collections;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -74,7 +75,7 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
     public void sawOpcode(int seen) {
 
         if (state == SEEN_POSSIBLE_THREAD) {
-            if (seen == POP) {
+            if (seen == Const.POP) {
                 state = SEEN_UNKNOWNCONTEXT_POP;
                 return;
             } else {
@@ -83,37 +84,37 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
         }
         switch (state) {
         case SEEN_NOTHING:
-            if ((seen == INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
+            if ((seen == Const.INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
                     && "currentThread".equals(getNameConstantOperand()) && "()Ljava/lang/Thread;".equals(getSigConstantOperand())) {
                 state = SEEN_CURRENTTHREAD;
-            } else if ((seen == INVOKESTATIC || seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL)
+            } else if ((seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL)
                     && getSigConstantOperand().endsWith("Ljava/lang/Thread;")) {
                 state = SEEN_POSSIBLE_THREAD;
-            } else if (seen == ALOAD) {
+            } else if (seen == Const.ALOAD) {
                 if (localsWithCurrentThreadValue.get(getRegisterOperand())) {
                     state = SEEN_CURRENTTHREAD;
                 } else {
                     state = SEEN_POSSIBLE_THREAD;
                 }
-            } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
-                if (localsWithCurrentThreadValue.get(seen - ALOAD_0)) {
+            } else if ((seen >= Const.ALOAD_0) && (seen <= Const.ALOAD_3)) {
+                if (localsWithCurrentThreadValue.get(seen - Const.ALOAD_0)) {
                     state = SEEN_CURRENTTHREAD;
                 } else {
                     state = SEEN_POSSIBLE_THREAD;
                 }
-            } else if ((seen == GETFIELD || seen == GETSTATIC) && "Ljava/lang/Thread;".equals(getSigConstantOperand())) {
+            } else if ((seen == Const.GETFIELD || seen == Const.GETSTATIC) && "Ljava/lang/Thread;".equals(getSigConstantOperand())) {
                 state = SEEN_POSSIBLE_THREAD;
             }
             break;
 
         case SEEN_CURRENTTHREAD:
-            if (seen == POP) {
+            if (seen == Const.POP) {
                 state = SEEN_POP_AFTER_CURRENTTHREAD;
-            } else if (seen == ASTORE) {
+            } else if (seen == Const.ASTORE) {
                 localsWithCurrentThreadValue.set(getRegisterOperand());
                 state = SEEN_NOTHING;
-            } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
-                localsWithCurrentThreadValue.set(seen - ASTORE_0);
+            } else if ((seen >= Const.ASTORE_0) && (seen <= Const.ASTORE_3)) {
+                localsWithCurrentThreadValue.set(seen - Const.ASTORE_0);
                 state = SEEN_NOTHING;
             } else {
                 state = SEEN_NOTHING;
@@ -121,7 +122,7 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
             break;
 
         default:
-            if ((seen == INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
+            if ((seen == Const.INVOKESTATIC) && "java/lang/Thread".equals(getClassConstantOperand())
                     && "interrupted".equals(getNameConstantOperand()) && "()Z".equals(getSigConstantOperand())) {
                 if (state == SEEN_POP_AFTER_CURRENTTHREAD) {
                     bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)

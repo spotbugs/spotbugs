@@ -2,11 +2,11 @@
           xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
           pluginid="edu.umd.cs.findbugs.plugins.core"
           version="USE_FINDBUGS_VERSION"
-          provider="FindBugs project" website="https://github.com/spotbugs"
+          provider="SpotBugs project" website="https://github.com/spotbugs"
           update-url="http://update.findbugs.org/update-check">
 
           <!--
-  Plugin descriptor for FindBugs "core" plugin.
+  Plugin descriptor for SpotBugs "core" plugin.
   This plugin is enabled by default.
 -->
           <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud"

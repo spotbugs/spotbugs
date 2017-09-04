@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -155,7 +156,7 @@ public class UnreadFields extends OpcodeStackDetector {
         return data.isWrittenInConstructor(f);
     }
 
-    static final int DO_NOT_CONSIDER = ACC_PUBLIC | ACC_PROTECTED;
+    static final int DO_NOT_CONSIDER = Const.ACC_PUBLIC | Const.ACC_PROTECTED;
 
     final ClassDescriptor externalizable = DescriptorFactory.createClassDescriptor(java.io.Externalizable.class);
 
@@ -359,7 +360,7 @@ public class UnreadFields extends OpcodeStackDetector {
         seenMonitorEnter = getMethod().isSynchronized();
         data.staticFieldsReadInThisMethod.clear();
         super.visit(obj);
-        if ("<init>".equals(getMethodName()) && count_aload_1 > 1
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && count_aload_1 > 1
                 && (getClassName().indexOf('$') >= 0 || getClassName().indexOf('+') >= 0)) {
             data.needsOuterObjectInConstructor.add(getDottedClassName());
             // System.out.println(betterClassName +
@@ -373,14 +374,14 @@ public class UnreadFields extends OpcodeStackDetector {
         if (DEBUG) {
             System.out.println("Checking " + getClassName() + "." + obj.getName());
         }
-        if ("<init>".equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
         pendingGetField = null;
         saState = 0;
         super.visit(obj);
         int flags = obj.getAccessFlags();
-        if ((flags & ACC_NATIVE) != 0) {
+        if ((flags & Const.ACC_NATIVE) != 0) {
             hasNativeMethods = true;
         }
     }
@@ -397,33 +398,33 @@ public class UnreadFields extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (DEBUG) {
-            System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + saState);
+            System.out.println(getPC() + ": " + Const.getOpcodeName(seen) + " " + saState);
         }
-        if (seen == MONITORENTER) {
+        if (seen == Const.MONITORENTER) {
             seenMonitorEnter = true;
         }
         switch (saState) {
         case 0:
-            if (seen == ALOAD_0) {
+            if (seen == Const.ALOAD_0) {
                 saState = 1;
             }
             break;
         case 1:
-            if (seen == ALOAD_0) {
+            if (seen == Const.ALOAD_0) {
                 saState = 2;
             } else {
                 saState = 0;
             }
             break;
         case 2:
-            if (seen == GETFIELD) {
+            if (seen == Const.GETFIELD) {
                 saState = 3;
             } else {
                 saState = 0;
             }
             break;
         case 3:
-            if (seen == PUTFIELD) {
+            if (seen == Const.PUTFIELD) {
                 saState = 4;
             } else {
                 saState = 0;
@@ -434,9 +435,9 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         boolean selfAssignment = false;
         if (pendingGetField != null) {
-            if (seen != PUTFIELD && seen != PUTSTATIC) {
+            if (seen != Const.PUTFIELD && seen != Const.PUTSTATIC) {
                 data.readFields.add(pendingGetField);
-            } else if (XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == PUTSTATIC)) {
+            } else if (XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == Const.PUTSTATIC)) {
                 selfAssignment = true;
             } else {
                 data.readFields.add(pendingGetField);
@@ -447,7 +448,7 @@ public class UnreadFields extends OpcodeStackDetector {
             saState = 0;
         }
 
-        if (seen == INVOKESTATIC && "java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
+        if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
                 && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldSignature = (String) stack.getStackItem(1).getConstant();
@@ -459,7 +460,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
 
         }
-        if (seen == INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
+        if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
                 && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldClass = (String) stack.getStackItem(1).getConstant();
@@ -469,7 +470,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
 
         }
-        if (seen == INVOKESTATIC && "java/util/concurrent/atomic/AtomicLongFieldUpdater".equals(getClassConstantOperand())
+        if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicLongFieldUpdater".equals(getClassConstantOperand())
                 && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldClass = (String) stack.getStackItem(1).getConstant();
@@ -480,12 +481,12 @@ public class UnreadFields extends OpcodeStackDetector {
 
         }
 
-        if (seen == GETSTATIC) {
+        if (seen == Const.GETSTATIC) {
             XField f = XFactory.createReferencedXField(this);
             data.staticFieldsReadInThisMethod.add(f);
-        } else if (seen == INVOKESTATIC) {
+        } else if (seen == Const.INVOKESTATIC) {
             seenInvokeStatic = true;
-        } else if (seen == PUTSTATIC && !getMethod().isStatic()) {
+        } else if (seen == Const.PUTSTATIC && !getMethod().isStatic()) {
             XField f = XFactory.createReferencedXField(this);
             OpcodeStack.Item valuePut = getStack().getStackItem(0);
 
@@ -583,7 +584,7 @@ public class UnreadFields extends OpcodeStackDetector {
         }
 
         // Store annotation for the anonymous class creation
-        if (seen == INVOKESPECIAL && getMethodDescriptorOperand().getName().equals("<init>") && ClassName.isAnonymous(getClassConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && getMethodDescriptorOperand().getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(getClassConstantOperand())) {
             List<BugAnnotation> annotation = new ArrayList<>();
             annotation.add(ClassAnnotation.fromClassDescriptor(getClassDescriptor()));
             annotation.add(MethodAnnotation.fromVisitedMethod(this));
@@ -591,15 +592,15 @@ public class UnreadFields extends OpcodeStackDetector {
             anonymousClassAnnotation.put(getClassDescriptorOperand().getDottedClassName(), annotation);
         }
 
-        if (seen == PUTFIELD || seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3) {
+        if (seen == Const.PUTFIELD || seen == Const.ASTORE || seen == Const.ASTORE_0 || seen == Const.ASTORE_1 || seen == Const.ASTORE_2 || seen == Const.ASTORE_3) {
             Item item = stack.getStackItem(0);
             XMethod xMethod = item.getReturnValueOf();
-            if(xMethod != null && xMethod.getName().equals("<init>") && ClassName.isAnonymous(xMethod.getClassName())) {
+            if(xMethod != null && xMethod.getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(xMethod.getClassName())) {
                 List<BugAnnotation> annotations = anonymousClassAnnotation.get(xMethod.getClassName());
                 if(annotations == null) {
                     annotations = new ArrayList<>();
                 }
-                if(seen == PUTFIELD) {
+                if(seen == Const.PUTFIELD) {
                     annotations.add(FieldAnnotation.fromReferencedField(this));
                 } else {
                     annotations.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getNextPC()));
@@ -608,26 +609,26 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
+        if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC) {
 
             String sig = getSigConstantOperand();
             String invokedClassName = getClassConstantOperand();
             if (invokedClassName.equals(getClassName())
-                    && ("<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName()))) {
+                    && (Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName()))) {
 
                 data.calledFromConstructors.add(getNameConstantOperand() + ":" + sig);
             }
             int pos = PreorderVisitor.getNumberArguments(sig);
             if (stack.getStackDepth() > pos) {
                 OpcodeStack.Item item = stack.getStackItem(pos);
-                boolean superCall = seen == INVOKESPECIAL && !invokedClassName.equals(getClassName());
+                boolean superCall = seen == Const.INVOKESPECIAL && !invokedClassName.equals(getClassName());
 
                 if (DEBUG) {
                     System.out.println("In " + getFullyQualifiedMethodName() + " saw call on " + item);
                 }
 
                 boolean selfCall = item.getRegisterNumber() == 0 && !superCall;
-                if (selfCall && "<init>".equals(getMethodName())) {
+                if (selfCall && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                     sawSelfCallInConstructor = true;
                     if (DEBUG) {
                         System.out.println("Saw self call in " + getFullyQualifiedMethodName() + " to " + invokedClassName + "."
@@ -637,7 +638,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        if ((seen == IFNULL || seen == IFNONNULL) && stack.getStackDepth() > 0) {
+        if ((seen == Const.IFNULL || seen == Const.IFNONNULL) && stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
             XField f = item.getXField();
             if (f != null) {
@@ -648,7 +649,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        if ((seen == IF_ACMPEQ || seen == IF_ACMPNE) && stack.getStackDepth() >= 2) {
+        if ((seen == Const.IF_ACMPEQ || seen == Const.IF_ACMPNE) && stack.getStackDepth() >= 2) {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
             XField field1 = item1.getXField();
@@ -662,35 +663,35 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        computePlacesAssumedNonnull: if (seen == GETFIELD || seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE
-                || seen == INVOKESPECIAL || seen == PUTFIELD || seen == IALOAD || seen == AALOAD || seen == BALOAD
-                || seen == CALOAD || seen == SALOAD || seen == IASTORE || seen == AASTORE || seen == BASTORE || seen == CASTORE
-                || seen == SASTORE || seen == ARRAYLENGTH) {
+        computePlacesAssumedNonnull: if (seen == Const.GETFIELD || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE
+                || seen == Const.INVOKESPECIAL || seen == Const.PUTFIELD || seen == Const.IALOAD || seen == Const.AALOAD || seen == Const.BALOAD
+                || seen == Const.CALOAD || seen == Const.SALOAD || seen == Const.IASTORE || seen == Const.AASTORE || seen == Const.BASTORE || seen == Const.CASTORE
+                || seen == Const.SASTORE || seen == Const.ARRAYLENGTH) {
             int pos = 0;
             switch (seen) {
-            case ARRAYLENGTH:
-            case GETFIELD:
+            case Const.ARRAYLENGTH:
+            case Const.GETFIELD:
                 pos = 0;
                 break;
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE:
-            case INVOKESPECIAL:
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
                 String sig = getSigConstantOperand();
                 pos = PreorderVisitor.getNumberArguments(sig);
                 break;
-            case PUTFIELD:
-            case IALOAD:
-            case AALOAD:
-            case BALOAD:
-            case CALOAD:
-            case SALOAD:
+            case Const.PUTFIELD:
+            case Const.IALOAD:
+            case Const.AALOAD:
+            case Const.BALOAD:
+            case Const.CALOAD:
+            case Const.SALOAD:
                 pos = 1;
                 break;
-            case IASTORE:
-            case AASTORE:
-            case BASTORE:
-            case CASTORE:
-            case SASTORE:
+            case Const.IASTORE:
+            case Const.AASTORE:
+            case Const.BASTORE:
+            case Const.CASTORE:
+            case Const.SASTORE:
                 pos = 2;
                 break;
             default:
@@ -735,12 +736,12 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        if (seen == ALOAD_1) {
+        if (seen == Const.ALOAD_1) {
             count_aload_1++;
-        } else if (seen == GETFIELD || seen == GETSTATIC) {
+        } else if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
             XField f = XFactory.createReferencedXField(this);
             pendingGetField = f;
-            if ("readResolve".equals(getMethodName()) && seen == GETFIELD) {
+            if ("readResolve".equals(getMethodName()) && seen == Const.GETFIELD) {
                 data.writtenFields.add(f);
                 data.writtenNonNullFields.add(f);
             }
@@ -752,7 +753,7 @@ public class UnreadFields extends OpcodeStackDetector {
             } else if (!data.fieldAccess.containsKey(f)) {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
             }
-        } else if ((seen == PUTFIELD || seen == PUTSTATIC) && !selfAssignment) {
+        } else if ((seen == Const.PUTFIELD || seen == Const.PUTSTATIC) && !selfAssignment) {
             XField f = XFactory.createReferencedXField(this);
             OpcodeStack.Item item = null;
             if (stack.getStackDepth() > 0) {
@@ -763,7 +764,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
             data.writtenFields.add(f);
 
-            boolean writtingNonNull = previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO;
+            boolean writtingNonNull = previousOpcode != Const.ACONST_NULL || previousPreviousOpcode == Const.GOTO;
             if (writtingNonNull) {
                 data.writtenNonNullFields.add(f);
                 if (DEBUG) {
@@ -778,7 +779,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
             }
 
-            boolean isConstructor = "<init>".equals(getMethodName()) || "<clinit>".equals(getMethodName());
+            boolean isConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName());
             if (getMethod().isStatic() == f.isStatic()
                     && (isConstructor || data.calledFromConstructors.contains(getMethodName() + ":" + getMethodSig())
                             || "init".equals(getMethodName()) || "initialize".equals(getMethodName())

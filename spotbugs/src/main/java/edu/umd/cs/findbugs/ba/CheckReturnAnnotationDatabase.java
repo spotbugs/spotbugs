@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -137,11 +138,11 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
         addMethodAnnotation("java.lang.String", "intern", "()Ljava/lang/String;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation("java.lang.String", "<init>", "([BLjava/lang/String;)V", false,
+        addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([BLjava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.lang.String", "<init>", "(Ljava/lang/String;)V", false,
+        addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.lang.String", "<init>", "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
         addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
         addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
@@ -158,7 +159,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigDecimal", "byteValueExact", "()B", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "<init>", "(Ljava/lang/String;)V", false,
+        addMethodAnnotation("java.math.BigDecimal", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigDecimal", "intValue", "()I", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
@@ -170,7 +171,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigInteger", "<init>", "(Ljava/lang/String;)V", false,
+        addMethodAnnotation("java.math.BigInteger", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -232,7 +233,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         XMethod m = (XMethod) o;
         if (m.getName().startsWith("access$")) {
             return null;
-        } else if ("<init>".equals(m.getName())) {
+        } else if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
             try {
                 if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass)) {
                     return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;

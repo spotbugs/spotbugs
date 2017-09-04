@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -78,18 +79,18 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
     @Override
     public void sawOpcode(int seen) {
         // System.out.println("State:" + state);
-        if (seen == GOTO && getBranchOffset() == 4) {
+        if (seen == Const.GOTO && getBranchOffset() == 4) {
             state = SEEN_GOTO;
         } else {
             switch (state) {
             case SEEN_NOTHING:
-                if ((seen == ICONST_1)) {
+                if ((seen == Const.ICONST_1)) {
                     state = SEEN_ICONST_1;
                 }
                 break;
 
             case SEEN_ICONST_1:
-                if (seen == ANEWARRAY && primitiveArray.matcher(getClassConstantOperand()).matches()) {
+                if (seen == Const.ANEWARRAY && primitiveArray.matcher(getClassConstantOperand()).matches()) {
                     // System.out.println("Allocation of array of type " +
                     // getClassConstantOperand());
                     primitiveArraySig = getClassConstantOperand();
@@ -100,21 +101,21 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 break;
 
             case SEEN_ANEWARRAY:
-                if (seen == DUP) {
+                if (seen == Const.DUP) {
                     state = SEEN_DUP;
                 } else {
                     state = SEEN_NOTHING;
                 }
                 break;
             case SEEN_DUP:
-                if (seen == ICONST_0) {
+                if (seen == Const.ICONST_0) {
                     state = SEEN_ICONST_0;
                 } else {
                     state = SEEN_NOTHING;
                 }
                 break;
             case SEEN_ICONST_0:
-                if (((seen >= ALOAD_0) && (seen < ALOAD_3)) || (seen == ALOAD)) {
+                if (((seen >= Const.ALOAD_0) && (seen < Const.ALOAD_3)) || (seen == Const.ALOAD)) {
                     state = SEEN_ALOAD;
                 } else {
                     state = SEEN_NOTHING;
@@ -122,7 +123,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 break;
 
             case SEEN_ALOAD:
-                if (seen == AASTORE) {
+                if (seen == Const.AASTORE) {
                     state = SEEN_AASTORE;
                 } else {
                     state = SEEN_NOTHING;
@@ -130,7 +131,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                 break;
 
             case SEEN_AASTORE:
-                if (seen == INVOKESTATIC || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKEVIRTUAL) {
+                if (seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE || seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL) {
                     // System.out.println(getClassConstantOperand());
                     // System.out.println(getNameConstantOperand());
                     // System.out.println(getSigConstantOperand());

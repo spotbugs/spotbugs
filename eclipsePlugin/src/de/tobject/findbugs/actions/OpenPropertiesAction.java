@@ -66,7 +66,7 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public final void run(final IAction action) {
@@ -108,7 +108,7 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
                 targetPart.getSite().getPage().showView(IPageLayout.ID_PROP_SHEET);
             }
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of FindBugs markers.");
+            FindbugsPlugin.getDefault().logException(e, "Exception while parsing content of SpotBugs markers.");
         } finally {
             targetPart = null;
         }

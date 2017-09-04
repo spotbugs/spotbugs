@@ -144,7 +144,7 @@ public class FilterFilesTab extends Composite {
 
         Link label = new Link(this, SWT.NONE);
         label.setText("Filter files may be used to include or exclude bug detection for particular classes and methods.\n"
-                + "<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>\n");
+                + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>\n");
 
         label.addSelectionListener(new SelectionListener() {
             public void widgetSelected(SelectionEvent e) {
@@ -174,8 +174,8 @@ public class FilterFilesTab extends Composite {
 
         ManagePathsWidget excl2 = new ManagePathsWidget(this);
         viewer = excl2.createViewer(getMessage(FilterKind.EXCLUDE_BUGS.propertyName),
-                "You can include past FindBugs result XML files here to exclude those bugs from analysis. "
-                        + "<a href=\"http://findbugs.sourceforge.net/manual/filter.html\">Details...</a>", true);
+                "You can include past SpotBugs result XML files here to exclude those bugs from analysis. "
+                        + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>", true);
         filterExclBugs = createFilterProvider(viewer, FilterKind.EXCLUDE_BUGS, page);
         excl2.createButtonsArea(filterExclBugs);
 

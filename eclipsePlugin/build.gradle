@@ -1,11 +1,13 @@
-apply from: "$rootDir/gradle/maven.gradle"
+// TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
+// apply from: "$rootDir/gradle/maven.gradle"
+apply plugin: 'eclipse'
 
 if (version.endsWith('-SNAPSHOT')) {
   // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
   version = version - '-SNAPSHOT' + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
 } else if (version.contains('-RC')) {
   // eclipse doesn't like the `-RC`, so we timestamp uniquely
-  version = version - '-RC' + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
+  version = version.substring(0, version.lastIndexOf('-RC')) + '.' + new Date().format('yyyyMMdd') + '-' + System.currentTimeMillis()
 }
 
 sourceSets {
@@ -21,62 +23,135 @@ sourceSets {
   }
 }
 
-configurations {
-  embeddedLibs
-  includedLibs
-  compile.extendsFrom embeddedLibs
-  compile.extendsFrom includedLibs
-}
-
 def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
 
 def localProps = new Properties()
 localProps.load(new FileInputStream("$projectDir/local.properties"))
 
-// TODO : convert these to external dependencies
-def requiredLibs = fileTree(dir:'lib', include:[
-  'jsr305.jar',
-  'jFormatString.jar',
-  'commons-lang-2.6.jar',
-  'dom4j-1.6.1.jar',
-  'jaxen-1.1.6.jar'
-])
+def eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
+// Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
+def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
+def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
+if (!eclipseExecutable.exists()) {
+   // Fall back to non-macOS directory layout.
+   eclipseExecutable = new File(eclipseRootDir, "eclipse")
+   eclipsePluginsDir = new File(eclipseRootDir, "plugins")
+}
 
 dependencies {
-  includedLibs requiredLibs
+  // List below includes all Eclipse SDK plugins except few causing troubles.
+  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
+  compileOnly fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
+    exclude:[
+        '**/datanucleus-enhancer*.jar',
+        'edu.umd.cs.findbugs.**/*.jar',
+        'org.mockito*.jar',
+        'com.github.spotbugs.**/*.jar'
+        ])
 
-  compile fileTree(dir:localProps.getProperty('eclipsePlugin.dir'), include:'**/*.jar',
-    exclude:['**/datanucleus-enhancer*.jar', 'edu.umd.cs.findbugs.**/*.jar', 'com.github.spotbugs.**/*.jar'])
-
-  includedLibs project(':spotbugs-annotations')
-  includedLibs 'net.jcip:jcip-annotations:1.0'
-  includedLibs fileTree(dir: '../findbugs/lib', include: 'bcel-6.1*.jar')
-  includedLibs 'org.ow2.asm:asm-debug-all:6.0_ALPHA'
-
-  embeddedLibs(project(':spotbugs')) {
-    transitive = false
+  compile(project(':spotbugs')) {
+    transitive = true
   }
+}
+
+clean {
+    delete "lib", "build"
+}
+
+task copyLibsForEclipse(type: Copy) {
+    dependsOn configurations.compile
+    from configurations.compile.files {
+    	include "*.jar"
+    	exclude "*xml-apis*.jar"
+    	// Workaround due https://github.com/spotbugs/spotbugs/issues/327 
+    	// BCEL classes are already included into the main spotbugs.jar
+    	// Should be removed after #327 is fixed.
+    	exclude "bcel-*.jar"
+    }
+    into "lib"
 }
 
 task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
 }
 
-jar {
-  includeEmptyDirs = false
-  from(configurations.embeddedLibs.collect { zipTree(it) }) {
-    exclude 'edu/umd/cs/findbugs/gui/**/*.*'
-    exclude 'edu/umd/cs/findbugs/gui2/**/*.*'
-    exclude 'edu/umd/cs/findbugs/userAnnotations/ri/**/*.*'
-    exclude 'edu/umd/cs/findbugs/sourceViewer/**/*.*'
-    exclude 'edu/umd/cs/findbugs/anttask/**/*.*'
-    exclude 'edu/umd/cs/findbugs/tools/**/*.*'
-    exclude 'edu/umd/cs/findbugs/annotations/**/*.*'
-    exclude 'net/jcip/annotations/**/*.*'
-    exclude 'META-INF/**.*'
+task updateManifest {
+  dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
+  doLast {
+    def manifestSpec = manifest {
+      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+                 'Bundle-Version': project.version,
+                 'Bundle-ClassPath': ".,spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
+                      projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+    }
+
+    def distManifestSpec = manifest {
+      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+                 'Bundle-Version': project.version,
+                 'Bundle-ClassPath': "spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
+                        projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+    }
+    // write manifests
+    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+    distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
+
+    // write build.properties
+    def propsTemplate = file('build-template.properties')
+    def props = new Properties()
+    props.load(propsTemplate.newDataInputStream())
+    props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
+        fileTree(dir: 'lib').collect { projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(','))
+    props.store(file('build.properties').newWriter(), null)
   }
-  exclude 'de/tobject/findbugs/tools/**'
-  archiveName 'findbugs-plugin.jar' // TODO : Change this
+}
+
+// create manifest when importing to eclipse
+tasks.eclipse.dependsOn copyLibsForEclipse, updateManifest
+
+class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
+    def file;
+    def FileRef(File file){
+        this.file = file
+    }
+    def File getFile(){
+        return file;
+    }
+    def String getJarURL(){
+        return "jar:" + file
+    }
+    def String getPath(){
+        return file.toString().replace('\\', '/')
+    }
+    def boolean isRelativeToPathVariable(){
+        return false
+    }
+}
+
+eclipse.classpath.file {
+    whenMerged {
+        classpath ->
+           classpath.entries.removeAll {
+               entry -> entry.kind == 'lib'
+           }
+           copyLibsForEclipse
+           fileTree(dir: 'lib').forEach {
+                file ->
+                    def rel = projectDir.toPath().relativize(java.nio.file.Paths.get(file.toString())).toFile()
+                    org.gradle.plugins.ide.eclipse.model.ClasspathEntry entry =
+                        new org.gradle.plugins.ide.eclipse.model.Library(new FileRef(rel))
+                    classpath.entries.add(entry)
+           }
+    }
+}
+
+jar {
+  // Make sure we always update the manifest when building
+  dependsOn updateManifest
+  includeEmptyDirs = false
+  from sourceSets.main.output
+  archiveName 'spotbugs-plugin.jar'
 }
 
 def distSpec = copySpec {
@@ -85,24 +160,18 @@ def distSpec = copySpec {
     include 'RELEASENOTES'
     include 'plugin.xml'
     include '.options'
-    include 'plugin*.properties' // match plugin.properties and plugin_ja.properties
+    include 'OSGI-INF/l10n/*.properties'
     include '*.png'
     include 'about.*'
     include 'doc/*.*'
     include 'plugin/*.*'
     include 'icons/*.*'
+    include 'lib/'
   }
-  from('../findbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
+  from('../spotbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
     include 'plugin/**'
   }
-  from('../findbugs/optionalPlugin/noUpdateChecks.jar') { // FIXME : ugly, but update checks are gonna die too
-    into 'plugin/'
-  }
-  from(configurations.includedLibs) {
-    into 'lib/'
-    rename 'annotations-.*', 'annotations.jar'
-  }
-  from('META-INF/MANIFEST.MF') {
+  from('META-INF/MANIFEST-DIST.MF') {
     filter { line ->
       if (line.startsWith('Bundle-Version:')) {
         return "Bundle-Version: ${project.version}"
@@ -111,6 +180,9 @@ def distSpec = copySpec {
       line
     }
     into 'META-INF/'
+    rename {
+      'MANIFEST.MF'
+    }
   }
 }
 
@@ -150,6 +222,10 @@ task featureJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
+  }
   destinationDir = file("${buildDir}/site/eclipse/features/")
 }
 
@@ -159,6 +235,10 @@ task featureCandidateJar(type:Zip) {
   from('plugin_feature-candidate.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
+  }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
   }
   destinationDir = file("${buildDir}/site/eclipse-candidate/features/")
 }
@@ -170,6 +250,10 @@ task featureDailyJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
+  }
   destinationDir = file("${buildDir}/site/eclipse-daily/features/")
 }
 
@@ -178,6 +262,10 @@ task siteXml(type:Copy) {
   from 'plugin_site.xml'
   destinationDir = file("${buildDir}/site/eclipse")
   rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
 }
 
 task siteCandidateXml(type:Copy) {
@@ -185,6 +273,10 @@ task siteCandidateXml(type:Copy) {
   from 'plugin_site-candidate.xml'
   destinationDir = file("${buildDir}/site/eclipse-candidate")
   rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
 }
 
 task siteDailyXml(type:Copy) {
@@ -192,12 +284,20 @@ task siteDailyXml(type:Copy) {
   from 'plugin_site-daily.xml'
   destinationDir = file("${buildDir}/site/eclipse-daily")
   rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
 }
 
 task generateP2Metadata(type:Exec) {
+  doFirst {
+    project.delete "${buildDir}/site/eclipse/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse/content.xml"
+  }
   inputs.file 'local.properties'
   dependsOn pluginJar, featureJar, siteXml
-  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+  commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
@@ -205,9 +305,13 @@ task generateP2Metadata(type:Exec) {
 }
 
 task generateCandidateP2Metadata(type:Exec) {
+  doFirst {
+    project.delete "${buildDir}/site/eclipse-candidate/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse-candidate/content.xml"
+  }
   inputs.file 'local.properties'
   dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml
-  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+  commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
@@ -215,9 +319,13 @@ task generateCandidateP2Metadata(type:Exec) {
 }
 
 task generateP2MetadataDaily(type:Exec) {
+  doFirst {
+    project.delete "${buildDir}/site/eclipse-daily/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse-daily/content.xml"
+  }
   inputs.file 'local.properties'
   dependsOn pluginDailyJar, featureDailyJar, siteDailyXml
-  commandLine "${localProps.getProperty('eclipsePlugin.dir')}/../eclipse", '-nosplash',
+  commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
     '-artifactRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
@@ -234,21 +342,3 @@ task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
 }
 
 tasks['assemble'].dependsOn eclipseSite
-
-artifacts {
-  archives jar
-
-  // deploy site zip to Maven central, to upload it to official update site https://spotbugs.github.io/
-  archives eclipseSiteZip
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'SpotBugs Eclipse Plugin'
-        description "Eclpse Plugin to integrate SpotBugs daily development"
-      }
-    }
-  }
-}

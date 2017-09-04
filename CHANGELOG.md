@@ -2,6 +2,80 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
+## Unreleased (2017/??/??)
+
+### Removed
+
+* Delete needless bundled libraries from Eclipse plugin ([#330](https://github.com/spotbugs/spotbugs/pull/330))
+
+### Added
+
+* Add plugin/README into the distribution ([#331](https://github.com/spotbugs/spotbugs/pull/331))
+
+### Fixed
+
+* Fix broken command line script ([#323](https://github.com/spotbugs/spotbugs/issues/323))
+
+## 3.1.0-RC5 (2017/Aug/16)
+
+### Removed
+
+* The `YourKitProfiler` class has been removed and the `findbugs.yourkit.enabled` system property is no longer supported ([#289](https://github.com/spotbugs/spotbugs/issues/289))
+
+### Changed
+
+* SpotBugs now consumes ASM 6.0 *beta* rather than *alpha* ([#268](https://github.com/spotbugs/spotbugs/issues/268))
+
+## 3.1.0-RC4 (2017/Jul/21)
+
+### Added
+
+* The Eclipse SpotBugs plugin is eligible as an update for FindBugs 3.0.2 and earlier ([#209](https://github.com/spotbugs/spotbugs/issues/209))
+* `<EarlierSubtypes>` and `<LaterSubtypes>` can now refer to supertypes from custom plug-ins ([#215](https://github.com/spotbugs/spotbugs/issues/215))
+
+### Removed
+
+* The `AbstractIntegrationTest.containsExactly` and `SpotBugsRule.containsExactly` methods have been replaced by `CountMatcher.containsExactly` ([#269](https://github.com/spotbugs/spotbugs/pull/269))
+
+### Changed
+
+* `jdepend:jdepend:2.9.1` is no longer a compile-scoped dependency but only test-scoped. ([#242](https://github.com/spotbugs/spotbugs/issues/242))
+* `ICodeBase`, `IClassPath`, and `URLClassPath` now implement `AutoCloseable` ([#258](https://github.com/spotbugs/spotbugs/issues/258))
+
+### Deprecated
+
+* In future versions of SpotBugs, classes currently implementing the deprecated `org.apache.bcel.Constants` interface may no longer do so.
+  Subclasses should either implement this interface themselves or, preferably, use the constants defined in the (non-deprecated) `org.apache.bcel.Const` class instead.
+  ([#262](https://github.com/spotbugs/spotbugs/issues/262))
+
+## 3.1.0-RC3 (2017/Jun/10)
+
+### Added
+
+* Make TypeQualifierResolver recognize android.support.annotation.NonNull and Nullable ([#182](https://github.com/spotbugs/spotbugs/pull/182))
+
+### Fixed
+
+* Fix wrong version in Eclipse Plugin ([#173](https://github.com/spotbugs/spotbugs/pull/173))
+* When AnalysisRunner has findbugs.xml in jar, don't create temp jar ([#183](https://github.com/spotbugs/spotbugs/pull/183))
+
+## 3.1.0-RC2 (2017/May/16)
+
+### Added
+
+* First release for SpotBugs Gradle Plugin ([#142](https://github.com/spotbugs/spotbugs/pull/142))
+* Support plugin development by test harness ([#140](https://github.com/spotbugs/spotbugs/pull/140))
+
+### Changed
+
+* Change Eclipse Plugin ID to avoid conflict with FindBugs Eclipse Plugin ([#157](https://github.com/spotbugs/spotbugs/pull/157))
+
+### Fixed
+
+* Enhance performance of Eclipse Plugin ([#159](https://github.com/spotbugs/spotbugs/pull/1579))
+* Fix HTML format in `messages.xml` and others ([#166](https://github.com/spotbugs/spotbugs/pull/166))
+* Fix Japanese message in `messages_ja.xml` ([#164](https://github.com/spotbugs/spotbugs/pull/164))
+
 ## 3.1.0-RC1 (2017/Feb/21)
 
 ### Added

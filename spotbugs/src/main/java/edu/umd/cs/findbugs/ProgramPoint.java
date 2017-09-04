@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 public class ProgramPoint {
+    private static final int PRIME = 31;
+
     public ProgramPoint(BytecodeScanningDetector v) {
         method = v.getXMethod();
         pc = v.getPC();
@@ -36,10 +38,9 @@ public class ProgramPoint {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
         int result = 1;
-        result = prime * result + ((method == null) ? 0 : method.hashCode());
-        result = prime * result + pc;
+        result = PRIME * result + ((method == null) ? 0 : method.hashCode());
+        result = PRIME * result + pc;
         return result;
     }
 

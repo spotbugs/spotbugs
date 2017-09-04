@@ -28,6 +28,7 @@ import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -172,7 +173,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     isSyntheticMethod = m.isSynthetic();
                     className = m.getClassName();
                     kind = Target.PARAMETER;
-                    if ("<init>".equals(m.getName())) {
+                    if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
                         int i = className.lastIndexOf('$');
                         if (i + 1 < className.length() && Character.isDigit(className.charAt(i + 1))) {
                             isParameterToInitMethodofAnonymousInnerClass = true;
@@ -182,7 +183,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                     throw new IllegalStateException("impossible");
                 }
 
-                if (!m.isStatic() && !"<init>".equals(m.getName())) {
+                if (!m.isStatic() && !Const.CONSTRUCTOR_NAME.equals(m.getName())) {
                     JavaClass c = Repository.lookupClass(className);
                     // get inherited annotation
                     TreeSet<AnnotationEnum> inheritedAnnotations = new TreeSet<AnnotationEnum>();

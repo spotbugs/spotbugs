@@ -124,7 +124,7 @@ public class SaveXmlAction extends FindBugsAction {
      *            The file name to store the XML to.
      */
     private void work(final IProject project, final String fileName) {
-        FindBugsJob runFindBugs = new FindBugsJob("Saving FindBugs XML data to " + fileName + "...", project) {
+        FindBugsJob runFindBugs = new FindBugsJob("Saving SpotBugs XML data to " + fileName + "...", project) {
             @Override
             protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
                 BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, monitor);
@@ -132,7 +132,7 @@ public class SaveXmlAction extends FindBugsAction {
                     bugCollection.writeXML(fileName);
                 } catch (IOException e) {
                     CoreException ex = new CoreException(FindbugsPlugin.createErrorStatus(
-                            "Can't write FindBugs bug collection from project " + project + " to file " + fileName, e));
+                            "Can't write SpotBugs bug collection from project " + project + " to file " + fileName, e));
                     throw ex;
                 }
             }

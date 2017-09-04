@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -81,7 +83,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEINTERFACE) {
             String methodName = getNameConstantOperand();
             String clsConstant = getClassConstantOperand();
             if (("java/sql/ResultSet".equals(clsConstant) && ((methodName.startsWith("get") && dbFieldTypesSet

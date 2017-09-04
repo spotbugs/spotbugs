@@ -180,10 +180,12 @@ public class DetectorConfigurationTab extends Composite {
     }
 
     private static final class DetectorFactoriesContentProvider implements IStructuredContentProvider {
+        @Override
         public void dispose() {
             // ignored
         }
 
+        @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
             // ignored
         }
@@ -320,7 +322,7 @@ public class DetectorConfigurationTab extends Composite {
         tabDetector.setToolTipText("Enable / disable available detectors");
 
         Label info = new Label(this, SWT.WRAP);
-        info.setText("Disabled detectors will not participate in FindBugs analysis. \n"
+        info.setText("Disabled detectors will not participate in SpotBugs analysis. \n"
                 + "'Grayed out' detectors will run, however they will not report" + " any results to the UI.");
 
         hiddenVisible = new Button(this, SWT.CHECK);

@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2009, Tom�s Pollak
+ * Copyright (C) 2009, Tomás Pollak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ import org.junit.Test;
 /**
  * This class tests the quickfix resolutions.
  *
- * @author Tom�s Pollak
+ * @author Tomás Pollak
  */
 public class QuickfixTest extends AbstractQuickfixTest {
     @BeforeClass
@@ -140,7 +140,3 @@ public class QuickfixTest extends AbstractQuickfixTest {
 
 
 }
-
-
-
-

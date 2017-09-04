@@ -89,7 +89,7 @@ public class ProjectUtilities {
         try {
             return ProjectUtilities.isJavaProject(project) && project.hasNature(FindbugsPlugin.NATURE_ID);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error while testing FindBugs nature for project " + project);
+            FindbugsPlugin.getDefault().logException(e, "Error while testing SpotBugs nature for project " + project);
         }
         return false;
     }

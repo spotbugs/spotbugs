@@ -60,12 +60,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     private static final BitSet RETURN_OPCODE_SET = new BitSet();
     static {
-        RETURN_OPCODE_SET.set(Const.ARETURN);
-        RETURN_OPCODE_SET.set(Const.IRETURN);
-        RETURN_OPCODE_SET.set(Const.LRETURN);
-        RETURN_OPCODE_SET.set(Const.DRETURN);
-        RETURN_OPCODE_SET.set(Const.FRETURN);
-        RETURN_OPCODE_SET.set(Const.RETURN);
+        RETURN_OPCODE_SET.set(Opcodes.ARETURN);
+        RETURN_OPCODE_SET.set(Opcodes.IRETURN);
+        RETURN_OPCODE_SET.set(Opcodes.LRETURN);
+        RETURN_OPCODE_SET.set(Opcodes.DRETURN);
+        RETURN_OPCODE_SET.set(Opcodes.FRETURN);
+        RETURN_OPCODE_SET.set(Opcodes.RETURN);
     }
 
     private final ClassReader classReader;
@@ -207,23 +207,23 @@ public class ClassParserUsingASM implements ClassParserInterface {
         @Override
         public void visitInsn(int opcode) {
             switch (opcode) {
-            case Const.MONITORENTER:
+            case Opcodes.MONITORENTER:
                 mBuilder.setUsesConcurrency();
                 break;
-            case Const.ARETURN:
-            case Const.IRETURN:
-            case Const.LRETURN:
-            case Const.DRETURN:
-            case Const.FRETURN:
+            case Opcodes.ARETURN:
+            case Opcodes.IRETURN:
+            case Opcodes.LRETURN:
+            case Opcodes.DRETURN:
+            case Opcodes.FRETURN:
                 if (identityState == IdentityMethodState.LOADED_PARAMETER) {
                     mBuilder.setIsIdentity();
                 }
                 sawReturn = true;
                 break;
-            case Const.RETURN:
+            case Opcodes.RETURN:
                 sawReturn = true;
                 break;
-            case Const.ATHROW:
+            case Opcodes.ATHROW:
                 if (stubState == StubState.INITIALIZE_RUNTIME) {
                     sawStubThrow = true;
                 } else if (justSawInitializationOfUnsupportedOperationException) {
@@ -457,7 +457,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         mBuilder.setUnsupported();
                     }
                     if (sawStubThrow) {
-                        mBuilder.addAccessFlags(Const.ACC_SYNTHETIC);
+                        mBuilder.addAccessFlags(Opcodes.ACC_SYNTHETIC);
                         mBuilder.setIsStub();
 
                     }

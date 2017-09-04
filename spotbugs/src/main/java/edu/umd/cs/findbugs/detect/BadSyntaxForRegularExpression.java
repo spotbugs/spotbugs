@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -128,28 +130,28 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+        if (seen == Const.INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
                 && "compile".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")) {
             sawRegExPattern(1, getIntValue(0, 0));
-        } else if (seen == INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
                 && "compile".equals(getNameConstantOperand()) && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
             sawRegExPattern(0);
-        } else if (seen == INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKESTATIC && "java/util/regex/Pattern".equals(getClassConstantOperand())
                 && "matches".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
-        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
                 && "replaceAll".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, true);
-        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
                 && "replaceFirst".equals(getNameConstantOperand())) {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, false);
-        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
                 && "matches".equals(getNameConstantOperand())) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
-        } else if (seen == INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
+        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
                 && "split".equals(getNameConstantOperand())) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);

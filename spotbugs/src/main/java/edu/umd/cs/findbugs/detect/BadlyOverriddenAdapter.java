@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -85,7 +86,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
         if (isAdapter) {
             String methodName = obj.getName();
             String signature = methodMap.get(methodName);
-            if (!"<init>".equals(methodName) && signature != null) {
+            if (!Const.CONSTRUCTOR_NAME.equals(methodName) && signature != null) {
                 if (!signature.equals(obj.getSignature())) {
                     if (!badOverrideMap.keySet().contains(methodName)) {
                         badOverrideMap.put(methodName, new BugInstance(this, "BOA_BADLY_OVERRIDDEN_ADAPTER", NORMAL_PRIORITY)

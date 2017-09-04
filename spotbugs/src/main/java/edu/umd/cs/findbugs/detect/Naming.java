@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -146,7 +147,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (m.isStatic()) {
             return false;
         }
-        if ("<init>".equals(m.getName()) || "<clinit>".equals(m.getName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(m.getName()) || Const.STATIC_INITIALIZER_NAME.equals(m.getName())) {
             return false;
         }
         for (XMethod m2 : others) {
@@ -250,7 +251,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (m.isStatic()) {
             return false;
         }
-        if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) {
+        if (m.getName().startsWith(Const.CONSTRUCTOR_NAME) || m.getName().startsWith(Const.STATIC_INITIALIZER_NAME)) {
             return false;
         }
         for (XMethod m2 : others) {
@@ -442,7 +443,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
         if (isEclipseNLS) {
             int flags = obj.getAccessFlags();
-            if ((flags & ACC_STATIC) != 0 && ((flags & ACC_PUBLIC) != 0) && "Ljava/lang/String;".equals(getFieldSig())) {
+            if ((flags & Const.ACC_STATIC) != 0 && ((flags & Const.ACC_PUBLIC) != 0) && "Ljava/lang/String;".equals(getFieldSig())) {
                 // ignore "public statis String InstallIUCommandTooltip;"
                 // messages from Eclipse NLS bundles
                 return;
@@ -489,11 +490,11 @@ public class Naming extends PreorderVisitor implements Detector {
         byte[] codeBytes = code.getCode();
         if (codeBytes.length > 1 && codeBytes.length < 10) {
             int lastOpcode = codeBytes[codeBytes.length - 1] & 0xff;
-            if (lastOpcode != ATHROW) {
+            if (lastOpcode != Const.ATHROW) {
                 return false;
             }
             for (int b : codeBytes) {
-                if ((b & 0xff) == RETURN) {
+                if ((b & 0xff) == Const.RETURN) {
                     return false;
                 }
             }
@@ -590,7 +591,7 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if (obj.isPrivate() || obj.isStatic() || "<init>".equals(mName)) {
+        if (obj.isPrivate() || obj.isStatic() || Const.CONSTRUCTOR_NAME.equals(mName)) {
             return;
         }
 
@@ -614,7 +615,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (outerClassSignature == null) {
             outerClassSignature = "";
         }
-        return "<init>".equals(m.getName()) && m.getSignature().equals("(" + outerClassSignature + ")V");
+        return Const.CONSTRUCTOR_NAME.equals(m.getName()) && m.getSignature().equals("(" + outerClassSignature + ")V");
     }
 
     private boolean badMethodName(String mName) {

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
@@ -212,12 +213,12 @@ public class FindBugsWorker {
 
         st.newPoint("runFindBugs");
         if (DEBUG) {
-            FindbugsPlugin.log("Running findbugs");
+            FindbugsPlugin.log("Running SpotBugs");
         }
 
         runFindBugs(findBugs);
         if (DEBUG) {
-            FindbugsPlugin.log("Done running findbugs");
+            FindbugsPlugin.log("Done running SpotBugs");
         }
 
         // Merge new results into existing results
@@ -233,9 +234,7 @@ public class FindBugsWorker {
 
     private void configureSourceDirectories(Project findBugsProject, Map<IPath, IPath> outLocations) {
         Set<IPath> srcDirs = outLocations.keySet();
-        for (IPath iPath : srcDirs) {
-            findBugsProject.addSourceDir(iPath.toOSString());
-        }
+        findBugsProject.addSourceDirs(srcDirs.stream().map(IPath::toOSString).collect(Collectors.toList()));
     }
 
     /**
@@ -318,11 +317,11 @@ public class FindBugsWorker {
             }
             Thread.currentThread().interrupt();
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
+            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs analysis");
         } finally {
             findBugs.dispose();
         }
- 
+
     }
     /**
      * Update the BugCollection for the project.
@@ -348,9 +347,9 @@ public class FindBugsWorker {
             st.newPoint("storeBugCollection");
             FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
+            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs results update");
+            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs results update");
         }
 
         // will store bugs as markers in Eclipse workspace
@@ -527,7 +526,7 @@ public class FindBugsWorker {
             } catch (DocumentException e) {
                 FindbugsPlugin.getDefault().logException(e, "Invalid XML file: " + xmlFileName);
             } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e, "Error loading FindBugs results xml file: " + xmlFileName);
+                FindbugsPlugin.getDefault().logException(e, "Error loading SpotBugs results xml file: " + xmlFileName);
             } finally {
                 IO.closeQuietly(input);
             }

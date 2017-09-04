@@ -397,7 +397,7 @@ public class FindInconsistentSync2 implements Detector {
 
             String name = method.getName();
 
-            boolean inConstructor = "<init>".equals(name) || "<clinit>".equals(name)
+            boolean inConstructor = Const.CONSTRUCTOR_NAME.equals(name) || Const.STATIC_INITIALIZER_NAME.equals(name)
                     || "readObject".equals(name) || "clone".equals(name) || "close".equals(name)
                     || "finalize".equals(name);
 
@@ -616,7 +616,7 @@ public class FindInconsistentSync2 implements Detector {
      */
 
     private static boolean isConstructor(String methodName) {
-        return "<init>".equals(methodName) || "<clinit>".equals(methodName) || "readObject".equals(methodName)
+        return Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName) || "readObject".equals(methodName)
                 || "clone".equals(methodName) || "close".equals(methodName) || "writeObject".equals(methodName)
                 || "toString".equals(methodName) || "init".equals(methodName) || "initialize".equals(methodName)
                 || "dispose".equals(methodName) || "finalize".equals(methodName) || "this".equals(methodName)

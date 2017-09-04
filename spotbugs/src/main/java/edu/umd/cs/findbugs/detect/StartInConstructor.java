@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -48,13 +49,13 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 
     @Override
     public boolean shouldVisit(JavaClass obj) {
-        boolean isFinal = (obj.getAccessFlags() & ACC_FINAL) != 0 || (obj.getAccessFlags() & ACC_PUBLIC) == 0;
+        boolean isFinal = (obj.getAccessFlags() & Const.ACC_FINAL) != 0 || (obj.getAccessFlags() & Const.ACC_PUBLIC) == 0;
         return !isFinal;
     }
 
     @Override
     public void visit(Code obj) {
-        if ("<init>".equals(getMethodName()) && (getMethod().isPublic() || getMethod().isProtected())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (getMethod().isPublic() || getMethod().isProtected())) {
             super.visit(obj);
             bugAccumulator.reportAccumulatedBugs();
         }
@@ -62,7 +63,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && "start".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && "start".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
             try {
                 if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
                     int priority = Priorities.NORMAL_PRIORITY;

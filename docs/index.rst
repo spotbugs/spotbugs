@@ -14,7 +14,6 @@ The name FindBugs and the FindBugs logo are trademarked by the University of Mar
 Indices and tables
 ==================
 
-* :ref:`genindex`
 * :ref:`search`
 
 Contents
@@ -25,4 +24,15 @@ Contents
 
    introduction
    installing
+   running
+   gui
+   eclipse
+   ant
+   gradle
+   filter
+   analysisprops
+   implement-plugin
+   faq
+   links
+   bugDescriptions
    migration

@@ -87,7 +87,6 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
      * .ClassDescriptor)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         if (dataflowClassName == null) {
             return;

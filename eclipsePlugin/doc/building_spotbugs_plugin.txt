@@ -1,0 +1,82 @@
+Here is how to build the SpotBugs Eclipse Plugin:
+
+Install Java 8
+===============
+
+Make sure you are using Java 8 or greater (since version 3.1 SpotBugs requires Java 8).
+
+Install Eclipse
+================
+1) Download and install Eclipse 4.6.+ (minimum supported version).
+2) Download and install EGit plugin for Git.
+    Choose [Help | Software Updates... | Available Software | Add Site...] and use
+    http://download.eclipse.org/egit/updates as update site url. Select both checkboxes
+    [Eclipse Git Team Provider] and [JGit]
+3) Uncheck "Task focused interface" child element of "Eclipse Git Team Provider".
+   Uncheck "Contact all update sites..." at the bottom and click [Install..., Next..., OK].
+4) Restart Eclipse.
+
+Clone spotbugs
+==============
+
+5) mkdir ~/git
+cd ~/git
+git clone https://github.com/spotbugs/spotbugs.git
+
+Setup target platform/spotbugs libraries
+========================================
+
+6) Create /home/user/bin/Eclipse46 directory. Create "plugins" link there pointing to the
+    "plugins" directory located in the root of Eclipse 4.6 installation. The Eclipse 4.6.3 can be fetched from
+    the official http://archive.eclipse.org/eclipse/downloads/ page.
+7) cd ~/git/spotbugs/eclipsePlugin
+echo eclipseRoot.dir=/home/user/bin/Eclipse46 > local.properties
+## on Windows use this syntax instead (notice the escaped backslashes):
+## echo eclipseRoot.dir=C:\\work\\eclipse-SDK-4.6\\eclipse > local.properties
+cd ..
+./gradlew eclipse
+
+Import the projects
+====================
+8) Choose [File | Import General | Existing Projects into Workspace | Next]. The Import project import wizard opens.
+9) In the wizard, proceed as follows:
+   a) Choose [Select root directory].
+   b) Enter ~/git/spotbugs. Click [Browse]. Make sure the checkbox "Search for nested projects" is selected.
+   c) Select all projects except the top level "spotbugs" project
+   d) Click [Finish].
+   e) Now "spotbugs" project will be compiled by Eclipse and should not have any errors,
+   the rest could have classpath errors due wrong target platform.
+10) Set the right target platform in Eclipse. Go to
+    [Window | Preferences | Plugin Development | Target Platform]
+    and select the "Eclipse 4.6" target platform definition from the list.
+    Additional target platforms can be setup in the similar way.
+    Under Windows, replace "/home/user/" path to something like C:\Documents\%user%.
+
+Change the code
+================
+11) You can immediately work with the source code. In Eclipse, make sure that
+    [Project | Build Automatically] is enabled (this is default). In this case, after the
+    first checkout both projects will be compiled. There must be NO compile errors.
+
+Debug Eclipse from Eclipse
+===========================
+12) Right click eclipsePlugin project, choose [Debug As | Eclipse Application],
+    to start plugin debugging. You do not need to build anything, if
+    [Project | Build Automatically] is enabled. You can change the code during debugging
+    (hot code replace is supported).
+
+Test Eclipse from Eclipse
+==========================
+13) Right click eclipsePlugin-junit project, choose [Debug As | JUnit Plug-In Test],
+    and all available SpotBugs Eclipse plugin tests will be executed. The
+    checked in version of tests should not fail with the checked in SpotBugs plugin code.
+
+Build executable plug-in
+=========================
+14) cd ~/git/spotbugs/eclipsePlugin
+./gradlew build
+15) You can now watch Gradle working in the console view. After a few
+    seconds, the console view should print "BUILD SUCCESSFUL".
+16) Right click on [eclipsePlugin] to refresh the Eclipse workspace
+    a) In the [eclipsePlugin]/build folder you will find the site/eclipse-daily folder which contains plugin update site.
+    b) Use the path to this folder in [Help | Install New Software] as the path to the update site to install it into Eclipse.

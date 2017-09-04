@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -65,7 +66,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL && "setAccessible".equals(getNameConstantOperand())) {
+        if (seen == Const.INVOKEVIRTUAL && "setAccessible".equals(getNameConstantOperand())) {
             @DottedClassName
             String className = getDottedClassConstantOperand();
             if ("java.lang.reflect.Field".equals(className) || "java.lang.reflect.Method".equals(className)) {
@@ -75,7 +76,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
             }
 
         }
-        if (seen == NEW) {
+        if (seen == Const.NEW) {
             @DottedClassName
             String classOfConstructedClass = getDottedClassConstantOperand();
             if (Subtypes2.instanceOf(classOfConstructedClass, "java.lang.ClassLoader")

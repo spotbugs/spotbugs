@@ -10,19 +10,41 @@ sourceSets {
 dependencies {
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
+
+  compile 'com.google.code.gson:gson:2.8.1'
+  compile 'com.google.inject:guice:4.1.0'
+  compile 'com.google.inject.extensions:guice-assistedinject:4.1.0'
+  compile 'com.google.inject.extensions:guice-servlet:4.1.0'
+  compile 'joda-time:joda-time:2.9.9'
+  compile 'net.jcip:jcip-annotations:1.0'
+  compile 'org.springframework:spring-core:4.3.8.RELEASE'
+
+  compile 'junit:junit:4.12'
+  compile 'org.testng:testng:6.11'
+
   compile project(':spotbugs')
   compile project(':spotbugs-annotations')
 }
 
 tasks.withType(JavaCompile).all {
   options.compilerArgs << '-Xlint:none'
+  options.encoding = 'UTF-8'
 }
 
 task classesJava7(type:JavaCompile) {
   exclude '**/*jdk8.java'
+  exclude '**/lambdas/**'
   sourceCompatibility = '1.7'
   targetCompatibility = '1.7'
   destinationDir = file("$buildDir/classes-jdk7")
+  classpath = sourceSets.main.compileClasspath
+  source = sourceSets.main.java
 }
 
 tasks['build'].dependsOn classesJava7
+
+sonarqube {
+  // this project should not be analyzed with sonarqube
+  // as it is test data, not real code
+  skipProject true
+}

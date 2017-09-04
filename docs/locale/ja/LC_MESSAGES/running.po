@@ -1,0 +1,537 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr "Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-17 15:12+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../running.rst:2
+msgid "Running SpotBugs"
+msgstr "SpotBugs の実行"
+
+#: ../../running.rst:4
+msgid ""
+"SpotBugs has two user interfaces: a graphical user interface (GUI) and a "
+"command line user interface. This chapter describes how to run each of "
+"these user interfaces."
+msgstr "SpotBugs には，グラフィカルユーザインターフェイス (GUI) とコマンドラインユーザインターフェイスの2つのユーザインターフェイスがあります。この章では，それぞれのユーザインタフェースを実行する方法について説明します。"
+
+#: ../../running.rst:8
+msgid "Quick Start"
+msgstr "クイックスタート"
+
+#: ../../running.rst:10
+msgid ""
+"If you are running SpotBugs on a Windows system, double-click on the file"
+" ``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` to start the SpotBugs GUI."
+msgstr "Windows で SpotBugs を実行するときは，``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` ファイルをダブルクリックして SpotBugs GUI を起動します。"
+
+#: ../../running.rst:12
+msgid ""
+"On a Unix, Linux, or macOS system, run the "
+"``$SPOTBUGS_HOME/bin/spotbugs`` script, or run the command ``java -jar "
+"$SPOTBUGS_HOME/lib/spotbugs.jar`` to run the SpotBugs GUI."
+msgstr "Unix，Linux，macOS では，  ``$SPOTBUGS_HOME/bin/spotbugs`` スクリプト，または ``java -jar $SPOTBUGS_HOME/lib/spotbugs.jar`` コマンドで SpotBugs GUI を実行します。"
+
+#: ../../running.rst:14
+msgid "Refer to :doc:`gui` for information on how to use the GUI."
+msgstr "GUI の使い方は :doc:`gui` を参照してください。"
+
+#: ../../running.rst:17
+msgid "Executing SpotBugs"
+msgstr "SpotBugs の実行"
+
+#: ../../running.rst:19
+msgid ""
+"This section describes how to invoke the SpotBugs program. There are two "
+"ways to invoke SpotBugs: directly, or using a wrapper script."
+msgstr "この節では，SpotBugs プログラムを起動する方法について説明します。SpotBugs を起動するためには，直接，またはラッパースクリプトを使用する2つの方法があります。"
+
+#: ../../running.rst:23
+msgid "Direct invocation of SpotBugs"
+msgstr "SpotBugs の直接起動"
+
+#: ../../running.rst:25
+msgid ""
+"The preferred method of running SpotBugs is to directly execute "
+"``$SPOTBUGS_HOME/lib/spotbugs.jar`` using the -jar command line switch of"
+" the JVM (java) executable. (Versions of SpotBugs prior to 1.3.5 required"
+" a wrapper script to invoke SpotBugs.)"
+msgstr "SpotBugs を実行するためには，JVM (Java) 実行可能ファイルの -jar コマンドラインスイッチを使用して ``$SPOTBUGS_HOME/lib/spotbugs.jar`` を直接実行する方法を推奨します。(バージョン 1.3.5 以前の SpotBugs では，SpotBugs を起動するためのラッパースクリプトが必要でした。)"
+
+#: ../../running.rst:28
+msgid "The general syntax of invoking SpotBugs directly is the following:"
+msgstr "SpotBugs を直接起動する一般的な構文は次のようになります。"
+
+#: ../../running.rst:35
+msgid "Choosing the User Interface"
+msgstr "ユーザインタフェースの選択"
+
+#: ../../running.rst:37
+msgid ""
+"The first command line option chooses the SpotBugs user interface to "
+"execute. Possible values are:"
+msgstr "最初のコマンドラインオプションは，実行する SpotBugs ユーザインタフェースの選択です。指定可能な値は次のとおりです。"
+
+#: ../../running.rst:40
+msgid "-gui:"
+msgstr ""
+
+#: ../../running.rst:40
+msgid "runs the graphical user interface (GUI)"
+msgstr "グラフィカルユーザインタフェース (GUI) の実行"
+
+#: ../../running.rst:43
+msgid "-textui:"
+msgstr ""
+
+#: ../../running.rst:43
+msgid "runs the command line user interface"
+msgstr "コマンドラインユーザインタフェースの実行"
+
+#: ../../running.rst:46
+msgid "-version:"
+msgstr ""
+
+#: ../../running.rst:46
+msgid "displays the SpotBugs version number"
+msgstr "SpotBugs のバージョン番号の表示"
+
+#: ../../running.rst:49
+msgid "-help:"
+msgstr ""
+
+#: ../../running.rst:49
+msgid "displays help information for the SpotBugs command line user interface"
+msgstr "SpotBugs コマンドラインユーザインタフェースに関するヘルプ情報の表示"
+
+#: ../../running.rst:52
+msgid "-gui1:"
+msgstr ""
+
+#: ../../running.rst:52
+msgid "executes the original (obsolete) SpotBugs graphical user interface"
+msgstr "オリジナル SpotBugs グラフィカルユーザインタフェース (廃止されている) の実行"
+
+#: ../../running.rst:55
+msgid "Java Virtual Machine (JVM) arguments"
+msgstr "Java 仮想マシン (JVM) の引数"
+
+#: ../../running.rst:57
+msgid "Several Java Virtual Machine arguments are useful when invoking SpotBugs."
+msgstr "Java 仮想マシンのいくつかの引数は，SpotBugs を起動するときに役立ちます。"
+
+#: ../../running.rst:62
+msgid "-XmxNNm:"
+msgstr ""
+
+#: ../../running.rst:60
+msgid ""
+"Set the maximum Java heap size to NN megabytes. SpotBugs generally "
+"requires a large amount of memory. For a very large project, using 1500 "
+"megabytes is not unusual."
+msgstr "Java ヒープサイズの最大値を NN メガバイトに設定します。SpotBugs は，通常大量のメモリを必要とします。巨大なプロジェクトでは，1500メガバイトを使用することは珍しいことではありません。"
+
+#: ../../running.rst:66
+msgid "-Dname=value:"
+msgstr ""
+
+#: ../../running.rst:65
+msgid ""
+"Set a Java system property. For example, you might use the argument "
+"``-Duser.language=ja`` to display GUI messages in Japanese."
+msgstr "Java システムプロパティを設定します。たとえば，GUI メッセージを日本語で表示したいときは ``-Duser.language=ja`` 引数を使用します。"
+
+#: ../../running.rst:69
+msgid "Invocation of SpotBugs using a wrapper script"
+msgstr "ラッパースクリプトを使用した SpotBugs の起動"
+
+#: ../../running.rst:71
+msgid "Another way to run SpotBugs is to use a wrapper script."
+msgstr "SpotBugs を実行するもう一つの方法は，ラッパースクリプトを使うことです。"
+
+#: ../../running.rst:73
+msgid ""
+"On Unix-like systems, use the following command to invoke the wrapper "
+"script:"
+msgstr "Unix 系システムでは，次のコマンドを使用してラッパースクリプトを起動します。"
+
+#: ../../running.rst:79
+msgid "On Windows systems, the command to invoke the wrapper script is"
+msgstr "Windows では，次のコマンドを使用してラッパースクリプトを起動します。"
+
+#: ../../running.rst:85
+msgid ""
+"On both Unix-like and Windows systems, you can simply add the "
+"``$SPOTBUGS_HOME/bin`` directory to your ``PATH`` environment variable "
+"and then invoke SpotBugs using the ``spotbugs`` command."
+msgstr "Unix 系システムと Windows のどちらでも，``$SPOTBUGS_HOME/bin`` ディレクトリを環境変数 ``PATH`` に追加するだけで，``spotbugs`` コマンドを使用して SpotBugs を起動できます。"
+
+#: ../../running.rst:88
+msgid "Wrapper script command line options"
+msgstr "ラッパースクリプトのコマンドラインオプション"
+
+#: ../../running.rst:90
+msgid ""
+"The SpotBugs wrapper scripts support the following command-line options. "
+"Note that these command line options are not handled by the SpotBugs "
+"program per se; rather, they are handled by the wrapper script."
+msgstr "SpotBugs ラッパースクリプトは，次のようなコマンドラインオプションをサポートしています。留意すべきは，これらのコマンドラインオプションは，SpotBugs プログラム自体では処理されません。それらはラッパースクリプトによって処理されます。"
+
+#: ../../running.rst:98
+msgid "-jvmArgs *args*:"
+msgstr ""
+
+#: ../../running.rst:94
+msgid ""
+"Specifies arguments to pass to the JVM. For example, you might want to "
+"set a JVM property:"
+msgstr "JVM に渡す引数を指定します。たとえは，JVM プロパティを設定したいとします。"
+
+#: ../../running.rst:101
+msgid "-javahome *directory*:"
+msgstr ""
+
+#: ../../running.rst:101
+msgid ""
+"Specifies the directory containing the JRE (Java Runtime Environment) to "
+"use to execute FindBugs."
+msgstr "SpotBugs の実行に使用する JRE(Javaランタイム環境) があるディテクトリを指定します。"
+
+#: ../../running.rst:105
+msgid "-maxHeap *size*:"
+msgstr ""
+
+#: ../../running.rst:104
+msgid ""
+"Specifies the maximum Java heap size in megabytes. The default is 256. "
+"More memory may be required to analyze very large programs or libraries."
+msgstr "Java ヒープサイズの最大値をメガバイトで指定します。デフォルトは256です。巨大なプログラムやライブラリを解析するためには，より多くのメモリが必要になることがあります。"
+
+#: ../../running.rst:109
+msgid "-debug:"
+msgstr ""
+
+#: ../../running.rst:108
+msgid ""
+"Prints a trace of detectors run and classes analyzed to standard output. "
+"Useful for troubleshooting unexpected analysis failures."
+msgstr "ディテクタの実行トレースと解析したクラスを標準出力に出力します。予期しない解析エラーのトラブルシューティングに役立ちます。"
+
+#: ../../running.rst:116
+msgid "-property *name=value*:"
+msgstr ""
+
+#: ../../running.rst:112
+msgid ""
+"This option sets a system property. SpotBugs uses system properties to "
+"configure analysis options. See :doc:`analysisprops`. You can use this "
+"option multiple times in order to set multiple properties. Note: In most "
+"versions of Windows, the name=value string must be in quotes."
+msgstr "このオプションはシステムプロパティを設定します。SpotBugs は，システムプロパティを使用して解析オプションを設定します。:doc:`analysisprops` を参照してください。複数のプロパティを設定したいときは，このオプションを複数回使用します。注:ほとんどの Windows のバージョンでは，name=value 文字列を引用符で囲む必要があります。"
+
+#: ../../running.rst:119
+msgid "Command-line Options"
+msgstr "コマンドラインオプション"
+
+#: ../../running.rst:121
+msgid ""
+"This section describes the command line options supported by SpotBugs. "
+"These command line options may be used when invoking SpotBugs directly, "
+"or when using a wrapper script."
+msgstr "この節では，SpotBugs でサポートされているコマンドラインオプションについて説明します。これらのコマンドラインオプションは，SpotBugs を直接起動するとき，またはラッパースクリプトを使用するときに使えます。"
+
+#: ../../running.rst:125
+msgid "Common command-line options"
+msgstr "共通のコマンドラインオプション"
+
+#: ../../running.rst:127
+msgid "These options may be used with both the GUI and command-line interfaces."
+msgstr "これらのオプションは，GUI とコマンドラインユーザインタフェースの両方で使えます。"
+
+#: ../../running.rst:131
+msgid "-effort:min:"
+msgstr ""
+
+#: ../../running.rst:130
+msgid ""
+"This option disables analyses that increase precision but also increase "
+"memory consumption. You may want to try this option if you find that "
+"SpotBugs runs out of memory, or takes an unusually long time to complete "
+"its analysis."
+msgstr "このオプションは，精度を向上させるがメモリ消費量も増やす解析を無効にします。SpotBugs を実行するためのメモリが不足したり，解析が完了するまでに異常に長い時間がかかるときは，このオプションを試してみると良いでしょう。"
+
+#: ../../running.rst:134
+msgid "-effort:max:"
+msgstr ""
+
+#: ../../running.rst:134
+msgid ""
+"Enable analyses which increase precision and find more bugs, but which "
+"may require more memory and take more time to complete."
+msgstr "精度を向上させ，より多くのバグを見つける解析を有効にします。しかし，より多くのメモリが必要になり，完了までに時間がかかることがあります。"
+
+#: ../../running.rst:138
+msgid "-project *project*:"
+msgstr ""
+
+#: ../../running.rst:137
+msgid ""
+"Specify a project to be analyzed. The project file you specify should be "
+"one that was created using the GUI interface. It will typically end in "
+"the extension .fb or .fbp."
+msgstr "解析するプロジェクトを指定します。指定するプロジェクトファイルは，GUI インタフェースを使用して作成したものでなければなりません。拡張子は，通常 .fb または .fbp です。"
+
+#: ../../running.rst:141
+msgid "GUI Options"
+msgstr "GUI オプション"
+
+#: ../../running.rst:143
+msgid "These options are only accepted by the Graphical User Interface."
+msgstr "これらのオプションは，グラフィカルユーザインタフェースだけで受け入れられます。"
+
+#: ../../running.rst:146
+msgid "-look:plastic|gtk|native:"
+msgstr ""
+
+#: ../../running.rst:146
+msgid "Set Swing look and feel."
+msgstr "Swing のルック & フィールを設定します。"
+
+#: ../../running.rst:149
+msgid "Text UI Options"
+msgstr "テキスト UI オプション"
+
+#: ../../running.rst:151
+msgid "These options are only accepted by the Text User Interface."
+msgstr "これらのオプションは，テキストユーザインタフェースだけで受け入れられます。"
+
+#: ../../running.rst:154
+msgid "-sortByClass:"
+msgstr ""
+
+#: ../../running.rst:154
+msgid "Sort reported bug instances by class name."
+msgstr "報告されたバグインスタンスをクラス名でソートします。"
+
+#: ../../running.rst:158
+msgid "-include *filterFile.xml*:"
+msgstr ""
+
+#: ../../running.rst:157
+msgid ""
+"Only report bug instances that match the filter specified by "
+"filterFile.xml. See :doc:`filter`."
+msgstr "filterFile.xml で指定したフィルタと一致するバグインスタンスだけを報告します。:doc:`filter` を参照してください。"
+
+#: ../../running.rst:162
+msgid "-exclude *filterFile.xml*:"
+msgstr ""
+
+#: ../../running.rst:161
+msgid ""
+"Report all bug instances except those matching the filter specified by "
+"filterFile.xml. See :doc:`filter`."
+msgstr "filterFile.xml で指定したフィルタと一致するもの以外のすべてのバグインスタンスを報告します。:doc:`filter` を参照してください。"
+
+#: ../../running.rst:169
+msgid "-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:"
+msgstr ""
+
+#: ../../running.rst:165
+msgid ""
+"Restrict analysis to find bugs to given comma-separated list of classes "
+"and packages. Unlike filtering, this option avoids running analysis on "
+"classes and packages that are not explicitly matched: for large projects,"
+" this may greatly reduce the amount of time needed to run the analysis. "
+"(However, some detectors may produce inaccurate results if they aren't "
+"run on the entire application.) Classes should be specified using their "
+"full classnames (including package), and packages should be specified in "
+"the same way they would in a Java import statement to import all classes "
+"in the package (i.e., add .* to the full name of the package). Replace .*"
+" with .- to also analyze all subpackages."
+msgstr "与えられたコンマ区切りのクラスとパッケージでバグを見つけるための解析を制限します。フィルタリングとは異なり，このオプションは明示的に一致しないクラスやパッケージの解析を回避します。大規模なプロジェクトの場合，解析を実行するために必要な時間が大幅に短縮されます。(しかしながら，アプリケーション全体でディテクタを実行していないので不正確な結果を返してしまうかもしれません。) クラスは，パッケージも含んだ完全なクラス名を使用して指定する必要があります。パッケージは，パッケージの中のすべてのクラスをインポートする Java import 文と同じ方法で指定する必要があります (つまり，パッケージの完全な名前に .* を追加します)。 .* を .- に換えるとすべてのサブパッケージも解析できます。"
+
+#: ../../running.rst:172
+msgid "-low:"
+msgstr ""
+
+#: ../../running.rst:172
+msgid "Report all bugs."
+msgstr "すべてのバグを報告します。"
+
+#: ../../running.rst:175
+msgid "-medium:"
+msgstr ""
+
+#: ../../running.rst:175
+msgid "Report medium and high priority bugs. This is the default setting."
+msgstr "優先度が中・高のバグを報告します。デフォルトの設定です。"
+
+#: ../../running.rst:178
+msgid "-high:"
+msgstr ""
+
+#: ../../running.rst:178
+msgid "Report only high priority bugs."
+msgstr "優先度が高のバグを報告します。"
+
+#: ../../running.rst:182
+msgid "-relaxed:"
+msgstr ""
+
+#: ../../running.rst:181
+msgid ""
+"Relaxed reporting mode. For many detectors, this option suppresses the "
+"heuristics used to avoid reporting false positives."
+msgstr "ざっくりとした報告をするモードです。多くのディテクタにおいて，このオプションは誤検出を回避するために使用されるヒューリスティックを抑制します。"
+
+#: ../../running.rst:188
+msgid "-xml:"
+msgstr ""
+
+#: ../../running.rst:185
+msgid ""
+"Produce the bug reports as XML. The XML data produced may be viewed in "
+"the GUI at a later time. You may also specify this option as "
+"``-xml:withMessages``; when this variant of the option is used, the XML "
+"output will contain human-readable messages describing the warnings "
+"contained in the file. XML files generated this way are easy to transform"
+" into reports."
+msgstr "バグレポートを XML として生成します。生成された XML データは，後で GUI で見ることができます。。このオプションは ``-xml:withMessages`` として指定することもできます。このオプションを使用すると出力された XML ファイルには人間が読める警告を説明するメッセージが含まれるようになります。この方法で生成された XML ファイルは簡単にレポートに変換できます。"
+
+#: ../../running.rst:197
+msgid "-html:"
+msgstr ""
+
+#: ../../running.rst:191
+msgid ""
+"Generate HTML output. By default, SpotBugs will use the default.xsl XSLT "
+"stylesheet to generate the HTML: you can find this file in spotbugs.jar, "
+"or in the SpotBugs source or binary distributions. Variants of this "
+"option include ``-html:plain.xsl``, ``-html:fancy.xsl`` and ``-html"
+":fancy-hist.xsl``. The ``plain.xsl`` stylesheet does not use Javascript "
+"or DOM, and may work better with older web browsers, or for printing. The"
+" ``fancy.xsl`` stylesheet uses DOM and Javascript for navigation and CSS "
+"for visual presentation. The ``fancy-hist.xsl`` an evolution of "
+"``fancy.xsl`` stylesheet. It makes an extensive use of DOM and Javascript"
+" for dynamically filtering the lists of bugs."
+msgstr "HTML 出力を生成します。デフォルトでは，SpotBugs は default.xsl XSLT スタイルシートを使用して HTML を生成します。このファイルは，spotbugs.jar，SpotBugs ソース，バイナリ配布物で見つけられます。このオプションのバリエーションには ``-html:plain.xsl``，``-html:fancy.xsl``，``-html:fancy-hist.xsl`` が含まれます。``plain.xsl`` スタイルシートは Javascript や DOM を使用していません。古いウェブブラウザや印刷のためにうまく動作するかもしれません。``fancy.xsl`` スタイルシートはナビゲーションのための DOM と Javascript，視覚的表現のための CSS を使用します。``fancy-hist.xsl`` は，``fancy.xsl`` スタイルシートが進化したものです。バグのリストを動的にフィルタリングするために DOM と Javascript をフル活用します。"
+
+#: ../../running.rst:197
+msgid ""
+"If you want to specify your own XSLT stylesheet to perform the "
+"transformation to HTML, specify the option as ``-html:myStylesheet.xsl``,"
+" where ``myStylesheet.xsl`` is the filename of the stylesheet you want to"
+" use."
+msgstr "独自の XSLT スタイルシートを指定して HTML への変換を実行したいときは，``-html:myStylesheet.xsl`` としてオプションを指定します。ここで ``myStylesheet.xsl`` は使用するスタイルシートのファイル名です。"
+
+#: ../../running.rst:200
+msgid "-emacs:"
+msgstr ""
+
+#: ../../running.rst:200
+msgid "Produce the bug reports in Emacs format."
+msgstr "バグレポートを Emacs 形式として生成します。"
+
+#: ../../running.rst:203
+msgid "-xdocs:"
+msgstr ""
+
+#: ../../running.rst:203
+msgid "Produce the bug reports in xdoc XML format for use with Apache Maven."
+msgstr "Apache Maven で使用するための xdoc XML 形式のバグレポートを生成します。"
+
+#: ../../running.rst:206
+msgid "-output *filename*:"
+msgstr ""
+
+#: ../../running.rst:206
+msgid "Produce the output in the specified file."
+msgstr "指定されたファイルに出力を生成します。"
+
+#: ../../running.rst:209
+msgid "-outputFile *filename*:"
+msgstr ""
+
+#: ../../running.rst:209
+msgid "This argument is deprecated. Use ``-output`` instead."
+msgstr "この引数は推奨されません。代わりに ``-output`` を使用してください。"
+
+#: ../../running.rst:213
+msgid "-nested[:true|false]:"
+msgstr ""
+
+#: ../../running.rst:212
+msgid ""
+"This option enables or disables scanning of nested jar and zip files "
+"found in the list of files and directories to be analyzed. By default, "
+"scanning of nested jar/zip files is enabled. To disable it, add "
+"``-nested:false`` to the command line arguments."
+msgstr "このオプションは，解析されるファイルとディレクトリのリストにあるネストされた jar/zip ファイルのスキャンを有効また無効にします。デフォルトでは，ネストされた jar/zip ファイルのスキャンが有効になっています。無効にしたいときは，コマンドライン引数に ``-nested:false`` を追加します。"
+
+#: ../../running.rst:217
+msgid "-auxclasspath *classpath*:"
+msgstr ""
+
+#: ../../running.rst:216
+msgid ""
+"Set the auxiliary classpath for analysis. This classpath should include "
+"all jar files and directories containing classes that are part of the "
+"program being analyzed but you do not want to have analyzed for bugs."
+msgstr "解析のための補助クラスパスを設定します。補助クラスパスには解析するプログラムで使用するクラスを含むディテクトリと jar ファイルをすべて指定します。バグの解析対象にはなりません。"
+
+#: ../../running.rst:220
+msgid "-auxclasspathFromInput:"
+msgstr ""
+
+#: ../../running.rst:220
+msgid ""
+"Read the auxiliary classpath for analysis from standard input, each line "
+"adds new entry to the auxiliary classpath for analysis."
+msgstr "標準入力から解析のための補助クラスパスを読み，それぞれの行を解析のための補助クラスパスに新規登録します。"
+
+#: ../../running.rst:223
+msgid "-auxclasspathFromFile *filepath*:"
+msgstr ""
+
+#: ../../running.rst:223
+msgid ""
+"Read the auxiliary classpath for analysis from file, each line adds new "
+"entry to the auxiliary classpath for analysis."
+msgstr "ファイルから解析のための補助クラスパスを読み，それぞれの行を解析のための補助クラスパスに新規登録します。"
+
+#: ../../running.rst:226
+msgid "-analyzeFromFile *filepath*:"
+msgstr ""
+
+#: ../../running.rst:226
+msgid ""
+"Read the files to analyze from file, each line adds new entry to the "
+"classpath for analysis."
+msgstr "ファイルから解析するファイルを読み，それぞれの行を解析のためのクラスパスに新規登録します。"
+
+#: ../../running.rst:230
+msgid "-userPrefs *edu.umd.cs.findbugs.core.prefs*:"
+msgstr ""
+
+#: ../../running.rst:229
+msgid ""
+"Set the path of the user preferences file to use, which might override "
+"some of the options above. Specifying userPrefs as first argument would "
+"mean some later options will override them, as last argument would mean "
+"they will override some previous options). This rationale behind this "
+"option is to reuse SpotBugs Eclipse project settings for command line "
+"execution."
+msgstr "使用するユーザ設定ファイルを設定します。上記のオプションの一部が上書きされる可能性があります。最初の引数として userPrefs を指定すると，後続のオプションで上書きすることになります。最後の引数として指定すると以前のオプションを上書きすることになります。このオプションの背後にある根拠は，コマンドライン実行で SpotBugs Eclipse プロジェクトの設定を再利用するためです。"
+

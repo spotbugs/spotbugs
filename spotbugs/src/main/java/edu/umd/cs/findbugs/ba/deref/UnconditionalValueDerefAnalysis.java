@@ -32,6 +32,7 @@ import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -550,6 +551,10 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         INullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+        if (inv instanceof INVOKEDYNAMIC) {
+            // ignore indy, it's only used to create lambda instances
+            return Collections.emptySet();
+        }
         XMethod called = XFactory.createXMethod(inv, constantPool);
         SignatureParser sigParser = new SignatureParser(called.getSignature());
         int numParams = sigParser.getNumParameters();

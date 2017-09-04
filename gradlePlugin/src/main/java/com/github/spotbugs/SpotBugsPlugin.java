@@ -1,7 +1,12 @@
 package com.github.spotbugs;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.net.URL;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -15,30 +20,31 @@ import org.gradle.api.reporting.SingleFileReport;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.SourceSet;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.Resources;
 import com.google.common.util.concurrent.Callables;
 
 /**
- * A plugin for the <a href="http://findbugs.sourceforge.net">FindBugs</a> byte code analyzer.
+ * A plugin for the <a href="https://spotbugs.github.io">SpotBugs</a> byte code analyzer.
  *
  * <p>
- * Declares a <tt>findbugs</tt> configuration which needs to be configured with the FindBugs library to be used.
- * Additional plugins can be added to the <tt>findbugsPlugins</tt> configuration.
+ * Declares a <tt>spotbugs</tt> configuration which needs to be configured with the SpotBugs library to be used.
+ * Additional plugins can be added to the <tt>spotbugsPlugins</tt> configuration.
  *
  * <p>
  * For projects that have the Java (base) plugin applied, a {@link SpotBugsTask} task is
  * created for each source set.
  *
  * @see SpotBugsTask
- * @see FindBugsExtension
+ * @see SpotBugsExtension
  */
 public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
-    public static final String DEFAULT_FINDBUGS_VERSION = "3.0.1";
-    private FindBugsExtension extension;
+    private SpotBugsExtension extension;
 
     @Override
     protected String getToolName() {
-        return "FindBugs";
+        return "SpotBugs";
     }
 
     @Override
@@ -48,27 +54,39 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     @Override
     protected void beforeApply() {
-        configureFindBugsConfigurations();
+        configureSpotBugsConfigurations();
     }
 
-    private void configureFindBugsConfigurations() {
-        Configuration configuration = project.getConfigurations().create("findbugsPlugins");
+    private void configureSpotBugsConfigurations() {
+        Configuration configuration = project.getConfigurations().create("spotbugsPlugins");
         configuration.setVisible(false);
         configuration.setTransitive(true);
-        configuration.setDescription("The FindBugs plugins to be used for this project.");
+        configuration.setDescription("The SpotBugs plugins to be used for this project.");
     }
 
     @Override
     protected CodeQualityExtension createExtension() {
-        extension = project.getExtensions().create("spotbugs", FindBugsExtension.class, project);
-        extension.setToolVersion(DEFAULT_FINDBUGS_VERSION);
+        extension = project.getExtensions().create("spotbugs", SpotBugsExtension.class, project);
+        extension.setToolVersion(loadToolVersion());
         return extension;
+    }
+
+    @VisibleForTesting
+    String loadToolVersion() {
+        URL url = Resources.getResource("spotbugs-gradle-plugin.properties");
+        try (InputStream input = url.openStream()) {
+            Properties prop = new Properties();
+            prop.load(input);
+            return prop.getProperty("spotbugs-version");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
     protected void configureTaskDefaults(SpotBugsTask task, String baseName) {
-        task.setPluginClasspath(project.getConfigurations().getAt("findbugsPlugins"));
-        Configuration configuration = project.getConfigurations().getAt("findbugs");
+        task.setPluginClasspath(project.getConfigurations().getAt("spotbugsPlugins"));
+        Configuration configuration = project.getConfigurations().getAt("spotbugs");
         configureDefaultDependencies(configuration);
         configureTaskConventionMapping(configuration, task);
         configureReportsConventionMapping(task, baseName);
@@ -78,14 +96,14 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
         configuration.defaultDependencies(new Action<DependencySet>() {
             @Override
             public void execute(DependencySet dependencies) {
-                dependencies.add(project.getDependencies().create("com.google.code.findbugs:findbugs:" + extension.getToolVersion()));
+                dependencies.add(project.getDependencies().create("com.github.spotbugs:spotbugs:" + extension.getToolVersion()));
             }
         });
     }
 
     private void configureTaskConventionMapping(Configuration configuration, SpotBugsTask task) {
         ConventionMapping taskMapping = task.getConventionMapping();
-        taskMapping.map("findbugsClasspath", Callables.returning(configuration));
+        taskMapping.map("spotbugsClasspath", Callables.returning(configuration));
         taskMapping.map("ignoreFailures", new Callable<Boolean>() {
             @Override
             public Boolean call() {
@@ -167,14 +185,14 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     @Override
     protected void configureForSourceSet(final SourceSet sourceSet, SpotBugsTask task) {
-        task.setDescription("Run FindBugs analysis for " + sourceSet.getName() + " classes");
+        task.setDescription("Run SpotBugs analysis for " + sourceSet.getName() + " classes");
         task.setSource(sourceSet.getAllJava());
         ConventionMapping taskMapping = task.getConventionMapping();
         taskMapping.map("classes", new Callable<FileCollection>() {
             @Override
             public FileCollection call() {
                 // the simple "classes = sourceSet.output" may lead to non-existing resources directory
-                // being passed to FindBugs Ant task, resulting in an error
+                // being passed to SpotBugs Ant task, resulting in an error
                 return project.fileTree(sourceSet.getOutput().getClassesDir()).builtBy(sourceSet.getOutput());
             }
         });

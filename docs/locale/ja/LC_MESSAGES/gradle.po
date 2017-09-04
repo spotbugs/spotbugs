@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr "Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-31 14:07+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../gradle.rst:2
+msgid "Using the SpotBugs Gradle Plugin"
+msgstr "SpotBugs Gradle プラグインの使い方"
+
+#: ../../gradle.rst:4
+msgid ""
+"This chapter describes how to integrate SpotBugs into a build script for "
+"Gradle."
+msgstr "この章では，Gradle のビルドスクリプトに SpotBugs を統合する方法について説明します。"
+
+#: ../../gradle.rst:7
+msgid "Use SpotBugs Gradle Plugin"
+msgstr "SpotBugs Gradle プラグインを使う"
+
+#: ../../gradle.rst:9
+msgid ""
+"Please follow instruction found on `official Gradle Plugin page "
+"<https://plugins.gradle.org/plugin/com.github.spotbugs>`_."
+msgstr "`Gradle プラグインの公式ページ <https://plugins.gradle.org/plugin/com.github.spotbugs>`_ の指示に従ってください。"
+
+#: ../../gradle.rst:12
+msgid "Tasks introduced by this Gradle Plugin"
+msgstr "Gradle プラグインによって導入されたタスク"
+
+#: ../../gradle.rst:14
+msgid ""
+"This Gradle Plugin introduces two tasks: `spotbugsMain` and "
+"`spotbugsTest`."
+msgstr "Gradle プラグインには，`spotbugsMain` と `spotbugsTest` という2つのタスクが導入されています。"
+
+#: ../../gradle.rst:16
+msgid ""
+"`spotbugsMain` task runs SpotBugs for your production Java source files. "
+"This task depends on `classes` task. `spotbugsTest` task runs SpotBugs "
+"for your test Java source files. This task depends on `testClasses` task."
+msgstr "`spotbugsMain` タスクは，製品 Java ソースファイル用の SpotBugs を実行します。このタスクは `classes` タスクに依存します。`spotbugsTest` タスクは，テスト Java ソースファイル用の SpotBugs を実行します。このタスクは `testClasses` タスクに依存します。"
+
+#: ../../gradle.rst:19
+msgid ""
+"SpotBugs Gradle Plugin adds task dependency from `check` to these these "
+"tasks, so you can simply run ``./gradlew check`` to run SpotBugs."
+msgstr "SpotBugs Gradle プラグインは，`check` タスクからこれらのタスクにタスク依存関係を追加するので，単に ``./gradlew check`` を実行すれば SpotBugs を実行できます。"
+
+#: ../../gradle.rst:22
+msgid "Configure Gradle Plugin"
+msgstr "Gradle プラグインの設定"
+
+#: ../../gradle.rst:24
+msgid ""
+"Current version of SpotBugs Gradle Plugin uses the same way to configure."
+" Please check the document for `FindBugsExtension "
+"<http://gradle.monochromeroad.com/docs/dsl/org.gradle.api.plugins.quality.FindBugsExtension.html>`_."
+msgstr "現バージョンの SpotBugs Gradle プラグインは同じ方法で設定します。`FindBugsExtension <http://gradle.monochromeroad.com/docs/dsl/org.gradle.api.plugins.quality.FindBugsExtension.html>`_ のドキュメントを参照してください。"
+
+#: ../../gradle.rst:26
+msgid ""
+"For instance, to specify the version of SpotBugs, you can configure like "
+"below:"
+msgstr "たとえば，SpotBugs のバージョンを指定したいときは，次のように設定します。"
+
+#~ msgid ""
+#~ "This Gradle Plugin introduces two tasks:"
+#~ " `spotbugsMain and `spotbugsTest."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "SpotBugs Gradle Plugin adds task "
+#~ "dependency from `check` to these these"
+#~ " tasks, so you can simly run "
+#~ "``./gradlew check`` to run SpotBugs."
+#~ msgstr ""
+

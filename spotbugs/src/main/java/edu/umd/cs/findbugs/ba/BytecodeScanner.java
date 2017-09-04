@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.SystemProperties;
 
 /**
@@ -95,181 +97,181 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
             callback.handleInstruction(opcode, index);
 
             if (DEBUG) {
-                System.out.println(index + ": " + OPCODE_NAMES[opcode]);
+                System.out.println(index + ": " + Const.getOpcodeName(opcode));
             }
 
             switch (opcode) {
 
             // Single byte instructions.
-            case NOP:
-            case ACONST_NULL:
-            case ICONST_M1:
-            case ICONST_0:
-            case ICONST_1:
-            case ICONST_2:
-            case ICONST_3:
-            case ICONST_4:
-            case ICONST_5:
-            case LCONST_0:
-            case LCONST_1:
-            case FCONST_0:
-            case FCONST_1:
-            case FCONST_2:
-            case DCONST_0:
-            case DCONST_1:
-            case ILOAD_0:
-            case ILOAD_1:
-            case ILOAD_2:
-            case ILOAD_3:
-            case LLOAD_0:
-            case LLOAD_1:
-            case LLOAD_2:
-            case LLOAD_3:
-            case FLOAD_0:
-            case FLOAD_1:
-            case FLOAD_2:
-            case FLOAD_3:
-            case DLOAD_0:
-            case DLOAD_1:
-            case DLOAD_2:
-            case DLOAD_3:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-            case IALOAD:
-            case LALOAD:
-            case FALOAD:
-            case DALOAD:
-            case AALOAD:
-            case BALOAD:
-            case CALOAD:
-            case SALOAD:
-            case ISTORE_0:
-            case ISTORE_1:
-            case ISTORE_2:
-            case ISTORE_3:
-            case LSTORE_0:
-            case LSTORE_1:
-            case LSTORE_2:
-            case LSTORE_3:
-            case FSTORE_0:
-            case FSTORE_1:
-            case FSTORE_2:
-            case FSTORE_3:
-            case DSTORE_0:
-            case DSTORE_1:
-            case DSTORE_2:
-            case DSTORE_3:
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3:
-            case IASTORE:
-            case LASTORE:
-            case FASTORE:
-            case DASTORE:
-            case AASTORE:
-            case BASTORE:
-            case CASTORE:
-            case SASTORE:
-            case POP:
-            case POP2:
-            case DUP:
-            case DUP_X1:
-            case DUP_X2:
-            case DUP2:
-            case DUP2_X1:
-            case DUP2_X2:
-            case SWAP:
-            case IADD:
-            case LADD:
-            case FADD:
-            case DADD:
-            case ISUB:
-            case LSUB:
-            case FSUB:
-            case DSUB:
-            case IMUL:
-            case LMUL:
-            case FMUL:
-            case DMUL:
-            case IDIV:
-            case LDIV:
-            case FDIV:
-            case DDIV:
-            case IREM:
-            case LREM:
-            case FREM:
-            case DREM:
-            case INEG:
-            case LNEG:
-            case FNEG:
-            case DNEG:
-            case ISHL:
-            case LSHL:
-            case ISHR:
-            case LSHR:
-            case IUSHR:
-            case LUSHR:
-            case IAND:
-            case LAND:
-            case IOR:
-            case LOR:
-            case IXOR:
-            case LXOR:
-            case I2L:
-            case I2F:
-            case I2D:
-            case L2I:
-            case L2F:
-            case L2D:
-            case F2I:
-            case F2L:
-            case F2D:
-            case D2I:
-            case D2L:
-            case D2F:
-            case I2B:
-            case I2C:
-            case I2S:
-            case LCMP:
-            case FCMPL:
-            case FCMPG:
-            case DCMPL:
-            case DCMPG:
-            case IRETURN:
-            case LRETURN:
-            case FRETURN:
-            case DRETURN:
-            case ARETURN:
-            case RETURN:
-            case ARRAYLENGTH:
-            case ATHROW:
-            case MONITORENTER:
-            case MONITOREXIT:
+            case Const.NOP:
+            case Const.ACONST_NULL:
+            case Const.ICONST_M1:
+            case Const.ICONST_0:
+            case Const.ICONST_1:
+            case Const.ICONST_2:
+            case Const.ICONST_3:
+            case Const.ICONST_4:
+            case Const.ICONST_5:
+            case Const.LCONST_0:
+            case Const.LCONST_1:
+            case Const.FCONST_0:
+            case Const.FCONST_1:
+            case Const.FCONST_2:
+            case Const.DCONST_0:
+            case Const.DCONST_1:
+            case Const.ILOAD_0:
+            case Const.ILOAD_1:
+            case Const.ILOAD_2:
+            case Const.ILOAD_3:
+            case Const.LLOAD_0:
+            case Const.LLOAD_1:
+            case Const.LLOAD_2:
+            case Const.LLOAD_3:
+            case Const.FLOAD_0:
+            case Const.FLOAD_1:
+            case Const.FLOAD_2:
+            case Const.FLOAD_3:
+            case Const.DLOAD_0:
+            case Const.DLOAD_1:
+            case Const.DLOAD_2:
+            case Const.DLOAD_3:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3:
+            case Const.IALOAD:
+            case Const.LALOAD:
+            case Const.FALOAD:
+            case Const.DALOAD:
+            case Const.AALOAD:
+            case Const.BALOAD:
+            case Const.CALOAD:
+            case Const.SALOAD:
+            case Const.ISTORE_0:
+            case Const.ISTORE_1:
+            case Const.ISTORE_2:
+            case Const.ISTORE_3:
+            case Const.LSTORE_0:
+            case Const.LSTORE_1:
+            case Const.LSTORE_2:
+            case Const.LSTORE_3:
+            case Const.FSTORE_0:
+            case Const.FSTORE_1:
+            case Const.FSTORE_2:
+            case Const.FSTORE_3:
+            case Const.DSTORE_0:
+            case Const.DSTORE_1:
+            case Const.DSTORE_2:
+            case Const.DSTORE_3:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3:
+            case Const.IASTORE:
+            case Const.LASTORE:
+            case Const.FASTORE:
+            case Const.DASTORE:
+            case Const.AASTORE:
+            case Const.BASTORE:
+            case Const.CASTORE:
+            case Const.SASTORE:
+            case Const.POP:
+            case Const.POP2:
+            case Const.DUP:
+            case Const.DUP_X1:
+            case Const.DUP_X2:
+            case Const.DUP2:
+            case Const.DUP2_X1:
+            case Const.DUP2_X2:
+            case Const.SWAP:
+            case Const.IADD:
+            case Const.LADD:
+            case Const.FADD:
+            case Const.DADD:
+            case Const.ISUB:
+            case Const.LSUB:
+            case Const.FSUB:
+            case Const.DSUB:
+            case Const.IMUL:
+            case Const.LMUL:
+            case Const.FMUL:
+            case Const.DMUL:
+            case Const.IDIV:
+            case Const.LDIV:
+            case Const.FDIV:
+            case Const.DDIV:
+            case Const.IREM:
+            case Const.LREM:
+            case Const.FREM:
+            case Const.DREM:
+            case Const.INEG:
+            case Const.LNEG:
+            case Const.FNEG:
+            case Const.DNEG:
+            case Const.ISHL:
+            case Const.LSHL:
+            case Const.ISHR:
+            case Const.LSHR:
+            case Const.IUSHR:
+            case Const.LUSHR:
+            case Const.IAND:
+            case Const.LAND:
+            case Const.IOR:
+            case Const.LOR:
+            case Const.IXOR:
+            case Const.LXOR:
+            case Const.I2L:
+            case Const.I2F:
+            case Const.I2D:
+            case Const.L2I:
+            case Const.L2F:
+            case Const.L2D:
+            case Const.F2I:
+            case Const.F2L:
+            case Const.F2D:
+            case Const.D2I:
+            case Const.D2L:
+            case Const.D2F:
+            case Const.I2B:
+            case Const.I2C:
+            case Const.I2S:
+            case Const.LCMP:
+            case Const.FCMPL:
+            case Const.FCMPG:
+            case Const.DCMPL:
+            case Const.DCMPG:
+            case Const.IRETURN:
+            case Const.LRETURN:
+            case Const.FRETURN:
+            case Const.DRETURN:
+            case Const.ARETURN:
+            case Const.RETURN:
+            case Const.ARRAYLENGTH:
+            case Const.ATHROW:
+            case Const.MONITORENTER:
+            case Const.MONITOREXIT:
                 ++index;
                 break;
 
                 // Two byte instructions.
-            case BIPUSH:
-            case LDC:
-            case NEWARRAY:
+            case Const.BIPUSH:
+            case Const.LDC:
+            case Const.NEWARRAY:
                 index += 2;
                 break;
 
                 // Instructions that can be used with the WIDE prefix.
-            case ILOAD:
-            case LLOAD:
-            case FLOAD:
-            case DLOAD:
-            case ALOAD:
-            case ISTORE:
-            case LSTORE:
-            case FSTORE:
-            case DSTORE:
-            case ASTORE:
-            case RET:
+            case Const.ILOAD:
+            case Const.LLOAD:
+            case Const.FLOAD:
+            case Const.DLOAD:
+            case Const.ALOAD:
+            case Const.ISTORE:
+            case Const.LSTORE:
+            case Const.FSTORE:
+            case Const.DSTORE:
+            case Const.ASTORE:
+            case Const.RET:
                 if (wide) {
                     // Skip opcode and two immediate bytes.
                     index += 3;
@@ -280,8 +282,8 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 }
                 break;
 
-                // IINC is a special case for WIDE handling
-            case IINC:
+                // IINC is a special case Const.for WIDE handling
+            case Const.IINC:
                 if (wide) {
                     // Skip opcode, two byte index, and two byte immediate
                     // value.
@@ -294,56 +296,56 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
                 break;
 
                 // Three byte instructions.
-            case SIPUSH:
-            case LDC_W:
-            case LDC2_W:
-            case IFEQ:
-            case IFNE:
-            case IFLT:
-            case IFGE:
-            case IFGT:
-            case IFLE:
-            case IF_ICMPEQ:
-            case IF_ICMPNE:
-            case IF_ICMPLT:
-            case IF_ICMPGE:
-            case IF_ICMPGT:
-            case IF_ICMPLE:
-            case IF_ACMPEQ:
-            case IF_ACMPNE:
-            case GOTO:
-            case JSR:
-            case GETSTATIC:
-            case PUTSTATIC:
-            case GETFIELD:
-            case PUTFIELD:
-            case INVOKEVIRTUAL:
-            case INVOKESPECIAL:
-            case INVOKESTATIC:
-            case NEW:
-            case ANEWARRAY:
-            case CHECKCAST:
-            case INSTANCEOF:
-            case IFNULL:
-            case IFNONNULL:
+            case Const.SIPUSH:
+            case Const.LDC_W:
+            case Const.LDC2_W:
+            case Const.IFEQ:
+            case Const.IFNE:
+            case Const.IFLT:
+            case Const.IFGE:
+            case Const.IFGT:
+            case Const.IFLE:
+            case Const.IF_ICMPEQ:
+            case Const.IF_ICMPNE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPGE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPLE:
+            case Const.IF_ACMPEQ:
+            case Const.IF_ACMPNE:
+            case Const.GOTO:
+            case Const.JSR:
+            case Const.GETSTATIC:
+            case Const.PUTSTATIC:
+            case Const.GETFIELD:
+            case Const.PUTFIELD:
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC:
+            case Const.NEW:
+            case Const.ANEWARRAY:
+            case Const.CHECKCAST:
+            case Const.INSTANCEOF:
+            case Const.IFNULL:
+            case Const.IFNONNULL:
                 index += 3;
                 break;
 
                 // Four byte instructions.
-            case MULTIANEWARRAY:
+            case Const.MULTIANEWARRAY:
                 index += 4;
                 break;
 
                 // Five byte instructions.
-            case INVOKEINTERFACE:
-            case INVOKEDYNAMIC:
-            case GOTO_W:
-            case JSR_W:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEDYNAMIC:
+            case Const.GOTO_W:
+            case Const.JSR_W:
                 index += 5;
                 break;
 
                 // TABLESWITCH - variable length.
-            case TABLESWITCH: {
+            case Const.TABLESWITCH: {
                 // Skip padding.
                 int offset = index + 1; // skip the opcode
                 offset += PAD[offset & 3];
@@ -365,7 +367,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
             break;
 
             // LOOKUPSWITCH - variable length.
-            case LOOKUPSWITCH: {
+            case Const.LOOKUPSWITCH: {
                 // Skip padding.
                 int offset = index + 1; // skip the opcode
                 offset += PAD[offset & 3];
@@ -385,7 +387,7 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
             break;
 
             // Wide prefix.
-            case WIDE:
+            case Const.WIDE:
                 wide = true;
                 ++index;
                 break;

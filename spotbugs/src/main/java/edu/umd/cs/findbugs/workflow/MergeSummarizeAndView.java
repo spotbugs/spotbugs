@@ -346,9 +346,7 @@ public class MergeSummarizeAndView {
         for (String cwd : workingDirList) {
             project.addWorkingDir(cwd);
         }
-        for (String srcDir : srcDirList) {
-            project.addSourceDir(srcDir);
-        }
+        project.addSourceDirs(srcDirList);
         project.setGuiCallback(guiCallback);
         return new SortedBugCollection(project);
     }

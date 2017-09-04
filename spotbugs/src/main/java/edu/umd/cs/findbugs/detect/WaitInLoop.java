@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -70,12 +71,12 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) && "notify".equals(getNameConstantOperand())
+        if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) && "notify".equals(getNameConstantOperand())
                 && "()V".equals(getSigConstantOperand())) {
             sawNotify = true;
             notifyPC = getPC();
         }
-        if (!(sawWait || sawAwait) && (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
+        if (!(sawWait || sawAwait) && (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
                 && (isMonitorWait() || isConditionAwait())) {
 
             if ("wait".equals(getNameConstantOperand())) {
@@ -88,7 +89,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
             earliestJump = getPC() + 1;
             return;
         }
-        if (seen >= IFEQ && seen <= GOTO || seen >= IFNULL && seen <= GOTO_W) {
+        if (seen >= Const.IFEQ && seen <= Const.GOTO || seen >= Const.IFNULL && seen <= Const.GOTO_W) {
             earliestJump = Math.min(earliestJump, getBranchTarget());
         }
     }

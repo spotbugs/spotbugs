@@ -44,9 +44,9 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     public FieldOrMethodDescriptor(@SlashedClassName String slashedClassName, String name, String signature, boolean isStatic) {
         assert slashedClassName.indexOf('.') == -1 : "class name not in VM format: " + slashedClassName;
 
-        this.slashedClassName = DescriptorFactory.canonicalizeString(slashedClassName);
-        this.name = DescriptorFactory.canonicalizeString(name);
-        this.signature = DescriptorFactory.canonicalizeString(signature);
+        this.slashedClassName = slashedClassName;
+        this.name = name;
+        this.signature = signature;
         this.isStatic = isStatic;
         this.nameSigHashCode = getNameSigHashCode(this.name, this.signature);
     }

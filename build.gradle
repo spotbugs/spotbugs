@@ -1,11 +1,23 @@
+plugins {
+  id "com.github.kt3k.coveralls" version "2.7.1"
+  id 'org.sonarqube' version '2.5'
+}
+
+version = '3.1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "$rootDir/gradle/sonar.gradle"
+
 subprojects {
   apply plugin: 'java'
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"
   apply from: "$rootDir/gradle/test.gradle"
+  apply from: "$rootDir/gradle/jacoco.gradle"
 
   group = 'com.github.spotbugs'
-  version = '3.1.0-SNAPSHOT'
+  version = rootProject.version
 
   // Java versions
   project.sourceCompatibility = 1.8
@@ -16,7 +28,40 @@ subprojects {
   }
 }
 
+repositories {
+  jcenter()
+}
+
 wrapper {
-  gradleVersion = '3.2.1'
+  gradleVersion = '4.1'
   distributionType = Wrapper.DistributionType.ALL
+}
+
+// https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
+task jacocoRootReport(type: JacocoReport) {
+  description = 'Merge all coverage reports before submit to coveralls'
+
+  executionData project(':spotbugs').file('build/jacoco/test.exec')
+  sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+
+  // Only enable class directories related to non-test project
+  classDirectories = files(subprojects.sourceSets.main.output).filter {
+    !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")
+  }
+
+  reports {
+    xml.enabled = true
+  }
+}
+
+coveralls {
+  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+  dependsOn jacocoRootReport
+  doFirst {
+    // set lazily to relect subproject specific config in each build.groovy
+    coveralls.sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+  }
 }

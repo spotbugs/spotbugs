@@ -249,12 +249,11 @@ public class DiscoverSourceDirectories {
         List<String> candidateSourceDirList = rfs.getDirectoriesScanned();
 
         // Build the classpath
-        IClassPath classPath = null;
-        try {
-            IClassFactory factory = ClassFactory.instance();
-            IClassPathBuilder builder = factory.createClassPathBuilder(errorLogger);
 
-            classPath = buildClassPath(builder, factory);
+        IClassFactory factory = ClassFactory.instance();
+        IClassPathBuilder builder = factory.createClassPathBuilder(errorLogger);
+
+        try (IClassPath classPath = buildClassPath(builder, factory)) {
 
             // From the application classes, find the full list of
             // fully-qualified source file names.
@@ -266,10 +265,6 @@ public class DiscoverSourceDirectories {
                 System.out.println("looking for " + fullyQualifiedSourceFileNameList.size() + " files");
             }
             findSourceDirectoriesForAllSourceFiles(fullyQualifiedSourceFileNameList, candidateSourceDirList);
-        } finally {
-            if (classPath != null) {
-                classPath.close();
-            }
         }
     }
 

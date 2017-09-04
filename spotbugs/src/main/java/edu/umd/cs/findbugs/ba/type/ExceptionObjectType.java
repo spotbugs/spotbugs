@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
@@ -59,7 +60,7 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
      */
     public static Type fromExceptionSet(ExceptionSet exceptionSet) throws ClassNotFoundException {
         Type commonSupertype = exceptionSet.getCommonSupertype();
-        if (commonSupertype.getType() != T_OBJECT) {
+        if (commonSupertype.getType() != Const.T_OBJECT) {
             return commonSupertype;
         }
 

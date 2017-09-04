@@ -70,7 +70,7 @@
 <xsl:template match="/">
 	<html>
 	<head>
-		<title>FindBugs Report</title>
+		<title>SpotBugs Report</title>
 		<style type="text/css">
 		.tablerow0 {
 			background: #EEEEEE;
@@ -137,7 +137,7 @@
 
 	<body>
 
-		<h1><a href="http://findbugs.sourceforge.net">FindBugs</a> Report</h1>
+		<h1><a href="https://spotbugs.github.io/">SpotBugs</a> Report</h1>
 
 	<h2>Project Information</h2>	
 	<xsl:apply-templates select="/BugCollection/Project"/>
@@ -226,7 +226,7 @@
 			<xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
 		</xsl:choose>
 	</p>
-	<p>FindBugs version: <xsl:value-of select="/BugCollection/@version"/></p>
+	<p>SpotBugs version: <xsl:value-of select="/BugCollection/@version"/></p>
 	
 	<p>Code analyzed:</p>
 	<ul>

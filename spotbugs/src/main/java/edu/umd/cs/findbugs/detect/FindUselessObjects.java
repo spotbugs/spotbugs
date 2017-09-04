@@ -139,7 +139,7 @@ public class FindUselessObjects implements Detector {
                     }
                 } else if(instruction instanceof INVOKESPECIAL) {
                     InvokeInstruction inv = (InvokeInstruction) instruction;
-                    if (inv.getMethodName(cpg).equals("<init>")
+                    if (inv.getMethodName(cpg).equals(CONSTRUCTOR_NAME)
                             && noSideEffectMethods.hasNoSideEffect(new MethodDescriptor(inv, cpg))) {
                         int number = vna.getFactAtLocation(location).getStackValue(inv.consumeStack(cpg)-1).getNumber();
                         TypeFrame typeFrame = ta.getFactAtLocation(location);
@@ -666,7 +666,7 @@ public class FindUselessObjects implements Detector {
                                 }
                                 MethodSideEffectStatus status = noSideEffectMethods.status(m);
                                 if(status == MethodSideEffectStatus.NSE || status == MethodSideEffectStatus.SE_CLINIT) {
-                                    if(m.getName().equals("<init>")) {
+                                    if(m.getName().equals(CONSTRUCTOR_NAME)) {
                                         if(vns[0].equals(context.thisValue)) {
                                             changed |= context.setEscape(vals);
                                         } else {

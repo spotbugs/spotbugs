@@ -19,6 +19,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -58,18 +59,18 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == GOTO && getBranchOffset() == 4) {
+        if (seen == Const.GOTO && getBranchOffset() == 4) {
             state = SEEN_GOTO;
         } else {
             switch (state) {
             case SEEN_NOTHING:
-                if ((seen == ICONST_1) || (seen == ICONST_0)) {
+                if ((seen == Const.ICONST_1) || (seen == Const.ICONST_0)) {
                     state = SEEN_ICONST_0_OR_1;
                 }
                 break;
 
             case SEEN_ICONST_0_OR_1:
-                if (seen == DUP) {
+                if (seen == Const.DUP) {
                     state = SEEN_DUP;
                 } else {
                     state = SEEN_NOTHING;
@@ -77,7 +78,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
                 break;
 
             case SEEN_DUP:
-                if (((seen >= ISTORE_0) && (seen <= ISTORE_3)) || (seen == ISTORE)) {
+                if (((seen >= Const.ISTORE_0) && (seen <= Const.ISTORE_3)) || (seen == Const.ISTORE)) {
                     state = SEEN_ISTORE;
                 } else {
                     state = SEEN_NOTHING;
@@ -85,7 +86,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
                 break;
 
             case SEEN_ISTORE:
-                if (seen == IFEQ || seen == IFNE) {
+                if (seen == Const.IFEQ || seen == Const.IFNE) {
                     bug = new BugInstance(this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY).addClassAndMethod(this)
                             .addSourceLine(this);
                     state = SEEN_IF;
@@ -96,7 +97,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 
             case SEEN_IF:
                 state = SEEN_NOTHING;
-                if (seen == NEW) {
+                if (seen == Const.NEW) {
                     String cName = getClassConstantOperand();
                     if ("java/lang/AssertionError".equals(cName)) {
                         break;

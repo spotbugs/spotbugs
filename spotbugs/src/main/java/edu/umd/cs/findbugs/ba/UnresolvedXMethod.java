@@ -61,7 +61,7 @@ class UnresolvedXMethod extends AbstractMethod {
 
     @Override
     public ElementType getElementType() {
-        if ("<init>".equals(getName())) {
+        if (Const.CONSTRUCTOR_NAME.equals(getName())) {
             return ElementType.CONSTRUCTOR;
         }
         return ElementType.METHOD;

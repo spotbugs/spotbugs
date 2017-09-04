@@ -6,13 +6,28 @@ dependencies {
   compile 'com.google.code.findbugs:jsr305:3.0.1'
 }
 
+def manifestSpec = manifest {
+  attributes 'Bundle-Name': 'spotbugs-annotations',
+               'Bundle-SymbolicName': 'spotbugs-annotations',
+               'Bundle-Version': project.version.replace('-', '.'),
+               'Export-Package': 'edu.umd.cs.findbugs.annotations',
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5',
+               'Bundle-ManifestVersion': '2'
+}
+
+task updateManifest {
+    // write manifests
+    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+}
+
 jar {
   manifest {
-    attributes 'Bundle-Name': 'SpotbugsInternalAnnotations',
-               'Bundle-SymbolicName': 'spotbugsInternalAnnotations',
-               'Bundle-Version': project.version,
+    attributes 'Bundle-Name': 'spotbugs-annotations',
+               'Bundle-SymbolicName': 'spotbugs-annotations',
+               'Bundle-Version': project.version.replace('-', '.'),
                'Export-Package': 'edu.umd.cs.findbugs.annotations',
-               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5'
+               'Bundle-RequiredExecutionEnvironment': 'J2SE-1.5',
+               'Bundle-ManifestVersion': '2'
   }
 }
 
