@@ -118,7 +118,6 @@ public class DescriptorFactory {
     public @Nonnull
     ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
         assert className.indexOf('.') == -1;
-        className = className;
         ClassDescriptor classDescriptor = classDescriptorMap.get(className);
         if (classDescriptor == null) {
             classDescriptor = new ClassDescriptor(className);

@@ -81,8 +81,6 @@ public class AppendingToAnObjectOutputStream extends OpcodeStackDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             Object value = item.getConstant();
             sawOpenInAppendMode = value instanceof Integer && ((Integer) value).intValue() == 1;
-        } else if (!sawOpenInAppendMode) {
-            return;
         } else if ("java/io/BufferedOutputStream".equals(calledClassName) && Const.CONSTRUCTOR_NAME.equals(calledMethodName)
                 && "(Ljava/io/OutputStream;)V".equals(calledMethodSig)) {
             // do nothing
