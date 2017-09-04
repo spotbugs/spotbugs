@@ -1,3 +1,4 @@
+apply plugin: 'findbugs'
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
@@ -47,6 +48,14 @@ dependencies {
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+findbugs {
+  effort = "max"
+  reportLevel = "high"
+  dependencies {
+    findbugs 'com.google.code.findbugs:findbugs:3.0.1'
+  }
 }
 
 clean {
@@ -108,7 +117,7 @@ task updateManifest {
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   from sourceSets.main.output
-  
+
   // Workaround for missing released BCEL maven artifact, see https://github.com/spotbugs/spotbugs/issues/327
   // Should be removed after #327 is fixed.
   from zipTree("$projectDir/lib/bcel-6.1-20161207.023659-9.jar").matching {
