@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.gradle.testkit.runner.BuildResult;
@@ -36,9 +37,9 @@ public class SpotBugsPluginTest extends Assert{
     Files.copy(from, to);
     
     File buildFile = folder.newFile("build.gradle");
-    Files.write(buildScript.getBytes(), buildFile);
-    
-    
+    Files.write(buildScript.getBytes(StandardCharsets.UTF_8), buildFile);
+
+
     BuildResult result = GradleRunner.create().withProjectDir(folder.getRoot()).withArguments(Arrays.asList("tasks", "--all")).withPluginClasspath().build();
     assertTrue(result.getOutput().contains("spotbugsMain"));
     assertTrue(result.getOutput().contains("spotbugsTest"));
