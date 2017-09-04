@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -53,6 +54,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:min.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
@@ -68,6 +70,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:less.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -83,6 +86,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:default.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -98,6 +102,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:more.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -113,6 +118,7 @@ public abstract class FindBugs {
     /**
      * Analysis settings for -effort:max.
      */
+    @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[] {
             new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
             new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -177,12 +183,14 @@ public abstract class FindBugs {
      * are assumed to be files.
      */
     @StaticConstant
-    static public final Set<String> knownURLProtocolSet = new HashSet<String>();
+    public static final Set<String> knownURLProtocolSet;
     static {
-        knownURLProtocolSet.add("file");
-        knownURLProtocolSet.add("http");
-        knownURLProtocolSet.add("https");
-        knownURLProtocolSet.add("jar");
+        Set<String> protocols = new HashSet<>();
+        protocols.add("file");
+        protocols.add("http");
+        protocols.add("https");
+        protocols.add("jar");
+        knownURLProtocolSet = Collections.unmodifiableSet(protocols);
     }
 
     /**

@@ -63,7 +63,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class DerefFinder {
 
-    public static boolean DEBUG = SystemProperties.getBoolean("deref.finder.debug");
+    public static final boolean DEBUG = SystemProperties.getBoolean("deref.finder.debug");
 
     public static UsagesRequiringNonNullValues getAnalysis(ClassContext classContext, Method method) {
         XMethod thisMethod = classContext.getXClass().findMethod(method.getName(), method.getSignature(), method.isStatic());

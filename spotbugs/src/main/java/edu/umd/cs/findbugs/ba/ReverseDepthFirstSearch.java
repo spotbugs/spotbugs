@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Algorithm to perform a reverse depth first search on a CFG. (I.e., depth
  * first search on reversed CFG.)
@@ -26,6 +28,7 @@ package edu.umd.cs.findbugs.ba;
  * @see CFG
  * @author David Hovemeyer
  */
+@SuppressFBWarnings(value = "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", justification = "Would have to break APIs to fix this properly")
 public class ReverseDepthFirstSearch extends edu.umd.cs.findbugs.graph.ReverseDepthFirstSearch<CFG, Edge, BasicBlock> {
     private BasicBlock firstRoot;
 
