@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class SpotBugsPluginTest extends Assert{
       "  mavenLocal()\n" +
       "}";
     File buildFile = folder.newFile("build.gradle");
-    Files.write(buildScript.getBytes(), buildFile);
+    Files.write(buildScript.getBytes(StandardCharsets.UTF_8), buildFile);
 
     File sourceDir = folder.newFolder("src", "main", "java");
     File to = new File(sourceDir, "Foo.java");

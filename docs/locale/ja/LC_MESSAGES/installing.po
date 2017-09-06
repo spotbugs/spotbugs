@@ -1,21 +1,19 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2016, spotbugs community
+# Copyright (C) 2016-2017, spotbugs community
 # This file is distributed under the same license as the spotbugs package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
-#, fuzzy
 msgid ""
-msgstr ""
-"Project-Id-Version: spotbugs 3.1\n"
+msgstr "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 03:44+0000\n"
+"POT-Creation-Date: 2017-08-17 15:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../installing.rst:2
 msgid "Installing"
@@ -23,11 +21,11 @@ msgstr "インストール"
 
 #: ../../installing.rst:4
 msgid "This chapter explains how to install SpotBugs."
-msgstr "この章ではSpotBugsのインストール方法を説明します。"
+msgstr "この章では，SpotBugs のインストール方法を説明します。"
 
 #: ../../installing.rst:7
 msgid "Extracting the Distribution"
-msgstr "配布パッケージの展開"
+msgstr "配布物の展開"
 
 #: ../../installing.rst:9
 msgid ""
@@ -38,20 +36,17 @@ msgid ""
 "<http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.0-RC5/spotbugs-3.1.0-RC5.zip>`_."
 " Once you have downloaded a binary distribution, extract it into a "
 "directory of your choice."
-msgstr ""
+msgstr "SpotBugs をインストールする最も簡単な方法は，バイナリ配布物をダウンロードすることです。バイナリ配布物は `gzipped tar 形式 <http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.0-RC5/spotbugs-3.1.0-RC5.tgz>`_ と `zip 形式 <http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.0-RC5/spotbugs-3.1.0-RC5.zip>`_ がそれぞれ入手可能です。バイナリ配布物をダウンロードしたら，任意のディレクトリに展開します。"
 
 #: ../../installing.rst:13
-#, fuzzy
 msgid "Extracting a gzipped tar format distribution::"
-msgstr "gzipped tar の展開方法例："
+msgstr "gzipped tar 形式の展開方法例::"
 
 #: ../../installing.rst:17
-#, fuzzy
 msgid "Extracting a zip format distribution::"
-msgstr "zipフォーマットの展開方法例："
+msgstr "zip 形式の展開方法例::"
 
 #: ../../installing.rst:21
-#, fuzzy
 msgid ""
 "Usually, extracting a binary distribution will create a directory ending "
 "in ``spotbugs-3.1.0-RC5``. For example, if you extracted the binary "
@@ -60,26 +55,5 @@ msgid ""
 "``C:\\Software\\spotbugs-3.1.0-RC5``. This directory is the SpotBugs home"
 " directory. We'll refer to it as ``$SPOTBUGS_HOME`` (or "
 "``%SPOTBUGS_HOME%`` for Windows) throughout this manual."
-msgstr ""
-"バイナリ配布物の展開すると、通常は spotbugs-3.1.0-dev-20161105-d07b50f "
-"ディレクトリーが作成されます。例えば、ディレクトリー C:\\Software でバイナリ配布物を展開すると、ディレクトリー "
-"C:\\Software\\findbugs-3.1.0-dev-20161105-d07b50f に FindBugs "
-"は展開されます。このディレクトリーが FindBugs のホームディレクトリーになります。このマニュアルでは、このホームディレクトリーを "
-"$FINDBUGS_HOME (Windowsでは %FINDBUGS_HOME%) を用いて参照します。"
-
-#~ msgid ""
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The easiest way to install SpotBugs "
-#~ "is to download a binary distribution."
-#~ " Binary distributions are available in "
-#~ "`gzipped tar format "
-#~ "<http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.0-RC4/spotbugs-3.1.0-RC4.tgz>`_"
-#~ " and `zip format "
-#~ "<http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.0-RC4/spotbugs-3.1.0-RC4.zip>`_."
-#~ " Once you have downloaded a binary"
-#~ " distribution, extract it into a "
-#~ "directory of your choice."
-#~ msgstr ""
+msgstr "バイナリ配布物を展開すると，通常は ``spotbugs-3.1.0-RC5`` で終わるディレクトリが作成されます。たとえば，``C:\\Software`` ディレクトリでバイナリ配布物を展開すると，SpotBugs ソフトウェアは ``C:\\Software\\spotbugs-3.1.0-RC5`` ディレクトリに展開されます。このディテクトリが SpotBugs のホームディレクトリになります。このマニュアルでは，``$SPOTBUGS_HOME`` (Windows では ``%SPOTBUGS_HOME%``) と呼びます。"
 

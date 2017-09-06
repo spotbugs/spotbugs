@@ -643,6 +643,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
     MethodDescriptor previousMethodCall = null;
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS", justification = "False positive, see https://github.com/spotbugs/spotbugs/issues/87")
     @Override
     public void sawOpcode(int seen) {
 

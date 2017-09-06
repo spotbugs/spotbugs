@@ -1,25 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2016, spotbugs community
+# Copyright (C) 2016-2017, spotbugs community
 # This file is distributed under the same license as the spotbugs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
-#, fuzzy
 msgid ""
-msgstr ""
-"Project-Id-Version: spotbugs 3.1\n"
+msgstr "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-06 19:57+0000\n"
+"POT-Creation-Date: 2017-08-17 15:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../migration.rst:2
 msgid "Guide for migration from FindBugs 3.0 to SpotBugs 3.1"
-msgstr ""
+msgstr "FindBugs 3.0 から SpotBugs 3.1 への移行ガイド"
 
 #: ../../migration.rst:5
 msgid "com.google.code.findbugs:findbugs"
@@ -29,7 +27,7 @@ msgstr ""
 msgid ""
 "Simply replace ``com.google.code.findbugs:findbugs`` with "
 "``com.github.spotbugs:spotbugs``."
-msgstr ""
+msgstr "``com.google.code.findbugs:findbugs`` を ``com.github.spotbugs:spotbugs`` に換えてください。"
 
 #: ../../migration.rst:24
 msgid "com.google.code.findbugs:jsr305"
@@ -39,7 +37,7 @@ msgstr ""
 msgid ""
 "JSR305 is already Dormant status, so SpotBugs does not release ``jsr305``"
 " jar file. Please continue using findbugs' one."
-msgstr ""
+msgstr "JSR305 は，すでに休止状態なので，SpotBugs は ``jsr305`` jarファイルをリリースしません。FindBugs のものを使い続けてください。"
 
 #: ../../migration.rst:30
 msgid "com.google.code.findbugs:findbugs-annotations"
@@ -47,7 +45,7 @@ msgstr ""
 
 #: ../../migration.rst:32
 msgid "Please depend on ``spotbugs-annotations`` instead."
-msgstr ""
+msgstr "代わりに ``spotbugs-annotations`` に依存してください。"
 
 #: ../../migration.rst:50
 msgid "com.google.code.findbugs:annotations"
@@ -57,71 +55,53 @@ msgstr ""
 msgid ""
 "Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-"
 "annotations:1.0`` instead."
-msgstr ""
+msgstr "代わりに ``spotbugs-annotations`` と ``net.jcip:jcip-annotations:1.0`` の両方に依存してください。"
 
 #: ../../migration.rst:77
 msgid "FindBugs Ant task"
-msgstr ""
+msgstr "FindBugs Ant タスク"
 
 #: ../../migration.rst:79
 msgid "Please replace ``findbugs-ant.jar`` with ``spotbugs-ant.jar``."
-msgstr ""
+msgstr "``findbugs-ant.jar`` を ``spotbugs-ant.jar`` に換えてください。"
 
 #: ../../migration.rst:99
 msgid "FindBugs Maven plugin"
-msgstr ""
+msgstr "FindBugs Maven プラグイン"
 
 #: ../../migration.rst:101
 msgid ""
 "Please use `com.github.hazendaz.spotbugs:spotbugs-maven-plugin` instead "
 "of `org.codehaus.mojo:findbugs-maven-plugin`."
-msgstr ""
+msgstr "``org.codehaus.mojo:findbugs-maven-plugin`` の代わりに ``com.github.hazendaz.spotbugs:spotbugs-maven-plugin`` を使用してください。"
 
 #: ../../migration.rst:120
 msgid "FindBugs Gradle plugin"
-msgstr ""
+msgstr "FindBugs Gradle プラグイン"
 
 #: ../../migration.rst:122
 msgid ""
 "Please use spotbugs plugin found on "
 "https://plugins.gradle.org/plugin/com.github.spotbugs"
-msgstr ""
+msgstr "https://plugins.gradle.org/plugin/com.github.spotbugs にある spotbugs プラグインを使用してください。"
 
 #: ../../migration.rst:142
 msgid "FindBugs Eclipse plugin"
-msgstr ""
+msgstr "FindBugs Eclipse プラグイン"
 
 #: ../../migration.rst:144
 msgid "Please use following update site instead."
-msgstr ""
+msgstr "代わりに次の更新サイトをご利用ください。"
 
 #: ../../migration.rst:146
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)"
-msgstr ""
+msgstr "https://spotbugs.github.io/eclipse/ (安定バージョンを使用する (まだ利用できない))"
 
 #: ../../migration.rst:147
 msgid "https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)"
-msgstr ""
+msgstr "https://spotbugs.github.io/eclipse-candidate/ (候補バージョンを使用する)"
 
 #: ../../migration.rst:148
 msgid "https://spotbugs.github.io/eclipse-latest/ (to use latest build)"
-msgstr ""
-
-#~ msgid ""
-#~ msgstr ""
-
-#~ msgid "Migration from FindBugs 3.0 to SpotBugs 3.1"
-#~ msgstr ""
-
-#~ msgid "TBU"
-#~ msgstr ""
-
-#~ msgid "In near future we release SpotBugs Gradle plugin."
-#~ msgstr ""
-
-#~ msgid "Please use spotbugs plugin found on https://plugins.gradle.org"
-#~ msgstr ""
-
-#~ msgid "Currently the update site for daily built plugin isn't ready."
-#~ msgstr ""
+msgstr "https://spotbugs.github.io/eclipse-latest/ (最新のビルドを使用する)"
 

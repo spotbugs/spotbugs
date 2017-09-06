@@ -104,6 +104,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
         return asUnsignedByte(a[i]) << 8 | asUnsignedByte(a[i + 1]);
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "UC_USELESS_CONDITION", justification = "To be fixed in SpotBugs 4.0.0, see https://github.com/spotbugs/spotbugs/issues/84")
     @Override
     public void visit(Code obj) {
 

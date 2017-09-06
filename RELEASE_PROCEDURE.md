@@ -11,9 +11,9 @@ When you release fixed version of SpotBugs, please follow these procedures.
 
 ## Release to Maven Central
 
-Add necessary properties to `~/.gradle/gradle.properties` and make sure that you have proper `eclipsePlugin/local.properties` file to release Eclipse plugin at the same time. Then run `./gradlew build smoketest uploadArchives`.
+When we push tag, the build result on Travis CI will be deployed to [SonaType Nexus](https://oss.sonatype.org/). Check [SonaType official page](http://central.sonatype.org/pages/gradle.html) for detail.
 
-Check [SonaType official page](http://central.sonatype.org/pages/gradle.html) for detail.
+After that, please visit SonaType Nexus and [release staging repository](http://central.sonatype.org/pages/releasing-the-deployment.html). Then we can find artifacts after several hours.
 
 ## Release to Eclipse Update Site
 
@@ -31,7 +31,9 @@ If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse
 
 ## Release to Gradle Plugin Portal
 
-Add necessary properties to `~/.gradle/gradle.properties` and run `./gradlew publishPlugins`.
+No action necessary. When we push tag, the build result on Travis CI will be deployed to Gradle Plugin Portal.
+
+See `deploy` phase in `.travis.yml` for detail.
 
 ## Update installation manual
 

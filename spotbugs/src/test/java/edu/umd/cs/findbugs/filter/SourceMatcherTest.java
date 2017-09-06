@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
@@ -122,7 +123,7 @@ public class SourceMatcherTest {
         matcher.writeXML(xmlOutput, disabled);
         xmlOutput.finish();
 
-        return outputStream.toString().trim();
+        return outputStream.toString(StandardCharsets.UTF_8.name()).trim();
     }
 
 

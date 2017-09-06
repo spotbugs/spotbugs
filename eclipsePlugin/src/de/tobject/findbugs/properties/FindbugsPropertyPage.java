@@ -521,7 +521,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
     protected void remindAboutFullBuild() {
         MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(getShell(), "Full SpotBugs build required",
-                "SpotBugs analysis settings are changed." + "\nReexecute SpotBugs analysis to see updated results.",
+                "SpotBugs analysis settings have changed. Run SpotBugs analysis again to see updated results.",
                 "Do not show this warning again", false, null, null);
 
         getPreferenceStore().setValue(FindBugsConstants.DONT_REMIND_ABOUT_FULL_BUILD, dialog.getToggleState());

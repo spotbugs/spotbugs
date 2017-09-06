@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -36,13 +37,15 @@ public class Archive {
      * File extensions that indicate an archive (zip, jar, or similar).
      */
     @StaticConstant
-    static public final Set<String> ARCHIVE_EXTENSION_SET = new HashSet<String>();
+    public static final Set<String> ARCHIVE_EXTENSION_SET;
     static {
-        ARCHIVE_EXTENSION_SET.add(".jar");
-        ARCHIVE_EXTENSION_SET.add(".zip");
-        ARCHIVE_EXTENSION_SET.add(".war");
-        ARCHIVE_EXTENSION_SET.add(".ear");
-        ARCHIVE_EXTENSION_SET.add(".sar");
+        Set<String> extensions = new HashSet<>();
+        extensions.add(".jar");
+        extensions.add(".zip");
+        extensions.add(".war");
+        extensions.add(".ear");
+        extensions.add(".sar");
+        ARCHIVE_EXTENSION_SET = Collections.unmodifiableSet(extensions);
     }
 
     /**

@@ -28,6 +28,7 @@ Contents
    gui
    eclipse
    ant
+   gradle
    filter
    analysisprops
    implement-plugin

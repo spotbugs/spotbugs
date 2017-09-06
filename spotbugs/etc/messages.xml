@@ -2201,8 +2201,7 @@ should be written to the JarFile between the calls to
 <p>Array of covariant type is assigned to a field. This is confusing and may lead to ArrayStoreException at runtime
 if the reference of some other type will be stored in this array later like in the following code:
 </p>
-<pre><code>
-Number[] arr = new Integer[10];
+<pre><code>Number[] arr = new Integer[10];
 arr[0] = 1.0;
 </code></pre>
 <p>Consider changing the type of created array or the field type.</p>
@@ -2217,8 +2216,7 @@ arr[0] = 1.0;
 <p>Array of covariant type is assigned to a local variable. This is confusing and may lead to ArrayStoreException at runtime
 if the reference of some other type will be stored in this array later like in the following code:
 </p>
-<pre><code>
-Number[] arr = new Integer[10];
+<pre><code>Number[] arr = new Integer[10];
 arr[0] = 1.0;
 </code></pre>
 <p>Consider changing the type of created array or the local variable type.</p>
@@ -2881,8 +2879,7 @@ on objects referenced by X, because they may already be getting finalized in a s
 the equals method). For example, the Foo class might have an equals method
 that looks like:
 </p>
-<pre><code>
-public boolean equals(Object o) {
+<pre><code>public boolean equals(Object o) {
     if (o instanceof Foo)
         return name.equals(((Foo)o).name);
     else if (o instanceof String)
@@ -3052,8 +3049,7 @@ Plus, it means that the equals method is not symmetric.
 that equals is not reflexive, one of the requirements of the equals method.</p>
 <p>The likely intended semantics are object identity: that an object is equal to itself. This is the behavior inherited from class <code>Object</code>. If you need to override an equals inherited from a different
 superclass, you can use:</p>
-<pre><code>
-public boolean equals(Object o) {
+<pre><code>public boolean equals(Object o) {
     return this == o;
 }
 </code></pre>
@@ -3196,8 +3192,7 @@ fix this problem of highest importance.
   than simple reference equality.)</p>
 <p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
 the recommended <code>hashCode</code> implementation to use is:</p>
-<pre><code>
-public int hashCode() {
+<pre><code>public int hashCode() {
     assert false : "hashCode not designed";
     return 42; // any arbitrary constant will do
 }
@@ -3253,8 +3248,7 @@ is "Note: this class has a natural ordering that is inconsistent with equals."
 
 <p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
 the recommended <code>hashCode</code> implementation to use is:</p>
-<pre><code>
-public int hashCode() {
+<pre><code>public int hashCode() {
     assert false : "hashCode not designed";
     return 42; // any arbitrary constant will do
 }
@@ -3610,8 +3604,7 @@ This not necessarily a bug, but is worth examining
   <p> This method is invoked in the constructor of the superclass. At this point,
     the fields of the class have not yet initialized.</p>
 <p>To make this more concrete, consider the following classes:</p>
-<pre><code>
-abstract class A {
+<pre><code>abstract class A {
     int hashCode;
     abstract Object getValue();
 
@@ -3673,8 +3666,7 @@ an uninitialized value is read for <code>value</code>.
   <p> During the initialization of a class, the class makes an active use of a subclass.
 That subclass will not yet be initialized at the time of this use.
 For example, in the following code, <code>foo</code> will be null.</p>
-<pre><code>
-public class CircularClassInitialization {
+<pre><code>public class CircularClassInitialization {
     static class InnerClassSingleton extends CircularClassInitialization {
         static InnerClassSingleton singleton = new InnerClassSingleton();
     }
@@ -3704,8 +3696,7 @@ public class CircularClassInitialization {
     <Details>
 <![CDATA[
   <p> The code synchronizes on interned String.</p>
-<pre><code>
-private static String LOCK = "LOCK";
+<pre><code>private static String LOCK = "LOCK";
 ...
 synchronized(LOCK) {
     ...
@@ -3726,8 +3717,7 @@ blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forum
     <Details>
       <![CDATA[
   <p> The code synchronizes on a boxed primitive constant, such as a Boolean.</p>
-<pre><code>
-private static Boolean inited = Boolean.FALSE;
+<pre><code>private static Boolean inited = Boolean.FALSE;
 ...
 synchronized(inited) {
     if (!inited) {
@@ -3750,8 +3740,7 @@ and possible deadlock.</p>
       <![CDATA[
   <p> The code synchronizes on an apparently unshared boxed primitive,
 such as an Integer.</p>
-<pre><code>
-private static final Integer fileLock = new Integer(1);
+<pre><code>private static final Integer fileLock = new Integer(1);
 ...
 synchronized(fileLock) {
     .. do something ..
@@ -3759,8 +3748,7 @@ synchronized(fileLock) {
 ...
 </code></pre>
 <p>It would be much better, in this code, to redeclare fileLock as</p>
-<pre><code>
-private static final Object fileLock = new Object();
+<pre><code>private static final Object fileLock = new Object();
 </code></pre>
 <p>
 The existing code might be OK, but it is confusing and a
@@ -3777,8 +3765,7 @@ throughout the JVM, leading to very confusing behavior and potential deadlock.
     <Details>
       <![CDATA[
   <p> The code synchronizes on a boxed primitive constant, such as an Integer.</p>
-<pre><code>
-private static Integer count = 0;
+<pre><code>private static Integer count = 0;
 ...
 synchronized(count) {
     count++;
@@ -3798,8 +3785,7 @@ and possible deadlock.</p>
     <Details>
 <![CDATA[
   <p> The code contains an empty synchronized block:</p>
-<pre><code>
-synchronized() {
+<pre><code>synchronized() {
 }
 </code></pre>
 <p>Empty synchronized blocks are far more subtle and hard to use correctly
@@ -3848,8 +3834,7 @@ gets a lock on the referenced object, not on the field. This may not
 provide the mutual exclusion you need, and other threads might
 be obtaining locks on the referenced objects (for other purposes). An example
 of this pattern would be:</p>
-<pre><code>
-private Long myNtfSeqNbrCounter = new Long(0);
+<pre><code>private Long myNtfSeqNbrCounter = new Long(0);
 private Long getNotificationSequenceNumber() {
      Long result = null;
      synchronized(myNtfSeqNbrCounter) {
@@ -4151,8 +4136,7 @@ You should try hard to eliminate one of them, unless you are forced to have both
 <![CDATA[
   <p> The method in the subclass doesn't override a similar method in a superclass because the type of a parameter doesn't exactly match
 the type of the corresponding parameter in the superclass. For example, if you have:</p>
-<pre><code>
-import alpha.Foo;
+<pre><code>import alpha.Foo;
 
 public class A {
     public int f(Foo x) { return 17; }
@@ -4179,8 +4163,7 @@ types are <code>Foo</code>'s from different packages.
 <![CDATA[
   <p> The method in the subclass doesn't override a similar method in a superclass because the type of a parameter doesn't exactly match
 the type of the corresponding parameter in the superclass. For example, if you have:</p>
-<pre><code>
-import alpha.Foo;
+<pre><code>import alpha.Foo;
 
 public class A {
     public int f(Foo x) { return 17; }
@@ -5059,16 +5042,14 @@ to instruct SpotBugs that ignoring the return value of this method is acceptable
 cause of this warning is to invoke a method on an immutable object,
 thinking that it updates the object. For example, in the following code
 fragment,</p>
-<pre><code>
-String dateString = getHeaderField(name);
+<pre><code>String dateString = getHeaderField(name);
 dateString.trim();
 </code></pre>
 <p>the programmer seems to be thinking that the trim() method will update
 the String referenced by dateString. But since Strings are immutable, the trim()
 function returns a new String value, which is being ignored here. The code
 should be corrected to: </p>
-<pre><code>
-String dateString = getHeaderField(name);
+<pre><code>String dateString = getHeaderField(name);
 dateString = dateString.trim();
 </code></pre>
 ]]>
@@ -5111,14 +5092,12 @@ will return other values.
 <![CDATA[
    <p> This code creates an exception (or error) object, but doesn't do anything with it. For example,
 something like </p>
-<pre><code>
-if (x &lt; 0) {
+<pre><code>if (x &lt; 0) {
     new IllegalArgumentException("x must be nonnegative");
 }
 </code></pre>
 <p>It was probably the intent of the programmer to throw the created exception:</p>
-<pre><code>
-if (x &lt; 0) {
+<pre><code>if (x &lt; 0) {
     throw new IllegalArgumentException("x must be nonnegative");
 }
 </code></pre>
@@ -5434,8 +5413,7 @@ control flow continues onto the same place regardless of whether or not
 the branch is taken. For example,
 this is caused by having an empty statement
 block for an <code>if</code> statement:</p>
-<pre><code>
-if (argv.length == 0) {
+<pre><code>if (argv.length == 0) {
     // TODO: handle this case
 }
 </code></pre>
@@ -5452,8 +5430,7 @@ flow follows to the same or following line regardless of whether or not
 the branch is taken.
 Often, this is caused by inadvertently using an empty statement as the
 body of an <code>if</code> statement, e.g.:</p>
-<pre><code>
-if (argv.length == 1);
+<pre><code>if (argv.length == 1);
     System.out.println("Hello, " + argv[0]);
 </code></pre>
 ]]>
@@ -5542,8 +5519,7 @@ of defensive programming.</p>
 but does not release it on all paths out of the method.  In general, the correct idiom
 for using a JSR-166 lock is:
 </p>
-<pre><code>
-Lock l = ...;
+<pre><code>Lock l = ...;
 l.lock();
 try {
     // do something
@@ -5563,8 +5539,7 @@ try {
 but does not release it on all exception paths out of the method.  In general, the correct idiom
 for using a JSR-166 lock is:
 </p>
-<pre><code>
-Lock l = ...;
+<pre><code>Lock l = ...;
 l.lock();
 try {
     // do something
@@ -5730,8 +5705,7 @@ an <code>IllegalMonitorStateException</code> being thrown.</p>
 <p> This method contains a self assignment of a local variable, and there
 is a field with an identical name.
 assignment appears to have been ; e.g.</p>
-<pre><code>
-    int foo;
+<pre><code>    int foo;
     public void setFoo(int foo) {
         foo = foo;
     }
@@ -5746,8 +5720,7 @@ assignment appears to have been ; e.g.</p>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a local variable; e.g.</p>
-<pre><code>
-public void foo() {
+<pre><code>public void foo() {
     int x = 3;
     x = x;
 }
@@ -5765,8 +5738,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 <![CDATA[
 <p> This method contains a self assignment of a field; e.g.
 </p>
-<pre><code>
-int x;
+<pre><code>int x;
 public void foo() {
     x = x;
 }
@@ -5782,8 +5754,7 @@ public void foo() {
 <![CDATA[
 <p> This method contains a double assignment of a field; e.g.
 </p>
-<pre><code>
-int x,y;
+<pre><code>int x,y;
 public void foo() {
     x = x = 17;
 }
@@ -5799,8 +5770,7 @@ public void foo() {
 <![CDATA[
 <p> This method contains a double assignment of a local variable; e.g.
 </p>
-<pre><code>
-public void foo() {
+<pre><code>public void foo() {
     int x,y;
     x = x = 17;
 }
@@ -6055,15 +6025,13 @@ to get <code>0xffffffff</code>, and thus give the value
 </p>
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
-<pre><code>
-int result = 0;
+<pre><code>int result = 0;
 for(int i = 0; i &lt; 4; i++) {
     result = ((result &lt;&lt; 8) | b[i]);
 }
 </code></pre>
 <p>The following idiom will work instead: </p>
-<pre><code>
-int result = 0;
+<pre><code>int result = 0;
 for(int i = 0; i &lt; 4; i++) {
     result = ((result &lt;&lt; 8) | (b[i] &amp; 0xff));
 }
@@ -6087,14 +6055,12 @@ to get <code>0xffffffff</code>, and thus give the value
 </p>
 
 <p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
-<pre><code>
-int result = 0;
+<pre><code>int result = 0;
 for(int i = 0; i &lt; 4; i++)
     result = ((result &lt;&lt; 8) + b[i]);
 </code></pre>
 <p>The following idiom will work instead: </p>
-<pre><code>
-int result = 0;
+<pre><code>int result = 0;
 for(int i = 0; i &lt; 4; i++)
     result = ((result &lt;&lt; 8) + (b[i] &amp; 0xff));
 </code></pre>
@@ -6347,8 +6313,7 @@ In each iteration, the String is converted to a StringBuffer/StringBuilder,
 a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
 
 <p> For example:</p>
-<pre><code>
-// This is bad
+<pre><code>// This is bad
 String s = "";
 for (int i = 0; i &lt; field.length; ++i) {
     s = s + field[i];
@@ -6496,14 +6461,12 @@ super.tearDown(), but doesn't.</p>
 <![CDATA[
 <p> Class is a JUnit TestCase and defines a suite() method.
 However, the suite method needs to be declared as either</p>
-<pre><code>
-public static junit.framework.Test suite()
+<pre><code>public static junit.framework.Test suite()
 </code></pre>
 <p>
 or
 </p>
-<pre><code>
-public static junit.framework.TestSuite suite()
+<pre><code>public static junit.framework.TestSuite suite()
 </code></pre>
 ]]>
     </Details>
@@ -6817,8 +6780,7 @@ does not need to be created, just access the static methods directly using the c
   </p>
   <p>A better approach is to either explicitly catch the specific exceptions that are thrown,
   or to explicitly catch RuntimeException exception, rethrow it, and then catch all non-Runtime Exceptions, as shown below:</p>
-<pre><code>
-try {
+<pre><code>try {
     ...
 } catch (RuntimeException e) {
     throw e;
@@ -7034,21 +6996,18 @@ just use the constant. Methods detected are:
 <p>
 This code performs integer multiply and then converts the result to a long,
 as in:</p>
-<pre><code>
-long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }
+<pre><code>long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }
 </code></pre>
 <p>
 If the multiplication is done using long arithmetic, you can avoid
 the possibility that the result will overflow. For example, you
 could fix the above code to:</p>
-<pre><code>
-long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }
+<pre><code>long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }
 </code></pre>
 <p>
 or
 </p>
-<pre><code>
-static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
+<pre><code>static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
 long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
 </code></pre>
 ]]>
@@ -7066,16 +7025,14 @@ An absolute time value is the number
 of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
 For example, the following method, intended to convert seconds since the epoch into a Date, is badly
 broken:</p>
-<pre><code>
-Date getDate(int seconds) { return new Date(seconds * 1000); }
+<pre><code>Date getDate(int seconds) { return new Date(seconds * 1000); }
 </code></pre>
 <p>The multiplication is done using 32-bit arithmetic, and then converted to a 64-bit value.
 When a 32-bit value is converted to 64-bits and used to express an absolute time
 value, only dates in December 1969 and January 1970 can be represented.</p>
 
 <p>Correct implementations for the above method are:</p>
-<pre><code>
-// Fails for dates after 2037
+<pre><code>// Fails for dates after 2037
 Date getDate(int seconds) { return new Date(seconds * 1000L); }
 
 // better, works for all dates
@@ -7138,8 +7095,7 @@ was cast to double suggests that this precision should have been retained.
 What was probably meant was to cast one or both of the operands to
 double <em>before</em> performing the division.  Here is an example:
 </p>
-<pre><code>
-int x = 2;
+<pre><code>int x = 2;
 int y = 5;
 // Wrong: yields result 0.0
 double value1 = x / y;
@@ -7425,8 +7381,7 @@ downcast it to a subtype will always fail by throwing a ClassCastException.
 <p>
 This code is casting the result of calling <code>toArray()</code> on a collection
 to a type more specific than <code>Object[]</code>, as in:</p>
-<pre><code>
-String[] getAsArray(Collection&lt;String&gt; c) {
+<pre><code>String[] getAsArray(Collection&lt;String&gt; c) {
     return (String[]) c.toArray();
 }
 </code></pre>
@@ -8115,8 +8070,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
         the return statement requires a @NonNegative value,
         but receives one that is marked as @Negative.
         </p>
-<pre><code>
-public boolean example(@Negative Integer value1, @NonNegative Integer value2) {
+<pre><code>public boolean example(@Negative Integer value1, @NonNegative Integer value2) {
     return value1.equals(value2);
 }
 </code></pre>
@@ -8148,8 +8102,7 @@ public boolean example(@Negative Integer value1, @NonNegative Integer value2) {
         the return statement requires a @NonNegative value,
         but receives one that is marked as @Negative.
         </p>
-<pre><code>
-public @NonNegative Integer example(@Negative Integer value) {
+<pre><code>public @NonNegative Integer example(@Negative Integer value) {
     return value;
 }
 </code></pre>
@@ -8286,8 +8239,7 @@ public @NonNegative Integer example(@Negative Integer value) {
      This instance method synchronizes on <code>this.getClass()</code>. If this class is subclassed,
      subclasses will synchronize on the class object for the subclass, which isn't likely what was intended.
      For example, consider this code from java.awt.Label:</p>
-<pre><code>
-private static final String base = "label";
+<pre><code>private static final String base = "label";
 private static int nameCounter = 0;
 
 String constructComponentName() {
@@ -8298,8 +8250,7 @@ String constructComponentName() {
 </code></pre>
      <p>Subclasses of <code>Label</code> won't synchronize on the same subclass, giving rise to a datarace.
      Instead, this code should be synchronizing on <code>Label.class</code></p>
-<pre><code>
-private static final String base = "label";
+<pre><code>private static final String base = "label";
 private static int nameCounter = 0;
 
 String constructComponentName() {
@@ -8471,8 +8422,7 @@ String constructComponentName() {
   that memory, which means that the logger configuration is lost. For example,
 consider:
 </p>
-<pre><code>
-public static void initLogging() throws Exception {
+<pre><code>public static void initLogging() throws Exception {
     Logger logger = Logger.getLogger("edu.umd.cs");
     logger.addHandler(new FileHandler()); // call to change logger configuration
     logger.setUseParentHandlers(false); // another call to change logger configuration
@@ -8482,8 +8432,7 @@ public static void initLogging() throws Exception {
 escape the method), so if you have a garbage collection cycle just
 after the call to initLogging, the logger configuration is lost
 (because Logger only keeps weak references).</p>
-<pre><code>
-public static void main(String[] args) throws Exception {
+<pre><code>public static void main(String[] args) throws Exception {
     initLogging(); // adds a file handler to the logger
     System.gc(); // logger configuration lost
     Logger.getLogger("edu.umd.cs").info("Some message"); // this isn't logged to the file as expected

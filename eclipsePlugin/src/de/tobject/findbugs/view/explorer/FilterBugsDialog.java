@@ -183,7 +183,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
     class PatternFilteredTree extends FilteredTree {
         PatternFilteredTree(Composite parent, int treeStyle, PatternFilter filter) {
-            super(parent, treeStyle, filter);
+            super(parent, treeStyle, filter, true);
         }
 
         @Override

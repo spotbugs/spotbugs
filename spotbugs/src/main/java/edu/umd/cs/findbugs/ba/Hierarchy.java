@@ -62,9 +62,9 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 public class Hierarchy {
     protected static final boolean DEBUG_METHOD_LOOKUP = SystemProperties.getBoolean("hier.lookup.debug");
 
-    public static ClassDescriptor RUNTIME_EXCEPTION = DescriptorFactory.createClassDescriptor(RuntimeException.class);
-    public static ClassDescriptor EXCEPTION = DescriptorFactory.createClassDescriptor(Exception.class);
-    public static ClassDescriptor ERROR = DescriptorFactory.createClassDescriptor(Error.class);
+    public static final ClassDescriptor RUNTIME_EXCEPTION = DescriptorFactory.createClassDescriptor(RuntimeException.class);
+    public static final ClassDescriptor EXCEPTION = DescriptorFactory.createClassDescriptor(Exception.class);
+    public static final ClassDescriptor ERROR = DescriptorFactory.createClassDescriptor(Error.class);
 
     /**
      * Type of java.lang.Exception.

@@ -14,8 +14,16 @@ env:
     - SONATYPE_USERNAME="eller86"
     - secure: "bNbHxR43FHIWX/im5GUZD52UF0FszM5kxhw/3DFqpaOWEpf3BtvSTDpHvOdbVmcD+HtC8cCaXViCQaSIsDWuP2LrxxGlULl/a9yF5FLq+BxyTx28+Xi6c+mXSeava82poWEbF6whiLrn8GIIC+z2xwpphT+bBXj/3UmOmPj/cxfsuzb6gH95Xk1OhQJjhJ0Lt6muO0YmxA4dAtNDJHHwTU/GVn25+41WiAO1P4tDHRnPdAZFXnbM5kPV41KmYw4/0YbPgr5aJuAyrUD86ufwJR0Zp+TR4JJB+miw9+XYUgjRMgPBSS3VChOnYugKClfwVq8MwxRpUpBjG5eszt64TxgeEX0sTLBv9JwxUu5R+uCYgQvSdVKduyQYVTdJnMqTsVFCeOQlF0XHXvRXK7+SSNjkpaV/TMlfZ0vY+BAUnBIUAsMjvpX9RNMvDYx5D/5/cqj9WiEsaBLBLuQX90bZA0B8xbA1IHj9pRSxm9N8VAWMTzxhZzuqqMAi2IszBRZicKKYd66z83T1k9SFcTY4mvg0W2uVvZsoaBMIYmhvBZXPOLEgwadTbeiqFW2vox16k6k8xRlKzH+IIYQAChFPqxDxBtP8b7LZDa6ahreBMKtp3xBPbbCgbrviE647CwyPwb+DxOihua5GNfgxXby4kxiXcuglUXZ5NWCmvks2KIE="
 
+    - SIGNING_KEY_ID="EECF0E90"
+    # SIGNING_PASSWORD value
+    - secure: "nzYrbmtBrexfFoKVKtqcBrjjRUoyGWQQYsbx4Z+BZN6F1QLEo+bVFmMe8SaKACSbTUqCI5gvFFOAk/2ZOvv8yPqj0lUvqgVc9oqNuuT1N+csbJlF1NJ6weQMuktC1njVhnujR5UPsngwfLrgGb9fUmgE5P1VvPNqv5Qc9idHXkjq4c+ynuJzjnPZ5EwjDFBLbuOqG7C1pRltis3NObxui27VNQphQ55aGsOSSwrHdIoSePZlBBNDGqVlJPSL6u+Odu2It7q2RDRa2594ADbljcRE1F2MjYEJeGFL3t0uOy9QvxKHRq2fJyPLWBmMKpifsR8ronyEceWV1IlZB7LzuzwSDZxjoUAvPK7FFw1KS94rvIMhch0UNhbeuJUGn0SHzRns+aRHEE2dV9Bd3i+iPmDpLuOslTTOEiUA3yMO0aWR95qeXLSgqglLJvhDSkuZy1xxW6eERo8RfrC1pPwW9xPulDRMoDxebeXHEyIbG85ZiKnyKWzYsuJ1qZNrc1ZbBBtyRjpaIh8aQmn3zdR5BiUlDCVXB4lnCtx5vpPfJGr/Oc/zt5KWFmzED9VxsrdssfAupmSCVMRAO6O57VI7T2hrL89CdBBBCkn/6wsVC97iPO752mglHWLZfZDkUVqxX5+KJRGclAliQSBjFYJG8Ci61aoYslzn6HUwgi/OlQI="
+
     # GITHUB_TOKEN value to push changes to GitHub; Currently it is ued to update gh-pages branch of spotbugs/eclipse-latest etc.
     - secure: "dFmNTEiYr0XHd2Zoj95j1xqoawNIrN63pgvHwKWf5ngNkncxLukKu1nGvvt9Fbw4/Embgzvz2GRwxWJBu5//yKrUHD9ILBS78Sn8nxpba7wHE6r8k6m+u7dOeN4jEH1fzyzsniSq939S6uB8gvfhhikddh9oZzwZnMq1YVyHQaWzbcaUnom+cwndKfK+YXg5mkt5Z92uXkJjGqd36FPA3GrlGJH7kXgWhVXI7Vds2hHsX/IBG0/2ZDhKNSZ8AiaDU4g2pSBlqA7F/noFW68hpohz9AAjku2COmpK0Ojd/iE0bVclXHYzs2aZq3lvYb3gv0dTEJrcIwPlDKQZWaEV/SxX9nIOqL5Q6XeVigTmnKkivQQ/b0hMPEpeHVvipMETYVzDvFT0qatLX/gUsiLgRPilWu0imFvNY4YAPZK3UPBSL5g+/8DzDPmTMZiOqJTMuMr+r/c7ch8qfjoaibc6LqUSJYLxyfk3NeturoviPLiBBtoadNsLPddtsNE8MZhr9lwRefNXY/VPBUxi7Bpxo7KfZ0BDSTzKeW7AEm/9E4CDmbd25eYGdvfVFeElGt5iTAfwIBYhj/GDkqnjesNCyDeNry/NywnEigkZQ4gzIvkHDkevUFs19nSspBmxiK82doY/j9Q0/TAK30mIdhg8VQwmkq5AYVIcN8kCu8WBhxw="
+    # GRADLE_PUBLISH_KEY value
+    - secure: "lZc3FKJlHOKrtYJp2Tc+SDLTye5vip0Hp2jpLj9GwxyP74DgmfzdABeptcvbfbxAHP7+emAyV7en0jdfS6iK9YWDTKpu4FKH/WrH4b03ArdkowJTYQI1pi2TLBlUNg64xaP/eeao1oWg44jCqp/sbU414zlA3+9gynnGED3mpsRQieRF3niBIt2bnzIeIusWxIqMWCXSzRnxC4RvlYpV7lhhJQb+2nJRets/KykhGs4RZj+bZB2I/WqgorzVN8GXBKevjAvR6HCaVClfa9A5boA4qsxb1P7UEurcMT4dJUXJHCW1tMBXpGDxtyNAhJgbKr4cVL7skzVsDaqSE1szLNwnDf9P5+a23EZeaT7juVsf7kXpR4KZ1JRWbss6Md035Px0KrbNFGtiojdtqRHBkAYnNNB1AwfeD4ZmsRip7oKU7mnwXOK5yUtuFnssZaIVIQHeGeNJOmtL69ELhEju07fmellIf5+fpBYwJVj62t/MvTEt9I1NbXCNPHpeHOVq6HY8OhMQ0Gzpzy8OfM/F6Nu8lowFV9LK/G3NZ7Uh206xZ+ArGDJ59a3mjsJ0eIVbkar1XxoJDZkQrrUx3GSN19o4Jw8y62V9E5A486nA3zjRSl5uOUhbnPTNO9RsxcIvwFx1dHYTTXkZMLqZarvhSjj+Pi0mCLxKjcoUyvtWZMk="
+    # GRADLE_PUBLISH_SECRET value
+    - secure: "mfFuR4+xh23Q71jdwv43hL4LnwNPE3m3zH4h+q5XkNeKbdEQMb+Sn5nXmhgR/vJ9zFTchmlmyg4bjEdV4Dc65g2kNPSu0CvSgn+ypURhPwvN+5JAeplh+XBqtE8gVh8qxCXAR4ZCVsEEUg4KyW+Rb9U0Uuy04b+45f1RfjqO5dayYvob0DQg3c5OrqyQ6pD88Y2LGUjfVAB+/8RZvvLJeEQTvBvISNceBCTxQrRt00y8f9p2VqqLG5lVZD1mnceIRgLWIkTiK/nxUqOh5IBpeyUF6Y9/uLKNeNn/5U11RnYL4O3XMICReBD/HcwW4hVTT+gAg8vNVVTuANbyG8AcsWGTF0Yck52W8DK9j07vGIeqgqDetvmh+a+hvCwsfpM9Wl0sv5lx7iim9VSE2DappFDaWKRF8ixGvjndL8Up8yCsfdJPYVafH81Ybv+Fd5GQX59Q5GIQs2IYFZ7312wzRswFfy5j1Hn74cnQWInxtbn7SXVaRj5CswEFearua38KDjkrx0GY1pt3ypbjf//kkgPmjRj8PRtPe/SEuZvCWlqBOym8QkZ2mIhiPn+pz6RO+mNRll5bmAaOtHLLkcIziMuFD7fi1YrCtCuY3PKiW0Xt7NHQQlD+y6X3RK2qsV8txPGXZz3F2Cnk9GvJepQv14hbc8OKPtJdJG/2uaLUuDg="
   matrix:
     - JDK_FOR_TEST=oraclejdk8
 #    - JDK_FOR_TEST=oraclejdk9
@@ -29,6 +37,8 @@ before_install:
   - mkdir -p deps
   - if [[ $JDK_FOR_TEST == "oraclejdk9" && ! -e deps/oracle-java9-installer.deb ]]; then wget -O deps/oracle-java9-installer.deb http://ppa.launchpad.net/webupd8team/java/ubuntu/pool/main/o/oracle-java9-installer/oracle-java9-installer_9b140+9b140arm-1~webupd8~3_all.deb; fi
   - if [[ $JDK_FOR_TEST == "oraclejdk9" ]]; then sudo dpkg -i deps/oracle-java9-installer.deb; fi
+  # In forked repository, encrypted environment variable is undefined. We need to skip this decryption.
+  - if [ -n "$encrypted_05a1b17af1e9_key" ]; then openssl aes-256-cbc -K $encrypted_05a1b17af1e9_key -iv $encrypted_05a1b17af1e9_iv -in secring.gpg.enc -out secring.gpg -d; fi
 
 install:
   - if [[ ! -e deps/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz ]]; then wget 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O deps/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz; fi
@@ -89,4 +99,16 @@ deploy:
     script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
     on:
       branch: master
+      condition: "$JDK_FOR_TEST = oraclejdk8"
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew publishPlugins -Pgradle.publish.key="$GRADLE_PUBLISH_KEY" -Pgradle.publish.secret="$GRADLE_PUBLISH_SECRET"
+    on:
+      tags: true
+      condition: "$JDK_FOR_TEST = oraclejdk8"
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD" -Psigning.keyId="$SIGNING_KEY_ID" -Psigning.password="$SIGNING_PASSWORD" -Psigning.secretKeyRingFile="$TRAVIS_BUILD_DIR/secring.gpg"
+    on:
+      tags: true
       condition: "$JDK_FOR_TEST = oraclejdk8"

@@ -26,6 +26,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -90,8 +91,7 @@ public class NotMatcherTest {
         notMatcher.writeXML(xmlOutput, false);
         xmlOutput.finish();
 
-        String xmlOutputCreated = outputStream.toString();
-        return xmlOutputCreated;
+        return outputStream.toString(StandardCharsets.UTF_8.name());
     }
 
     private static class TestMatcher implements Matcher {

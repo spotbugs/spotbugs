@@ -37,6 +37,7 @@ public class IsNullValueTest {
         assertFalse(nsp.isException());
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION", justification = "Test is disabled, would need to be fixed anyway")
     @Ignore
     @Test
     public void testMerge4() {
