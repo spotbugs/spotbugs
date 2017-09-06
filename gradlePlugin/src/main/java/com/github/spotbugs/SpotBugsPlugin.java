@@ -7,13 +7,18 @@ import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.ConventionMapping;
+import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.plugins.quality.CodeQualityExtension;
 import org.gradle.api.plugins.quality.internal.AbstractCodeQualityPlugin;
 import org.gradle.api.reporting.SingleFileReport;
@@ -191,9 +196,16 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
         taskMapping.map("classes", new Callable<FileCollection>() {
             @Override
             public FileCollection call() {
-                // the simple "classes = sourceSet.output" may lead to non-existing resources directory
-                // being passed to SpotBugs Ant task, resulting in an error
-                return project.fileTree(sourceSet.getOutput().getClassesDir()).builtBy(sourceSet.getOutput());
+                Set<File> files = StreamSupport.stream(sourceSet.getOutput().getClassesDirs().spliterator(), false)
+                        .map(dir -> {
+                            // the simple "classes = sourceSet.output" may lead to non-existing resources directory
+                            // being passed to SpotBugs Ant task, resulting in an error
+                            return project.fileTree(dir).builtBy(sourceSet.getOutput());
+                        })
+                        .map(ConfigurableFileTree::spliterator)
+                        .flatMap(spliterator -> StreamSupport.stream(spliterator, false))
+                        .collect(Collectors.toSet());
+                return new SimpleFileCollection(files);
             }
         });
         taskMapping.map("classpath", new Callable<FileCollection>() {
