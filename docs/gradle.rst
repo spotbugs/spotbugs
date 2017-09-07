@@ -8,6 +8,8 @@ Use SpotBugs Gradle Plugin
 
 Please follow instruction found on `official Gradle Plugin page <https://plugins.gradle.org/plugin/com.github.spotbugs>`_.
 
+Note that SpotBugs Gradle Plugin does not support Gradle v3, you need to use v4 or later.
+
 Tasks introduced by this Gradle Plugin
 --------------------------------------
 
@@ -29,4 +31,15 @@ For instance, to specify the version of SpotBugs, you can configure like below:
 
   spotbugs {
     toolVersion = '3.1.0-RC5'
+  }
+
+Introduce SpotBugs Plugin
+-------------------------
+
+To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like below:
+
+.. code-block:: groovy
+
+  dependencies {
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.7.1'
   }
