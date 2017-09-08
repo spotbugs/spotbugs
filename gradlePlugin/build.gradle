@@ -18,7 +18,11 @@ dependencies {
     testCompile 'junit:junit:4.12'//, 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
 
-test { //show test output
+test {
+  // SpotBugsPluginTest.java needs SpotBugs packages in Maven local
+  dependsOn ':spotbugs-annotations:install'
+  dependsOn ':spotbugs:install'
+  // show test output
   testLogging.showStandardStreams = true
 }
 
