@@ -6,7 +6,7 @@ plugins{
 
 apply from: "$rootDir/gradle/checkstyle.gradle"
 
-version = "1.4"
+version = "1.5-SNAPSHOT"
 group = "com.github.spotbugs"
 
 dependencies {
