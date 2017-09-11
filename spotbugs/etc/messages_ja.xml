@@ -7,16 +7,16 @@
   **********************************************************************
   -->
   <Plugin>
-    <ShortDescription>コア FindBugs プラグイン</ShortDescription>
+    <ShortDescription>コア SpotBugs プラグイン</ShortDescription>
     <Details>
 <![CDATA[
 <p>
-このプラグインにはすべての標準的な FindBugs ディテクタがあります。
+このプラグインにはすべての標準的な SpotBugs ディテクタがあります。
 </p>
 ]]>
     </Details>
-    <BugsUrl>https://spotbugs.github.io/bugDescriptions_ja.html</BugsUrl>
-    <AllBugsUrl>https://spotbugs.github.io/bugDescriptions_ja.html</AllBugsUrl>
+    <BugsUrl>https://spotbugs.readthedocs.io/ja/latest/bugDescriptions.html</BugsUrl>
+    <AllBugsUrl>https://spotbugs.readthedocs.io/ja/latest/bugDescriptions.html</AllBugsUrl>
   </Plugin>
 
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
@@ -130,7 +130,7 @@
     <Details>紛らわしいコード，異常なコード，またはエラーを引き起こす方法で書かれたコードです。
 たとえば，ローカル変数への無効な代入，switch 文のフォールスルー，未確認のキャスト，null とわかっている値の冗長な null チェックなどです。
 より多くの誤検出を受け入れました。
-FindBugs の以前のバージョンでは，このカテゴリは Style として知られていました。
+SpotBugs の以前のバージョンでは，このカテゴリは Style として知られていました。
     </Details>
   </BugCategory>
 
@@ -1853,7 +1853,7 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
     <Details>
 <![CDATA[
 <p>
-このディテクタは，FindBugs でメソッド呼び出しの解決をデバッグするためにあります。
+このディテクタは，SpotBugs でメソッド呼び出しの解決をデバッグするためにあります。
 </p>
 <p>
 有効にしないでください。
@@ -1875,7 +1875,7 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
     <Details>
 <![CDATA[
 <p>
-このディテクタは，ASM バイトコード解析フレームワークを使用した FindBugs ディテクタを書く方法を示しているコード例です。
+このディテクタは，ASM バイトコード解析フレームワークを使用した SpotBugs ディテクタを書く方法を示しているコード例です。
 </p>
 ]]>
     </Details>
@@ -1943,7 +1943,7 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
 <![CDATA[
 <p>
 このディテクタは，@ExpectedWarning と @NoWarning アノテーションをチェックします。
-このディテクタは，FindBugs をテストするためだけに使われます。
+このディテクタは，SpotBugs をテストするためだけに使われます。
 </p>
 ]]>
     </Details>
@@ -2181,12 +2181,12 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
 <![CDATA[
 <p>
 このコードは信頼できない HTTP パラメータを使用して HTTP クッキーを構築しています。
-このクッキーが HTTP レスポンスに追加されるなら，HRS(HTTP レスポンススプリッティング) 脆弱性を可能にします。<br>
+このクッキーが HTTP レスポンスに追加されるなら，HRS(HTTP レスポンス分割) 脆弱性を可能にします。<br>
 詳細は， <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a> を参照してください。
 </p>
 <p>
-FindBugs は，HRS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを発見したなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
+SpotBugs は，HRS の最も露骨で自明なケースだけを探します。
+SpotBugs が何かを発見したなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
 HRS を心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
@@ -2194,17 +2194,17 @@ HRS を心配するなら，商用の静的解析ツールかペネトレーシ�
   </BugPattern>
 
   <BugPattern type="HRS_REQUEST_PARAMETER_TO_HTTP_HEADER">
-    <ShortDescription>HTTP レスポンススプリッティング脆弱性</ShortDescription>
+    <ShortDescription>HTTP レスポンス分割脆弱性</ShortDescription>
     <LongDescription>HTTP ヘッダ出力に HTTP パラメータを直接書き込んでいます。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このコードはHTTP ヘッダに HTTP パラメータを直接書き込んでいます。これは HRS(HTTP レスポンススプリッティング) 脆弱性を可能にします。<br>
+このコードはHTTP ヘッダに HTTP パラメータを直接書き込んでいます。これは HRS(HTTP レスポンス分割) 脆弱性を可能にします。<br>
 詳細は， <a href="http://en.wikipedia.org/wiki/HTTP_response_splitting">http://en.wikipedia.org/wiki/HTTP_response_splitting</a> を参照してください。
 </p>
 <p>
-FindBugs は，HRS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
+SpotBugs は，HRS の最も露骨で自明なケースだけを探します。
+SpotBugs が何かを見つけたなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
 HRS を心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
@@ -2220,8 +2220,8 @@ HRS を心配するなら，商用の静的解析ツールかペネトレーシ�
 詳細は， <a href="http://cwe.mitre.org/data/definitions/23.html">http://cwe.mitre.org/data/definitions/23.html</a> を参照してください。
 </p>
 <p>
-FindBugs は，相対パストラバーサルの最も露骨で自明なケースだけを探します。
-FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
+SpotBugs は，相対パストラバーサルの最も露骨で自明なケースだけを探します。
+SpotBugs が何かを見つけたなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
 相対パストラバーサルを心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
@@ -2237,9 +2237,9 @@ FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報�
 詳細は， <a href="http://cwe.mitre.org/data/definitions/36.html">http://cwe.mitre.org/data/definitions/36.html</a> を参照してください。
 </p>
 <p>
-FindBugs は，相対パストラバーサルの最も露骨で自明なケースだけを探します。
-FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
-相対パストラバーサルを心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
+SpotBugs は，絶対パストラバーサルの最も露骨で自明なケースだけを探します。
+SpotBugs が何かを見つけたなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
+絶対パストラバーサルを心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
     </Details>
@@ -2254,8 +2254,8 @@ FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報�
 詳細は， <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> を参照してください。
 </p>
 <p>
-FindBugs は，XSS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
+SpotBugs は，XSS の最も露骨で自明なケースだけを探します。
+SpotBugs が何かを見つけたなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
 XSS を心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
@@ -2273,8 +2273,8 @@ XSS を心配するなら，商用の静的解析ツールかペネトレーシ�
 詳細は， <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> を参照してください。
 </p>
 <p>
-FindBugs は，XSS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
+SpotBugs は，XSS の最も露骨で自明なケースだけを探します。
+SpotBugs が何かを見つけたなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
 XSS を心配するなら，商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
@@ -2291,8 +2291,8 @@ XSS を心配するなら，商用の静的解析ツールかペネトレーシ�
 詳細は， <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">http://en.wikipedia.org/wiki/Cross-site_scripting</a> を参照してください。
 </p>
 <p>
-FindBugs は，XSS の最も露骨で自明なケースだけを探します。
-FindBugs が何かを見つけたなら，ほぼ間違いなく FindBugs が報告しない多くの脆弱性があるでしょう。
+SpotBugs は，XSS の最も露骨で自明なケースだけを探します。
+SpotBugs が何かを見つけたなら，ほぼ間違いなく SpotBugs が報告しない多くの脆弱性があるでしょう。
 XSS に関して心配しているなら商用の静的解析ツールかペネトレーションテストツールの使用を真剣に検討すべきです。
 </p>
 ]]>
@@ -2515,8 +2515,8 @@ XSS に関して心配しているなら商用の静的解析ツールかペネ�
     <Details>
 <![CDATA[
 <p>
-警告が記録されたのに FindBugs はこのバグパターンの説明を見つけることができなかったので警告について説明できません。
-これは FindBugs かその設定のバグの場合だけで発生させるべきです。
+警告が記録されたのに SpotBugs はこのバグパターンの説明を見つけることができなかったので警告について説明できません。
+これは SpotBugs かその設定のバグの場合だけで発生させるべきです。
 または解析プラグインを使用して生成されるなら，プラグインは現在ロードされていません。
 </p>
 ]]>
@@ -3527,7 +3527,7 @@ JLS セクション15.25を参照してください。
   </BugPattern>
 
   <BugPattern type="EQ_ALWAYS_FALSE">
-    <ShortDescription>equals メソッドは常に false を戻す</ShortDescription>
+    <ShortDescription>equals メソッドは常に false を返す</ShortDescription>
     <LongDescription>{1} は，常に false を返します。</LongDescription>
     <Details>
 <![CDATA[
@@ -4382,7 +4382,7 @@ private Long getNotificationSequenceNumber() {
 
   <BugPattern type="MS_OOI_PKGPROTECT">
     <ShortDescription>インタフェースから移動してパッケージプロテクテッドにすべきフィールド</ShortDescription>
-    <LongDescription>{1} は，インタフェースから移動してパッケージプロテクテッドにすべきです</LongDescription>
+    <LongDescription>{1} は，インタフェースから移動してパッケージプロテクテッドにすべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4557,11 +4557,11 @@ Java のセマンティックスでは，継承したメソッドを呼び出し
 </p>
 <p>
 本当に継承されたメソッドを呼び出すつもりなら <code>super</code> を付けて (例：<code>super.foo(17)</code>) 呼び出してください。
-そうすれば，外部クラスのメソッドではなく継承されたメソッドを呼び出したいことがこのコードを読む人と FindBugs に明確になります。
+そうすれば，外部クラスのメソッドではなく継承されたメソッドを呼び出したいことがこのコードを読む人と SpotBugs に明確になります。
 </p>
 <p>
 <code>this.foo(17)</code> を呼び出す場合は，継承されたメソッドが呼び出されます。
-しかしながら，FindBugs はクラスファイルを見るだけなので， <code>this.foo(17)</code> と <code>foo(17)</code> の呼び出しの違いを見分けることができません。
+しかしながら，SpotBugs はクラスファイルを見るだけなので， <code>this.foo(17)</code> と <code>foo(17)</code> の呼び出しの違いを見分けることができません。
 潜在的なあいまいな呼び出しについて文句を言うでしょう。
 </p>
 ]]>
@@ -5463,7 +5463,7 @@ public class B extends A {
 <![CDATA[
 <p>
 このメソッドは， <code>notifyAll</code> メソッドではなく <code>notify</code> メソッドを呼び出しています。
-モニタが複数の条件のために多くの場合使われます。
+モニターは，複数の条件で使われることがよくあります。
 <code>notify</code> メソッドの呼び出しは1つのスレッドを起こすだけで起こされたスレッドは呼び出し元が満たした待機条件の1つではないかもしれないことを意味しています。
 </p>
 ]]>
@@ -5641,7 +5641,7 @@ public class B extends A {
 </p>
 <p>
 我々は，戻り値を無視することがメソッド本体の単純な解析から悪い考えかもしれないと推測しています。
-このメソッドの戻り値を無視することが重要であるか許容できるかどうかに関して，FindBugs に指示する <code>@CheckReturnValue</code> アノテーションが使えます。
+このメソッドの戻り値を無視することが重要であるか許容できるかどうかに関して，SpotBugs に指示する <code>@CheckReturnValue</code> アノテーションが使えます。
 </p>
 <p>
 戻り値を無視することが間違いではないか決めるために厳密に調査してください。
@@ -5670,7 +5670,7 @@ public class B extends A {
   <li>メソッドは，例外を取得するために呼び出されている</li>
 </ul>
 <p>
-我々の仮定が正しくないと感じるなら，FindBugs にこのメソッドの戻り値が無視されることを許容するように指示する <code>@CheckReturnValue</code> アノテーションを使用することができます。
+我々の仮定が正しくないと感じるなら，SpotBugs にこのメソッドの戻り値が無視されることを許容するように指示する <code>@CheckReturnValue</code> アノテーションを使用することができます。
 </p>
 ]]>
     </Details>
@@ -5800,10 +5800,10 @@ dateString = dateString.trim();
 <![CDATA[
 <p>
 例外経路上のここで <code>null</code> 値を利用しています。コードが実行されると <code>NullPointerException</code> が発生します。
-現在の FindBugs は実行不可能な例外経路を刈り取れていないので，誤検出かもしれないことに注意してください。
+現在の SpotBugs は実行不可能な例外経路を刈り取れていないので，誤検出かもしれないことに注意してください。
 </p>
 <p>
-<code>switch</code> 文の <code>default</code> が多くの場合実行不可能なので FindBugs が例外経路である <code>default</code> を検討することに注意して下さい。
+<code>switch</code> 文の <code>default</code> が多くの場合実行不可能なので SpotBugs が例外経路である <code>default</code> を検討することに注意して下さい。
 </p>
 ]]>
     </Details>
@@ -5830,7 +5830,7 @@ dateString = dateString.trim();
 <p>
 そこで分岐または文が実行されるなら <code>null</code> 値が利用されて <code>NullPointerException</code> が発生します。
 もちろん，問題は分岐または文が実行不可能で， <code>NullPointerException</code> が決して発生する可能性がないということかもしれません。
-それを決めるのは FindBugs の能力を超えています。
+それを決めるのは SpotBugs の能力を超えています。
 </p>
 ]]>
     </Details>
@@ -5844,7 +5844,7 @@ dateString = dateString.trim();
 <p>
 そこで分岐または文が実行されるなら， <code>null</code> 値が利用されて <code>NullPointerException</code> が発生します。
 もちろん，問題は分岐または文が実行不可能で， <code>NullPointerException</code> が決して発生する可能性がないということかもしれません。
-それを決めるのは FindBugs の能力を超えています。
+それを決めるのは SpotBugs の能力を超えています。
 この値が既に <code>null</code> であることを検査したという事実からこれは明確な可能性です。
 </p>
 ]]>
@@ -5858,10 +5858,10 @@ dateString = dateString.trim();
 <![CDATA[
 <p>
 例外経路上のここで <code>null</code> 値が利用されています。コードが実行されると <code>NullPointerException</code> を引き起こすことがあります。
-現在の FindBugs は実行不可能な例外経路を刈り取れていないので，誤検出かもしれないことに注意してください。
+現在の SpotBugs は実行不可能な例外経路を刈り取れていないので，誤検出かもしれないことに注意してください。
 </p>
 <p>
-switch 文の default が多くの場合実行不可能なので FindBugs が例外経路である default を検討することに注意して下さい。
+<code>switch</code> 文の <code>default</code> が多くの場合実行不可能なので SpotBugs が例外経路である <code>default</code> を検討することに注意して下さい。
 </p>
 ]]>
     </Details>
@@ -6224,7 +6224,7 @@ try {
 このメソッドは， <code>==</code> または <code>!=</code> 演算子を使用して2つの参照値を比較しています。
 一般的にこの型のインスタンスを比較する正しい方法は <code>equals</code> メソッドです。
 等価で識別可能なインスタンスを作成する可能性がありますが異なるオブジェクトなので <code>==</code> で比較しないでください。
-参照によって一般に比較されるべきではないクラスの例は， <code>java.lang.Integer</code> ， <code>java.lang.Float</code> などです。
+一般的に参照によって比較されるべきではないクラスの例は， <code>java.lang.Integer</code> ， <code>java.lang.Float</code> などです。
 </p>
 ]]>
     </Details>
@@ -6322,7 +6322,7 @@ try {
 
   <BugPattern type="EC_NULL_ARG">
     <ShortDescription>equals(null) の呼び出し</ShortDescription>
-    <LongDescription>equals(null) の呼び出し。</LongDescription>
+    <LongDescription>equals(null) の呼び出し。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -6571,7 +6571,7 @@ public void foo() {
 <p>
 このコードは符号付き整数の乱数を生成して絶対値を計算しています。
 乱数ジェネレータで返される数が <code>Integer.MIN_VALUE</code> なら結果は同様に負です (<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code> なので)。
-(同じ問題は long 値でも同様に起きます)。
+(同じ問題は <code>long</code> 値でも同様に起きます)。
 </p>
 ]]>
     </Details>
@@ -7382,7 +7382,7 @@ field index is 0. As ResultSet fields start at index 1, this is always a mistake
 </p>
 <p>
 Sun の javac コンパイラが <code>final</code> なローカル変数のためにしばしば無効な格納を生成することに注意してください。
-FindBugs は，バイトコードベースのツールなので誤検出をなくす簡単な方法がありません。
+SpotBugs は，バイトコードベースのツールなので誤検出をなくす簡単な方法がありません。
 </p>
 ]]>
     </Details>
@@ -7645,8 +7645,8 @@ Struts Action クラスの1つのインスタンスだけが Struts フレーム
     <Details>
 <![CDATA[
 <p>
-Servlet クラスを拡張したクラスで，インスタンス変数を使用しています。
-Servlet クラスの1つのインスタンスだけが Java EE フレームワークによって作成され，マルチスレッドによって使われるので，このパラダイムは極めて問題があり，推奨できません。
+<code>Servlet</code> クラスを拡張したクラスで，インスタンス変数を使用しています。
+<code>Servlet</code> クラスの1つのインスタンスだけが Java EE フレームワークによって作成され，マルチスレッドによって使われるので，このパラダイムは極めて問題があり，推奨できません。
 ローカル変数を使用することだけを検討してください。
 </p>
 ]]>
@@ -8007,7 +8007,7 @@ Java の <code>printf</code> 書式文字列と引数のリストを期待する
 <![CDATA[
 <p>
 このキャストは，常に <code>ClassCastException</code> をスローします。
-FindBugs は， <code>instanceof</code> チェックから型情報を調査して，メソッドからの戻り値とフィールドからロードされた値の型について，より多くの正確な情報を使用します。
+SpotBugs は， <code>instanceof</code> チェックから型情報を調査して，メソッドからの戻り値とフィールドからロードされた値の型について，より多くの正確な情報を使用します。
 したがって，宣言された変数の型にはより多くの正確な情報があるかもしれないしれません。
 また，キャストが常に実行時例外をスローするのかを決定するために利用する可能性があります。
 </p>
@@ -8048,7 +8048,7 @@ FindBugs は， <code>instanceof</code> チェックから型情報を調査し�
 これに対する1つの共通の知られている例外があります。
 <code>Arrays.asList(...)</code>によって返されるリストの <code>toArray()</code> メソッドは共変型配列を返します。
 たとえば， <code>Arrays.asArray(new String[] { "a" }).toArray()</code> は <code>String []</code> を返します。
-FindBugs はそのようなケースを検出して抑止しようとしますが，見落としているかもしれません。
+SpotBugs はそのようなケースを検出して抑止しようとしますが，見落としているかもしれません。
 </p>
 ]]>
     </Details>
@@ -8127,7 +8127,7 @@ an indication of some misunderstanding or some other logic error.
 <![CDATA[
 <p>
 このコードはメソッドの戻り値の未確認のキャストを実行しています。
-コードは，キャストが安全であることが保証されるようにメソッドを呼び出しているかもしれませんが，FindBugs はキャストが安全であることを検証できません。
+コードは，キャストが安全であることが保証されるようにメソッドを呼び出しているかもしれませんが，SpotBugs はキャストが安全であることを検証できません。
 プログラムのロジックがこのキャストが失敗しないことを確実に確認してください。
 </p>
 ]]>
@@ -8918,7 +8918,8 @@ Jason Mehrens によって寄贈されたバグパターン
 どちらかの方法でフィードバックを送ってください。
 </p>
 <ul>
-  <li>file an issue: <a href="ihttps://github.com/spotbugs/spotbugs/issues">https://github.com/spotbugs/spotbugs/issues</a></li>
+  <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">問題の報告</a></li>
+  <li><a href="https://github.com/spotbugs/discuss/issues?q=">メーリングリスト</a></li>
 </ul>
 <p>
 特に，このバグパターンの誤検出抑制探索法は詳細にわたって調整されていないので，誤検出についてのレポートは我々の助けになります。
@@ -8947,8 +8948,8 @@ Jason Mehrens によって寄贈されたバグパターン
 どちらかの方法でフィードバックを送ってください。
 </p>
 <ul>
-  <li>send email to findbugs@cs.umd.edu</li>
-  <li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
+  <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">問題の報告</a></li>
+  <li><a href="https://github.com/spotbugs/discuss/issues?q=">メーリングリスト</a></li>
 </ul>
 <p>
 特に，このバグパターンの誤検出抑制探索法は詳細にわたって調整されていないので，誤検出についてのレポートは我々の助けになります。
@@ -8961,24 +8962,24 @@ Jason Mehrens によって寄贈されたバグパターン
   </BugPattern>
 
   <BugPattern type="FB_UNEXPECTED_WARNING">
-    <ShortDescription>FindBugs からの予期しない/望ましくない警告</ShortDescription>
-    <LongDescription>予期しない/望ましくない {2} FindBugs 警告。{1}</LongDescription>
+    <ShortDescription>SpotBugs からの予期しない/望ましくない警告</ShortDescription>
+    <LongDescription>予期しない/望ましくない {2} SpotBugs 警告。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-FindBugs は， <code>@NoWarning</code> アノテーションが付けられたことにより予期しない/望ましくない警告を生成しました。
+SpotBugs は， <code>@NoWarning</code> アノテーションが付けられたことにより予期しない/望ましくない警告を生成しました。
 </p>
 ]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="FB_MISSING_EXPECTED_WARNING">
-    <ShortDescription>失われた FindBugs からの予期した/望ましい警告</ShortDescription>
-    <LongDescription>失われた予期した/望ましい {2} FindBugs 警告。{1}</LongDescription>
+    <ShortDescription>失われた SpotBugs からの予期した/望ましい警告</ShortDescription>
+    <LongDescription>失われた予期した/望ましい {2} SpotBugs 警告。{1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-FindBugs は， <code>@ExpectedWarning</code> アノテーションが付けられたことにより予期した/望ましい警告が生成されませんでした。
+SpotBugs は， <code>@ExpectedWarning</code> アノテーションが付けられたことにより予期した/望ましい警告が生成されませんでした。
 </p>
 ]]>
     </Details>
@@ -9152,7 +9153,7 @@ Ulf Ochsenfahrt と Eric Fellheimer
   <BugCode abbrev="ME">可変列挙型フィールド</BugCode>
   <BugCode abbrev="EI">内部表現を暴露するかもしれない配列を返すメソッド</BugCode>
   <BugCode abbrev="Nm">紛らわしいメソッド名</BugCode>
-  <BugCode abbrev="SS">読み出されないフィールドは static にすべき</BugCode>
+  <BugCode abbrev="SS">static にすべき読み出されないフィールド</BugCode>
   <BugCode abbrev="UuF">未使用フィールド</BugCode>
   <BugCode abbrev="UrF">読み出されないフィールド</BugCode>
   <BugCode abbrev="UwF">書き込まれないフィールド</BugCode>
@@ -9180,7 +9181,7 @@ Ulf Ochsenfahrt と Eric Fellheimer
   <BugCode abbrev="SA">役に立たない自己演算</BugCode>
   <BugCode abbrev="INT">疑わしい整数式</BugCode>
   <BugCode abbrev="BIT">疑わしいビット演算式</BugCode>
-  <BugCode abbrev="LI">非同期化な遅延初期化</BugCode>
+  <BugCode abbrev="LI">同期化されていない遅延初期化</BugCode>
   <BugCode abbrev="JLM">java.util.concurrent オブジェクトの同期化</BugCode>
   <BugCode abbrev="UPM">決して呼び出されない private メソッド</BugCode>
   <BugCode abbrev="UMAC">無名クラスの呼び出しできないメソッド</BugCode>
@@ -9242,6 +9243,6 @@ Ulf Ochsenfahrt と Eric Fellheimer
   <BugCode abbrev="STCAL">Calendar，DateFormat の static 使用</BugCode>
   <BugCode abbrev="TQ">型修飾子アノテーションの一貫性のない使用</BugCode>
   <BugCode abbrev="OBL">ストリームまたはリソースをクリーンアップする責務が満たされていない</BugCode>
-  <BugCode abbrev="FB">FindBugs はメソッドで期待された警告を出しませんでした</BugCode>
+  <BugCode abbrev="FB">SpotBugs はメソッドで期待された警告を出さない</BugCode>
   <BugCode abbrev="DL">共有オブジェクトを意図的でなくロックすることによる潜在的デッドロック</BugCode>
 </MessageCollection>
