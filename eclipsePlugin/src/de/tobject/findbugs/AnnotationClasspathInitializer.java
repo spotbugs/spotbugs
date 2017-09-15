@@ -12,15 +12,17 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.framework.Bundle;
 
+import edu.umd.cs.findbugs.Version;
+
 public class AnnotationClasspathInitializer extends ClasspathVariableInitializer {
 
     private static final String FINDBUGS_ANNOTATIONS = "FINDBUGS_ANNOTATIONS";
 
     private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
 
-    private static final String FINDBUGS_LIBRARY = "/lib/annotations.jar";
+	private static final String FINDBUGS_LIBRARY = "/lib/spotbugs-annotations-" + Version.VERSION_STRING + ".jar";
 
-    private static final String JSR305_LIBRARY = "/lib/jsr305.jar";
+    private static final String JSR305_LIBRARY = "/lib/jsr305-3.0.1.jar";
 
     @Override
     public void initialize(String variable) {
@@ -36,13 +38,13 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
 
     private void setVariable(String fullPath, String variableName) {
         if (fullPath == null) {
-            FindbugsPlugin.getDefault().logError("unable to find path for variable: " + variableName);
+            FindbugsPlugin.getDefault().logError("Unable to find path for variable: " + variableName);
             return;
         }
         try {
             JavaCore.setClasspathVariable(variableName, new Path(fullPath), null);
         } catch (JavaModelException e1) {
-            FindbugsPlugin.getDefault().logException(e1, "unable to set annotations classpath");
+            FindbugsPlugin.getDefault().logException(e1, "Unable to set annotations classpath");
         }
     }
 
@@ -50,7 +52,7 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
         URL installLocation = bundle.getEntry(libName);
         if (installLocation == null) {
             // check if we debugging eclipse and see classpath of the findbugs core project 
-        	Bundle bundle2 = Platform.getBundle("findbugs");
+        	Bundle bundle2 = Platform.getBundle("spotbugs");
             if(bundle2 != null){
                 installLocation = bundle2.getEntry(libName);
             }
@@ -65,7 +67,7 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
             URL local = FileLocator.toFileURL(installLocation);
             fullPath = new File(local.getPath()).getCanonicalPath();
         } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "unable to set classpath for " + libName);
+            FindbugsPlugin.getDefault().logException(e, "Unable to set classpath for " + libName);
         }
         return fullPath;
     }
