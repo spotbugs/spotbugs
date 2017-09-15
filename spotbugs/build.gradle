@@ -276,10 +276,6 @@ uploadArchives {
   }
 }
 
-ant.importBuild('build.xml') { antTargetName ->
-  'ant-' + antTargetName
-}
-
 // TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual

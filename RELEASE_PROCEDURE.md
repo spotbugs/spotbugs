@@ -40,18 +40,6 @@ See `deploy` phase in `.travis.yml` for detail.
 `docs/installing.rst` includes link to released binaries, update them.
 It is also necessary to change filename in command line example.
 
-## Release old manuals
-
-Send pull-request to spotbugs/spotbugs.github.io, to update contents.
-To generate files to upload, add following properties to `spotbugs/local.properties` and run `./gradlew ant-docs`, then you can get built contents at `spotbugs/build/doc`.
-
-```properties
-saxon.home=path/to/saxon6-5-5
-xsl.stylesheet.home=path/to/docbook-xsl-1.71.1
-```
-
-Use sourceforge to download [Saxon 6.5.5](https://sourceforge.net/projects/saxon/files/saxon6/6.5.5/) and [docbook-xsl 1.71.1](https://sourceforge.net/projects/docbook/files/docbook-xsl/1.71.1/).
-
 ## Release to ReadTheDocs
 
 See [docs/README.md](docs/README.md) for detail.
