@@ -734,6 +734,9 @@ public class Hierarchy {
             // the class specified by the instruction
             receiverType = ObjectTypeFactory.getInstance(invokeInstruction.getClassName(cpg));
             receiverTypeIsExact = false; // Doesn't actually matter
+        } else if (opcode == Const.INVOKEDYNAMIC) {
+            // XXX handle INVOKEDYNAMIC
+            return new HashSet<>();
         } else {
             // For invokevirtual and invokeinterface instructions, we have
             // virtual dispatch. By taking the receiver type (which may be a
