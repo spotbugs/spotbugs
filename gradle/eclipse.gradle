@@ -4,17 +4,24 @@ apply plugin: 'eclipse'
 
 tasks.eclipse.dependsOn(cleanEclipse)
 
+def testCasesProject = 'spotbugsTestCases'.equals(project.name)
+
 eclipse {
   project {
-//    natures = 'org.eclipse.jdt.core.javanature'
+    natures 'org.eclipse.jdt.core.javanature'
     natures 'org.eclipse.pde.PluginNature'
-//    natures = 'edu.umd.cs.findbugs.plugin.eclipse.findbugsNature'
+    natures 'edu.umd.cs.findbugs.plugin.eclipse.findbugsNature'
 
-//    buildCommand 'org.eclipse.jdt.core.javabuilder'
-
+    buildCommand 'org.eclipse.jdt.core.javabuilder'
     buildCommand 'org.eclipse.pde.ManifestBuilder'
     buildCommand 'org.eclipse.pde.SchemaBuilder'
-//    buildCommand  = 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+    buildCommand 'edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder'
+    
+    // Link default settings to all eclipse projects, see #380
+	// Don't link settings to the test cases - they contain broken code (on purpose)
+    if(!testCasesProject){
+    	linkedResource name: '.settings', type: '2', locationUri: '$%7BPARENT-1-PROJECT_LOC%7D/gradle/.settings-templates'
+    }
   }
 
   classpath {
