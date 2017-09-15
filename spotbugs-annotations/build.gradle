@@ -19,6 +19,7 @@ task updateManifest {
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
 }
+tasks.eclipse.dependsOn(updateManifest)
 
 jar {
   manifest {
