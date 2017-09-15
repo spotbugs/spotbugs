@@ -257,10 +257,6 @@ task smokeTest {
   }
 }
 
-coveralls {
-  jacocoReportPath = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-}
-
 uploadArchives {
   repositories {
     mavenDeployer {

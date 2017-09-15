@@ -1,5 +1,4 @@
 plugins {
-  id "com.github.kt3k.coveralls" version "2.7.1"
   id 'org.sonarqube' version '2.5'
 }
 
@@ -39,7 +38,7 @@ wrapper {
 
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
 task jacocoRootReport(type: JacocoReport) {
-  description = 'Merge all coverage reports before submit to coveralls'
+  description = 'Merge all coverage reports before submit to SonarQube'
 
   executionData project(':spotbugs').file('build/jacoco/test.exec')
   sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
@@ -53,15 +52,4 @@ task jacocoRootReport(type: JacocoReport) {
     xml.enabled = true
   }
 }
-
-coveralls {
-  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
-}
-
-tasks.coveralls {
-  dependsOn jacocoRootReport
-  doFirst {
-    // set lazily to relect subproject specific config in each build.groovy
-    coveralls.sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
-  }
-}
+tasks.sonarqube.dependsOn jacocoRootReport

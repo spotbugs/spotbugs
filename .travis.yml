@@ -54,9 +54,6 @@ script:
   - jdk_switcher use oraclejdk8
   - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
-after_success:
-  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew coveralls; fi
-
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/

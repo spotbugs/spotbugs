@@ -2,7 +2,7 @@
 # ![SpotBugs](https://spotbugs.github.io/images/logos/spotbugs_logo_300px.png)
 
 [![Build Status](https://travis-ci.org/spotbugs/spotbugs.svg?branch=master)](https://travis-ci.org/spotbugs/spotbugs)
-[![Coverage Status](https://coveralls.io/repos/github/spotbugs/spotbugs/badge.svg?branch=master)](https://coveralls.io/github/spotbugs/spotbugs?branch=master)
+[![Coverage Status](https://sonarcloud.io/api/badges/measure?key=com.github.spotbugs.spotbugs&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.spotbugs.spotbugs&metric=coverage)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs)
 [![Javadocs](http://javadoc.io/badge/com.github.spotbugs/spotbugs.svg)](http://javadoc.io/doc/com.github.spotbugs/spotbugs)
 
