@@ -16,8 +16,8 @@ This plugin contains all of the standard SpotBugs detectors.
 </p>
 ]]>
     </Details>
-    <BugsUrl>https://spotbugs.github.io/bugDescriptions.html</BugsUrl>
-    <AllBugsUrl>https://spotbugs.github.io/bugDescriptions.html</AllBugsUrl>
+    <BugsUrl>https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html</BugsUrl>
+    <AllBugsUrl>https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html</AllBugsUrl>
   </Plugin>
   <FindBugsMain cmd="addMessages" class="edu.umd.cs.findbugs.AddMessages">
     <Description>Add msgs (e.g., textual descriptions of bugs) to analysis results</Description>
@@ -8288,10 +8288,11 @@ String constructComponentName() {
           (and hopefully better) static analysis technique.
           We are interested is getting feedback about the
           usefulness of this bug pattern.
-          To send feedback:
+          To send feedback, either:
           </p>
           <ul>
-            <li>file an issue: <a href="https://github.com/spotbugs/spotbugs/issues">https://github.com/spotbugs/spotbugs/issues</a></li>
+            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">reporting a problem</a></li>
+            <li><a href="https://github.com/spotbugs/discuss/issues?q=">malinglist</a></li>
           </ul>
 
           <p>
@@ -8340,8 +8341,8 @@ String constructComponentName() {
           To send feedback, either:
           </p>
           <ul>
-            <li>send email to findbugs@cs.umd.edu</li>
-            <li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
+            <li><a href="https://github.com/spotbugs/spotbugs/blob/master/CONTRIBUTING.md">reporting a problem</a></li>
+            <li><a href="https://github.com/spotbugs/discuss/issues?q=">malinglist</a></li>
           </ul>
 
           <p>
