@@ -117,6 +117,7 @@ task updateManifest {
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
   }
 }
+tasks.eclipse.dependsOn(updateManifest)
 
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
