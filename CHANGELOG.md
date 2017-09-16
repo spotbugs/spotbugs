@@ -4,6 +4,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ## Unreleased (2017/??/??)
 
+## 3.1.0-RC6 (2017/Sep/11)
+
 ### Removed
 
 * Delete needless bundled libraries from Eclipse plugin ([#330](https://github.com/spotbugs/spotbugs/pull/330))
