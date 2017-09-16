@@ -70,7 +70,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
 
     @Override
     public void visit(Code m) {
-        applicableApplications = new HashSet<TypeQualifierValue<?>>();
+        applicableApplications = new HashSet<>();
         XMethod xMethod = getXMethod();
 
         // Find the direct annotations on this method
@@ -80,7 +80,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
         super.visit(m);
 
         if (applicableApplications.size() > 0) {
-            qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<TypeQualifierValue<?>>(
+            qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<>(
                     applicableApplications));
         }
     }

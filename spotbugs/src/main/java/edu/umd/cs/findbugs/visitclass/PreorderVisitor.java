@@ -175,7 +175,7 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
     }
 
     public Set<String> getSurroundingCaughtExceptions(int pc, int maxTryBlockSize) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         if (code == null) {
             throw new IllegalStateException("Not visiting Code");
         }

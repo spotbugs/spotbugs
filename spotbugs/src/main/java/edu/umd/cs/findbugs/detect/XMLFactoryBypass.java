@@ -53,7 +53,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector {
         }
     };
 
-    private final Set<String> rejectedXMLClasses = new HashSet<String>();
+    private final Set<String> rejectedXMLClasses = new HashSet<>();
 
     private JavaClass curClass;
 

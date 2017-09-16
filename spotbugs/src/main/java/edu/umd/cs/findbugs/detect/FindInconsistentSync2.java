@@ -190,7 +190,7 @@ public class FindInconsistentSync2 implements Detector {
         }
 
         public static Collection<SourceLineAnnotation> asSourceLineAnnotation(Collection<FieldAccess> c) {
-            ArrayList<SourceLineAnnotation> result = new ArrayList<SourceLineAnnotation>(c.size());
+            ArrayList<SourceLineAnnotation> result = new ArrayList<>(c.size());
             for (FieldAccess f : c) {
                 result.add(f.asSourceLineAnnotation());
             }
@@ -327,7 +327,7 @@ public class FindInconsistentSync2 implements Detector {
 
     private final BugReporter bugReporter;
 
-    private final Map<XField, FieldStats> statMap = new HashMap<XField, FieldStats>();
+    private final Map<XField, FieldStats> statMap = new HashMap<>();
 
     /*
      * ----------------------------------------------------------------------
@@ -356,7 +356,7 @@ public class FindInconsistentSync2 implements Detector {
 
         Set<Method> lockedMethodSet;
         // Set<Method> publicReachableMethods;
-        Set<Method> allMethods = new HashSet<Method>(Arrays.asList(javaClass.getMethods()));
+        Set<Method> allMethods = new HashSet<>(Arrays.asList(javaClass.getMethods()));
 
         try {
             selfCalls.execute();
@@ -456,7 +456,7 @@ public class FindInconsistentSync2 implements Detector {
             }
             boolean threadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "ThreadSafe");
 
-            WarningPropertySet<InconsistentSyncWarningProperty> propertySet = new WarningPropertySet<InconsistentSyncWarningProperty>();
+            WarningPropertySet<InconsistentSyncWarningProperty> propertySet = new WarningPropertySet<>();
 
             int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
             int numWriteUnlocked = stats.getNumAccesses(WRITE_UNLOCKED);
@@ -893,7 +893,7 @@ public class FindInconsistentSync2 implements Detector {
 
         // Initially, assume no methods are called from an
         // unlocked context
-        Set<Method> lockedMethodSet = new HashSet<Method>();
+        Set<Method> lockedMethodSet = new HashSet<>();
         lockedMethodSet.addAll(Arrays.asList(methodList));
 
         // Assume all public methods are called from
@@ -959,7 +959,7 @@ public class FindInconsistentSync2 implements Detector {
         CallGraph callGraph = selfCalls.getCallGraph();
 
         // Initially, assume all methods are locked
-        Set<Method> lockedMethodSet = new HashSet<Method>();
+        Set<Method> lockedMethodSet = new HashSet<>();
 
         // Assume all public methods are unlocked
         for (Method method : methodList) {
@@ -1052,7 +1052,7 @@ public class FindInconsistentSync2 implements Detector {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
         // Find all obviously locked call sites
-        Set<CallSite> obviouslyLockedSites = new HashSet<CallSite>();
+        Set<CallSite> obviouslyLockedSites = new HashSet<>();
         for (Iterator<CallSite> i = selfCalls.callSiteIterator(); i.hasNext();) {
             CallSite callSite = i.next();
             Method method = callSite.getMethod();

@@ -66,7 +66,7 @@ public class LaunchAppropriateUI {
     @StaticConstant
     public static final Map<String, Integer> uiNameToCodeMap;
     static {
-        uiNameToCodeMap = new HashMap<String, Integer>();
+        uiNameToCodeMap = new HashMap<>();
         uiNameToCodeMap.put("textui", TEXTUI);
         uiNameToCodeMap.put("gui", GUI2);
         uiNameToCodeMap.put("gui1", GUI1);

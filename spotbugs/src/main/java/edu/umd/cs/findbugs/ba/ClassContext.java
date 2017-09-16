@@ -115,7 +115,7 @@ public class ClassContext {
     public ClassContext(JavaClass jclass, AnalysisContext analysisContext) {
         this.jclass = jclass;
         this.analysisContext = analysisContext;
-        this.methodAnalysisObjectMap = new HashMap<Class<?>, Map<MethodDescriptor, Object>>();
+        this.methodAnalysisObjectMap = new HashMap<>();
         try {
             classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class,
                     DescriptorFactory.createClassDescriptor(jclass));
@@ -128,11 +128,11 @@ public class ClassContext {
         Map<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
         if (objectMap == null) {
             if (analysisClass == ValueNumberDataflow.class) {
-                objectMap = new MapCache<MethodDescriptor, Object>(300);
+                objectMap = new MapCache<>(300);
             } else if (Dataflow.class.isAssignableFrom(analysisClass)) {
-                objectMap = new MapCache<MethodDescriptor, Object>(500);
+                objectMap = new MapCache<>(500);
             } else {
-                objectMap = new HashMap<MethodDescriptor, Object>();
+                objectMap = new HashMap<>();
             }
             methodAnalysisObjectMap.put(analysisClass, objectMap);
         }
@@ -241,13 +241,13 @@ public class ClassContext {
 
     public @Nonnull
     List<Method> getMethodsInCallOrder() {
-        Map<XMethod, Method> map = new HashMap<XMethod, Method>();
+        Map<XMethod, Method> map = new HashMap<>();
         for (Method m : getJavaClass().getMethods()) {
             XMethod xMethod = classInfo.findMethod(m.getName(), m.getSignature(), m.isStatic());
             map.put(xMethod, m);
         }
         List<? extends XMethod> xmethodsInCallOrder = classInfo.getXMethodsInCallOrder();
-        List<Method> methodsInCallOrder = new ArrayList<Method>(xmethodsInCallOrder.size());
+        List<Method> methodsInCallOrder = new ArrayList<>(xmethodsInCallOrder.size());
         for (XMethod x : xmethodsInCallOrder) {
             Method m = map.get(x);
             if (m != null) {
@@ -384,7 +384,7 @@ public class ClassContext {
             new AnalysisLocal<MapCache<XMethod, BitSet>>() {
         @Override
         protected MapCache<XMethod, BitSet> initialValue() {
-            return  new MapCache<XMethod, BitSet>(64);
+            return  new MapCache<>(64);
         }
     };
 
@@ -392,7 +392,7 @@ public class ClassContext {
             new AnalysisLocal<MapCache<XMethod, Set<Integer>>>() {
         @Override
         protected MapCache<XMethod, Set<Integer>> initialValue() {
-            return  new MapCache<XMethod, Set<Integer>>(13);
+            return  new MapCache<>(13);
         }
     };
 
@@ -481,7 +481,7 @@ public class ClassContext {
 
         byte[] instructionList = code.getCode();
 
-        Set<Integer> result = new HashSet<Integer>();
+        Set<Integer> result = new HashSet<>();
         for (int i = 0; i < instructionList.length; i++) {
             if (checkForBranchExit(instructionList, i)) {
                 result.add(i);
@@ -905,7 +905,7 @@ public class ClassContext {
             @CheckForNull UnconditionalValueDerefDataflow dataflow, @CheckForNull TypeDataflow typeDataflow)
                     throws DataflowAnalysisException {
         System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
-        TreeSet<Location> tree = new TreeSet<Location>();
+        TreeSet<Location> tree = new TreeSet<>();
 
         for (Iterator<Location> locs = cfg.locationIterator(); locs.hasNext();) {
             Location loc = locs.next();
@@ -937,7 +937,7 @@ public class ClassContext {
     public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
         System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName()
                 + method.getSignature());
-        TreeSet<Location> tree = new TreeSet<Location>();
+        TreeSet<Location> tree = new TreeSet<>();
 
         for (Iterator<Location> locs = cfg.locationIterator(); locs.hasNext();) {
             Location loc = locs.next();
@@ -954,7 +954,7 @@ public class ClassContext {
     public static void dumpLiveLocalStoreDataflow(MethodDescriptor method, CFG cfg, LiveLocalStoreDataflow dataflow)
             throws DataflowAnalysisException {
         System.out.println("\n\n{ LiveLocalStore analysis for " + method);
-        TreeSet<Location> tree = new TreeSet<Location>();
+        TreeSet<Location> tree = new TreeSet<>();
 
         for (Iterator<Location> locs = cfg.locationIterator(); locs.hasNext();) {
             Location loc = locs.next();

@@ -33,7 +33,7 @@ public class FieldSet {
     private final Set<XField> fieldSet;
 
     public FieldSet() {
-        fieldSet = new HashSet<XField>();
+        fieldSet = new HashSet<>();
     }
 
     public void setTop() {

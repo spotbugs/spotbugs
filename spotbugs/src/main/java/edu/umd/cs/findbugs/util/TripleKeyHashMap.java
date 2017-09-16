@@ -26,7 +26,7 @@ import java.util.Map;
  * @author pugh
  */
 public class TripleKeyHashMap<K1, K2, K3, V> {
-    Map<K1, DualKeyHashMap<K2, K3, V>> map = new HashMap<K1, DualKeyHashMap<K2, K3, V>>();
+    Map<K1, DualKeyHashMap<K2, K3, V>> map = new HashMap<>();
 
     public V get(K1 k1, K2 k2, K3 k3) {
         DualKeyHashMap<K2, K3, V> m = map.get(k1);
@@ -39,7 +39,7 @@ public class TripleKeyHashMap<K1, K2, K3, V> {
     public V put(K1 k1, K2 k2, K3 k3, V v) {
         DualKeyHashMap<K2, K3, V> m = map.get(k1);
         if (m == null) {
-            m = new DualKeyHashMap<K2, K3, V>();
+            m = new DualKeyHashMap<>();
             map.put(k1, m);
         }
         return m.put(k2, k3, v);

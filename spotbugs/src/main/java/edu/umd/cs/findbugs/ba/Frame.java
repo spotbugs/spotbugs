@@ -110,7 +110,7 @@ public abstract class Frame<ValueType> {
      */
     public Frame(int numLocals) {
         this.numLocals = numLocals;
-        this.slotList = new ArrayList<ValueType>(numLocals + DEFAULT_STACK_CAPACITY);
+        this.slotList = new ArrayList<>(numLocals + DEFAULT_STACK_CAPACITY);
         for (int i = 0; i < numLocals; ++i) {
             slotList.add(null);
         }

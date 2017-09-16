@@ -86,7 +86,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         super(numLocals);
         this.trackValueNumbers = trackValueNumbers;
         if (trackValueNumbers) {
-            this.knownValueMap = new HashMap<ValueNumber, IsNullValue>(3);
+            this.knownValueMap = new HashMap<>(3);
         }
     }
 
@@ -127,7 +127,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
 
         if (trackValueNumbers) {
-            Map<ValueNumber, IsNullValue> replaceMap = new HashMap<ValueNumber, IsNullValue>();
+            Map<ValueNumber, IsNullValue> replaceMap = new HashMap<>();
             for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
                 replaceMap.put(entry.getKey(), entry.getValue().toExceptionValue());
             }
@@ -199,7 +199,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
             System.out.println("     " + this);
             System.out.println(" with" + otherFrame);
         }
-        Map<ValueNumber, IsNullValue> replaceMap = new HashMap<ValueNumber, IsNullValue>();
+        Map<ValueNumber, IsNullValue> replaceMap = new HashMap<>();
         for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
             IsNullValue otherKnownValue = otherFrame.knownValueMap.get(entry.getKey());
             if (otherKnownValue == null) {

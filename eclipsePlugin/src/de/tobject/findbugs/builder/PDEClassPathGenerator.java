@@ -85,7 +85,7 @@ public class PDEClassPathGenerator {
 
     @SuppressWarnings("restriction")
     private static Set<String> createJavaClasspath(IJavaProject javaProject, Set<IProject> projectOnCp) {
-        LinkedHashSet<String> classPath = new LinkedHashSet<String>();
+        LinkedHashSet<String> classPath = new LinkedHashSet<>();
         try {
             // doesn't return jre libraries
             String[] defaultClassPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
@@ -214,7 +214,7 @@ public class PDEClassPathGenerator {
 
         BundleDescription target = model.getBundleDescription();
 
-        Set<BundleDescription> bundles = new HashSet<BundleDescription>();
+        Set<BundleDescription> bundles = new HashSet<>();
         // target is null if plugin uses non OSGI format
         if (target != null) {
             addDependentBundles(target, bundles);
@@ -242,7 +242,7 @@ public class PDEClassPathGenerator {
         if(model == null) {
             return;
         }
-        ArrayList<IClasspathEntry> classpathEntries = new ArrayList<IClasspathEntry>();
+        ArrayList<IClasspathEntry> classpathEntries = new ArrayList<>();
         ClasspathUtilCore.addLibraries(model, classpathEntries);
 
         for (IClasspathEntry cpe : classpathEntries) {

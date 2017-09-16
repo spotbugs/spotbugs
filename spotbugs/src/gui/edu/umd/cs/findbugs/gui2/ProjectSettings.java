@@ -44,7 +44,7 @@ public class ProjectSettings implements Serializable {
     // Singleton
     private ProjectSettings() {
         allMatchers = new CompoundMatcher();
-        filters = new ArrayList<FilterMatcher>();
+        filters = new ArrayList<>();
     }
 
     private static ProjectSettings instance;
@@ -132,8 +132,8 @@ public class ProjectSettings implements Serializable {
             List<Sortables> sortablesToCheck = order.subList(0, sizeToCheck);
             Debug.println("Size to check" + sizeToCheck + " checking list" + sortablesToCheck);
             Debug.println("checking filters");
-            ArrayList<String> almostPath = new ArrayList<String>();
-            ArrayList<Sortables> almostPathSortables = new ArrayList<Sortables>();
+            ArrayList<String> almostPath = new ArrayList<>();
+            ArrayList<Sortables> almostPathSortables = new ArrayList<>();
             for (int x = 0; x < sortablesToCheck.size(); x++) {
                 Sortables s = sortablesToCheck.get(x);
                 for (FilterMatcher fm : filtersInStack) {
@@ -144,7 +144,7 @@ public class ProjectSettings implements Serializable {
                 }
             }
             if (almostPath.size() == filtersInStack.length) {
-                ArrayList<String> finalPath = new ArrayList<String>();
+                ArrayList<String> finalPath = new ArrayList<>();
                 for (int x = 0; x < almostPath.size(); x++) {
                     Sortables s = almostPathSortables.get(x);
                     if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s)) {

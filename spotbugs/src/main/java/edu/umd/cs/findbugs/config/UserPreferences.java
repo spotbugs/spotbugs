@@ -131,14 +131,14 @@ public class UserPreferences implements Cloneable {
 
     private UserPreferences() {
         filterSettings = ProjectFilterSettings.createDefault();
-        recentProjectsList = new LinkedList<String>();
-        detectorEnablementMap = new HashMap<String, Boolean>();
+        recentProjectsList = new LinkedList<>();
+        detectorEnablementMap = new HashMap<>();
         runAtFullBuild = true;
         effort = EFFORT_DEFAULT;
-        includeFilterFiles = new TreeMap<String, Boolean>();
-        excludeFilterFiles = new TreeMap<String, Boolean>();
-        excludeBugsFiles = new TreeMap<String, Boolean>();
-        customPlugins = new TreeMap<String, Boolean>();
+        includeFilterFiles = new TreeMap<>();
+        excludeFilterFiles = new TreeMap<>();
+        excludeBugsFiles = new TreeMap<>();
+        customPlugins = new TreeMap<>();
     }
 
     /**
@@ -520,13 +520,13 @@ public class UserPreferences implements Cloneable {
         try {
             UserPreferences dup = (UserPreferences) super.clone();
             // Deep copy
-            dup.recentProjectsList = new LinkedList<String>(recentProjectsList);
-            dup.detectorEnablementMap = new HashMap<String, Boolean>(detectorEnablementMap);
+            dup.recentProjectsList = new LinkedList<>(recentProjectsList);
+            dup.detectorEnablementMap = new HashMap<>(detectorEnablementMap);
             dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
-            dup.includeFilterFiles = new TreeMap<String, Boolean>(includeFilterFiles);
-            dup.excludeFilterFiles = new TreeMap<String, Boolean>(excludeFilterFiles);
-            dup.excludeBugsFiles = new TreeMap<String, Boolean>(excludeBugsFiles);
-            dup.customPlugins = new TreeMap<String, Boolean>(customPlugins);
+            dup.includeFilterFiles = new TreeMap<>(includeFilterFiles);
+            dup.excludeFilterFiles = new TreeMap<>(excludeFilterFiles);
+            dup.excludeBugsFiles = new TreeMap<>(excludeBugsFiles);
+            dup.customPlugins = new TreeMap<>(customPlugins);
             return dup;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
@@ -629,7 +629,7 @@ public class UserPreferences implements Cloneable {
      */
     public Set<String> getCustomPlugins(boolean enabled){
         Set<Entry<String, Boolean>> entrySet = customPlugins.entrySet();
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         for (Entry<String, Boolean> entry : entrySet) {
             if(enabled) {
                 if(entry.getValue() != null && entry.getValue().booleanValue()) {
@@ -656,7 +656,7 @@ public class UserPreferences implements Cloneable {
      * @return The array of Strings, or an empty array if no values exist.
      */
     private static Map<String, Boolean> readProperties(Properties props, String keyPrefix) {
-        Map<String, Boolean> filters = new TreeMap<String, Boolean>();
+        Map<String, Boolean> filters = new TreeMap<>();
         int counter = 0;
         boolean keyFound = true;
         while (keyFound) {

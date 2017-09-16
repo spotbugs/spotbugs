@@ -40,9 +40,9 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
     static final int doNotConsider = Const.ACC_PRIVATE | Const.ACC_STATIC | Const.ACC_NATIVE;
 
     // Maps of property names to get and set methods
-    private final HashMap<String, MethodAnnotation> getMethods = new HashMap<String, MethodAnnotation>();
+    private final HashMap<String, MethodAnnotation> getMethods = new HashMap<>();
 
-    private final HashMap<String, MethodAnnotation> setMethods = new HashMap<String, MethodAnnotation>();
+    private final HashMap<String, MethodAnnotation> setMethods = new HashMap<>();
 
     public FindUnsyncGet(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -52,7 +52,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
     public void report() {
         // Find the set of properties for which we have both
         // unsynchronized get and synchronized set methods
-        Set<String> commonProperties = new HashSet<String>(getMethods.keySet());
+        Set<String> commonProperties = new HashSet<>(getMethods.keySet());
         commonProperties.retainAll(setMethods.keySet());
 
         // Report method pairs

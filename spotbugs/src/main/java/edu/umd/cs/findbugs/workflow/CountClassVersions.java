@@ -53,7 +53,7 @@ public class CountClassVersions {
 
     public static List<String> readFrom(Reader r) throws IOException {
         BufferedReader in = new BufferedReader(r);
-        List<String> lst = new LinkedList<String>();
+        List<String> lst = new LinkedList<>();
         while (true) {
             String s = in.readLine();
             if (s == null) {
@@ -114,7 +114,7 @@ public class CountClassVersions {
         }
         byte buffer[] = new byte[8192];
         MessageDigest digest = Util.getMD5Digest();
-        DualKeyHashMap<String, String, String> map = new DualKeyHashMap<String, String, String>();
+        DualKeyHashMap<String, String, String> map = new DualKeyHashMap<>();
 
         for (String fInName : fileList) {
             File f = new File(fInName);

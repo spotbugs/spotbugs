@@ -35,7 +35,7 @@ public class ObjectTypeFactory {
     private static ThreadLocal<Map<String, ObjectType>> instance = new ThreadLocal<Map<String, ObjectType>>() {
         @Override
         protected Map<String, ObjectType> initialValue() {
-            return new HashMap<String, ObjectType>();
+            return new HashMap<>();
         }
     };
 

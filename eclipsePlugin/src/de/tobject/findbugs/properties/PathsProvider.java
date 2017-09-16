@@ -65,7 +65,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
     protected PathsProvider(TableViewer viewer, FindbugsPropertyPage propertyPage) {
         this.propertyPage = propertyPage;
-        this.paths = new ArrayList<IPathElement>();
+        this.paths = new ArrayList<>();
         this.viewer = viewer;
         if(viewer instanceof CheckboxTableViewer) {
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
@@ -99,7 +99,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         paths.addAll(filterFiles);
         if(viewer instanceof CheckboxTableViewer) {
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
-            List<IPathElement> checked = new ArrayList<IPathElement>();
+            List<IPathElement> checked = new ArrayList<>();
             for (IPathElement pe : paths) {
                 if(pe.isEnabled()) {
                     checked.add(pe);
@@ -250,7 +250,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
 
     protected Map<String, Boolean> pathsToStrings() {
         IProject project = propertyPage.getProject();
-        Map<String, Boolean> result = new TreeMap<String, Boolean>();
+        Map<String, Boolean> result = new TreeMap<>();
         for (IPathElement path : paths) {
             if(path.isSystem()) {
                 if (!path.isEnabled()) {

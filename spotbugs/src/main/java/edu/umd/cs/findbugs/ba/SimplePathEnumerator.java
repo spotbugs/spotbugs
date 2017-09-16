@@ -74,7 +74,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
         this.maxPaths = maxPaths;
         this.maxWork = maxWork;
         this.work = 0;
-        this.pathList = new LinkedList<List<Edge>>();
+        this.pathList = new LinkedList<>();
     }
 
     /**
@@ -101,7 +101,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
         }
         Edge entryEdge = entryOut.next();
 
-        LinkedList<Edge> init = new LinkedList<Edge>();
+        LinkedList<Edge> init = new LinkedList<>();
         init.add(entryEdge);
 
         work(init);
@@ -128,7 +128,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 
         // Is this a complete path?
         if (last.getTarget() == cfg.getExit()) {
-            pathList.add(new LinkedList<Edge>(partialPath));
+            pathList.add(new LinkedList<>(partialPath));
             return;
         }
 

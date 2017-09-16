@@ -34,7 +34,7 @@ public class ByteCodePatternMatch {
 
     @Override
     public String toString() {
-        ArrayList<Integer> lst = new ArrayList<Integer>();
+        ArrayList<Integer> lst = new ArrayList<>();
         for (PatternElementMatch m : patternElementMatchList) {
             lst.add(m.getMatchedInstructionInstructionHandle().getPosition());
         }
@@ -44,7 +44,7 @@ public class ByteCodePatternMatch {
     public ByteCodePatternMatch(BindingSet bindingSet, PatternElementMatch lastElementMatch) {
         this.bindingSet = bindingSet;
         this.lastElementMatch = lastElementMatch;
-        this.patternElementMatchList = new LinkedList<PatternElementMatch>();
+        this.patternElementMatchList = new LinkedList<>();
 
         // The PatternElementMatch objects are stored in reverse order.
         // So, put them in a LinkedList to get them in the right order.

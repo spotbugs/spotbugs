@@ -135,8 +135,8 @@ public class SourceFinder {
 
     private static class InMemorySourceRepository implements SourceRepository {
 
-        Map<String, byte[]> contents = new HashMap<String, byte[]>();
-        Map<String, Long> lastModified = new HashMap<String, Long>();
+        Map<String, byte[]> contents = new HashMap<>();
+        Map<String, Long> lastModified = new HashMap<>();
 
         InMemorySourceRepository(@WillClose ZipInputStream in) throws IOException {
             try {
@@ -582,7 +582,7 @@ public class SourceFinder {
 
     private void setProject(Project project) {
         this.project = project;
-        repositoryList = new LinkedList<SourceRepository>();
+        repositoryList = new LinkedList<>();
         cache = new Cache();
         setSourceBaseList(project.getResolvedSourcePaths());
     }

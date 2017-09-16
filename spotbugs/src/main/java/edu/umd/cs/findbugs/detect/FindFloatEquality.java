@@ -53,7 +53,7 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
-    Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
+    Collection<SourceLineAnnotation> found = new LinkedList<>();
 
     @Override
     public void visit(Code obj) {

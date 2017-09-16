@@ -73,8 +73,8 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
     // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        foundModel = new DefaultListModel<String>();
-        progressModel = new DefaultListModel<String>();
+        foundModel = new DefaultListModel<>();
+        progressModel = new DefaultListModel<>();
         contentPanel = new javax.swing.JPanel();
         secondPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();

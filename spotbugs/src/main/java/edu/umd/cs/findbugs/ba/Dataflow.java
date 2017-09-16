@@ -207,7 +207,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 if (DEBUG) {
                     System.out.println("Trying program order");
                 }
-                TreeSet<BasicBlock> bb = new TreeSet<BasicBlock>(new BackwardProgramOrder());
+                TreeSet<BasicBlock> bb = new TreeSet<>(new BackwardProgramOrder());
                 Iterator<BasicBlock> j = blockOrder.blockIterator();
                 while (j.hasNext()) {
                     BasicBlock block = j.next();

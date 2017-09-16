@@ -94,10 +94,10 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
         this.streamFactoryList = streamFactoryList;
         this.lookupFailureCallback = lookupFailureCallback;
-        this.streamOpenLocationMap = new HashMap<Location, Stream>();
-        this.uninterestingStreamEscapeSet = new HashSet<Stream>();
-        this.streamEscapeSet = new TreeSet<StreamEscape>();
-        this.streamEquivalenceMap = new HashMap<Stream, StreamEquivalenceClass>();
+        this.streamOpenLocationMap = new HashMap<>();
+        this.uninterestingStreamEscapeSet = new HashSet<>();
+        this.streamEscapeSet = new TreeSet<>();
+        this.streamEquivalenceMap = new HashMap<>();
     }
 
     /**
@@ -154,7 +154,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         // Starting with the set of uninteresting stream open location points,
         // propagate all uninteresting stream escapes. Iterate until there
         // is no change. This also builds the map of stream equivalence classes.
-        Set<Stream> orig = new HashSet<Stream>();
+        Set<Stream> orig = new HashSet<>();
         do {
             orig.clear();
             orig.addAll(uninterestingStreamEscapeSet);

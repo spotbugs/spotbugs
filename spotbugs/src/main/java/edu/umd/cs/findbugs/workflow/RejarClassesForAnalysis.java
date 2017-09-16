@@ -224,7 +224,7 @@ public class RejarClassesForAnalysis {
         readFrom(result, UserTextFile.bufferedReader(System.in));
     }
 
-    SortedMap<String, ZipOutputStream> analysisOutputFiles = new TreeMap<String, ZipOutputStream>();
+    SortedMap<String, ZipOutputStream> analysisOutputFiles = new TreeMap<>();
 
     public @Nonnull
     ZipOutputStream getZipOutputFile(String path) {
@@ -283,13 +283,13 @@ public class RejarClassesForAnalysis {
     }
 
     /** For each file, give the latest timestamp */
-    Map<String, Long> copied = new HashMap<String, Long>();
+    Map<String, Long> copied = new HashMap<>();
     /** While file should we copy it from */
-    Map<String, File> copyFrom = new HashMap<String, File>();
+    Map<String, File> copyFrom = new HashMap<>();
 
-    Set<String> excluded = new HashSet<String>();
+    Set<String> excluded = new HashSet<>();
 
-    TreeSet<String> filesToAnalyze = new TreeSet<String>();
+    TreeSet<String> filesToAnalyze = new TreeSet<>();
 
     int numFilesToAnalyze = 0;
 
@@ -323,7 +323,7 @@ public class RejarClassesForAnalysis {
     boolean classFileFound;
     public void execute() throws IOException {
 
-        ArrayList<String> fileList = new ArrayList<String>();
+        ArrayList<String> fileList = new ArrayList<>();
 
         if (commandLine.inputFileList != null) {
             readFrom(fileList, UTF8.fileReader(commandLine.inputFileList));
@@ -332,14 +332,14 @@ public class RejarClassesForAnalysis {
         } else {
             fileList.addAll(Arrays.asList(args).subList(argCount, args.length));
         }
-        ArrayList<String> auxFileList = new ArrayList<String>();
+        ArrayList<String> auxFileList = new ArrayList<>();
         if (commandLine.auxFileList != null) {
             readFrom(auxFileList, UTF8.fileReader(commandLine.auxFileList));
             auxFileList.removeAll(fileList);
         }
 
-        List<File> inputZipFiles = new ArrayList<File>(fileList.size());
-        List<File> auxZipFiles = new ArrayList<File>(auxFileList.size());
+        List<File> inputZipFiles = new ArrayList<>(fileList.size());
+        List<File> auxZipFiles = new ArrayList<>(auxFileList.size());
         for (String fInName : fileList) {
             final File f = new File(fInName);
             if (f.lastModified() < commandLine.maxAge) {

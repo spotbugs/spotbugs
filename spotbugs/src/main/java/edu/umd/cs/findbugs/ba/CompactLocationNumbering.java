@@ -40,8 +40,8 @@ public class CompactLocationNumbering {
      *            the CFG containing the Locations to number
      */
     public CompactLocationNumbering(CFG cfg) {
-        this.locationToNumberMap = new HashMap<Location, Integer>();
-        this.numberToLocationMap = new HashMap<Integer, Location>();
+        this.locationToNumberMap = new HashMap<>();
+        this.numberToLocationMap = new HashMap<>();
         build(cfg);
     }
 

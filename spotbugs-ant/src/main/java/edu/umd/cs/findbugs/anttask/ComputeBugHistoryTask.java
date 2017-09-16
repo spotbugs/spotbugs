@@ -50,7 +50,7 @@ public class ComputeBugHistoryTask extends AbstractFindBugsTask {
 
     public ComputeBugHistoryTask() {
         super("edu.umd.cs.findbugs.workflow.Update");
-        dataFileList = new LinkedList<DataFile>();
+        dataFileList = new LinkedList<>();
 
         setFailOnError(true);
     }

@@ -117,7 +117,7 @@ public class LoadOfKnownNullValue implements Detector {
             }
         }
 
-        IdentityHashMap<InstructionHandle, Object> sometimesGood = new IdentityHashMap<InstructionHandle, Object>();
+        IdentityHashMap<InstructionHandle, Object> sometimesGood = new IdentityHashMap<>();
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();

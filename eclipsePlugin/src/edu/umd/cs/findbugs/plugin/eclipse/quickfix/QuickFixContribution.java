@@ -49,7 +49,7 @@ public class QuickFixContribution {
     }
 
     private static Map<String, String> convertToMap(Set<String> args) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         for (String keyValue : args) {
             String[] keyValueArr = keyValue.split("\\s*=\\s*");
             if(keyValueArr.length > 1) {

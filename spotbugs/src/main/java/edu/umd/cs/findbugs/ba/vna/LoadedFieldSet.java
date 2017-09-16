@@ -71,8 +71,8 @@ public class LoadedFieldSet {
      */
     public LoadedFieldSet(MethodGen methodGen) {
         // this.methodGen = methodGen;
-        this.loadStoreCountMap = new HashMap<XField, LoadStoreCount>();
-        this.handleToFieldMap = new HashMap<InstructionHandle, XField>();
+        this.loadStoreCountMap = new HashMap<>();
+        this.handleToFieldMap = new HashMap<>();
         this.loadHandleSet = new BitSet();
     }
 

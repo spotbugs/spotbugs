@@ -52,7 +52,7 @@ public class RegenerateClassFeatures {
         bugCollection.clearClassFeatures();
 
 
-        ArrayList<JavaClass> classList = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> classList = new ArrayList<>();
 
         try (ZipFile zipFile = new ZipFile(jarFile)){
 

@@ -61,7 +61,7 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
         // Get all vertices to which we have outgoing edges
         // or from which we have incoming edges, since they'll need
         // to be fixed
-        TreeSet<EdgeType> edgeSet = new TreeSet<EdgeType>();
+        TreeSet<EdgeType> edgeSet = new TreeSet<>();
         for (Iterator<EdgeType> i = g.edgeIterator(); i.hasNext();) {
             EdgeType e = i.next();
             if (vertexSet.contains(e.getSource()) || vertexSet.contains(e.getTarget())) {

@@ -67,7 +67,7 @@ public class UnconditionalValueDerefSet {
     public UnconditionalValueDerefSet(int numValueNumbersInMethod) {
         this.numValueNumbersInMethod = numValueNumbersInMethod;
         this.valueNumbersUnconditionallyDereferenced = new BitSet();
-        this.derefLocationSetMap = new HashMap<ValueNumber, Set<Location>>(3);
+        this.derefLocationSetMap = new HashMap<>(3);
 
     }
 
@@ -189,7 +189,7 @@ public class UnconditionalValueDerefSet {
                     // this value number.
                     Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
                     if (derefLocationSet == null) {
-                        derefLocationSet = new HashSet<Location>();
+                        derefLocationSet = new HashSet<>();
                         derefLocationSetMap.put(vn, derefLocationSet);
                     }
                     derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
@@ -223,12 +223,12 @@ public class UnconditionalValueDerefSet {
                 // this value number.
                 Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
                 if (derefLocationSet == null) {
-                    derefLocationSet = new HashSet<Location>();
+                    derefLocationSet = new HashSet<>();
                     derefLocationSetMap.put(vn, derefLocationSet);
                 }
                 derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
             } else {
-                derefLocationSetMap.put(vn, new HashSet<Location>(fact.getDerefLocationSet(vn)));
+                derefLocationSetMap.put(vn, new HashSet<>(fact.getDerefLocationSet(vn)));
             }
         }
     }
@@ -295,7 +295,7 @@ public class UnconditionalValueDerefSet {
     public Set<Location> getDerefLocationSet(ValueNumber vn) {
         Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
         if (derefLocationSet == null) {
-            derefLocationSet = new HashSet<Location>();
+            derefLocationSet = new HashSet<>();
             derefLocationSetMap.put(vn, derefLocationSet);
         }
         return derefLocationSet;
@@ -315,7 +315,7 @@ public class UnconditionalValueDerefSet {
     }
 
     public Set<ValueNumber> getValueNumbersThatAreUnconditionallyDereferenced() {
-        HashSet<ValueNumber> result = new HashSet<ValueNumber>();
+        HashSet<ValueNumber> result = new HashSet<>();
         for (Map.Entry<ValueNumber, Set<Location>> e : derefLocationSetMap.entrySet()) {
             if (!e.getValue().isEmpty()) {
                 result.add(e.getKey());
@@ -385,7 +385,7 @@ public class UnconditionalValueDerefSet {
             } else {
                 buf.append('?');
             }
-            TreeSet<Location> derefLocationSet = new TreeSet<Location>();
+            TreeSet<Location> derefLocationSet = new TreeSet<>();
             derefLocationSet.addAll(getDerefLocationSet(i));
             boolean firstLoc = true;
             for (Location location : derefLocationSet) {
@@ -408,7 +408,7 @@ public class UnconditionalValueDerefSet {
                 return Collections.<Location> unmodifiableSet(entry.getValue());
             }
         }
-        return new HashSet<Location>();
+        return new HashSet<>();
     }
 
     /**
@@ -417,7 +417,7 @@ public class UnconditionalValueDerefSet {
      */
     public void cleanDerefSet(@CheckForNull Location location, ValueNumberFrame vnaFrame) {
 
-        Set<ValueNumber> valueNumbers = new HashSet<ValueNumber>(vnaFrame.allSlots());
+        Set<ValueNumber> valueNumbers = new HashSet<>(vnaFrame.allSlots());
 
         valueNumbers.addAll(vnaFrame.valueNumbersForLoads());
 

@@ -51,7 +51,7 @@ public class NonExceptionPostdominatorsAnalysisFactory extends AnalysisFactory<N
         ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(analysisCache, descriptor);
         NonExceptionPostdominatorsAnalysis analysis = new NonExceptionPostdominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(
                 analysisCache, descriptor));
-        Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg,
+        Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<>(cfg,
                 analysis);
         dataflow.execute();
         return analysis;

@@ -270,7 +270,7 @@ public enum GroupType {
     }
 
     public static List<GroupType> getVisible() {
-        List<GroupType> visible = new ArrayList<GroupType>();
+        List<GroupType> visible = new ArrayList<>();
         GroupType[] values = values();
         for (GroupType type : values) {
             if (type.isVisible()) {

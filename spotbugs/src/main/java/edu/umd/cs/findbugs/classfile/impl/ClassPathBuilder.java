@@ -125,7 +125,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
         public DiscoveredCodeBase(ICodeBase codeBase) {
             this.codeBase = codeBase;
-            this.resourceList = new LinkedList<ICodeBaseEntry>();
+            this.resourceList = new LinkedList<>();
         }
 
         public ICodeBase getCodeBase() {
@@ -185,10 +185,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
     ClassPathBuilder(IClassFactory classFactory, IErrorLogger errorLogger) {
         this.classFactory = classFactory;
         this.errorLogger = errorLogger;
-        this.projectWorkList = new LinkedList<WorkListItem>();
-        this.discoveredCodeBaseList = new LinkedList<DiscoveredCodeBase>();
-        this.discoveredCodeBaseMap = new HashMap<String, DiscoveredCodeBase>();
-        this.appClassList = new LinkedList<ClassDescriptor>();
+        this.projectWorkList = new LinkedList<>();
+        this.discoveredCodeBaseList = new LinkedList<>();
+        this.discoveredCodeBaseMap = new HashMap<>();
+        this.appClassList = new LinkedList<>();
     }
 
     /*
@@ -240,7 +240,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
             classPath.addCodeBase(discoveredCodeBase.getCodeBase());
         }
 
-        Set<ClassDescriptor> appClassSet = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> appClassSet = new HashSet<>();
 
         // Build collection of all application classes.
         // Also, add resource name -> codebase entry mappings for application
@@ -343,7 +343,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         String findbugsFullJar = ClassPathUtil.findCodeBaseInClassPath("findbugs-full.jar",
                 SystemProperties.getProperty("java.class.path"));
 
-        LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+        LinkedList<WorkListItem> workList = new LinkedList<>();
         if (findbugsFullJar != null) {
             //
             // Found findbugs-full.jar: add it to the aux classpath.
@@ -384,7 +384,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         // org.apache.bcel.util.ClassPath.getClassPath()
         // method.
 
-        LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+        LinkedList<WorkListItem> workList = new LinkedList<>();
 
         String bootClassPath = SystemProperties.getProperty("sun.boot.class.path");
         // Seed worklist with system codebases.
@@ -431,7 +431,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
     }
 
     private LinkedList<WorkListItem> createFindBugsLibWorkList(String jarFileName) {
-        LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+        LinkedList<WorkListItem> workList = new LinkedList<>();
 
         boolean found = false;
 

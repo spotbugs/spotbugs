@@ -71,19 +71,19 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class XFactory {
     public static final boolean DEBUG_UNRESOLVED = SystemProperties.getBoolean("findbugs.xfactory.debugunresolved");
 
-    private final Set<ClassDescriptor> reflectiveClasses = new HashSet<ClassDescriptor>();
+    private final Set<ClassDescriptor> reflectiveClasses = new HashSet<>();
 
-    private final Map<MethodDescriptor, XMethod> methods = new HashMap<MethodDescriptor, XMethod>();
+    private final Map<MethodDescriptor, XMethod> methods = new HashMap<>();
 
-    private final Map<FieldDescriptor, XField> fields = new HashMap<FieldDescriptor, XField>();
+    private final Map<FieldDescriptor, XField> fields = new HashMap<>();
 
-    private final Set<XMethod> calledMethods = new HashSet<XMethod>();
+    private final Set<XMethod> calledMethods = new HashSet<>();
 
-    private final Set<XField> emptyArrays = new HashSet<XField>();
+    private final Set<XField> emptyArrays = new HashSet<>();
 
-    private final Set<String> calledMethodSignatures = new HashSet<String>();
+    private final Set<String> calledMethodSignatures = new HashSet<>();
 
-    private final Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<MethodDescriptor>();
+    private final Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<>();
 
     public void canonicalizeAll() {
         DescriptorFactory descriptorFactory = DescriptorFactory.instance();
@@ -566,7 +566,7 @@ public class XFactory {
 
     private XField resolveXField(FieldDescriptor originalDescriptor) {
         FieldDescriptor desc = originalDescriptor;
-        LinkedList<ClassDescriptor> worklist = new LinkedList<ClassDescriptor>();
+        LinkedList<ClassDescriptor> worklist = new LinkedList<>();
         ClassDescriptor originalClassDescriptor = desc.getClassDescriptor();
         worklist.add(originalClassDescriptor);
         try {

@@ -31,8 +31,8 @@ public class ExceptionSetFactory {
     private final ArrayList<ObjectType> typeList;
 
     public ExceptionSetFactory() {
-        this.typeIndexMap = new HashMap<ObjectType, Integer>();
-        this.typeList = new ArrayList<ObjectType>();
+        this.typeIndexMap = new HashMap<>();
+        this.typeList = new ArrayList<>();
     }
 
     public ExceptionSet createExceptionSet() {

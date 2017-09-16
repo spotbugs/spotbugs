@@ -59,7 +59,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
      * @return the value number to parameter index map
      */
     public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
-        HashMap<ValueNumber, Integer> valueNumberToParamMap = new HashMap<ValueNumber, Integer>();
+        HashMap<ValueNumber, Integer> valueNumberToParamMap = new HashMap<>();
 
         ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 

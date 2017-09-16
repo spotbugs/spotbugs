@@ -100,9 +100,9 @@ public class BugSet implements Iterable<BugLeafNode> {
      * @param filteredSet
      */
     BugSet(Collection<? extends BugLeafNode> filteredSet) {
-        this.mainList = new ArrayList<BugLeafNode>(filteredSet);
-        doneMap = new HashMap<SortableValue, BugSet>();
-        doneContainsMap = new HashMap<SortableValue, Boolean>();
+        this.mainList = new ArrayList<>(filteredSet);
+        doneMap = new HashMap<>();
+        doneContainsMap = new HashMap<>();
         cacheSortables();
     }
 
@@ -137,7 +137,7 @@ public class BugSet implements Iterable<BugLeafNode> {
      * the results.
      */
     void cacheSortables() {
-        sortablesToStrings = new HashMap<Sortables, String[]>();
+        sortablesToStrings = new HashMap<>();
     }
 
     String[] getDistinctValues(Sortables key) {
@@ -157,7 +157,7 @@ public class BugSet implements Iterable<BugLeafNode> {
             return EMPTY_STRING_ARRAY;
         }
 
-        Collection<String> list = new HashSet<String>();
+        Collection<String> list = new HashSet<>();
 
         for (BugLeafNode p : mainList) {
             if (suppress(p)) {
@@ -198,8 +198,8 @@ public class BugSet implements Iterable<BugLeafNode> {
     // Note: THIS CLEARS THE CACHES OF DONE SETS!
     BugSet(BugSet copySet) {
         this.mainList = copySet.mainList;
-        doneMap = new HashMap<SortableValue, BugSet>();
-        doneContainsMap = new HashMap<SortableValue, Boolean>();
+        doneMap = new HashMap<>();
+        doneContainsMap = new HashMap<>();
         cacheSortables();
     }
 
@@ -219,7 +219,7 @@ public class BugSet implements Iterable<BugLeafNode> {
         if (doneMap.containsKey(keyValuePair)) {
             return doneMap.get(keyValuePair);
         }
-        ArrayList<BugLeafNode> bugs = new ArrayList<BugLeafNode>();
+        ArrayList<BugLeafNode> bugs = new ArrayList<>();
 
         for (BugLeafNode b : mainList) {
             if (b.matches(keyValuePair)) {
@@ -291,7 +291,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
             }
         };
-        ArrayList<BugLeafNode> copy = new ArrayList<BugLeafNode>(mainList);
+        ArrayList<BugLeafNode> copy = new ArrayList<>(mainList);
         Collections.sort(copy, comparator);
         mainList = copy;
 
@@ -367,9 +367,9 @@ public class BugSet implements Iterable<BugLeafNode> {
     // //////Filtered API
 
     BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables) {
-        this.mainList = new ArrayList<BugLeafNode>(filteredSet);
-        doneMap = new HashMap<SortableValue, BugSet>();
-        doneContainsMap = new HashMap<SortableValue, Boolean>();
+        this.mainList = new ArrayList<>(filteredSet);
+        doneMap = new HashMap<>();
+        doneContainsMap = new HashMap<>();
         if (cacheSortables) {
             cacheSortables();
         }
@@ -377,7 +377,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     private BugSet filteredBugsNoCache() {
 
-        ArrayList<BugLeafNode> people = new ArrayList<BugLeafNode>();
+        ArrayList<BugLeafNode> people = new ArrayList<>();
         for (BugLeafNode p : mainList) {
             if (!suppress(p)) {
                 people.add(p);
@@ -400,7 +400,7 @@ public class BugSet implements Iterable<BugLeafNode> {
     }
 
     public BugSet getBugsMatchingFilter(Matcher m) {
-        ArrayList<BugLeafNode> people = new ArrayList<BugLeafNode>();
+        ArrayList<BugLeafNode> people = new ArrayList<>();
         for (BugLeafNode p : mainList) {
             if (!(m.match(p.getBug()))) {
                 people.add(p);

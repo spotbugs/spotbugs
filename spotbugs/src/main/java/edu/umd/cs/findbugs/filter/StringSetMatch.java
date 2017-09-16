@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
  * @author rak
  */
 public class StringSetMatch {
-    private final Set<String> strings = new HashSet<String>();
+    private final Set<String> strings = new HashSet<>();
 
     @Override
     public int hashCode() {

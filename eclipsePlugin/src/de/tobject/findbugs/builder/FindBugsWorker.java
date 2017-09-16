@@ -371,7 +371,7 @@ public class FindBugsWorker {
     }
 
     private Map<String, Boolean> relativeToAbsolute(Map<String, Boolean> map) {
-        Map<String, Boolean> resultMap = new TreeMap<String, Boolean>();
+        Map<String, Boolean> resultMap = new TreeMap<>();
         for (Entry<String, Boolean> entry : map.entrySet()) {
             if(!entry.getValue().booleanValue()) {
                 continue;
@@ -484,7 +484,7 @@ public class FindBugsWorker {
      */
     private Map<IPath, IPath> createOutputLocations() throws CoreException {
 
-        Map<IPath, IPath> srcToOutputMap = new HashMap<IPath, IPath>();
+        Map<IPath, IPath> srcToOutputMap = new HashMap<>();
 
         // get the default location => relative to wsp
         IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject.getOutputLocation());

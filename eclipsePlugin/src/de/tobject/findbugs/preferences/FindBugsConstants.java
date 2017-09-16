@@ -128,7 +128,7 @@ public final class FindBugsConstants {
     }
 
     public static Set<String> decodeIds(String text) {
-        Set<String> sortedIds = new TreeSet<String>();
+        Set<String> sortedIds = new TreeSet<>();
         if (text == null || text.trim().length() == 0) {
             return sortedIds;
         }

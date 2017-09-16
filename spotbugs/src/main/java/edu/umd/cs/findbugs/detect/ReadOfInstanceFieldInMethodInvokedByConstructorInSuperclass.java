@@ -60,8 +60,8 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
         if (getMethod().isStatic()) {
             return;
         }
-        initializedFields = new HashSet<XField>();
-        nullCheckedFields = new HashSet<XField>();
+        initializedFields = new HashSet<>();
+        nullCheckedFields = new HashSet<>();
         super.visit(obj);
         accumulator.reportAccumulatedBugs();
     }

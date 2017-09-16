@@ -240,12 +240,12 @@ public class TypeQualifierValue<A extends Annotation> {
         /**
          * Cache in which constructed TypeQualifierValues are interned.
          */
-        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> typeQualifierMap = new DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>>();
+        DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> typeQualifierMap = new DualKeyHashMap<>();
 
         /**
          * Set of all known TypeQualifierValues.
          */
-        Set<TypeQualifierValue<?>> allKnownTypeQualifiers = new HashSet<TypeQualifierValue<?>>();
+        Set<TypeQualifierValue<?>> allKnownTypeQualifiers = new HashSet<>();
     }
 
     private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
@@ -332,7 +332,7 @@ public class TypeQualifierValue<A extends Annotation> {
     public static Collection<TypeQualifierValue<?>> getComplementaryExclusiveTypeQualifierValue(TypeQualifierValue<?> tqv) {
         assert tqv.isExclusiveQualifier();
 
-        LinkedList<TypeQualifierValue<?>> result = new LinkedList<TypeQualifierValue<?>>();
+        LinkedList<TypeQualifierValue<?>> result = new LinkedList<>();
 
         for (TypeQualifierValue<?> t : instance.get().allKnownTypeQualifiers) {
             //

@@ -59,7 +59,7 @@ public final class SourceCodeDisplay implements Runnable {
 
     private int currentChar = -1; // for find
 
-    private final Map<String, SoftReference<JavaSourceDocument>> map = new HashMap<String, SoftReference<JavaSourceDocument>>();
+    private final Map<String, SoftReference<JavaSourceDocument>> map = new HashMap<>();
 
     SourceCodeDisplay(MainFrame frame) {
         this.frame = frame;
@@ -78,7 +78,7 @@ public final class SourceCodeDisplay implements Runnable {
         final SourceLineAnnotation source;
     }
 
-    final BlockingQueue<DisplayMe> queue = new   LinkedBlockingQueue<DisplayMe>();
+    final BlockingQueue<DisplayMe> queue = new   LinkedBlockingQueue<>();
 
     public  void displaySource(BugInstance bug, SourceLineAnnotation source) {
         queue.add(new DisplayMe(bug, source));
@@ -108,7 +108,7 @@ public final class SourceCodeDisplay implements Runnable {
                 result = JavaSourceDocument.UNKNOWNSOURCE;
                 Debug.println(e); // e.printStackTrace();
             }
-            map.put(fullFileName, new SoftReference<JavaSourceDocument>(result));
+            map.put(fullFileName, new SoftReference<>(result));
             return result;
         } catch (Exception e) {
             Debug.println(e); // e.printStackTrace();
@@ -192,7 +192,7 @@ public final class SourceCodeDisplay implements Runnable {
             frame.setSourceTab(sourceFile + " in " + mySourceLine.getPackageName(), myBug);
 
             int originLine = (startLine + endLine) / 2;
-            LinkedList<Integer> otherLines = new LinkedList<Integer>();
+            LinkedList<Integer> otherLines = new LinkedList<>();
             // show(frame.getSourceCodeTextPane(), document,
             // thisSource);
             for (Iterator<BugAnnotation> i = myBug.annotationIterator(); i.hasNext();) {

@@ -135,9 +135,9 @@ public class GUISaveState {
 
     private int packagePrefixSegments;
 
-    private List<String> enabledPlugins = new ArrayList<String>();
-    private List<String> disabledPlugins = new ArrayList<String>();
-    private final LinkedHashSet<URI> customPlugins = new LinkedHashSet<URI>();
+    private List<String> enabledPlugins = new ArrayList<>();
+    private List<String> disabledPlugins = new ArrayList<>();
+    private final LinkedHashSet<URI> customPlugins = new LinkedHashSet<>();
 
     private static String[] generateSorterKeys(int numSorters) {
         String[] result = new String[numSorters];
@@ -156,7 +156,7 @@ public class GUISaveState {
 
     public static void loadInstance() {
         GUISaveState newInstance = new GUISaveState();
-        newInstance.recentFiles = new ArrayList<File>();
+        newInstance.recentFiles = new ArrayList<>();
         Preferences p = Preferences.userNodeForPackage(GUISaveState.class);
 
         newInstance.tabSize = p.getInt(TAB_SIZE, 4);
@@ -180,7 +180,7 @@ public class GUISaveState {
 
         int sorterSize = p.getInt(GUISaveState.SORTERTABLELENGTH, -1);
         if (sorterSize != -1) {
-            ArrayList<Sortables> sortColumns = new ArrayList<Sortables>();
+            ArrayList<Sortables> sortColumns = new ArrayList<>();
             String[] sortKeys = GUISaveState.generateSorterKeys(sorterSize);
             for (int x = 0; x < sorterSize; x++) {
                 Sortables s = Sortables.getSortableByPrettyName(p.get(sortKeys[x], "*none*"));
@@ -196,7 +196,7 @@ public class GUISaveState {
             }
             if (!newInstance.useDefault) {
                 // add in default columns
-                Set<Sortables> missingSortColumns = new HashSet<Sortables>(Arrays.asList(DEFAULT_COLUMN_HEADERS));
+                Set<Sortables> missingSortColumns = new HashSet<>(Arrays.asList(DEFAULT_COLUMN_HEADERS));
                 missingSortColumns.removeAll(sortColumns);
                 sortColumns.addAll(missingSortColumns);
                 newInstance.sortColumns = sortColumns.toArray(new Sortables[sortColumns.size()]);
@@ -266,8 +266,8 @@ public class GUISaveState {
 
         String enabledPluginsString = p.get(ENABLED_PLUGINS, "");
         String disabledPluginsString = p.get(DISABLED_PLUGINS, "");
-        newInstance.enabledPlugins = new ArrayList<String>(Arrays.asList(enabledPluginsString.split(",")));
-        newInstance.disabledPlugins = new ArrayList<String>(Arrays.asList(disabledPluginsString.split(",")));
+        newInstance.enabledPlugins = new ArrayList<>(Arrays.asList(enabledPluginsString.split(",")));
+        newInstance.disabledPlugins = new ArrayList<>(Arrays.asList(disabledPluginsString.split(",")));
 
         instance = newInstance;
     }
@@ -283,8 +283,8 @@ public class GUISaveState {
     }
 
     private GUISaveState() {
-        recentFiles = new ArrayList<File>();
-        previousComments = new LinkedList<String>();
+        recentFiles = new ArrayList<>();
+        previousComments = new LinkedList<>();
     }
 
     public int getTabSize() {
@@ -529,8 +529,8 @@ public class GUISaveState {
     }
 
     public void setPluginsEnabled(List<String> enabledPlugins, List<String> disabledPlugins) {
-        this.enabledPlugins = new ArrayList<String>(enabledPlugins);
-        this.disabledPlugins = new ArrayList<String>(disabledPlugins);
+        this.enabledPlugins = new ArrayList<>(enabledPlugins);
+        this.disabledPlugins = new ArrayList<>(disabledPlugins);
     }
 
     public void setPluginEnabled(String url) {

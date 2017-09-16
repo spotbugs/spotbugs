@@ -48,7 +48,7 @@ public class MergeTree {
      */
     public MergeTree(ValueNumberFactory factory) {
         this.factory = factory;
-        this.outputToInputMap = new HashMap<ValueNumber, BitSet>();
+        this.outputToInputMap = new HashMap<>();
     }
 
     /**
@@ -104,7 +104,7 @@ public class MergeTree {
             System.out.println("Output: " + output.getNumber());
         }
 
-        LinkedList<ValueNumber> workList = new LinkedList<ValueNumber>();
+        LinkedList<ValueNumber> workList = new LinkedList<>();
         workList.addLast(output);
         while (!workList.isEmpty()) {
             ValueNumber valueNumber = workList.removeFirst();
@@ -137,7 +137,7 @@ public class MergeTree {
         BitSet visited = new BitSet();
         BitSet result = new BitSet();
 
-        LinkedList<Integer> workList = new LinkedList<Integer>();
+        LinkedList<Integer> workList = new LinkedList<>();
         workList.addLast(input);
         while (!workList.isEmpty()) {
             Integer valueNumber = workList.removeFirst();

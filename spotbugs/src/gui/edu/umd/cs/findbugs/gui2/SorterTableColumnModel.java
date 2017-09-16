@@ -57,15 +57,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class SorterTableColumnModel implements TableColumnModel {
 
-    private ArrayList<Sortables> order = new ArrayList<Sortables>();
+    private ArrayList<Sortables> order = new ArrayList<>();
 
-    private final Set<Sortables> shown = new HashSet<Sortables>();
+    private final Set<Sortables> shown = new HashSet<>();
 
-    private final ArrayList<TableColumn> columnList = new ArrayList<TableColumn>();
+    private final ArrayList<TableColumn> columnList = new ArrayList<>();
 
     private DefaultListSelectionModel dlsm;
 
-    private final ArrayList<TableColumnModelListener> watchers = new ArrayList<TableColumnModelListener>();
+    private final ArrayList<TableColumnModelListener> watchers = new ArrayList<>();
 
     private boolean frozen = false;
 
@@ -258,7 +258,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
         orderUpdate();
 
-        for (TableColumnModelListener w : new ArrayList<TableColumnModelListener>(watchers)) {
+        for (TableColumnModelListener w : new ArrayList<>(watchers)) {
             w.columnMoved(new TableColumnModelEvent(this, fromIndex, toIndex));
         }
     }
@@ -391,7 +391,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
     List<Sortables> getOrderAfterDivider() {
         if (!order.contains(Sortables.DIVIDER) || order.indexOf(Sortables.DIVIDER) == order.size() - 1) {
-            return new ArrayList<Sortables>();
+            return new ArrayList<>();
         }
 
         return order.subList(order.indexOf(Sortables.DIVIDER) + 1, order.size());
@@ -400,7 +400,7 @@ public class SorterTableColumnModel implements TableColumnModel {
     private void orderUpdate() {
         // order.clear();
         if (!frozen) {
-            order = new ArrayList<Sortables>();
+            order = new ArrayList<>();
             for (TableColumn c : columnList) {
                 order.add((Sortables) c.getIdentifier());
             }

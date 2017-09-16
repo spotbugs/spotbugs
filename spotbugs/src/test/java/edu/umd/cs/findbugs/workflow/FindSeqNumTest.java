@@ -24,9 +24,9 @@ public class FindSeqNumTest {
 
     @Before
     public void setUp() throws Exception {
-        versionNames = new HashMap<String, AppVersion>();
-        timeStamps = new TreeMap<Long, AppVersion>();
-        Set<AppVersion> versions = new HashSet<AppVersion>();
+        versionNames = new HashMap<>();
+        timeStamps = new TreeMap<>();
+        Set<AppVersion> versions = new HashSet<>();
         SimpleDateFormat format = new SimpleDateFormat("MMMMM dd, yyyy", Locale.ENGLISH);
         versions.add(new AppVersion(0, format.parse("June 1, 2005"), "v1.0"));
         versions.add(new AppVersion(1, format.parse("June 10, 2005"), "v1.1"));

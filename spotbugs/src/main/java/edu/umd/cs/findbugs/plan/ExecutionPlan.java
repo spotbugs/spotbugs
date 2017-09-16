@@ -70,7 +70,7 @@ public class ExecutionPlan {
      * Constructor. Creates an empty plan.
      */
     public ExecutionPlan() {
-        this.pluginList = new LinkedList<Plugin>();
+        this.pluginList = new LinkedList<>();
         this.factoryChooser = new DetectorFactoryChooser() {
             @Override
             public boolean choose(DetectorFactory factory) {
@@ -82,11 +82,11 @@ public class ExecutionPlan {
                 // OK...
             }
         };
-        this.passList = new LinkedList<AnalysisPass>();
-        this.factoryMap = new HashMap<String, DetectorFactory>();
-        this.interPassConstraintList = new LinkedList<DetectorOrderingConstraint>();
-        this.intraPassConstraintList = new LinkedList<DetectorOrderingConstraint>();
-        this.assignedToPassSet = new HashSet<DetectorFactory>();
+        this.passList = new LinkedList<>();
+        this.factoryMap = new HashMap<>();
+        this.interPassConstraintList = new LinkedList<>();
+        this.intraPassConstraintList = new LinkedList<>();
+        this.assignedToPassSet = new HashSet<>();
     }
 
     public void dispose() {
@@ -152,14 +152,14 @@ public class ExecutionPlan {
             detectorFactory.setEnabledButNonReporting(false);
         }
 
-        ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<DetectorOrderingConstraint>(
+        ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<>(
                 interPassConstraintList.size() + intraPassConstraintList.size());
         allConstraints.addAll(interPassConstraintList);
         allConstraints.addAll(intraPassConstraintList);
 
-        Map<String, DetectorNode> nodeMapAll = new HashMap<String, DetectorNode>();
+        Map<String, DetectorNode> nodeMapAll = new HashMap<>();
         ConstraintGraph allPassConstraintGraph = buildConstraintGraph(nodeMapAll,
-                new HashSet<DetectorFactory>(factoryMap.values()), allConstraints);
+                new HashSet<>(factoryMap.values()), allConstraints);
         boolean change;
         do {
             change = false;
@@ -198,9 +198,9 @@ public class ExecutionPlan {
         }
 
         // Build inter-pass constraint graph
-        Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
+        Map<String, DetectorNode> nodeMap = new HashMap<>();
         ConstraintGraph interPassConstraintGraph = buildConstraintGraph(nodeMap,
-                new HashSet<DetectorFactory>(factoryMap.values()), interPassConstraintList);
+                new HashSet<>(factoryMap.values()), interPassConstraintList);
         if (DEBUG) {
             System.out.println(interPassConstraintGraph.getNumVertices() + " nodes in inter-pass constraint graph");
         }
@@ -293,7 +293,7 @@ public class ExecutionPlan {
     }
 
     private Set<DetectorFactory> selectDetectors(DetectorFactorySelector selector, Set<DetectorFactory> candidateSet) {
-        Set<DetectorFactory> result = new HashSet<DetectorFactory>();
+        Set<DetectorFactory> result = new HashSet<>();
         for (DetectorFactory factory : candidateSet) {
             if (selector.selectFactory(factory)) {
                 result.add(factory);
@@ -304,7 +304,7 @@ public class ExecutionPlan {
 
     private Set<DetectorNode> addOrCreateDetectorNodes(DetectorFactorySelector selector, Map<String, DetectorNode> nodeMap,
             Set<DetectorFactory> factorySet, ConstraintGraph constraintGraph) {
-        HashSet<DetectorNode> result = new HashSet<DetectorNode>();
+        HashSet<DetectorNode> result = new HashSet<>();
 
         Set<DetectorFactory> chosenSet = selectDetectors(selector, factorySet);
 
@@ -348,7 +348,7 @@ public class ExecutionPlan {
 
         int passCount = 0;
         while (constraintGraph.getNumVertices() > 0) {
-            List<DetectorNode> inDegreeZeroList = new LinkedList<DetectorNode>();
+            List<DetectorNode> inDegreeZeroList = new LinkedList<>();
             // Get all of the detectors nodes with in-degree 0.
             // These have no unsatisfied prerequisites, and thus can
             // be chosen for the current pass.
@@ -401,13 +401,13 @@ public class ExecutionPlan {
             AnalysisPass pass) throws OrderingConstraintException {
 
         // Build set of all (initial) detectors in pass
-        Set<DetectorFactory> detectorSet = new HashSet<DetectorFactory>(pass.getMembers());
+        Set<DetectorFactory> detectorSet = new HashSet<>(pass.getMembers());
         if (DEBUG) {
             System.out.println(detectorSet.size() + " detectors currently in this pass");
         }
 
         // Build list of ordering constraints in this pass only
-        List<DetectorOrderingConstraint> passConstraintList = new LinkedList<DetectorOrderingConstraint>();
+        List<DetectorOrderingConstraint> passConstraintList = new LinkedList<>();
         for (DetectorOrderingConstraint constraint : constraintList) {
             // Does this constraint specify any detectors in this pass?
             // If so, add it to the pass constraints
@@ -421,12 +421,12 @@ public class ExecutionPlan {
         }
 
         // Build set of all detectors available to be added to this pass
-        HashSet<DetectorFactory> availableSet = new HashSet<DetectorFactory>();
+        HashSet<DetectorFactory> availableSet = new HashSet<>();
         availableSet.addAll(detectorSet);
         availableSet.addAll(getUnassignedSet());
 
         // Build intra-pass constraint graph
-        Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
+        Map<String, DetectorNode> nodeMap = new HashMap<>();
         ConstraintGraph constraintGraph = buildConstraintGraph(nodeMap, availableSet, passConstraintList);
         if (DEBUG) {
             System.out.println("Pass constraint graph:");
@@ -443,7 +443,7 @@ public class ExecutionPlan {
         }
 
         // Perform DFS, check for cycles
-        DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs = new DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode>(
+        DepthFirstSearch<ConstraintGraph, ConstraintEdge, DetectorNode> dfs = new DepthFirstSearch<>(
                 constraintGraph);
         dfs.search();
         if (dfs.containsCycle()) {
@@ -464,7 +464,7 @@ public class ExecutionPlan {
     }
 
     private Set<DetectorFactory> getUnassignedSet() {
-        Set<DetectorFactory> unassignedSet = new HashSet<DetectorFactory>();
+        Set<DetectorFactory> unassignedSet = new HashSet<>();
         unassignedSet.addAll(factoryMap.values());
         unassignedSet.removeAll(assignedToPassSet);
         return unassignedSet;

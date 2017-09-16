@@ -77,7 +77,7 @@ public class Analysis {
     public static Collection<TypeQualifierValue<?>> getRelevantTypeQualifiers(MethodDescriptor methodDescriptor, CFG cfg)
             throws CheckedAnalysisException {
 
-        final HashSet<TypeQualifierValue<?>> result = new HashSet<TypeQualifierValue<?>>();
+        final HashSet<TypeQualifierValue<?>> result = new HashSet<>();
 
         XMethod xmethod = XFactory.createXMethod(methodDescriptor);
 

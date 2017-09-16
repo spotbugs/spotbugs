@@ -100,9 +100,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        definedPrivateMethods = new HashSet<MethodAnnotation>();
-        calledMethods = new HashSet<MethodAnnotation>();
-        calledMethodNames = new HashSet<String>();
+        definedPrivateMethods = new HashSet<>();
+        calledMethods = new HashSet<>();
+        calledMethodNames = new HashSet<>();
         className = classContext.getJavaClass().getClassName();
         String[] parts = className.split("[$+.]");
         String simpleClassName = parts[parts.length - 1];

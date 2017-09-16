@@ -39,7 +39,7 @@ public class InterproceduralCallGraph extends AbstractGraph<InterproceduralCallG
      * Constructor.
      */
     public InterproceduralCallGraph() {
-        this.methodDescToVertexMap = new HashMap<MethodDescriptor, InterproceduralCallGraphVertex>();
+        this.methodDescToVertexMap = new HashMap<>();
     }
 
     /*

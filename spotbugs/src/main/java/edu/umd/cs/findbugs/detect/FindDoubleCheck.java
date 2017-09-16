@@ -46,9 +46,9 @@ public class FindDoubleCheck extends OpcodeStackDetector {
 
     boolean sawMonitorEnter;
 
-    Set<FieldAnnotation> fields = new HashSet<FieldAnnotation>();
+    Set<FieldAnnotation> fields = new HashSet<>();
 
-    Set<FieldAnnotation> twice = new HashSet<FieldAnnotation>();
+    Set<FieldAnnotation> twice = new HashSet<>();
 
     FieldAnnotation pendingFieldLoad;
 

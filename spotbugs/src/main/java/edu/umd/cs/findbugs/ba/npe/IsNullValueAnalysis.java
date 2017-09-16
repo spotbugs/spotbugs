@@ -114,7 +114,7 @@ IsNullValueAnalysisFeatures {
                 typeDataflow, trackValueNumbers);
         this.vnaDataflow = vnaDataflow;
         this.cfg = cfg;
-        this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
+        this.locationWhereValueBecomesNullSet = new HashSet<>();
         this.pointerEqualityCheck = getForPointerEqualityCheck(cfg, vnaDataflow);
 
         if (DEBUG) {

@@ -38,9 +38,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 public class CalledMethods extends BytecodeScanningDetector implements NonReportingDetector {
     boolean emptyArrayOnTOS;
 
-    HashSet<XField> emptyArray = new HashSet<XField>();
+    HashSet<XField> emptyArray = new HashSet<>();
 
-    HashSet<XField> nonEmptyArray = new HashSet<XField>();
+    HashSet<XField> nonEmptyArray = new HashSet<>();
 
     XFactory xFactory = AnalysisContext.currentXFactory();
 

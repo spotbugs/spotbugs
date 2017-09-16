@@ -7,7 +7,7 @@ import java.util.Properties;
 public class WriteOnceProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
-    private final Map<String, PropertyReadAt> propertReadAt = new HashMap<String, PropertyReadAt>();
+    private final Map<String, PropertyReadAt> propertReadAt = new HashMap<>();
 
     static class PropertyReadAt extends Exception {
         private static final long serialVersionUID = 1L;

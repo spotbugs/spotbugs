@@ -94,7 +94,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             this.entryLocalValueList[i] = factory.createFreshValue();
         }
 
-        this.exceptionHandlerValueNumberMap = new IdentityHashMap<BasicBlock, ValueNumber>();
+        this.exceptionHandlerValueNumberMap = new IdentityHashMap<>();
 
         // For non-static methods, keep track of which value represents the
         // "this" reference
@@ -102,8 +102,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             this.thisValue = entryLocalValueList[0];
         }
 
-        this.factAtLocationMap = new HashMap<Location, ValueNumberFrame>();
-        this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
+        this.factAtLocationMap = new HashMap<>();
+        this.factAfterLocationMap = new HashMap<>();
         if (DEBUG) {
             System.out.println("VNA Analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : "
                     + methodGen.getSignature());

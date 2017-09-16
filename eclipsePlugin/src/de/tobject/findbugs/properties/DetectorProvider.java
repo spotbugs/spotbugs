@@ -61,11 +61,11 @@ public class DetectorProvider extends PathsProvider {
      */
     public static List<IPathElement> getPluginElements(UserPreferences userPreferences) {
         DetectorValidator validator = new DetectorValidator();
-        final List<IPathElement> newPaths = new ArrayList<IPathElement>();
+        final List<IPathElement> newPaths = new ArrayList<>();
         Map<String, Boolean> pluginPaths = userPreferences.getCustomPlugins();
 
-        Set<String> disabledSystemPlugins = new HashSet<String>();
-        Set<URI> customPlugins = new HashSet<URI>();
+        Set<String> disabledSystemPlugins = new HashSet<>();
+        Set<URI> customPlugins = new HashSet<>();
         Set<Entry<String,Boolean>> entrySet = pluginPaths.entrySet();
         for (Entry<String, Boolean> entry : entrySet) {
             String idOrPath = entry.getKey();

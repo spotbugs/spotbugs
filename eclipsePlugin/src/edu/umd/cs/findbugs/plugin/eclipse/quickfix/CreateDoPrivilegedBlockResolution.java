@@ -93,7 +93,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
     private boolean staticImport = false;
 
-    private Comparator<ImportDeclaration> importComparator = new ImportDeclarationComparator<ImportDeclaration>();
+    private Comparator<ImportDeclaration> importComparator = new ImportDeclarationComparator<>();
 
     public CreateDoPrivilegedBlockResolution() {
         super();
@@ -243,7 +243,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
         if (isUpdateImports()) {
             final AST ast = rewrite.getAST();
-            SortedSet<ImportDeclaration> imports = new TreeSet<ImportDeclaration>(importComparator);
+            SortedSet<ImportDeclaration> imports = new TreeSet<>(importComparator);
             imports.add(createImportDeclaration(ast, PrivilegedAction.class));
             if (!isStaticImport()) {
                 imports.add(createImportDeclaration(ast, AccessController.class));
@@ -392,7 +392,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
     }
 
     private Set<String> findVariableReferences(List<?> arguments) {
-        final Set<String> refs = new HashSet<String>();
+        final Set<String> refs = new HashSet<>();
         for (Object argumentObj : arguments) {
             Expression argument = (Expression) argumentObj;
             argument.accept(new ASTVisitor() {

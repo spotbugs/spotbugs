@@ -251,9 +251,9 @@ public class FilterBugsDialog extends SelectionDialog {
 
     public FilterBugsDialog(Shell parentShell, Set<BugPattern> filteredPatterns, Set<BugCode> filteredTypes) {
         super(parentShell);
-        codeToPattern = new HashMap<BugCode, Set<BugPattern>>();
-        patternToFactory = new HashMap<BugPattern, Set<DetectorFactory>>();
-        patternToPlugin = new HashMap<BugPattern, Set<Plugin>>();
+        codeToPattern = new HashMap<>();
+        patternToFactory = new HashMap<>();
+        patternToPlugin = new HashMap<>();
         allowedPatterns = FindbugsPlugin.getKnownPatterns();
         allowedTypes = FindbugsPlugin.getKnownPatternTypes();
         preSelectedPatterns = filteredPatterns;
@@ -284,7 +284,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
 
         // merge types and the rest of patterns (without parent type)
-        List<Object> merged = new ArrayList<Object>();
+        List<Object> merged = new ArrayList<>();
         merged.addAll(preSelectedTypes);
         merged.addAll(preSelectedPatterns);
 
@@ -307,7 +307,7 @@ public class FilterBugsDialog extends SelectionDialog {
             for (BugPattern pattern : patterns) {
                 Set<DetectorFactory> set = patternToFactory.get(pattern);
                 if (set == null) {
-                    set = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>() {
+                    set = new TreeSet<>(new Comparator<DetectorFactory>() {
                         @Override
                         public int compare(DetectorFactory f1, DetectorFactory f2) {
                             return f1.getFullName().compareTo(f2.getFullName());
@@ -319,7 +319,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
                 Set<Plugin> pset = patternToPlugin.get(pattern);
                 if (pset == null) {
-                    pset = new TreeSet<Plugin>(new Comparator<Plugin>() {
+                    pset = new TreeSet<>(new Comparator<Plugin>() {
                         @Override
                         public int compare(Plugin f1, Plugin f2) {
                             return f1.getPluginId().compareTo(f2.getPluginId());
@@ -518,7 +518,7 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private Object[] getPreselected() {
-        List<Object> all = new ArrayList<Object>(preSelectedPatterns);
+        List<Object> all = new ArrayList<>(preSelectedPatterns);
         all.addAll(preSelectedTypes);
         return all.toArray();
     }
@@ -538,7 +538,7 @@ public class FilterBugsDialog extends SelectionDialog {
         if (set != null) {
             return set;
         }
-        set = new HashSet<BugPattern>();
+        set = new HashSet<>();
         codeToPattern.put(bugCode, set);
         return set;
     }
@@ -565,7 +565,7 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     protected void elementChecked(Object element, boolean checked) {
-        Set<Object> selected = new HashSet<Object>();
+        Set<Object> selected = new HashSet<>();
         selected.addAll(Arrays.asList(checkedElements));
         toggleElement(checked, element, selected);
         if (element instanceof BugCode) {
@@ -663,7 +663,7 @@ public class FilterBugsDialog extends SelectionDialog {
             sb.append(bugPattern.getType()).append("<br>");
         }
         // add reported by...
-        Set<DetectorFactory> allFactories = new TreeSet<DetectorFactory>(new Comparator<DetectorFactory>() {
+        Set<DetectorFactory> allFactories = new TreeSet<>(new Comparator<DetectorFactory>() {
             @Override
             public int compare(DetectorFactory f1, DetectorFactory f2) {
                 return f1.getFullName().compareTo(f2.getFullName());

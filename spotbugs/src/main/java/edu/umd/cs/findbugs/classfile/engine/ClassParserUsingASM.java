@@ -154,7 +154,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         boolean accessIsStatic;
 
-        HashSet<Label> labelsSeen = new HashSet<Label>();
+        HashSet<Label> labelsSeen = new HashSet<>();
 
         /**
          * @param calledClassSet
@@ -514,7 +514,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         cBuilder.setCodeBaseEntry(codeBaseEntry);
 
-        final TreeSet<ClassDescriptor> calledClassSet = new TreeSet<ClassDescriptor>();
+        final TreeSet<ClassDescriptor> calledClassSet = new TreeSet<>();
 
         classReader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
@@ -634,7 +634,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             }
         }, ClassReader.SKIP_FRAMES);
-        HashSet<ClassDescriptor> referencedClassSet = new HashSet<ClassDescriptor>();
+        HashSet<ClassDescriptor> referencedClassSet = new HashSet<>();
 
         // collect class references
 

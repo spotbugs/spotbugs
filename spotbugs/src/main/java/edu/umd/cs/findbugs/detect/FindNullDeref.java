@@ -587,7 +587,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     }
 
     @StaticConstant
-    public static final Set<String> catchTypesForNull = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+    public static final Set<String> catchTypesForNull = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             "java/lang/NullPointerException", "java/lang/RuntimeException", "java/lang/Exception")));
 
     public static boolean catchesNull(ConstantPool constantPool, Code code, Location location) {
@@ -674,8 +674,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // See if any call targets unconditionally dereference one of the null
         // arguments
         BitSet unconditionallyDereferencedNullArgSet = new BitSet();
-        List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
-        List<JavaClassAndMethod> veryDangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
+        List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<>();
+        List<JavaClassAndMethod> veryDangerousCallTargetList = new LinkedList<>();
         for (JavaClassAndMethod targetMethod : targetMethodSet) {
             if (DEBUG_NULLARG) {
                 System.out.println("For target method " + targetMethod);
@@ -708,10 +708,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             return;
         }
 
-        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
 
         // See if there are any safe targets
-        Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<JavaClassAndMethod>();
+        Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<>();
         safeCallTargetSet.addAll(targetMethodSet);
         safeCallTargetSet.removeAll(dangerousCallTargetList);
         if (safeCallTargetSet.isEmpty()) {
@@ -892,7 +892,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                     priority = NORMAL_PRIORITY;
                 }
                 String description = definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG";
-                WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+                WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
                 Set<Location> derefLocationSet = Collections.singleton(location);
 
                 addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
@@ -937,7 +937,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     @Override
     public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame,
             boolean isConsistent) {
-        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
         if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             return;
         }
@@ -1282,7 +1282,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
 
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
-            WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+            WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
             WarningPropertyUtil.addPropertiesForDataMining(propertySet, classContext, method, location);
             if (isChecked) {
                 propertySet.addProperty(NullDerefProperty.CHECKED_VALUE);
@@ -1454,7 +1454,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         SortedSet<Location> sourceLocations;
         if (doomedLocations.isEmpty() || doomedLocations.size() > 3 && doomedLocations.size() > assignedNullLocationSet.size()) {
-            sourceLocations = new TreeSet<Location>(assignedNullLocationSet);
+            sourceLocations = new TreeSet<>(assignedNullLocationSet);
         } else {
             sourceLocations = doomedLocations;
         }
@@ -1463,7 +1463,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             return;
         }
 
-        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
 
         addPropertiesForDereferenceLocations(propertySet, derefLocationSet, false);
 
@@ -1482,7 +1482,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         BitSet knownNull = new BitSet();
 
-        SortedSet<SourceLineAnnotation> knownNullLocations = new TreeSet<SourceLineAnnotation>();
+        SortedSet<SourceLineAnnotation> knownNullLocations = new TreeSet<>();
         for (Location loc : sourceLocations) {
             SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method, loc);
             if (sourceLineAnnotation == null) {

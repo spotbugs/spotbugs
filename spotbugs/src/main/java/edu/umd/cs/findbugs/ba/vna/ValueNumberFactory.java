@@ -39,9 +39,9 @@ public class ValueNumberFactory {
     /**
      * Store all allocated value numbers.
      */
-    private ArrayList<ValueNumber> allocatedValueList = new ArrayList<ValueNumber>();
+    private ArrayList<ValueNumber> allocatedValueList = new ArrayList<>();
 
-    private final HashMap<String, ValueNumber> classObjectValueMap = new HashMap<String, ValueNumber>();
+    private final HashMap<String, ValueNumber> classObjectValueMap = new HashMap<>();
 
     /**
      * Create a fresh (unique) value number.
@@ -89,7 +89,7 @@ public class ValueNumberFactory {
             throw new UnsupportedOperationException();
         }
         ArrayList<ValueNumber> oldList = this.allocatedValueList;
-        ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.<ValueNumber> nCopies(numValuesAllocated, null));
+        ArrayList<ValueNumber> newList = new ArrayList<>(Collections.<ValueNumber> nCopies(numValuesAllocated, null));
 
         for (ValueNumber value : oldList) {
             int newNumber = map[value.getNumber()];

@@ -40,7 +40,7 @@ public abstract class AbstractBlockOrder implements BlockOrder {
 
         // Put the blocks in an array
         int numBlocks = cfg.getNumBasicBlocks();
-        blockList = new ArrayList<BasicBlock>(cfg.getNumBasicBlocks());
+        blockList = new ArrayList<>(cfg.getNumBasicBlocks());
         for (BasicBlock bb : cfg.blocks()) {
             blockList.add(bb);
         }

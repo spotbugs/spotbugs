@@ -61,7 +61,7 @@ public class SelfCalls {
     public SelfCalls(ClassContext classContext) {
         this.classContext = classContext;
         this.callGraph = new CallGraph();
-        this.calledMethodSet = new HashSet<Method>();
+        this.calledMethodSet = new HashSet<>();
         this.hasSynchronization = false;
     }
 

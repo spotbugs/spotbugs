@@ -89,13 +89,13 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     }
 
-    HashSet<XMethod> okToIgnore = new HashSet<XMethod>();
+    HashSet<XMethod> okToIgnore = new HashSet<>();
 
-    HashSet<XMethod> methodsSeen = new HashSet<XMethod>();
+    HashSet<XMethod> methodsSeen = new HashSet<>();
 
-    HashSet<XMethod> doNotIgnore = new HashSet<XMethod>();
+    HashSet<XMethod> doNotIgnore = new HashSet<>();
 
-    HashSet<XMethod> doNotIgnoreHigh = new HashSet<XMethod>();
+    HashSet<XMethod> doNotIgnoreHigh = new HashSet<>();
 
     int returnSelf, returnOther, returnNew, returnUnknown;
 

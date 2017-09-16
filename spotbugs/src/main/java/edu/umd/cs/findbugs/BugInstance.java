@@ -180,7 +180,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         this.type = type.intern();
         this.priority = priority;
         lastVersion = -1;
-        annotationList = new ArrayList<BugAnnotation>(4);
+        annotationList = new ArrayList<>(4);
         cachedHashCode = INVALID_HASH_CODE;
 
         BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
@@ -542,7 +542,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     public Collection<? extends SourceLineAnnotation> getAnotherInstanceSourceLineAnnotations() {
         // Highest priority: return the first top level source line annotation
-        Collection<SourceLineAnnotation> result = new ArrayList<SourceLineAnnotation>();
+        Collection<SourceLineAnnotation> result = new ArrayList<>();
         for (BugAnnotation annotation : annotationList) {
             if (annotation instanceof SourceLineAnnotation
                     && SourceLineAnnotation.ROLE_ANOTHER_INSTANCE.equals(annotation.getDescription())
@@ -2036,7 +2036,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         Map<BugAnnotation, Void> primaryAnnotations;
 
         if (addMessages) {
-            primaryAnnotations = new IdentityHashMap<BugAnnotation, Void>();
+            primaryAnnotations = new IdentityHashMap<>();
             primaryAnnotations.put(getPrimarySourceLineAnnotation(), null);
             primaryAnnotations.put(getPrimaryClass(), null);
             primaryAnnotations.put(getPrimaryField(), null);
@@ -2226,7 +2226,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public BugInstance addOptionalUniqueAnnotations(BugAnnotation... annotations) {
-        HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+        HashSet<BugAnnotation> added = new HashSet<>();
         for (BugAnnotation a : annotations) {
             if (a != null && added.add(a)) {
                 add(a);
@@ -2236,7 +2236,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public boolean tryAddingOptionalUniqueAnnotations(BugAnnotation... annotations) {
-        HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+        HashSet<BugAnnotation> added = new HashSet<>();
         for (BugAnnotation a : annotations) {
             if (a != null && added.add(a)) {
                 add(a);
@@ -2246,7 +2246,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public BugInstance addOptionalUniqueAnnotationsWithFallback(BugAnnotation fallback, BugAnnotation... annotations) {
-        HashSet<BugAnnotation> added = new HashSet<BugAnnotation>();
+        HashSet<BugAnnotation> added = new HashSet<>();
         for (BugAnnotation a : annotations) {
             if (a != null && added.add(a)) {
                 add(a);
@@ -2493,9 +2493,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public List<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
-        ArrayList<BugAnnotation> result = new ArrayList<BugAnnotation>();
+        ArrayList<BugAnnotation> result = new ArrayList<>();
 
-        HashSet<BugAnnotation> primaryAnnotations = new HashSet<BugAnnotation>();
+        HashSet<BugAnnotation> primaryAnnotations = new HashSet<>();
 
         // This ensures the order of the primary annotations of the bug
         FieldAnnotation primeField = getPrimaryField();

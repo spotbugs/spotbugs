@@ -120,7 +120,7 @@ public class CFGFactory extends AnalysisFactory<CFG> {
         boolean changed = false;
         boolean ASSUME_ASSERTIONS_ENABLED = true;
         if (ASSUME_ASSERTIONS_ENABLED) {
-            LinkedList<Edge> edgesToRemove = new LinkedList<Edge>();
+            LinkedList<Edge> edgesToRemove = new LinkedList<>();
             for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
                 Edge e = i.next();
                 if (e.getType() == EdgeTypes.IFCMP_EDGE) {

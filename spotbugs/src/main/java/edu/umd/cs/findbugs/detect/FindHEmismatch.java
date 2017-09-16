@@ -115,8 +115,8 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
     public FindHEmismatch(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        nonHashableClasses = new HashSet<String>();
-        potentialBugs = new HashMap<String, BugInstance>();
+        nonHashableClasses = new HashSet<>();
+        potentialBugs = new HashMap<>();
     }
 
     public boolean isHashableClassName(String dottedClassName) {

@@ -66,9 +66,9 @@ public class AddMessages {
         Iterator<?> elementIter = XMLUtil.selectNodes(document, "/BugCollection/BugInstance").iterator();
         Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
-        Set<String> bugTypeSet = new HashSet<String>();
-        Set<String> bugCategorySet = new HashSet<String>();
-        Set<String> bugCodeSet = new HashSet<String>();
+        Set<String> bugTypeSet = new HashSet<>();
+        Set<String> bugCategorySet = new HashSet<>();
+        Set<String> bugCodeSet = new HashSet<>();
 
         // Add short and long descriptions to BugInstance elements.
         // We rely on the Document and the BugCollection storing

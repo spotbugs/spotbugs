@@ -104,7 +104,7 @@ public class FindDeadLocalStores implements Detector {
 
     // Define a collection of excluded local variables...
     @StaticConstant
-    private static final Set<String> EXCLUDED_LOCALS = new HashSet<String>();
+    private static final Set<String> EXCLUDED_LOCALS = new HashSet<>();
 
     //    private static final boolean DO_EXCLUDE_LOCALS = SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
 
@@ -253,7 +253,7 @@ public class FindDeadLocalStores implements Detector {
 
             BugInstance pendingBugReportAboutOverwrittenParameter = null;
             try {
-                WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+                WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
                 // Skip any instruction which is not a store
                 if (!isStore(location)) {
                     continue;

@@ -49,7 +49,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
         context.setFieldSummary(fieldSummary);
     }
 
-    Set<XField> touched = new HashSet<XField>();
+    Set<XField> touched = new HashSet<>();
 
     @Override
     public boolean shouldVisit(JavaClass obj) {

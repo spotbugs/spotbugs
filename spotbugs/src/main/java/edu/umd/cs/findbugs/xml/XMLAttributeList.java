@@ -60,7 +60,7 @@ public class XMLAttributeList {
      * Constructor. Creates an empty object.
      */
     public XMLAttributeList() {
-        this.nameValuePairList = new LinkedList<NameValuePair>();
+        this.nameValuePairList = new LinkedList<>();
     }
 
     /**

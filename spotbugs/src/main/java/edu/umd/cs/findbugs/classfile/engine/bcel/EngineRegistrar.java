@@ -74,18 +74,18 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 
     private static final IDatabaseFactory<?>[] databaseFactoryList = {
         // new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
-        new ReflectionDatabaseFactory<Subtypes2>(Subtypes2.class),
-        new ReflectionDatabaseFactory<InnerClassAccessMap>(InnerClassAccessMap.class),
-        new ReflectionDatabaseFactory<CheckReturnAnnotationDatabase>(CheckReturnAnnotationDatabase.class),
-        new ReflectionDatabaseFactory<AnnotationRetentionDatabase>(AnnotationRetentionDatabase.class),
-        new ReflectionDatabaseFactory<JCIPAnnotationDatabase>(JCIPAnnotationDatabase.class),
-        new ReflectionDatabaseFactory<SourceInfoMap>(SourceInfoMap.class),
-        new ReflectionDatabaseFactory<FieldStoreTypeDatabase>(FieldStoreTypeDatabase.class),
-        new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),
-        new ReflectionDatabaseFactory<ReturnValueNullnessPropertyDatabase>(ReturnValueNullnessPropertyDatabase.class),
-        new ReflectionDatabaseFactory<DirectlyRelevantTypeQualifiersDatabase>(DirectlyRelevantTypeQualifiersDatabase.class),
-        new ReflectionDatabaseFactory<TypeQualifierDatabase>(TypeQualifierDatabase.class),
-        new ReflectionDatabaseFactory<MethodInfoDatabase>(MethodInfoDatabase.class),
+        new ReflectionDatabaseFactory<>(Subtypes2.class),
+        new ReflectionDatabaseFactory<>(InnerClassAccessMap.class),
+        new ReflectionDatabaseFactory<>(CheckReturnAnnotationDatabase.class),
+        new ReflectionDatabaseFactory<>(AnnotationRetentionDatabase.class),
+        new ReflectionDatabaseFactory<>(JCIPAnnotationDatabase.class),
+        new ReflectionDatabaseFactory<>(SourceInfoMap.class),
+        new ReflectionDatabaseFactory<>(FieldStoreTypeDatabase.class),
+        new ReflectionDatabaseFactory<>(ParameterNullnessPropertyDatabase.class),
+        new ReflectionDatabaseFactory<>(ReturnValueNullnessPropertyDatabase.class),
+        new ReflectionDatabaseFactory<>(DirectlyRelevantTypeQualifiersDatabase.class),
+        new ReflectionDatabaseFactory<>(TypeQualifierDatabase.class),
+        new ReflectionDatabaseFactory<>(MethodInfoDatabase.class),
     };
 
     /*

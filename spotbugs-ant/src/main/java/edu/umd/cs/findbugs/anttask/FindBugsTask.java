@@ -161,7 +161,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     private String stylesheet;
 
-    private final List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
+    private final List<ClassLocation> classLocations = new ArrayList<>();
 
     private String onlyAnalyze;
 
@@ -171,9 +171,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     private boolean setExitCode = true;
 
-    private final List<FileSet> filesets = new ArrayList<FileSet>();
+    private final List<FileSet> filesets = new ArrayList<>();
 
-    private final List<DirSet> dirsets = new ArrayList<DirSet>();
+    private final List<DirSet> dirsets = new ArrayList<>();
 
     public FindBugsTask() {
         super("edu.umd.cs.findbugs.FindBugs2");

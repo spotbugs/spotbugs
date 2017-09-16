@@ -100,7 +100,7 @@ public class MineBugHistory {
 
     Version[] versionList;
 
-    Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
+    Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<>();
 
     boolean formatDates = false;
 

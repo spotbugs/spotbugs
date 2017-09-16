@@ -47,7 +47,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     private void compute() {
         if (defined == null) {
             // System.out.println("Computing");
-            defined = new HashSet<String>();
+            defined = new HashSet<>();
 
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             Collection<XClass> allClasses = subtypes2.getXClassCollection();

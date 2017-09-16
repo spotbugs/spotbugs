@@ -112,7 +112,7 @@ public class AnalysisError {
 
     private String[] getStackTraceAsStringArray(Throwable exception) {
         StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
-        ArrayList<String> arr = new ArrayList<String>();
+        ArrayList<String> arr = new ArrayList<>();
         for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
             arr.add(aExceptionStackTrace.toString());
         }

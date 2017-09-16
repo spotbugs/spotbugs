@@ -49,17 +49,17 @@ import edu.umd.cs.findbugs.util.Util;
  * @author pugh
  */
 public class FieldSummary {
-    private final Set<XField> writtenOutsideOfConstructor = new HashSet<XField>();
+    private final Set<XField> writtenOutsideOfConstructor = new HashSet<>();
 
-    private final Map<XField, OpcodeStack.Item> summary = new HashMap<XField, OpcodeStack.Item>();
+    private final Map<XField, OpcodeStack.Item> summary = new HashMap<>();
 
-    private final Map<XMethod, Set<XField>> fieldsWritten = new HashMap<XMethod, Set<XField>>();
+    private final Map<XMethod, Set<XField>> fieldsWritten = new HashMap<>();
 
-    private final Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<XMethod, XMethod>();
+    private final Map<XMethod, XMethod> nonVoidSuperConstructorsCalled = new HashMap<>();
 
-    private final Map<XMethod, Set<ProgramPoint>> selfMethodsCalledFromConstructor = new HashMap<XMethod, Set<ProgramPoint>>();
+    private final Map<XMethod, Set<ProgramPoint>> selfMethodsCalledFromConstructor = new HashMap<>();
 
-    private final Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<ClassDescriptor>();
+    private final Set<ClassDescriptor> callsOverriddenMethodsFromConstructor = new HashSet<>();
 
     private boolean complete = false;
 
@@ -101,7 +101,7 @@ public class FieldSummary {
     public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
         Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
         if (set == null) {
-            set = new HashSet<ProgramPoint>();
+            set = new HashSet<>();
             selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
         }
         set.add(from);

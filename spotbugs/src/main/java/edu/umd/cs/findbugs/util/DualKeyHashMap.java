@@ -28,7 +28,7 @@ import java.util.Set;
  * @author William Pugh
  */
 public class DualKeyHashMap<K1, K2, V> {
-    Map<K1, Map<K2, V>> map = new HashMap<K1, Map<K2, V>>();
+    Map<K1, Map<K2, V>> map = new HashMap<>();
 
     public V get(K1 k1, K2 k2) {
         Map<K2, V> m = map.get(k1);

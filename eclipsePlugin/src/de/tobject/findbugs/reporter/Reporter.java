@@ -139,7 +139,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     @Override
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
-        List<Error> errorList = new ArrayList<Error>(getQueuedErrors());
+        List<Error> errorList = new ArrayList<>(getQueuedErrors());
         if (errorList.size() > 0) {
             Collections.sort(errorList, new Comparator<Error>() {
                 @Override
@@ -289,7 +289,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     @Override
     public void reportNumberOfArchives(int numArchives) {
         printToStream("\nStarting SpotBugs analysis on file(s) from: " + project.getElementName());
-        List<String> classpathEntryList = new ArrayList<String>(bugCollection.getProject().getAuxClasspathEntryList());
+        List<String> classpathEntryList = new ArrayList<>(bugCollection.getProject().getAuxClasspathEntryList());
         printToStream("\nResolved auxiliary classpath (" + classpathEntryList.size() + " entries):");
         for (String path : classpathEntryList) {
             printToStream("\t " + path);

@@ -107,7 +107,7 @@ public class ValueNumberCache {
     /**
      * Map of entries to output values.
      */
-    private final HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<Entry, ValueNumber[]>();
+    private final HashMap<Entry, ValueNumber[]> entryToOutputMap = new HashMap<>();
 
     /**
      * Look up cached output values for given entry.

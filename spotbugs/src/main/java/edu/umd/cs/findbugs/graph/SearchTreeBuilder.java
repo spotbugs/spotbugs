@@ -32,9 +32,9 @@ import java.util.LinkedList;
  */
 public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> implements SearchTreeCallback<VertexType> {
 
-    private final HashMap<VertexType, SearchTree<VertexType>> searchTreeMap = new HashMap<VertexType, SearchTree<VertexType>>();
+    private final HashMap<VertexType, SearchTree<VertexType>> searchTreeMap = new HashMap<>();
 
-    private final LinkedList<SearchTree<VertexType>> searchTreeList = new LinkedList<SearchTree<VertexType>>();
+    private final LinkedList<SearchTree<VertexType>> searchTreeList = new LinkedList<>();
 
     @Override
     public void startSearchTree(VertexType vertex) {
@@ -59,7 +59,7 @@ public class SearchTreeBuilder<VertexType extends GraphVertex<VertexType>> imple
     }
 
     private SearchTree<VertexType> createSearchTree(VertexType vertex) {
-        SearchTree<VertexType> searchTree = new SearchTree<VertexType>(vertex);
+        SearchTree<VertexType> searchTree = new SearchTree<>(vertex);
         searchTreeMap.put(vertex, searchTree);
         return searchTree;
     }

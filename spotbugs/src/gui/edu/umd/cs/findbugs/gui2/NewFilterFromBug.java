@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.filter.Matcher;
 @SuppressWarnings("serial")
 public class NewFilterFromBug extends FBDialog {
 
-    private static final List<NewFilterFromBug> listOfAllFrames = new ArrayList<NewFilterFromBug>();
+    private static final List<NewFilterFromBug> listOfAllFrames = new ArrayList<>();
 
     public NewFilterFromBug(final FilterFromBugPicker filterFromBugPicker, final ApplyNewFilter applyNewFilter) {
         this.setModal(true);

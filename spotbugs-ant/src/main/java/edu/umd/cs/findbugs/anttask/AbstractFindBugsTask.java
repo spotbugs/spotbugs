@@ -85,7 +85,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
     protected String errorProperty = null;
 
-    private final List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
+    private final List<SystemProperty> systemPropertyList = new ArrayList<>();
 
     private Path classpath = null;
 

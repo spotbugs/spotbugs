@@ -33,7 +33,7 @@ public class DominatorsAnalysisFactory extends AnalysisFactory<DominatorsAnalysi
         CFG cfg = getCFG(analysisCache, descriptor);
         DepthFirstSearch dfs = getDepthFirstSearch(analysisCache, descriptor);
         DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, true);
-        Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow = new Dataflow<java.util.BitSet, DominatorsAnalysis>(cfg,
+        Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow = new Dataflow<>(cfg,
                 analysis);
         dataflow.execute();
         return analysis;

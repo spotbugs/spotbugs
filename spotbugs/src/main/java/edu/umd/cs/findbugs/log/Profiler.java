@@ -46,8 +46,8 @@ public class Profiler implements XMLWriteable {
     final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     public Profiler() {
-        startTimes = new Stack<Clock>();
-        profile = new ConcurrentHashMap<Class<?>, Profile>();
+        startTimes = new Stack<>();
+        profile = new ConcurrentHashMap<>();
         if (REPORT) {
             System.err.println("Profiling activated");
         }
@@ -211,7 +211,7 @@ public class Profiler implements XMLWriteable {
 
     final ConcurrentMap<Class<?>, Profile> profile;
 
-    final Stack<Object> context = new Stack<Object>();
+    final Stack<Object> context = new Stack<>();
 
     public void startContext(Object context) {
         this.context.push(context);
@@ -383,7 +383,7 @@ public class Profiler implements XMLWriteable {
         stream.println("PROFILE REPORT");
         try {
 
-            TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(reportComparator);
+            TreeSet<Class<?>> treeSet = new TreeSet<>(reportComparator);
             treeSet.addAll(profile.keySet());
 
             stream.printf("%8s  %8s %9s %s%n", "msecs", "#calls", "usecs/call", "Class");
@@ -443,7 +443,7 @@ public class Profiler implements XMLWriteable {
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.startTag("FindBugsProfile");
         xmlOutput.stopTag(false);
-        TreeSet<Class<?>> treeSet = new TreeSet<Class<?>>(new TotalTimeComparator(this));
+        TreeSet<Class<?>> treeSet = new TreeSet<>(new TotalTimeComparator(this));
         treeSet.addAll(profile.keySet());
         long totalTime = 0;
         for (Profile p : profile.values()) {

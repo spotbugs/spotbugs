@@ -135,7 +135,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
      * Get the String key by calling getCollectionsMapKey()
      */
 
-    private final MultiMap<String, Info> callMap = new MultiMap<String, Info>(LinkedList.class);
+    private final MultiMap<String, Info> callMap = new MultiMap<>(LinkedList.class);
 
 
     private void addCheckedCall(@DottedClassName String className, String methodName, String sig, int argumentParameterIndex, int typeParameterIndex) {
@@ -300,7 +300,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
     }
 
     @StaticConstant
-    final static Set<String> baseGenericTypes = new LinkedHashSet<String>();
+    final static Set<String> baseGenericTypes = new LinkedHashSet<>();
     static {
         baseGenericTypes.addAll(Arrays.asList(new String[] { "java.util.Map", "java.util.Collection", "java.lang.Iterable",
                 "java.util.Iterator", "com.google.common.collect.Multimap", "com.google.common.collect.Multiset",
@@ -685,7 +685,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                                         ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location, argVN, vnFrame, "ARGUMENT"))
                                         .addEqualsMethodUsed(targets);
                 if (noisy) {
-                    WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+                    WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
 
                     propertySet.addProperty(GeneralWarningProperty.NOISY_BUG);
                     propertySet.decorateBugInstance(bug);

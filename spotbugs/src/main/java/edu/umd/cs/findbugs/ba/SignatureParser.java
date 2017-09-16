@@ -50,7 +50,7 @@ public class SignatureParser {
         if ( parameterOffset != null ) {
             return parameterOffset;
         }
-        ArrayList<Integer> offsets = new ArrayList<Integer>();
+        ArrayList<Integer> offsets = new ArrayList<>();
         Iterator<String> i = parameterSignatureIterator();
         int totalSize = 0;
 
@@ -164,7 +164,7 @@ public class SignatureParser {
     }
 
     public String[] getArguments() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
             result.add(i.next());
         }

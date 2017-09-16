@@ -212,12 +212,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             this.start = start;
             this.instructionSet = new BitSet();
             this.cfgSub = new CFG();
-            this.blockMap = new IdentityHashMap<InstructionHandle, BasicBlock>();
-            this.escapeTargetListMap = new IdentityHashMap<BasicBlock, List<EscapeTarget>>();
+            this.blockMap = new IdentityHashMap<>();
+            this.escapeTargetListMap = new IdentityHashMap<>();
             this.returnBlockSet = new BitSet();
             this.exitBlockSet = new BitSet();
             this.unhandledExceptionBlockSet = new BitSet();
-            this.workList = new LinkedList<WorkListItem>();
+            this.workList = new LinkedList<>();
         }
 
         /**
@@ -405,7 +405,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 // Control escapes this subroutine
                 List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
                 if (escapeTargetList == null) {
-                    escapeTargetList = new LinkedList<EscapeTarget>();
+                    escapeTargetList = new LinkedList<>();
                     escapeTargetListMap.put(sourceBlock, escapeTargetList);
                 }
                 escapeTargetList.add(new EscapeTarget(target, edgeType));
@@ -483,8 +483,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             this.caller = caller;
             this.subroutine = subroutine;
             this.result = result;
-            this.blockMap = new IdentityHashMap<BasicBlock, BasicBlock>();
-            this.workList = new LinkedList<BasicBlock>();
+            this.blockMap = new IdentityHashMap<>();
+            this.workList = new LinkedList<>();
         }
 
         /**
@@ -593,7 +593,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     private final IdentityHashMap<InstructionHandle, Subroutine> jsrSubroutineMap;
 
-    private final Map<FieldDescriptor, Integer> addedFields = new HashMap<FieldDescriptor, Integer>();
+    private final Map<FieldDescriptor, Integer> addedFields = new HashMap<>();
     private Subroutine topLevelSubroutine;
 
     private CFG cfg;
@@ -627,8 +627,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
         this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen, merger);
         this.usedInstructionSet = new BitSet();
-        this.jsrSubroutineMap = new IdentityHashMap<InstructionHandle, Subroutine>();
-        this.subroutineWorkList = new LinkedList<Subroutine>();
+        this.jsrSubroutineMap = new IdentityHashMap<>();
+        this.subroutineWorkList = new LinkedList<>();
     }
 
     public int getIndex(FieldDescriptor f) {

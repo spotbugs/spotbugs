@@ -141,7 +141,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static final String BUG_CONTENT_PROVIDER_ID = "de.tobject.findbugs.view.explorer.BugContentProvider";
 
     /** Map containing preloaded ImageDescriptors */
-    private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<String, ImageDescriptor>(13);
+    private final Map<String, ImageDescriptor> imageDescriptors = new HashMap<>(13);
 
     /** Controls debugging of the plugin */
     public static boolean DEBUG;
@@ -281,7 +281,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
         customDetectorsInitialized = true;
         DetectorValidator validator = new DetectorValidator();
-        final SortedSet<String> detectorPaths = new TreeSet<String>();
+        final SortedSet<String> detectorPaths = new TreeSet<>();
         SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
         UserPreferences corePreferences = getCorePreferences(null, force);
         detectorPaths.addAll(corePreferences.getCustomPlugins(true));
@@ -319,7 +319,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             }
         }
 
-        HashSet<Plugin> enabled = new HashSet<Plugin>();
+        HashSet<Plugin> enabled = new HashSet<>();
 
         // adding FindBugs *Eclipse* plugins, key plugin id, value is path
         for (Entry<String, String> entry : contributedDetectors.entrySet()) {
@@ -1127,7 +1127,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugPattern> getKnownPatterns() {
-        Set<BugPattern> patterns = new TreeSet<BugPattern>();
+        Set<BugPattern> patterns = new TreeSet<>();
         Iterator<BugPattern> patternIterator = DetectorFactoryCollection.instance().bugPatternIterator();
         while (patternIterator.hasNext()) {
             patterns.add(patternIterator.next());
@@ -1136,7 +1136,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getKnownPatternTypes() {
-        Set<BugCode> patterns = new TreeSet<BugCode>(DetectorFactoryCollection.instance().getBugCodes());
+        Set<BugCode> patterns = new TreeSet<>(DetectorFactoryCollection.instance().getBugCodes());
         return patterns;
     }
 
@@ -1148,7 +1148,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static Set<BugPattern> getFilteredPatterns() {
         Iterator<BugPattern> patternIterator = DetectorFactoryCollection.instance().bugPatternIterator();
-        Set<BugPattern> set = new HashSet<BugPattern>();
+        Set<BugPattern> set = new HashSet<>();
         Set<String> patternTypes = getFilteredIds();
         while (patternIterator.hasNext()) {
             BugPattern next = patternIterator.next();
@@ -1162,7 +1162,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static Set<BugCode> getFilteredPatternTypes() {
-        Set<BugCode> set = new HashSet<BugCode>();
+        Set<BugCode> set = new HashSet<>();
         Set<String> patternTypes = getFilteredIds();
         for(BugCode next :  DetectorFactoryCollection.instance().getBugCodes()) {
             String type = next.getAbbrev();

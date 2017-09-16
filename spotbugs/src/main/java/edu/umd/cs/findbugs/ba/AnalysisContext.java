@@ -961,9 +961,9 @@ public class AnalysisContext {
 
     public void setAppClassList(List<ClassDescriptor> appClassCollection) {
         // FIXME: we really should drive the progress callback here
-        HashSet<ClassDescriptor> appSet = new HashSet<ClassDescriptor>(appClassCollection);
+        HashSet<ClassDescriptor> appSet = new HashSet<>(appClassCollection);
 
-        Collection<ClassDescriptor> allClassDescriptors = new ArrayList<ClassDescriptor>(DescriptorFactory.instance()
+        Collection<ClassDescriptor> allClassDescriptors = new ArrayList<>(DescriptorFactory.instance()
                 .getAllClassDescriptors());
         for (ClassDescriptor appClass : allClassDescriptors) {
             try {

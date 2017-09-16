@@ -61,10 +61,10 @@ public class DescriptorFactory {
     private final Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
 
     private DescriptorFactory() {
-        this.classDescriptorMap = new HashMap<String, ClassDescriptor>();
-        this.dottedClassDescriptorMap = new HashMap<String, ClassDescriptor>();
-        this.methodDescriptorMap = new HashMap<MethodDescriptor, MethodDescriptor>();
-        this.fieldDescriptorMap = new HashMap<FieldDescriptor, FieldDescriptor>();
+        this.classDescriptorMap = new HashMap<>();
+        this.dottedClassDescriptorMap = new HashMap<>();
+        this.methodDescriptorMap = new HashMap<>();
+        this.fieldDescriptorMap = new HashMap<>();
     }
 
     /**

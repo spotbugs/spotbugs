@@ -57,7 +57,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
         setPriority(Job.DECORATE);
         contentProvider = provider;
         deltaComparator = new RemovedFirstComparator();
-        deltaToRefresh = new ArrayList<DeltaInfo>();
+        deltaToRefresh = new ArrayList<>();
         resourceListener = new ResourceChangeListener(this);
     }
 
@@ -143,7 +143,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
     }
 
     private List<DeltaInfo> fetchDeltas() {
-        final List<DeltaInfo> deltas = new ArrayList<DeltaInfo>();
+        final List<DeltaInfo> deltas = new ArrayList<>();
         synchronized (deltaToRefresh) {
             if (deltaToRefresh.isEmpty()) {
                 return deltas;

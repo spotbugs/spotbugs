@@ -35,9 +35,9 @@ public class JUnitDetectorAdapter implements Detector2 {
 
     private boolean testExecuted;
 
-    private static InheritableThreadLocal<JUnitDetectorAdapter> instance = new InheritableThreadLocal<JUnitDetectorAdapter>();
+    private static InheritableThreadLocal<JUnitDetectorAdapter> instance = new InheritableThreadLocal<>();
 
-    private static InheritableThreadLocal<RunnableWithExceptions> runnableInstance = new InheritableThreadLocal<RunnableWithExceptions>();
+    private static InheritableThreadLocal<RunnableWithExceptions> runnableInstance = new InheritableThreadLocal<>();
 
     public JUnitDetectorAdapter(BugReporter bugReporter) {
         instance.set(this);

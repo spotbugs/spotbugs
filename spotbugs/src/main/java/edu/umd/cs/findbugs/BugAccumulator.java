@@ -47,9 +47,9 @@ public class BugAccumulator {
 
     private final boolean performAccumulation;
 
-    private final Map<BugInstance, Data> map = new HashMap<BugInstance, Data>();
+    private final Map<BugInstance, Data> map = new HashMap<>();
 
-    private final HashMap<String, BugInstance> hashes = new HashMap<String, BugInstance>();
+    private final HashMap<String, BugInstance> hashes = new HashMap<>();
 
     private BugInstance lastBug;
     private SourceLineAnnotation lastSourceLine;
@@ -65,7 +65,7 @@ public class BugAccumulator {
 
         SourceLineAnnotation primarySource;
 
-        LinkedHashSet<SourceLineAnnotation> allSource = new LinkedHashSet<SourceLineAnnotation>();
+        LinkedHashSet<SourceLineAnnotation> allSource = new LinkedHashSet<>();
     }
 
     /**
@@ -186,7 +186,7 @@ public class BugAccumulator {
     public void reportBug(BugInstance bug, Data d) {
         bug.setPriority(d.priority);
         bug.addSourceLine(d.primarySource);
-        HashSet<Integer> lines = new HashSet<Integer>();
+        HashSet<Integer> lines = new HashSet<>();
         lines.add(d.primarySource.getStartLine());
         d.allSource.remove(d.primarySource);
         for (SourceLineAnnotation source : d.allSource) {

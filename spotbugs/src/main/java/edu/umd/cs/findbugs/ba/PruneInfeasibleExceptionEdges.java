@@ -119,8 +119,8 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
      */
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void execute() throws ClassNotFoundException {
-        Set<Edge> deletedEdgeSet = new HashSet<Edge>();
-        List<MarkedEdge> markedEdgeList = new LinkedList<MarkedEdge>();
+        Set<Edge> deletedEdgeSet = new HashSet<>();
+        List<MarkedEdge> markedEdgeList = new LinkedList<>();
 
         // Mark edges to delete,
         // mark edges to set properties of

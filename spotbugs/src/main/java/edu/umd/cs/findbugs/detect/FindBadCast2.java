@@ -65,11 +65,11 @@ public class FindBadCast2 implements Detector {
 
     private final BugReporter bugReporter;
 
-    private final Set<String> concreteCollectionClasses = new HashSet<String>();
+    private final Set<String> concreteCollectionClasses = new HashSet<>();
 
-    private final Set<String> abstractCollectionClasses = new HashSet<String>();
+    private final Set<String> abstractCollectionClasses = new HashSet<>();
 
-    private final Set<String> veryAbstractCollectionClasses = new HashSet<String>();
+    private final Set<String> veryAbstractCollectionClasses = new HashSet<>();
 
     private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
 
@@ -131,7 +131,7 @@ public class FindBadCast2 implements Detector {
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
         ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
-        Set<ValueNumber> paramValueNumberSet = new HashSet<ValueNumber>();
+        Set<ValueNumber> paramValueNumberSet = new HashSet<>();
         int firstParam = method.isStatic() ? 0 : 1;
         for (int i = firstParam; i < vnaFrameAtEntry.getNumLocals(); ++i) {
             paramValueNumberSet.add(vnaFrameAtEntry.getValue(i));
@@ -163,10 +163,10 @@ public class FindBadCast2 implements Detector {
             System.out.println("Checking " + methodName);
         }
 
-        Set<SourceLineAnnotation> haveInstanceOf = new HashSet<SourceLineAnnotation>();
-        Set<SourceLineAnnotation> haveCast = new HashSet<SourceLineAnnotation>();
-        Set<SourceLineAnnotation> haveMultipleInstanceOf = new HashSet<SourceLineAnnotation>();
-        Set<SourceLineAnnotation> haveMultipleCast = new HashSet<SourceLineAnnotation>();
+        Set<SourceLineAnnotation> haveInstanceOf = new HashSet<>();
+        Set<SourceLineAnnotation> haveCast = new HashSet<>();
+        Set<SourceLineAnnotation> haveMultipleInstanceOf = new HashSet<>();
+        Set<SourceLineAnnotation> haveMultipleCast = new HashSet<>();
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
@@ -196,7 +196,7 @@ public class FindBadCast2 implements Detector {
         }
         BitSet linesMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
         LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
-        Map<BugAnnotation, String> instanceOfChecks = new HashMap<BugAnnotation, String>();
+        Map<BugAnnotation, String> instanceOfChecks = new HashMap<>();
         String constantClass = null;
         boolean methodInvocationWasGeneric = false;
 

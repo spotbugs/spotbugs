@@ -64,7 +64,7 @@ public class NumberConstructor extends OpcodeStackDetector {
             this.parsingMethod = parsingMethod;
         }
     }
-    private final Map<String, Pair> boxClasses = new HashMap<String, Pair>();
+    private final Map<String, Pair> boxClasses = new HashMap<>();
 
     private final List<MethodDescriptor> methods = new ArrayList<>();
 

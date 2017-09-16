@@ -102,7 +102,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             throw new IllegalStateException("This should not happen");
         }
         boolean foundInexact = false;
-        Set<Edge> deletedEdgeSet = new HashSet<Edge>();
+        Set<Edge> deletedEdgeSet = new HashSet<>();
         // TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
         if (DEBUG) {

@@ -48,13 +48,13 @@ public class ObligationPolicyDatabase {
 
     private final LinkedList<ObligationPolicyDatabaseEntry> entryList;
 
-    private final HashSet<Obligation> allObligations = new HashSet<Obligation>();
+    private final HashSet<Obligation> allObligations = new HashSet<>();
 
     private boolean strictChecking;
 
     public ObligationPolicyDatabase() {
         this.factory = new ObligationFactory();
-        this.entryList = new LinkedList<ObligationPolicyDatabaseEntry>();
+        this.entryList = new LinkedList<>();
 
     }
 

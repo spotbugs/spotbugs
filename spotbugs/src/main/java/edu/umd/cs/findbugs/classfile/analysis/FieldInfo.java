@@ -60,7 +60,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
         String fieldSourceSignature;
 
-        final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(3);
+        final Map<ClassDescriptor, AnnotationValue> fieldAnnotations = new HashMap<>(3);
 
         public Builder(@SlashedClassName String className, String fieldName, String fieldSignature, int accessFlags) {
             this.className = className;
@@ -274,7 +274,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
      *            an AnnotationValue representing a field annotation
      */
     public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(
+        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(
                 fieldAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         fieldAnnotations = updatedAnnotations;

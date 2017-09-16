@@ -340,7 +340,7 @@ public class DetectorFactory {
      * we don't know what kind of bug patterns might be reported.
      */
     public Set<BugPattern> getReportedBugPatterns() {
-        Set<BugPattern> result = new TreeSet<BugPattern>();
+        Set<BugPattern> result = new TreeSet<>();
         StringTokenizer tok = new StringTokenizer(reports, ",");
         while (tok.hasMoreTokens()) {
             String type = tok.nextToken();

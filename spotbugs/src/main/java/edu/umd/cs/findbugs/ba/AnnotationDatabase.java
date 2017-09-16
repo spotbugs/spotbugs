@@ -58,9 +58,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     //    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
-    private final Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
+    private final Map<Object, AnnotationEnum> directAnnotations = new HashMap<>();
 
-    private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new EnumMap<AnnotationDatabase.Target, Map<String, AnnotationEnum>>(AnnotationDatabase.Target.class);
+    private final Map<AnnotationDatabase.Target, Map<String, AnnotationEnum>> defaultAnnotation = new EnumMap<>(AnnotationDatabase.Target.class);
 
     // private Subtypes subtypes;
     public AnnotationDatabase() {
@@ -78,7 +78,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 
     }
 
-    private final Set<AnnotationEnum> seen = new HashSet<AnnotationEnum>();
+    private final Set<AnnotationEnum> seen = new HashSet<>();
 
     public void addDirectAnnotation(Object o, AnnotationEnum n) {
         directAnnotations.put(o, n);
@@ -101,9 +101,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
     }
 
     // TODO: Parameterize these values?
-    Map<Object, AnnotationEnum> cachedMinimal = new MapCache<Object, AnnotationEnum>(20000);
+    Map<Object, AnnotationEnum> cachedMinimal = new MapCache<>(20000);
 
-    Map<Object, AnnotationEnum> cachedMaximal = new MapCache<Object, AnnotationEnum>(20000);
+    Map<Object, AnnotationEnum> cachedMaximal = new MapCache<>(20000);
 
     @CheckForNull
     public AnnotationEnum getResolvedAnnotation(Object o, boolean getMinimal) {
@@ -186,7 +186,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
                 if (!m.isStatic() && !Const.CONSTRUCTOR_NAME.equals(m.getName())) {
                     JavaClass c = Repository.lookupClass(className);
                     // get inherited annotation
-                    TreeSet<AnnotationEnum> inheritedAnnotations = new TreeSet<AnnotationEnum>();
+                    TreeSet<AnnotationEnum> inheritedAnnotations = new TreeSet<>();
                     if (c.getSuperclassNameIndex() > 0) {
 
                         n = lookInOverriddenMethod(o, c.getSuperclassName(), m, getMinimal);

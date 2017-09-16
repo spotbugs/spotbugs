@@ -91,7 +91,7 @@ public class FilterFilesTab extends Composite {
 
         List<IPathElement> getFilterFiles(UserPreferences prefs) {
             IProject project = propertyPage.getProject();
-            final List<IPathElement> newPaths = new ArrayList<IPathElement>();
+            final List<IPathElement> newPaths = new ArrayList<>();
             Map<String, Boolean> filterPaths = kind.selectedPaths(prefs);
             if (filterPaths != null) {
                 for (Entry<String, Boolean> entry : filterPaths.entrySet()) {
@@ -219,7 +219,7 @@ public class FilterFilesTab extends Composite {
 
             @Override
             Map<String, Boolean> excludedPaths(UserPreferences u) {
-                Map<String, Boolean> excl = new TreeMap<String, Boolean>();
+                Map<String, Boolean> excl = new TreeMap<>();
                 excl.putAll(u.getExcludeFilterFiles());
                 excl.putAll(u.getExcludeBugsFiles());
                 return excl;
@@ -238,7 +238,7 @@ public class FilterFilesTab extends Composite {
 
             @Override
             Map<String, Boolean> excludedPaths(UserPreferences u) {
-                Map<String, Boolean> excl = new TreeMap<String, Boolean>();
+                Map<String, Boolean> excl = new TreeMap<>();
                 excl.putAll(u.getIncludeFilterFiles());
                 excl.putAll(u.getExcludeBugsFiles());
                 return excl;
@@ -257,7 +257,7 @@ public class FilterFilesTab extends Composite {
 
             @Override
             Map<String, Boolean> excludedPaths(UserPreferences u) {
-                Map<String, Boolean> excl = new TreeMap<String, Boolean>();
+                Map<String, Boolean> excl = new TreeMap<>();
                 excl.putAll(u.getIncludeFilterFiles());
                 excl.putAll(u.getExcludeFilterFiles());
                 return excl;

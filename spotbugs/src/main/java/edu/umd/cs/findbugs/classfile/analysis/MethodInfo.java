@@ -98,9 +98,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         MethodDescriptor accessMethodForMethod;
         FieldDescriptor accessMethodForField;
 
-        final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(4);
+        final Map<ClassDescriptor, AnnotationValue> methodAnnotations = new HashMap<>(4);
 
-        final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
+        final Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations = new HashMap<>(
                 4);
 
         @Override
@@ -179,7 +179,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
             Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(parameter);
             if (map == null) {
-                map = new HashMap<ClassDescriptor, AnnotationValue>();
+                map = new HashMap<>();
                 methodParameterAnnotations.put(parameter, map);
             }
             map.put(annotationClass, value);
@@ -243,12 +243,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations;
 
     public static class MethodInfoDatabase {
-        final IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<MethodInfo, Void>();
-        final IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<MethodInfo, Void>();
-        final IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<MethodInfo, MethodDescriptor>();
-        final IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<MethodInfo, FieldDescriptor>();
-        final IdentityHashMap<MethodInfo, Void> identityMethods = new IdentityHashMap<MethodInfo, Void>();
-        final IdentityHashMap<MethodInfo, Void> invokeDynamicMethods = new IdentityHashMap<MethodInfo, Void>();
+        final IdentityHashMap<MethodInfo, Void> unconditionalThrowers = new IdentityHashMap<>();
+        final IdentityHashMap<MethodInfo, Void> unsupportedMethods = new IdentityHashMap<>();
+        final IdentityHashMap<MethodInfo, MethodDescriptor> accessMethodForMethod = new IdentityHashMap<>();
+        final IdentityHashMap<MethodInfo, FieldDescriptor> accessMethodForField = new IdentityHashMap<>();
+        final IdentityHashMap<MethodInfo, Void> identityMethods = new IdentityHashMap<>();
+        final IdentityHashMap<MethodInfo, Void> invokeDynamicMethods = new IdentityHashMap<>();
 
     }
 
@@ -574,7 +574,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(
+        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(
                 methodAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         methodAnnotations = updatedAnnotations;
@@ -591,11 +591,11 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
-        HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
+        HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<>(
                 methodParameterAnnotations);
         Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.get(param);
         if (paramMap == null) {
-            paramMap = new HashMap<ClassDescriptor, AnnotationValue>();
+            paramMap = new HashMap<>();
             updatedAnnotations.put(param, paramMap);
         }
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);

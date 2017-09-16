@@ -714,7 +714,7 @@ public class Hierarchy {
         short opcode = invokeInstruction.getOpcode();
 
         if (opcode == Const.INVOKESTATIC) {
-            HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
+            HashSet<JavaClassAndMethod> result = new HashSet<>();
             JavaClassAndMethod targetMethod = findInvocationLeastUpperBound(invokeInstruction, cpg, CONCRETE_METHOD);
             if (targetMethod != null) {
                 result.add(targetMethod);
@@ -723,7 +723,7 @@ public class Hierarchy {
         }
 
         if (!typeFrame.isValid()) {
-            return new HashSet<JavaClassAndMethod>();
+            return new HashSet<>();
         }
 
         Type receiverType;
@@ -742,7 +742,7 @@ public class Hierarchy {
             int instanceStackLocation = typeFrame.getInstanceStackLocation(invokeInstruction, cpg);
             receiverType = typeFrame.getStackValue(instanceStackLocation);
             if (!(receiverType instanceof ReferenceType)) {
-                return new HashSet<JavaClassAndMethod>();
+                return new HashSet<>();
             }
             receiverTypeIsExact = typeFrame.isExact(instanceStackLocation);
         }
@@ -788,7 +788,7 @@ public class Hierarchy {
      */
     public static Set<JavaClassAndMethod> resolveMethodCallTargets(ReferenceType receiverType,
             InvokeInstruction invokeInstruction, ConstantPoolGen cpg, boolean receiverTypeIsExact) throws ClassNotFoundException {
-        HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
+        HashSet<JavaClassAndMethod> result = new HashSet<>();
 
         if (invokeInstruction.getOpcode() == Const.INVOKESTATIC) {
             throw new IllegalArgumentException();

@@ -31,9 +31,9 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
  * @author pugh
  */
 public class SourceSearcher {
-    final HashSet<String> sourceFound = new HashSet<String>();
+    final HashSet<String> sourceFound = new HashSet<>();
 
-    final HashSet<String> sourceNotFound = new HashSet<String>();
+    final HashSet<String> sourceNotFound = new HashSet<>();
 
     private final SourceFinder sourceFinder;
 

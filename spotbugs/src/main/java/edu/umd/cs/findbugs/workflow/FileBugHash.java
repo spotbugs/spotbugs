@@ -44,11 +44,11 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class FileBugHash {
 
-    Map<String, StringBuilder> hashes = new LinkedHashMap<String, StringBuilder>();
+    Map<String, StringBuilder> hashes = new LinkedHashMap<>();
 
-    Map<String, Integer> counts = new HashMap<String, Integer>();
+    Map<String, Integer> counts = new HashMap<>();
 
-    Map<String, Integer> sizes = new HashMap<String, Integer>();
+    Map<String, Integer> sizes = new HashMap<>();
 
     MessageDigest digest = Util.getMD5Digest();
 

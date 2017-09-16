@@ -57,7 +57,7 @@ public class RecentMenu {
     JMenu recentMenu;
 
     public RecentMenu(JMenu menu) {
-        recentFiles = new LimitedArrayList<File>();
+        recentFiles = new LimitedArrayList<>();
         recentMenu = menu;
 
         for (File f : GUISaveState.getInstance().getRecentFiles()) {

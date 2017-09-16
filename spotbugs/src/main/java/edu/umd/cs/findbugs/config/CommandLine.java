@@ -63,13 +63,13 @@ public abstract class CommandLine {
     int maxWidth;
 
     public CommandLine() {
-        this.unlistedOptions = new HashSet<String>();
-        this.optionList = new LinkedList<String>();
-        this.optionGroups = new HashMap<Integer, String>();
-        this.requiresArgumentSet = new HashSet<String>();
-        this.optionDescriptionMap = new HashMap<String, String>();
-        this.optionExtraPartSynopsisMap = new HashMap<String, String>();
-        this.argumentDescriptionMap = new HashMap<String, String>();
+        this.unlistedOptions = new HashSet<>();
+        this.optionList = new LinkedList<>();
+        this.optionGroups = new HashMap<>();
+        this.requiresArgumentSet = new HashSet<>();
+        this.optionDescriptionMap = new HashMap<>();
+        this.optionExtraPartSynopsisMap = new HashMap<>();
+        this.argumentDescriptionMap = new HashMap<>();
         this.maxWidth = 0;
     }
 
@@ -178,7 +178,7 @@ public abstract class CommandLine {
         // -adjustPriority
         // must always come after -pluginList).
         int lastOptionIndex = parse(argv, true);
-        ArrayList<String> resultList = new ArrayList<String>();
+        ArrayList<String> resultList = new ArrayList<>();
         ArrayList<String> expandedOptionsList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
         for (int i = 0; i < lastOptionIndex; i++) {
             String arg = argv[i];
@@ -204,7 +204,7 @@ public abstract class CommandLine {
     }
 
     public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
-        ArrayList<String> resultList = new ArrayList<String>();
+        ArrayList<String> resultList = new ArrayList<>();
         URL u = DetectorFactoryCollection.getCoreResource("analysisOptions.properties");
         if (u != null) {
             BufferedReader reader = null;

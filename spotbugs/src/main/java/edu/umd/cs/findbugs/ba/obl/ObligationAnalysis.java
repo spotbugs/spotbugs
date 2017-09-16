@@ -348,7 +348,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
             if (!obligationSet.isEmpty()) {
                 // Add the state
-                HashMap<ObligationSet, State> map = new HashMap<ObligationSet, State>();
+                HashMap<ObligationSet, State> map = new HashMap<>();
                 map.put(obligationSet, state);
                 cachedEntryFact.replaceMap(map);
             }
@@ -420,7 +420,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             // we're building.
             final Map<ObligationSet, State> updatedStateMap = result.createEmptyMap();
             // Build a Set of all ObligationSets.
-            Set<ObligationSet> allObligationSets = new HashSet<ObligationSet>();
+            Set<ObligationSet> allObligationSets = new HashSet<>();
             allObligationSets.addAll(inputFact.getAllObligationSets());
             allObligationSets.addAll(result.getAllObligationSets());
 

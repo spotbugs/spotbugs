@@ -62,7 +62,7 @@ public class LockChecker {
      * Constructor.
      */
     public LockChecker(MethodDescriptor methodDescriptor) {
-        this.cache = new HashMap<Location, LockSet>();
+        this.cache = new HashMap<>();
         this.methodDescriptor = methodDescriptor;
     }
 

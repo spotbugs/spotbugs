@@ -60,7 +60,7 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
     public TargetEnumeratingVisitor(InstructionHandle handle, ConstantPoolGen constPoolGen) {
         this.handle = handle;
         this.constPoolGen = constPoolGen;
-        targetList = new LinkedList<Target>();
+        targetList = new LinkedList<>();
         isBranch = isReturn = isThrow = isExit = false;
 
         handle.getInstruction().accept(this);

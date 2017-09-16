@@ -204,7 +204,7 @@ public class ExportWizardPage extends WizardPage {
      */
     private String collectBugsData() {
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        List<Record> lines = new ArrayList<Record>();
+        List<Record> lines = new ArrayList<>();
         for (IProject project : projects) {
             Record line = createProjectLine(project);
             if (line != null) {

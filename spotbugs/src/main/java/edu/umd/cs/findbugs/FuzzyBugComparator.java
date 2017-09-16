@@ -116,7 +116,7 @@ public class FuzzyBugComparator implements WarningComparator {
         if (DEBUG) {
             System.out.println("Created fuzzy comparator");
         }
-        this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
+        this.bugCollectionMap = new IdentityHashMap<>();
         // this.classHashToCanonicalClassNameMap = new TreeMap<ClassHash,
         // String>();
     }
@@ -312,7 +312,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
     // See "FindBugsAnnotationDescriptions.properties"
     @StaticConstant
-    private static final HashSet<String> significantDescriptionSet = new HashSet<String>();
+    private static final HashSet<String> significantDescriptionSet = new HashSet<>();
     static {
         // Classes, methods, and fields are significant.
         significantDescriptionSet.add("CLASS_DEFAULT");

@@ -88,9 +88,9 @@ public class ASTUtil {
     private static Map<String, Class<?>> primitiveTypes;
 
     static {
-        defaultImportComparator = new ImportDeclarationComparator<ImportDeclaration>();
+        defaultImportComparator = new ImportDeclarationComparator<>();
 
-        primitiveTypes = new HashMap<String, Class<?>>();
+        primitiveTypes = new HashMap<>();
         primitiveTypes.put("B", byte.class);
         primitiveTypes.put("C", char.class);
         primitiveTypes.put("S", short.class);
@@ -119,7 +119,7 @@ public class ASTUtil {
         requireNonNull(imports, "imports");
 
         final AST ast = rewrite.getAST();
-        SortedSet<ImportDeclaration> importDeclarations = new TreeSet<ImportDeclaration>(comparator);
+        SortedSet<ImportDeclaration> importDeclarations = new TreeSet<>(comparator);
         for (String importName : imports) {
             ImportDeclaration importDeclaration = ast.newImportDeclaration();
             importDeclaration.setName(ast.newName(importName));

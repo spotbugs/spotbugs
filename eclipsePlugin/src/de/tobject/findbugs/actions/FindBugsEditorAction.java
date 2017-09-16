@@ -52,7 +52,7 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
     public final void run(final IAction action) {
         if (currentEditor != null) {
             IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
-            List<WorkItem> list = new ArrayList<WorkItem>();
+            List<WorkItem> list = new ArrayList<>();
             list.add(new WorkItem(file));
             work(currentEditor, file, list);
         }

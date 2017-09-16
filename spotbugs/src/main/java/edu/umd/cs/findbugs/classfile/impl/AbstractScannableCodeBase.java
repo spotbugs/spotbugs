@@ -48,7 +48,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
     public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
         this.codeBaseLocator = codeBaseLocator;
         this.lastModifiedTime = -1L;
-        this.resourceNameTranslationMap = new HashMap<String, String>();
+        this.resourceNameTranslationMap = new HashMap<>();
     }
 
     /*

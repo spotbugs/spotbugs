@@ -64,7 +64,7 @@ public class ClassFeatureSet implements XMLWriteable {
      * Constructor. Creates an empty feature set.
      */
     public ClassFeatureSet() {
-        this.featureSet = new HashSet<String>();
+        this.featureSet = new HashSet<>();
     }
 
     /**

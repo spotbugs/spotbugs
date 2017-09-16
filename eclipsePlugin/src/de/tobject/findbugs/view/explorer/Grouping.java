@@ -31,7 +31,7 @@ public class Grouping {
     private final LinkedList<GroupType> groupOrder;
 
     private Grouping(List<GroupType> types) {
-        groupOrder = new LinkedList<GroupType>(types);
+        groupOrder = new LinkedList<>(types);
         // at least marker should be shown
         if (!groupOrder.contains(GroupType.Marker)) {
             groupOrder.add(GroupType.Marker);
@@ -39,7 +39,7 @@ public class Grouping {
     }
 
     private static Grouping createDefault() {
-        List<GroupType> order = new ArrayList<GroupType>();
+        List<GroupType> order = new ArrayList<>();
         order.add(GroupType.Project);
         order.add(GroupType.BugRank);
         order.add(GroupType.Confidence);
@@ -55,7 +55,7 @@ public class Grouping {
 
     @Nonnull
     public List<GroupType> asList() {
-        return new LinkedList<GroupType>(groupOrder);
+        return new LinkedList<>(groupOrder);
     }
 
     @Nonnull
@@ -94,7 +94,7 @@ public class Grouping {
             return createDefault();
         }
         StringTokenizer st = new StringTokenizer(saved, "[] ,", false);
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         while (st.hasMoreTokens()) {
             GroupType type = GroupType.getType(st.nextToken());
             types.add(type);

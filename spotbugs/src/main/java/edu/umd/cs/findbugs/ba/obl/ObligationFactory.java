@@ -45,14 +45,14 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 public class ObligationFactory {
     private final Map<String, Obligation> classNameToObligationMap;
 
-    private final Set<String> slashedClassNames = new HashSet<String>();
+    private final Set<String> slashedClassNames = new HashSet<>();
 
     // // XXX: this is just for debugging.
     // static ObligationFactory lastInstance;
 
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public ObligationFactory() {
-        this.classNameToObligationMap = new HashMap<String, Obligation>();
+        this.classNameToObligationMap = new HashMap<>();
         // lastInstance = this;
     }
 

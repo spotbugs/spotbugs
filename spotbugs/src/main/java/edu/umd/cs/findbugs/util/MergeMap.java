@@ -56,7 +56,7 @@ public abstract class MergeMap<K, V> {
     protected abstract V mergeValues(V oldValue, V newValue);
 
     public MergeMap() {
-        map = new HashMap<K, V>();
+        map = new HashMap<>();
     }
 
     public MergeMap(Map<K, V> map) {
@@ -91,7 +91,7 @@ public abstract class MergeMap<K, V> {
 
     public static void main(String args[]) {
 
-        MergeMap<String, Integer> m = new MaxMap<String, Integer>();
+        MergeMap<String, Integer> m = new MaxMap<>();
 
         m.put("a", 1);
         m.put("a", 2);

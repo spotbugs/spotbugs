@@ -44,8 +44,8 @@ public class DirectlyRelevantTypeQualifiersDatabase {
      * Constructor.
      */
     public DirectlyRelevantTypeQualifiersDatabase() {
-        methodToDirectlyRelevantQualifiersMap = new HashMap<MethodDescriptor, Collection<TypeQualifierValue<?>>>();
-        allKnownQualifiers = new HashSet<TypeQualifierValue<?>>();
+        methodToDirectlyRelevantQualifiersMap = new HashMap<>();
+        allKnownQualifiers = new HashSet<>();
     }
 
     /**

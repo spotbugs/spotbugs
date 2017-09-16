@@ -95,7 +95,7 @@ class NumberedParagraphView extends ParagraphView {
         return lineCount;
     }
 
-    static WeakHashMap<Element, Integer> elementLineNumberCache = new WeakHashMap<Element, Integer>();
+    static WeakHashMap<Element, Integer> elementLineNumberCache = new WeakHashMap<>();
 
     public Integer getLineNumber() {
 

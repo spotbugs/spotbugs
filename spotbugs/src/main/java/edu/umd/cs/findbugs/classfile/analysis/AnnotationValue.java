@@ -38,9 +38,9 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 public class AnnotationValue {
     private final ClassDescriptor annotationClass;
 
-    private final Map<String, Object> valueMap = new HashMap<String, Object>(4);
+    private final Map<String, Object> valueMap = new HashMap<>(4);
 
-    private final Map<String, Object> typeMap = new HashMap<String, Object>(4);
+    private final Map<String, Object> typeMap = new HashMap<>(4);
 
     /**
      * Constructor.
@@ -184,7 +184,7 @@ public class AnnotationValue {
         /**
          *
          */
-        private final List<Object> result = new LinkedList<Object>();
+        private final List<Object> result = new LinkedList<>();
 
         /**
          * @param name

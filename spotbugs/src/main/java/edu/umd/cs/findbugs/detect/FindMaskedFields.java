@@ -50,11 +50,11 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 
     private int numParms;
 
-    private final Map<String, Field> classFields = new HashMap<String, Field>();
+    private final Map<String, Field> classFields = new HashMap<>();
 
     private boolean staticMethod;
 
-    private final Collection<RememberedBug> rememberedBugs = new LinkedList<RememberedBug>();
+    private final Collection<RememberedBug> rememberedBugs = new LinkedList<>();
 
     static class RememberedBug {
         BugInstance bug;

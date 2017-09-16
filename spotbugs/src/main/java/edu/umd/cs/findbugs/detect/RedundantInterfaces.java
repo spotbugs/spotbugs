@@ -55,7 +55,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
 
         try {
             JavaClass superObj = obj.getSuperClass();
-            SortedSet<String> redundantInfNames = new TreeSet<String>();
+            SortedSet<String> redundantInfNames = new TreeSet<>();
 
             for (String interfaceName : interfaceNames) {
                 if (!"java.io.Serializable".equals(interfaceName)) {

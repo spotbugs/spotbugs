@@ -154,13 +154,13 @@ public class Project implements XMLWriteable {
      * Create an anonymous project.
      */
     public Project() {
-        enabledPlugins = new HashMap<String,Boolean>();
+        enabledPlugins = new HashMap<>();
         configuration = UserPreferences.createDefaultUserPreferences();
-        analysisTargets = new LinkedList<String>();
-        srcDirList = new LinkedList<String>();
-        auxClasspathEntryList = new LinkedList<String>();
+        analysisTargets = new LinkedList<>();
+        srcDirList = new LinkedList<>();
+        auxClasspathEntryList = new LinkedList<>();
         isModified = false;
-        currentWorkingDirectoryList = new ArrayList<File>();
+        currentWorkingDirectoryList = new ArrayList<>();
     }
 
     /**
@@ -199,9 +199,9 @@ public class Project implements XMLWriteable {
     }
 
     public static <T> List<T> appendWithoutDuplicates(List<T> lst1, List<T> lst2) {
-        LinkedHashSet<T> joined = new LinkedHashSet<T>(lst1);
+        LinkedHashSet<T> joined = new LinkedHashSet<>(lst1);
         joined.addAll(lst2);
-        return new ArrayList<T>(joined);
+        return new ArrayList<>(joined);
 
     }
 
@@ -461,8 +461,8 @@ public class Project implements XMLWriteable {
          * Constructor. Creates an empty worklist.
          */
         public WorkList() {
-            this.itemList = new LinkedList<WorkListItem>();
-            this.addedSet = new HashSet<String>();
+            this.itemList = new LinkedList<>();
+            this.addedSet = new HashSet<>();
         }
 
         /**
@@ -535,7 +535,7 @@ public class Project implements XMLWriteable {
      */
     @Deprecated
     public List<String> getImplicitClasspathEntryList() {
-        final LinkedList<String> implicitClasspath = new LinkedList<String>();
+        final LinkedList<String> implicitClasspath = new LinkedList<>();
         WorkList workList = new WorkList();
 
         // Prime the worklist by adding the zip/jar files
@@ -821,7 +821,7 @@ public class Project implements XMLWriteable {
             writeElementList(xmlOutput, JAR_ELEMENT_NAME, convertToRelative(analysisTargets, base));
             writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, convertToRelative(auxClasspathEntryList, base));
             writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, convertToRelative(srcDirList, base));
-            List<String> cwdStrings = new ArrayList<String>();
+            List<String> cwdStrings = new ArrayList<>();
             for (File file : currentWorkingDirectoryList) {
                 cwdStrings.add(file.getPath());
             }
@@ -864,7 +864,7 @@ public class Project implements XMLWriteable {
     private static final boolean FILE_IGNORE_CASE = SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
 
     private Iterable<String> convertToRelative(List<String> paths, String base) {
-        List<String> newList = new ArrayList<String>(paths.size());
+        List<String> newList = new ArrayList<>(paths.size());
         for (String path : paths) {
             newList.add(convertToRelative(path, base));
         }
@@ -988,7 +988,7 @@ public class Project implements XMLWriteable {
      * @return A list of at least one candidate path for the given filename.
      */
     private List<String> makeAbsoluteCwdCandidates(String fileName) {
-        List<String> candidates = new ArrayList<String>();
+        List<String> candidates = new ArrayList<>();
 
         boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
         if (hasProtocol) {
@@ -1095,7 +1095,7 @@ public class Project implements XMLWriteable {
     }
 
     public Iterable<String> getResolvedSourcePaths() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String s : srcDirList) {
             boolean hasProtocol = (URLClassPath.getURLProtocol(s) != null);
             if (hasProtocol) {

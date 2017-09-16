@@ -148,7 +148,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
      */
     public FindbugsPropertyPage() {
         super();
-        visibleDetectors = new HashMap<DetectorFactory, Boolean>();
+        visibleDetectors = new HashMap<>();
     }
 
     @Override

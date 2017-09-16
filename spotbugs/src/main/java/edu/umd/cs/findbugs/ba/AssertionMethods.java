@@ -79,7 +79,7 @@ public class AssertionMethods implements Constants {
     }
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
+    private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<>();
 
     static {
         String userProperty = SystemProperties.getProperty("findbugs.assertionmethods");

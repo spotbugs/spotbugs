@@ -131,7 +131,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
      * Classes that are suspicious if compared by reference.
      */
     @StaticConstant
-    private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<String>();
+    private static final HashSet<String> DEFAULT_SUSPICIOUS_SET = new HashSet<>();
 
     static {
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Boolean");
@@ -654,7 +654,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     public FindRefComparison(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        this.suspiciousSet = new HashSet<String>(DEFAULT_SUSPICIOUS_SET);
+        this.suspiciousSet = new HashSet<>(DEFAULT_SUSPICIOUS_SET);
 
         // Check frc.suspicious system property for additional suspicious types
         // to check
@@ -745,11 +745,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         // Normally we'll only report the first highest-priority warning,
         // but if in relaxed mode or if REPORT_ALL_REF_COMPARISONS is set,
         // then we'll report everything.
-        LinkedList<WarningWithProperties> refComparisonList = new LinkedList<WarningWithProperties>();
-        LinkedList<WarningWithProperties> stringComparisonList = new LinkedList<WarningWithProperties>();
+        LinkedList<WarningWithProperties> refComparisonList = new LinkedList<>();
+        LinkedList<WarningWithProperties> stringComparisonList = new LinkedList<>();
 
 
-        comparedForEqualityInThisMethod = new HashMap<String,Integer>();
+        comparedForEqualityInThisMethod = new HashMap<>();
         CFG cfg = classContext.getCFG(method);
         DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
         ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
@@ -1005,7 +1005,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         // ? D high
         // S ? normal
         // ? S normal
-        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
         if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
             propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
         } else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
@@ -1068,7 +1068,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, location.getHandle());
 
-        refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<WarningProperty>(),
+        refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet<>(),
                 sourceLineAnnotation, location));
     }
 
@@ -1213,7 +1213,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 priorityModifier = 0;
             }
             if (true) {
-                Set<XMethod> targets = new HashSet<XMethod>();
+                Set<XMethod> targets = new HashSet<>();
                 boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
                 if (allOk) {
                     priorityModifier += 2;

@@ -62,10 +62,10 @@ import edu.umd.cs.findbugs.log.Profiler.Profile;
 public class FindBugs2Eclipse extends FindBugs2 {
 
     private static WeakHashMap<IProject, SoftReference<List<String>>> auxClassPaths =
-        new WeakHashMap<IProject, SoftReference<List<String>>>();
+        new WeakHashMap<>();
 
     private static WeakHashMap<IProject, SoftReference<Map<ClassDescriptor, Object>>> classAnalysisCache =
-        new WeakHashMap<IProject, SoftReference<Map<ClassDescriptor, Object>>>();
+        new WeakHashMap<>();
 
     private AnalysisCache analysisCache;
     private final IProject project;
@@ -81,7 +81,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
             } else if (event.getResource() instanceof IProject) {
                 cleanClassClache((IProject) event.getResource());
             } else if(event.getDelta() != null) {
-                final Set<IProject> affectedProjects = new HashSet<IProject>();
+                final Set<IProject> affectedProjects = new HashSet<>();
                 final IResourceDelta delta = event.getDelta();
                 try {
                     delta.accept(new IResourceDeltaVisitor() {
@@ -190,8 +190,8 @@ public class FindBugs2Eclipse extends FindBugs2 {
         }
         if(cacheClassData) {
             // create new reference not reachable to anyone except us
-            classAnalysis = new HashMap<ClassDescriptor, Object>(classAnalysis);
-            classAnalysisCache.put(project, new SoftReference<Map<ClassDescriptor, Object>>(classAnalysis));
+            classAnalysis = new HashMap<>(classAnalysis);
+            classAnalysisCache.put(project, new SoftReference<>(classAnalysis));
         }
         reportExtraData(data);
     }
@@ -256,10 +256,10 @@ public class FindBugs2Eclipse extends FindBugs2 {
         SoftReference<List<String>> wr = auxClassPaths.get(project);
         List<String> oldAuxCp = wr != null ? wr.get() : null;
         if(oldAuxCp != null && !oldAuxCp.equals(auxClassPath)) {
-            auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<String>(auxClassPath)));
+            auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<>(auxClassPath)));
             classAnalysisCache.remove(project);
         } else if(oldAuxCp == null){
-            auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<String>(auxClassPath)));
+            auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<>(auxClassPath)));
         }
     }
 }

@@ -38,7 +38,7 @@ public class JavaScanner {
     public final static int EOF = -1;
 
     @StaticConstant
-    private final static HashSet<String> KEYWORDS = new HashSet<String>();
+    private final static HashSet<String> KEYWORDS = new HashSet<>();
 
     private final static int MAX_KEYWORD_LENGTH;
 

@@ -44,21 +44,21 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 public class InitializationChain extends BytecodeScanningDetector {
-    Set<String> requires = new TreeSet<String>();
+    Set<String> requires = new TreeSet<>();
 
-    Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
+    Map<String, Set<String>> classRequires = new TreeMap<>();
 
 
 
     private final BugReporter bugReporter;
 
-    private final Map<XMethod, Set<XField>> staticFieldsRead = new HashMap<XMethod, Set<XField>>();
-    private final Set<XField> staticFieldsReadInAnyConstructor = new HashSet<XField>();
-    private Set<XField> fieldsReadInThisConstructor = new HashSet<XField>();
+    private final Map<XMethod, Set<XField>> staticFieldsRead = new HashMap<>();
+    private final Set<XField> staticFieldsReadInAnyConstructor = new HashSet<>();
+    private Set<XField> fieldsReadInThisConstructor = new HashSet<>();
 
-    private final Set<XMethod> constructorsInvokedInStaticInitializer = new HashSet<XMethod>();
-    private final List<InvocationInfo> invocationInfo = new ArrayList<InvocationInfo>();
-    private final Set<XField> warningGiven = new HashSet<XField>();
+    private final Set<XMethod> constructorsInvokedInStaticInitializer = new HashSet<>();
+    private final List<InvocationInfo> invocationInfo = new ArrayList<>();
+    private final Set<XField> warningGiven = new HashSet<>();
 
     private InvocationInfo lastInvocation;
 
@@ -80,7 +80,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     @Override
     protected Iterable<Method> getMethodVisitOrder(JavaClass obj) {
-        ArrayList<Method> visitOrder = new ArrayList<Method>();
+        ArrayList<Method> visitOrder = new ArrayList<>();
         Method staticInitializer = null;
         for(Method m : obj.getMethods()) {
             String name = m.getName();
@@ -100,7 +100,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     @Override
     public void visit(Code obj) {
-        fieldsReadInThisConstructor  = new HashSet<XField>();
+        fieldsReadInThisConstructor  = new HashSet<>();
         super.visit(obj);
         staticFieldsRead.put(getXMethod(), fieldsReadInThisConstructor);
         requires.remove(getDottedClassName());
@@ -113,7 +113,7 @@ public class InitializationChain extends BytecodeScanningDetector {
         }
         if (!requires.isEmpty()) {
             classRequires.put(getDottedClassName(), requires);
-            requires = new TreeSet<String>();
+            requires = new TreeSet<>();
         }
     }
 
@@ -186,11 +186,11 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     public void compute() {
         Set<String> allClasses = classRequires.keySet();
-        Set<String> emptyClasses = new TreeSet<String>();
+        Set<String> emptyClasses = new TreeSet<>();
         for (String c : allClasses) {
             Set<String> needs = classRequires.get(c);
             needs.retainAll(allClasses);
-            Set<String> extra = new TreeSet<String>();
+            Set<String> extra = new TreeSet<>();
             for (String need : needs) {
                 extra.addAll(classRequires.get(need));
             }

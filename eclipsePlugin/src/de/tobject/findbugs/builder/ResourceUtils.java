@@ -132,8 +132,8 @@ public class ResourceUtils {
      */
     public static List<WorkItem> collectIncremental(IResourceDelta delta) {
         // XXX deleted packages should be considered to remove markers
-        List<WorkItem> result = new ArrayList<WorkItem>();
-        List<IResourceDelta> foldersDelta = new ArrayList<IResourceDelta>();
+        List<WorkItem> result = new ArrayList<>();
+        List<IResourceDelta> foldersDelta = new ArrayList<>();
         IResourceDelta affectedChildren[] = delta.getAffectedChildren();
         for (int i = 0; i < affectedChildren.length; i++) {
             IResourceDelta childDelta = affectedChildren[i];
@@ -190,7 +190,7 @@ public class ResourceUtils {
      *         If project itself was selected, then key is the same as value.
      */
     public static Map<IProject, List<WorkItem>> getResourcesPerProject(IStructuredSelection structuredSelection) {
-        Map<IProject, List<WorkItem>> projectsMap = new HashMap<IProject, List<WorkItem>>();
+        Map<IProject, List<WorkItem>> projectsMap = new HashMap<>();
         for (Iterator<?> iter = structuredSelection.iterator(); iter.hasNext();) {
             Object element = iter.next();
             WorkItem workItem = getWorkItem(element);
@@ -226,7 +226,7 @@ public class ResourceUtils {
      * @return non null set with work items, which may be empty
      */
     public static Set<WorkItem> getResources(IWorkingSet wset) {
-        Set<WorkItem> set = new HashSet<WorkItem>();
+        Set<WorkItem> set = new HashSet<>();
         boolean aggregateWorkingSet = wset.isAggregateWorkingSet();
         // IAggregateWorkingSet was introduced in Eclipse 3.5
         if (aggregateWorkingSet && wset instanceof IAggregateWorkingSet) {
@@ -262,7 +262,7 @@ public class ResourceUtils {
         }
         List<WorkItem> resources = projectsMap.get(project);
         if (resources == null) {
-            resources = new ArrayList<WorkItem>();
+            resources = new ArrayList<>();
             projectsMap.put(project, resources);
         }
         // do not need to check for duplicates, cause user cannot select
@@ -282,7 +282,7 @@ public class ResourceUtils {
     public static List<WorkItem> getResources(ChangeSet set) {
         if (set != null && !set.isEmpty()) {
             IResource[] resources = set.getResources();
-            List<WorkItem> filtered = new ArrayList<WorkItem>();
+            List<WorkItem> filtered = new ArrayList<>();
             for (IResource resource : resources) {
                 if (resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource)) {
                     // Ignore non java files

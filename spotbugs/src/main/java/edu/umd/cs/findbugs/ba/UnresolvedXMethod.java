@@ -184,11 +184,11 @@ class UnresolvedXMethod extends AbstractMethod {
      */
     @Override
     public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
-        HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<Integer, Map<ClassDescriptor, AnnotationValue>>(
+        HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<>(
                 methodParameterAnnotations);
         Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.get(param);
         if (paramMap == null) {
-            paramMap = new HashMap<ClassDescriptor, AnnotationValue>();
+            paramMap = new HashMap<>();
             updatedAnnotations.put(param, paramMap);
         }
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
@@ -241,7 +241,7 @@ class UnresolvedXMethod extends AbstractMethod {
      */
     @Override
     public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(
+        HashMap<ClassDescriptor, AnnotationValue> updatedAnnotations = new HashMap<>(
                 methodAnnotations);
         updatedAnnotations.put(annotationValue.getAnnotationClass(), annotationValue);
         methodAnnotations = updatedAnnotations;

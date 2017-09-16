@@ -270,7 +270,7 @@ public class AnnotationVisitor extends PreorderVisitor {
                     continue;
                 }
                 name = ClassName.toDottedClassName(name);
-                Map<String, ElementValue> map = new HashMap<String, ElementValue>();
+                Map<String, ElementValue> map = new HashMap<>();
                 for (ElementValuePair ev : ae.getElementValuePairs()) {
                     map.put(ev.getNameString(), ev.getValue());
                 }
@@ -296,7 +296,7 @@ public class AnnotationVisitor extends PreorderVisitor {
                 continue;
             }
             name = ClassName.toDottedClassName(name);
-            Map<String, ElementValue> map = new HashMap<String, ElementValue>();
+            Map<String, ElementValue> map = new HashMap<>();
             for (ElementValuePair ev : ae.getElementValuePairs()) {
                 map.put(ev.getNameString(), ev.getValue());
             }

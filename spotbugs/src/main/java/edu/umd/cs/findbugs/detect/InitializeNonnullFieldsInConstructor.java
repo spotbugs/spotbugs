@@ -40,11 +40,11 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
 
     final BugReporter bugReporter;
 
-    final HashSet<XField> initializedFields = new HashSet<XField>();
+    final HashSet<XField> initializedFields = new HashSet<>();
 
-    final HashSet<XField> nonnullFields = new HashSet<XField>();
+    final HashSet<XField> nonnullFields = new HashSet<>();
 
-    final HashSet<XField> nonnullStaticFields = new HashSet<XField>();
+    final HashSet<XField> nonnullStaticFields = new HashSet<>();
 
     public InitializeNonnullFieldsInConstructor(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

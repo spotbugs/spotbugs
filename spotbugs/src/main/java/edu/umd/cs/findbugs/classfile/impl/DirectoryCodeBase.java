@@ -203,7 +203,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
         String relativeFileName = fileName.substring(dirPath.length());
         File file = new File(relativeFileName);
-        LinkedList<String> partList = new LinkedList<String>();
+        LinkedList<String> partList = new LinkedList<>();
         do {
             partList.addFirst(file.getName());
         } while ((file = file.getParentFile()) != null);

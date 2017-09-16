@@ -31,7 +31,7 @@ public class SimilarClassSet {
     private final List<ClassFeatureSet> memberList;
 
     public SimilarClassSet() {
-        this.memberList = new LinkedList<ClassFeatureSet>();
+        this.memberList = new LinkedList<>();
     }
 
     public boolean shouldContain(ClassFeatureSet candidate) {

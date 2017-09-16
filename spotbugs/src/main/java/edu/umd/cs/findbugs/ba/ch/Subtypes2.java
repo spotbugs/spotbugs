@@ -85,7 +85,7 @@ public class Subtypes2 {
      * Object to record the results of a supertype search.
      */
     private static class SupertypeQueryResults {
-        private final Set<ClassDescriptor> supertypeSet = new HashSet<ClassDescriptor>(4);
+        private final Set<ClassDescriptor> supertypeSet = new HashSet<>(4);
 
         private boolean encounteredMissingClasses = false;
 
@@ -115,13 +115,13 @@ public class Subtypes2 {
      */
     public Subtypes2() {
         this.graph = new InheritanceGraph();
-        this.classDescriptorToVertexMap = new HashMap<ClassDescriptor, ClassVertex>();
-        this.supertypeSetMap = new MapCache<ClassDescriptor, SupertypeQueryResults>(500);
-        this.subtypeSetMap = new MapCache<ClassDescriptor, Set<ClassDescriptor>>(500);
-        this.xclassSet = new HashSet<XClass>();
+        this.classDescriptorToVertexMap = new HashMap<>();
+        this.supertypeSetMap = new MapCache<>(500);
+        this.subtypeSetMap = new MapCache<>(500);
+        this.xclassSet = new HashSet<>();
         this.SERIALIZABLE = ObjectTypeFactory.getInstance("java.io.Serializable");
         this.CLONEABLE = ObjectTypeFactory.getInstance("java.lang.Cloneable");
-        this.firstCommonSuperclassQueryCache = new DualKeyHashMap<ReferenceType, ReferenceType, ReferenceType>();
+        this.firstCommonSuperclassQueryCache = new DualKeyHashMap<>();
     }
 
     /**
@@ -264,7 +264,7 @@ public class Subtypes2 {
             throw new IllegalStateException();
         }
 
-        LinkedList<XClass> workList = new LinkedList<XClass>();
+        LinkedList<XClass> workList = new LinkedList<>();
         workList.add(xclass);
 
         while (!workList.isEmpty()) {
@@ -800,7 +800,7 @@ public class Subtypes2 {
      * @return list of all superclass vertices in order
      */
     private ArrayList<ClassVertex> getAllSuperclassVertices(ClassVertex vertex) throws ClassNotFoundException {
-        ArrayList<ClassVertex> result = new ArrayList<ClassVertex>();
+        ArrayList<ClassVertex> result = new ArrayList<>();
         ClassVertex cur = vertex;
         while (cur != null) {
             if (!cur.isResolved()) {
@@ -858,7 +858,7 @@ public class Subtypes2 {
 
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
 
-        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> result = new HashSet<>();
         Iterator<InheritanceEdge> i = graph.incomingEdgeIterator(startVertex);
         while (i.hasNext()) {
             InheritanceEdge edge = i.next();
@@ -881,7 +881,7 @@ public class Subtypes2 {
     public Set<ClassDescriptor> getTransitiveCommonSubtypes(ClassDescriptor classDescriptor1, ClassDescriptor classDescriptor2)
             throws ClassNotFoundException {
         Set<ClassDescriptor> subtypes1 = getSubtypes(classDescriptor1);
-        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>(subtypes1);
+        Set<ClassDescriptor> result = new HashSet<>(subtypes1);
         Set<ClassDescriptor> subtypes2 = getSubtypes(classDescriptor2);
         result.retainAll(subtypes2);
         return result;
@@ -908,7 +908,7 @@ public class Subtypes2 {
 
         public SupertypeTraversalPath(@CheckForNull ClassVertex next) {
             this.next = next;
-            this.seen = new HashSet<ClassDescriptor>();
+            this.seen = new HashSet<>();
         }
 
         @Override
@@ -956,7 +956,7 @@ public class Subtypes2 {
      *             if the start vertex cannot be resolved
      */
     public void traverseSupertypes(ClassDescriptor start, InheritanceGraphVisitor visitor) throws ClassNotFoundException {
-        LinkedList<SupertypeTraversalPath> workList = new LinkedList<SupertypeTraversalPath>();
+        LinkedList<SupertypeTraversalPath> workList = new LinkedList<>();
 
         ClassVertex startVertex = resolveClassVertex(start);
         workList.addLast(new SupertypeTraversalPath(startVertex));
@@ -1087,12 +1087,12 @@ public class Subtypes2 {
      * @throws ClassNotFoundException
      */
     private Set<ClassDescriptor> computeKnownSubtypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+        LinkedList<ClassVertex> workList = new LinkedList<>();
 
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
         workList.addLast(startVertex);
 
-        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> result = new HashSet<>();
 
         while (!workList.isEmpty()) {
             ClassVertex current = workList.removeFirst();
@@ -1113,7 +1113,7 @@ public class Subtypes2 {
             }
         }
 
-        return new HashSet<ClassDescriptor>(result);
+        return new HashSet<>(result);
     }
 
 
@@ -1124,11 +1124,11 @@ public class Subtypes2 {
             return true;
         }
 
-        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+        LinkedList<ClassVertex> workList = new LinkedList<>();
 
         workList.addLast(startVertex);
 
-        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> result = new HashSet<>();
 
         while (!workList.isEmpty()) {
             ClassVertex current = workList.removeFirst();
@@ -1154,12 +1154,12 @@ public class Subtypes2 {
         return false;
     }
     private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+        LinkedList<ClassVertex> workList = new LinkedList<>();
 
         ClassVertex startVertex = resolveClassVertex(classDescriptor);
         workList.addLast(startVertex);
 
-        Set<ClassDescriptor> result = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> result = new HashSet<>();
 
         while (!workList.isEmpty()) {
             ClassVertex current = workList.removeFirst();
@@ -1223,7 +1223,7 @@ public class Subtypes2 {
         // Add all known superclasses/superinterfaces.
         // The ClassVertexes for all of them should be in the
         // InheritanceGraph by now.
-        LinkedList<ClassVertex> workList = new LinkedList<ClassVertex>();
+        LinkedList<ClassVertex> workList = new LinkedList<>();
         workList.addLast(typeVertex);
         while (!workList.isEmpty()) {
             ClassVertex vertex = workList.removeFirst();

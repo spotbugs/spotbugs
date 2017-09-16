@@ -105,7 +105,7 @@ implements DFSEdgeTypes {
 
         timestamp = 0;
 
-        topologicalSortList = new LinkedList<VertexType>();
+        topologicalSortList = new LinkedList<>();
     }
 
     // Abstract methods allow the concrete subclass to define
@@ -146,7 +146,7 @@ implements DFSEdgeTypes {
     }
 
     public Collection<VertexType> unvisitedVertices() {
-        LinkedList<VertexType> result = new LinkedList<VertexType>();
+        LinkedList<VertexType> result = new LinkedList<>();
 
         for (Iterator<VertexType> i = graph.vertexIterator(); i.hasNext();) {
             VertexType v = i.next();
@@ -302,7 +302,7 @@ implements DFSEdgeTypes {
                 searchTreeCallback.startSearchTree(searchTreeRoot);
             }
 
-            ArrayList<Visit> stack = new ArrayList<Visit>(graph.getNumVertexLabels());
+            ArrayList<Visit> stack = new ArrayList<>(graph.getNumVertexLabels());
             stack.add(new Visit(searchTreeRoot));
 
             while (!stack.isEmpty()) {

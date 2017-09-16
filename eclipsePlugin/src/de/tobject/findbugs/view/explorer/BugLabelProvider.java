@@ -170,8 +170,8 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
     }
 
     private int getBugCountsSum(Object[] objects) {
-        List<BugGroup> groups = new ArrayList<BugGroup>();
-        List<IMarker> markers = new ArrayList<IMarker>();
+        List<BugGroup> groups = new ArrayList<>();
+        List<IMarker> markers = new ArrayList<>();
         for (Object object : objects) {
             if (object instanceof BugGroup) {
                 groups.add((BugGroup) object);
@@ -189,7 +189,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
 
             });
         }
-        Set<BugGroup> finalGroups = new HashSet<BugGroup>();
+        Set<BugGroup> finalGroups = new HashSet<>();
         int count = 0;
         while (!groups.isEmpty()) {
             BugGroup g1 = groups.remove(groups.size() - 1);

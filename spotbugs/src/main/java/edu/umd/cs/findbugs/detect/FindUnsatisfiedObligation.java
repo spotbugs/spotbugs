@@ -259,7 +259,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             // Main loop: looking at the StateSet at the exit block of the CFG,
             // see if there are any states with nonempty obligation sets.
             //
-            Map<Obligation, State> leakedObligationMap = new HashMap<Obligation, State>();
+            Map<Obligation, State> leakedObligationMap = new HashMap<>();
             StateSet factAtExit = dataflow.getResultFact(cfg.getExit());
             for (Iterator<State> i = factAtExit.stateIterator(); i.hasNext();) {
                 State state = i.next();
@@ -384,7 +384,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 this.state = state;
                 this.adjustedLeakCount = state.getObligationSet().getCount(possiblyLeakedObligation.getId());
                 if (COMPUTE_TRANSFERS) {
-                    this.transferList = new LinkedList<PossibleObligationTransfer>();
+                    this.transferList = new LinkedList<>();
                 }
             }
 

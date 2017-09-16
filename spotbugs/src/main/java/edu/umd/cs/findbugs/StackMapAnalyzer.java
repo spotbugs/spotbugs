@@ -116,7 +116,7 @@ public  class StackMapAnalyzer {
     }
 
     static  List<Item>  getInitialLocals(MethodDescriptor descriptor) {
-        List<Item> locals = new ArrayList<Item>();
+        List<Item> locals = new ArrayList<>();
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
         int reg = 0;
         if (!descriptor.isStatic()) {
@@ -201,12 +201,12 @@ public  class StackMapAnalyzer {
         if (stackMapTable == null) {
             return null;
         }
-        Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
+        Map<Integer, List<Item>> jumpEntries = new HashMap<>();
 
-        Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
+        Map<Integer, List<Item>> jumpStackEntries = new HashMap<>();
 
         List<Item> locals = getInitialLocals(descriptor);
-        List<Item> stack = new ArrayList<Item>();
+        List<Item> stack = new ArrayList<>();
         BitSet jumpEntryLocations = new BitSet();
         if (DEBUG) {
             System.out.println(descriptor);
@@ -258,9 +258,9 @@ public  class StackMapAnalyzer {
                 System.out.printf("     %s :: %s%n", stack, locals);
             }
             if (pc > 0) {
-                jumpEntries.put(pc, new ArrayList<Item>(locals));
+                jumpEntries.put(pc, new ArrayList<>(locals));
                 if (!stack.isEmpty()) {
-                    jumpStackEntries.put(pc, new ArrayList<Item>(stack));
+                    jumpStackEntries.put(pc, new ArrayList<>(stack));
                 }
                 jumpEntryLocations.set(pc);
             }

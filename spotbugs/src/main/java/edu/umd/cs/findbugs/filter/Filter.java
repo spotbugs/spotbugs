@@ -53,7 +53,7 @@ public class Filter extends OrMatcher {
     private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
     private static final int PRIME = 31;
 
-    private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<Matcher, Boolean>();
+    private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<>();
 
     /**
      * Constructor for empty filter

@@ -312,7 +312,7 @@ public class DetectorConfigurationTab extends Composite {
 
     public DetectorConfigurationTab(TabFolder tabFolder, final FindbugsPropertyPage page, int style) {
         super(tabFolder, style);
-        columnsMap = new HashMap<Integer, COLUMN>();
+        columnsMap = new HashMap<>();
         this.propertyPage = page;
         setLayout(new GridLayout());
 
@@ -456,7 +456,7 @@ public class DetectorConfigurationTab extends Composite {
     private String getBugsCategories(DetectorFactory factory) {
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         String category = null;
-        Set<String> categories = new TreeSet<String>();
+        Set<String> categories = new TreeSet<>();
         for (BugPattern bugPattern : patterns) {
             String category2 = bugPattern.getCategory();
             if (category == null) {
@@ -628,8 +628,8 @@ public class DetectorConfigurationTab extends Composite {
      * Populate the rule table
      */
     private void populateAvailableRulesTable(IProject project) {
-        List<DetectorFactory> allAvailableList = new ArrayList<DetectorFactory>();
-        factoriesToBugAbbrev = new HashMap<DetectorFactory, String>();
+        List<DetectorFactory> allAvailableList = new ArrayList<>();
+        factoriesToBugAbbrev = new HashMap<>();
         Iterator<DetectorFactory> iterator = DetectorFactoryCollection.instance().factoryIterator();
         while (iterator.hasNext()) {
             DetectorFactory factory = iterator.next();
@@ -678,7 +678,7 @@ public class DetectorConfigurationTab extends Composite {
     private String createBugsAbbreviation(DetectorFactory factory) {
         StringBuffer sb = new StringBuffer();
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
-        LinkedHashSet<String> abbrs = new LinkedHashSet<String>();
+        LinkedHashSet<String> abbrs = new LinkedHashSet<>();
         for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
             BugPattern pattern = iter.next();
             String abbr = pattern.getAbbrev();

@@ -50,7 +50,7 @@ public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
     @Override
     public String[] analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
         SignatureParser parser = new SignatureParser(descriptor.getSignature());
-        ArrayList<String> resultList = new ArrayList<String>();
+        ArrayList<String> resultList = new ArrayList<>();
         for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             resultList.add(i.next());
         }

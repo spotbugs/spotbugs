@@ -73,9 +73,9 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
 
     private final BugReporter bugReporter;
 
-    private final List<ExceptionCaught> catchList = new ArrayList<ExceptionCaught>();
+    private final List<ExceptionCaught> catchList = new ArrayList<>();
 
-    private final List<ExceptionThrown> throwList = new ArrayList<ExceptionThrown>();
+    private final List<ExceptionThrown> throwList = new ArrayList<>();
 
     private final BugAccumulator accumulator;
 
@@ -122,7 +122,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     @Override
     public void visitAfter(Code obj) {
         for (ExceptionCaught caughtException : catchList) {
-            Set<String> thrownSet = new HashSet<String>();
+            Set<String> thrownSet = new HashSet<>();
             for (ExceptionThrown thrownException : throwList) {
                 if (thrownException.offset >= caughtException.startOffset && thrownException.offset < caughtException.endOffset) {
                     thrownSet.add(thrownException.exceptionClass);

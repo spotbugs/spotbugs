@@ -39,7 +39,7 @@ public class MetaCharacterMap {
      */
     public MetaCharacterMap() {
         this.metaCharacterSet = new BitSet();
-        this.replacementMap = new HashMap<String, String>();
+        this.replacementMap = new HashMap<>();
     }
 
     /**

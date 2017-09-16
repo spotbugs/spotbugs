@@ -37,8 +37,8 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
      * Constructor.
      */
     public Transpose() {
-        m_origToTransposeMap = new IdentityHashMap<VertexType, VertexType>();
-        m_transposeToOrigMap = new IdentityHashMap<VertexType, VertexType>();
+        m_origToTransposeMap = new IdentityHashMap<>();
+        m_transposeToOrigMap = new IdentityHashMap<>();
     }
 
     /**

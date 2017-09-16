@@ -64,7 +64,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         public PropertySource(Object object) {
             this.object = object;
-            List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+            List<IPropertyDescriptor> props = new ArrayList<>();
             List<Method> getters = getGetters(object);
             for (Method method : getters) {
                 props.add(new PropertyDescriptor(method, getReadableName(method)));
@@ -123,7 +123,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         public ArrayPropertySource(Object[] object) {
             this.array = object;
-            List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+            List<IPropertyDescriptor> props = new ArrayList<>();
             for (Object obj : array) {
                 props.add(new PropertyDescriptor(obj, getDisplayName(obj)));
             }
@@ -163,7 +163,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
     }
 
     static List<Method> getGetters(Object obj) {
-        List<Method> methodList = new ArrayList<Method>();
+        List<Method> methodList = new ArrayList<>();
         Method[] methods = obj.getClass().getMethods();
         for (Method method : methods) {
             if (method.getParameterTypes().length == 0) {
@@ -195,7 +195,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         public MarkerPropertySource(IMarker marker) {
             this.marker = marker;
-            List<IPropertyDescriptor> props = new ArrayList<IPropertyDescriptor>();
+            List<IPropertyDescriptor> props = new ArrayList<>();
             try {
                 Map<?, ?> attributes = marker.getAttributes();
                 Set<?> keySet = new TreeSet<Object>(attributes.keySet());

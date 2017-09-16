@@ -51,17 +51,17 @@ public class MovedClassMap implements ClassNameRewriter {
     public MovedClassMap(BugCollection before, BugCollection after) {
         this.before = before;
         this.after = after;
-        this.rewriteMap = new HashMap<String, String>();
+        this.rewriteMap = new HashMap<>();
     }
 
     public MovedClassMap execute() {
         Set<String> beforeClasses = buildClassSet(before);
         Set<String> afterClasses = buildClassSet(after);
 
-        Set<String> removedClasses = new HashSet<String>(beforeClasses);
+        Set<String> removedClasses = new HashSet<>(beforeClasses);
         removedClasses.removeAll(afterClasses);
 
-        Set<String> addedClasses = new HashSet<String>(afterClasses);
+        Set<String> addedClasses = new HashSet<>(afterClasses);
         addedClasses.removeAll(beforeClasses);
 
         Map<String, String> removedShortNameToFullNameMap = buildShortNameToFullNameMap(removedClasses);
@@ -107,7 +107,7 @@ public class MovedClassMap implements ClassNameRewriter {
      * @return set of classes referenced in the BugCollection
      */
     private Set<String> buildClassSet(BugCollection bugCollection) {
-        Set<String> classSet = new HashSet<String>();
+        Set<String> classSet = new HashSet<>();
 
         for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
             BugInstance warning = i.next();
@@ -131,7 +131,7 @@ public class MovedClassMap implements ClassNameRewriter {
      * @return map of short class names to fully-qualified class names
      */
     private Map<String, String> buildShortNameToFullNameMap(Set<String> classSet) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         for (String className : classSet) {
             String shortClassName = getShortClassName(className);
             result.put(shortClassName, className);

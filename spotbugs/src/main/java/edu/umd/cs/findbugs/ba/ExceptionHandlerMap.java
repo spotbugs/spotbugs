@@ -55,8 +55,8 @@ public class ExceptionHandlerMap {
      *            the method to build the map for
      */
     public ExceptionHandlerMap( MethodGen methodGen, TypeMerger merger) {
-        codeToHandlerMap = new IdentityHashMap<InstructionHandle, List<CodeExceptionGen>>();
-        startInstructionToHandlerMap = new IdentityHashMap<InstructionHandle, CodeExceptionGen>();
+        codeToHandlerMap = new IdentityHashMap<>();
+        startInstructionToHandlerMap = new IdentityHashMap<>();
         this.merger = merger;
         build(methodGen);
     }
@@ -162,7 +162,7 @@ public class ExceptionHandlerMap {
     private void addHandler(InstructionHandle handle, CodeExceptionGen exceptionHandler) {
         List<CodeExceptionGen> handlerList = codeToHandlerMap.get(handle);
         if (handlerList == null) {
-            handlerList = new LinkedList<CodeExceptionGen>();
+            handlerList = new LinkedList<>();
             codeToHandlerMap.put(handle, handlerList);
         }
         handlerList.add(exceptionHandler);

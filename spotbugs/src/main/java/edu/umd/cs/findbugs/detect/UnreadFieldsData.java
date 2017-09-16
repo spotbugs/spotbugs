@@ -36,58 +36,58 @@ import edu.umd.cs.findbugs.util.MultiMap;
  * @author  pugh
  */
 public class UnreadFieldsData {
-    final Map<XField, Set<ProgramPoint>> assumedNonNull = new HashMap<XField, Set<ProgramPoint>>();
+    final Map<XField, Set<ProgramPoint>> assumedNonNull = new HashMap<>();
 
-    final  Map<XField, ProgramPoint> threadLocalAssignedInConstructor = new HashMap<XField, ProgramPoint>();
+    final  Map<XField, ProgramPoint> threadLocalAssignedInConstructor = new HashMap<>();
 
-    final Set<XField> nullTested = new HashSet<XField>();
+    final Set<XField> nullTested = new HashSet<>();
 
-    final Set<XField> containerFields = new TreeSet<XField>();
+    final Set<XField> containerFields = new TreeSet<>();
 
-    final MultiMap<XField, String> unknownAnnotation = new MultiMap<XField, String>(LinkedList.class);
+    final MultiMap<XField, String> unknownAnnotation = new MultiMap<>(LinkedList.class);
 
-    final Set<String> abstractClasses = new HashSet<String>();
+    final Set<String> abstractClasses = new HashSet<>();
 
-    final Set<String> hasNonAbstractSubClass = new HashSet<String>();
+    final Set<String> hasNonAbstractSubClass = new HashSet<>();
 
-    final Set<String> classesScanned = new HashSet<String>();
+    final Set<String> classesScanned = new HashSet<>();
 
-    final Set<XField> fieldsOfNativeClasses = new HashSet<XField>();
+    final Set<XField> fieldsOfNativeClasses = new HashSet<>();
 
-    final Set<XField> reflectiveFields = new HashSet<XField>();
+    final Set<XField> reflectiveFields = new HashSet<>();
 
-    final Set<XField> fieldsOfSerializableOrNativeClassed = new HashSet<XField>();
+    final Set<XField> fieldsOfSerializableOrNativeClassed = new HashSet<>();
 
-    final  Set<XField> staticFieldsReadInThisMethod = new HashSet<XField>();
+    final  Set<XField> staticFieldsReadInThisMethod = new HashSet<>();
 
-    final  Set<XField> allMyFields = new TreeSet<XField>();
+    final  Set<XField> allMyFields = new TreeSet<>();
 
-    final Set<XField> myFields = new TreeSet<XField>();
+    final Set<XField> myFields = new TreeSet<>();
 
-    final  Set<XField> writtenFields = new HashSet<XField>();
+    final  Set<XField> writtenFields = new HashSet<>();
 
 
-    final Map<XField, SourceLineAnnotation> fieldAccess = new HashMap<XField, SourceLineAnnotation>();
+    final Map<XField, SourceLineAnnotation> fieldAccess = new HashMap<>();
 
-    final  Set<XField> writtenNonNullFields = new HashSet<XField>();
+    final  Set<XField> writtenNonNullFields = new HashSet<>();
 
-    final  Set<String> calledFromConstructors = new HashSet<String>();
+    final  Set<String> calledFromConstructors = new HashSet<>();
 
-    final Set<XField> writtenInConstructorFields = new HashSet<XField>();
+    final Set<XField> writtenInConstructorFields = new HashSet<>();
 
-    final Set<XField> writtenInInitializationFields = new HashSet<XField>();
+    final Set<XField> writtenInInitializationFields = new HashSet<>();
 
-    final Set<XField> writtenOutsideOfInitializationFields = new HashSet<XField>();
+    final Set<XField> writtenOutsideOfInitializationFields = new HashSet<>();
 
-    final  Set<XField> readFields = new HashSet<XField>();
+    final  Set<XField> readFields = new HashSet<>();
 
-    final  Set<XField> constantFields = new HashSet<XField>();
+    final  Set<XField> constantFields = new HashSet<>();
 
-    final Set<String> needsOuterObjectInConstructor = new HashSet<String>();
+    final Set<String> needsOuterObjectInConstructor = new HashSet<>();
 
-    final  Set<String> innerClassCannotBeStatic = new HashSet<String>();
+    final  Set<String> innerClassCannotBeStatic = new HashSet<>();
 
-    final   HashSet<ClassDescriptor> toldStrongEvidenceForIntendedSerialization = new HashSet<ClassDescriptor>();
+    final   HashSet<ClassDescriptor> toldStrongEvidenceForIntendedSerialization = new HashSet<>();
 
     public boolean isContainerField(XField f) {
         return containerFields.contains(f);

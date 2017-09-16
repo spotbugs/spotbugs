@@ -526,7 +526,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 }
                 //                String name = null;
                 int reg = item.getRegisterNumber();
-                Collection<BugAnnotation> as = new ArrayList<BugAnnotation>();
+                Collection<BugAnnotation> as = new ArrayList<>();
                 XField field = item.getXField();
                 FieldAnnotation fieldAnnotation = null;
                 if (field != null) {

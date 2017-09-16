@@ -45,7 +45,7 @@ public class MultiMap<K, V> {
         }
     }
 
-    Map<K, Collection<V>> map = new HashMap<K, Collection<V>>();
+    Map<K, Collection<V>> map = new HashMap<>();
 
     public Collection<? extends K> keySet() {
         return map.keySet();

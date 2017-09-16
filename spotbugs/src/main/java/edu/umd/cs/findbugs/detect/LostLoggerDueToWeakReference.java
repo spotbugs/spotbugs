@@ -53,7 +53,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
 
     final BugAccumulator bugAccumulator;
 
-    final HashSet<String> namesOfSetterMethods = new HashSet<String>();
+    final HashSet<String> namesOfSetterMethods = new HashSet<>();
 
     public LostLoggerDueToWeakReference(BugReporter bugReporter) {
         //        this.bugReporter = bugReporter;

@@ -50,7 +50,7 @@ public class BugAspects implements Iterable<BugAspects.SortableValue> {
 
     private int count = -1;
 
-    private ArrayList<BugAspects.SortableValue> lst = new ArrayList<BugAspects.SortableValue>();
+    private ArrayList<BugAspects.SortableValue> lst = new ArrayList<>();
 
     public SortableValue last() {
         return lst.get(lst.size() - 1);
@@ -96,7 +96,7 @@ public class BugAspects implements Iterable<BugAspects.SortableValue> {
     }
 
     public BugAspects(BugAspects a) {
-        lst = new ArrayList<SortableValue>(a.lst);
+        lst = new ArrayList<>(a.lst);
         count = a.count;
     }
 

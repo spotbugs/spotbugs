@@ -124,7 +124,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         this.vnaDataflow = vnaDataflow;
         this.cpg = cpg;
         this.typeQualifierValue = typeQualifierValue;
-        this.sourceSinkMap = new HashMap<Location, Set<SourceSinkInfo>>();
+        this.sourceSinkMap = new HashMap<>();
     }
 
     /*
@@ -283,7 +283,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
     protected void registerSourceSink(SourceSinkInfo sourceSinkInfo) {
         Set<SourceSinkInfo> set = sourceSinkMap.get(sourceSinkInfo.getLocation());
         if (set == null) {
-            set = new HashSet<SourceSinkInfo>();
+            set = new HashSet<>();
             sourceSinkMap.put(sourceSinkInfo.getLocation(), set);
         }
         set.add(sourceSinkInfo);

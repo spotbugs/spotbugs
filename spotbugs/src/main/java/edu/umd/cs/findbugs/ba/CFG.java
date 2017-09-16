@@ -339,7 +339,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * @return collection of locations
      */
     public Collection<Location> orderedLocations() {
-        TreeSet<Location> tree = new TreeSet<Location>();
+        TreeSet<Location> tree = new TreeSet<>();
         for (Iterator<Location> locs = locationIterator(); locs.hasNext();) {
             Location loc = locs.next();
             tree.add(loc);
@@ -355,7 +355,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * @return a Collection containing the blocks whose IDs are given
      */
     public Collection<BasicBlock> getBlocks(BitSet labelSet) {
-        LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
+        LinkedList<BasicBlock> result = new LinkedList<>();
         for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
             BasicBlock block = i.next();
             if (labelSet.get(block.getLabel())) {
@@ -375,7 +375,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      *         with that offset
      */
     public Collection<BasicBlock> getBlocksContainingInstructionWithOffset(int offset) {
-        LinkedList<BasicBlock> result = new LinkedList<BasicBlock>();
+        LinkedList<BasicBlock> result = new LinkedList<>();
         for (Iterator<BasicBlock> i = blockIterator(); i.hasNext();) {
             BasicBlock block = i.next();
             if (block.containsInstructionWithOffset(offset)) {
@@ -394,7 +394,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * @return all Locations referring to the instruction at that offset
      */
     public Collection<Location> getLocationsContainingInstructionWithOffset(int offset) {
-        LinkedList<Location> result = new LinkedList<Location>();
+        LinkedList<Location> result = new LinkedList<>();
         for (Iterator<Location> i = locationIterator(); i.hasNext();) {
             Location location = i.next();
             if (location.getHandle().getPosition() == offset) {
@@ -483,7 +483,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * @return Iterator over Edges removed from this CFG
      */
     public Iterator<Edge> removedEdgeIterator() {
-        return removedEdgeList != null ? removedEdgeList.iterator() : new NullIterator<Edge>();
+        return removedEdgeList != null ? removedEdgeList.iterator() : new NullIterator<>();
     }
 
     /**
@@ -582,7 +582,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
         // Keep track of removed edges.
         if (removedEdgeList == null) {
-            removedEdgeList = new LinkedList<Edge>();
+            removedEdgeList = new LinkedList<>();
         }
         removedEdgeList.add(edge);
     }

@@ -66,7 +66,7 @@ public abstract class TypeQualifierDataflowFactory<AnalysisType extends TypeQual
 
     public TypeQualifierDataflowFactory(MethodDescriptor methodDescriptor) {
         this.methodDescriptor = methodDescriptor;
-        this.dataflowMap = new HashMap<TypeQualifierValue<?>, DataflowResult<DataflowType>>();
+        this.dataflowMap = new HashMap<>();
     }
 
     public DataflowType getDataflow(TypeQualifierValue<?> typeQualifierValue) throws CheckedAnalysisException {
@@ -79,7 +79,7 @@ public abstract class TypeQualifierDataflowFactory<AnalysisType extends TypeQual
     }
 
     private DataflowResult<DataflowType> compute(TypeQualifierValue<?> typeQualifierValue) {
-        DataflowResult<DataflowType> result = new DataflowResult<DataflowType>();
+        DataflowResult<DataflowType> result = new DataflowResult<>();
 
         try {
             IAnalysisCache analysisCache = Global.getAnalysisCache();

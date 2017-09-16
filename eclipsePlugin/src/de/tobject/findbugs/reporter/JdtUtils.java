@@ -65,7 +65,7 @@ public class JdtUtils {
             this.sourceComparator = sourceComparator;
             is50OrHigher = is50OrHigher(javaElement);
             topAncestorType = (IType) getLastAncestor(javaElement, IJavaElement.TYPE);
-            map = new IdentityHashMap<IType, Integer>();
+            map = new IdentityHashMap<>();
         }
 
         /**
@@ -267,7 +267,7 @@ public class JdtUtils {
             return null;
         }
 
-        List<IType> list = new ArrayList<IType>();
+        List<IType> list = new ArrayList<>();
         /*
          * For JDK >= 1.5 in Eclipse 3.1+ the naming schema for nested anonymous
          * classes was changed from A$1, A$2, A$3, A$4, ..., A$n to A$1, A$1$1,

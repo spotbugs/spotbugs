@@ -45,7 +45,7 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
     public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         if (DEBUG) {
-            msgs = new HashSet<String>();
+            msgs = new HashSet<>();
         }
     }
 

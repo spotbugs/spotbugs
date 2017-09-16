@@ -152,7 +152,7 @@ public class NavigableTextPane extends JTextPane {
             endY = startY + max;
         } else if (otherLines != null && otherLines.size() > 0) {
             int origin = startY + endY / 2;
-            PriorityQueue<Integer> pq = new PriorityQueue<Integer>(otherLines.size(), new DistanceComparator(origin));
+            PriorityQueue<Integer> pq = new PriorityQueue<>(otherLines.size(), new DistanceComparator(origin));
             for (int line : otherLines) {
                 int otherY;
                 try {

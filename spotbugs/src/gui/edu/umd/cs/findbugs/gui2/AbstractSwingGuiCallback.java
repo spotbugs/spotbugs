@@ -114,7 +114,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
             return null;
         }
         updateFormItemsFromGui(items);
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (FormItem item : items) {
             results.add(item.getCurrentValue());
         }

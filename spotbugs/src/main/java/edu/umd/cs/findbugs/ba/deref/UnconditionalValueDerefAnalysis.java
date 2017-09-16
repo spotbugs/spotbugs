@@ -413,7 +413,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 System.out.println("** Summary of call @ " + location.getHandle().getPosition() + ": " + derefParamSet);
             }
 
-            HashSet<ValueNumber> requiredToBeNonnull = new HashSet<ValueNumber>();
+            HashSet<ValueNumber> requiredToBeNonnull = new HashSet<>();
             for (int i = 0; i < numParams; i++) {
                 if (!derefParamSet.hasProperty(i)) {
                     continue;
@@ -559,7 +559,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         SignatureParser sigParser = new SignatureParser(called.getSignature());
         int numParams = sigParser.getNumParameters();
 
-        Set<ValueNumber> result = new HashSet<ValueNumber>();
+        Set<ValueNumber> result = new HashSet<>();
         Iterator<String> parameterIterator = sigParser.parameterSignatureIterator();
         for (int i = 0; i < numParams; i++) {
             String parameterSignature = parameterIterator.next();

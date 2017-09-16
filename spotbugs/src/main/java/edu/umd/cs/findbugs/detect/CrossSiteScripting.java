@@ -54,7 +54,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         allFileNameStringMethods = database.getFileNameStringMethods();
     }
 
-    Map<String, OpcodeStack.Item> map = new HashMap<String, OpcodeStack.Item>();
+    Map<String, OpcodeStack.Item> map = new HashMap<>();
 
     OpcodeStack.Item top = null;
 

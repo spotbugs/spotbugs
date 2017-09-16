@@ -78,7 +78,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     public MarkerRulerAction() {
         super();
-        markers = new ArrayList<IMarker>();
+        markers = new ArrayList<>();
     }
 
     public void setActiveEditor(IAction callerAction, IEditorPart targetEditor) {

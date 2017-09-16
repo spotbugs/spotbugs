@@ -819,7 +819,7 @@ public class UnreadFields extends OpcodeStackDetector {
 
     @Override
     public void report() {
-        Set<String> fieldNamesSet = new HashSet<String>();
+        Set<String> fieldNamesSet = new HashSet<>();
         for (XField f : data.writtenNonNullFields) {
             fieldNamesSet.add(f.getName());
         }
@@ -855,7 +855,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 System.out.println("  " + f);
             }
         }
-        Set<XField> declaredFields = new HashSet<XField>();
+        Set<XField> declaredFields = new HashSet<>();
         AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (XField f : AnalysisContext.currentXFactory().allFields()) {
@@ -866,7 +866,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
         // Don't report anything about ejb3Fields
-        HashSet<XField> unknownAnotationAndUnwritten = new HashSet<XField>(data.unknownAnnotation.keySet());
+        HashSet<XField> unknownAnotationAndUnwritten = new HashSet<>(data.unknownAnnotation.keySet());
         unknownAnotationAndUnwritten.removeAll(data.writtenFields);
         declaredFields.removeAll(unknownAnotationAndUnwritten);
         declaredFields.removeAll(data.containerFields);
@@ -878,7 +878,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        TreeSet<XField> notInitializedInConstructors = new TreeSet<XField>(declaredFields);
+        TreeSet<XField> notInitializedInConstructors = new TreeSet<>(declaredFields);
         notInitializedInConstructors.retainAll(data.readFields);
         notInitializedInConstructors.retainAll(data.writtenNonNullFields);
         notInitializedInConstructors.retainAll(data.assumedNonNull.keySet());
@@ -891,12 +891,12 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        TreeSet<XField> readOnlyFields = new TreeSet<XField>(declaredFields);
+        TreeSet<XField> readOnlyFields = new TreeSet<>(declaredFields);
         readOnlyFields.removeAll(data.writtenFields);
 
         readOnlyFields.retainAll(data.readFields);
 
-        TreeSet<XField> nullOnlyFields = new TreeSet<XField>(declaredFields);
+        TreeSet<XField> nullOnlyFields = new TreeSet<>(declaredFields);
         nullOnlyFields.removeAll(data.writtenNonNullFields);
 
         nullOnlyFields.retainAll(data.readFields);
@@ -904,9 +904,9 @@ public class UnreadFields extends OpcodeStackDetector {
         Set<XField> writeOnlyFields = declaredFields;
         writeOnlyFields.removeAll(data.readFields);
 
-        Map<String, Integer> count = new HashMap<String, Integer>();
-        Bag<String> nullOnlyFieldNames = new Bag<String>();
-        Bag<ClassDescriptor> classContainingNullOnlyFields = new Bag<ClassDescriptor>();
+        Map<String, Integer> count = new HashMap<>();
+        Bag<String> nullOnlyFieldNames = new Bag<>();
+        Bag<ClassDescriptor> classContainingNullOnlyFields = new Bag<>();
 
         for (XField f : nullOnlyFields) {
             nullOnlyFieldNames.add(f.getName());
@@ -925,9 +925,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
             }
         }
-        Map<XField, Integer> maxCount = new HashMap<XField, Integer>();
+        Map<XField, Integer> maxCount = new HashMap<>();
 
-        LinkedList<XField> assumeReflective = new LinkedList<XField>();
+        LinkedList<XField> assumeReflective = new LinkedList<>();
         for (XField f : nullOnlyFields) {
             int myMaxCount = 0;
             for (String s : data.unknownAnnotation.get(f)) {
@@ -955,7 +955,7 @@ public class UnreadFields extends OpcodeStackDetector {
         nullOnlyFields.removeAll(assumeReflective);
         notInitializedInConstructors.removeAll(assumeReflective);
 
-        Bag<String> notInitializedUses = new Bag<String>();
+        Bag<String> notInitializedUses = new Bag<>();
         for (XField f : notInitializedInConstructors) {
             String className = f.getClassName();
             Set<ProgramPoint> assumedNonnullAt = data.assumedNonNull.get(f);

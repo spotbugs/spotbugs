@@ -33,9 +33,9 @@ public class RecursiveSearchForJavaFiles {
     }
 
     public static Set<File> search(File root) {
-        Set<File> result = new HashSet<File>();
-        Set<File> directories = new HashSet<File>();
-        LinkedList<File> worklist = new LinkedList<File>();
+        Set<File> result = new HashSet<>();
+        Set<File> directories = new HashSet<>();
+        LinkedList<File> worklist = new LinkedList<>();
         directories.add(root);
         worklist.add(root);
         while (!worklist.isEmpty()) {

@@ -28,7 +28,7 @@ import javax.annotation.CheckForNull;
 
 public class HighlightInformation {
 
-    Map<Integer, Color> map = new HashMap<Integer, Color>();
+    Map<Integer, Color> map = new HashMap<>();
 
     private int foundLineNum = -1;
 

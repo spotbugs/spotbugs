@@ -74,24 +74,24 @@ public class TypeQualifierApplications {
          * Type qualifier annotations applied directly to
          * methods/fields/classes/etc.
          */
-        private final Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations = new HashMap<AnnotatedObject, Collection<AnnotationValue>>();
+        private final Map<AnnotatedObject, Collection<AnnotationValue>> directObjectAnnotations = new HashMap<>();
 
         /** Type qualifier annotations applied directly to method parameters. */
-        private final HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>> directParameterAnnotations = new HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>>();
+        private final HashMap<XMethod, Map<Integer, Collection<AnnotationValue>>> directParameterAnnotations = new HashMap<>();
 
         /**
          * Map of TypeQualifierValues to maps containing, for each
          * AnnotatedObject, the effective TypeQualifierAnnotation (if any) for
          * that AnnotatedObject.
          */
-        private final Map<TypeQualifierValue<?>, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations = new HashMap<TypeQualifierValue<?>, Map<AnnotatedObject, TypeQualifierAnnotation>>();
+        private final Map<TypeQualifierValue<?>, Map<AnnotatedObject, TypeQualifierAnnotation>> effectiveObjectAnnotations = new HashMap<>();
 
         /**
          * Map of TypeQualifierValues to maps containing, for each
          * XMethod/parameter, the effective TypeQualifierAnnotation (if any) for
          * that XMethod/parameter.
          */
-        private final Map<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = new HashMap<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>>();
+        private final Map<TypeQualifierValue<?>, DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>> effectiveParameterAnnotations = new HashMap<>();
     }
 
     private static ThreadLocal<Data> instance = new ThreadLocal<Data>() {
@@ -180,7 +180,7 @@ public class TypeQualifierApplications {
             {
                 n--; // ignore annotations on varargs parameters
             }
-            map = new HashMap<Integer, Collection<AnnotationValue>>(n + 2);
+            map = new HashMap<>(n + 2);
             for (int i = 0; i < n; i++) {
                 Collection<AnnotationValue> a = TypeQualifierResolver.resolveTypeQualifiers(m.getParameterAnnotations(i));
                 if (!a.isEmpty()) {
@@ -307,7 +307,7 @@ public class TypeQualifierApplications {
      * @return Collection of resolved TypeQualifierAnnotations
      */
     private static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(AnnotatedObject o, ElementType e) {
-        Set<TypeQualifierAnnotation> result = new HashSet<TypeQualifierAnnotation>();
+        Set<TypeQualifierAnnotation> result = new HashSet<>();
         getApplicableScopedApplications(result, o, e);
         return result;
     }
@@ -324,7 +324,7 @@ public class TypeQualifierApplications {
      * @return Collection of resolved TypeQualifierAnnotations
      */
     private static Collection<TypeQualifierAnnotation> getApplicableScopedApplications(XMethod o, int parameter) {
-        Set<TypeQualifierAnnotation> result = new HashSet<TypeQualifierAnnotation>();
+        Set<TypeQualifierAnnotation> result = new HashSet<>();
         ElementType e = ElementType.PARAMETER;
         getApplicableScopedApplications(result, o, e);
         getDirectApplications(result, o, parameter);
@@ -598,7 +598,7 @@ public class TypeQualifierApplications {
 
         Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().get(typeQualifierValue);
         if (map == null) {
-            map = new HashMap<AnnotatedObject, TypeQualifierAnnotation>();
+            map = new HashMap<>();
             getEffectiveObjectAnnotations().put(typeQualifierValue, map);
         }
 
@@ -661,7 +661,7 @@ public class TypeQualifierApplications {
             TypeQualifierValue<?> typeQualifierValue) {
         TypeQualifierAnnotation result;
 
-        Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
+        Set<TypeQualifierAnnotation> applications = new HashSet<>();
         getDirectApplications(applications, o, o.getElementType());
 
         result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
@@ -729,7 +729,7 @@ public class TypeQualifierApplications {
             TypeQualifierAnnotation result;
 
             // Check direct applications of the type qualifier
-            Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
+            Set<TypeQualifierAnnotation> applications = new HashSet<>();
             getDirectApplications(applications, o, elementType);
             result = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
             if (result != null) {
@@ -801,7 +801,7 @@ public class TypeQualifierApplications {
             if (DEBUG) {
                 System.out.println("computeEffectiveTypeQualifierAnnotation: Creating map for " + typeQualifierValue);
             }
-            map = new DualKeyHashMap<XMethod, Integer, TypeQualifierAnnotation>();
+            map = new DualKeyHashMap<>();
             effectiveParameterAnnotations.put(typeQualifierValue, map);
         }
 
@@ -927,7 +927,7 @@ public class TypeQualifierApplications {
         if (bridge != null) {
             xmethod = bridge;
         }
-        Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
+        Set<TypeQualifierAnnotation> applications = new HashSet<>();
         getDirectApplications(applications, xmethod, parameter);
         if (DEBUG_METHOD != null && DEBUG_METHOD.equals(xmethod.getName())) {
             System.out.println("  Direct applications are: " + applications);
@@ -1022,7 +1022,7 @@ public class TypeQualifierApplications {
                 return null;
             }
             // Check for direct type qualifier annotation
-            Set<TypeQualifierAnnotation> applications = new HashSet<TypeQualifierAnnotation>();
+            Set<TypeQualifierAnnotation> applications = new HashSet<>();
             getDirectApplications(applications, o, ElementType.PARAMETER);
             TypeQualifierAnnotation tqa = findMatchingTypeQualifierAnnotation(applications, typeQualifierValue);
             if (tqa != null) {

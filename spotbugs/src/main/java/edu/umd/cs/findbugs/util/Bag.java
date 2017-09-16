@@ -33,7 +33,7 @@ public class Bag<E> {
     final Map<E, Integer> map;
 
     public Bag() {
-        map = new HashMap<E, Integer>();
+        map = new HashMap<>();
     }
 
     public Bag(Map<E, Integer> map) {

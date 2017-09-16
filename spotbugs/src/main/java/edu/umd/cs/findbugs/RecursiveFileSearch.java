@@ -43,9 +43,9 @@ public class RecursiveFileSearch {
 
     private final LinkedList<File> directoryWorkList;
 
-    private final HashSet<String> directoriesScanned = new HashSet<String>();
+    private final HashSet<String> directoriesScanned = new HashSet<>();
 
-    private final List<String> directoriesScannedList = new LinkedList<String>();
+    private final List<String> directoriesScannedList = new LinkedList<>();
 
     private final ArrayList<String> resultList;
 
@@ -61,8 +61,8 @@ public class RecursiveFileSearch {
     public RecursiveFileSearch(String baseDir, FileFilter fileFilter) {
         this.baseDir = baseDir;
         this.fileFilter = fileFilter;
-        this.directoryWorkList = new LinkedList<File>();
-        this.resultList = new ArrayList<String>();
+        this.directoryWorkList = new LinkedList<>();
+        this.resultList = new ArrayList<>();
     }
 
     static String bestEffortCanonicalPath(File f) {

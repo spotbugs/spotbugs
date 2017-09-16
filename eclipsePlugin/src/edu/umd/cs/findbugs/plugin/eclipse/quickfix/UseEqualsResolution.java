@@ -149,7 +149,7 @@ public class UseEqualsResolution extends BugResolution {
 
     static class StringEqualityCheckFinder extends ASTVisitor {
 
-        private final Set<InfixExpression> objectEqualityChecks = new HashSet<InfixExpression>();
+        private final Set<InfixExpression> objectEqualityChecks = new HashSet<>();
 
         @Override
         public boolean visit(InfixExpression node) {

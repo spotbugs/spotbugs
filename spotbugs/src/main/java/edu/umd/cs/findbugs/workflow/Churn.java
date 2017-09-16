@@ -78,7 +78,7 @@ public class Churn {
             return count;
         }
 
-        Map<Long, Integer> lastCount = new HashMap<Long, Integer>();
+        Map<Long, Integer> lastCount = new HashMap<>();
 
         void update(BugInstance bug) {
             if (bug.isDead()) {
@@ -98,7 +98,7 @@ public class Churn {
         }
     }
 
-    Map<String, Data> data = new TreeMap<String, Data>();
+    Map<String, Data> data = new TreeMap<>();
 
     Data all = new Data();
 
