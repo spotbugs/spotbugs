@@ -51,9 +51,9 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
 
     private JavaClass javaClass;
 
-    private final Collection<BugInstance> possibleWaitBugs = new LinkedList<BugInstance>();
+    private final Collection<BugInstance> possibleWaitBugs = new LinkedList<>();
 
-    private final Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<SourceLineAnnotation>();
+    private final Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<>();
 
     public FindTwoLockWait(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

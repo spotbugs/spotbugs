@@ -81,11 +81,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     @CheckForNull
     private final Project project;
 
-    private final Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
+    private final Stack<CompoundMatcher> matcherStack = new Stack<>();
 
     private Filter filter;
 
-    private final MapCache<String, String> cache = new MapCache<String, String>(2000);
+    private final MapCache<String, String> cache = new MapCache<>(2000);
 
     private final ArrayList<String> elementStack;
 
@@ -114,9 +114,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         this.bugCollection = bugCollection;
         this.project = project;
 
-        this.elementStack = new ArrayList<String>();
+        this.elementStack = new ArrayList<>();
         this.textBuffer = new StringBuilder();
-        this.stackTrace = new ArrayList<String>();
+        this.stackTrace = new ArrayList<>();
         this.base = base;
 
     }
@@ -430,7 +430,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     boolean nextMatchedIsDisabled;
-    private final Set<String> outerElementTags = unmodifiableSet(new HashSet<String>(asList("And", "Match", "Or", "Not")));
+    private final Set<String> outerElementTags = unmodifiableSet(new HashSet<>(asList("And", "Match", "Or", "Not")));
 
     private void parseMatcher(String qName, Attributes attributes) throws SAXException {
         if (DEBUG) {

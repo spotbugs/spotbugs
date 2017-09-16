@@ -52,9 +52,9 @@ public class TypeQualifierValueSet {
     final boolean  isStrict;
 
     public TypeQualifierValueSet(TypeQualifierValue<?> typeQualifierValue) {
-        this.valueMap = new HashMap<ValueNumber, FlowValue>(3);
-        this.whereAlways = new HashMap<ValueNumber, Set<SourceSinkInfo>>(3);
-        this.whereNever = new HashMap<ValueNumber, Set<SourceSinkInfo>>(3);
+        this.valueMap = new HashMap<>(3);
+        this.whereAlways = new HashMap<>(3);
+        this.whereNever = new HashMap<>(3);
         this.state = State.TOP;
         isStrict = typeQualifierValue.isStrictQualifier();
     }
@@ -116,7 +116,7 @@ public class TypeQualifierValueSet {
             SourceSinkInfo sourceSinkInfo) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
         if (sourceSinkInfoSet == null) {
-            sourceSinkInfoSet = new HashSet<SourceSinkInfo>(3);
+            sourceSinkInfoSet = new HashSet<>(3);
             sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
         }
         sourceSinkInfoSet.add(sourceSinkInfo);
@@ -159,7 +159,7 @@ public class TypeQualifierValueSet {
             ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
         if (sourceSinkInfoSet == null) {
-            sourceSinkInfoSet = new HashSet<SourceSinkInfo>(3);
+            sourceSinkInfoSet = new HashSet<>(3);
             sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
         }
         return sourceSinkInfoSet;
@@ -202,7 +202,7 @@ public class TypeQualifierValueSet {
         dest.clear();
 
         for (Map.Entry<ValueNumber, Set<SourceSinkInfo>> entry : source.entrySet()) {
-            HashSet<SourceSinkInfo> copy = new HashSet<SourceSinkInfo>(entry.getValue());
+            HashSet<SourceSinkInfo> copy = new HashSet<>(entry.getValue());
             dest.put(entry.getKey(), copy);
         }
     }
@@ -265,7 +265,7 @@ public class TypeQualifierValueSet {
             throw new DataflowAnalysisException("merging an invalid TypeQualifierValueSet");
         }
 
-        Set<ValueNumber> interesting = new HashSet<ValueNumber>();
+        Set<ValueNumber> interesting = new HashSet<>();
         interesting.addAll(this.valueMap.keySet());
         interesting.addAll(fact.valueMap.keySet());
 
@@ -322,7 +322,7 @@ public class TypeQualifierValueSet {
             return state.toString();
         }
 
-        TreeSet<ValueNumber> interesting = new TreeSet<ValueNumber>();
+        TreeSet<ValueNumber> interesting = new TreeSet<>();
         interesting.addAll(valueMap.keySet());
 
         StringBuilder buf = new StringBuilder();
@@ -378,7 +378,7 @@ public class TypeQualifierValueSet {
     }
 
     private static void appendSourceSinkInfos(StringBuilder buf, String key, Set<? extends SourceSinkInfo> sourceSinkInfoSet) {
-        TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<SourceSinkInfo>();
+        TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<>();
         sortedLocSet.addAll(sourceSinkInfoSet);
         boolean first = true;
         buf.append(key);

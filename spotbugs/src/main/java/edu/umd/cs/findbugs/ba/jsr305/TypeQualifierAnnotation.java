@@ -60,7 +60,7 @@ public class TypeQualifierAnnotation {
     private static ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>> instance = new ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>>() {
         @Override
         protected DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> initialValue() {
-            return new DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>();
+            return new DualKeyHashMap<>();
         }
     };
 
@@ -158,7 +158,7 @@ public class TypeQualifierAnnotation {
 
     public static @Nonnull
     Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
-        Collection<TypeQualifierAnnotation> result = new LinkedList<TypeQualifierAnnotation>();
+        Collection<TypeQualifierAnnotation> result = new LinkedList<>();
         for (Map.Entry<TypeQualifierValue<?>, When> e : map.entrySet()) {
             result.add(getValue(e.getKey(), e.getValue()));
         }

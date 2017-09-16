@@ -67,7 +67,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
      * Constructor.
      */
     public ClassHash() {
-        this.methodHashMap = new HashMap<XMethod, MethodHash>();
+        this.methodHashMap = new HashMap<>();
     }
 
     /**

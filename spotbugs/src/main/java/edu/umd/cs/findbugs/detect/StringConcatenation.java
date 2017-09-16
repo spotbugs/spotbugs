@@ -75,7 +75,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
     // Keep track of which registers where clobbered at which PC, on
     // a per-method basis
-    private Map<Integer, Integer> clobberedRegisters = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> clobberedRegisters = new HashMap<>();
 
     @Override
     public void visit(Method obj) {
@@ -83,7 +83,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
             System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
         }
         reset();
-        clobberedRegisters = new HashMap<Integer, Integer>();
+        clobberedRegisters = new HashMap<>();
         reportedThisMethod = false;
         super.visit(obj);
     }

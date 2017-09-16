@@ -50,8 +50,8 @@ public class AnalysisPass {
      * Creates an empty analysis pass.
      */
     public AnalysisPass() {
-        this.orderedFactoryList = new LinkedList<DetectorFactory>();
-        this.memberSet = new HashSet<DetectorFactory>();
+        this.orderedFactoryList = new LinkedList<>();
+        this.memberSet = new HashSet<>();
     }
 
     /**
@@ -93,7 +93,7 @@ public class AnalysisPass {
      * pass.
      */
     public Set<DetectorFactory> getUnpositionedMembers() {
-        HashSet<DetectorFactory> result = new HashSet<DetectorFactory>(memberSet);
+        HashSet<DetectorFactory> result = new HashSet<>(memberSet);
         result.removeAll(orderedFactoryList);
         return result;
     }

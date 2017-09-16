@@ -59,8 +59,8 @@ public class CountByPackagePrefix {
         } else {
             origCollection.readXML(args[1]);
         }
-        Map<String, Integer> map = new TreeMap<String, Integer>();
-        Map<String, Integer> ncss = new TreeMap<String, Integer>();
+        Map<String, Integer> map = new TreeMap<>();
+        Map<String, Integer> ncss = new TreeMap<>();
 
         for (BugInstance b : origCollection.getCollection()) {
             String prefix = ClassName.extractPackagePrefix(b.getPrimaryClass().getPackageName(), prefixLength);

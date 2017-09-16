@@ -76,9 +76,9 @@ public class SetBugDatabaseInfo {
 
         long revisionTimestamp = 0L;
 
-        public List<String> sourcePaths = new LinkedList<String>();
+        public List<String> sourcePaths = new LinkedList<>();
 
-        public List<String> searchSourcePaths = new LinkedList<String>();
+        public List<String> searchSourcePaths = new LinkedList<>();
 
         SetInfoCommandLine() {
             addOption("-name", "name", "set name for (last) revision");
@@ -206,7 +206,7 @@ public class SetBugDatabaseInfo {
 
         }
 
-        Map<String, Set<String>> missingFiles = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> missingFiles = new HashMap<>();
         if (!commandLine.searchSourcePaths.isEmpty()) {
             sourceSearcher = new SourceSearcher(project);
             for (BugInstance bug : origCollection.getCollection()) {
@@ -214,7 +214,7 @@ public class SetBugDatabaseInfo {
                 if (!sourceSearcher.sourceNotFound.contains(src.getClassName()) && !sourceSearcher.findSource(src)) {
                     Set<String> paths = missingFiles.get(src.getSourceFile());
                     if (paths == null) {
-                        paths = new HashSet<String>();
+                        paths = new HashSet<>();
                         missingFiles.put(src.getSourceFile(), paths);
                     }
                     String fullPath = fullPath(src);
@@ -222,7 +222,7 @@ public class SetBugDatabaseInfo {
                     paths.add(fullPath);
                 }
             }
-            Set<String> foundPaths = new HashSet<String>();
+            Set<String> foundPaths = new HashSet<>();
             for (String f : commandLine.searchSourcePaths) {
                 for (File javaFile : RecursiveSearchForJavaFiles.search(new File(f))) {
                     Set<String> matchingMissingClasses = missingFiles.get(javaFile.getName());
@@ -242,7 +242,7 @@ public class SetBugDatabaseInfo {
                 }
             }
 
-            Set<String> toRemove = new HashSet<String>();
+            Set<String> toRemove = new HashSet<>();
             for (String p1 : foundPaths) {
                 for (String p2 : foundPaths) {
                     if (!p1.equals(p2) && p1.startsWith(p2)) {

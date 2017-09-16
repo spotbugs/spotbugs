@@ -79,9 +79,9 @@ public class TestingGround {
         } else {
             bugCollection.readXML(System.in);
         }
-        ArrayList<Bag<String>> live = new ArrayList<Bag<String>>();
-        ArrayList<Bag<String>> died = new ArrayList<Bag<String>>();
-        Bag<String> allBugs = new Bag<String>();
+        ArrayList<Bag<String>> live = new ArrayList<>();
+        ArrayList<Bag<String>> died = new ArrayList<>();
+        Bag<String> allBugs = new Bag<>();
         for (int i = 0; i <= bugCollection.getSequenceNumber(); i++) {
             live.add(new Bag<String>());
             died.add(new Bag<String>());

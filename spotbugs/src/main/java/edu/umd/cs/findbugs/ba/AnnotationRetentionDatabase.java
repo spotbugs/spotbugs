@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.HashMap;
 
 public class AnnotationRetentionDatabase {
-    private final HashMap<String, Boolean> annotationRetention = new HashMap<String, Boolean>();
+    private final HashMap<String, Boolean> annotationRetention = new HashMap<>();
 
     public boolean hasRuntimeRetention(String dottedClassName) {
         Boolean result = annotationRetention.get(dottedClassName);

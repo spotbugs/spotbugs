@@ -47,11 +47,11 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
         return s.length() + ":" + s.hashCode();
     }
 
-    HashMap<String, SortedSet<String>> map = new HashMap<String, SortedSet<String>>();
+    HashMap<String, SortedSet<String>> map = new HashMap<>();
 
-    HashMap<String, XField> definition = new HashMap<String, XField>();
+    HashMap<String, XField> definition = new HashMap<>();
 
-    HashMap<String, Integer> stringSize = new HashMap<String, Integer>();
+    HashMap<String, Integer> stringSize = new HashMap<>();
 
     BugReporter bugReporter;
 
@@ -68,7 +68,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
         String key = getStringKey(value);
         SortedSet<String> set = map.get(key);
         if (set == null) {
-            set = new TreeSet<String>();
+            set = new TreeSet<>();
             map.put(key, set);
         }
         set.add(getDottedClassName());

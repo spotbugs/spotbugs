@@ -91,19 +91,19 @@ public class NewProjectWizard extends FBDialog {
         }
     };
 
-    private final JList<String> analyzeList = new JList<String>();
+    private final JList<String> analyzeList = new JList<>();
 
-    private final DefaultListModel<String> analyzeModel = new DefaultListModel<String>();
+    private final DefaultListModel<String> analyzeModel = new DefaultListModel<>();
 
     private final JTextField projectName = new JTextField();
 
-    private final JList<String> auxList = new JList<String>();
+    private final JList<String> auxList = new JList<>();
 
-    private final DefaultListModel<String> auxModel = new DefaultListModel<String>();
+    private final DefaultListModel<String> auxModel = new DefaultListModel<>();
 
-    private final JList<String> sourceList = new JList<String>();
+    private final JList<String> sourceList = new JList<>();
 
-    private final DefaultListModel<String> sourceModel = new DefaultListModel<String>();
+    private final DefaultListModel<String> sourceModel = new DefaultListModel<>();
 
     private final JButton finishButton = new JButton();
 

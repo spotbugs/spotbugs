@@ -55,7 +55,7 @@ AnalysisFactory<NonImplicitExceptionPostDominatorsAnalysis> {
         CFG cfg = getCFG(analysisCache, descriptor);
         NonImplicitExceptionPostDominatorsAnalysis analysis = new NonImplicitExceptionPostDominatorsAnalysis(cfg,
                 getReverseDepthFirstSearch(analysisCache, descriptor), getDepthFirstSearch(analysisCache, descriptor));
-        Dataflow<BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
+        Dataflow<BitSet, PostDominatorsAnalysis> dataflow = new Dataflow<>(cfg, analysis);
         dataflow.execute();
 
         return analysis;

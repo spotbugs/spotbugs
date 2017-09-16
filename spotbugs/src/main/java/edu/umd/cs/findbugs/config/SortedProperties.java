@@ -36,7 +36,7 @@ public final class SortedProperties extends Properties {
      *         lexicographically. The list may be empty if given set was empty
      */
     static public Enumeration<?> sortKeys(Set<String> keySet) {
-        List<String> sortedList = new ArrayList<String>();
+        List<String> sortedList = new ArrayList<>();
         sortedList.addAll(keySet);
         Collections.sort(sortedList);
         return Collections.enumeration(sortedList);

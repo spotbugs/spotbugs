@@ -240,7 +240,7 @@ public class TestDesktopIntegration extends JPanel {
 
         if (SHOW_CONSOLE) {
             writer.println("System properties:");
-            TreeSet<String> props = new TreeSet<String>();
+            TreeSet<String> props = new TreeSet<>();
             for (Object o : System.getProperties().keySet()) {
                 if (o instanceof String) {
                     props.add((String) o);

@@ -50,8 +50,8 @@ public class ResourceCollection<Resource> {
      * Constructor. Creates empty collection.
      */
     public ResourceCollection() {
-        this.resourceList = new LinkedList<Resource>();
-        this.locationToResourceMap = new HashMap<Location, Resource>();
+        this.resourceList = new LinkedList<>();
+        this.locationToResourceMap = new HashMap<>();
     }
 
     /**

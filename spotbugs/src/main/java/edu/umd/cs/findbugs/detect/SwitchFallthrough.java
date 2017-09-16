@@ -67,11 +67,11 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private final BitSet potentiallyDeadStores = new BitSet();
 
-    private final Set<XField> potentiallyDeadFields = new HashSet<XField>();
+    private final Set<XField> potentiallyDeadFields = new HashSet<>();
 
     private BitSet potentiallyDeadStoresFromBeforeFallthrough = new BitSet();
 
-    private Set<XField> potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>();
+    private Set<XField> potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<>();
 
     private LocalVariableAnnotation deadStore = null;
 
@@ -88,7 +88,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         classContext.getJavaClass().accept(this);
     }
 
-    Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
+    Collection<SourceLineAnnotation> found = new LinkedList<>();
 
     @Override
     public void visit(Code obj) {
@@ -165,7 +165,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             }
             fallthroughDistance = 0;
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
-            potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<XField>(potentiallyDeadFields);
+            potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
                 if (!isDefaultOffset) {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(

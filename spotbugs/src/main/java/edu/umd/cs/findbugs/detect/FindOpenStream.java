@@ -90,7 +90,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     static final StreamFactory[] streamFactoryList;
 
     static {
-        ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<StreamFactory>();
+        ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<>();
 
         // Examine InputStreams, OutputStreams, Readers, and Writers,
         // ignoring byte array, char array, and String variants.
@@ -264,7 +264,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
     public FindOpenStream(BugReporter bugReporter) {
         super(bugReporter);
-        this.potentialOpenStreamList = new LinkedList<PotentialOpenStream>();
+        this.potentialOpenStreamList = new LinkedList<>();
     }
 
     @Override

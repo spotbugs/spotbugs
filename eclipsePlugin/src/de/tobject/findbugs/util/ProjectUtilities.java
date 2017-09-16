@@ -100,7 +100,7 @@ public class ProjectUtilities {
     @Nonnull
     public static List<IProject> getFindBugsProjects(){
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-        List<IProject> fbProj = new ArrayList<IProject>();
+        List<IProject> fbProj = new ArrayList<>();
         for (IProject aProject : projects) {
             if (aProject.isAccessible() && ProjectUtilities.hasFindBugsNature(aProject)) {
                 fbProj.add(aProject);
@@ -124,7 +124,7 @@ public class ProjectUtilities {
         }
         IProjectDescription description = project.getDescription();
         String[] prevNatures = description.getNatureIds();
-        ArrayList<String> newNaturesList = new ArrayList<String>();
+        ArrayList<String> newNaturesList = new ArrayList<>();
         for (int i = 0; i < prevNatures.length; i++) {
             if (!FindbugsPlugin.NATURE_ID.equals(prevNatures[i])) {
                 newNaturesList.add(prevNatures[i]);

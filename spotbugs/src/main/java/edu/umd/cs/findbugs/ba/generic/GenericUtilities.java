@@ -434,7 +434,7 @@ public class GenericUtilities {
     public static final @CheckForNull
     List<ReferenceType> getTypeParameters(String signature) {
         GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
-        List<ReferenceType> types = new ArrayList<ReferenceType>();
+        List<ReferenceType> types = new ArrayList<>();
 
         Iterator<String> iter = parser.parameterSignatureIterator();
         while (iter.hasNext()) {
@@ -449,7 +449,7 @@ public class GenericUtilities {
     }
 
     public static final List<String> split(String signature, boolean skipInitialAngleBracket) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         if (signature.charAt(0) != '<') {
             skipInitialAngleBracket = false;
         }

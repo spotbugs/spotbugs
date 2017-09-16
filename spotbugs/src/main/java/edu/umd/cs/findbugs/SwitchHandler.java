@@ -34,7 +34,7 @@ public class SwitchHandler {
     private final List<SwitchDetails> switchOffsetStack;
 
     public SwitchHandler() {
-        switchOffsetStack = new ArrayList<SwitchDetails>();
+        switchOffsetStack = new ArrayList<>();
     }
 
     public int stackSize() {

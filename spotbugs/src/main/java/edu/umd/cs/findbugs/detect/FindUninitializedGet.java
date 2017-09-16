@@ -45,13 +45,13 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
-    Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
+    Set<FieldAnnotation> initializedFields = new HashSet<>();
 
-    Set<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
+    Set<FieldAnnotation> declaredFields = new HashSet<>();
 
-    Set<FieldAnnotation> containerFields = new HashSet<FieldAnnotation>();
+    Set<FieldAnnotation> containerFields = new HashSet<>();
 
-    Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
+    Collection<BugInstance> pendingBugs = new LinkedList<>();
 
     BugInstance uninitializedFieldReadAndCheckedForNonnull;
 

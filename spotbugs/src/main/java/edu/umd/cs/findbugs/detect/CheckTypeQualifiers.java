@@ -230,7 +230,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         if (DEBUG_DATAFLOW) {
             System.out.println("********* Valuenumber analysis *********");
-            DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis> p = new DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis>(vnaDataflow);
+            DataflowCFGPrinter<ValueNumberFrame, ValueNumberAnalysis> p = new DataflowCFGPrinter<>(vnaDataflow);
             p.print(System.out);
         }
 
@@ -238,7 +238,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("forward") || "both".equals(DEBUG_DATAFLOW_MODE))) {
             System.out.println("********* Forwards analysis *********");
-            DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis> p = new DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis>(
+            DataflowCFGPrinter<TypeQualifierValueSet, ForwardTypeQualifierDataflowAnalysis> p = new DataflowCFGPrinter<>(
                     forwardDataflow);
             p.print(System.out);
         }
@@ -247,7 +247,7 @@ public class CheckTypeQualifiers extends CFGDetector {
 
         if (DEBUG_DATAFLOW && (DEBUG_DATAFLOW_MODE.startsWith("backward") || "both".equals(DEBUG_DATAFLOW_MODE))) {
             System.out.println("********* Backwards analysis *********");
-            DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis> p = new DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis>(
+            DataflowCFGPrinter<TypeQualifierValueSet, BackwardTypeQualifierDataflowAnalysis> p = new DataflowCFGPrinter<>(
                     backwardDataflow);
             p.print(System.out);
         }
@@ -471,7 +471,7 @@ public class CheckTypeQualifiers extends CFGDetector {
     private void checkForConflictingValues(XMethod xMethod, CFG cfg,
             TypeQualifierValue<?> typeQualifierValue, TypeQualifierValueSet forwardsFact, TypeQualifierValueSet backwardsFact,
             Location locationToReport, Location locationWhereDoomedValueIsObserved, ValueNumberFrame vnaFrame) throws CheckedAnalysisException {
-        Set<ValueNumber> valueNumberSet = new HashSet<ValueNumber>();
+        Set<ValueNumber> valueNumberSet = new HashSet<>();
         valueNumberSet.addAll(forwardsFact.getValueNumbers());
         valueNumberSet.addAll(backwardsFact.getValueNumbers());
 

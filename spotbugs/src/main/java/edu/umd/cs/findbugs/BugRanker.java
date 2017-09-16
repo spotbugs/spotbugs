@@ -93,9 +93,9 @@ public class BugRanker {
     static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
 
     static class Scorer {
-        private final HashMap<String, Integer> adjustment = new HashMap<String, Integer>();
+        private final HashMap<String, Integer> adjustment = new HashMap<>();
 
-        private final HashSet<String> isRelative = new HashSet<String>();
+        private final HashSet<String> isRelative = new HashSet<>();
 
         int get(String key) {
             Integer v = adjustment.get(key);
@@ -263,7 +263,7 @@ public class BugRanker {
     = new AnalysisLocal<HashMap<BugPattern, Integer>>() {
         @Override
         protected HashMap<BugPattern, Integer> initialValue() {
-            return new HashMap<BugPattern, Integer>();
+            return new HashMap<>();
         }
     };
 
@@ -299,7 +299,7 @@ public class BugRanker {
 
     private static int findRankUnknownPlugin(BugPattern pattern) {
 
-        List<BugRanker> rankers = new ArrayList<BugRanker>();
+        List<BugRanker> rankers = new ArrayList<>();
         pluginLoop: for (Plugin plugin : Plugin.getAllPlugins()) {
             if (plugin.isCorePlugin()) {
                 continue;

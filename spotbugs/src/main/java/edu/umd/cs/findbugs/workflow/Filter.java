@@ -188,15 +188,15 @@ public class Filter {
 
         public boolean withMessages = false;
 
-        private final List<Matcher> includeFilter = new LinkedList<Matcher>();
+        private final List<Matcher> includeFilter = new LinkedList<>();
 
-        private final List<Matcher> excludeFilter = new LinkedList<Matcher>();
+        private final List<Matcher> excludeFilter = new LinkedList<>();
 
-        HashSet<String> excludedInstanceHashes = new HashSet<String>();
+        HashSet<String> excludedInstanceHashes = new HashSet<>();
 
-        Set<String> designationKey = new HashSet<String>();
+        Set<String> designationKey = new HashSet<>();
 
-        Set<String> categoryKey = new HashSet<String>();
+        Set<String> categoryKey = new HashSet<>();
 
         SortedSet<BugInstance> uniqueSloppy;
 
@@ -263,8 +263,8 @@ public class Filter {
             if (val == null) {
                 return -1;
             }
-            Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
-            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+            Map<String, AppVersion> versions = new HashMap<>();
+            SortedMap<Long, AppVersion> timeStamps = new TreeMap<>();
 
             for (Iterator<AppVersion> i = collection.appVersionIterator(); i.hasNext();) {
                 AppVersion v = i.next();
@@ -353,7 +353,7 @@ public class Filter {
             absent = getVersionNum(collection, absentAsString, true);
 
             if (sloppyUniqueSpecified) {
-                uniqueSloppy = new TreeSet<BugInstance>(new SloppyBugComparator());
+                uniqueSloppy = new TreeSet<>(new SloppyBugComparator());
             }
 
             long fixed = getVersionNum(collection, fixedAsString, true);
@@ -607,7 +607,7 @@ public class Filter {
                     throw new IllegalArgumentException("Error processing include file: " + argument, e);
                 }
             } else if ("-hashes".equals(option)) {
-                hashesFromFile = new HashSet<String>();
+                hashesFromFile = new HashSet<>();
                 BufferedReader in = null;
                 try {
                     in = new BufferedReader(UTF8.fileReader(argument));
@@ -638,8 +638,8 @@ public class Filter {
          */
         public void getReady(SortedBugCollection origCollection) {
             if (maybeMutatedAsString != null) {
-                HashSet<String> addedIssues = new HashSet<String>();
-                HashSet<String> removedIssues = new HashSet<String>();
+                HashSet<String> addedIssues = new HashSet<>();
+                HashSet<String> removedIssues = new HashSet<>();
                 for (BugInstance b : origCollection) {
                     if (b.getFirstVersion() == maybeMutated) {
                         addedIssues.add(getBugLocation(b));
@@ -730,8 +730,8 @@ public class Filter {
 
         long trimToVersion = -1;
         if (commandLine.trimToVersionAsString != null) {
-            Map<String, AppVersion> versions = new HashMap<String, AppVersion>();
-            SortedMap<Long, AppVersion> timeStamps = new TreeMap<Long, AppVersion>();
+            Map<String, AppVersion> versions = new HashMap<>();
+            SortedMap<Long, AppVersion> timeStamps = new TreeMap<>();
 
             for (Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext();) {
                 AppVersion v = i.next();

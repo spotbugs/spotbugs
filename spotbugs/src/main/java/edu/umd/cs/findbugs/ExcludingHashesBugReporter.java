@@ -32,7 +32,7 @@ import org.dom4j.DocumentException;
  */
 public class ExcludingHashesBugReporter extends DelegatingBugReporter {
 
-    Set<String> excludedHashes = new HashSet<String>();
+    Set<String> excludedHashes = new HashSet<>();
 
     /**
      * @param delegate

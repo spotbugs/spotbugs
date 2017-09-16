@@ -213,7 +213,7 @@ public class Hierarchy2 {
     }
 
     public static Set<XMethod> findSuperMethods(XMethod m) {
-        Set<XMethod> result = new HashSet<XMethod>();
+        Set<XMethod> result = new HashSet<>();
 
         findSuperMethods(m.getClassDescriptor(), m, result);
         result.remove(m);
@@ -439,7 +439,7 @@ public class Hierarchy2 {
             return Collections.<XMethod> emptySet();
         }
 
-        HashSet<XMethod> result = new LinkedHashSet<XMethod>();
+        HashSet<XMethod> result = new LinkedHashSet<>();
         XMethod upperBound = findMethod(receiverDesc, methodName, methodSig, false);
         if (upperBound == null) {
             upperBound = findInvocationLeastUpperBound(xClass, methodName, methodSig, false, false);

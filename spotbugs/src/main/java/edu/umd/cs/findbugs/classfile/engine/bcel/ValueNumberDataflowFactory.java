@@ -75,7 +75,7 @@ public class ValueNumberDataflowFactory extends AnalysisFactory<ValueNumberDataf
         ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
         vnaDataflow.execute();
         if (ClassContext.DUMP_DATAFLOW_ANALYSIS) {
-            TreeSet<Location> tree = new TreeSet<Location>();
+            TreeSet<Location> tree = new TreeSet<>();
             for (Iterator<Location> locs = cfg.locationIterator(); locs.hasNext();) {
                 Location loc = locs.next();
                 tree.add(loc);

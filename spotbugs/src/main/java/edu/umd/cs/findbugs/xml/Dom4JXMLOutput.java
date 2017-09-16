@@ -43,7 +43,7 @@ public class Dom4JXMLOutput implements XMLOutput {
      *            built
      */
     public Dom4JXMLOutput(Branch topLevel) {
-        this.stack = new LinkedList<Branch>();
+        this.stack = new LinkedList<>();
         stack.addLast(topLevel);
     }
 

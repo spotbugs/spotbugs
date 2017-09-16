@@ -108,7 +108,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         public CachedExceptionSet(TypeFrame result, ExceptionSet exceptionSet) {
             this.result = result;
             this.exceptionSet = exceptionSet;
-            this.edgeExceptionMap = new HashMap<Edge, ExceptionSet>();
+            this.edgeExceptionMap = new HashMap<>();
         }
 
         public boolean isUpToDate(TypeFrame result) {
@@ -220,10 +220,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         this.cfg = cfg;
         this.typeMerger = typeMerger;
         this.visitor = visitor;
-        this.thrownExceptionSetMap = new HashMap<BasicBlock, CachedExceptionSet>();
+        this.thrownExceptionSetMap = new HashMap<>();
         this.lookupFailureCallback = lookupFailureCallback;
         this.exceptionSetFactory = exceptionSetFactory;
-        this.instanceOfCheckMap = new HashMap<BasicBlock, InstanceOfCheck>();
+        this.instanceOfCheckMap = new HashMap<>();
         if (DEBUG) {
             System.out.println("\n\nAnalyzing " + methodGen);
         }

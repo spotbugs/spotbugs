@@ -62,7 +62,7 @@ public class ProjectFilterSettings implements Cloneable {
 
     /** Map of priority level names to their numeric values. */
     @StaticConstant
-    private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
+    private static Map<String, Integer> priorityNameToValueMap = new HashMap<>();
     static {
         priorityNameToValueMap.put(HIGH_PRIORITY, (Priorities.HIGH_PRIORITY));
         priorityNameToValueMap.put(MEDIUM_PRIORITY, (Priorities.NORMAL_PRIORITY));
@@ -109,8 +109,8 @@ public class ProjectFilterSettings implements Cloneable {
         // initially all known bug categories are active
         // using SortedSet to allow better revision control on saved sorted
         // properties
-        this.activeBugCategorySet = new TreeSet<String>(DetectorFactoryCollection.instance().getBugCategories());
-        this.hiddenBugCategorySet = new HashSet<String>();
+        this.activeBugCategorySet = new TreeSet<>(DetectorFactoryCollection.instance().getBugCategories());
+        this.hiddenBugCategorySet = new HashSet<>();
         activeBugCategorySet.remove("NOISE");
         hiddenBugCategorySet.add("NOISE");
         setMinRank(DEFAULT_MIN_RANK);
@@ -384,7 +384,7 @@ public class ProjectFilterSettings implements Cloneable {
      * @return the set of active categories
      */
     public Set<String> getActiveCategorySet() {
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         result.addAll(this.activeBugCategorySet);
         return result;
     }
@@ -509,9 +509,9 @@ public class ProjectFilterSettings implements Cloneable {
             ProjectFilterSettings clone = (ProjectFilterSettings) super.clone();
 
             // Copy field contents
-            clone.hiddenBugCategorySet = new HashSet<String>();
+            clone.hiddenBugCategorySet = new HashSet<>();
             clone.hiddenBugCategorySet.addAll(this.hiddenBugCategorySet);
-            clone.activeBugCategorySet = new TreeSet<String>();
+            clone.activeBugCategorySet = new TreeSet<>();
             clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
             clone.setMinPriority(this.getMinPriority());
             clone.setMinRank(this.getMinRank());

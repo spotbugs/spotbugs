@@ -109,9 +109,9 @@ public class ClassParserUsingBCEL implements ClassParserInterface {
     public void parse(ClassInfo.Builder builder) throws InvalidClassFileFormatException {
         parse((ClassNameAndSuperclassInfo.Builder) builder);
 
-        final List<FieldDescriptor> fieldDescriptorList = new LinkedList<FieldDescriptor>();
-        final List<MethodDescriptor> methodDescriptorList = new LinkedList<MethodDescriptor>();
-        final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<ClassDescriptor>();
+        final List<FieldDescriptor> fieldDescriptorList = new LinkedList<>();
+        final List<MethodDescriptor> methodDescriptorList = new LinkedList<>();
+        final TreeSet<ClassDescriptor> referencedClassSet = new TreeSet<>();
         javaClass.accept(new AnnotationVisitor() {
             @Override
             public void visit(Method obj) {

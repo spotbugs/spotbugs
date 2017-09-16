@@ -67,7 +67,7 @@ public class GroupSelectionDialog extends SelectionDialog {
         super(parentShell);
         this.preSelectedGroups = selectedGroups;
         this.allowedGroups = GroupType.getVisible();
-        selectionMap = new HashMap<GroupType, Boolean>();
+        selectionMap = new HashMap<>();
 
         initSelections();
     }
@@ -228,7 +228,7 @@ public class GroupSelectionDialog extends SelectionDialog {
     }
 
     public List<GroupType> getGroups() {
-        List<GroupType> selected = new ArrayList<GroupType>();
+        List<GroupType> selected = new ArrayList<>();
         for (GroupType groupType : allowedGroups) {
             if (selectionMap.get(groupType).booleanValue()) {
                 selected.add(groupType);

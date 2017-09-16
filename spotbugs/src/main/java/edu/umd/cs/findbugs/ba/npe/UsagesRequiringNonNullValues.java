@@ -53,7 +53,7 @@ public class UsagesRequiringNonNullValues {
         }
     }
 
-    MultiMap<Integer, Pair> map = new MultiMap<Integer, Pair>(LinkedList.class);
+    MultiMap<Integer, Pair> map = new MultiMap<>(LinkedList.class);
 
     @Override
     public String toString() {

@@ -78,13 +78,13 @@ public class ProjectPackagePrefixes {
         return map.size();
     }
 
-    Map<String, PrefixFilter> map = new HashMap<String, PrefixFilter>();
+    Map<String, PrefixFilter> map = new HashMap<>();
 
-    Map<Set<String>, Integer> count = new HashMap<Set<String>, Integer>();
+    Map<Set<String>, Integer> count = new HashMap<>();
 
-    Map<String, Integer> missingProjectCount = new TreeMap<String, Integer>();
+    Map<String, Integer> missingProjectCount = new TreeMap<>();
 
-    Map<String, Integer> rawPackageCount = new TreeMap<String, Integer>();
+    Map<String, Integer> rawPackageCount = new TreeMap<>();
 
     int totalCount = 0;
 
@@ -112,7 +112,7 @@ public class ProjectPackagePrefixes {
     }
 
     public TreeSet<String> getProjects(@DottedClassName String className) {
-        TreeSet<String> results = new TreeSet<String>();
+        TreeSet<String> results = new TreeSet<>();
         for (Map.Entry<String, PrefixFilter> e : map.entrySet()) {
             if (e.getValue().matches(className)) {
                 results.add(e.getKey());
@@ -160,7 +160,7 @@ public class ProjectPackagePrefixes {
 
         Set<String> packages = missingProjectCount.keySet();
         for (int count = 0; count < 3; count++) {
-            HashSet<String> extraSuperPackages = new HashSet<String>();
+            HashSet<String> extraSuperPackages = new HashSet<>();
 
             for (String p1 : packages) {
                 int num = missingProjectCount.get(p1);

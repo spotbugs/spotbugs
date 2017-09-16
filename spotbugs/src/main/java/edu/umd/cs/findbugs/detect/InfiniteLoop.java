@@ -44,7 +44,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     //    private static final boolean active = true;
 
-    ArrayList<BitSet> regModifiedAt = new ArrayList<BitSet>();
+    ArrayList<BitSet> regModifiedAt = new ArrayList<>();
 
     @Nonnull
     BitSet getModifiedBitSet(int reg) {
@@ -106,7 +106,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
     }
 
     static class BackwardsBranch extends Jump {
-        final List<Integer> invariantRegisters = new LinkedList<Integer>();
+        final List<Integer> invariantRegisters = new LinkedList<>();
 
         final int numLastUpdates;
 
@@ -162,13 +162,13 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     BugReporter bugReporter;
 
-    HashSet<Jump> backwardReach = new HashSet<Jump>();
+    HashSet<Jump> backwardReach = new HashSet<>();
 
-    HashSet<BackwardsBranch> backwardBranches = new HashSet<BackwardsBranch>();
+    HashSet<BackwardsBranch> backwardBranches = new HashSet<>();
 
-    HashSet<ForwardConditionalBranch> forwardConditionalBranches = new HashSet<ForwardConditionalBranch>();
+    HashSet<ForwardConditionalBranch> forwardConditionalBranches = new HashSet<>();
 
-    LinkedList<Jump> forwardJumps = new LinkedList<Jump>();
+    LinkedList<Jump> forwardJumps = new LinkedList<>();
 
     void purgeForwardJumps(int before) {
         if (true) {
@@ -220,7 +220,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         backwardReach.clear();
         super.visit(obj);
         backwardBranchLoop: for (BackwardsBranch bb : backwardBranches) {
-            LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
+            LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<>();
             int myBackwardsReach = getBackwardsReach(bb.to);
 
             for (ForwardConditionalBranch fcb : forwardConditionalBranches) {

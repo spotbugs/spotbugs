@@ -45,9 +45,9 @@ public class ClassPathImpl implements IClassPath {
     private final Map<String, ICodeBaseEntry> codeBaseEntryMap;
 
     public ClassPathImpl() {
-        this.appCodeBaseList = new LinkedList<IScannableCodeBase>();
-        this.auxCodeBaseList = new LinkedList<ICodeBase>();
-        this.codeBaseEntryMap = new HashMap<String, ICodeBaseEntry>();
+        this.appCodeBaseList = new LinkedList<>();
+        this.auxCodeBaseList = new LinkedList<>();
+        this.codeBaseEntryMap = new HashMap<>();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ClassPathImpl implements IClassPath {
 
     @Override
     public Map<String, ICodeBaseEntry> getApplicationCodebaseEntries() {
-        Map<String, ICodeBaseEntry> appEntries = new HashMap<String, ICodeBaseEntry>();
+        Map<String, ICodeBaseEntry> appEntries = new HashMap<>();
         Iterator<Entry<String, ICodeBaseEntry>> iterator = codeBaseEntryMap.entrySet().iterator();
         while(iterator.hasNext()) {
             Entry<String, ICodeBaseEntry> entry = iterator.next();

@@ -43,7 +43,7 @@ public class FieldStoreType {
     private ReferenceType loadType;
 
     public FieldStoreType() {
-        this.typeSignatureSet = new HashSet<String>();
+        this.typeSignatureSet = new HashSet<>();
     }
 
     // TODO: type may be exact

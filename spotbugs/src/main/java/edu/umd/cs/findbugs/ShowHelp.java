@@ -33,7 +33,7 @@ public class ShowHelp {
         DetectorFactoryCollection.instance();
         System.out.println("Command line options");
 
-        TreeSet<FindBugsMain> cmds = new TreeSet<FindBugsMain>();
+        TreeSet<FindBugsMain> cmds = new TreeSet<>();
         for(Plugin p : Plugin.getAllPlugins()) {
             for(FindBugsMain m : p.getAllFindBugsMain()) {
                 cmds.add(m);

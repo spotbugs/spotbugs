@@ -62,7 +62,7 @@ public class StateSet {
 
     public StateSet(ObligationFactory factory) {
         this.isTop = this.isBottom = false;
-        this.stateMap = new HashMap<ObligationSet, State>();
+        this.stateMap = new HashMap<>();
         this.factory = factory;
     }
 
@@ -187,7 +187,7 @@ public class StateSet {
      *            obligation
      */
     public void addObligation(final Obligation obligation, int basicBlockId) throws ObligationAcquiredOrReleasedInLoopException {
-        Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
+        Map<ObligationSet, State> updatedStateMap = new HashMap<>();
         if (stateMap.isEmpty()) {
             State s = new State(factory);
             s.getObligationSet().add(obligation);
@@ -215,7 +215,7 @@ public class StateSet {
      */
     public void deleteObligation(final Obligation obligation, int basicBlockId)
             throws ObligationAcquiredOrReleasedInLoopException {
-        Map<ObligationSet, State> updatedStateMap = new HashMap<ObligationSet, State>();
+        Map<ObligationSet, State> updatedStateMap = new HashMap<>();
         for (Iterator<State> i = stateIterator(); i.hasNext();) {
             State state = i.next();
             checkCircularity(state, obligation, basicBlockId);
@@ -265,7 +265,7 @@ public class StateSet {
      *         given Path
      */
     public List<State> getPrefixStates(Path path) {
-        List<State> result = new LinkedList<State>();
+        List<State> result = new LinkedList<>();
         for (State state : stateMap.values()) {
             if (state.getPath().isPrefixOf(path)) {
                 result.add(state);
@@ -311,7 +311,7 @@ public class StateSet {
      * to applyToAllStatesAndUpdateMap().
      */
     public Map<ObligationSet, State> createEmptyMap() {
-        return new HashMap<ObligationSet, State>();
+        return new HashMap<>();
     }
 }
 

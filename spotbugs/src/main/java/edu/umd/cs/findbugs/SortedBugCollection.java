@@ -475,7 +475,7 @@ public class SortedBugCollection implements BugCollection {
             return;
         }
         invalidateHashes();
-        HashMap<String, Integer> seen = new HashMap<String, Integer>();
+        HashMap<String, Integer> seen = new HashMap<>();
 
         for (BugInstance bugInstance : getCollection()) {
             String hash = bugInstance.getInstanceHash();
@@ -616,7 +616,7 @@ public class SortedBugCollection implements BugCollection {
 
     private void writeBugPatterns(XMLOutput xmlOutput) throws IOException {
         // Find bug types reported
-        Set<String> bugTypeSet = new HashSet<String>();
+        Set<String> bugTypeSet = new HashSet<>();
         for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             BugPattern bugPattern = bugInstance.getBugPattern();
@@ -652,7 +652,7 @@ public class SortedBugCollection implements BugCollection {
 
     private void writeBugCodes(XMLOutput xmlOutput) throws IOException {
         // Find bug codes reported
-        Set<String> bugCodeSet = new HashSet<String>();
+        Set<String> bugCodeSet = new HashSet<>();
         for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             String bugCode = bugInstance.getAbbrev();
@@ -685,7 +685,7 @@ public class SortedBugCollection implements BugCollection {
 
     private void writeBugCategories(XMLOutput xmlOutput) throws IOException {
         // Find bug categories reported
-        Set<String> bugCatSet = new HashSet<String>();
+        Set<String> bugCatSet = new HashSet<>();
         for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
             BugInstance bugInstance = i.next();
             BugPattern bugPattern = bugInstance.getBugPattern();
@@ -928,13 +928,13 @@ public class SortedBugCollection implements BugCollection {
         this.projectStats = projectStats;
         this.comparator = comparator;
         this.project = project;
-        bugSet = new TreeSet<BugInstance>(comparator);
+        bugSet = new TreeSet<>(comparator);
         errorList = new BoundedLinkedHashSet();
-        missingClassSet = new TreeSet<String>();
+        missingClassSet = new TreeSet<>();
         summaryHTML = null;
-        classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
+        classFeatureSetMap = new TreeMap<>();
         sequence = 0L;
-        appVersionList = new LinkedList<AppVersion>();
+        appVersionList = new LinkedList<>();
         releaseName = "";
         timestamp = -1L;
     }

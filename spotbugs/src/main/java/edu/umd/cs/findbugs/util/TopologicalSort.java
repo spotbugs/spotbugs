@@ -51,7 +51,7 @@ public class TopologicalSort {
 
     public static class OutEdgesCache<E> implements OutEdges<E> {
 
-        final Map<E, Collection<E>> map = new IdentityHashMap<E, Collection<E>>();
+        final Map<E, Collection<E>> map = new IdentityHashMap<>();
 
         final OutEdges<E> base;
 
@@ -75,7 +75,7 @@ public class TopologicalSort {
         Profiler profile = Global.getAnalysisCache().getProfiler();
         profile.start(TopologicalSort.class);
         try {
-            SortAlgorithm<E> instance = new Worker2<E>(elements, outEdges);
+            SortAlgorithm<E> instance = new Worker2<>(elements, outEdges);
             return instance.compute();
         } finally {
             profile.end(TopologicalSort.class);
@@ -86,8 +86,8 @@ public class TopologicalSort {
         if (!DEBUG) {
             return;
         }
-        HashSet<E> seen = new HashSet<E>();
-        HashSet<E> all = new HashSet<E>(elements);
+        HashSet<E> seen = new HashSet<>();
+        HashSet<E> all = new HashSet<>(elements);
         int result = 0;
         int total = 0;
         for (E e : elements) {
@@ -110,9 +110,9 @@ public class TopologicalSort {
 
     static class Worker<E> implements SortAlgorithm<E> {
         Worker(Collection<E> consider, OutEdges<E> outEdges) {
-            this.consider = new LinkedHashSet<E>(consider);
+            this.consider = new LinkedHashSet<>(consider);
             this.outEdges = outEdges;
-            this.result = new ArrayList<E>(consider.size());
+            this.result = new ArrayList<>(consider.size());
 
         }
 
@@ -120,9 +120,9 @@ public class TopologicalSort {
 
         List<E> result;
 
-        HashSet<E> visited = new HashSet<E>();
+        HashSet<E> visited = new HashSet<>();
 
-        Set<E> consider = new HashSet<E>();
+        Set<E> consider = new HashSet<>();
 
         @Override
         public List<E> compute() {
@@ -152,14 +152,14 @@ public class TopologicalSort {
             if (outEdges == null) {
                 throw new IllegalArgumentException("outEdges must not be null");
             }
-            this.consider = new LinkedHashSet<E>(consider);
+            this.consider = new LinkedHashSet<>(consider);
             this.outEdges = outEdges;
 
         }
 
         OutEdges<E> outEdges;
 
-        Set<E> consider = new HashSet<E>();
+        Set<E> consider = new HashSet<>();
 
         MultiMap<E, E> iEdges, oEdges;
 
@@ -179,12 +179,12 @@ public class TopologicalSort {
 
         @Override
         public List<E> compute() {
-            ArrayList<E> doFirst = new ArrayList<E>(consider.size());
-            ArrayList<E> doLast = new ArrayList<E>(consider.size());
+            ArrayList<E> doFirst = new ArrayList<>(consider.size());
+            ArrayList<E> doLast = new ArrayList<>(consider.size());
 
-            HashSet<E> remaining = new HashSet<E>(consider);
-            iEdges = new MultiMap<E, E>(LinkedList.class);
-            oEdges = new MultiMap<E, E>(LinkedList.class);
+            HashSet<E> remaining = new HashSet<>(consider);
+            iEdges = new MultiMap<>(LinkedList.class);
+            oEdges = new MultiMap<>(LinkedList.class);
 
             for (E e : consider) {
                 for (E e2 : outEdges.getOutEdges(e)) {
@@ -195,7 +195,7 @@ public class TopologicalSort {
                 }
             }
             for (E e : consider) {
-                HashSet<E> both = new HashSet<E>(iEdges.get(e));
+                HashSet<E> both = new HashSet<>(iEdges.get(e));
                 both.retainAll(oEdges.get(e));
                 for (E e2 : both) {
                     iEdges.remove(e, e2);

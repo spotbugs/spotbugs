@@ -151,7 +151,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
      */
     @Nonnull
     private Map<String, Object> createMarkerAttributes(MarkerParameter mp) {
-        Map<String, Object> attributes = new HashMap<String, Object>(23);
+        Map<String, Object> attributes = new HashMap<>(23);
         attributes.put(IMarker.LINE_NUMBER, mp.startLine);
         attributes.put(PRIMARY_LINE, mp.primaryLine);
         attributes.put(BUG_TYPE, mp.bug.getType());

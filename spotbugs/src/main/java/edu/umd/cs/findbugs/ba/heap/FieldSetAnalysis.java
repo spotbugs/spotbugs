@@ -49,7 +49,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
     public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
         super(dfs);
         this.cpg = cpg;
-        this.instructionToFieldMap = new HashMap<InstructionHandle, XField>();
+        this.instructionToFieldMap = new HashMap<>();
     }
 
     public ConstantPoolGen getCPG() {

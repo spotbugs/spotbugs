@@ -127,7 +127,7 @@ public class OpcodeStack implements Constants2 {
     private static final boolean DEBUG2 = DEBUG;
 
     @StaticConstant
-    static final HashMap<String, String> boxedTypes = new HashMap<String, String>();
+    static final HashMap<String, String> boxedTypes = new HashMap<>();
 
     private List<Item> stack;
 
@@ -163,9 +163,9 @@ public class OpcodeStack implements Constants2 {
 
     private boolean jumpInfoChangedByNewTarget;
 
-    private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
+    private Map<Integer, List<Item>> jumpEntries = new HashMap<>();
 
-    private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
+    private Map<Integer, List<Item>> jumpStackEntries = new HashMap<>();
 
     private BitSet jumpEntryLocations = new BitSet();
 
@@ -278,7 +278,7 @@ public class OpcodeStack implements Constants2 {
          */
         @Deprecated
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-        public static final HashMap<Integer, String> specialKindNames = new HashMap<Integer, String>();
+        public static final HashMap<Integer, String> specialKindNames = new HashMap<>();
 
         private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
 
@@ -1118,9 +1118,9 @@ public class OpcodeStack implements Constants2 {
     }
 
     public OpcodeStack() {
-        stack = new ArrayList<Item>();
-        lvValues = new ArrayList<Item>();
-        lastUpdate = new ArrayList<Integer>();
+        stack = new ArrayList<>();
+        lvValues = new ArrayList<>();
+        lastUpdate = new ArrayList<>();
     }
 
     public boolean hasIncomingBranches(int pc) {
@@ -1202,9 +1202,9 @@ public class OpcodeStack implements Constants2 {
 
             }
             if (isTop()) {
-                lvValues = new ArrayList<Item>(jumpEntry);
+                lvValues = new ArrayList<>(jumpEntry);
                 if (jumpStackEntry != null) {
-                    stack = new ArrayList<Item>(jumpStackEntry);
+                    stack = new ArrayList<>(jumpStackEntry);
                 } else {
                     stack.clear();
                 }
@@ -1213,10 +1213,10 @@ public class OpcodeStack implements Constants2 {
             }
             if (isReachOnlyByBranch()) {
                 setTop(false);
-                lvValues = new ArrayList<Item>(jumpEntry);
+                lvValues = new ArrayList<>(jumpEntry);
                 if (!stackUpdated) {
                     if (jumpStackEntry != null) {
-                        stack = new ArrayList<Item>(jumpStackEntry);
+                        stack = new ArrayList<>(jumpStackEntry);
                     } else {
                         stack.clear();
                     }
@@ -2760,7 +2760,7 @@ public class OpcodeStack implements Constants2 {
 
             List<Item> mergeIntoCopy = null;
             if (DEBUG2) {
-                mergeIntoCopy = new ArrayList<Item>(mergeInto);
+                mergeIntoCopy = new ArrayList<>(mergeInto);
             }
             int common = Math.min(intoSize, fromSize);
             for (int i = 0; i < common; i++) {
@@ -2955,10 +2955,10 @@ public class OpcodeStack implements Constants2 {
         if (atTarget == null) {
             setJumpInfoChangedByBackwardBranch("new target", from, target);
             setJumpInfoChangedByNewTarget();
-            jumpEntries.put(Integer.valueOf(target), new ArrayList<Item>(lvValues));
+            jumpEntries.put(Integer.valueOf(target), new ArrayList<>(lvValues));
             jumpEntryLocations.set(target);
             if (stack.size() > 0) {
-                jumpStackEntries.put(Integer.valueOf(target), new ArrayList<Item>(stack));
+                jumpStackEntries.put(Integer.valueOf(target), new ArrayList<>(stack));
             }
         } else {
             if (mergeLists(atTarget, lvValues, false)) {
@@ -2982,8 +2982,8 @@ public class OpcodeStack implements Constants2 {
         if (info == null) {
             return;
         }
-        jumpEntries = new HashMap<Integer, List<Item>>(info.jumpEntries);
-        jumpStackEntries = new HashMap<Integer, List<Item>>(info.jumpStackEntries);
+        jumpEntries = new HashMap<>(info.jumpEntries);
+        jumpStackEntries = new HashMap<>(info.jumpStackEntries);
         jumpEntryLocations = (BitSet) info.jumpEntryLocations.clone();
     }
 

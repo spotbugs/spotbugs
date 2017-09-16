@@ -50,9 +50,9 @@ public class VolatileUsage extends BytecodeScanningDetector {
         classContext.getJavaClass().accept(this);
     }
 
-    Set<XField> initializationWrites = new HashSet<XField>();
+    Set<XField> initializationWrites = new HashSet<>();
 
-    Set<XField> otherWrites = new HashSet<XField>();
+    Set<XField> otherWrites = new HashSet<>();
 
     IncrementState state = IncrementState.START;
 

@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.workflow.UnionResults;
 @Deprecated
 public class UnionBugs extends Task {
 
-    private final List<FileSet> fileSets = new ArrayList<FileSet>();
+    private final List<FileSet> fileSets = new ArrayList<>();
 
     private String into;
 
@@ -109,7 +109,7 @@ public class UnionBugs extends Task {
     }
 
     private List<File> createListOfAllFilesToMerge() {
-        List<File> fileList = new ArrayList<File>();
+        List<File> fileList = new ArrayList<>();
         for (FileSet s : fileSets) {
             File fromDir = s.getDir(getProject());
             for (String file : s.getDirectoryScanner(getProject()).getIncludedFiles()) {
@@ -120,7 +120,7 @@ public class UnionBugs extends Task {
     }
 
     private String[] createCommandArgumentsArray(List<File> fileList) {
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         parts.add("-withMessages");
         parts.add("-output");
         parts.add(into);

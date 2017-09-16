@@ -57,7 +57,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     //    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
     @StaticConstant
-    private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<String, AnnotationDatabase.Target>();
+    private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<>();
     static {
         defaultKind.put("", AnnotationDatabase.Target.ANY);
         defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);

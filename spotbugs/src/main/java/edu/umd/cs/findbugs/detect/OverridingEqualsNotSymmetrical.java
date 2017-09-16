@@ -57,13 +57,13 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     private static final String STATIC_EQUALS_SIGNATURE = "(Ljava/lang/Object;Ljava/lang/Object;)Z";
 
-    Map<ClassDescriptor, Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<ClassDescriptor, Set<ClassDescriptor>>();
+    Map<ClassDescriptor, Set<ClassDescriptor>> classesWithGetClassBasedEquals = new HashMap<>();
 
-    Map<ClassDescriptor, Set<ClassDescriptor>> classesWithInstanceOfBasedEquals = new HashMap<ClassDescriptor, Set<ClassDescriptor>>();
+    Map<ClassDescriptor, Set<ClassDescriptor>> classesWithInstanceOfBasedEquals = new HashMap<>();
 
-    Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<ClassAnnotation, ClassAnnotation>();
+    Map<ClassAnnotation, ClassAnnotation> parentMap = new TreeMap<>();
 
-    Map<ClassAnnotation, MethodDescriptor> equalsMethod = new TreeMap<ClassAnnotation, MethodDescriptor>();
+    Map<ClassAnnotation, MethodDescriptor> equalsMethod = new TreeMap<>();
 
     final BugReporter bugReporter;
 
@@ -192,7 +192,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     boolean sawEqualsBuilder;
 
-    private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<EqualsKindSummary.KindOfEquals, Integer>(
+    private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<>(
             EqualsKindSummary.KindOfEquals.class);
 
     private void count(EqualsKindSummary.KindOfEquals k) {

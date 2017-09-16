@@ -129,7 +129,7 @@ public class DetectorsTest {
 
     @After
     public void checkForUnexpectedBugs() {
-        List<BugInstance> unexpectedBugs = new ArrayList<BugInstance>();
+        List<BugInstance> unexpectedBugs = new ArrayList<>();
         for (BugInstance bug : bugReporter.getBugCollection()) {
             if (isUnexpectedBug(bug) && bug.getPriority() == Priorities.HIGH_PRIORITY) {
                 unexpectedBugs.add(bug);

@@ -148,7 +148,7 @@ public class SmapParser {
     }
 
     public List<Integer> getJavaLineNumbers(Integer jspLineNo) {
-        final List<Integer> javaLines = new ArrayList<Integer>();
+        final List<Integer> javaLines = new ArrayList<>();
         for (final Map.Entry<Integer, int[]> lineMap : java2jsp.entrySet()) {
             if (lineMap.getValue()[1] == jspLineNo) {
                 javaLines.add(lineMap.getKey());

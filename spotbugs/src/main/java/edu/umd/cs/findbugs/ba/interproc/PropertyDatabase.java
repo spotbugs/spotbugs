@@ -59,7 +59,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * Constructor. Creates an empty property database.
      */
     protected PropertyDatabase() {
-        this.propertyMap = new HashMap<KeyType, ValueType>();
+        this.propertyMap = new HashMap<>();
     }
 
     /**
@@ -207,7 +207,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
         try {
             writer = new BufferedWriter(new OutputStreamWriter(out, UTF8.charset));
 
-            TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
+            TreeSet<KeyType> sortedMethodSet = new TreeSet<>();
             sortedMethodSet.addAll(propertyMap.keySet());
             for (KeyType key : sortedMethodSet) {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor())) {

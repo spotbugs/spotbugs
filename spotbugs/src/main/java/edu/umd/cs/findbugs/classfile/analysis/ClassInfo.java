@@ -82,18 +82,18 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     private boolean containingScopeCached;
 
     public static class Builder extends ClassNameAndSuperclassInfo.Builder {
-        private List<FieldInfo> fieldInfoList = new LinkedList<FieldInfo>();
+        private List<FieldInfo> fieldInfoList = new LinkedList<>();
 
-        private List<MethodInfo> methodInfoList = new LinkedList<MethodInfo>();
+        private List<MethodInfo> methodInfoList = new LinkedList<>();
 
         /**
          * Mapping from one method signature to its bridge method signature
          */
-        private final Map<MethodInfo, String> bridgedSignatures = new IdentityHashMap<MethodInfo, String>();
+        private final Map<MethodInfo, String> bridgedSignatures = new IdentityHashMap<>();
 
         private ClassDescriptor immediateEnclosingClass;
 
-        final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<ClassDescriptor, AnnotationValue>(3);
+        final Map<ClassDescriptor, AnnotationValue> classAnnotations = new HashMap<>(3);
 
         private String classSourceSignature;
 
@@ -237,7 +237,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     }
 
     private MethodInfo[] computeMethodsInCallOrder() {
-        final Map<String, MethodInfo> map = new HashMap<String, MethodInfo>();
+        final Map<String, MethodInfo> map = new HashMap<>();
 
         for (MethodInfo m : xMethods) {
             map.put(m.getName() + m.getSignature() + m.isStatic(), m);
@@ -438,7 +438,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
      *            an AnnotationValue to add to the class
      */
     public void addAnnotation(AnnotationValue annotationValue) {
-        HashMap<ClassDescriptor, AnnotationValue> updatedMap = new HashMap<ClassDescriptor, AnnotationValue>(classAnnotations);
+        HashMap<ClassDescriptor, AnnotationValue> updatedMap = new HashMap<>(classAnnotations);
         updatedMap.put(annotationValue.getAnnotationClass(), annotationValue);
         classAnnotations = Util.immutableMap(updatedMap);
     }

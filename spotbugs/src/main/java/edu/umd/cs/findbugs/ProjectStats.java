@@ -110,7 +110,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * Constructor. Creates an empty object.
      */
     public ProjectStats() {
-        this.packageStatsMap = new TreeMap<String, PackageStats>();
+        this.packageStatsMap = new TreeMap<>();
         this.totalClasses = 0;
         this.analysisTimestamp = new Date();
         this.baseFootprint = new Footprint();
@@ -436,7 +436,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         xmlOutput.stopTag(false);
 
         if (withMessages && fileBugHashes != null) {
-            for (String sourceFile : new TreeSet<String>(fileBugHashes.getSourceFiles())) {
+            for (String sourceFile : new TreeSet<>(fileBugHashes.getSourceFiles())) {
                 xmlOutput.startTag("FileStats");
                 xmlOutput.addAttribute("path", sourceFile);
                 xmlOutput.addAttribute("bugCount", String.valueOf(fileBugHashes.getBugCount(sourceFile)));
@@ -470,7 +470,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
             computeFileStats(bugs);
         }
 
-        HashMap<String, String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<>();
         for (String sourceFile : fileBugHashes.getSourceFiles()) {
             result.put(sourceFile, fileBugHashes.getHash(sourceFile));
         }

@@ -129,7 +129,7 @@ public class FindBugs2 implements IFindBugsEngine {
      * Constructor.
      */
     public FindBugs2() {
-        this.classObserverList = new LinkedList<IClassObserver>();
+        this.classObserverList = new LinkedList<>();
         this.analysisOptions.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
         this.progress = new NoOpFindBugsProgress();
 
@@ -656,7 +656,7 @@ public class FindBugs2 implements IFindBugsEngine {
         IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
 
         {
-            HashSet<String> seen = new HashSet<String>();
+            HashSet<String> seen = new HashSet<>();
             for (String path : project.getFileArray()) {
                 if (seen.add(path)) {
                     builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(path), true);
@@ -706,19 +706,19 @@ public class FindBugs2 implements IFindBugsEngine {
         if (PROGRESS) {
             System.out.println("Adding referenced classes");
         }
-        Set<String> referencedPackageSet = new HashSet<String>();
+        Set<String> referencedPackageSet = new HashSet<>();
 
-        LinkedList<ClassDescriptor> workList = new LinkedList<ClassDescriptor>();
+        LinkedList<ClassDescriptor> workList = new LinkedList<>();
         workList.addAll(appClassList);
 
-        Set<ClassDescriptor> seen = new HashSet<ClassDescriptor>();
-        Set<ClassDescriptor> appClassSet = new HashSet<ClassDescriptor>(appClassList);
+        Set<ClassDescriptor> seen = new HashSet<>();
+        Set<ClassDescriptor> appClassSet = new HashSet<>(appClassList);
 
-        Set<ClassDescriptor> badAppClassSet = new HashSet<ClassDescriptor>();
-        HashSet<ClassDescriptor> knownDescriptors = new HashSet<ClassDescriptor>(DescriptorFactory.instance()
+        Set<ClassDescriptor> badAppClassSet = new HashSet<>();
+        HashSet<ClassDescriptor> knownDescriptors = new HashSet<>(DescriptorFactory.instance()
                 .getAllClassDescriptors());
         int count = 0;
-        Set<ClassDescriptor> addedToWorkList = new HashSet<ClassDescriptor>(appClassList);
+        Set<ClassDescriptor> addedToWorkList = new HashSet<>(appClassList);
 
         // add fields
         //noinspection ConstantIfStatement
@@ -815,7 +815,7 @@ public class FindBugs2 implements IFindBugsEngine {
         for (ClassDescriptor d : DescriptorFactory.instance().getAllClassDescriptors()) {
             referencedPackageSet.add(d.getPackageName());
         }
-        referencedClassSet = new ArrayList<ClassDescriptor>(DescriptorFactory.instance().getAllClassDescriptors());
+        referencedClassSet = new ArrayList<>(DescriptorFactory.instance().getAllClassDescriptors());
 
         // Based on referenced packages, add any resolvable package-info classes
         // to the set of referenced classes.
@@ -898,7 +898,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
         // Use user preferences to decide which detectors are enabled.
         DetectorFactoryChooser detectorFactoryChooser = new DetectorFactoryChooser() {
-            HashSet<DetectorFactory> forcedEnabled = new HashSet<DetectorFactory>();
+            HashSet<DetectorFactory> forcedEnabled = new HashSet<>();
 
             @Override
             public boolean choose(DetectorFactory factory) {
@@ -961,7 +961,7 @@ public class FindBugs2 implements IFindBugsEngine {
             }
             progress.predictPassCount(classesPerPass);
             XFactory factory = AnalysisContext.currentXFactory();
-            Collection<ClassDescriptor> badClasses = new LinkedList<ClassDescriptor>();
+            Collection<ClassDescriptor> badClasses = new LinkedList<>();
             for (ClassDescriptor desc : referencedClassSet) {
                 try {
                     XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
@@ -975,7 +975,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 }
             }
             if (!badClasses.isEmpty()) {
-                referencedClassSet = new LinkedHashSet<ClassDescriptor>(referencedClassSet);
+                referencedClassSet = new LinkedHashSet<>(referencedClassSet);
                 referencedClassSet.removeAll(badClasses);
             }
 

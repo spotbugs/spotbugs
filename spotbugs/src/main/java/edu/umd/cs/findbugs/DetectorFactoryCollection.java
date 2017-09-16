@@ -60,17 +60,17 @@ public class DetectorFactoryCollection {
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
 
-    private final Map<String, Plugin> pluginByIdMap = new LinkedHashMap<String, Plugin>();
+    private final Map<String, Plugin> pluginByIdMap = new LinkedHashMap<>();
     private Plugin corePlugin;
-    private final List<DetectorFactory> factoryList = new ArrayList<DetectorFactory>();
-    private final Map<String, DetectorFactory> factoriesByName = new HashMap<String, DetectorFactory>();
-    private final Map<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<String, DetectorFactory>();
-    protected final Map<String, BugCategory> categoryDescriptionMap = new HashMap<String, BugCategory>();
-    protected final Map<String, BugPattern> bugPatternMap = new HashMap<String, BugPattern>();
-    protected final Map<String, BugCode> bugCodeMap = new HashMap<String, BugCode>();
+    private final List<DetectorFactory> factoryList = new ArrayList<>();
+    private final Map<String, DetectorFactory> factoriesByName = new HashMap<>();
+    private final Map<String, DetectorFactory> factoriesByDetectorClassName = new HashMap<>();
+    protected final Map<String, BugCategory> categoryDescriptionMap = new HashMap<>();
+    protected final Map<String, BugPattern> bugPatternMap = new HashMap<>();
+    protected final Map<String, BugCode> bugCodeMap = new HashMap<>();
 
-    final Map<String, String> globalOptions = new HashMap<String,String>();
-    final Map<String, Plugin> globalOptionsSetter = new HashMap<String,Plugin>();
+    final Map<String, String> globalOptions = new HashMap<>();
+    final Map<String, Plugin> globalOptionsSetter = new HashMap<>();
 
     public DetectorFactoryCollection() {
         this(true, false, Plugin.getAllPlugins(), new ArrayList<Plugin>());
@@ -537,7 +537,7 @@ public class DetectorFactoryCollection {
      * @return Collection of bug category keys.
      */
     public Collection<String> getBugCategories() {
-        ArrayList<String> result = new ArrayList<String>(categoryDescriptionMap.size());
+        ArrayList<String> result = new ArrayList<>(categoryDescriptionMap.size());
         for(BugCategory c : categoryDescriptionMap.values()) {
             if (!c.isHidden()) {
                 result.add(c.getCategory());

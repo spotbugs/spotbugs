@@ -73,7 +73,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
             JavaClass[] interfaces = null;
             if (cls.isClass() && ((cls.getAccessFlags() & Const.ACC_ABSTRACT) != 0)) {
                 interfaces = cls.getAllInterfaces();
-                interfaceMethods = new HashSet<String>();
+                interfaceMethods = new HashSet<>();
                 for (JavaClass aInterface : interfaces) {
                     Method[] infMethods = aInterface.getMethods();
                     for (Method meth : infMethods) {
@@ -298,7 +298,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
     }
 
     HashSet<String> thrownExceptions(Method m) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         ExceptionTable exceptionTable = m.getExceptionTable();
         if (exceptionTable != null) {
             for (String e : exceptionTable.getExceptionNames()) {

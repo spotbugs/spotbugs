@@ -233,9 +233,9 @@ public class SourceInfoMap {
      * Constructor. Creates an empty object.
      */
     public SourceInfoMap() {
-        this.fieldLineMap = new HashMap<FieldDescriptor, SourceLineRange>();
-        this.methodLineMap = new HashMap<MethodDescriptor, SourceLineRange>();
-        this.classLineMap = new HashMap<String, SourceLineRange>();
+        this.fieldLineMap = new HashMap<>();
+        this.methodLineMap = new HashMap<>();
+        this.classLineMap = new HashMap<>();
     }
 
     /**

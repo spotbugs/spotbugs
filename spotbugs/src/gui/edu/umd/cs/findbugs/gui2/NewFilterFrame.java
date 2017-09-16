@@ -145,7 +145,7 @@ public class NewFilterFrame extends FBDialog {
                 Sortables key = (Sortables) comboBox.getSelectedItem();
                 String[] values = key.getAllSorted();
 
-                ArrayList<SortableValue> filterMe = new ArrayList<SortableValue>();
+                ArrayList<SortableValue> filterMe = new ArrayList<>();
                 for (int i : list.getSelectedIndices()) {
                     filterMe.add(new BugAspects.SortableValue(key, values[i]));
                 }

@@ -122,7 +122,7 @@ public class TestDataflowAnalysis<Fact,AnalysisType extends DataflowAnalysis<Fac
 
             if (SystemProperties.getBoolean("dataflow.printcfg")) {
                 DataflowCFGPrinter<Fact,AnalysisType> cfgPrinter
-                = new DataflowCFGPrinter<Fact,AnalysisType>(dataflow);
+                = new DataflowCFGPrinter<>(dataflow);
                 cfgPrinter.print(System.out);
             }
 

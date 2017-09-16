@@ -27,9 +27,9 @@ import java.util.Set;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class ClassSummary {
-    private final Map<ClassDescriptor, ClassDescriptor> map = new HashMap<ClassDescriptor, ClassDescriptor>();
+    private final Map<ClassDescriptor, ClassDescriptor> map = new HashMap<>();
 
-    private final Set<ClassDescriptor> veryFunky = new HashSet<ClassDescriptor>();
+    private final Set<ClassDescriptor> veryFunky = new HashSet<>();
 
     public boolean mightBeEqualTo(ClassDescriptor checker, ClassDescriptor checkee) {
         return checkee.equals(map.get(checker)) || veryFunky.contains(checker);

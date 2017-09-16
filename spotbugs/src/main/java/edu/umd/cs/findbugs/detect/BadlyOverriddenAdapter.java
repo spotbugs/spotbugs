@@ -42,8 +42,8 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector {
 
     public BadlyOverriddenAdapter(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        methodMap = new HashMap<String, String>();
-        badOverrideMap = new HashMap<String, BugInstance>();
+        methodMap = new HashMap<>();
+        badOverrideMap = new HashMap<>();
     }
 
     @Override

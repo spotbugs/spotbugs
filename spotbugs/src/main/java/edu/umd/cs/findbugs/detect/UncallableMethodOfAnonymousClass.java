@@ -136,7 +136,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
     }
 
     Set<String> definedInClass(JavaClass clazz) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         for (Method m : clazz.getMethods()) {
             if (!skip(m)) {
                 result.add(m.getName() + m.getSignature());

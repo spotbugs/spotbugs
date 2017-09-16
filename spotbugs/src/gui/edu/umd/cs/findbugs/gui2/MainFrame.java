@@ -676,8 +676,8 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     public void selectPackagePrefixByProject() {
-        TreeSet<String> projects = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-        Multiset<String> count = new Multiset<String>();
+        TreeSet<String> projects = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Multiset<String> count = new Multiset<>();
         int total = 0;
         for (BugInstance b : getBugCollection().getCollection()) {
             if (shouldDisplayIssueIgnoringPackagePrefixes(b)) {
@@ -691,7 +691,7 @@ public class MainFrame extends FBFrame implements LogSync {
             JOptionPane.showMessageDialog(this, "No issues in current view");
             return;
         }
-        ArrayList<ProjectSelector> selectors = new ArrayList<ProjectSelector>(projects.size() + 1);
+        ArrayList<ProjectSelector> selectors = new ArrayList<>(projects.size() + 1);
         ProjectSelector everything = new ProjectSelector("all projects", "", total);
         selectors.add(everything);
         for (String projectName : projects) {

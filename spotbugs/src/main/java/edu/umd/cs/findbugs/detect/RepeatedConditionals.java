@@ -68,11 +68,11 @@ public class RepeatedConditionals extends OpcodeStackDetector {
      */
     int oldPC;
 
-    LinkedList<Integer> emptyStackLocations = new LinkedList<Integer>();
+    LinkedList<Integer> emptyStackLocations = new LinkedList<>();
 
-    LinkedList<Integer> prevOpcodeLocations = new LinkedList<Integer>();
+    LinkedList<Integer> prevOpcodeLocations = new LinkedList<>();
 
-    Map<Integer, Integer> branchTargets = new HashMap<Integer, Integer>();
+    Map<Integer, Integer> branchTargets = new HashMap<>();
 
     @Override
     public void sawBranchTo(int pc) {

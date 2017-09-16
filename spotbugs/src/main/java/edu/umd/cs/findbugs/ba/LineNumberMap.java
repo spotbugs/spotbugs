@@ -57,7 +57,7 @@ public class LineNumberMap {
      */
     public LineNumberMap(MethodGen methodGen) {
         this.methodGen = methodGen;
-        lineNumberMap = new IdentityHashMap<InstructionHandle, LineNumber>();
+        lineNumberMap = new IdentityHashMap<>();
         hasLineNumbers = false;
     }
 

@@ -139,7 +139,7 @@ public class Util {
      * the results ascending with the overall time.
      */
     public static class StopTimer {
-        TreeMap<Long, String> stopTimes = new TreeMap<Long, String>();
+        TreeMap<Long, String> stopTimes = new TreeMap<>();
 
         public synchronized void newPoint(String name) {
             Long time = Long.valueOf(System.currentTimeMillis());

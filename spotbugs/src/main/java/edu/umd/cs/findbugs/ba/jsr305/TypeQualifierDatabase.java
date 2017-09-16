@@ -48,8 +48,8 @@ public class TypeQualifierDatabase {
      * Constructor.
      */
     public TypeQualifierDatabase() {
-        this.returnValueMap = new HashMap<MethodDescriptor, Map<TypeQualifierValue<?>, TypeQualifierAnnotation>>();
-        this.parameterMap = new DualKeyHashMap<MethodDescriptor, Integer, Map<TypeQualifierValue<?>, TypeQualifierAnnotation>>();
+        this.returnValueMap = new HashMap<>();
+        this.parameterMap = new DualKeyHashMap<>();
     }
 
     /**
@@ -65,7 +65,7 @@ public class TypeQualifierDatabase {
     public void setReturnValue(MethodDescriptor methodDesc, TypeQualifierValue<?> tqv, TypeQualifierAnnotation tqa) {
         Map<TypeQualifierValue<?>, TypeQualifierAnnotation> map = returnValueMap.get(methodDesc);
         if (map == null) {
-            map = new HashMap<TypeQualifierValue<?>, TypeQualifierAnnotation>();
+            map = new HashMap<>();
             returnValueMap.put(methodDesc, map);
         }
         map.put(tqv, tqa);
@@ -112,7 +112,7 @@ public class TypeQualifierDatabase {
     public void setParameter(MethodDescriptor methodDesc, int param, TypeQualifierValue<?> tqv, TypeQualifierAnnotation tqa) {
         Map<TypeQualifierValue<?>, TypeQualifierAnnotation> map = parameterMap.get(methodDesc, param);
         if (map == null) {
-            map = new HashMap<TypeQualifierValue<?>, TypeQualifierAnnotation>();
+            map = new HashMap<>();
             parameterMap.put(methodDesc, param, map);
         }
         map.put(tqv, tqa);

@@ -47,7 +47,7 @@ public class FindRoughConstants extends BytecodeScanningDetector {
         double value;
         int basePriority;
 
-        Set<Number> approxSet = new HashSet<Number>();
+        Set<Number> approxSet = new HashSet<>();
 
         BadConstant(double base, double factor, String replacement, int basePriority) {
             this.base = base;

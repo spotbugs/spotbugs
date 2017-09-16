@@ -65,7 +65,7 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     int register;
 
     int lastMethodCall;
-    Set<String> initializedFields = new HashSet<String>();
+    Set<String> initializedFields = new HashSet<>();
 
     XField possibleOverwrite;
     @Override

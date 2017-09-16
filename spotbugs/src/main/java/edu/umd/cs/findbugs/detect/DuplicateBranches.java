@@ -58,7 +58,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
 
     private final BugReporter bugReporter;
 
-    private final Collection<BugInstance> pendingBugs = new LinkedList<BugInstance>();
+    private final Collection<BugInstance> pendingBugs = new LinkedList<>();
 
     public DuplicateBranches(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -196,7 +196,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
     private void findSwitchDuplicates(CFG cfg, Method method, BasicBlock bb) {
 
         int[] switchPos = new int[cfg.getNumOutgoingEdges(bb) + 1];
-        HashMap<Integer, InstructionHandle> prevHandle = new HashMap<Integer, InstructionHandle>();
+        HashMap<Integer, InstructionHandle> prevHandle = new HashMap<>();
 
         Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
         int idx = 0;
@@ -235,7 +235,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         // switchPos[idx-1])
         switchPos[idx] = getFinalTarget(cfg, switchPos[idx - 1], prevHandle.values());
 
-        HashMap<BigInteger, Collection<Integer>> map = new HashMap<BigInteger, Collection<Integer>>();
+        HashMap<BigInteger, Collection<Integer>> map = new HashMap<>();
         for (int i = 0; i < idx; i++) {
             if (switchPos[i] + 7 >= switchPos[i + 1])
             {
@@ -291,7 +291,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         Collection<Integer> values = map.get(clauseAsInt);
 
         if (values == null) {
-            values = new LinkedList<Integer>();
+            values = new LinkedList<>();
             map.put(clauseAsInt, values);
         }
         values.add(i); // index into the sorted array

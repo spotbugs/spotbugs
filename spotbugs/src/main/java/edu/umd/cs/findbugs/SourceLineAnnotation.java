@@ -111,9 +111,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     public static final String DESCRIPTION_LOOP_BOTTOM = "SOURCE_LINE_LOOP_BOTTOM";
 
-    static final ThreadLocal<Project> myProject = new ThreadLocal<Project>();
+    static final ThreadLocal<Project> myProject = new ThreadLocal<>();
 
-    static final ThreadLocal<String> relativeSourceBase = new ThreadLocal<String>();
+    static final ThreadLocal<String> relativeSourceBase = new ThreadLocal<>();
 
     private static final String ELEMENT_NAME = "SourceLine";
 

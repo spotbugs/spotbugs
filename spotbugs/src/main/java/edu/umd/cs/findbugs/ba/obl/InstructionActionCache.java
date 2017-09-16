@@ -77,7 +77,7 @@ public class InstructionActionCache {
 
     public InstructionActionCache(ObligationPolicyDatabase database, XMethod xmethod, ConstantPoolGen cpg, TypeDataflow typeDataflow) {
         this.database = database;
-        this.actionCache = new HashMap<InstructionHandle, Collection<ObligationPolicyDatabaseAction>>();
+        this.actionCache = new HashMap<>();
         this.xmethod = xmethod;
         this.cpg = cpg;
         this.typeDataflow = typeDataflow;
@@ -107,7 +107,7 @@ public class InstructionActionCache {
                     ReferenceType receiverType = inv.getReferenceType(cpg);
 
                     boolean isStatic = inv.getOpcode() == Const.INVOKESTATIC;
-                    actionList = new LinkedList<ObligationPolicyDatabaseAction>();
+                    actionList = new LinkedList<>();
 
                     database.getActions(receiverType, methodName, signature, isStatic, actionList);
 

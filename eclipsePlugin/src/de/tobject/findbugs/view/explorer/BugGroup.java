@@ -56,8 +56,8 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         Assert.isNotNull(type, "Group type cannot be null");
         this.type = type;
         this.identifier = identifier;
-        this.children = new HashSet<Object>();
-        this.allMarkers = new HashSet<IMarker>();
+        this.children = new HashSet<>();
+        this.allMarkers = new HashSet<>();
         if (parent instanceof BugGroup) {
             BugGroup bugGroup = (BugGroup) parent;
             bugGroup.addChild(this);

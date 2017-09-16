@@ -56,9 +56,9 @@ public class DroppedException extends PreorderVisitor implements Detector {
     private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS = SystemProperties
             .getBoolean("findbugs.de.comment");
 
-    Set<String> causes = new HashSet<String>();
+    Set<String> causes = new HashSet<>();
 
-    Set<String> checkedCauses = new HashSet<String>();
+    Set<String> checkedCauses = new HashSet<>();
 
     private final BugReporter bugReporter;
     private final BugAccumulator bugAccumulator;
@@ -416,7 +416,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
             // Read the tokens into an ArrayList,
             // keeping track of where the catch block is reported
             // to start
-            ArrayList<Token> tokenList = new ArrayList<Token>(40);
+            ArrayList<Token> tokenList = new ArrayList<>(40);
             int eolOfCatchBlockStart = -1;
             for (int line = scanStartLine; line < scanStartLine + MAX_LINES;) {
                 Token token = tokenizer.next();

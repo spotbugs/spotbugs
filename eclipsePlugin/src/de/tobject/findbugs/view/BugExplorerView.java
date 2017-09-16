@@ -185,7 +185,7 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
 
     private ISelection adaptSelection(IStructuredSelection selection) {
         BugContentProvider provider = BugContentProvider.getProvider(getNavigatorContentService());
-        Set<Object> accepted = new HashSet<Object>();
+        Set<Object> accepted = new HashSet<>();
         Iterator<?> iter = selection.iterator();
         while (iter.hasNext()) {
             Object object = iter.next();

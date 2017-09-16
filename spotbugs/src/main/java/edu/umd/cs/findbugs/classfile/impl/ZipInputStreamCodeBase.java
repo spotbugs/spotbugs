@@ -44,9 +44,9 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
     final File file;
 
-    final MapCache<String, ZipInputStreamCodeBaseEntry> map = new MapCache<String, ZipInputStreamCodeBaseEntry>(10000);
+    final MapCache<String, ZipInputStreamCodeBaseEntry> map = new MapCache<>(10000);
 
-    final HashSet<String> entries = new HashSet<String>();
+    final HashSet<String> entries = new HashSet<>();
 
     /**
      * Constructor.

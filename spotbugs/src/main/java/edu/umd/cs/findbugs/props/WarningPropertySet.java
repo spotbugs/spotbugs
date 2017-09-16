@@ -60,7 +60,7 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
      * Constructor Creates empty object.
      */
     public WarningPropertySet() {
-        this.map = new HashMap<T, Object>();
+        this.map = new HashMap<>();
     }
 
     @Override

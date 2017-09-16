@@ -311,7 +311,7 @@ public abstract class FindBugs {
      */
     public static Set<String> handleBugCategories(String categories) {
         // Parse list of bug categories
-        Set<String> categorySet = new HashSet<String>();
+        Set<String> categorySet = new HashSet<>();
         StringTokenizer tok = new StringTokenizer(categories, ",");
         while (tok.hasMoreTokens()) {
             categorySet.add(tok.nextToken());

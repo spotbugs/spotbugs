@@ -45,7 +45,7 @@ public class SelfMethodCalls {
     }
 
     public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
-        final MultiMap<T, T> map = new MultiMap<T, T>(HashSet.class);
+        final MultiMap<T, T> map = new MultiMap<>(HashSet.class);
 
         FBClassReader reader;
         try {

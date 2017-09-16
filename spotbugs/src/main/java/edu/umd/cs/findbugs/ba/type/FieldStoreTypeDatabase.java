@@ -39,7 +39,7 @@ public class FieldStoreTypeDatabase extends FieldPropertyDatabase<FieldStoreType
     public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
     public void purgeBoringEntries() {
-        Collection<FieldDescriptor> keys = new ArrayList<FieldDescriptor>(getKeys());
+        Collection<FieldDescriptor> keys = new ArrayList<>(getKeys());
         for (FieldDescriptor f : keys) {
             FieldStoreType type = getProperty(f);
             Type fieldType = Type.getType(f.getSignature());

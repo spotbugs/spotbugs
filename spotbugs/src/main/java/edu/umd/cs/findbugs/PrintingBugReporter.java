@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.util.Bag;
  * stream.
  */
 public class PrintingBugReporter extends TextUIBugReporter {
-    private final HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+    private final HashSet<BugInstance> seenAlready = new HashSet<>();
 
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
@@ -172,7 +172,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         boolean bugsReported = false;
         RuntimeException storedException = null;
         
-        Bag<String> lowRank = new Bag<String>(new TreeMap<String, Integer>());
+        Bag<String> lowRank = new Bag<>(new TreeMap<String, Integer>());
         for (BugInstance warning : bugCollection.getCollection()) {
             if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
                 int rank = warning.getBugRank();

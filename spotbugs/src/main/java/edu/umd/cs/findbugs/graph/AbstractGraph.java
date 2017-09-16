@@ -133,8 +133,8 @@ implements Graph<EdgeType, VertexType> {
      */
 
     public AbstractGraph() {
-        this.vertexList = new ArrayList<VertexType>();
-        this.edgeList = new ArrayList<EdgeType>();
+        this.vertexList = new ArrayList<>();
+        this.edgeList = new ArrayList<>();
         this.maxVertexLabel = 0;
         this.maxEdgeLabel = 0;
     }
@@ -247,12 +247,12 @@ implements Graph<EdgeType, VertexType> {
 
     @Override
     public Iterator<EdgeType> outgoingEdgeIterator(VertexType source) {
-        return new OutgoingEdgeIterator<EdgeType, VertexType>(source);
+        return new OutgoingEdgeIterator<>(source);
     }
 
     @Override
     public Iterator<EdgeType> incomingEdgeIterator(VertexType target) {
-        return new IncomingEdgeIterator<EdgeType, VertexType>(target);
+        return new IncomingEdgeIterator<>(target);
     }
 
     @Override

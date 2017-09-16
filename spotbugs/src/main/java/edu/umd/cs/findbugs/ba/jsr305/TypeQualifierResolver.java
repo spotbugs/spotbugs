@@ -78,7 +78,7 @@ public class TypeQualifierResolver {
      *         TypeQualifier annotations
      */
     public static Collection<AnnotationValue> resolveTypeQualifiers(AnnotationValue value) {
-        LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
+        LinkedList<AnnotationValue> result = new LinkedList<>();
         resolveTypeQualifierNicknames(value, result, new LinkedList<ClassDescriptor>());
         return result;
     }
@@ -95,7 +95,7 @@ public class TypeQualifierResolver {
      */
     public static Collection<AnnotationValue> resolveTypeQualifierDefaults(Collection<AnnotationValue> values,
             ElementType elementType) {
-        LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
+        LinkedList<AnnotationValue> result = new LinkedList<>();
         for (AnnotationValue value : values) {
             resolveTypeQualifierDefaults(value, elementType, result);
         }
@@ -188,8 +188,8 @@ public class TypeQualifierResolver {
         if (values.isEmpty()) {
             return Collections.emptyList();
         }
-        LinkedList<AnnotationValue> result = new LinkedList<AnnotationValue>();
-        LinkedList<ClassDescriptor> onStack = new LinkedList<ClassDescriptor>();
+        LinkedList<AnnotationValue> result = new LinkedList<>();
+        LinkedList<ClassDescriptor> onStack = new LinkedList<>();
         for (AnnotationValue value : values) {
             resolveTypeQualifierNicknames(value, result, onStack);
         }

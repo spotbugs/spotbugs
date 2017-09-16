@@ -180,7 +180,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return;
         }
-        HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+        HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
             if (availableLoad.getField().equals(field)) {
                 if (RLE_DEBUG) {
@@ -205,7 +205,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             return;
         }
         FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-        HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+        HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
             XField field = availableLoad.getField();
             if ((!primitiveOnly || !field.isReferenceType()) && (field.isVolatile() || !field.isFinal()
@@ -225,7 +225,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             return;
         }
         AvailableLoad myLoad = getLoad(v);
-        HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+        HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
             if (!availableLoad.getField().isFinal() && !availableLoad.equals(myLoad)) {
                 if (RLE_DEBUG) {
@@ -247,7 +247,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         }
         FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
-        HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+        HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
             if (availableLoad.getReference() != v) {
                 continue;
@@ -267,7 +267,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return;
         }
-        HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+        HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
 
             if (fieldsToKill.contains(availableLoad.getField())) {
@@ -284,7 +284,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         }
         String packageName = extractPackageName(className);
 
-        HashSet<AvailableLoad> killMe = new HashSet<AvailableLoad>();
+        HashSet<AvailableLoad> killMe = new HashSet<>();
         for (AvailableLoad availableLoad : getAvailableLoadMap().keySet()) {
 
             XField field = availableLoad.getField();
@@ -420,7 +420,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (mergedValueList == null && other.isValid()) {
             // This is where this frame gets its size.
             // It will have the same size as long as it remains valid.
-            mergedValueList = new ArrayList<ValueNumber>(other.getNumSlots());
+            mergedValueList = new ArrayList<>(other.getNumSlots());
             int numSlots = other.getNumSlots();
             for (int i = 0; i < numSlots; ++i) {
                 mergedValueList.add(null);
@@ -583,7 +583,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     }
 
     public Collection<ValueNumber> valueNumbersForLoads() {
-        HashSet<ValueNumber> result = new HashSet<ValueNumber>();
+        HashSet<ValueNumber> result = new HashSet<>();
         if (REDUNDANT_LOAD_ELIMINATION) {
             for (Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
                 if (e.getValue() != null) {
@@ -607,7 +607,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     private Map<AvailableLoad, ValueNumber[]> getUpdateableAvailableLoadMap() {
         if (!(availableLoadMap instanceof HashMap)) {
-            HashMap<AvailableLoad, ValueNumber[]> tmp = new HashMap<AvailableLoad, ValueNumber[]>(availableLoadMap.size() + 4);
+            HashMap<AvailableLoad, ValueNumber[]> tmp = new HashMap<>(availableLoadMap.size() + 4);
             tmp.putAll(availableLoadMap);
             availableLoadMap = tmp;
         }
@@ -624,7 +624,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     private Map<AvailableLoad, ValueNumber> getUpdateableMergedLoads() {
         if (!(mergedLoads instanceof HashMap)) {
-            mergedLoads = new HashMap<AvailableLoad, ValueNumber>();
+            mergedLoads = new HashMap<>();
         }
 
         return mergedLoads;
@@ -640,10 +640,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
         if (previouslyKnownAs.size() == 0) {
-            previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
+            previouslyKnownAs = new HashMap<>(4);
             createdEmptyMap++;
         } else if (!(previouslyKnownAs instanceof HashMap)) {
-            HashMap<ValueNumber, AvailableLoad> tmp = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs.size() + 4);
+            HashMap<ValueNumber, AvailableLoad> tmp = new HashMap<>(previouslyKnownAs.size() + 4);
             tmp.putAll(previouslyKnownAs);
             previouslyKnownAs = tmp;
             madeImmutableMutable++;

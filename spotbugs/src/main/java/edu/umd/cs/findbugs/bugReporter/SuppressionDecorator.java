@@ -44,9 +44,9 @@ public class SuppressionDecorator extends BugReporterDecorator {
 
     final String category;
 
-    final HashSet<String> check = new HashSet<String>();
+    final HashSet<String> check = new HashSet<>();
 
-    final HashSet<String> dontCheck = new HashSet<String>();
+    final HashSet<String> dontCheck = new HashSet<>();
 
     public SuppressionDecorator(ComponentPlugin<BugReporterDecorator> plugin, BugReporter delegate) {
         super(plugin, delegate);

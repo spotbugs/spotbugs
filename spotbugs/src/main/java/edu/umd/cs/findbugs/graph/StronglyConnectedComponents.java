@@ -40,7 +40,7 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
      * Constructor.
      */
     public StronglyConnectedComponents() {
-        m_stronglyConnectedSearchTreeList = new ArrayList<SearchTree<VertexType>>();
+        m_stronglyConnectedSearchTreeList = new ArrayList<>();
         m_vertexChooser = null;
     }
 
@@ -65,29 +65,29 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
     public void findStronglyConnectedComponents(GraphType g, GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
         // Perform the initial depth first search
-        DepthFirstSearch<GraphType, EdgeType, VertexType> initialDFS = new DepthFirstSearch<GraphType, EdgeType, VertexType>(g);
+        DepthFirstSearch<GraphType, EdgeType, VertexType> initialDFS = new DepthFirstSearch<>(g);
         if (m_vertexChooser != null) {
             initialDFS.setVertexChooser(m_vertexChooser);
         }
         initialDFS.search();
 
         // Create a transposed graph
-        Transpose<GraphType, EdgeType, VertexType> t = new Transpose<GraphType, EdgeType, VertexType>();
+        Transpose<GraphType, EdgeType, VertexType> t = new Transpose<>();
         GraphType transpose = t.transpose(g, toolkit);
 
         // Create a set of vertices in the transposed graph,
         // in descending order of finish time in the initial
         // depth first search.
-        VisitationTimeComparator<VertexType> comparator = new VisitationTimeComparator<VertexType>(
+        VisitationTimeComparator<VertexType> comparator = new VisitationTimeComparator<>(
                 initialDFS.getFinishTimeList(), VisitationTimeComparator.DESCENDING);
-        Set<VertexType> descendingByFinishTimeSet = new TreeSet<VertexType>(comparator);
+        Set<VertexType> descendingByFinishTimeSet = new TreeSet<>(comparator);
         Iterator<VertexType> i = transpose.vertexIterator();
         while (i.hasNext()) {
             descendingByFinishTimeSet.add(i.next());
         }
 
         // Create a SearchTreeBuilder for transposed DFS
-        SearchTreeBuilder<VertexType> searchTreeBuilder = new SearchTreeBuilder<VertexType>();
+        SearchTreeBuilder<VertexType> searchTreeBuilder = new SearchTreeBuilder<>();
 
         // Now perform a DFS on the transpose, choosing the vertices
         // to visit in the main loop by descending finish time
@@ -133,7 +133,7 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
      */
     private SearchTree<VertexType> copySearchTree(SearchTree<VertexType> tree, Transpose<GraphType, EdgeType, VertexType> t) {
         // Copy this node
-        SearchTree<VertexType> copy = new SearchTree<VertexType>(t.getOriginalGraphVertex(tree.getVertex()));
+        SearchTree<VertexType> copy = new SearchTree<>(t.getOriginalGraphVertex(tree.getVertex()));
 
         // Copy children
         Iterator<SearchTree<VertexType>> i = tree.childIterator();
@@ -174,7 +174,7 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
         @Override
         public Set<VertexType> next() {
             SearchTree<VertexType> tree = m_searchTreeIterator.next();
-            TreeSet<VertexType> set = new TreeSet<VertexType>();
+            TreeSet<VertexType> set = new TreeSet<>();
             tree.addVerticesToSet(set);
             return set;
         }

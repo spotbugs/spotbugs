@@ -126,9 +126,9 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             // produced by this point.
             //
 
-            warningsByClass = new HashMap<ClassDescriptor, Collection<BugInstance>>();
-            warningsByMethod = new HashMap<MethodDescriptor, Collection<BugInstance>>();
-            warningsByField = new HashMap<FieldDescriptor, Collection<BugInstance>>();
+            warningsByClass = new HashMap<>();
+            warningsByMethod = new HashMap<>();
+            warningsByField = new HashMap<>();
 
             for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
                 BugInstance warning = i.next();
@@ -137,7 +137,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     MethodDescriptor methodDesc = method.toMethodDescriptor();
                     Collection<BugInstance> warnings = warningsByMethod.get(methodDesc);
                     if (warnings == null) {
-                        warnings = new LinkedList<BugInstance>();
+                        warnings = new LinkedList<>();
                         warningsByMethod.put(methodDesc, warnings);
                     }
                     warnings.add(warning);
@@ -151,7 +151,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     Collection<BugInstance> warnings = warningsByField.get(fieldDescriptor);
 
                     if (warnings == null) {
-                        warnings = new LinkedList<BugInstance>();
+                        warnings = new LinkedList<>();
                         warningsByField.put(fieldDescriptor, warnings);
                     }
                     warnings.add(warning);
@@ -168,7 +168,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     }
                     Collection<BugInstance> warnings = warningsByClass.get(classDesc);
                     if (warnings == null) {
-                        warnings = new LinkedList<BugInstance>();
+                        warnings = new LinkedList<>();
                         warningsByClass.put(classDesc, warnings);
                     }
                     warnings.add(warning);
@@ -366,7 +366,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             @CheckForNull String bugCode,
             int desiredPriority, int rank) {
 
-        Collection<SourceLineAnnotation> matching = new HashSet<SourceLineAnnotation>();
+        Collection<SourceLineAnnotation> matching = new HashSet<>();
         DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
         boolean matchPattern = false;
         try {
@@ -407,7 +407,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     @Override
     public void finishPass() {
-        HashSet<BugPattern> claimedReported = new HashSet<BugPattern>();
+        HashSet<BugPattern> claimedReported = new HashSet<>();
         for (DetectorFactory d : DetectorFactoryCollection.instance().getFactories()) {
             claimedReported.addAll(d.getReportedBugPatterns());
         }

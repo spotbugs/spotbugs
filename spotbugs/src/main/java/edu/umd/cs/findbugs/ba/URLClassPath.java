@@ -287,7 +287,7 @@ public class URLClassPath implements AutoCloseable, Serializable {
      * Constructor. Creates a classpath with no elements.
      */
     public URLClassPath() {
-        this.entryList = new LinkedList<Entry>();
+        this.entryList = new LinkedList<>();
     }
 
     /**
@@ -398,7 +398,7 @@ public class URLClassPath implements AutoCloseable, Serializable {
         return null;
     }
 
-    private final Set<String> classesThatCantBeFound = new HashSet<String>();
+    private final Set<String> classesThatCantBeFound = new HashSet<>();
 
     /**
      * Look up a class from the classpath.

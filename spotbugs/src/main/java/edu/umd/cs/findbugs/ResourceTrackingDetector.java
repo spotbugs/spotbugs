@@ -125,7 +125,7 @@ Detector {
     private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext, Method method,
             ResourceTrackerType resourceTracker) throws CFGBuilderException, DataflowAnalysisException {
 
-        ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
+        ResourceCollection<Resource> resourceCollection = new ResourceCollection<>();
 
         CFG cfg = classContext.getCFG(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -176,9 +176,9 @@ Detector {
             for (Iterator<Resource> i = resourceCollection.resourceIterator(); i.hasNext();) {
                 Resource resource = i.next();
 
-                ResourceValueAnalysis<Resource> analysis = new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs,
+                ResourceValueAnalysis<Resource> analysis = new ResourceValueAnalysis<>(methodGen, cfg, dfs,
                         resourceTracker, resource);
-                Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow = new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(
+                Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow = new Dataflow<>(
                         cfg, analysis);
 
                 Profiler profiler = Global.getAnalysisCache().getProfiler();

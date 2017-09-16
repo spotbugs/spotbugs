@@ -26,7 +26,7 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public abstract class Global {
-    private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal = new InheritableThreadLocal<IAnalysisCache>();
+    private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal = new InheritableThreadLocal<>();
 
     /**
      * Remove the analysis cache for the current thread. This should be called

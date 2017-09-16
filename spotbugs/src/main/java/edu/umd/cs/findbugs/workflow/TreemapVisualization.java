@@ -33,13 +33,13 @@ import edu.umd.cs.findbugs.util.Bag;
 
 public class TreemapVisualization {
 
-    HashSet<String> buggyPackages = new HashSet<String>();
+    HashSet<String> buggyPackages = new HashSet<>();
 
-    HashSet<String> interiorPackages = new HashSet<String>();
+    HashSet<String> interiorPackages = new HashSet<>();
 
-    Bag<String> goodCodeSize = new Bag<String>(new TreeMap<String, Integer>());
+    Bag<String> goodCodeSize = new Bag<>(new TreeMap<String, Integer>());
 
-    Bag<String> goodCodeCount = new Bag<String>(new TreeMap<String, Integer>());
+    Bag<String> goodCodeCount = new Bag<>(new TreeMap<String, Integer>());
 
     public void addInteriorPackages(String packageName) {
         String p = superpackage(packageName);

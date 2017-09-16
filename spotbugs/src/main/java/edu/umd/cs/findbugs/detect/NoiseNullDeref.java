@@ -252,7 +252,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         if (!refValue.isNullOnComplicatedPath23()) {
             return;
         }
-        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<WarningProperty>();
+        WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
         if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             return;
         }

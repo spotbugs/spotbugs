@@ -28,9 +28,9 @@ import java.util.Set;
 public class ErrorCountingBugReporter extends DelegatingBugReporter {
     private int bugCount;
 
-    private final HashSet<String> errors = new HashSet<String>();
+    private final HashSet<String> errors = new HashSet<>();
 
-    private final Set<String> missingClassSet = new HashSet<String>();
+    private final Set<String> missingClassSet = new HashSet<>();
 
     public ErrorCountingBugReporter(BugReporter realBugReporter) {
         super(realBugReporter);

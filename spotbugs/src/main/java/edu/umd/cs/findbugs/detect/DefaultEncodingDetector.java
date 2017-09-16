@@ -73,7 +73,7 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
             this.loadAuxiliaryAnnotations();
         }
 
-        Set<ClassDescriptor> classes = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> classes = new HashSet<>();
         @Override
         protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
                 DefaultEncodingAnnotation annotation) {

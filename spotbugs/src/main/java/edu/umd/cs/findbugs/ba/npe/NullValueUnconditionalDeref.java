@@ -25,7 +25,7 @@ public class NullValueUnconditionalDeref {
         this.alwaysMethodReturnValue = true;
         this.alwaysFieldValue = true;
         this.alwaysReadlineValue = true;
-        this.derefLocationSet = new HashSet<Location>();
+        this.derefLocationSet = new HashSet<>();
     }
 
     /**

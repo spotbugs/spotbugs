@@ -57,7 +57,7 @@ public class Plugin {
 
 
     private static final String USE_FINDBUGS_VERSION = "USE_FINDBUGS_VERSION";
-    static Map<URI, Plugin> allPlugins = new LinkedHashMap<URI, Plugin>();
+    static Map<URI, Plugin> allPlugins = new LinkedHashMap<>();
     private final String pluginId;
 
     private final String version;
@@ -119,17 +119,17 @@ public class Plugin {
             version = Version.VERSION_STRING;
         }
         assert enabled || !cannotDisable;
-        myGlobalOptions = new HashMap<String, String>();
-        componentPlugins = new DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> ();
+        myGlobalOptions = new HashMap<>();
+        componentPlugins = new DualKeyHashMap<> ();
         this.version = version;
         this.releaseDate = releaseDate;
-        this.detectorFactoryList = new ArrayList<DetectorFactory>();
-        this.bugPatterns = new LinkedHashSet<BugPattern>();
-        this.bugCodeList = new LinkedHashSet<BugCode>();
-        this.bugCategories = new LinkedHashMap<String,BugCategory>();
-        this.interPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
-        this.intraPassConstraintList = new ArrayList<DetectorOrderingConstraint>();
-        this.mainPlugins = new HashMap<String, FindBugsMain>();
+        this.detectorFactoryList = new ArrayList<>();
+        this.bugPatterns = new LinkedHashSet<>();
+        this.bugCodeList = new LinkedHashSet<>();
+        this.bugCategories = new LinkedHashMap<>();
+        this.interPassConstraintList = new ArrayList<>();
+        this.intraPassConstraintList = new ArrayList<>();
+        this.mainPlugins = new HashMap<>();
         this.pluginLoader = pluginLoader;
         this.enabledByDefault = enabled;
         this.cannotDisable = cannotDisable;
@@ -509,11 +509,11 @@ public class Plugin {
      * @return a copy of the internal plugins collection
      */
     public static synchronized Collection<Plugin> getAllPlugins() {
-        return new ArrayList<Plugin>(allPlugins.values());
+        return new ArrayList<>(allPlugins.values());
     }
 
     public static synchronized Collection<String> getAllPluginIds() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for(Plugin p : allPlugins.values()) {
             result.add(p.getPluginId());
         }
@@ -524,12 +524,12 @@ public class Plugin {
      * @return a copy of the internal plugins collection
      */
     public static synchronized Map<URI, Plugin> getAllPluginsMap() {
-        return new LinkedHashMap<URI, Plugin>(allPlugins);
+        return new LinkedHashMap<>(allPlugins);
     }
 
     public static synchronized Set<URI> getAllPluginsURIs() {
         Collection<Plugin> plugins = getAllPlugins();
-        Set<URI> uris = new HashSet<URI>();
+        Set<URI> uris = new HashSet<>();
         for (Plugin plugin : plugins) {
 
             try {

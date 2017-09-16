@@ -79,7 +79,7 @@ public class TypeQualifierAnnotationLookupResult {
     private final List<PartialResult> partialResultList;
 
     TypeQualifierAnnotationLookupResult() {
-        this.partialResultList = new LinkedList<PartialResult>();
+        this.partialResultList = new LinkedList<>();
     }
 
     void addPartialResult(PartialResult partialResult) {

@@ -40,7 +40,7 @@ public class SearchTree<VertexType extends GraphVertex<VertexType>> {
      */
     public SearchTree(VertexType v) {
         m_vertex = v;
-        m_childList = new ArrayList<SearchTree<VertexType>>();
+        m_childList = new ArrayList<>();
     }
 
     /**

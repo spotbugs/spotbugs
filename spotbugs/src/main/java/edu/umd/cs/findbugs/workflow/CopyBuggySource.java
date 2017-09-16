@@ -92,9 +92,9 @@ public class CopyBuggySource {
     byte buf[] = new byte[4096];
     Project project;
     SourceFinder sourceFinder;
-    HashSet<String> copied = new HashSet<String>();
-    HashSet<String> couldNotFind = new HashSet<String>();
-    HashSet<String> couldNotCreate = new HashSet<String>();
+    HashSet<String> copied = new HashSet<>();
+    HashSet<String> couldNotFind = new HashSet<>();
+    HashSet<String> couldNotCreate = new HashSet<>();
     int copyCount = 0;
     File dstFile;
 

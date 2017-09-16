@@ -194,7 +194,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
     // LinkedList<BugInstance>();
 
     // all classes and interfaces in this package
-    private final Map<String, ClassStats> packageMembers = new HashMap<String, ClassStats>(5);
+    private final Map<String, ClassStats> packageMembers = new HashMap<>(5);
 
     public PackageStats(String packageName) {
         this.packageName = packageName;
@@ -310,7 +310,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
     }
 
     public Collection<ClassStats> getSortedClassStats() {
-        SortedMap<String, ClassStats> sorted = new TreeMap<String, ClassStats>(packageMembers);
+        SortedMap<String, ClassStats> sorted = new TreeMap<>(packageMembers);
         return sorted.values();
 
     }

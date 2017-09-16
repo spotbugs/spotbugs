@@ -44,7 +44,7 @@ public class PutfieldScanner {
 
     static class Scanner extends OpcodeStackDetector {
 
-        Map<Integer, OpcodeStack.Item> putfields = new TreeMap<Integer, OpcodeStack.Item>();
+        Map<Integer, OpcodeStack.Item> putfields = new TreeMap<>();
 
         public Scanner(JavaClass theClass, Method targetMethod, XField target) {
             this.theClass = theClass;

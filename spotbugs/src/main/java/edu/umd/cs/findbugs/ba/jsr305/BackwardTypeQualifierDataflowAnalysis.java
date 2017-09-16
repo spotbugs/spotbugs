@@ -126,7 +126,7 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
 
     private void pruneConflictingValues(TypeQualifierValueSet fact, TypeQualifierValueSet forwardFact) {
         if (forwardFact.isValid()) {
-            HashSet<ValueNumber> valueNumbers = new HashSet<ValueNumber>();
+            HashSet<ValueNumber> valueNumbers = new HashSet<>();
             valueNumbers.addAll(fact.getValueNumbers());
             valueNumbers.retainAll(forwardFact.getValueNumbers());
 

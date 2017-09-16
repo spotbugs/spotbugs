@@ -27,7 +27,7 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
      */
     @Factory
     public static <T> Matcher<Iterable<T>> containsExactly(final int count, final Matcher<T> matcher) {
-        return new CountMatcher<T>(count, matcher);
+        return new CountMatcher<>(count, matcher);
     }
 
     @Override

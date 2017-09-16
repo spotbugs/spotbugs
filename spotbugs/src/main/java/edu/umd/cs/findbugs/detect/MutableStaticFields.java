@@ -87,7 +87,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
                 sig.charAt(0) == '[';
     }
 
-    LinkedList<XField> seen = new LinkedList<XField>();
+    LinkedList<XField> seen = new LinkedList<>();
 
     boolean publicClass;
 
@@ -101,23 +101,23 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
     String packageName;
 
-    Set<XField> readAnywhere = new HashSet<XField>();
+    Set<XField> readAnywhere = new HashSet<>();
 
-    Set<XField> unsafeValue = new HashSet<XField>();
+    Set<XField> unsafeValue = new HashSet<>();
 
-    Set<XField> mutableCollection = new HashSet<XField>();
+    Set<XField> mutableCollection = new HashSet<>();
 
-    Set<XField> notFinal = new HashSet<XField>();
+    Set<XField> notFinal = new HashSet<>();
 
-    Set<XField> outsidePackage = new HashSet<XField>();
+    Set<XField> outsidePackage = new HashSet<>();
 
-    Set<XField> needsRefactoringToBeFinal = new HashSet<XField>();
+    Set<XField> needsRefactoringToBeFinal = new HashSet<>();
 
-    Set<XField> writtenInMethod = new HashSet<XField>();
+    Set<XField> writtenInMethod = new HashSet<>();
 
-    Set<XField> writtenTwiceInMethod = new HashSet<XField>();
+    Set<XField> writtenTwiceInMethod = new HashSet<>();
 
-    Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<XField, SourceLineAnnotation>();
+    Map<XField, SourceLineAnnotation> firstFieldUse = new HashMap<>();
 
     private final BugReporter bugReporter;
 

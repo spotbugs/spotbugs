@@ -81,8 +81,8 @@ public class StackedFilterMatcher extends FilterMatcher {
             List<Sortables> sortablesToCheck = order.subList(0, Math.min(sizeToCheck, order.size()));
             Debug.println("Size to check" + sizeToCheck + " checking list" + sortablesToCheck);
             Debug.println("checking filters");
-            ArrayList<String> almostPath = new ArrayList<String>();
-            ArrayList<Sortables> almostPathSortables = new ArrayList<Sortables>();
+            ArrayList<String> almostPath = new ArrayList<>();
+            ArrayList<Sortables> almostPathSortables = new ArrayList<>();
             for (int x = 0; x < sortablesToCheck.size(); x++) {
                 Sortables s = sortablesToCheck.get(x);
                 for (FilterMatcher fm : filtersInStack) {
@@ -92,7 +92,7 @@ public class StackedFilterMatcher extends FilterMatcher {
                     }
                 }
             }
-            ArrayList<String> finalPath = new ArrayList<String>();
+            ArrayList<String> finalPath = new ArrayList<>();
             for (int x = 0; x < almostPath.size(); x++) {
                 Sortables s = almostPathSortables.get(x);
                 if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s)) {

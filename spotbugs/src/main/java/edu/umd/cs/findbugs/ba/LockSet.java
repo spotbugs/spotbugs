@@ -386,7 +386,7 @@ public final class LockSet {
         if (frame == null) {
             throw new IllegalArgumentException("Null Frame");
         }
-        HashSet<ValueNumber> result = new HashSet<ValueNumber>();
+        HashSet<ValueNumber> result = new HashSet<>();
         for (ValueNumber v : frame.allSlots()) {
             if (v != null && getLockCount(v.getNumber()) > 0) {
                 result.add(v);

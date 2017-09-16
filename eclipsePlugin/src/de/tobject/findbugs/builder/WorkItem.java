@@ -296,7 +296,7 @@ public class WorkItem {
                 recursive = true;
             }
             IMarker[] markers = MarkerUtil.getMarkers(res, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
-            return new HashSet<IMarker>(Arrays.asList(markers));
+            return new HashSet<>(Arrays.asList(markers));
         }
         IResource markerTarget = getMarkerTarget();
         if(!markerTarget.isAccessible()) {

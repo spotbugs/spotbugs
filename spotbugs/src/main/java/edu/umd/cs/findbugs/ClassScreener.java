@@ -67,7 +67,7 @@ public class ClassScreener implements IClassScreener {
      * packages.
      */
     public ClassScreener() {
-        this.patternList = new LinkedList<Matcher>();
+        this.patternList = new LinkedList<>();
     }
 
     /**

@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.filter.NotMatcher;
  */
 final class FilterFromBugPicker {
 
-    private final HashMap<JCheckBox, Sortables> map = new HashMap<JCheckBox, Sortables>();
+    private final HashMap<JCheckBox, Sortables> map = new HashMap<>();
     private final BugInstance bug;
     private final List<Sortables> availableSortables;
     private final JPanel pickerPanel;
@@ -89,7 +89,7 @@ final class FilterFromBugPicker {
     }
 
     public Matcher makeMatcherFromSelection() {
-        HashSet<Sortables> set = new HashSet<Sortables>();
+        HashSet<Sortables> set = new HashSet<>();
         for (Map.Entry<JCheckBox, Sortables> e : map.entrySet()) {
             if (e.getKey().isSelected()) {
                 set.add(e.getValue());

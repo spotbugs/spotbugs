@@ -54,11 +54,11 @@ public class MergeSummarizeAndView {
 
     public static class MSVOptions {
 
-        public List<String> workingDirList = new ArrayList<String>();
+        public List<String> workingDirList = new ArrayList<>();
 
-        public List<String> analysisFiles = new ArrayList<String>();
+        public List<String> analysisFiles = new ArrayList<>();
 
-        public List<String> srcDirList = new ArrayList<String>();
+        public List<String> srcDirList = new ArrayList<>();
 
         public int maxRank = 12;
 

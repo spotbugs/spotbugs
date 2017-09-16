@@ -128,9 +128,9 @@ public class Naming extends PreorderVisitor implements Detector {
     }
 
     // map of canonicalName -> Set<XMethod>
-    HashMap<String, TreeSet<XMethod>> canonicalToXMethod = new HashMap<String, TreeSet<XMethod>>();
+    HashMap<String, TreeSet<XMethod>> canonicalToXMethod = new HashMap<>();
 
-    HashSet<String> visited = new HashSet<String>();
+    HashSet<String> visited = new HashSet<>();
 
     private final BugReporter bugReporter;
 
@@ -154,7 +154,7 @@ public class Naming extends PreorderVisitor implements Detector {
             try {
                 if ((confusingMethodNamesWrongCapitalization(m, m2) || confusingMethodNamesWrongPackage(m, m2))
                         && Repository.instanceOf(m.getClassName(), m2.getClassName())) {
-                    WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<NamingProperty>();
+                    WarningPropertySet<NamingProperty> propertySet = new WarningPropertySet<>();
 
                     int priority = HIGH_PRIORITY;
                     boolean intentional = false;
@@ -278,7 +278,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
         for (Map.Entry<String, TreeSet<XMethod>> e : canonicalToXMethod.entrySet()) {
             TreeSet<XMethod> conflictingMethods = e.getValue();
-            HashSet<String> trueNames = new HashSet<String>();
+            HashSet<String> trueNames = new HashSet<>();
 
             for (XMethod m : conflictingMethods) {
                 trueNames.add(m.getName() + m.getSignature());
@@ -602,7 +602,7 @@ public class Naming extends PreorderVisitor implements Detector {
         {
             TreeSet<XMethod> s = canonicalToXMethod.get(allSmall);
             if (s == null) {
-                s = new TreeSet<XMethod>();
+                s = new TreeSet<>();
                 canonicalToXMethod.put(allSmall, s);
             }
             s.add(xm);

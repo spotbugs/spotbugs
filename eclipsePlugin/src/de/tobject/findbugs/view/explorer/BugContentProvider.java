@@ -96,8 +96,8 @@ public class BugContentProvider implements ICommonContentProvider {
 
     public BugContentProvider() {
         super();
-        filteredMarkersMap = new HashMap<BugGroup, Integer>();
-        filteredMarkers = new HashSet<IMarker>();
+        filteredMarkersMap = new HashMap<>();
+        filteredMarkers = new HashSet<>();
         resourceFilter = new WorkingSetsFilter();
         rootElement = new BugGroup(null, null, GroupType.Undefined);
         refreshJob = new RefreshJob("Updating bugs in bug explorer", this);
@@ -148,7 +148,7 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     private Set<IResource> getResources(Object parent) {
-        Set<IResource> resources = new HashSet<IResource>();
+        Set<IResource> resources = new HashSet<>();
         if (parent instanceof IWorkingSet) {
             IWorkingSet workingSet = (IWorkingSet) parent;
             IAdaptable[] elements = workingSet.getElements();
@@ -322,7 +322,7 @@ public class BugContentProvider implements ICommonContentProvider {
      * @return
      */
     private synchronized Object[] createChildren(GroupType desiredType, Set<IResource> parents, BugGroup parent) {
-        Set<IMarker> markerSet = new HashSet<IMarker>();
+        Set<IMarker> markerSet = new HashSet<>();
         boolean filterActive = isBugFilterActive();
         Set<String> patternFilter = getPatternFilter();
         for (IResource resource : parents) {
@@ -350,12 +350,12 @@ public class BugContentProvider implements ICommonContentProvider {
         }
         Set<IMarker> allMarkers = parent.getAllMarkers();
         GroupType childType = grouping.getChildType(mapper.getType());
-        Map<Identifier, Set<IMarker>> groupIds = new HashMap<Identifier, Set<IMarker>>();
+        Map<Identifier, Set<IMarker>> groupIds = new HashMap<>();
         UserPreferences prefs = FindbugsPlugin.getCorePreferences(null, false);
         Set<String> disabledPlugins = prefs.getCustomPlugins(false);
 
         // first, sort all bugs to the sets with same identifier type
-        Set<String> errorMessages = new HashSet<String>();
+        Set<String> errorMessages = new HashSet<>();
         for (IMarker marker : allMarkers) {
             Identifier id = mapper.getIdentifier(marker);
             if (id == null) {
@@ -471,7 +471,7 @@ public class BugContentProvider implements ICommonContentProvider {
      */
     public synchronized Set<BugGroup> updateContent(List<DeltaInfo> deltas) {
         int oldRootSize = rootElement.getChildren().length;
-        Set<BugGroup> changedParents = new HashSet<BugGroup>();
+        Set<BugGroup> changedParents = new HashSet<>();
         bugFilterActive = isBugFilterActive();
         Set<String> patternFilter = getPatternFilter();
         for (DeltaInfo delta : deltas) {
@@ -654,7 +654,7 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     private List<BugGroup> getSelfAndParents(BugGroup child) {
-        List<BugGroup> parents = new ArrayList<BugGroup>();
+        List<BugGroup> parents = new ArrayList<>();
         parents.add(child);
         while (child.getParent() instanceof BugGroup) {
             child = (BugGroup) child.getParent();
@@ -724,7 +724,7 @@ public class BugContentProvider implements ICommonContentProvider {
     }
 
     public Set<Object> getShowInTargets(Object obj) {
-        Set<Object> supported = new HashSet<Object>();
+        Set<Object> supported = new HashSet<>();
         if (obj instanceof BugGroup) {
             supported.add(obj);
         } else if (obj instanceof IMarker) {

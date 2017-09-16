@@ -156,7 +156,7 @@ public class DiscoverSourceDirectories {
     public DiscoverSourceDirectories() {
         this.errorLogger = new NoOpErrorLogger();
         this.progress = new NoOpProgress();
-        this.discoveredSourceDirectoryList = new LinkedList<String>();
+        this.discoveredSourceDirectoryList = new LinkedList<>();
     }
 
     /**
@@ -331,7 +331,7 @@ public class DiscoverSourceDirectories {
 
         progress.startScanningClasses(appClassList.size());
 
-        List<String> fullyQualifiedSourceFileNameList = new LinkedList<String>();
+        List<String> fullyQualifiedSourceFileNameList = new LinkedList<>();
 
         for (ClassDescriptor classDesc : appClassList) {
             try {
@@ -352,7 +352,7 @@ public class DiscoverSourceDirectories {
     private void findSourceDirectoriesForAllSourceFiles(List<String> fullyQualifiedSourceFileNameList,
             List<String> candidateSourceDirList) {
 
-        Set<String> sourceDirsFound = new HashSet<String>();
+        Set<String> sourceDirsFound = new HashSet<>();
 
         // For each source file discovered, try to locate it in one of
         // the candidate source directories.

@@ -105,7 +105,7 @@ public class PreferencesFrame extends FBDialog {
 
     private JTextField packagePrefixLengthTextField;
 
-    private final Map<Plugin, EnabledSettings> pluginEnabledStatus = new HashMap<Plugin, EnabledSettings>();
+    private final Map<Plugin, EnabledSettings> pluginEnabledStatus = new HashMap<>();
     private JPanel pluginPanelCenter;
 
     private static class EnabledSettings {
@@ -199,8 +199,8 @@ public class PreferencesFrame extends FBDialog {
 
         boolean changed = pluginsAdded;
         pluginsAdded = false;
-        List<String> enabledPlugins = new ArrayList<String>();
-        List<String> disabledPlugins = new ArrayList<String>();
+        List<String> enabledPlugins = new ArrayList<>();
+        List<String> disabledPlugins = new ArrayList<>();
         for (Map.Entry<Plugin, EnabledSettings> entry : pluginEnabledStatus.entrySet()) {
             Plugin plugin = entry.getKey();
             EnabledSettings enabled = entry.getValue();
@@ -721,7 +721,7 @@ public class PreferencesFrame extends FBDialog {
     }
 
     void updateFilterPanel() {
-        ArrayList<MatchBox> boxes = new ArrayList<MatchBox>();
+        ArrayList<MatchBox> boxes = new ArrayList<>();
         final Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
 
         for (final Matcher m : f.getChildren()) {

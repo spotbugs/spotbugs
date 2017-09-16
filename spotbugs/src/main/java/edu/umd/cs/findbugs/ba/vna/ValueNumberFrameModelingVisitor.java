@@ -123,8 +123,8 @@ Debug, ValueNumberAnalysisFeatures {
         this.factory = factory;
         this.cache = cache;
         this.loadedFieldSet = loadedFieldSet;
-        this.constantValueMap = new HashMap<Object, ValueNumber>();
-        this.stringConstantMap = new HashMap<ValueNumber, String>();
+        this.constantValueMap = new HashMap<>();
+        this.stringConstantMap = new HashMap<>();
     }
 
     @Override

@@ -56,7 +56,7 @@ public class URLClassPathRepository implements Repository {
     private final URLClassPath urlClassPath;
 
     public URLClassPathRepository() {
-        this.nameToClassMap = new HashMap<String, JavaClass>();
+        this.nameToClassMap = new HashMap<>();
         this.urlClassPath = new URLClassPath();
     }
 

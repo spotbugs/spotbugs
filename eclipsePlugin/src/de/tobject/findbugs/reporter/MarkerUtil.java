@@ -154,7 +154,7 @@ public final class MarkerUtil {
      */
     public static List<MarkerParameter> createBugParameters(IJavaProject project, BugCollection theCollection,
             IProgressMonitor monitor) {
-        List<MarkerParameter> bugParameters = new ArrayList<MarkerParameter>();
+        List<MarkerParameter> bugParameters = new ArrayList<>();
         if (project == null) {
             FindbugsPlugin.getDefault().logException(new NullPointerException("project is null"), "project is null");
             return bugParameters;
@@ -648,7 +648,7 @@ public final class MarkerUtil {
 
     public static Set<IMarker> findMarkerForJavaElement(IJavaElement elt, IMarker[] possibleCandidates, boolean recursive) {
         String id = elt.getHandleIdentifier();
-        Set<IMarker> markers = new HashSet<IMarker>();
+        Set<IMarker> markers = new HashSet<>();
         for (IMarker marker : possibleCandidates) {
             try {
                 Object elementId = marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
@@ -821,7 +821,7 @@ public final class MarkerUtil {
      *         selection
      */
     public static Set<IMarker> getMarkerFromSelection(ISelection selection) {
-        Set<IMarker> markers = new HashSet<IMarker>();
+        Set<IMarker> markers = new HashSet<>();
         if (!(selection instanceof IStructuredSelection)) {
             return markers;
         }
@@ -834,7 +834,7 @@ public final class MarkerUtil {
     }
 
     public static Set<IMarker> getMarkers(Object obj) {
-        Set<IMarker> markers = new HashSet<IMarker>();
+        Set<IMarker> markers = new HashSet<>();
         if (obj instanceof IMarker) {
             IMarker marker = (IMarker) obj;
             if (isFindBugsMarker(marker)) {

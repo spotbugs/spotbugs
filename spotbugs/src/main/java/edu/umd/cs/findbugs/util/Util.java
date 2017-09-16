@@ -180,7 +180,7 @@ public class Util {
     public static synchronized void runLogAtShutdown(Runnable r) {
         if (ShutdownLogging.LOGGING) {
             if (runAtShutdown == null) {
-                runAtShutdown = new LinkedList<Runnable>();
+                runAtShutdown = new LinkedList<>();
                 Runtime.getRuntime().addShutdownHook(new Thread() {
                     @Override
                     public void run() {
@@ -442,7 +442,7 @@ public class Util {
 
     /** Duplication 1.6 functionality of Collections.newSetFromMap */
     public static <E> Set<E> newSetFromMap(Map<E, Boolean> m) {
-        return new SetFromMap<E>(m);
+        return new SetFromMap<>(m);
     }
 
     private static class SetFromMap<E> extends AbstractSet<E> {
@@ -535,21 +535,21 @@ public class Util {
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
     public static <K, V> HashMap<K, V> makeSmallHashMap(Map<K, V> m) {
-        HashMap<K, V> result = new HashMap<K, V>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
+        HashMap<K, V> result = new HashMap<>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
         result.putAll(m);
         return result;
 
     }
 
     public static <K> HashSet<K> makeSmallHashSet(Collection<K> m) {
-        HashSet<K> result = new HashSet<K>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
+        HashSet<K> result = new HashSet<>((int) (m.size() / DEFAULT_LOAD_FACTOR + 2));
         result.addAll(m);
         return result;
 
     }
 
     public static <K> ArrayList<K> makeSmallArrayList(List<K> m) {
-        ArrayList<K> result = new ArrayList<K>(m.size() + 2);
+        ArrayList<K> result = new ArrayList<>(m.size() + 2);
         result.addAll(m);
         return result;
 

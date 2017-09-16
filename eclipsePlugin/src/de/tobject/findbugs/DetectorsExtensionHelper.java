@@ -59,16 +59,16 @@ public class DetectorsExtensionHelper {
     /** key is the plugin id, value is the plugin library path */
     public static synchronized SortedMap<String, String> getContributedDetectors() {
         if (contributedDetectors != null) {
-            return new TreeMap<String, String>(contributedDetectors);
+            return new TreeMap<>(contributedDetectors);
         }
-        TreeMap<String, String> set = new TreeMap<String, String>();
+        TreeMap<String, String> set = new TreeMap<>();
 
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         for (IConfigurationElement configElt : registry.getConfigurationElementsFor(EXTENSION_POINT_ID)) {
             addContribution(set, configElt);
         }
         contributedDetectors = set;
-        return new TreeMap<String, String>(contributedDetectors);
+        return new TreeMap<>(contributedDetectors);
     }
 
     private static void addContribution(TreeMap<String, String> set, IConfigurationElement configElt) {

@@ -69,7 +69,7 @@ public class GroupByAction implements IViewActionDelegate {
         }
         id = id.substring(ACTION_ID_PREFIX.length());
         String[] typesArr = id.split("\\.");
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         for (String string : typesArr) {
             GroupType type = GroupType.valueOf(string);
             types.add(type);

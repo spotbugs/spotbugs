@@ -28,7 +28,7 @@ import java.util.LinkedHashSet;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public abstract class CompoundMatcher implements Matcher {
-    protected LinkedHashSet<Matcher> children = new LinkedHashSet<Matcher>();
+    protected LinkedHashSet<Matcher> children = new LinkedHashSet<>();
 
     @Override
     public int hashCode() {

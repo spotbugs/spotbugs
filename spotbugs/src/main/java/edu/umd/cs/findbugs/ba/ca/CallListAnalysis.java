@@ -50,7 +50,7 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     }
 
     private static Map<InstructionHandle, Call> buildCallMap(CFG cfg, ConstantPoolGen cpg) {
-        Map<InstructionHandle, Call> callMap = new HashMap<InstructionHandle, Call>();
+        Map<InstructionHandle, Call> callMap = new HashMap<>();
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             InstructionHandle handle = i.next().getHandle();

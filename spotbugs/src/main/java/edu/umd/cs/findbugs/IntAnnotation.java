@@ -128,7 +128,7 @@ public class IntAnnotation implements BugAnnotation {
         return base10;
     }
     private static int uniqueDigits(String value) {
-        Set<Character> used = new HashSet<Character>();
+        Set<Character> used = new HashSet<>();
         for(int i = 0; i < value.length(); i++) {
             used.add(value.charAt(i));
         }

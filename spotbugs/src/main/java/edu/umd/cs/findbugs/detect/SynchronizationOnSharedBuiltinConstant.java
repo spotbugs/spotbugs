@@ -47,7 +47,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 
     public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
-        badSignatures = new HashSet<String>();
+        badSignatures = new HashSet<>();
         badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
                 "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;" }));
     }

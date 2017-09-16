@@ -109,7 +109,7 @@ public class PluginLoader {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
     static boolean lazyInitialization = false;
-    static LinkedList<PluginLoader> partiallyInitialized = new LinkedList<PluginLoader>();
+    static LinkedList<PluginLoader> partiallyInitialized = new LinkedList<>();
 
 
     // Keep a count of how many plugins we've seen without a
@@ -141,7 +141,7 @@ public class PluginLoader {
     /** plugin Id for parent plugin */
     String parentId;
 
-    static HashSet<String> loadedPluginIds = new HashSet<String>();
+    static HashSet<String> loadedPluginIds = new HashSet<>();
     static {
         if (DEBUG) {
             System.out.println("Debugging plugin loading. SpotBugs version "
@@ -234,8 +234,8 @@ public class PluginLoader {
         }
         while (!partiallyInitialized.isEmpty()) {
             boolean changed = false;
-            LinkedList<String>  unresolved = new LinkedList<String>();
-            Set<String>  needed = new TreeSet<String>();
+            LinkedList<String>  unresolved = new LinkedList<>();
+            Set<String>  needed = new TreeSet<>();
 
             for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
                 PluginLoader pluginLoader = i.next();
@@ -292,7 +292,7 @@ public class PluginLoader {
      * @throws PluginException
      */
     private static @Nonnull URL[] createClassloaderUrls(@Nonnull URL url) throws PluginException {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         urls.add(url);
 
         Manifest mf = null;
@@ -1004,7 +1004,7 @@ public class PluginLoader {
         }
 
         // Create BugCodes
-        Set<String> definedBugCodes = new HashSet<String>();
+        Set<String> definedBugCodes = new HashSet<>();
         for (Document messageCollection : messageCollectionList) {
             List<Node> bugCodeNodeList = XMLUtil.selectNodes(messageCollection, "/MessageCollection/BugCode");
             for (Node bugCodeNode : bugCodeNodeList) {
@@ -1209,7 +1209,7 @@ public class PluginLoader {
         String language = locale.getLanguage();
         String country = locale.getCountry();
 
-        List<String> potential = new ArrayList<String>(3);
+        List<String> potential = new ArrayList<>(3);
         if (country != null) {
             potential.add("messages_" + language + "_" + country + ".xml");
         }
@@ -1220,7 +1220,7 @@ public class PluginLoader {
 
     private List<Document> getMessageDocuments() throws PluginException {
         // List of message translation files in decreasing order of precedence
-        ArrayList<Document> messageCollectionList = new ArrayList<Document>();
+        ArrayList<Document> messageCollectionList = new ArrayList<>();
         PluginException caught = null;
         for (String m : getPotentialMessageFiles()) {
             try {
@@ -1249,7 +1249,7 @@ public class PluginLoader {
             componentClass = getClass(classLoader, componentClassname, componentKind);
         }
 
-        ComponentPlugin<T> componentPlugin = new ComponentPlugin<T>(plugin, filterId, classLoader, componentClass,
+        ComponentPlugin<T> componentPlugin = new ComponentPlugin<>(plugin, filterId, classLoader, componentClass,
                 properties, !disabled, description, details);
         plugin.addComponentPlugin(componentKind, componentPlugin);
     }
@@ -1607,7 +1607,7 @@ public class PluginLoader {
             String pluginId = pluginDocument.valueOf(XPATH_PLUGIN_PLUGINID).trim();
             String provider = pluginDocument.valueOf(XPATH_PLUGIN_PROVIDER).trim();
             String website = pluginDocument.valueOf(XPATH_PLUGIN_WEBSITE).trim();
-            List<Document> msgDocuments = new ArrayList<Document>(3);
+            List<Document> msgDocuments = new ArrayList<>(3);
             for (String msgFile : getPotentialMessageFiles()) {
                 ZipEntry msgEntry = zip.getEntry(msgFile);
                 if (msgEntry == null) {

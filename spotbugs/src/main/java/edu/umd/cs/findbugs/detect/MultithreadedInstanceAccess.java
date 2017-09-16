@@ -66,7 +66,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
             return mtClasses;
         }
 
-        mtClasses = new HashSet<JavaClass>();
+        mtClasses = new HashSet<>();
         try {
             mtClasses.add(Repository.lookupClass(STRUTS_ACTION_NAME));
         } catch (ClassNotFoundException cnfe) {
@@ -123,7 +123,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
     @Override
     public void visitMethod(Method obj) {
         monitorCount = 0;
-        alreadyReported = new HashSet<String>();
+        alreadyReported = new HashSet<>();
         writingField = false;
     }
 

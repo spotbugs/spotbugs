@@ -29,9 +29,9 @@ import org.apache.bcel.classfile.ElementValue;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class JCIPAnnotationDatabase {
-    Map<ClassMember, Map<String, ElementValue>> memberAnnotations = new HashMap<ClassMember, Map<String, ElementValue>>();
+    Map<ClassMember, Map<String, ElementValue>> memberAnnotations = new HashMap<>();
 
-    Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<String, Map<String, ElementValue>>();
+    Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<>();
 
     @CheckForNull
     public ElementValue getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
@@ -76,7 +76,7 @@ public class JCIPAnnotationDatabase {
             String annotationClass, ElementValue value) {
         Map<String, ElementValue> map = memberAnnotations.get(member);
         if (map == null) {
-            map = new HashMap<String, ElementValue>();
+            map = new HashMap<>();
             memberAnnotations.put(member, map);
         }
         map.put(annotationClass, value);
@@ -92,7 +92,7 @@ public class JCIPAnnotationDatabase {
             String annotationClass, ElementValue value) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         if (map == null) {
-            map = new HashMap<String, ElementValue>(3);
+            map = new HashMap<>(3);
             classAnnotations.put(dottedClassName, map);
         }
         map.put(annotationClass, value);

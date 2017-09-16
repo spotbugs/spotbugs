@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 public class NoteSuppressedWarnings extends AnnotationVisitor implements Detector, NonReportingDetector {
 
-    private final Set<String> packages = new HashSet<String>();
+    private final Set<String> packages = new HashSet<>();
 
     private final SuppressionMatcher suppressionMatcher;
 

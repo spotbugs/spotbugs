@@ -37,7 +37,7 @@ public abstract class RelationalOp {
     final String name;
 
     @StaticConstant
-    private static final Map<String, RelationalOp> map = new HashMap<String, RelationalOp>();
+    private static final Map<String, RelationalOp> map = new HashMap<>();
 
     public static RelationalOp byName(String s) {
         RelationalOp relationalOp = map.get(s);

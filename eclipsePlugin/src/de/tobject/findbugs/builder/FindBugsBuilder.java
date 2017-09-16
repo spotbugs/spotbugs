@@ -130,7 +130,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
             IResourceDelta resourceDelta = getDelta(project);
             boolean configChanged = !isConfigUnchanged(resourceDelta);
             if (configChanged) {
-                files = new ArrayList<WorkItem>();
+                files = new ArrayList<>();
                 files.add(new WorkItem(project));
             } else {
                 files = ResourceUtils.collectIncremental(resourceDelta);
@@ -142,7 +142,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                 }
             }
         } else {
-            files = new ArrayList<WorkItem>();
+            files = new ArrayList<>();
             files.add(new WorkItem(project));
         }
 

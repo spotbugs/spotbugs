@@ -56,12 +56,12 @@ public class RebornIssues {
 
     public RebornIssues execute() {
 
-        Map<String, List<BugInstance>> map = new HashMap<String, List<BugInstance>>();
+        Map<String, List<BugInstance>> map = new HashMap<>();
         for (BugInstance b : bugCollection.getCollection()) {
             if (b.getFirstVersion() != 0 || b.getLastVersion() != -1) {
                 List<BugInstance> lst = map.get(b.getInstanceHash());
                 if (lst == null) {
-                    lst = new LinkedList<BugInstance>();
+                    lst = new LinkedList<>();
                     map.put(b.getInstanceHash(), lst);
                 }
                 lst.add(b);
@@ -69,8 +69,8 @@ public class RebornIssues {
         }
         for (List<BugInstance> lst : map.values()) {
             if (lst.size() > 1) {
-                TreeSet<Long> removalTimes = new TreeSet<Long>();
-                TreeSet<Long> additionTimes = new TreeSet<Long>();
+                TreeSet<Long> removalTimes = new TreeSet<>();
+                TreeSet<Long> additionTimes = new TreeSet<>();
 
                 String bugPattern = "XXX";
                 for (BugInstance b : lst) {

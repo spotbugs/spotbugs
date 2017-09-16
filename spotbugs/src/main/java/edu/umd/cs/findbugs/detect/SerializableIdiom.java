@@ -90,15 +90,15 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     boolean isAbstract;
 
-    private final List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
+    private final List<BugInstance> fieldWarningList = new LinkedList<>();
 
-    private final HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
+    private final HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<>();
 
-    private final HashMap<XField, Integer> transientFieldsUpdates = new HashMap<XField, Integer>();
+    private final HashMap<XField, Integer> transientFieldsUpdates = new HashMap<>();
 
-    private final HashSet<XField> transientFieldsSetInConstructor = new HashSet<XField>();
+    private final HashSet<XField> transientFieldsSetInConstructor = new HashSet<>();
 
-    private final HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<XField>();
+    private final HashSet<XField> transientFieldsSetToDefaultValueInConstructor = new HashSet<>();
 
     private boolean sawReadExternal;
 

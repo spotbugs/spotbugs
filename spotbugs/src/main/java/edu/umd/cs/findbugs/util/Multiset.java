@@ -36,7 +36,7 @@ public class Multiset<K> {
     final Map<K, Integer> map;
 
     public Multiset() {
-        map = new HashMap<K, Integer>();
+        map = new HashMap<>();
     }
 
     public Multiset(Map<K, Integer> map) {
@@ -44,7 +44,7 @@ public class Multiset<K> {
     }
 
     public Multiset(Multiset<K> mset) {
-        this.map = new HashMap<K, Integer>(mset.map);
+        this.map = new HashMap<>(mset.map);
     }
 
     public void clear() {
@@ -109,7 +109,7 @@ public class Multiset<K> {
 
     @SuppressFBWarnings("DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS")
     public Iterable<Map.Entry<K, Integer>> entriesInDecreasingFrequency() {
-        TreeSet<Map.Entry<K, Integer>> result = new TreeSet<Map.Entry<K, Integer>>(new EntryComparator<K>());
+        TreeSet<Map.Entry<K, Integer>> result = new TreeSet<>(new EntryComparator<K>());
         result.addAll(map.entrySet());
         if (result.size() != map.size()) {
             throw new IllegalStateException("Map " + map.getClass().getSimpleName()

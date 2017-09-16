@@ -36,7 +36,7 @@ public class StreamEquivalenceClass {
      * Constructor. Creates an empty set.
      */
     public StreamEquivalenceClass() {
-        this.memberSet = new HashSet<Stream>();
+        this.memberSet = new HashSet<>();
         this.isClosed = false;
     }
 

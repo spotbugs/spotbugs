@@ -115,7 +115,7 @@ public class MainFrameTree {
 
     public Sortables[] getAvailableSortables() {
         Sortables[] sortables;
-        ArrayList<Sortables> a = new ArrayList<Sortables>(Sortables.values().length);
+        ArrayList<Sortables> a = new ArrayList<>(Sortables.values().length);
         for (Sortables s : Sortables.values()) {
             if (s.isAvailable(mainFrame)) {
                 a.add(s);

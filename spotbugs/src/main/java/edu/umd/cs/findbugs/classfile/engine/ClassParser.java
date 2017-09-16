@@ -157,7 +157,7 @@ public class ClassParser implements ClassParserInterface {
      * @throws InvalidClassFileFormatException
      */
     private Collection<ClassDescriptor> extractReferencedClasses() throws InvalidClassFileFormatException {
-        Set<ClassDescriptor> referencedClassSet = new HashSet<ClassDescriptor>();
+        Set<ClassDescriptor> referencedClassSet = new HashSet<>();
         for (Constant constant : constantPool) {
             if (constant == null) {
                 continue;

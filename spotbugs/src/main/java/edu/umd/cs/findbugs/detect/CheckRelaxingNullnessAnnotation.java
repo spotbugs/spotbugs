@@ -231,8 +231,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         private final Set<ClassDescriptor> visited;
 
         public HierarchyIterator(@Nonnull XClass xclass) {
-            interfacesToVisit = new LinkedList<ClassDescriptor>(Arrays.asList(xclass.getInterfaceDescriptorList()));
-            visited = new HashSet<ClassDescriptor>();
+            interfacesToVisit = new LinkedList<>(Arrays.asList(xclass.getInterfaceDescriptorList()));
+            visited = new HashSet<>();
             superclass = getClassInfo(xclass.getSuperclassDescriptor());
         }
 
@@ -255,7 +255,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             // compute next one
             superclass = getClassInfo(superclass.getSuperclassDescriptor());
             if(superclass != null){
-                interfacesToVisit = new LinkedList<ClassDescriptor>(Arrays.asList(superclass.getInterfaceDescriptorList()));
+                interfacesToVisit = new LinkedList<>(Arrays.asList(superclass.getInterfaceDescriptorList()));
             }
             return currentSuperclass;
         }
@@ -279,7 +279,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         if (parameterAnnotations == null) {
             return null;
         }
-        Map<Integer, NullnessAnnotation> nonNullParameter = new HashMap<Integer, NullnessAnnotation>();
+        Map<Integer, NullnessAnnotation> nonNullParameter = new HashMap<>();
         for (int i = 0; i < parameterAnnotations.length; i++) {
             List<AnnotationNode> annotations = parameterAnnotations[i];
             if (annotations == null) {

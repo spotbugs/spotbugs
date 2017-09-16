@@ -123,7 +123,7 @@ public class UnionResults {
                 + " [options] [<results1> <results2> ... <resultsn>] ");
 
         SortedBugCollection results = null;
-        HashSet<String> hashes = new HashSet<String>();
+        HashSet<String> hashes = new HashSet<>();
 
         for (int i = argCount; i < argv.length; i++) {
             try {

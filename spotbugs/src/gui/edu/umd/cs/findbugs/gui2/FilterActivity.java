@@ -32,7 +32,7 @@ import javax.swing.tree.TreePath;
  */
 public class FilterActivity {
 
-    private static final HashSet<FilterListener> listeners = new HashSet<FilterListener>();
+    private static final HashSet<FilterListener> listeners = new HashSet<>();
 
     public static boolean addFilterListener(FilterListener newListener) {
         return listeners.add(newListener);
@@ -43,7 +43,7 @@ public class FilterActivity {
     }
 
     public static void notifyListeners(FilterListener.Action whatsGoingOnCode, @CheckForNull TreePath optionalPath) {
-        Collection<FilterListener> currentListeners = new ArrayList<FilterListener>(FilterActivity.listeners);
+        Collection<FilterListener> currentListeners = new ArrayList<>(FilterActivity.listeners);
         switch (whatsGoingOnCode) {
         case FILTERING:
         case UNFILTERING:

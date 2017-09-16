@@ -104,9 +104,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private final ClassScreener classScreener = new ClassScreener();
 
-    private final Set<String> enabledBugReporterDecorators = new LinkedHashSet<String>();
+    private final Set<String> enabledBugReporterDecorators = new LinkedHashSet<>();
 
-    private final Set<String> disabledBugReporterDecorators = new LinkedHashSet<String>();
+    private final Set<String> disabledBugReporterDecorators = new LinkedHashSet<>();
 
     private boolean setExitCode = false;
 
@@ -252,7 +252,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         return printVersion;
     }
 
-    Map<String, String> parsedOptions = new LinkedHashMap<String, String>();
+    Map<String, String> parsedOptions = new LinkedHashMap<>();
 
     @SuppressFBWarnings("DM_EXIT")
     @Override

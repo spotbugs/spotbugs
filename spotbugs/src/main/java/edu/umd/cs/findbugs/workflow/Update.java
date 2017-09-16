@@ -61,11 +61,11 @@ public class Update {
 
     private static final String USAGE = "Usage: " + Update.class.getName() + " [options]  data1File data2File data3File ... ";
 
-    private final Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<BugInstance, BugInstance>();
+    private final Map<BugInstance, BugInstance> mapFromNewToOldBug = new IdentityHashMap<>();
 
-    private final Set<String> resurrected = new HashSet<String>();
+    private final Set<String> resurrected = new HashSet<>();
 
-    private final Map<BugInstance, Void> matchedOldBugs = new IdentityHashMap<BugInstance, Void>();
+    private final Map<BugInstance, Void> matchedOldBugs = new IdentityHashMap<>();
 
     boolean noPackageMoves = false;
 
@@ -171,7 +171,7 @@ public class Update {
     }
 
     HashSet<String> sourceFilesInCollection(BugCollection collection) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         for (PackageStats pStats : collection.getProjectStats().getPackageStats()) {
             for (ClassStats cStats : pStats.getClassStats()) {
                 result.add(cStats.getSourceFile());
@@ -341,7 +341,7 @@ public class Update {
     private void discardUnwantedBugs(BugCollection newCollection) {
         BugRanker.trimToMaxRank(newCollection, maxRank);
         if (sloppyMatch) {
-            TreeSet<BugInstance> sloppyUnique = new TreeSet<BugInstance>(new SloppyBugComparator());
+            TreeSet<BugInstance> sloppyUnique = new TreeSet<>(new SloppyBugComparator());
             for(Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); ) {
                 if (!sloppyUnique.add(i.next())) {
                     i.remove();
@@ -594,7 +594,7 @@ public class Update {
     private void matchBugs(Comparator<BugInstance> bugInstanceComparator, BugCollection origCollection,
             BugCollection newCollection, MatchOldBugs matchOld) {
 
-        TreeMap<BugInstance, LinkedList<BugInstance>> set = new TreeMap<BugInstance, LinkedList<BugInstance>>(
+        TreeMap<BugInstance, LinkedList<BugInstance>> set = new TreeMap<>(
                 bugInstanceComparator);
         //        int oldBugs = 0;
         //        int newBugs = 0;
@@ -605,7 +605,7 @@ public class Update {
                     //                    oldBugs++;
                     LinkedList<BugInstance> q = set.get(bug);
                     if (q == null) {
-                        q = new LinkedList<BugInstance>();
+                        q = new LinkedList<>();
                         set.put(bug, q);
                     }
                     q.add(bug);

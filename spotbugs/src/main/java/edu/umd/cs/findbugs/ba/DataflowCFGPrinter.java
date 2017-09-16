@@ -106,7 +106,7 @@ public class DataflowCFGPrinter<Fact, AnalysisType extends DataflowAnalysis<Fact
      */
     public static <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> void printCFG(
             Dataflow<Fact, AnalysisType> dataflow, PrintStream out) {
-        DataflowCFGPrinter<Fact, AnalysisType> printer = new DataflowCFGPrinter<Fact, AnalysisType>(dataflow);
+        DataflowCFGPrinter<Fact, AnalysisType> printer = new DataflowCFGPrinter<>(dataflow);
         printer.print(out);
     }
 

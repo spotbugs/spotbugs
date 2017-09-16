@@ -96,9 +96,9 @@ public class PatternMatcher implements DFSEdgeTypes {
         this.dfs = classContext.getDepthFirstSearch(method);
         this.vnaDataflow = classContext.getValueNumberDataflow(method);
         this.domAnalysis = classContext.getNonExceptionDominatorsAnalysis(method);
-        this.workList = new LinkedList<BasicBlock>();
-        this.visitedBlockMap = new IdentityHashMap<BasicBlock, BasicBlock>();
-        this.resultList = new LinkedList<ByteCodePatternMatch>();
+        this.workList = new LinkedList<>();
+        this.visitedBlockMap = new IdentityHashMap<>();
+        this.resultList = new LinkedList<>();
     }
 
     /**
@@ -379,7 +379,7 @@ public class PatternMatcher implements DFSEdgeTypes {
             if (!lookForDominatedInstruction()) {
                 throw new IllegalStateException();
             }
-            LinkedList<State> stateList = new LinkedList<State>();
+            LinkedList<State> stateList = new LinkedList<>();
 
             State dup = this.duplicate();
 

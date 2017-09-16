@@ -43,7 +43,7 @@ public class UnionBugs2 extends AbstractFindBugsTask {
 
     private String to;
 
-    private final ArrayList<FileSet> fileSets = new ArrayList<FileSet>();
+    private final ArrayList<FileSet> fileSets = new ArrayList<>();
 
     public UnionBugs2() {
         super("edu.umd.cs.findbugs.workflow.UnionResults");

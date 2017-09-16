@@ -48,7 +48,7 @@ public class ClassNotFoundExceptionParser {
     private static final Pattern[] patternList;
 
     static {
-        ArrayList<Pattern> list = new ArrayList<Pattern>();
+        ArrayList<Pattern> list = new ArrayList<>();
         list.add(BCEL_MISSING_CLASS_PATTERN);
         list.add(TYPE_REPOSITORY_MISSING_CLASS_PATTERN);
 

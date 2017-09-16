@@ -40,7 +40,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
         this.bugReporter = bugReporter;
     }
 
-    Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
+    Collection<SourceLineAnnotation> found = new LinkedList<>();
 
     @Override
     public void visit(Code obj) {

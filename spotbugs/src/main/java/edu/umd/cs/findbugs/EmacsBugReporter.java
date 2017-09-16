@@ -39,9 +39,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  */
 public class EmacsBugReporter extends TextUIBugReporter {
 
-    private final HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+    private final HashSet<BugInstance> seenAlready = new HashSet<>();
 
-    private final HashMap<String, String> sourceFileNameCache = new HashMap<String, String>();
+    private final HashMap<String, String> sourceFileNameCache = new HashMap<>();
 
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {

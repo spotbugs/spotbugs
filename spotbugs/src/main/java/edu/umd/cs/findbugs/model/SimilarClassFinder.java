@@ -30,7 +30,7 @@ public class SimilarClassFinder {
     private final List<SimilarClassSet> similarClassSetList;
 
     public SimilarClassFinder() {
-        this.similarClassSetList = new LinkedList<SimilarClassSet>();
+        this.similarClassSetList = new LinkedList<>();
     }
 
     public void add(ClassFeatureSet classFeatureSet) {

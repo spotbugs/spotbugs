@@ -48,7 +48,7 @@ public class SplitCamelCaseIdentifier {
      */
     public Collection<String> split() {
         String s = ident;
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
 
         while (s.length() > 0) {
             StringBuilder buf = new StringBuilder();

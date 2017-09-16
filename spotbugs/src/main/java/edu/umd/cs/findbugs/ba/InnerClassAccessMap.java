@@ -133,7 +133,7 @@ public class InnerClassAccessMap {
      * Constructor.
      */
     private InnerClassAccessMap() {
-        this.classToAccessMap = new HashMap<String, Map<String, InnerClassAccess>>(3);
+        this.classToAccessMap = new HashMap<>(3);
     }
 
     /**
@@ -342,7 +342,7 @@ public class InnerClassAccessMap {
 
         Map<String, InnerClassAccess> map = classToAccessMap.get(className);
         if (map == null) {
-            map = new HashMap<String, InnerClassAccess>(3);
+            map = new HashMap<>(3);
 
             if (!className.startsWith("[")) {
                 JavaClass javaClass = Repository.lookupClass(className);
@@ -385,7 +385,7 @@ public class InnerClassAccessMap {
             if (map.size() == 0) {
                 map = Collections.emptyMap();
             } else {
-                map = new HashMap<String, InnerClassAccess>(map);
+                map = new HashMap<>(map);
             }
 
             classToAccessMap.put(className, map);

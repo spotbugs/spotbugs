@@ -134,7 +134,7 @@ public class NullDerefAndRedundantComparisonFinder {
                 AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS);
         this.lineMentionedMultipleTimes = classContext.linesMentionedMultipleTimes(method);
 
-        this.redundantBranchList = new LinkedList<RedundantBranch>();
+        this.redundantBranchList = new LinkedList<>();
         this.definitelySameBranchSet = new BitSet();
         this.definitelyDifferentBranchSet = new BitSet();
         this.undeterminedBranchSet = new BitSet();
@@ -231,10 +231,10 @@ public class NullDerefAndRedundantComparisonFinder {
             System.out.println("----------------------- examineNullValues " + locationWhereValueBecomesNullSet.size());
         }
 
-        Map<ValueNumber, SortedSet<Location>> bugStatementLocationMap = new HashMap<ValueNumber, SortedSet<Location>>();
+        Map<ValueNumber, SortedSet<Location>> bugStatementLocationMap = new HashMap<>();
         // Inspect the method for locations where a null value is guaranteed to
         // be dereferenced. Add the dereference locations
-        Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap = new HashMap<ValueNumber, NullValueUnconditionalDeref>();
+        Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap = new HashMap<>();
 
         // Check every location
         CFG cfg = classContext.getCFG(method);
@@ -249,8 +249,8 @@ public class NullDerefAndRedundantComparisonFinder {
                     vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location),
                     uvdDataflow.getFactAfterLocation(location), false);
         }
-        HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
-        Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap = new HashMap<ValueNumber, SortedSet<Location>>();
+        HashSet<ValueNumber> npeIfStatementCovered = new HashSet<>(nullValueGuaranteedDerefMap.keySet());
+        Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap = new HashMap<>();
 
         checkEdges(cfg, nullValueGuaranteedDerefMap, bugEdgeLocationMap);
 
@@ -267,14 +267,14 @@ public class NullDerefAndRedundantComparisonFinder {
     }
 
     public Map<ValueNumber, Set<Location>> findNullAssignments(Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet) {
-        Map<ValueNumber, Set<Location>> nullValueAssignmentMap = new HashMap<ValueNumber, Set<Location>>();
+        Map<ValueNumber, Set<Location>> nullValueAssignmentMap = new HashMap<>();
         for (LocationWhereValueBecomesNull lwvbn : locationWhereValueBecomesNullSet) {
             if (DEBUG_DEREFS) {
                 System.out.println("OOO " + lwvbn);
             }
             Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
             if (locationSet == null) {
-                locationSet = new HashSet<Location>(4);
+                locationSet = new HashSet<>(4);
                 nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
             }
             locationSet.add(lwvbn.getLocation());
@@ -423,7 +423,7 @@ public class NullDerefAndRedundantComparisonFinder {
             allDominatedBy.clear(loc.getBasicBlock().getLabel());
             strictlyDominated.or(allDominatedBy);
         }
-        LinkedList<Location> locations2 = new LinkedList<Location>(locations);
+        LinkedList<Location> locations2 = new LinkedList<>(locations);
 
         for (Iterator<Location> i = locations.iterator(); i.hasNext();) {
             Location loc = i.next();
@@ -448,7 +448,7 @@ public class NullDerefAndRedundantComparisonFinder {
             allDominatedBy.clear(loc.getBasicBlock().getLabel());
             strictlyDominated.or(allDominatedBy);
         }
-        LinkedList<Location> locations2 = new LinkedList<Location>(locations);
+        LinkedList<Location> locations2 = new LinkedList<>(locations);
 
         for (Iterator<Location> i = locations.iterator(); i.hasNext();) {
             Location loc = i.next();
@@ -628,7 +628,7 @@ public class NullDerefAndRedundantComparisonFinder {
             SortedSet<Location> locationsForThisBug = bugLocations.get(valueNumber);
 
             if (locationsForThisBug == null) {
-                locationsForThisBug = new TreeSet<Location>();
+                locationsForThisBug = new TreeSet<>();
                 bugLocations.put(valueNumber, locationsForThisBug);
             }
             locationsForThisBug.add(thisLocation);

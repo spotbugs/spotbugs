@@ -70,9 +70,9 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
 
   private String maxHeapSize;
 
-  private Collection<String> visitors = new ArrayList<String>();
+  private Collection<String> visitors = new ArrayList<>();
 
-  private Collection<String> omitVisitors = new ArrayList<String>();
+  private Collection<String> omitVisitors = new ArrayList<>();
 
   private TextResource includeFilterConfig;
 
@@ -80,7 +80,7 @@ public class SpotBugsTask extends SourceTask implements VerificationTask, Report
 
   private TextResource excludeBugsFilterConfig;
 
-  private Collection<String> extraArgs = new ArrayList<String>();
+  private Collection<String> extraArgs = new ArrayList<>();
 
   @Nested
   private final SpotBugsReportsInternal reports;

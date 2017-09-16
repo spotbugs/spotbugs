@@ -219,7 +219,7 @@ public class Analyze {
         }
 
         // exist classes that are both X and Y
-        Set<ClassDescriptor> xButNotY = new HashSet<ClassDescriptor>(subtypes2.getSubtypes(xDesc));
+        Set<ClassDescriptor> xButNotY = new HashSet<>(subtypes2.getSubtypes(xDesc));
         xButNotY.removeAll(transitiveCommonSubtypes);
         for (ClassDescriptor c : xButNotY) {
 

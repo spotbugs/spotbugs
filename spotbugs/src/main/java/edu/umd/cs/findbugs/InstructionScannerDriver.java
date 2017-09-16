@@ -47,7 +47,7 @@ public class InstructionScannerDriver {
      */
     public InstructionScannerDriver(Iterator<Edge> edgeIter) {
         this.edgeIter = edgeIter;
-        scannerList = new LinkedList<InstructionScanner>();
+        scannerList = new LinkedList<>();
     }
 
     /**

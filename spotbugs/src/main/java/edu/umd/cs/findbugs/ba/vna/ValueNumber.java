@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.util.Util;
  * @see ValueNumberAnalysis
  */
 public class ValueNumber implements Comparable<ValueNumber> {
-    static MapCache<ValueNumber, ValueNumber> cache = new MapCache<ValueNumber, ValueNumber>(200);
+    static MapCache<ValueNumber, ValueNumber> cache = new MapCache<>(200);
 
     static int valueNumbersCreated = 0;
 

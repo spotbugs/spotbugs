@@ -27,7 +27,7 @@ public class CallList {
     private final ArrayList<Call> callList;
 
     public CallList() {
-        this.callList = new ArrayList<Call>();
+        this.callList = new ArrayList<>();
     }
 
     public boolean isValid() {

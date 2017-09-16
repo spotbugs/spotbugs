@@ -103,7 +103,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
     /** Stores current LDF */
     private LockDataflow currentLockDataFlow;
 
-    private final Map<XField, BugInstance> pendingBugs = new HashMap<XField, BugInstance>();
+    private final Map<XField, BugInstance> pendingBugs = new HashMap<>();
 
     /**
      * Creates a new instance of this Detector.

@@ -29,7 +29,7 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
     private final IdentityHashMap<Method, CallGraphNode> methodToNodeMap;
 
     public CallGraph() {
-        this.methodToNodeMap = new IdentityHashMap<Method, CallGraphNode>();
+        this.methodToNodeMap = new IdentityHashMap<>();
     }
 
     public CallGraphEdge createEdge(CallGraphNode source, CallGraphNode target, CallSite callSite) {

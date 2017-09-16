@@ -55,7 +55,7 @@ public class SorterDialog extends FBDialog {
 
     private JTableHeader preview;
 
-    private final ArrayList<SortableCheckBox> checkBoxSortList = new ArrayList<SortableCheckBox>();
+    private final ArrayList<SortableCheckBox> checkBoxSortList = new ArrayList<>();
 
     JButton sortApply;
 

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ClassAnnotation;
  */
 public class EqualsKindSummary {
 
-    final Map<ClassAnnotation, EqualsKindSummary.KindOfEquals> kindMap = new HashMap<ClassAnnotation, EqualsKindSummary.KindOfEquals>();
+    final Map<ClassAnnotation, EqualsKindSummary.KindOfEquals> kindMap = new HashMap<>();
 
     public static enum KindOfEquals {
         OBJECT_EQUALS, ABSTRACT_INSTANCE_OF, INSTANCE_OF_EQUALS,INSTANCE_OF_SUPERCLASS_EQUALS, COMPARE_EQUALS, CHECKED_CAST_EQUALS, RETURNS_SUPER, GETCLASS_GOOD_EQUALS, ABSTRACT_GETCLASS_GOOD_EQUALS, GETCLASS_BAD_EQUALS, DELEGATE_EQUALS, TRIVIAL_EQUALS, INVOKES_SUPER, ALWAYS_TRUE, ALWAYS_FALSE, UNKNOWN

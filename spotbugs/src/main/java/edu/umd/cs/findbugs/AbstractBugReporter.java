@@ -130,9 +130,9 @@ public abstract class AbstractBugReporter implements BugReporter {
     public AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
-        missingClassMessageList = new LinkedHashSet<String>();
-        errorSet = new HashSet<Error>();
-        observerList = new LinkedList<BugReporterObserver>();
+        missingClassMessageList = new LinkedHashSet<>();
+        errorSet = new HashSet<>();
+        observerList = new LinkedList<>();
         projectStats = new ProjectStats();
         // bug 2815983: no bugs are reported anymore
         // there is no info which value should be default, so using the max
