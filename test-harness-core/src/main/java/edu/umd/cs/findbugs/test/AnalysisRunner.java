@@ -1,7 +1,5 @@
 package edu.umd.cs.findbugs.test;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,7 +118,7 @@ public class AnalysisRunner {
         try {
             engine.execute();
         } catch (final IOException | InterruptedException e) {
-            fail("Analysis failed with exception; " + e.getMessage());
+            throw new AssertionError("Analysis failed with exception", e);
         }
         if (!bugReporter.getQueuedErrors().isEmpty()) {
             AssertionError assertionError = new AssertionError(

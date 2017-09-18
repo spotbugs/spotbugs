@@ -7,14 +7,9 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
-  compile 'junit:junit:4.12'
-  compile project(':spotbugs')
-}
-
-javadoc {
-  options.with {
-    tags = ['Test']
-  }
+  compileOnly 'junit:junit:4.12'
+  compileOnly project(':spotbugs')
+  compile project(':test-harness-core')
 }
 
 task javadocJar(type: Jar) {
@@ -35,8 +30,8 @@ uploadArchives {
   repositories {
     mavenDeployer {
       pom.project {
-        name 'Test Harness for SpotBugs Plugin'
-        description 'A test harness library for SpotBugs plugin developers'
+        name 'JUnit 4 Test Harness for SpotBugs Plugin'
+        description 'A test harness library for SpotBugs plugin developers to test on JUnit4'
       }
     }
   }
