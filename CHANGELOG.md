@@ -8,6 +8,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 * Delete needless bundled libraries from Eclipse plugin ([#330](https://github.com/spotbugs/spotbugs/pull/330))
 
+### Changed
+
+* Upgrade BCEL from 6.1 SNAPSHOT to 6.1 STABLE ([#388](https://github.com/spotbugs/spotbugs/pull/388))
+
 ### Added
 
 * Add plugin/README into the distribution ([#331](https://github.com/spotbugs/spotbugs/pull/331))
