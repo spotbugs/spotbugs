@@ -70,7 +70,6 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -2219,15 +2218,36 @@ public class OpcodeStack implements Constants2 {
     }
 
     private float constantToFloat(Item it) {
-        return ((Number) it.getConstant()).floatValue();
+        Object constant = it.getConstant();
+        if (constant instanceof Number) {
+            return ((Number) constant).floatValue();
+        }
+        if (constant instanceof Character) {
+            return ((Character) constant).charValue();
+        }
+        throw new IllegalArgumentException(String.valueOf(constant));
     }
 
     private double constantToDouble(Item it) {
-        return ((Number) it.getConstant()).doubleValue();
+        Object constant = it.getConstant();
+        if (constant instanceof Number) {
+            return ((Number) constant).doubleValue();
+        }
+        if (constant instanceof Character) {
+            return ((Character) constant).charValue();
+        }
+        throw new IllegalArgumentException(String.valueOf(constant));
     }
 
     private long constantToLong(Item it) {
-        return ((Number) it.getConstant()).longValue();
+        Object constant = it.getConstant();
+        if (constant instanceof Number) {
+            return ((Number) constant).longValue();
+        }
+        if (constant instanceof Character) {
+            return ((Character) constant).charValue();
+        }
+        throw new IllegalArgumentException(String.valueOf(constant));
     }
 
     private void handleDcmp(int opcode) {
@@ -3138,8 +3158,8 @@ public class OpcodeStack implements Constants2 {
     public Item getStackItem(int stackOffset) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+            + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
+                    + " is not a value stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
         }
@@ -3160,8 +3180,8 @@ public class OpcodeStack implements Constants2 {
     public void replace(int stackOffset, Item value) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+            + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
+                    + " is not a value stack offset"));
 
         }
         int tos = stack.size() - 1;
@@ -3419,7 +3439,11 @@ public class OpcodeStack implements Constants2 {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
             }
         } catch (RuntimeException e) {
-            // ignore it
+            // TODO: this catch is probably not needed anymore after fix for issue 386
+            // Added logging to see if there were even more issues with the code.
+            AnalysisContext
+                .logError(String.format("Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s",
+                    seen, String.valueOf(lhs), String.valueOf(rhs)), e);
         }
         push(newValue);
     }
