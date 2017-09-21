@@ -2,7 +2,7 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://keepachangelog.com/en/0.3.0/).
 
-## Unreleased (2017/??/??)
+## 3.1.0-RC6 (2017/Sep/25)
 
 ### Removed
 
@@ -11,6 +11,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 ### Changed
 
 * Upgrade BCEL from 6.1 SNAPSHOT to 6.1 STABLE ([#388](https://github.com/spotbugs/spotbugs/pull/388))
+* Upgrade ASM from 6.0 BETA to 6.0 STABLE ([#373](https://github.com/spotbugs/spotbugs/issues/373))
 
 ### Added
 
