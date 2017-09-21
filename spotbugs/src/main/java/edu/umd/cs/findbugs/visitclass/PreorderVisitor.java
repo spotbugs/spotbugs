@@ -41,7 +41,9 @@ import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantMethodHandle;
 import org.apache.bcel.classfile.ConstantMethodType;
 import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantModule;
 import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPackage;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.EnclosingMethod;
@@ -871,6 +873,18 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
 
     @Override
     public void visitParameterAnnotationEntry(ParameterAnnotationEntry obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitConstantModule(ConstantModule obj) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visitConstantPackage(ConstantPackage obj) {
         // TODO Auto-generated method stub
 
     }
