@@ -55,5 +55,5 @@ msgid ""
 "``C:\\Software\\spotbugs-3.1.0-RC5``. This directory is the SpotBugs home"
 " directory. We'll refer to it as ``$SPOTBUGS_HOME`` (or "
 "``%SPOTBUGS_HOME%`` for Windows) throughout this manual."
-msgstr "バイナリ配布物を展開すると，通常は ``spotbugs-3.1.0-RC5`` で終わるディレクトリが作成されます。たとえば，``C:\\Software`` ディレクトリでバイナリ配布物を展開すると，SpotBugs ソフトウェアは ``C:\\Software\\spotbugs-3.1.0-RC5`` ディレクトリに展開されます。このディテクトリが SpotBugs のホームディレクトリになります。このマニュアルでは，``$SPOTBUGS_HOME`` (Windows では ``%SPOTBUGS_HOME%``) と呼びます。"
+msgstr "バイナリ配布物を展開すると，通常は ``spotbugs-3.1.0-RC5`` で終わるディレクトリが作成されます。たとえば，``C:\\Software`` ディレクトリでバイナリ配布物を展開すると，SpotBugs ソフトウェアは ``C:\\Software\\spotbugs-3.1.0-RC5`` ディレクトリに展開されます。このディレクトリが SpotBugs のホームディレクトリになります。このマニュアルでは，``$SPOTBUGS_HOME`` (Windows では ``%SPOTBUGS_HOME%``) と呼びます。"
 
