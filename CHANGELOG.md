@@ -21,6 +21,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 * Fix broken command line script ([#323](https://github.com/spotbugs/spotbugs/issues/323))
 * Fix broken Eclipse classpath variables ([#379](https://github.com/spotbugs/spotbugs/issues/379))
 * Fix errors on processing INVOKEDYNAMIC instructions ([#371](https://github.com/spotbugs/spotbugs/issues/371))
+* Fix errors on processing i2f, i2d and i2l instructions if the lhs is a character ([#389](https://github.com/spotbugs/spotbugs/issues/389))
 
 ## 3.1.0-RC5 (2017/Aug/16)
 
