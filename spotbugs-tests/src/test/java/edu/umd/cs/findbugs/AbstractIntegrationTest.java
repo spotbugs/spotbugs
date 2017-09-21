@@ -63,9 +63,19 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  */
 public class AbstractIntegrationTest {
 
+    /**
+     * Build path if running command line build
+     */
+    private static final String BUILD_CLASSES_CLI = "/build/classes/java/main/";
+
+    /**
+     * Build path if running in Eclipse
+     */
+    private static final String BUILD_CLASSES_ECLIPSE = "/classesEclipse/";
+
     private BugCollectionBugReporter bugReporter;
 
-    private File getFindbugsTestCases() {
+    private static File getFindbugsTestCases() {
         final File f = new File(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
         assertTrue("'spotbugsTestCases' directory not found", f.exists());
         assertTrue(f.isDirectory());
@@ -74,8 +84,14 @@ public class AbstractIntegrationTest {
         return f;
     }
 
-    private File getFindbugsTestCasesFile(final String path) {
-        final File f = new File(getFindbugsTestCases(), path);
+    private static File getFindbugsTestCasesFile(final String path) {
+        File f = new File(getFindbugsTestCases(), path);
+        if (!f.exists() && path.startsWith(BUILD_CLASSES_CLI)) {
+            File f2 = new File(getFindbugsTestCases(), path.replace(BUILD_CLASSES_CLI, BUILD_CLASSES_ECLIPSE));
+            if (f2.exists()) {
+                f = f2;
+            }
+        }
         assertTrue(f.getAbsolutePath() + " not found", f.exists());
         assertTrue(f.getAbsolutePath() + " is not readable", f.canRead());
 
@@ -104,9 +120,9 @@ public class AbstractIntegrationTest {
 
         // TODO : Unwire this once we move bug samples to a proper sourceset
         Path[] paths = Arrays.stream(analyzeMe)
-                .map(s -> getFindbugsTestCasesFile("/build/classes/java/main/" + s).toPath())
+                .map(s -> getFindbugsTestCasesFile(BUILD_CLASSES_CLI + s).toPath())
                 .collect(Collectors.toList())
                 .toArray(new Path[analyzeMe.length]);
-        this.bugReporter = runner.run(paths);
+        bugReporter = runner.run(paths);
     }
 }
