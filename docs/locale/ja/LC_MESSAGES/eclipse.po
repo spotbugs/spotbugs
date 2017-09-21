@@ -91,7 +91,7 @@ msgid ""
 "markers (displayed in source windows, and also in the Eclipse Problems "
 "view) will point to locations in your code which have been identified as "
 "potential instances of bug patterns."
-msgstr "開始するには，パッケージエクスプローラで Java プロジェクトを右クリックして，「Spot Bugs」というラベルの付いたオプションを選択します。SpotBugs が実行され，問題マーカー (ソースウインドウと Eclipse の問題ビューに表示されます) は，バグパターンの潜在的なインスタンスとして識別されたコード内の場所を示します。"
+msgstr "開始するには，パッケージエクスプローラで Java プロジェクトを右クリックして，「Spot Bugs」というラベルの付いたオプションを選択します。SpotBugs が実行され，問題マーカー (ソースウインドウと Eclipse の問題ビューに表示されます) は，バグパターンの潜在的なインスタンスとして特定されたコード内の場所を示します。"
 
 #: ../../eclipse.rst:36
 msgid ""
@@ -153,7 +153,7 @@ msgid ""
 "quality of third party detectors. The drawback is that you have to apply "
 "this settings in each new Eclipse workspace, and this settings can't be "
 "shared between team members."
-msgstr "既存の標準 SpotBugs ディテクタパッケージは，``Window → Preferences → Java → FindBugs → Misc. Settings → Custom Detectors`` で設定できます。追加のプラグインの場所を指定するだけです。このソリューションの利点は，既存のディテクタパッケージを「そのまま」使用でき，サードパーティのディテクタの品質を迅速に検証でくることです。欠点は，新しい Eclipse ワークスペースごとにこの設定を適用する必要があり，この設定をチームメンバ間で共有できないことです。"
+msgstr "既存の標準 SpotBugs ディテクタパッケージは，``Window → Preferences → Java → FindBugs → Misc. Settings → Custom Detectors`` で設定できます。追加のプラグインの場所を指定するだけです。このソリューションの利点は，既存のディテクタパッケージを「そのまま」使用でき，サードパーティのディテクタの品質を迅速に検証できることです。欠点は，新しい Eclipse ワークスペースごとにこの設定を適用する必要があり，この設定をチームメンバ間で共有できないことです。"
 
 #: ../../eclipse.rst:58
 msgid ""

@@ -395,7 +395,7 @@ msgstr ""
 msgid ""
 "Optional boolean attribute. Whether to abort the build process if there "
 "is an error running SpotBugs. Defaults to ``false``."
-msgstr "オプションのブール値属性です。SpotBugs を実行中にエラーが発生したときに，ビルドプロセスrを中断するかどうか指定します。デフォルトは ``false`` です。"
+msgstr "オプションのブール値属性です。SpotBugs を実行中にエラーが発生したときに，ビルドプロセスを中断するかどうか指定します。デフォルトは ``false`` です。"
 
 #: ../../ant.rst:186
 msgid "errorProperty"

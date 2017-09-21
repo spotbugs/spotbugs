@@ -206,7 +206,7 @@ msgstr ""
 msgid ""
 "Specifies the directory containing the JRE (Java Runtime Environment) to "
 "use to execute FindBugs."
-msgstr "SpotBugs の実行に使用する JRE(Javaランタイム環境) があるディテクトリを指定します。"
+msgstr "SpotBugs の実行に使用する JRE(Javaランタイム環境) があるディレクトリを指定します。"
 
 #: ../../running.rst:105
 msgid "-maxHeap *size*:"
@@ -489,7 +489,7 @@ msgid ""
 "Set the auxiliary classpath for analysis. This classpath should include "
 "all jar files and directories containing classes that are part of the "
 "program being analyzed but you do not want to have analyzed for bugs."
-msgstr "解析のための補助クラスパスを設定します。補助クラスパスには解析するプログラムで使用するクラスを含むディテクトリと jar ファイルをすべて指定します。バグの解析対象にはなりません。"
+msgstr "解析のための補助クラスパスを設定します。補助クラスパスには解析するプログラムで使用するクラスを含むディレクトリと jar ファイルをすべて指定します。バグの解析対象にはなりません。"
 
 #: ../../running.rst:220
 msgid "-auxclasspathFromInput:"
