@@ -34,6 +34,7 @@ sourceSets {
 
 dependencies {
   compile 'org.ow2.asm:asm-debug-all:6.0_BETA'
+  compile 'org.apache.bcel:bcel:6.1'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
   compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
@@ -122,12 +123,6 @@ tasks.eclipse.dependsOn(updateManifest)
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   from sourceSets.main.output
-
-  // Workaround for missing released BCEL maven artifact, see https://github.com/spotbugs/spotbugs/issues/327
-  // Should be removed after #327 is fixed.
-  from zipTree("$projectDir/lib/bcel-6.1-20161207.023659-9.jar").matching {
-    exclude 'META-INF/**'
-  }
 
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',

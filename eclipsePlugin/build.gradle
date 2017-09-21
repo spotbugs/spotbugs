@@ -63,10 +63,6 @@ task copyLibsForEclipse(type: Copy) {
     from configurations.compile.files {
     	include "*.jar"
     	exclude "*xml-apis*.jar"
-    	// Workaround due https://github.com/spotbugs/spotbugs/issues/327 
-    	// BCEL classes are already included into the main spotbugs.jar
-    	// Should be removed after #327 is fixed.
-    	exclude "bcel-*.jar"
     }
     into "lib"
 }
