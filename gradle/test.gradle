@@ -4,8 +4,9 @@ tasks.withType(Test) {
         exceptionFormat 'full'
     }
     doFirst {
+      // http://openjdk.java.net/jeps/223
       if (System.getProperty("java.specification.version") == "9") {
-        jvmArgs = [
+        jvmArgs += [
           '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
         ]
       }
