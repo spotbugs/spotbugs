@@ -47,10 +47,10 @@ install:
   - echo eclipseRoot.dir=$(pwd)/eclipse > eclipsePlugin/local.properties
 
 script:
-  - ./gradlew build -S
+  - ./gradlew compileJava compileTestJava -S
   - jdk_switcher use $JDK_FOR_TEST
   - ./gradlew -v --no-daemon
-  - ./gradlew smoketest -S --no-daemon
+  - ./gradlew build smoketest -S --no-daemon
   - jdk_switcher use oraclejdk8
   - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
