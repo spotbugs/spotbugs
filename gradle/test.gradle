@@ -3,5 +3,11 @@ tasks.withType(Test) {
         events 'FAILED'
         exceptionFormat 'full'
     }
+    doFirst {
+      if (System.getProperty("java.specification.version") == "9") {
+        jvmArgs = [
+          '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+        ]
+      }
+    }
 }
-
