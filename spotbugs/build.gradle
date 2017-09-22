@@ -1,5 +1,7 @@
-// FindBugs Gradle plugin does not support Java 9
-// apply plugin: 'findbugs'
+plugins {
+  id "com.github.spotbugs" version "1.2"
+}
+
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
@@ -56,15 +58,11 @@ dependencies {
   compile fileTree(dir: 'lib', include: '*.jar')
 }
 
-/*
-findbugs {
+spotbugs {
   effort = "max"
   reportLevel = "high"
-  dependencies {
-    findbugs 'com.google.code.findbugs:findbugs:3.0.1'
-  }
+  toolVersion '3.1.0-RC5'
 }
-*/
 
 clean {
 	delete ".libs"
