@@ -1,0 +1,9 @@
+// Reserve module name
+// https://guides.gradle.org/building-java-9-modules/#optional_add_code_automatic_module_name_code_manifest_entries_for_all_other_projects
+// http://blog.joda.org/2017/05/java-se-9-jpms-automatic-modules.html
+jar {
+  inputs.property('moduleName', moduleName)
+  manifest {
+    attributes('Automatic-Module-Name': moduleName)
+  }
+}

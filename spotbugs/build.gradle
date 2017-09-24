@@ -269,6 +269,11 @@ uploadArchives {
   }
 }
 
+// Module name should be reverse-DNS (com.github.spotbugs) just like package name
+// http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
+ext.moduleName = 'com.github.spotbugs.spotbugs'
+apply from: "$rootDir/gradle/jigsaw.gradle"
+
 // TODO : jsr305.jar (really?)
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual

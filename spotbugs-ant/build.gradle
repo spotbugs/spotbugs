@@ -38,3 +38,8 @@ uploadArchives {
     }
   }
 }
+
+// Module name should be reverse-DNS (com.github.spotbugs) just like package name
+// http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
+ext.moduleName = 'com.github.spotbugs.ant'
+apply from: "$rootDir/gradle/jigsaw.gradle"
