@@ -24,6 +24,9 @@ subprojects {
 
   repositories {
     jcenter()
+    maven {
+      url 'https://repository.ow2.org/nexus/content/repositories/releases/'
+    }
   }
 }
 
