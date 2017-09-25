@@ -37,7 +37,11 @@ sourceSets {
 
 dependencies {
   compile 'org.ow2.asm:asm:6.0'
+  compile 'org.ow2.asm:asm-analysis:6.0'
+  compile 'org.ow2.asm:asm-commons:6.0'
   compile 'org.ow2.asm:asm-tree:6.0'
+  compile 'org.ow2.asm:asm-util:6.0'
+  compile 'org.ow2.asm:asm-xml:6.0'
   compile 'org.apache.bcel:bcel:6.1'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'dom4j:dom4j:1.6.1'
@@ -66,7 +70,7 @@ spotbugs {
 }
 
 clean {
-	delete ".libs"
+  delete ".libs"
 }
 
 tasks.withType(Jar).all {
@@ -78,15 +82,15 @@ tasks.withType(Jar).all {
 
 eclipse.classpath.file {
     whenMerged {
-	    classpath ->
-	       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
-	       classpath.entries.forEach {
-	           entry ->
-		           if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')) {
-		               entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
-		               entry.exported = true
-		           }
-	    }
+      classpath ->
+         classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
+         classpath.entries.forEach {
+             entry ->
+               if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')) {
+                   entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
+                   entry.exported = true
+               }
+      }
     }
 }
 
