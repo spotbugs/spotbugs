@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This class is a highly modified version of Michael Schierl's "SmapParser.java".
  * It was test with Jetty and WebLogic SMAP.
@@ -74,6 +76,7 @@ public class SmapParser {
         return s;
     }
 
+    @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "To keep backward compatibility")
     public SmapParser(String smap) throws IOException {
         //BufferedReader is use to support multiple types of line return
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(smap.getBytes())));

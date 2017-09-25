@@ -1,3 +1,7 @@
+plugins {
+  id "com.github.spotbugs" version "1.4"
+}
+
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
@@ -68,3 +72,9 @@ uploadArchives {
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.annotations'
 apply from: "$rootDir/gradle/jigsaw.gradle"
+
+spotbugs {
+  effort = "max"
+  reportLevel = "high"
+  toolVersion '3.1.0-RC6'
+}
