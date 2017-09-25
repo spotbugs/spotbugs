@@ -36,9 +36,6 @@ public class SpotBugsPluginTest extends Assert{
       "repositories {\n" +
       "  mavenCentral()\n" +
       "  mavenLocal()\n" +
-      "  maven {\n" +
-      "    url 'https://repository.ow2.org/nexus/content/repositories/releases/'\n" +
-      "  }\n" +
       "}";
     File buildFile = folder.newFile("build.gradle");
     Files.write(buildFile.toPath(), buildScript.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE);
