@@ -158,7 +158,9 @@ public interface FindBugsMarker {
 
         /**
          * XXX replace numeric values and double mapping through simple string id
-         * @param confidence name as defined by {@link #name()}
+         *
+         * @param bugPrio
+         *            name as defined by {@link #name()}
          * @return matching confidence, never null
          */
         @Nonnull

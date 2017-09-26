@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 
 /**
  * Code that uses the == or != operators to compare Strings is bad code. The
- * <CODE>UseEqualsResolution</CODE> uses <CODE>equals()<CODE> instead.
+ * <CODE>UseEqualsResolution</CODE> uses <CODE>equals()</CODE> instead.
  *
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#ES_COMPARING_PARAMETER_STRING_WITH_EQ">ES_COMPARING_PARAMETER_STRING_WITH_EQ</a>
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#ES_COMPARING_STRINGS_WITH_EQ">ES_COMPARING_STRINGS_WITH_EQ</a>

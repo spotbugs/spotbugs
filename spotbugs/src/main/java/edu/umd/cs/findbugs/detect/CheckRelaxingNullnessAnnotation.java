@@ -67,7 +67,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * {@link Nonnull}) on parameters.
  *
  * The code accepts also old (deprecated) nullness annotations from
- * {@link edu.umd.cs.findbugs.annotations} package.
+ * {@code edu.umd.cs.findbugs.annotations} package.
  *
  * @author alienisty (Alessandro Nistico)
  * @author Andrey Loskutov

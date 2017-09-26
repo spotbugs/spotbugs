@@ -45,7 +45,8 @@ dependencies {
         '**/datanucleus-enhancer*.jar',
         'edu.umd.cs.findbugs.**/*.jar',
         'org.mockito*.jar',
-        'com.github.spotbugs.**/*.jar'
+        'com.github.spotbugs.**/*.jar',
+        '**/*source_*.jar'
         ])
 
   compile(project(':spotbugs')) {
@@ -55,6 +56,21 @@ dependencies {
 
 clean {
     delete "lib", "build"
+}
+
+// This disables hundreds of javadoc warnings on missing tags etc, see #340
+javadoc {
+  doFirst {
+    // This is supposed to enable everything except "missing" but doesn't work with gradle
+    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    options.addBooleanOption('Xdoclint:all,-missing', true)
+
+    // TODO remove command and warning below if the doclint can be properly configured
+    options.addStringOption('Xmaxwarns', '3')
+  }
+  doLast {
+    logger.warn('Javadoc: too many warnings, only first 3 are shown, see #340!')
+  }
 }
 
 task copyLibsForEclipse(type: Copy) {

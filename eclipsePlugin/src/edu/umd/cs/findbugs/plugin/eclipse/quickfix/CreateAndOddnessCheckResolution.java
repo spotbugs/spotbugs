@@ -34,7 +34,7 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 /**
  * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the
  * abstract class <CODE>CorrectOddnessCheckResolution</CODE> and creates the
- * proper oddness check <CODE>(x & 2) == 1</CODE>.
+ * proper oddness check <CODE>(x &amp; 2) == 1</CODE>.
  *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
@@ -45,7 +45,7 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 public class CreateAndOddnessCheckResolution extends CorrectOddnessCheckResolution {
 
     /**
-     * Creates the new <CODE>InfixExpression</CODE> <CODE>(x & 1) == 1</CODE>.
+     * Creates the new <CODE>InfixExpression</CODE> <CODE>(x &amp; 1) == 1</CODE>.
      */
     @Override
     protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
