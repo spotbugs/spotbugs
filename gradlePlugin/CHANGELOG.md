@@ -10,7 +10,7 @@ This is the changelog for SpotBugs Gradle Plugin. This follows [Keep a Changelog
 * Fix "Cannot convert the provided notation to a File or URI: classesDirs" error ([#320](https://github.com/spotbugs/spotbugs/issues/320))
 * Support working with Android Gradle Plugin 2.3 ([#256](https://github.com/spotbugs/spotbugs/issues/256))
 
-## 1.3 - 2017-08-16
+## 1.3 - 2017-08-16 [YANKED]
 
 * Use SpotBugs 3.1.0-RC5
 * Stop using [single class directory](https://docs.gradle.org/4.0.2/release-notes.html#multiple-class-directories-for-a-single-source-set) to prepare for Gradle v5 ([#299](https://github.com/spotbugs/spotbugs/issues/299))
