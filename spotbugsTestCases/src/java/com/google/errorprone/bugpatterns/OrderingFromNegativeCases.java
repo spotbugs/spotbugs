@@ -21,7 +21,7 @@ import java.util.Comparator;
 import com.google.common.collect.Ordering;
 
 /**
- * Negative test cases for theOrdering.from(new Comparator<T>() { ... }) check
+ * Negative test cases for theOrdering.from(new Comparator&lt;T&gt;() { ... }) check
  *
  * @author sjnickerson@google.com (Simon Nickerson)
  */

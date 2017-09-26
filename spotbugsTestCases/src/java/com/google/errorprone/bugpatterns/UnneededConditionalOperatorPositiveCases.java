@@ -16,7 +16,7 @@ package com.google.errorprone.bugpatterns;
  */
 
 /**
- * Positive cases for {@link UnneededConditionalOperator}.
+ * Positive cases for {@code UnneededConditionalOperator}.
  *
  * @author sjnickerson@google.com (Simon Nickerson)
  */

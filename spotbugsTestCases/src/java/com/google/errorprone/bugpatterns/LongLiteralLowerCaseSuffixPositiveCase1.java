@@ -17,7 +17,7 @@
 package com.google.errorprone.bugpatterns;
 
 /**
- * Positive cases for {@link LongLiteralLowerCaseSuffix}.
+ * Positive cases for {@code LongLiteralLowerCaseSuffix}.
  */
 public class LongLiteralLowerCaseSuffixPositiveCase1 {
   

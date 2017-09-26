@@ -4,10 +4,6 @@ public class MutableMan {
 
     final int[] x = new int[1];
 
-    /**
-     * @param args
-     */
-
     public int[] getX() {
         return x;
     }

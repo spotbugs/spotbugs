@@ -16,7 +16,7 @@ package com.google.errorprone.bugpatterns;
  */
 
 /**
- * Positive cases for {@link SuppressWarningsDeprecated}.
+ * Positive cases for {@code SuppressWarningsDeprecated}.
  * 
  * @author sjnickerson@google.com (Simon Nickerson)
  */

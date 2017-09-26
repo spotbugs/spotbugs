@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * Helper methods useful in JUnit test implementations
  * 
- * @author Piotr Swiecicki <piotr.swiecicki@southyorks.pnn.police.uk>
+ * @author Piotr Swiecicki &lt;piotr.swiecicki@southyorks.pnn.police.uk&gt;
  */
 public class Bug2798271 {
     /**

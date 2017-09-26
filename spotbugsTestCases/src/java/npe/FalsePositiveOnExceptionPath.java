@@ -27,7 +27,7 @@ import java.io.IOException;
  *    return null;
  * }
  * 
- * size = r.getSize();  // <--NP_NULL_ON_SOME_PATH_EXCEPTION
+ * size = r.getSize();  // &lt;--NP_NULL_ON_SOME_PATH_EXCEPTION
  * </pre>
  **/
 
