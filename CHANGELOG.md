@@ -2,13 +2,13 @@
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http://keepachangelog.com/en/1.0.0/).
 
-## Unreleased (2017/??/??)
+## Unreleased
 
 ### Fixed
 
 * Wrong Class-Path in MANIFEST.MF ([#407](https://github.com/spotbugs/spotbugs/pull/407))
 
-## 3.1.0-RC6 (2017/Sep/25)
+## 3.1.0-RC6 - 2017-09-25
 
 ### Removed
 
@@ -30,7 +30,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 * Fix errors on processing INVOKEDYNAMIC instructions ([#371](https://github.com/spotbugs/spotbugs/issues/371))
 * Fix errors on processing i2f, i2d and i2l instructions if the lhs is a character ([#389](https://github.com/spotbugs/spotbugs/issues/389))
 
-## 3.1.0-RC5 (2017/Aug/16)
+## 3.1.0-RC5 - 2017-08-16
 
 ### Removed
 
@@ -40,7 +40,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 * SpotBugs now consumes ASM 6.0 *beta* rather than *alpha* ([#268](https://github.com/spotbugs/spotbugs/issues/268))
 
-## 3.1.0-RC4 (2017/Jul/21)
+## 3.1.0-RC4 - 2017-07-21
 
 ### Added
 
@@ -62,7 +62,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
   Subclasses should either implement this interface themselves or, preferably, use the constants defined in the (non-deprecated) `org.apache.bcel.Const` class instead.
   ([#262](https://github.com/spotbugs/spotbugs/issues/262))
 
-## 3.1.0-RC3 (2017/Jun/10)
+## 3.1.0-RC3 - 2017-06-10
 
 ### Added
 
@@ -73,7 +73,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 * Fix wrong version in Eclipse Plugin ([#173](https://github.com/spotbugs/spotbugs/pull/173))
 * When AnalysisRunner has findbugs.xml in jar, don't create temp jar ([#183](https://github.com/spotbugs/spotbugs/pull/183))
 
-## 3.1.0-RC2 (2017/May/16)
+## 3.1.0-RC2 - 2017-05-16
 
 ### Added
 
@@ -90,7 +90,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 * Fix HTML format in `messages.xml` and others ([#166](https://github.com/spotbugs/spotbugs/pull/166))
 * Fix Japanese message in `messages_ja.xml` ([#164](https://github.com/spotbugs/spotbugs/pull/164))
 
-## 3.1.0-RC1 (2017/Feb/21)
+## 3.1.0-RC1 - 2017-02-21
 
 ### Added
 
