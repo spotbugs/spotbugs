@@ -4,6 +4,10 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v0.3](http://
 
 ## Unreleased (2017/??/??)
 
+### Fixed
+
+* Wrong Class-Path in MANIFEST.MF ([#407](https://github.com/spotbugs/spotbugs/pull/407))
+
 ## 3.1.0-RC6 (2017/Sep/25)
 
 ### Removed
