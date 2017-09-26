@@ -54,18 +54,20 @@ public class UnionBugs2 extends AbstractFindBugsTask {
      * The fileset containing all the findbugs xml files that need to be merged
      *
      * @param arg
+     *            fileset containing all the findbugs xml files that need to be merged
      */
     public void addFileset(FileSet arg) {
-        this.fileSets.add(arg);
+        fileSets.add(arg);
     }
 
     /**
      * The File everything should get merged into
      *
      * @param arg
+     *            file everything should get merged into
      */
     public void setTo(String arg) {
-        this.to = arg;
+        to = arg;
     }
 
     @Override

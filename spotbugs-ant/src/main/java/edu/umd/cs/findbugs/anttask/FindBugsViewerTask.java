@@ -103,6 +103,9 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Set the project file
+     *
+     * @param projectFile
+     *            project file
      */
     public void setProjectFile(File projectFile) {
         this.projectFile = projectFile;
@@ -110,27 +113,39 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Set the debug flag
+     *
+     * @param flag
+     *            {@code true} to enable debugging
      */
     public void setDebug(boolean flag) {
-        this.debug = flag;
+        debug = flag;
     }
 
     /**
      * Set any specific jvm args
+     *
+     * @param args
+     *            specific jvm args
      */
     public void setJvmargs(String args) {
-        this.jvmargs = args;
+        jvmargs = args;
     }
 
     /**
      * Set look. One of "native", "gtk" or "plastic"
+     *
+     * @param look
+     *            One of "native", "gtk" or "plastic
      */
     public void setLook(String look) {
         this.look = look;
     }
 
     /**
-     * Set the home directory into which findbugs was installed
+     * Set the home directory into which spotbugs was installed
+     *
+     * @param homeDir
+     *            home directory into which spotbugs was installed
      */
     public void setHome(File homeDir) {
         this.homeDir = homeDir;
@@ -138,6 +153,8 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Path to use for classpath.
+     *
+     * @return classpath
      */
     public Path createClasspath() {
         if (classpath == null) {
@@ -148,6 +165,9 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Adds a reference to a classpath defined elsewhere.
+     *
+     * @param r
+     *            reference to a classpath defined elsewher
      */
     public void setClasspathRef(Reference r) {
         createClasspath().setRefid(r);
@@ -155,6 +175,9 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * the plugin list to use.
+     *
+     * @param src
+     *            plugin list to use
      */
     public void setPluginList(Path src) {
         if (pluginList == null) {
@@ -166,6 +189,8 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Path to use for plugin list.
+     *
+     * @return plugin list
      */
     public Path createPluginList() {
         if (pluginList == null) {
@@ -176,6 +201,9 @@ public class FindBugsViewerTask extends Task {
 
     /**
      * Adds a reference to a plugin list defined elsewhere.
+     *
+     * @param r
+     *            reference to a plugin list defined elsewhere
      */
     public void setPluginListRef(Reference r) {
         createPluginList().setRefid(r);

@@ -60,6 +60,7 @@ public class UnionBugs extends Task {
      * The fileset containing all the findbugs xml files that need to be merged
      *
      * @param arg
+     *            fileset containing all the findbugs xml files that need to be merged
      */
     public void addFileset(FileSet arg) {
         fileSets.add(arg);
@@ -69,6 +70,7 @@ public class UnionBugs extends Task {
      * The File everything should get merged into
      *
      * @param file
+     *            everything should get merged into
      */
     public void setTo(String file) {
         into = file;
