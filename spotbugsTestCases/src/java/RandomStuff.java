@@ -1,10 +1,6 @@
 
 public class RandomStuff {
 
-    /**
-     * @param args
-     */
-
     public void click() {
 
     }

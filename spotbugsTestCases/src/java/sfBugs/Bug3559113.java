@@ -62,7 +62,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 /**
 * This class centralizes the parsing of the URL parameters from the search for the
-* &requiredfields= and the &newrequiredfields= parameters.
+* &amp;requiredfields= and the &amp;newrequiredfields= parameters.
 * 
 * Because this was being done in 3 different places in the code it was important to centralize it.
 * These parameters may contain international characters which need to be consistency decoded.

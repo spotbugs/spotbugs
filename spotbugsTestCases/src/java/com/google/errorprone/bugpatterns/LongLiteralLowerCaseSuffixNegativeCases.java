@@ -17,7 +17,7 @@
 package com.google.errorprone.bugpatterns;
 
 /**
- * Negative cases for {@link LongLiteralLowerCaseSuffix}
+ * Negative cases for {@code LongLiteralLowerCaseSuffix}
  * 
  * @author Simon Nickerson (sjnickerson@google.com)
  */

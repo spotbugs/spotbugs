@@ -6,7 +6,7 @@ package sfBugs;
  * The rule FI: Explicit invocation of finalizer reports false positive
  * encountering a call to method "finalize" with signature other than
  * Object.finalize(). i.e. the rule will report a violation on a call to e.g.
- * finalize(String,List<Object>) - a self defined method.
+ * finalize(String,List&lt;Object&gt;) - a self defined method.
  */
 public class Bug1792234 {
 
