@@ -129,11 +129,13 @@ tasks.eclipse.dependsOn(updateManifest)
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   from sourceSets.main.output
-
+  def jarInClasspath = project.configurations.runtime.collect{it.getName()}.collect{
+    it.replaceFirst("-${project.version}.jar", '.jar')
+  }
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': 'spotbugs-annotations.jar dom4j-1.6.1.jar jaxen-1.1.6.jar bcel-6.1.jar asm-6.0.jar asm-analysis-6.0.jar asm-commons-6.0.jar asm-tree-6.0.jar asm-util-6.0.jar asm-xml-6.0.jar jsr305-3.0.1.jar jFormatString-3.0.0.jar commons-lang-2.6.jar'
+               'Class-Path': jarInClasspath.join(' ')
   }
 }
 
