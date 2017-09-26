@@ -4,6 +4,8 @@ plugins {
 
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
+apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/javadoc.gradle"
 
 sourceSets {
   main {
@@ -171,9 +173,6 @@ task scripts(type:Copy) {
   destinationDir file("$buildDir/bin")
   duplicatesStrategy DuplicatesStrategy.INCLUDE
 }
-
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
   classifier 'javadoc'
