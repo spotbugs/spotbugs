@@ -265,39 +265,54 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     public void setAdjustPriority(String adjustPriorityString) {
-        this.adjustPriority = adjustPriorityString;
+        adjustPriority = adjustPriorityString;
     }
 
     /**
      * Set the specific visitors to use
+     *
+     * @param commaSeperatedString
+     *            visitors to use
      */
     public void setVisitors(String commaSeperatedString) {
-        this.visitors = commaSeperatedString;
+        visitors = commaSeperatedString;
     }
 
     /**
      * Set the specific visitors to use
+     *
+     * @param commaSeperatedString
+     *            visitors to use
      */
     public void setChooseVisitors(String commaSeperatedString) {
-        this.chooseVisitors = commaSeperatedString;
+        chooseVisitors = commaSeperatedString;
     }
 
     /**
      * Set the specific visitors to use
+     *
+     * @param commaSeperatedString
+     *            visitors to use
      */
     public void setOmitVisitors(String commaSeperatedString) {
-        this.omitVisitors = commaSeperatedString;
+        omitVisitors = commaSeperatedString;
     }
 
     /**
      * Set the output format
+     *
+     * @param format
+     *            output format
      */
     public void setOutput(String format) {
-        this.outputFormat = format;
+        outputFormat = format;
     }
 
     /**
      * Set the stylesheet filename for HTML generation.
+     *
+     * @param stylesheet
+     *            stylesheet filename for HTML generation
      */
     public void setStylesheet(String stylesheet) {
         this.stylesheet = stylesheet;
@@ -305,45 +320,62 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the report level
+     *
+     * @param level
+     *            the report level
      */
     public void setReportLevel(String level) {
-        this.reportLevel = level;
+        reportLevel = level;
     }
 
     /**
      * Set the sorted flag
+     *
+     * @param flag
+     *            sorted
      */
     public void setSort(boolean flag) {
-        this.sorted = flag;
+        sorted = flag;
     }
 
     /**
      * Set the timestampNow flag
+     *
+     * @param flag
+     *            timestampNow
      */
     public void setTimestampNow(boolean flag) {
-        this.timestampNow = flag;
+        timestampNow = flag;
     }
 
     /**
      * Set the quietErrors flag
+     *
+     * @param flag
+     *            quietErrors
      */
     public void setQuietErrors(boolean flag) {
-        this.quietErrors = flag;
+        quietErrors = flag;
     }
 
     /**
-     * Set the quietErrors flag
+     * Set the applySuppression flag
+     *
+     * @param flag
+     *            applySuppression
      */
     public void setApplySuppression(boolean flag) {
-        this.applySuppression = flag;
+        applySuppression = flag;
     }
 
     /**
-     * Tells this task to set the property with the given name to "true" when
-     * bugs were found.
+     * Tells this task to set the property with the given name to "true" when bugs were found.
+     *
+     * @param name
+     *            property with the given name
      */
     public void setWarningsProperty(String name) {
-        this.warningsProperty = name;
+        warningsProperty = name;
     }
 
     /**
@@ -372,43 +404,55 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the conserveSpace flag.
+     *
+     * @param flag
+     *            conserveSpace
      */
     public void setConserveSpace(boolean flag) {
-        this.conserveSpace = flag;
+        conserveSpace = flag;
     }
 
     /**
      * Set the exclude filter file
+     *
+     * @param filterFile
+     *            exclude filter file
      */
     public void setExcludeFilter(File filterFile) {
         if (filterFile != null && filterFile.length() > 0) {
-            this.excludeFile = filterFile;
+            excludeFile = filterFile;
         } else {
             if (filterFile != null) {
                 log("Warning: exclude filter file " + filterFile
                         + (filterFile.exists() ? " is empty" : " does not exist"));
             }
-            this.excludeFile = null;
+            excludeFile = null;
         }
     }
 
     /**
      * Set the include filter file
+     *
+     * @param filterFile
+     *            include filter file
      */
     public void setIncludeFilter(File filterFile) {
         if (filterFile != null && filterFile.length() > 0) {
-            this.includeFile = filterFile;
+            includeFile = filterFile;
         } else {
             if (filterFile != null) {
                 log("Warning: include filter file " + filterFile
                         + (filterFile.exists() ? " is empty" : " does not exist"));
             }
-            this.includeFile = null;
+            includeFile = null;
         }
     }
 
     /**
      * Set the baseline bugs file
+     *
+     * @param baselineBugs
+     *            baseline bugs file
      */
     public void setBaselineBugs(File baselineBugs) {
         if (baselineBugs != null && baselineBugs.length() > 0) {
@@ -424,13 +468,19 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the project file
+     *
+     * @param projectFile
+     *            project file
      */
     public void setProjectFile(File projectFile) {
         this.projectFile = projectFile;
     }
 
     /**
-     * Set the project file
+     * Set the user preferences file
+     *
+     * @param userPreferencesFile
+     *            user preferences file
      */
     public void setUserPreferencesFile(File userPreferencesFile) {
         this.userPreferencesFile = userPreferencesFile;
@@ -438,6 +488,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * the auxclasspath to use.
+     *
+     * @param src
+     *            auxclasspath to use
      */
     public void setAuxClasspath(Path src) {
         boolean nonEmpty = false;
@@ -461,6 +514,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Path to use for auxclasspath.
+     *
+     * @return auxclasspath
      */
     public Path createAuxClasspath() {
         if (auxClasspath == null) {
@@ -471,6 +526,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Adds a reference to a sourcepath defined elsewhere.
+     *
+     * @param r
+     *            reference to a sourcepath defined elsewhere
      */
     public void setAuxClasspathRef(Reference r) {
         Path path = createAuxClasspath();
@@ -481,6 +539,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * the auxAnalyzepath to use.
+     *
+     * @param src
+     *            auxAnalyzepath
      */
     public void setAuxAnalyzepath(Path src) {
         boolean nonEmpty = false;
@@ -504,6 +565,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Path to use for auxAnalyzepath.
+     *
+     * @return auxAnalyzepath
      */
     public Path createAuxAnalyzepath() {
         if (auxAnalyzepath == null) {
@@ -513,7 +576,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     /**
-     * Adds a reference to a sourcepath defined elsewhere.
+     * Adds a reference to a auxAnalyzepath defined elsewhere.
+     *
+     * @param r
+     *            reference to a auxAnalyzepath defined elsewhe
      */
     public void setAuxAnalyzepathRef(Reference r) {
         createAuxAnalyzepath().setRefid(r);
@@ -521,6 +587,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * the sourcepath to use.
+     *
+     * @param src
+     *            sourcepath
      */
     public void setSourcePath(Path src) {
         if (sourcePath == null) {
@@ -532,6 +601,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Path to use for sourcepath.
+     *
+     * @return sourcepath
      */
     public Path createSourcePath() {
         if (sourcePath == null) {
@@ -542,13 +613,19 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Adds a reference to a source path defined elsewhere.
+     *
+     * @param r
+     *            reference to a source path defined elsewhere
      */
     public void setSourcePathRef(Reference r) {
         createSourcePath().setRefid(r);
     }
 
     /**
-     * the sourcepath to use.
+     * the excludepath to use.
+     *
+     * @param src
+     *            excludepath
      */
     public void setExcludePath(Path src) {
         if (excludePath == null) {
@@ -559,7 +636,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     /**
-     * Path to use for sourcepath.
+     * Path to use for excludepath.
+     *
+     * @return excludepath
      */
     public Path createExcludePath() {
         if (excludePath == null) {
@@ -570,13 +649,19 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Adds a reference to a source path defined elsewhere.
+     *
+     * @param r
+     *            reference to a exclude path defined elsewhe
      */
     public void setExcludePathRef(Reference r) {
         createExcludePath().setRefid(r);
     }
 
     /**
-     * the sourcepath to use.
+     * the includepath to use.
+     *
+     * @param src
+     *            includepath
      */
     public void setIncludePath(Path src) {
         if (includePath == null) {
@@ -587,7 +672,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     /**
-     * Path to use for sourcepath.
+     * Path to use for includepath.
+     *
+     * @return includepath
      */
     public Path createIncludePath() {
         if (includePath == null) {
@@ -597,7 +684,10 @@ public class FindBugsTask extends AbstractFindBugsTask {
     }
 
     /**
-     * Adds a reference to a source path defined elsewhere.
+     * Adds a reference to a include path defined elsewhere.
+     *
+     * @param r
+     *            reference to a include path defined elsewher
      */
     public void setIncludePathRef(Reference r) {
         createIncludePath().setRefid(r);
@@ -605,6 +695,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Add a class location
+     *
+     * @return class location
      */
     public ClassLocation createClass() {
         ClassLocation cl = new ClassLocation();
@@ -614,6 +706,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set name of output file.
+     *
+     * @param outputFileName
+     *            name of output file
      */
     public void setOutputFile(String outputFileName) {
         if (outputFileName != null && outputFileName.length() > 0) {
@@ -623,13 +718,19 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Set the packages or classes to analyze
+     *
+     * @param filter
+     *            packages or classes to analyze
      */
     public void setOnlyAnalyze(String filter) {
-        this.onlyAnalyze = filter;
+        onlyAnalyze = filter;
     }
 
     /**
      * Add a nested fileset of classes or jar files.
+     *
+     * @param fs
+     *            nested fileset of classes or jar files
      */
     public void addFileset(FileSet fs) {
         filesets.add(fs);
@@ -637,6 +738,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     /**
      * Add a nested dirset of classes dirs.
+     *
+     * @param fs
+     *            nested dirset of classes dirs
      */
     public void addDirset(DirSet fs) {
         dirsets.add(fs);
@@ -798,9 +902,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
         }
         if (excludePath != null) {
             String[] result = excludePath.toString().split(java.io.File.pathSeparator);
-            for (int x = 0; x < result.length; x++) {
+            for (String element : result) {
                 addArg("-exclude");
-                addArg(result[x]);
+                addArg(element);
             }
         }
         if (includeFile != null) {
@@ -809,9 +913,9 @@ public class FindBugsTask extends AbstractFindBugsTask {
         }
         if (includePath != null) {
             String[] result = includePath.toString().split(java.io.File.pathSeparator);
-            for (int x = 0; x < result.length; x++) {
+            for (String element : result) {
                 addArg("-include");
-                addArg(result[x]);
+                addArg(element);
             }
         }
         if (visitors != null) {
@@ -898,8 +1002,8 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
         if (auxAnalyzepath != null) {
             String[] result = auxAnalyzepath.toString().split(java.io.File.pathSeparator);
-            for (int x = 0; x < result.length; x++) {
-                addArg(result[x]);
+            for (String element : result) {
+                addArg(element);
             }
         }
     }

@@ -100,11 +100,14 @@ public abstract class AbstractFindBugsTask extends Task {
      */
     protected AbstractFindBugsTask(String mainClass) {
         this.mainClass = mainClass;
-        this.execResultProperty = mainClass + "." + RESULT_PROPERTY_SUFFIX;
+        execResultProperty = mainClass + "." + RESULT_PROPERTY_SUFFIX;
     }
 
     /**
      * Set the home directory into which findbugs was installed
+     *
+     * @param homeDir
+     *            installation directory
      */
     public void setHome(File homeDir) {
         this.homeDir = homeDir;
@@ -112,9 +115,12 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Set the debug flag
+     *
+     * @param flag
+     *            {@code true} to enable debugging
      */
     public void setDebug(boolean flag) {
-        this.debug = flag;
+        debug = flag;
     }
 
     /**
@@ -126,13 +132,19 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Set any specific jvm args
+     *
+     * @param args
+     *            JVM arguments
      */
     public void setJvmargs(String args) {
-        this.jvmargs = args;
+        jvmargs = args;
     }
 
     /**
      * Set the command used to start the VM
+     *
+     * @param jvm
+     *            command used to start the VM
      */
     public void setJvm(String jvm) {
         this.jvm = jvm;
@@ -150,21 +162,28 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Set the failOnError flag
+     *
+     * @param flag
+     *            {@code true} to enable
      */
     public void setFailOnError(boolean flag) {
-        this.failOnError = flag;
+        failOnError = flag;
     }
 
     /**
-     * Tells this task to set the property with the given name to "true" when
-     * there were errors.
+     * Tells this task to set the property with the given name to "true" when there were errors.
+     *
+     * @param name
+     *            property to set to "true" on errors
      */
     public void setErrorProperty(String name) {
-        this.errorProperty = name;
+        errorProperty = name;
     }
 
     /**
      * Create a SystemProperty (to handle &lt;systemProperty&gt; elements).
+     *
+     * @return new property
      */
     public SystemProperty createSystemProperty() {
         SystemProperty systemProperty = new SystemProperty();
@@ -174,6 +193,9 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Set the classpath to use.
+     *
+     * @param src
+     *            classpath to use
      */
     public void setClasspath(Path src) {
         if (classpath == null) {
@@ -185,6 +207,8 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Path to use for classpath.
+     *
+     * @return path to use for classpath
      */
     public Path createClasspath() {
         if (classpath == null) {
@@ -195,6 +219,9 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Adds a reference to a classpath defined elsewhere.
+     *
+     * @param r
+     *            reference to a classpath defined elsewhere
      */
     public void setClasspathRef(Reference r) {
         Path path = createClasspath();
@@ -205,6 +232,9 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * the plugin list to use.
+     *
+     * @param src
+     *            plugin list to use
      */
     public void setPluginList(Path src) {
         if (pluginList == null) {
@@ -216,6 +246,8 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Path to use for plugin list.
+     *
+     * @return path to use for plugin list
      */
     public Path createPluginList() {
         if (pluginList == null) {
@@ -226,6 +258,9 @@ public abstract class AbstractFindBugsTask extends Task {
 
     /**
      * Adds a reference to a plugin list defined elsewhere.
+     *
+     * @param r
+     *            reference to a plugin list defined elsewhere
      */
     public void setPluginListRef(Reference r) {
         createPluginList().setRefid(r);
