@@ -17,7 +17,8 @@
  */
 package edu.umd.cs.findbugs.test.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -27,6 +28,7 @@ public class ClassFileLocator {
 
     /**
      * @param path
+     *            class name
      * @return Full path to the class file base on class name.
      */
     public String getClassFilePath(String path) {
