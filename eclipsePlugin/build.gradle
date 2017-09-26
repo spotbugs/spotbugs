@@ -1,6 +1,5 @@
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
 // apply from: "$rootDir/gradle/maven.gradle"
-apply plugin: 'eclipse'
 
 if (version.endsWith('-SNAPSHOT')) {
   // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
@@ -61,8 +60,8 @@ clean {
 task copyLibsForEclipse(type: Copy) {
     dependsOn configurations.compile
     from configurations.compile.files {
-    	include "*.jar"
-    	exclude "*xml-apis*.jar"
+      include "*.jar"
+      exclude "*xml-apis*.jar"
     }
     into "lib"
 }
