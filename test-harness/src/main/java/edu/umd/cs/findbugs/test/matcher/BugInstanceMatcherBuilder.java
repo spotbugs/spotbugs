@@ -70,8 +70,9 @@ public class BugInstanceMatcherBuilder {
 
     /**
      * @deprecated Use atJspLine for JSP line mapping
-     * @param lineNumberApprox Line to verify accepting an offset of 1
-     * @return
+     * @param lineNumberApprox
+     *            Line to verify accepting an offset of 1
+     * @return this
      */
     @Deprecated
     public BugInstanceMatcherBuilder atLineApprox(int lineNumberApprox) {
@@ -81,8 +82,10 @@ public class BugInstanceMatcherBuilder {
 
     /**
      * Define the priority of the detector
-     * @param confidence The desired confidence
-     * @return
+     *
+     * @param confidence
+     *            The desired confidence
+     * @return this
      */
     public BugInstanceMatcherBuilder withConfidence(Confidence confidence) {
         this.confidence = confidence;
