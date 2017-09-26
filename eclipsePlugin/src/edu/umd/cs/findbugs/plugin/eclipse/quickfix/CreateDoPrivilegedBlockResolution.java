@@ -135,7 +135,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
      * is imported statically. This feature should only be used under
      * source-level 1.5 or higher.
      *
-     * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is
+     * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is
      *         <CODE>false</CODE>.
      */
     public boolean isStaticImport() {

@@ -41,6 +41,14 @@ javadoc {
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Annotation Documentation'
   }
+  doFirst {
+    // This is supposed to enable everything except "missing" but doesn't work with gradle
+    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+    options.addBooleanOption('Xdoclint:all,-missing', true)
+  }
+  doLast {
+    logger.warn('Javadoc: "missing" warnings are disabled, see #340!')
+  }
 }
 
 task javadocJar(type: Jar) {

@@ -96,12 +96,6 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
      * Creates and returns a correct <CODE>expression</CODE> that checks if a
      * value is odd or not.
      *
-     * @param ast
-     *            the <CODE>AST</CODE> instance under which the created
-     *            <CODE>InfixExpression</CODE> will be created.
-     * @param replaceField
-     *            the field name of the bad oddness-check which will be used for
-     *            the new <CODE>InfixExpression</CODE>.
      * @return the correct <CODE>InfixExpression</CODE>.
      */
     protected abstract InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression);

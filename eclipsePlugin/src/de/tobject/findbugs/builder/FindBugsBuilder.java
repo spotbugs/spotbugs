@@ -153,8 +153,6 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      * Run a FindBugs analysis on the given resource as build job BUT not
      * delaying the current Java build
      *
-     * @param part
-     *
      * @param resources
      *            The resource to run the analysis on.
      * @param monitor

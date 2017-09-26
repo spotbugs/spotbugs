@@ -148,7 +148,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 
     public static final String OLD_PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse";
-    
+
     /**
      * The identifier for the FindBugs builder (value
      * <code>"com.github.spotbugs.plugin.eclipse.findbugsbuilder"</code>).
@@ -270,8 +270,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * via code or properties. The code below is still work in progress, see
      * also {@link DetectorProvider#getPluginElements(UserPreferences)}.
      *
-     * @param detectorPaths
-     *            list of possible detector plugins
      * @param force
      *            true if we MUST set plugins even if the given list is empty
      */

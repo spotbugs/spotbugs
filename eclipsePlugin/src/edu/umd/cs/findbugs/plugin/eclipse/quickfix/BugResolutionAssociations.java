@@ -42,7 +42,6 @@ import de.tobject.findbugs.FindbugsPlugin;
  * has to be specified. Also an instance of a bug resolution can be associated
  * with a bug pattern.
  *
- * @see BugResolutionAssociations#getBugResolutions(String)
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>

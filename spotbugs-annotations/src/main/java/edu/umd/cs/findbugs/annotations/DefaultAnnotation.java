@@ -46,13 +46,13 @@ import javax.annotation.meta.TypeQualifierDefault;
  * of @DefaultAnnotation(NonNull.class) so that method parameters are nonnull by default in the annotated
  * element. You can also use {@link javax.annotation.meta.TypeQualifierDefault}
  * in general to define your own annotation that specifies a default type qualifier. For example,
- * <p><pre><code>
+ * <br><pre><code>
  * {@link Nonnegative}
  * {@link TypeQualifierDefault}({@link ElementType#PARAMETER})
  * public @interface ParametersAreNonnegativeByDefault {}
  * </code></pre>
  *
- * <p>The JSR305 {@link javax.annotation.CheckReturnValue}
+ * <br>The JSR305 {@link javax.annotation.CheckReturnValue}
  * annotation can be applied to a type or package, and it will act as a default for all methods
  * in that class or package unless otherwise overridden.
  *
