@@ -148,7 +148,6 @@ public class JavaProjectHelper {
      *            The element to remove
      * @throws CoreException
      *             Removing failed
-     * @see #ASSERT_NO_MIXED_LINE_DELIMIERS
      */
     public static void delete(final IResource elem) throws CoreException {
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {

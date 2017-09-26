@@ -84,8 +84,6 @@ public abstract class AbstractFindBugsTest extends AbstractPluginTest {
 
     /**
      * Configures the test project to use the baseline bugs file.
-     *
-     * @param b
      */
     protected void setBaselineBugsFile(boolean on) throws CoreException {
         // per default, workspace settings are used. We enable project settings

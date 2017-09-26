@@ -75,12 +75,14 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * Base class for FindBugs tests.
  * <p>
  * Subclasses must:
+ * <ul>
  * <li>implement getTestScenario() to return the required TestScenario.</li>
  * <li>call setUpTestProject(TestScenario) and tearDownTestProject() during
  * setUp and tearDown respectively. The argument for the setup must be the same
  * test scenario as returned by getTestScenario(). The fixture may be shared by
  * all tests in the same class, if the tests don't modify the project or are
  * independent from the modifications.</li>
+ * </ul>
  *
  * @author Tomás Pollak
  */
@@ -282,7 +284,7 @@ public abstract class AbstractPluginTest {
      *
      * @param expectedBugType
      *            The expected bug type.
-     * @param expectedBugCount
+     * @param expectedBugTypeCount
      *            The expected bug type count.
      * @param markers
      *            The array of markers to assert on.
