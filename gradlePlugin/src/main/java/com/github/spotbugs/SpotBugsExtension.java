@@ -53,59 +53,82 @@ public class SpotBugsExtension extends CodeQualityExtension {
     }
 
     /**
-     * The analysis effort level.
-     * The value specified should be one of {@code min}, {@code default}, or {@code max}.
+     * The analysis effort level. The value specified should be one of {@code min}, {@code default}, or {@code max}.
      * Higher levels increase precision and find more bugs at the expense of running time and memory consumption.
+     *
+     * @return analysis effort level
      */
     public String getEffort() {
         return effort;
     }
 
+    /**
+     * @param effort
+     *            analysis effort level
+     */
     public void setEffort(String effort) {
         this.effort = effort;
     }
 
     /**
-     * The priority threshold for reporting bugs.
-     * If set to {@code low}, all bugs are reported.
-     * If set to {@code medium} (the default), medium and high priority bugs are reported.
-     * If set to {@code high}, only high priority bugs are reported.
+     * The priority threshold for reporting bugs. If set to {@code low}, all bugs are reported. If set to {@code medium}
+     * (the default), medium and high priority bugs are reported. If set to {@code high}, only high priority bugs are
+     * reported.
+     *
+     * @return priority threshold for reporting bugs
      */
     public String getReportLevel() {
         return reportLevel;
     }
 
+    /**
+     * @param reportLevel
+     *            priority threshold for reporting bugs
+     */
     public void setReportLevel(String reportLevel) {
         this.reportLevel = reportLevel;
     }
 
     /**
-     * The bug detectors which should be run.
-     * The bug detectors are specified by their class names, without any package qualification.
-     * By default, all detectors which are not disabled by default are run.
+     * The bug detectors which should be run. The bug detectors are specified by their class names, without any package
+     * qualification. By default, all detectors which are not disabled by default are run.
+     *
+     * @return bug detectors which should be run
      */
     public Collection<String> getVisitors() {
         return visitors;
     }
 
+    /**
+     * @param visitors
+     *            bug detectors which should be run
+     */
     public void setVisitors(Collection<String> visitors) {
         this.visitors = visitors;
     }
 
     /**
-     * Similar to {@code visitors} except that it specifies bug detectors which should not be run.
-     * By default, no visitors are omitted.
+     * Similar to {@code visitors} except that it specifies bug detectors which should not be run. By default, no
+     * visitors are omitted.
+     *
+     * @return bug detectors which should not be run
      */
     public Collection<String> getOmitVisitors() {
         return omitVisitors;
     }
 
+    /**
+     * @param omitVisitors
+     *            bug detectors which should not be run
+     */
     public void setOmitVisitors(Collection<String> omitVisitors) {
         this.omitVisitors = omitVisitors;
     }
 
     /**
      * A filter specifying which bugs are reported. Replaces the {@code includeFilter} property.
+     *
+     * @return filter specifying which bugs are reported
      *
      * @since 2.2
      */
@@ -121,6 +144,8 @@ public class SpotBugsExtension extends CodeQualityExtension {
 
     /**
      * The filename of a filter specifying which bugs are reported.
+     *
+     * @return filename of a filter specifying which bugs are reported
      */
     public File getIncludeFilter() {
         TextResource includeFilterConfig = getIncludeFilterConfig();
@@ -132,6 +157,9 @@ public class SpotBugsExtension extends CodeQualityExtension {
 
     /**
      * The filename of a filter specifying which bugs are reported.
+     *
+     * @param filter
+     *            filename of a filter specifying which bugs are reported
      */
     public void setIncludeFilter(File filter) {
         setIncludeFilterConfig(project.getResources().getText().fromFile(filter));
@@ -140,6 +168,8 @@ public class SpotBugsExtension extends CodeQualityExtension {
     /**
      * A filter specifying bugs to exclude from being reported. Replaces the {@code excludeFilter} property.
      *
+     * @return filter specifying bugs to exclude from being reported
+     *
      * @since 2.2
      */
     @Incubating
@@ -147,6 +177,10 @@ public class SpotBugsExtension extends CodeQualityExtension {
         return excludeFilterConfig;
     }
 
+    /**
+     * @param excludeFilterConfig
+     *            filter specifying bugs to exclude from being reported
+     */
     @Incubating
     public void setExcludeFilterConfig(TextResource excludeFilterConfig) {
         this.excludeFilterConfig = excludeFilterConfig;
@@ -154,6 +188,8 @@ public class SpotBugsExtension extends CodeQualityExtension {
 
     /**
      * The filename of a filter specifying bugs to exclude from being reported.
+     *
+     * @return filename of a filter specifying bugs to exclude from being reported
      */
     public File getExcludeFilter() {
         TextResource excludeFilterConfig = getExcludeFilterConfig();
@@ -165,6 +201,9 @@ public class SpotBugsExtension extends CodeQualityExtension {
 
     /**
      * The filename of a filter specifying bugs to exclude from being reported.
+     *
+     * @param filter
+     *            filename of a filter specifying bugs to exclude from being reported
      */
     public void setExcludeFilter(File filter) {
         setExcludeFilterConfig(project.getResources().getText().fromFile(filter));
@@ -173,6 +212,8 @@ public class SpotBugsExtension extends CodeQualityExtension {
     /**
      * A filter specifying baseline bugs to exclude from being reported.
      *
+     * @return filter specifying baseline bugs to exclude from being report
+     *
      * @since 2.4
      */
     @Incubating
@@ -180,6 +221,10 @@ public class SpotBugsExtension extends CodeQualityExtension {
         return excludeBugsFilterConfig;
     }
 
+    /**
+     * @param excludeBugsFilterConfig
+     *            filter specifying baseline bugs to exclude from being report
+     */
     @Incubating
     public void setExcludeBugsFilterConfig(TextResource excludeBugsFilterConfig) {
         this.excludeBugsFilterConfig = excludeBugsFilterConfig;
@@ -187,6 +232,8 @@ public class SpotBugsExtension extends CodeQualityExtension {
 
     /**
      * The filename of a filter specifying baseline bugs to exclude from being reported.
+     *
+     * @return filename of a filter specifying baseline bugs to exclude from being reporte
      */
     public File getExcludeBugsFilter() {
         TextResource excludeBugsFilterConfig = getExcludeBugsFilterConfig();
@@ -198,6 +245,9 @@ public class SpotBugsExtension extends CodeQualityExtension {
 
     /**
      * The filename of a filter specifying baseline bugs to exclude from being reported.
+     *
+     * @param filter
+     *            filename of a filter specifying baseline bugs to exclude from being reported
      */
     public void setExcludeBugsFilter(File filter) {
         setExcludeBugsFilterConfig(project.getResources().getText().fromFile(filter));
@@ -206,12 +256,16 @@ public class SpotBugsExtension extends CodeQualityExtension {
     /**
      * Any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to SpotBugs.
      * <p>
-     * Extra arguments are passed to SpotBugs after the arguments Gradle understands (like {@code effort} but before the list of classes to analyze.
-     * This should only be used for arguments that cannot be provided by Gradle directly.
+     * Extra arguments are passed to SpotBugs after the arguments Gradle understands (like {@code effort} but before the
+     * list of classes to analyze. This should only be used for arguments that cannot be provided by Gradle directly.
      * Gradle does not try to interpret or validate the arguments before passing them to SpotBugs.
      * <p>
-     * See the <a href="https://github.com/spotbugs/spotbugs/blob/master/spotbugs/src/main/java/edu/umd/cs/findbugs/TextUICommandLine.java">SpotBugs
+     * See the <a href=
+     * "https://github.com/spotbugs/spotbugs/blob/master/spotbugs/src/main/java/edu/umd/cs/findbugs/TextUICommandLine.java">SpotBugs
      * TextUICommandLine source</a> for available options.
+     *
+     * @return any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to
+     *         SpotBugs
      *
      * @since 2.6
      */
@@ -219,6 +273,11 @@ public class SpotBugsExtension extends CodeQualityExtension {
         return extraArgs;
     }
 
+    /**
+     * @param extraArgs
+     *            any additional arguments (not covered here more explicitly like {@code effort}) to be passed along to
+     *            SpotBugs
+     */
     public void setExtraArgs(Collection<String> extraArgs) {
         this.extraArgs = extraArgs;
     }
