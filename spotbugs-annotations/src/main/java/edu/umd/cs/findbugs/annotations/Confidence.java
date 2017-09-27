@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import javax.annotation.Nonnull;
-
 /**
  * Describes the confidence with which FindBugs reports a bug instance.
  */
@@ -33,7 +31,7 @@ public enum Confidence {
     private final int confidenceValue;
 
     /** Given a numeric confidence value, report the corresponding confidence enum value */
-    @Nonnull
+    @NonNull
     static public Confidence getConfidence(int prio) {
         for(Confidence c : values()) {
             if (prio <= c.confidenceValue) {
