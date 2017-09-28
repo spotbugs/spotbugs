@@ -130,10 +130,11 @@ tasks.eclipse.dependsOn(updateManifest)
 
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
+  // To keep backward compatibility, delete version number from jar name
+  archiveName "${baseName}.${extension}"
+
   from sourceSets.main.output
-  def jarInClasspath = project.configurations.runtime.collect{it.getName()}.collect{
-    it.replaceFirst("-${project.version}.jar", '.jar')
-  }
+  def jarInClasspath = project.configurations.runtime.collect{it.getName()}
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
@@ -220,11 +221,9 @@ distributions {
       from(configurations.compile) {
         into 'lib'
         include '**/*.jar'
-        rename "(.*)-${project.version}.jar", '$1.jar'
       }
       from([jar, project(':spotbugs-ant').jar]) {
         into 'lib'
-        rename "(.*)-${project.version}.jar", '$1.jar'
       }
       from('src/xsl') {
         into 'src/xsl'

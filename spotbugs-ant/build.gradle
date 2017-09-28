@@ -18,6 +18,11 @@ javadoc {
   }
 }
 
+jar {
+  // To keep backward compatibility, delete version number from jar name
+  archiveName "${baseName}.${extension}"
+}
+
 task javadocJar(type: Jar) {
   classifier = 'javadoc'
   from javadoc
