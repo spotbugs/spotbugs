@@ -3417,7 +3417,13 @@ public class OpcodeStack implements Constants2 {
                     } else if (seen == Const.LMUL) {
                         newValue = new Item("J", Long.valueOf(lhsValue * rhsValue));
                     } else if (seen == Const.LDIV) {
-                        newValue = new Item("J", Long.valueOf(lhsValue / rhsValue));
+                        if (rhsValue != 0) {
+                            newValue = new Item("J", Long.valueOf(lhsValue / rhsValue));
+                        } else {
+                            // Code like "return 1L / (1L / 2);"
+                            // Here we could report bug, because it will throw java.lang.ArithmeticException: / by zero,
+                            // see #413
+                        }
                     } else if (seen == Const.LAND) {
                         newValue = new Item("J", Long.valueOf(lhsValue & rhsValue));
                         if ((rhsValue & 0xff) == 0 && rhsValue != 0 || (lhsValue & 0xff) == 0 && lhsValue != 0) {
@@ -3428,7 +3434,13 @@ public class OpcodeStack implements Constants2 {
                     } else if (seen == Const.LXOR) {
                         newValue = new Item("J", Long.valueOf(lhsValue ^ rhsValue));
                     } else if (seen == Const.LREM) {
-                        newValue = new Item("J", Long.valueOf(lhsValue % rhsValue));
+                        if (rhsValue != 0) {
+                            newValue = new Item("J", Long.valueOf(lhsValue % rhsValue));
+                        } else {
+                            // Code like "return 1L % (1L / 2);"
+                            // Here we could report bug, because it will throw java.lang.ArithmeticException: / by zero,
+                            // see #413
+                        }
                     }
                 }
             } else if (rhs.getConstant() != null && seen == Const.LSHL && constantToInt(rhs) >= 8) {
@@ -3439,11 +3451,12 @@ public class OpcodeStack implements Constants2 {
                 newValue.setSpecialKind(Item.LOW_8_BITS_CLEAR);
             }
         } catch (RuntimeException e) {
-            // TODO: this catch is probably not needed anymore after fix for issue 386
+            // TODO: this catch is probably not needed anymore after fixes for issue 386 and 413
             // Added logging to see if there were even more issues with the code.
-            AnalysisContext
-                .logError(String.format("Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s",
-                    seen, String.valueOf(lhs), String.valueOf(rhs)), e);
+            String context = v != null ? v.getFullyQualifiedMethodName() : toString();
+            AnalysisContext.logError(
+                    String.format("Exception processing 'pushByLongMath' with opcode %d, lhs %s and rhs %s in %s",
+                        seen, String.valueOf(lhs), String.valueOf(rhs), context), e);
         }
         push(newValue);
     }
