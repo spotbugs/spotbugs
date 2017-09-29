@@ -122,7 +122,7 @@ public class RebornIssues {
         RebornIssues reborn = new RebornIssues();
         CommandLine commandLine = new CommandLine();
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + RebornIssues.class.getName()
-                + " [options] [<xml results> [<history]] ");
+                + " [options] [<xml results> [<history>]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
