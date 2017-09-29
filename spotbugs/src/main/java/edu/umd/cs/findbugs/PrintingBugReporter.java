@@ -149,7 +149,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         PrintingCommandLine commandLine = reporter.new PrintingCommandLine();
 
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + PrintingCommandLine.class.getName()
-                + " [options] [<xml results> [<test results]] ");
+                + " [options] [<xml results> [<test results>]] ");
 
 
         if (commandLine.stylesheet != null) {
@@ -250,4 +250,3 @@ public class PrintingBugReporter extends TextUIBugReporter {
         return null;
     }
 }
-
