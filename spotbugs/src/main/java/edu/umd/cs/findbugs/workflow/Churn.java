@@ -225,7 +225,7 @@ public class Churn {
         Churn churn = new Churn();
         ChurnCommandLine commandLine = churn.new ChurnCommandLine();
         int argCount = commandLine
-                .parse(args, 0, 2, "Usage: " + Churn.class.getName() + " [options] [<xml results> [<history]] ");
+                .parse(args, 0, 2, "Usage: " + Churn.class.getName() + " [options] [<xml results> [<history>]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {

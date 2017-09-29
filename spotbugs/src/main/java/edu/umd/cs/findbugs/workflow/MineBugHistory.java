@@ -461,7 +461,7 @@ public class MineBugHistory {
         MineBugHistory mineBugHistory = new MineBugHistory();
         MineBugHistoryCommandLine commandLine = mineBugHistory.new MineBugHistoryCommandLine();
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + MineBugHistory.class.getName()
-                + " [options] [<xml results> [<history]] ");
+                + " [options] [<xml results> [<history>]] ");
 
         SortedBugCollection bugCollection = new SortedBugCollection();
         if (argCount < args.length) {
