@@ -37,12 +37,10 @@ import javax.annotation.meta.TypeQualifierDefault;
  * annotation of the corresponding parameter in the superclass applies)
  * <li>there is a default annotation applied to a more tightly nested element.
  * </ul>
- * @deprecated This annotation depends on JSR-305 which is already deprecated. Use {@link DefaultAnnotationForMethods} instead.
  */
 @Documented
 @Nonnull
 @TypeQualifierDefault(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Deprecated
 public @interface ReturnValuesAreNonnullByDefault {
 }
