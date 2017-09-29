@@ -703,7 +703,7 @@ public class Filter {
         final FilterCommandLine commandLine = new FilterCommandLine();
 
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
-                + " [options] [<orig results> [<new results]] ");
+                + " [options] [<orig results> [<new results>]] ");
         SortedBugCollection origCollection = new SortedBugCollection();
 
         if (argCount == args.length) {
@@ -811,4 +811,3 @@ public class Filter {
 
     }
 }
-

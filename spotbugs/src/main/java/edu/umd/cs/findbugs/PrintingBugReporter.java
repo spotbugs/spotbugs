@@ -149,7 +149,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         PrintingCommandLine commandLine = reporter.new PrintingCommandLine();
 
         int argCount = commandLine.parse(args, 0, 2, "Usage: " + PrintingCommandLine.class.getName()
-                + " [options] [<xml results> [<test results]] ");
+                + " [options] [<xml results> [<test results>]] ");
 
 
         if (commandLine.stylesheet != null) {
@@ -171,7 +171,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
         boolean bugsReported = false;
         RuntimeException storedException = null;
-        
+
         Bag<String> lowRank = new Bag<>(new TreeMap<String, Integer>());
         for (BugInstance warning : bugCollection.getCollection()) {
             if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
@@ -250,4 +250,3 @@ public class PrintingBugReporter extends TextUIBugReporter {
         return null;
     }
 }
-
