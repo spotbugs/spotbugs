@@ -16,6 +16,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.gradle.util.GradleVersion;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -96,4 +97,34 @@ public class SpotBugsPluginTest extends Assert{
     SpotBugsPlugin plugin = new SpotBugsPlugin();
     assertThat(plugin.loadToolVersion(), is(notNullValue()));
   }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testVersionVerifyForGradleVersion2() {
+        SpotBugsPlugin plugin = new SpotBugsPlugin();
+        plugin.verifyGradleVersion(GradleVersion.version("2.0"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testVersionVerifyForGradleVersion3() {
+        SpotBugsPlugin plugin = new SpotBugsPlugin();
+        plugin.verifyGradleVersion(GradleVersion.version("3.0"));
+    }
+
+    @Test
+    public void testVersionVerifyForGradleVersion4() {
+        SpotBugsPlugin plugin = new SpotBugsPlugin();
+        plugin.verifyGradleVersion(GradleVersion.version("4.0"));
+    }
+
+    @Test
+    public void testVersionVerifyForGradleVersion41() {
+        SpotBugsPlugin plugin = new SpotBugsPlugin();
+        plugin.verifyGradleVersion(GradleVersion.version("4.1"));
+    }
+
+    @Test
+    public void testVersionVerifyForGradleVersion42() {
+        SpotBugsPlugin plugin = new SpotBugsPlugin();
+        plugin.verifyGradleVersion(GradleVersion.version("4.2"));
+    }
 }

@@ -24,6 +24,7 @@ import org.gradle.api.plugins.quality.internal.AbstractCodeQualityPlugin;
 import org.gradle.api.reporting.SingleFileReport;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.util.GradleVersion;
 
 /**
  * A plugin for the <a href="https://spotbugs.github.io">SpotBugs</a> byte code analyzer.
@@ -41,6 +42,12 @@ import org.gradle.api.tasks.SourceSet;
  */
 public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
+    /**
+     * Supported Gradle version described at <a href="http://spotbugs.readthedocs.io/en/latest/gradle.html">official
+     * manual site</a>.
+     */
+    private static final GradleVersion SUPPORTED_VERSION = GradleVersion.version("4.0");
+
     private SpotBugsExtension extension;
 
     @Override
@@ -55,7 +62,24 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     @Override
     protected void beforeApply() {
+        verifyGradleVersion(GradleVersion.current());
         configureSpotBugsConfigurations();
+    }
+
+    /**
+     * Verify that given version is supported by {@link SpotBugsPlugin} or not.
+     * 
+     * @param version
+     *            to verify
+     * @throws IllegalArgumentException
+     *             if given version is not supported
+     */
+    void verifyGradleVersion(GradleVersion version) throws IllegalArgumentException {
+        if (version.compareTo(SUPPORTED_VERSION) < 0) {
+            String message = String.format("Gradle version %s is unsupported. Please use %s or later.", version,
+                    SUPPORTED_VERSION);
+            throw new IllegalArgumentException(message);
+        }
     }
 
     private void configureSpotBugsConfigurations() {
