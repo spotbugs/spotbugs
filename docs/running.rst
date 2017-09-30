@@ -129,9 +129,11 @@ These options may be used with both the GUI and command-line interfaces.
 -effort:min:
   This option disables analyses that increase precision but also increase memory consumption.
   You may want to try this option if you find that SpotBugs runs out of memory, or takes an unusually long time to complete its analysis.
+  See :doc:`effort`.
 
 -effort:max:
   Enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
+  See :doc:`effort`.
 
 -project *project*:
   Specify a project to be analyzed. The project file you specify should be one that was created using the GUI interface.

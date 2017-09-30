@@ -31,6 +31,7 @@ Contents
    gradle
    filter
    analysisprops
+   effort
    implement-plugin
    faq
    links
