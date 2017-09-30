@@ -6,6 +6,8 @@ Currently the versioning policy of this project does not follow [Semantic Versio
 
 ## Unreleased
 
+* Make build failed when user uses unsupported Gradle version ([#357](https://github.com/spotbugs/spotbugs/issues/357))
+
 ## 1.4 - 2017-09-25
 
 * Use SpotBugs 3.1.0-RC6
