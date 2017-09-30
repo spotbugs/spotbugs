@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-15 03:55+0000\n"
+"POT-Creation-Date: 2017-09-30 03:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,64 +22,125 @@ msgid "Effort"
 msgstr ""
 
 #: ../../effort.rst:4
-msgid "Effort value adjusts"
+msgid ""
+"Effort value adjusts internal flags of SpotBugs, to reduce computation "
+"cost by lowering the prediction."
 msgstr ""
 
-#: ../../effort.rst:7
-msgid "Flags in FindBugs.java"
-msgstr ""
-
-#: ../../effort.rst:7
-msgid "Description"
-msgstr ""
-
-#: ../../effort.rst:7
-msgid "Effort Level"
+#: ../../effort.rst:6
+msgid "The default effort configuration is same with ``more``."
 msgstr ""
 
 #: ../../effort.rst:9
-msgid "min | less | more | max"
+msgid "Flags in FindBugs.java"
+msgstr ""
+
+#: ../../effort.rst:9
+msgid "Description"
+msgstr ""
+
+#: ../../effort.rst:9
+msgid "Effort Level"
 msgstr ""
 
 #: ../../effort.rst:11
-msgid "Accurate Exceptions"
+msgid "min"
 msgstr ""
 
-#: ../../effort.rst:11 ../../effort.rst:13 ../../effort.rst:15
-#: ../../effort.rst:17 ../../effort.rst:19 ../../effort.rst:21
-#: ../../effort.rst:23 ../../effort.rst:25
-msgid "✔"
+#: ../../effort.rst:11
+msgid "less"
+msgstr ""
+
+#: ../../effort.rst:11
+msgid "more"
+msgstr ""
+
+#: ../../effort.rst:11
+msgid "max"
 msgstr ""
 
 #: ../../effort.rst:13
+msgid "Accurate Exceptions"
+msgstr ""
+
+#: ../../effort.rst:13
+msgid ""
+"Determine (1) what exceptions can be thrown on exception edges, (2) "
+"which,catch blocks are reachable, and (3) which exception edges carry "
+"only, \"implicit\" runtime exceptions."
+msgstr ""
+
+#: ../../effort.rst:13 ../../effort.rst:15 ../../effort.rst:17
+#: ../../effort.rst:19 ../../effort.rst:21 ../../effort.rst:23
+#: ../../effort.rst:25 ../../effort.rst:28
+msgid "✔"
+msgstr ""
+
+#: ../../effort.rst:15
 msgid "Model Instanceof"
 msgstr ""
 
 #: ../../effort.rst:15
+msgid "Model the effect of instanceof checks in type analysis"
+msgstr ""
+
+#: ../../effort.rst:17
 msgid "Track Guaranteed Value Derefs in Null Pointer Analysis"
 msgstr ""
 
 #: ../../effort.rst:17
+msgid ""
+"In the null pointer analysis, track null values that are guaranteed to "
+"be, dereferenced on some (non-implicit-exception) path."
+msgstr ""
+
+#: ../../effort.rst:19
 msgid "Track Value Numbers in Null Pointer Analysis"
 msgstr ""
 
 #: ../../effort.rst:19
+msgid ""
+"In the null pointer analysis, track value numbers that are known to be, "
+"null. This allows us to not lose track of null values that are not, "
+"currently in the stack frame but might be in a heap location where the, "
+"value is recoverable by redundant load elimination or forward, "
+"substitution."
+msgstr ""
+
+#: ../../effort.rst:21
 msgid "Interprocedural Analysis"
 msgstr ""
 
 #: ../../effort.rst:21
+msgid "Enable interprocedural analysis for application classes."
+msgstr ""
+
+#: ../../effort.rst:23
 msgid "Interprocedural Analysis of Referenced Classes"
 msgstr ""
 
 #: ../../effort.rst:23
+msgid ""
+"Enable interprocedural analysis for referenced classes (non-application "
+"classes)."
+msgstr ""
+
+#: ../../effort.rst:25
 msgid "Conserve Space"
 msgstr ""
 
 #: ../../effort.rst:25
+msgid ""
+"Try to conserve space at the expense of precision. e.g. Prune "
+"unconditional exception thrower edges for control flow graph analysis, to"
+" reduce memory footprint."
+msgstr ""
+
+#: ../../effort.rst:28
 msgid "Skip Huge Methods"
 msgstr ""
 
-#: ../../effort.rst:25
+#: ../../effort.rst:28
 msgid "Skip method analysis if length of its bytecode is too long (6,000)."
 msgstr ""
 
@@ -105,5 +166,19 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "| (default) |"
+#~ msgstr ""
+
+#~ msgid "Effort value adjusts"
+#~ msgstr ""
+
+#~ msgid "min | less | more | max"
+#~ msgstr ""
+
+#~ msgid "Enable interprocedural analysis."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Enable interprocedural analysis of referenced"
+#~ " classes (non-application classes)."
 #~ msgstr ""
 
