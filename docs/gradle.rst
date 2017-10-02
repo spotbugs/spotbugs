@@ -43,3 +43,24 @@ To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like
   dependencies {
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.7.1'
   }
+
+Generate SpotBugs Tasks with Android Gradle Plugin
+--------------------------------------------------
+
+SpotBugs Gradle Plugin generates task for each sourceSet.
+But Android Gradle Plugin does not generate sourceSet by default (Java plugin does).
+
+So define sourceSets explicitly, then SpotBugs Gradle plugin generates tasks for each of them.
+
+.. code-block:: groovy
+
+  sourceSets {
+    // we define `main` sourceSet here, so SpotBugs Gradle Plugin generates `spotbugsMain` task
+    main {
+      srcDirs = ['src/main/java']
+    }
+  }
+
+  tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    // configure automatically generated tasks
+  }
