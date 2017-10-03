@@ -14,6 +14,14 @@ dependencies {
   compile 'org.apache.ant:ant:1.9.4'
 }
 
+
+test {
+  doFirst {
+    def auxClasspath = project(':spotbugsTestCases').configurations.runtime.resolvedConfiguration.resolvedArtifacts.file
+    systemProperty 'AUX_CLASSPATH', auxClasspath.join(',')
+  }
+}
+
 task sourcesJar(type: Jar) {
   classifier = 'sources'
   from sourceSets.main.allSource
