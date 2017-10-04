@@ -27,7 +27,7 @@ def generate_bug_description(language):
             bug_description_page.write(category_title)
             bug_description_page.write('\n')
             bug_description_page.write('-' * len(category_title))
-            bug_description_page.write('\n')
+            bug_description_page.write('\n\n')
             for line in bug_category.findtext('.//Details').splitlines():
                 bug_description_page.write(line.strip())
                 bug_description_page.write('\n')
@@ -37,6 +37,7 @@ def generate_bug_description(language):
                 if (bug_pattern.get('deprecated') == 'true'):
                     continue
                 type = bug_pattern.get('type')
+                bug_description_page.write(".. _%s:\n\n" % type)
                 message = messages.find(".//BugPattern[@type='%s']" % type)
                 pattern_title = generate_pattern_title(bug_pattern, message)
                 bug_description_page.write("%s\n%s\n\n" % (pattern_title, '^' * len(pattern_title)))
