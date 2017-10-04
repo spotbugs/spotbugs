@@ -1,4 +1,4 @@
 .build
 *.pyc
-generated/*.rst
+generated/*.inc
 locale/ja/LC_MESSAGES/generated/*.po

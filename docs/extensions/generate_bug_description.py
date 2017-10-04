@@ -20,7 +20,7 @@ def generate_bug_description(language):
     else:
         messages = parse('../spotbugs/etc/messages.xml')
 
-    with codecs.open('generated/bugDescriptionList.rst', 'w', encoding='UTF-8') as bug_description_page:
+    with codecs.open('generated/bugDescriptionList.inc', 'w', encoding='UTF-8') as bug_description_page:
         for bug_category in sorted(messages.getiterator('BugCategory'), key=lambda element: element.get('category')):
             category = bug_category.get('category')
             category_title = generate_category_title(bug_category)
