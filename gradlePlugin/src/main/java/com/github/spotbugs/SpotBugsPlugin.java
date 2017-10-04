@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.gradle.api.Action;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.file.ConfigurableFileTree;
@@ -64,6 +65,37 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
     protected void beforeApply() {
         verifyGradleVersion(GradleVersion.current());
         configureSpotBugsConfigurations();
+        project.afterEvaluate(this::verify);
+    }
+
+    private void verify(Project p) {
+        p.getTasks().withType(SpotBugsTask.class).forEach(task -> {
+            SpotBugsReports reports = task.getReports();
+            if (reports.getText() != null && reports.getText().getDestination() == null) {
+                String message = String.format(
+                        "Task '%s' has no destination for TEXT report. Set reports.text.destination to this task.",
+                        task.getName());
+                throw new IllegalStateException(message);
+            }
+            if (reports.getXml() != null && reports.getXml().getDestination() == null) {
+                String message = String.format(
+                        "Task '%s' has no destination for XML report. Set reports.xml.destination to this task.",
+                        task.getName());
+                throw new IllegalStateException(message);
+            }
+            if (reports.getHtml() != null && reports.getHtml().getDestination() == null) {
+                String message = String.format(
+                        "Task '%s' has no destination for HTML report. Set reports.html.destination. to this task",
+                        task.getName());
+                throw new IllegalStateException(message);
+            }
+            if (reports.getEmacs() != null && reports.getEmacs().getDestination() == null) {
+                String message = String.format(
+                        "Task '%s' has no destination for EMACS report. Set reports.emacs.destination. to this task",
+                        task.getName());
+                throw new IllegalStateException(message);
+            }
+        });
     }
 
     /**
