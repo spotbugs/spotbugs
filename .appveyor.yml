@@ -1,0 +1,13 @@
+environment:
+  matrix:
+    - JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+install:
+  - ps: $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+build_script:
+  - gradlew.bat compileJava compileTestJava -S
+test_script:
+  - gradlew.bat -v --no-daemon
+  - gradlew.bat build smoketest -S --no-daemon
+cache:
+  - C:\Users\appveyor\.gradle
