@@ -102,6 +102,8 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
             if (v instanceof EnumElementValue) {
                 EnumElementValue when = (EnumElementValue) v;
                 String w = simpleClassName(when.getEnumValueString());
+                // TODO move mapping logic (When -> CheckReturnValueAnnotation)
+                // to factory method of CheckReturnValueAnnotation
                 if ("NEVER".equals(w) || "UNKNOWN".equals(w)) {
                     n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
                 } else if ("MAYBE".equals(w)) {
