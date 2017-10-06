@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs.ba;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author pugh
@@ -105,4 +107,18 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
         priority = p;
     }
 
+    @CheckForNull
+    public static CheckReturnValueAnnotation createFor(@NonNull When when) {
+        switch (when.name()) {
+        case "NEVER":
+        case "UNKNOWN":
+            return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
+        case "MAYBE":
+            return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE;
+        case "ALWAYS":
+            return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
+        default:
+            return null;
+        }
+    }
 }

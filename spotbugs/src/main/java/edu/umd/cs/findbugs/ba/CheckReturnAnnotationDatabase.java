@@ -19,14 +19,29 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * @author pugh
@@ -258,7 +273,68 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 && ("java.lang.StringBuffer".equals(m.getClassName()) || "java.lang.StringBuilder".equals(m.getClassName()))) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         }
+        if (!AnalysisContext.currentAnalysisContext().isApplicationClass(m.getClassDescriptor())) {
+            // https://github.com/spotbugs/spotbugs/issues/429
+            // BuildCheckReturnAnnotationDatabase does not visit non-application classes,
+            // so we need to check package info dynamically
+
+            CheckReturnValueAnnotation packageDefault = packageInfoCache.computeIfAbsent(m.getPackageName(),
+                    this::parsePackage);
+            if (packageDefault != null) {
+                return packageDefault;
+            }
+        }
         return super.getResolvedAnnotation(o, getMinimal);
     }
 
+    private static final ClassDescriptor CHECK_RETURN_NULL_SPOTBUGS = DescriptorFactory
+            .createClassDescriptor(CheckReturnValue.class);
+    private static final ClassDescriptor CHECK_RETURN_NULL_JSR305 = DescriptorFactory
+            .createClassDescriptor("javax/annotation/CheckReturnValue");
+
+    private final Map<String, CheckReturnValueAnnotation> packageInfoCache = new HashMap<>();
+
+    /**
+     * Try to find default {@link CheckReturnValueAnnotation} for methods inside of target class.
+     *
+     */
+    @CheckForNull
+    private CheckReturnValueAnnotation parsePackage(@DottedClassName String packageName) {
+        String className = ClassName.toSlashedClassName(packageName) + "/package-info";
+        ClassDescriptor descriptor = DescriptorFactory.createClassDescriptor(className);
+        XClass clazz;
+        try {
+            clazz = descriptor.getXClass();
+        } catch (ResourceNotFoundException e) {
+            // no annotation on package
+            return null;
+        } catch (CheckedAnalysisException e) {
+            // ignore unexpected error to keep backward compatibility
+            e.printStackTrace();
+            return null;
+        }
+
+        AnnotationValue annotation = clazz.getAnnotation(CHECK_RETURN_NULL_SPOTBUGS);
+        if (annotation != null) {
+            Confidence confidence = (Confidence) annotation.getValue("confidence");
+            if (confidence != null) {
+                return CheckReturnValueAnnotation.parse(confidence.name());
+            } else {
+                // use default name
+                return CheckReturnValueAnnotation.parse(Confidence.MEDIUM.name());
+            }
+        }
+
+        annotation = clazz.getAnnotation(CHECK_RETURN_NULL_JSR305);
+        if (annotation != null) {
+            When when = (When) annotation.getValue("when");
+            if (when != null) {
+                return CheckReturnValueAnnotation.createFor(when);
+            } else {
+                // use default value
+                return CheckReturnValueAnnotation.createFor(When.ALWAYS);
+            }
+        }
+        return null;
+    }
 }
