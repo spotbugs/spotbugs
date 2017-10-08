@@ -3,7 +3,7 @@
   FindBugs - Find bugs in Java programs
   Copyright (C) 2004,2005 University of Maryland
   Copyright (C) 2005, Chris Nappin
-  Copyright (C) 2015, Brahim Djoudi (modifications)
+  Copyright (C) 2015, 2017, Brahim Djoudi (modifications)
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,6 @@
 
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
-		<th align="left">Warning</th>
 		<th align="center">Priority</th>
 		<th align="left">Details</th>
 	</tr>
@@ -44,95 +43,97 @@
 	<head>
 		<title>SpotBugs Report</title>
 		<style type="text/css">
-		.tablerow0 {
-			background: #EEEEEE;
-		}
+            body {
+            	font-family: Candara, Arial, Helvetica, sans-serif;
+            }
 
-		.tablerow1 {
-			background: white;
-		}
+            tr {
+                border: 1px solid;
+                border-left: 8px solid;
+            }
 
-		.detailrow0 {
-			background: #EEEEEE;
-		}
+            .tablerow0 {
+                background: #EEEEEE;
+            }
 
-		.detailrow1 {
-			background: white;
-		}
-		.long_message {
-			color:#220001;
-			background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,0.96) 24%, rgba(255,255,255,1) 25%, rgba(255,255,255,0) 100%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0)), color-stop(24%,rgba(255,255,255,0.96)), color-stop(25%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.96) 24%,rgba(255,255,255,1) 25%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.96) 24%,rgba(255,255,255,1) 25%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
-			background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,0.96) 24%,rgba(255,255,255,1) 25%,rgba(255,255,255,0) 100%); /* IE10+ */
-			background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.96) 24%,rgba(255,255,255,1) 25%,rgba(255,255,255,0) 100%); /* W3C */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 ); /* IE6-9 */
-		}
+            .tablerow1 {
+                background: white;
+            }
 
-		.tableheader {
-			font-size: larger;
-			background: -moz-linear-gradient(left,  rgba(135,224,253,1) 0%, rgba(83,203,241,0.9) 40%, rgba(59,4,153,0.75) 100%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(135,224,253,1)), color-stop(40%,rgba(83,203,241,0.9)), color-stop(100%,rgba(59,4,153,0.75))); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(left,  rgba(135,224,253,1) 0%,rgba(83,203,241,0.9) 40%,rgba(59,4,153,0.75) 100%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(left,  rgba(135,224,253,1) 0%,rgba(83,203,241,0.9) 40%,rgba(59,4,153,0.75) 100%); /* Opera 11.10+ */
-			background: -ms-linear-gradient(left,  rgba(135,224,253,1) 0%,rgba(83,203,241,0.9) 40%,rgba(59,4,153,0.75) 100%); /* IE10+ */
-			background: linear-gradient(to right,  rgba(135,224,253,1) 0%,rgba(83,203,241,0.9) 40%,rgba(59,4,153,0.75) 100%); /* W3C */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#87e0fd', endColorstr='#bf3b0499',GradientType=1 ); /* IE6-9 */
+            .detailrow0 {
+                background: #EEEEEE;
+            }
 
-		}
-		.high {
-			background: -moz-linear-gradient(top, rgba(239,187,110,0.93) 0%, rgba(255,26,0,0.97) 52%, rgba(239,187,110,1) 100%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(239,187,110,0.93)), color-stop(52%,rgba(255,26,0,0.97)), color-stop(100%,rgba(239,187,110,1))); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(top, rgba(239,187,110,0.93) 0%,rgba(255,26,0,0.97) 52%,rgba(239,187,110,1) 100%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(top, rgba(239,187,110,0.93) 0%,rgba(255,26,0,0.97) 52%,rgba(239,187,110,1) 100%); /* Opera 11.10+ */
-			background: -ms-linear-gradient(top, rgba(239,187,110,0.93) 0%,rgba(255,26,0,0.97) 52%,rgba(239,187,110,1) 100%); /* IE10+ */
-			background: linear-gradient(to bottom, rgba(239,187,110,0.93) 0%,rgba(255,26,0,0.97) 52%,rgba(239,187,110,1) 100%); /* W3C */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#edefbb6e', endColorstr='#efbb6e',GradientType=0 ); /* IE6-9 */
-		}
-		.medium {
-			background: -moz-linear-gradient(top, rgba(244,232,117,1) 0%, rgba(239,187,110,0.96) 52%, rgba(244,232,117,0.93) 100%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(244,232,117,1)), color-stop(52%,rgba(239,187,110,0.96)), color-stop(100%,rgba(244,232,117,0.93))); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(top, rgba(244,232,117,1) 0%,rgba(239,187,110,0.96) 52%,rgba(244,232,117,0.93) 100%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(top, rgba(244,232,117,1) 0%,rgba(239,187,110,0.96) 52%,rgba(244,232,117,0.93) 100%); /* Opera 11.10+ */
-			background: -ms-linear-gradient(top, rgba(244,232,117,1) 0%,rgba(239,187,110,0.96) 52%,rgba(244,232,117,0.93) 100%); /* IE10+ */
-			background: linear-gradient(to bottom, rgba(244,232,117,1) 0%,rgba(239,187,110,0.96) 52%,rgba(244,232,117,0.93) 100%); /* W3C */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4e875', endColorstr='#edf4e875',GradientType=0 ); /* IE6-9 */
-		}
-		.low {
-			background: -moz-linear-gradient(top, rgba(244,232,117,0.93) 0%, rgba(140,186,124,0.97) 53%, rgba(244,232,117,1) 100%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(244,232,117,0.93)), color-stop(53%,rgba(140,186,124,0.97)), color-stop(100%,rgba(244,232,117,1))); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(top, rgba(244,232,117,0.93) 0%,rgba(140,186,124,0.97) 53%,rgba(244,232,117,1) 100%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(top, rgba(244,232,117,0.93) 0%,rgba(140,186,124,0.97) 53%,rgba(244,232,117,1) 100%); /* Opera 11.10+ */
-			background: -ms-linear-gradient(top, rgba(244,232,117,0.93) 0%,rgba(140,186,124,0.97) 53%,rgba(244,232,117,1) 100%); /* IE10+ */
-			background: linear-gradient(to bottom, rgba(244,232,117,0.93) 0%,rgba(140,186,124,0.97) 53%,rgba(244,232,117,1) 100%); /* W3C */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#edf4e875', endColorstr='#f4e875',GradientType=0 ); /* IE6-9 */
-		}
-		pre {
-			font-family: "Bitstream Vera Sans Mono", Consolas, Inconsolata, "Lucida Console", "Courier New", Monospace !important;
-			box-shadow: 0 0;
-			color: black;
-			border-width: 1px 1px 1px 6px;
-			border-style: solid;
-			padding: 2ex;
-			margin: 2ex 2ex 2ex 2ex;
-			overflow: auto;
-			-moz-border-radius: 0px;
-			-webkit-border-radius: 0px;
-			-khtml-border-radius: 0px;
-			border-radius: 0px;
-			border-color: #996666;
+            .detailrow1 {
+                background: white;
+            }
 
-			background: rgb(232,239,244); /* Old browsers */
-			background: -moz-linear-gradient(left, rgba(232,239,244,1) 1%, rgba(244,249,249,1) 23%, rgba(249,250,246,1) 87%, rgba(241,242,236,1) 98%); /* FF3.6+ */
-			background: -webkit-gradient(linear, left top, right top, color-stop(1%,rgba(232,239,244,1)), color-stop(23%,rgba(244,249,249,1)), color-stop(87%,rgba(249,250,246,1)), color-stop(98%,rgba(241,242,236,1))); /* Chrome,Safari4+ */
-			background: -webkit-linear-gradient(left, rgba(232,239,244,1) 1%,rgba(244,249,249,1) 23%,rgba(249,250,246,1) 87%,rgba(241,242,236,1) 98%); /* Chrome10+,Safari5.1+ */
-			background: -o-linear-gradient(left, rgba(232,239,244,1) 1%,rgba(244,249,249,1) 23%,rgba(249,250,246,1) 87%,rgba(241,242,236,1) 98%); /* Opera 11.10+ */
-			background: -ms-linear-gradient(left, rgba(232,239,244,1) 1%,rgba(244,249,249,1) 23%,rgba(249,250,246,1) 87%,rgba(241,242,236,1) 98%); /* IE10+ */
-			background: linear-gradient(to right, rgba(232,239,244,1) 1%,rgba(244,249,249,1) 23%,rgba(249,250,246,1) 87%,rgba(241,242,236,1) 98%); /* W3C */
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e8eff4', endColorstr='#f1f2ec',GradientType=1 ); /* IE6-9 */
-		}
-		</style>
+            .long_message {
+                color: #220001;
+            }
+
+            .tableheader {
+                font-size: larger;
+                background: #D7D7D7;
+            }
+
+            .high {
+                background: rgb(242, 130, 91);
+                background: -moz-linear-gradient(left, rgba(242, 130, 91, 1) 0%, rgba(255, 35, 35, 1) 100%);
+                background: -webkit-linear-gradient(left, rgba(242, 130, 91, 1) 0%, rgba(255, 35, 35, 1) 100%);
+                background: linear-gradient(to right, rgba(242, 130, 91, 1) 0%, rgba(255, 35, 35, 1) 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2825b', endColorstr='#ff2323', GradientType=1);
+                border: 1px solid;
+                border-left: 8px solid;
+                border-color: firebrick;
+            }
+
+            .medium {
+            	background: rgb(235,255,25);
+            	background: -moz-linear-gradient(left,  rgba(235,255,25,1) 0%, rgba(255,125,20,1) 100%);
+            	background: -webkit-linear-gradient(left,  rgba(235,255,25,1) 0%,rgba(255,125,20,1) 100%);
+            	background: linear-gradient(to right,  rgba(235,255,25,1) 0%,rgba(255,125,20,1) 100%);
+            	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebff19', endColorstr='#ff7d14',GradientType=1 );
+                border: 1px solid;
+                border-left: 8px solid;
+                border-color: darkgoldenrod;
+            }
+
+            .low {
+                background: rgb(185, 221, 93);
+                background: -moz-linear-gradient(left, rgba(185, 221, 93, 1) 0%, rgba(155, 242, 171, 1) 100%);
+                background: -webkit-linear-gradient(left, rgba(185, 221, 93, 1) 0%, rgba(155, 242, 171, 1) 100%);
+                background: linear-gradient(to right, rgba(185, 221, 93, 1) 0%, rgba(155, 242, 171, 1) 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b9dd5d', endColorstr='#9bf2ab', GradientType=1);
+                border: 1px solid;
+                border-left: 8px solid;
+                border-color: darkolivegreen;
+            }
+
+            pre {
+                font-family: "Bitstream Vera Sans Mono", Consolas, "Lucida Console", "Courier New", Monospace !important;
+                box-shadow: 0 0;
+                color: black;
+                border-width: 1px 1px 1px 6px;
+                border-style: solid;
+                padding: 2ex;
+                margin: 2ex 2ex 2ex 2ex;
+                overflow: auto;
+                -moz-border-radius: 0px;
+                -webkit-border-radius: 0px;
+                -khtml-border-radius: 0px;
+                border-radius: 0px;
+                border-color: #996666;
+                background: rgb(232, 239, 244);
+                background: -moz-linear-gradient(left, rgba(232, 239, 244, 1) 1%, rgba(244, 249, 249, 1) 23%, rgba(249, 250, 246, 1) 87%, rgba(241, 242, 236, 1) 98%);
+                background: -webkit-gradient(linear, left top, right top, color-stop(1%, rgba(232, 239, 244, 1)), color-stop(23%, rgba(244, 249, 249, 1)), color-stop(87%, rgba(249, 250, 246, 1)), color-stop(98%, rgba(241, 242, 236, 1)));
+                background: -webkit-linear-gradient(left, rgba(232, 239, 244, 1) 1%, rgba(244, 249, 249, 1) 23%, rgba(249, 250, 246, 1) 87%, rgba(241, 242, 236, 1) 98%);
+                background: -o-linear-gradient(left, rgba(232, 239, 244, 1) 1%, rgba(244, 249, 249, 1) 23%, rgba(249, 250, 246, 1) 87%, rgba(241, 242, 236, 1) 98%);
+                background: -ms-linear-gradient(left, rgba(232, 239, 244, 1) 1%, rgba(244, 249, 249, 1) 23%, rgba(249, 250, 246, 1) 87%, rgba(241, 242, 236, 1) 98%);
+                background: linear-gradient(to right, rgba(232, 239, 244, 1) 1%, rgba(244, 249, 249, 1) 23%, rgba(249, 250, 246, 1) 87%, rgba(241, 242, 236, 1) 98%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e8eff4', endColorstr='#f1f2ec', GradientType=1);
+            }
+        </style>
 	</head>
 
 	<xsl:variable name="unique-catkey" select="/BugCollection/BugCategory/@category"/>
@@ -144,7 +145,8 @@
 		<p>Produced using <a href="https://spotbugs.github.io">SpotBugs </a> <xsl:value-of select="/BugCollection/@version"/>.</p>
 		<p>Project:
 			<xsl:choose>
-				<xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
+				<xsl:when test='string-length(/BugCollection/Project/@projectName)>0'>
+				<xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
 				<xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
 			</xsl:choose>
 		</p>
@@ -235,9 +237,6 @@
 			<xsl:when test="@priority = 3"><xsl:attribute name="class">low</xsl:attribute></xsl:when>
 			<xsl:otherwise><xsl:attribute name="bgcolor">#fdfdfd</xsl:attribute></xsl:otherwise>
 		</xsl:choose>
-		<td width="20%" valign="top">
-			<a href="#{@type}"><xsl:value-of select="ShortMessage"/></a>
-		</td>
 		<td width="10%" valign="top" align="center">
 			<xsl:choose>
 				<xsl:when test="@priority = 1"><strong>High</strong></xsl:when>
@@ -247,6 +246,7 @@
 			</xsl:choose>
 		</td>
 		<td width="70%">
+			<a href="#{@type}"><xsl:value-of select="ShortMessage"/></a>
 			<dl>
 				<dt class='long_message'><xsl:value-of select="LongMessage"/></dt>
 				<dd>
