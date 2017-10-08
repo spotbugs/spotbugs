@@ -142,7 +142,7 @@
 	<body>
 
 	<h1>SpotBugs Report</h1>
-		<p>Produced using SpotBugs <xsl:value-of select="/BugCollection/@version"/>.</p>
+		<p>Produced using <a href="https://spotbugs.github.io">SpotBugs </a> <xsl:value-of select="/BugCollection/@version"/>.</p>
 		<p>Project:
 			<xsl:choose>
 				<xsl:when test='string-length(/BugCollection/Project/@projectName)>0'>
