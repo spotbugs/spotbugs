@@ -8,6 +8,7 @@ Currently the versioning policy of this project does not follow [Semantic Versio
 
 * Make build failed when user uses unsupported Gradle version ([#357](https://github.com/spotbugs/spotbugs/issues/357))
 * Make error message human readable ([#428](https://github.com/spotbugs/spotbugs/pull/428))
+* Fix missing dependency on compile task ([#440](https://github.com/spotbugs/spotbugs/issues/440))
 
 ## 1.4 - 2017-09-25
 
