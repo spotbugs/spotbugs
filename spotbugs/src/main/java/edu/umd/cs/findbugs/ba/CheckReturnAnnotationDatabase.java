@@ -33,6 +33,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -310,7 +311,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             return null;
         } catch (CheckedAnalysisException e) {
             // ignore unexpected error to keep backward compatibility
-            e.printStackTrace();
+            if (FindBugs2.DEBUG) {
+                e.printStackTrace();
+            }
             return null;
         }
 
