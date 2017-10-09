@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 
 * SpotBugs annotation is recommended instead of JSR305 annotation ([#130](https://github.com/spotbugs/spotbugs/pull/130))
+* Improve color in HTML output ([#433](https://github.com/spotbugs/spotbugs/pull/433))
 
 ### Fixed
 
