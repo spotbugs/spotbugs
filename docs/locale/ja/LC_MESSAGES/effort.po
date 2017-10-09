@@ -3,10 +3,8 @@
 # This file is distributed under the same license as the spotbugs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
-#, fuzzy
 msgid ""
-msgstr ""
-"Project-Id-Version: spotbugs 3.1\n"
+msgstr "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-30 03:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -19,29 +17,29 @@ msgstr ""
 
 #: ../../effort.rst:2
 msgid "Effort"
-msgstr ""
+msgstr "解析力"
 
 #: ../../effort.rst:4
 msgid ""
 "Effort value adjusts internal flags of SpotBugs, to reduce computation "
 "cost by lowering the prediction."
-msgstr ""
+msgstr "解析力の値は，SpotBug の内部フラグを調整し，予測を下げて計算コストを削減します。"
 
 #: ../../effort.rst:6
 msgid "The default effort configuration is same with ``more``."
-msgstr ""
+msgstr "デフォルトの解析力の設定は ``more`` と同じです。"
 
 #: ../../effort.rst:9
 msgid "Flags in FindBugs.java"
-msgstr ""
+msgstr "FindBugs.java のフラグ"
 
 #: ../../effort.rst:9
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 #: ../../effort.rst:9
 msgid "Effort Level"
-msgstr ""
+msgstr "解析力"
 
 #: ../../effort.rst:11
 msgid "min"
@@ -68,7 +66,7 @@ msgid ""
 "Determine (1) what exceptions can be thrown on exception edges, (2) "
 "which,catch blocks are reachable, and (3) which exception edges carry "
 "only, \"implicit\" runtime exceptions."
-msgstr ""
+msgstr "\\(1) 例外エッジでどのような例外がスローされるか，(2) ブロックが到達可能か，(3) どの例外エッジだけが実行されるか，「暗黙的な」ランタイム例外を判断します。"
 
 #: ../../effort.rst:13 ../../effort.rst:15 ../../effort.rst:17
 #: ../../effort.rst:19 ../../effort.rst:21 ../../effort.rst:23
@@ -82,7 +80,7 @@ msgstr ""
 
 #: ../../effort.rst:15
 msgid "Model the effect of instanceof checks in type analysis"
-msgstr ""
+msgstr "型解析における instanceof チェックの効果をモデル化します。"
 
 #: ../../effort.rst:17
 msgid "Track Guaranteed Value Derefs in Null Pointer Analysis"
@@ -92,7 +90,7 @@ msgstr ""
 msgid ""
 "In the null pointer analysis, track null values that are guaranteed to "
 "be, dereferenced on some (non-implicit-exception) path."
-msgstr ""
+msgstr "NULL ポインタ解析では，(暗黙的でない例外を除いた) パスで逆参照されることが保証されている NULL 値を追跡します。"
 
 #: ../../effort.rst:19
 msgid "Track Value Numbers in Null Pointer Analysis"
@@ -105,7 +103,7 @@ msgid ""
 "currently in the stack frame but might be in a heap location where the, "
 "value is recoverable by redundant load elimination or forward, "
 "substitution."
-msgstr ""
+msgstr "NULL ポインタ解析では，NULL とわかっている値の番号を追跡します。これにより，スタックフレーム内に存在しないが，冗長なロードの除去または転送，代用によって値が復帰可能なヒープ領域にあるかもしれない NULL 値を見失わないことを可能にします。"
 
 #: ../../effort.rst:21
 msgid "Interprocedural Analysis"
@@ -113,7 +111,7 @@ msgstr ""
 
 #: ../../effort.rst:21
 msgid "Enable interprocedural analysis for application classes."
-msgstr ""
+msgstr "アプリケーションクラスのプロシージャ間解析を有効にします。"
 
 #: ../../effort.rst:23
 msgid "Interprocedural Analysis of Referenced Classes"
@@ -123,7 +121,7 @@ msgstr ""
 msgid ""
 "Enable interprocedural analysis for referenced classes (non-application "
 "classes)."
-msgstr ""
+msgstr "参照クラス　(非アプリケーションクラス) のプロシージャ間解析を有効にします。"
 
 #: ../../effort.rst:25
 msgid "Conserve Space"
@@ -134,7 +132,7 @@ msgid ""
 "Try to conserve space at the expense of precision. e.g. Prune "
 "unconditional exception thrower edges for control flow graph analysis, to"
 " reduce memory footprint."
-msgstr ""
+msgstr "精度を犠牲にしてスペースを節約しようとします。たとえば，制御フローグラフ解析のための無条件例外スローアエッジを切り捨てて，メモリフットプリントを削減します。"
 
 #: ../../effort.rst:28
 msgid "Skip Huge Methods"
@@ -142,7 +140,7 @@ msgstr ""
 
 #: ../../effort.rst:28
 msgid "Skip method analysis if length of its bytecode is too long (6,000)."
-msgstr ""
+msgstr "バイトコードの長さが長すぎる (6,000) ときは，メソッド解析をスキップします。"
 
 #~ msgid "Effort is"
 #~ msgstr ""
