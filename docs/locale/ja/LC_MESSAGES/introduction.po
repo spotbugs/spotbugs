@@ -6,7 +6,7 @@
 msgid ""
 msgstr "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-17 15:12+0900\n"
+"POT-Creation-Date: 2017-10-07 22:57+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,12 +28,12 @@ msgstr "SpotBugs は，Java プログラムの中のバグを見つけるプロ�
 
 #: ../../introduction.rst:7
 msgid ""
-"This document describes version 3.1.0-RC5 of SpotBugs. We are very "
+"This document describes version 3.1.0-RC6 of SpotBugs. We are very "
 "interested in getting your feedback on SpotBugs. Please visit the "
 "SpotBugs web page for the latest information on SpotBugs, contact "
 "information, and support resources such as information about the SpotBugs"
 " GitHub organization."
-msgstr "この文書では，SpotBugs のバージョン 3.1.0-RC5 について説明します。私たちは，SpotBugs に対するフィードバックを心待ちにしています。SpotBugs の最新情報，連絡先，SpotBugs GitHub 組織に関する情報などのサポートリソースは SpotBugs のウェブページを参照してください。"
+msgstr "このドキュメントでは，SpotBugs のバージョン 3.1.0-RC6 について説明します。私たちは，SpotBugs に対するフィードバックを心待ちにしています。SpotBugs の最新情報，連絡先，SpotBugs GitHub 組織に関する情報などのサポートリソースは SpotBugs のウェブページを参照してください。"
 
 #: ../../introduction.rst:12
 msgid "Requirements"
