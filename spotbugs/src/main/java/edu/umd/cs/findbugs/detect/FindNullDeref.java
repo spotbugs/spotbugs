@@ -428,7 +428,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg,
                                                  // Only choose non-exception values.
-                                                 // Values null on an exception path might be due to
+                                                 // Values null on an exception path might be due to infeasible control flow.
                                                  value -> value.mightBeNull() && !value.isException() && !value.isReturnValue());
         BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, value -> value.isDefinitelyNull());
         nullArgSet.and(definitelyNullArgSet);
