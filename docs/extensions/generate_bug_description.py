@@ -12,12 +12,13 @@ import os
 import xml.etree.ElementTree as ET
 
 
-ETC_DIR = os.path.normpath(os.path.join(
-    os.path.dirname(__file__), "..", "..", "spotbugs", "etc"))
+DOCS_DIR = os.path.dirname(os.path.dirname(__file__))
+ETC_DIR = os.path.normpath(os.path.join(DOCS_DIR, "..", "spotbugs", "etc"))
 
 
 BugCategory = namedtuple("BugCategory", "name hidden description")
 Bug = namedtuple("Bug", "name abbrev category deprecated description")
+Detector = namedtuple("Detector", "java_class reports speed hidden disabled")
 
 
 def parse_bool_attr(element, attr_name):
@@ -48,7 +49,26 @@ def parse_bug_patterns(app, path):
         hidden = parse_bool_attr(element, "hidden")
         categories[category_name] = categories[category_name]._replace(hidden=hidden)
 
-    return categories, bugs
+    # Index detectors
+    detectors = []
+    for element in document.iterfind(".//Detector"):
+        klass = element.get("class")
+        app.debug("Parsing detector: %s", klass)
+        disabled = parse_bool_attr(element, "disabled")
+        hidden = parse_bool_attr(element, "hidden")
+        speed = element.get("speed")
+
+        reports = ()
+        for key in element.get("reports", "").split(","):
+            if not key:
+                continue
+            if key not in bugs:
+                app.warn("Detector %s claims to report %s but no such bug exists", klass, key)
+            reports += (bugs[key],)
+
+        detectors.append(Detector(klass, reports, speed, hidden, disabled))
+
+    return categories, bugs, detectors
 
 
 def parse_i18n_messages(language):
@@ -143,14 +163,52 @@ def generate_bug_description(app, messages, categories, bugs):
     yield ""
 
 
+def generate_detector_description(app, messages, detectors, disabled):
+    for detector in sorted(detectors, key=lambda d: d.java_class):
+        if detector.hidden:
+            continue
+
+        if detector.disabled != disabled:
+            continue
+
+        app.debug("Generating %s", detector)
+
+        msg_elem = messages.find(".//Detector[@class='%s']" % detector.java_class)
+        short_name = detector.java_class.split(".")[-1]
+        details = i18n_text(msg_elem, "Details")
+
+        yield ".. _detector-{}:".format(short_name.lower())
+        yield ""
+        yield short_name
+        yield "^" * column_width(short_name)
+        yield ""
+
+        for line in generate_raw_section(details):
+            yield line
+        yield ""
+
+        for bug in sorted(detector.reports, key=lambda bug: bug.name):
+            yield "* :ref:`{bug.name}`".format(bug=bug)
+        yield ""
+
+
 def write_bug_description(app):
-    categories, bugs = parse_bug_patterns(app, os.path.join(ETC_DIR, "findbugs.xml"))
+    categories, bugs, detectors = parse_bug_patterns(app, os.path.join(ETC_DIR, "findbugs.xml"))
     messages = parse_i18n_messages(app.config.language)
 
-    with io.open("./generated/bugDescriptionList.inc", mode="w", encoding="utf-8") as output:
+    output_dir = os.path.join(DOCS_DIR, "generated")
+
+    with io.open(os.path.join(output_dir, "bugDescriptionList.inc"), mode="w", encoding="utf-8") as output:
         for line in generate_bug_description(app, messages, categories, bugs):
             print(line, file=output)
 
+    with io.open(os.path.join(output_dir, "detectorListEnabled.inc"), mode="w", encoding="utf-8") as output:
+        for line in generate_detector_description(app, messages, detectors, disabled=False):
+            print(line, file=output)
+
+    with io.open(os.path.join(output_dir, "detectorListDisabled.inc"), mode="w", encoding="utf-8") as output:
+        for line in generate_detector_description(app, messages, detectors, disabled=True):
+            print(line, file=output)
 
 def setup(app):
     app.connect('builder-inited', write_bug_description)
