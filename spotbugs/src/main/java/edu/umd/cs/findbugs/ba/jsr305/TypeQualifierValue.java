@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -47,7 +48,6 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * A TypeQualifierValue is a pair specifying a type qualifier annotation and a
@@ -335,7 +335,7 @@ public class TypeQualifierValue<A extends Annotation> {
             // annotation class but a different value is a complementary
             // type qualifier.
             //
-            if (t.typeQualifier.equals(tqv.typeQualifier) && !Util.nullSafeEquals(t.value, tqv.value)) {
+            if (t.typeQualifier.equals(tqv.typeQualifier) && !Objects.equals(t.value, tqv.value)) {
                 result.add(t);
             }
         }
@@ -416,7 +416,7 @@ public class TypeQualifierValue<A extends Annotation> {
             return false;
         }
         TypeQualifierValue<?> other = (TypeQualifierValue<?>) o;
-        return typeQualifier.equals(other.typeQualifier) && Util.nullSafeEquals(value, other.value);
+        return typeQualifier.equals(other.typeQualifier) && Objects.equals(value, other.value);
     }
 
     @Override

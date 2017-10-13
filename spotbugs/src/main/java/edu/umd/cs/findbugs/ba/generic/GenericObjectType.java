@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.generic;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -32,7 +33,6 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Extension to ObjectType that includes additional information about the
@@ -65,8 +65,8 @@ public class GenericObjectType extends ObjectType {
 
     @Override
     public int hashCode() {
-        return 13 * super.hashCode() + 9 * Util.nullSafeHashcode(parameters) + 7 * Util.nullSafeHashcode(variable)
-                + Util.nullSafeHashcode(extension);
+        return 13 * super.hashCode() + 9 * Objects.hashCode(parameters) + 7 * Objects.hashCode(variable)
+                + Objects.hashCode(extension);
     }
 
     @Override
@@ -78,8 +78,8 @@ public class GenericObjectType extends ObjectType {
             return false;
         }
         GenericObjectType that = (GenericObjectType) o;
-        return Util.nullSafeEquals(this.parameters, that.parameters) && Util.nullSafeEquals(this.variable, that.variable)
-                && Util.nullSafeEquals(this.extension, that.extension);
+        return Objects.equals(parameters, that.parameters) && Objects.equals(variable, that.variable)
+                && Objects.equals(extension, that.extension);
     }
 
     public Type getUpperBound() {

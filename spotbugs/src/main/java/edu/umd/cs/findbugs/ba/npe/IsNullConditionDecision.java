@@ -19,12 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.util.Objects;
+
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * A control decision which resulted in information being gained about whether a
@@ -70,8 +71,8 @@ public class IsNullConditionDecision {
 
     @Override
     public int hashCode() {
-        return Util.nullSafeHashcode(value) + 5 * Util.nullSafeHashcode(ifcmpDecision) + 17
-                * Util.nullSafeHashcode(fallThroughDecision);
+        return Objects.hashCode(value) + 5 * Objects.hashCode(ifcmpDecision) + 17
+                * Objects.hashCode(fallThroughDecision);
     }
 
     @Override
@@ -80,8 +81,8 @@ public class IsNullConditionDecision {
             return false;
         }
         IsNullConditionDecision other = (IsNullConditionDecision) o;
-        return Util.nullSafeEquals(value, other.value) && Util.nullSafeEquals(ifcmpDecision, other.ifcmpDecision)
-                && Util.nullSafeEquals(fallThroughDecision, other.fallThroughDecision);
+        return Objects.equals(value, other.value) && Objects.equals(ifcmpDecision, other.ifcmpDecision)
+                && Objects.equals(fallThroughDecision, other.fallThroughDecision);
     }
 
     /**

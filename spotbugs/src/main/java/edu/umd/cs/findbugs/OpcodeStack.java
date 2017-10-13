@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.CheckForNull;
@@ -387,9 +388,9 @@ public class OpcodeStack implements Constants2 {
             }
             Item that = (Item) o;
 
-            return Util.nullSafeEquals(this.signature, that.signature) && Util.nullSafeEquals(this.constValue, that.constValue)
-                    && Util.nullSafeEquals(this.source, that.source) && Util.nullSafeEquals(this.userValue, that.userValue)
-                    && Util.nullSafeEquals(this.injection, that.injection) && this.specialKind == that.specialKind
+            return Objects.equals(this.signature, that.signature) && Objects.equals(this.constValue, that.constValue)
+                    && Objects.equals(this.source, that.source) && Objects.equals(this.userValue, that.userValue)
+                    && Objects.equals(this.injection, that.injection) && this.specialKind == that.specialKind
                     && this.registerNumber == that.registerNumber && this.flags == that.flags
                     && this.fieldLoadedFromRegister == that.fieldLoadedFromRegister;
 
@@ -545,17 +546,17 @@ public class OpcodeStack implements Constants2 {
             if (i1.pc == i2.pc) {
                 m.pc = i1.pc;
             }
-            if (Util.nullSafeEquals(i1.signature, i2.signature)) {
+            if (Objects.equals(i1.signature, i2.signature)) {
                 m.signature = i1.signature;
             } else if (i1.isNull()) {
                 m.signature = i2.signature;
             } else if (i2.isNull()) {
                 m.signature = i1.signature;
             }
-            if (Util.nullSafeEquals(i1.constValue, i2.constValue)) {
+            if (Objects.equals(i1.constValue, i2.constValue)) {
                 m.constValue = i1.constValue;
             }
-            if (Util.nullSafeEquals(i1.source, i2.source)) {
+            if (Objects.equals(i1.source, i2.source)) {
                 m.source = i1.source;
             } else if ("".equals(i1.constValue)) {
                 m.source = i2.source;
@@ -563,7 +564,7 @@ public class OpcodeStack implements Constants2 {
                 m.source = i1.source;
             }
 
-            if (Util.nullSafeEquals(i1.userValue, i2.userValue)) {
+            if (Objects.equals(i1.userValue, i2.userValue)) {
                 m.userValue = i1.userValue;
             }
 

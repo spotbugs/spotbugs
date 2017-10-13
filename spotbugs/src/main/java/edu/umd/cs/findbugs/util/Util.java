@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,6 +86,10 @@ public class Util {
 
     }
 
+    /**
+     * @deprecated use {@link Integer#signum(int)} instead.
+     */
+    @Deprecated
     public static int sign(int x) {
         if (x < 0) {
             return -1;
@@ -94,9 +99,13 @@ public class Util {
         }
         return 0;
     }
+
     /**
      * return sign of x - y
+     *
+     * @deprecated use {@link Integer#compare(int, int)} instead.
      */
+    @Deprecated
     public static int compare(int x, int y) {
         if (x > y) {
             return 1;
@@ -109,7 +118,10 @@ public class Util {
 
     /**
      * return sign of x - y
+     *
+     * @deprecated use {@link Long#compare(long, long)} instead.
      */
+    @Deprecated
     public static int compare(long x, long y) {
         if (x > y) {
             return 1;
@@ -208,6 +220,10 @@ public class Util {
         return Collections.<K, V> unmodifiableMap(map);
     }
 
+    /**
+     * @deprecated use {@link Objects#hashCode(Object)} instead.
+     */
+    @Deprecated
     public static int nullSafeHashcode(@CheckForNull Object o) {
         if (o == null) {
             return 0;
@@ -215,6 +231,10 @@ public class Util {
         return o.hashCode();
     }
 
+    /**
+     * @deprecated use {@link Objects#equals(Object, Object)} instead.
+     */
+    @Deprecated
     public static <T> boolean nullSafeEquals(@CheckForNull T o1, @CheckForNull T o2) {
         if (o1 == o2) {
             return true;

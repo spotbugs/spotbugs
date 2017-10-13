@@ -151,7 +151,7 @@ public class DetectorConfigurationTab extends Composite {
                 result = s1.compareTo(s2);
             } else if (revertOrder) {
                 // same column selected twice - revert first order
-                result = -Util.sign(result);
+                result = -Integer.signum(result);
             }
             return result;
         }
