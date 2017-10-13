@@ -39,12 +39,14 @@ public class FilterBugsDialogAction implements IViewActionDelegate {
 
     private CommonNavigator navigator;
 
+    @Override
     public void init(IViewPart view) {
         if (view instanceof CommonNavigator) {
             navigator = (CommonNavigator) view;
         }
     }
 
+    @Override
     public void run(IAction action) {
         if (navigator == null) {
             return;
@@ -69,6 +71,7 @@ public class FilterBugsDialogAction implements IViewActionDelegate {
         viewer.setExpandedElements(expandedElements);
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         if (navigator == null) {
             action.setEnabled(false);

@@ -12,7 +12,8 @@ public class Bug3438200 {
     Map<UsageDataEventWrapper, String> usageDataColumnProvider = new HashMap<UsageDataEventWrapper, String>();
 
     Comparator<UsageDataEventWrapper> comparator = new Comparator<UsageDataEventWrapper>() {
-        public int compare(UsageDataEventWrapper event1, UsageDataEventWrapper event2) {
+        @Override
+		public int compare(UsageDataEventWrapper event1, UsageDataEventWrapper event2) {
             if (usageDataColumnProvider == null)
                 return 0;
             String text1 = usageDataColumnProvider.get(event1);

@@ -17,11 +17,13 @@ public class RFE3285242 {
         @ExpectWarning("MF_CLASS_MASKS_FIELD")
         protected String theDing;
 
-        public String getTheDing() {
+        @Override
+		public String getTheDing() {
             return theDing;
         }
 
-        public void setTheDing(String theDing) {
+        @Override
+		public void setTheDing(String theDing) {
             this.theDing = theDing;
         }
     }

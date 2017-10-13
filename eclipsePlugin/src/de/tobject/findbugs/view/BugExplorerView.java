@@ -78,10 +78,12 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
         getCommonViewer().addSelectionChangedListener(this);
     }
 
+    @Override
     public boolean isVisible() {
         return getSite().getPage().isPartVisible(this);
     }
 
+    @Override
     public void markerSelected(IWorkbenchPart part, IMarker marker) {
         if (selectionInProgress) {
             return;
@@ -164,6 +166,7 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
         super.dispose();
     }
 
+    @Override
     public void selectionChanged(SelectionChangedEvent event) {
         IStructuredSelection selection = (IStructuredSelection) event.getSelection();
         if (selection.isEmpty() || selection.size() == 1) {

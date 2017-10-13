@@ -45,6 +45,7 @@ public class PluginElement implements IPathElement {
         return string;
     }
 
+    @Override
     public String getPath() {
         return plugin.getPluginId();
     }
@@ -68,6 +69,7 @@ public class PluginElement implements IPathElement {
     /**
      * @return the enabled
      */
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
@@ -75,6 +77,7 @@ public class PluginElement implements IPathElement {
     /**
      * @param enabled the enabled to set
      */
+    @Override
     public void setEnabled(boolean enabled) {
         if(plugin.isCorePlugin() || (!enabled && plugin.cannotDisable())) {
             return;
@@ -83,18 +86,22 @@ public class PluginElement implements IPathElement {
         this.enabled = enabled;
     }
 
+    @Override
     public void setStatus(IStatus status) {
         this.status = status;
     }
 
+    @Override
     public IStatus getStatus() {
         return status;
     }
 
+    @Override
     public boolean isSystem() {
         return true;
     }
 
+    @Override
     public String getId() {
         return plugin.getPluginId();
     }

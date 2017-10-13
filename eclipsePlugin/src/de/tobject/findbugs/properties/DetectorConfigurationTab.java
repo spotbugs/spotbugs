@@ -100,6 +100,7 @@ public class DetectorConfigurationTab extends Composite {
             return compare((DetectorFactory) e1, (DetectorFactory) e2);
         }
 
+        @Override
         public int compare(DetectorFactory factory1, DetectorFactory factory2) {
             int result = 0;
             String s1, s2;
@@ -190,6 +191,7 @@ public class DetectorConfigurationTab extends Composite {
             // ignored
         }
 
+        @Override
         public Object[] getElements(Object inputElement) {
             if (inputElement instanceof List) {
                 List<?> list = (List<?>) inputElement;
@@ -206,27 +208,33 @@ public class DetectorConfigurationTab extends Composite {
             this.tab = tab;
         }
 
+        @Override
         public void addListener(ILabelProviderListener listener) {
             // ignored
         }
 
+        @Override
         public void dispose() {
             // ignored
         }
 
+        @Override
         public boolean isLabelProperty(Object element, String property) {
             return false;
         }
 
+        @Override
         public void removeListener(ILabelProviderListener listener) {
             // ignored
         }
 
+        @Override
         public Image getColumnImage(Object element, int columnIndex) {
             // TODO ignored - but if we have images for different detectors ...
             return null;
         }
 
+        @Override
         public String getColumnText(Object element, int columnIndex) {
 
             if (!(element instanceof DetectorFactory)) {
@@ -258,6 +266,7 @@ public class DetectorConfigurationTab extends Composite {
             }
         }
 
+        @Override
         public Color getBackground(Object element) {
             if (!(element instanceof DetectorFactory)) {
                 return null;
@@ -295,6 +304,7 @@ public class DetectorConfigurationTab extends Composite {
             return false;
         }
 
+        @Override
         public Color getForeground(Object element) {
             return null;
         }
@@ -361,10 +371,12 @@ public class DetectorConfigurationTab extends Composite {
         sash.setWeights(new int[] { 3, 1 });
 
         availableRulesTable.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 TableItem item = (TableItem) e.item;
                 DetectorFactory factory = (DetectorFactory) item.getData();
@@ -542,6 +554,7 @@ public class DetectorConfigurationTab extends Composite {
         availableFactoriesTableViewer = CheckboxTableViewer.newCheckList(parent, tableStyle);
         availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
 
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 syncUserPreferencesWithTable();
             }

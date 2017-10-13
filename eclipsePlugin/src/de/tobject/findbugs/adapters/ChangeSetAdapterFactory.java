@@ -33,6 +33,7 @@ public class ChangeSetAdapterFactory implements IAdapterFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
         if (adaptableObject instanceof ChangeSetDiffNode && adapterType == ChangeSet.class) {
             ChangeSetDiffNode node = (ChangeSetDiffNode) adaptableObject;
@@ -44,6 +45,7 @@ public class ChangeSetAdapterFactory implements IAdapterFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("rawtypes")
     public Class[] getAdapterList() {
         return new Class[] { ChangeSet.class };

@@ -88,6 +88,7 @@ public class ResourceUtils {
             this.findBugsProject = findBugsProject;
         }
 
+        @Override
         public boolean accept(File file) {
             if (!file.isDirectory()) {
                 // add the clzs to the list of files to be analyzed

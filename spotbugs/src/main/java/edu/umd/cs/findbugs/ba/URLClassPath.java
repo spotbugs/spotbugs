@@ -447,6 +447,7 @@ public class URLClassPath implements AutoCloseable, Serializable {
     /**
      * Close all underlying resources.
      */
+    @Override
     public void close() {
         for (Entry entry : entryList) {
             entry.close();

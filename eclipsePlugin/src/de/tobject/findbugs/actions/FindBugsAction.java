@@ -82,6 +82,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 
     private static boolean dialogAlreadyShown;
 
+    @Override
     public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
         this.targetPart = targetPart;
     }
@@ -91,12 +92,14 @@ public class FindBugsAction implements IObjectActionDelegate {
         return perspective != null && FindBugsPerspectiveFactory.ID.equals(perspective.getId());
     }
 
+    @Override
     public final void selectionChanged(final IAction action, final ISelection newSelection) {
         if (!usedInEditor) {
             this.selection = newSelection;
         }
     }
 
+    @Override
     public void run(final IAction action) {
         if (selection == null || selection.isEmpty()) {
             return;
@@ -176,6 +179,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         }
         final TreeViewer viewer = (TreeViewer) selProvider;
         Display.getDefault().asyncExec(new Runnable() {
+            @Override
             public void run() {
                 if (viewer.getControl().isDisposed()) {
                     return;
@@ -285,6 +289,7 @@ public class FindBugsAction implements IObjectActionDelegate {
             }
 
             Display.getDefault().asyncExec(new Runnable() {
+                @Override
                 public void run() {
                     if (isFindBugsPerspectiveActive(targetPart)) {
                         return;

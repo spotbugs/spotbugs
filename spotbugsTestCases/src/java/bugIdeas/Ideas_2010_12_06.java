@@ -17,7 +17,8 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_12_06 extends HttpServlet {
 
-    @ExpectWarning("PT_RELATIVE_PATH_TRAVERSAL")
+    @Override
+	@ExpectWarning("PT_RELATIVE_PATH_TRAVERSAL")
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain");
         PrintWriter out = response.getWriter();
@@ -33,7 +34,8 @@ public class Ideas_2010_12_06 extends HttpServlet {
         r.close();
     }
     
-    @ExpectWarning("PT_ABSOLUTE_PATH_TRAVERSAL")
+    @Override
+	@ExpectWarning("PT_ABSOLUTE_PATH_TRAVERSAL")
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain");
         PrintWriter out = response.getWriter();

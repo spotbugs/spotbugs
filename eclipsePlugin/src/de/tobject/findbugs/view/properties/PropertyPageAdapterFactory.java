@@ -72,10 +72,12 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
         }
 
+        @Override
         public IPropertyDescriptor[] getPropertyDescriptors() {
             return propertyDescriptors;
         }
 
+        @Override
         public Object getPropertyValue(Object propId) {
             if (propId instanceof Method) {
                 Method method = (Method) propId;
@@ -98,18 +100,22 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             return null;
         }
 
+        @Override
         public Object getEditableValue() {
             return null;
         }
 
+        @Override
         public boolean isPropertySet(Object id) {
             return false;
         }
 
+        @Override
         public void resetPropertyValue(Object id) {
             //
         }
 
+        @Override
         public void setPropertyValue(Object id, Object value) {
             //
         }
@@ -137,26 +143,32 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             return "" + obj;
         }
 
+        @Override
         public IPropertyDescriptor[] getPropertyDescriptors() {
             return propertyDescriptors;
         }
 
+        @Override
         public Object getPropertyValue(Object propId) {
             return propId;
         }
 
+        @Override
         public Object getEditableValue() {
             return null;
         }
 
+        @Override
         public boolean isPropertySet(Object id) {
             return false;
         }
 
+        @Override
         public void resetPropertyValue(Object id) {
             //
         }
 
+        @Override
         public void setPropertyValue(Object id, Object value) {
             //
         }
@@ -213,10 +225,12 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             propertyDescriptors = props.toArray(new PropertyDescriptor[0]);
         }
 
+        @Override
         public IPropertyDescriptor[] getPropertyDescriptors() {
             return propertyDescriptors;
         }
 
+        @Override
         public Object getPropertyValue(Object propId) {
             try {
                 if (propId instanceof PropId) {
@@ -242,23 +256,28 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             return null;
         }
 
+        @Override
         public Object getEditableValue() {
             return null;
         }
 
+        @Override
         public boolean isPropertySet(Object id) {
             return false;
         }
 
+        @Override
         public void resetPropertyValue(Object id) {
             //
         }
 
+        @Override
         public void setPropertyValue(Object id, Object value) {
             //
         }
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
         if (adapterType == IPropertySheetPage.class) {
@@ -282,6 +301,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
         return null;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public Class[] getAdapterList() {
         return new Class[] { IPropertySheetPage.class, IPropertySource.class };
@@ -292,6 +312,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
         private boolean isDisposed;
 
         static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
+            @Override
             public String getContributorId() {
                 return FindbugsPlugin.TREE_VIEW_ID;
             }

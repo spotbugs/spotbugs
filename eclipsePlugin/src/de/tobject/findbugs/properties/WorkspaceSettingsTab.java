@@ -129,6 +129,7 @@ public class WorkspaceSettingsTab extends Composite {
     protected DetectorProvider createDetectorProvider(CheckboxTableViewer viewer) {
         final DetectorProvider filterProvider = new DetectorProvider(viewer, page);
         filterProvider.addListener(new Listener() {
+            @Override
             public void handleEvent(Event event) {
                 page.setErrorMessage(null);
                 filterProvider.refresh();

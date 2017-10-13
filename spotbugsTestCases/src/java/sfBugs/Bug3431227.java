@@ -11,7 +11,8 @@ public class Bug3431227<T extends Bug3431227<T>> implements Comparable<T> {
         return _i;
     }
 
-    public int compareTo(T other) {
+    @Override
+	public int compareTo(T other) {
         return other.getI() - getI();
     }
 

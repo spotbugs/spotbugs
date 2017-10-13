@@ -37,6 +37,7 @@ class MarkerSelectionListener implements ISelectionListener {
         this.handler = handler;
     }
 
+    @Override
     public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
         if (thePart == handler || !handler.isVisible()) {
             return;

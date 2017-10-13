@@ -20,19 +20,23 @@ public class SpotBugsReportsImpl extends TaskReportContainer<SingleFileReport> i
       add(TaskGeneratedSingleFileReport.class, "emacs", task);
   }
 
-  public SpotBugsXmlReport getXml() {
+  @Override
+public SpotBugsXmlReport getXml() {
       return (SpotBugsXmlReport) getByName("xml");
   }
 
-  public SingleFileReport getHtml() {
+  @Override
+public SingleFileReport getHtml() {
       return getByName("html");
   }
 
-  public SingleFileReport getText() {
+  @Override
+public SingleFileReport getText() {
       return getByName("text");
   }
 
-  public SingleFileReport getEmacs() {
+  @Override
+public SingleFileReport getEmacs() {
       return getByName("emacs");
   }
 

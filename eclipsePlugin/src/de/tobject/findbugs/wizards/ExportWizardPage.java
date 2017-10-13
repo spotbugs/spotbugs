@@ -85,6 +85,7 @@ public class ExportWizardPage extends WizardPage {
      * org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets
      * .Composite)
      */
+    @Override
     public void createControl(Composite parent) {
         comp = new Composite(parent, SWT.BORDER);
         GridLayout layout = new GridLayout();
@@ -134,10 +135,12 @@ public class ExportWizardPage extends WizardPage {
         button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
         button.setText("Browse...");
         button.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 Set<BugPattern> filtered = FindbugsPlugin.getFilteredPatterns();
                 Set<BugCode> filteredTypes = FindbugsPlugin.getFilteredPatternTypes();
@@ -319,6 +322,7 @@ public class ExportWizardPage extends WizardPage {
             this.notFilteredBugs = notFilteredBugs;
         }
 
+        @Override
         public int compareTo(Record other) {
             int result;
             switch (sortBy) {

@@ -38,10 +38,12 @@ import de.tobject.findbugs.util.Util;
  */
 public class ResourceBugCountDecorator implements ILabelDecorator {
 
+    @Override
     public Image decorateImage(Image image, Object element) {
         return null;
     }
 
+    @Override
     public String decorateText(String text, Object element) {
         WorkItem item = ResourceUtils.getWorkItem(element);
         if (item == null) {
@@ -70,18 +72,22 @@ public class ResourceBugCountDecorator implements ILabelDecorator {
         return decorateText(text, markerCount);
     }
 
+    @Override
     public void addListener(ILabelProviderListener listener) {
         // noop
     }
 
+    @Override
     public void dispose() {
         // noop
     }
 
+    @Override
     public boolean isLabelProperty(Object element, String property) {
         return true;
     }
 
+    @Override
     public void removeListener(ILabelProviderListener listener) {
         // noop
     }

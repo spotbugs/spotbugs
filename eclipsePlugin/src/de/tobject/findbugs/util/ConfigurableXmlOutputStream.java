@@ -66,6 +66,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         this.newLine = true;
     }
 
+    @Override
     public void beginDocument() throws IOException {
         if (!plainText) {
             out.write(OPENING);
@@ -74,10 +75,12 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         newLine = true;
     }
 
+    @Override
     public void openTag(String tagName) throws IOException {
         emitTag(tagName, false);
     }
 
+    @Override
     public void openTag(String tagName, XMLAttributeList attributeList) throws IOException {
         if (!plainText) {
             emitTag(tagName, attributeList.toString(), false);
@@ -96,10 +99,12 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         }
     }
 
+    @Override
     public void openCloseTag(String tagName) throws IOException {
         emitTag(tagName, true);
     }
 
+    @Override
     public void openCloseTag(String tagName, XMLAttributeList attributeList) throws IOException {
         if (!plainText) {
             emitTag(tagName, attributeList.toString(), true);
@@ -118,6 +123,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         }
     }
 
+    @Override
     public void startTag(String tagName) throws IOException {
         indent();
         ++nestingLevel;
@@ -127,6 +133,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         out.write(tagName);
     }
 
+    @Override
     public void addAttribute(String name, String value) throws IOException {
         if (plainText) {
             out.write("\n");
@@ -142,6 +149,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         out.write('"');
     }
 
+    @Override
     public void stopTag(boolean close) throws IOException {
         if (close) {
             if (!plainText) {
@@ -175,6 +183,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         stopTag(close);
     }
 
+    @Override
     public void closeTag(String tagName) throws IOException {
         --nestingLevel;
         if (newLine) {
@@ -187,10 +196,12 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         newLine = true;
     }
 
+    @Override
     public void writeText(String text) throws IOException {
         out.write(Strings.escapeXml(text));
     }
 
+    @Override
     public void writeCDATA(String cdata) throws IOException {
         // FIXME: We just trust fate that the characters being written
         // don't contain the string "]]>"
@@ -209,6 +220,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
         newLine = false;
     }
 
+    @Override
     @DischargesObligation
     public void finish() throws IOException {
         out.flush();

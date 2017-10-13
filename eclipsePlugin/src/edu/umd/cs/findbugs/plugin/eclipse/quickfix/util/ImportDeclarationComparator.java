@@ -40,6 +40,7 @@ public class ImportDeclarationComparator<E extends ImportDeclaration> implements
 
     private static final long serialVersionUID = -5389720178174319293L;
 
+    @Override
     public int compare(E o1, E o2) {
         if (o1 == o2) {
             return 0;

@@ -61,7 +61,8 @@ class AnotherClass {
  * equals. In this case covariant equals is probably a helper.
  */
 class ClassWithEqualsOverridden {
-  public boolean equals(Object other) {
+  @Override
+public boolean equals(Object other) {
     if (other instanceof ClassWithEqualsOverridden) {
       return equals((ClassWithEqualsOverridden)other);
     } else {

@@ -42,14 +42,17 @@ public class CopyMarkerDetailsAction implements IObjectActionDelegate {
         super();
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection newSelection) {
         this.selection = newSelection;
     }
 
+    @Override
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
         // noop
     }
 
+    @Override
     public void run(IAction action) {
         if (selection.isEmpty() || !(selection instanceof IStructuredSelection)) {
             return;

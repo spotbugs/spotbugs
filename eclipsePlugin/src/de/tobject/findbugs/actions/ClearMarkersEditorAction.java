@@ -45,14 +45,17 @@ public class ClearMarkersEditorAction implements IEditorActionDelegate {
 
     private IEditorPart currentEditor;
 
+    @Override
     public final void setActiveEditor(final IAction action, final IEditorPart targetPart) {
         currentEditor = targetPart;
     }
 
+    @Override
     public final void selectionChanged(final IAction action, final ISelection selection) {
         // noop
     }
 
+    @Override
     public final void run(final IAction action) {
         if (currentEditor != null) {
             IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();

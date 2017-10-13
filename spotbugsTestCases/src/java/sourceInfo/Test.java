@@ -36,7 +36,8 @@ public class Test  implements Serializable {
         }
     }
     
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
         return this == o;
     }
 

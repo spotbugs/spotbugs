@@ -44,6 +44,7 @@ public class FindBugsEditorAction extends FindBugsAction implements IEditorActio
     /** The current selection. */
     private IEditorPart currentEditor;
 
+    @Override
     public final void setActiveEditor(final IAction action, final IEditorPart targetPart) {
         currentEditor = targetPart;
     }

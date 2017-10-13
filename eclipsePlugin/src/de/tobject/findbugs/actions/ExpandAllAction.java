@@ -28,12 +28,14 @@ public class ExpandAllAction implements IViewActionDelegate {
 
     private CommonNavigator navigator;
 
+    @Override
     public void init(IViewPart view) {
         if (view instanceof CommonNavigator) {
             navigator = (CommonNavigator) view;
         }
     }
 
+    @Override
     public void run(IAction action) {
         if (navigator != null) {
             if (action.getId().endsWith("Expand")) {
@@ -44,6 +46,7 @@ public class ExpandAllAction implements IViewActionDelegate {
         }
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         // noop
     }

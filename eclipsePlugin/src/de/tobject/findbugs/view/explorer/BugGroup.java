@@ -193,6 +193,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         return shortDescription == null ? getShortDescription() : shortDescription;
     }
 
+    @Override
     public Object getAdapter(Class adapter) {
         if (identifier != null && adapter.isAssignableFrom(identifier.getClass())) {
             return identifier;
@@ -228,6 +229,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         parent = null;
     }
 
+    @Override
     public boolean testAttribute(Object target, String name, String value) {
         if ("type".equals(name)) {
             String groupType = getType().name();
@@ -283,6 +285,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         return o1 == o2 || o1.equals(o2);
     }
 
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public int compareTo(BugGroup o) {
         if(identifier == null || !getType().equals(o.getType())){

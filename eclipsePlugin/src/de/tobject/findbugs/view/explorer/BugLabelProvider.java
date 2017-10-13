@@ -63,6 +63,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         wbProvider = new WorkbenchLabelProvider();
     }
 
+    @Override
     public @CheckForNull Image getImage(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
@@ -106,6 +107,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         return provider == null;
     }
 
+    @Override
     public String getText(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
@@ -183,6 +185,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             Collections.sort(groups, new Comparator<BugGroup>() {
                 Grouping grouping = getGrouping();
 
+                @Override
                 public int compare(BugGroup o1, BugGroup o2) {
                     return grouping.compare(o1.getType(), o2.getType());
                 }
@@ -225,6 +228,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         return count;
     }
 
+    @Override
     public void init(ICommonContentExtensionSite config) {
         provider = BugContentProvider.getProvider(config.getService());
     }
@@ -233,38 +237,47 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
         return provider == null ? null : provider.getGrouping();
     }
 
+    @Override
     public void addListener(ILabelProviderListener listener) {
         // noop
     }
 
+    @Override
     public void dispose() {
         // noop
     }
 
+    @Override
     public boolean isLabelProperty(Object element, String property) {
         return true;
     }
 
+    @Override
     public void removeListener(ILabelProviderListener listener) {
         // noop
     }
 
+    @Override
     public String getDescription(Object anElement) {
         return getText(anElement);
     }
 
+    @Override
     public void restoreState(IMemento memento) {
         // noop
     }
 
+    @Override
     public void saveState(IMemento memento) {
         // noop
     }
 
+    @Override
     public Color getBackground(Object element) {
         return null;
     }
 
+    @Override
     public Color getForeground(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
