@@ -7,7 +7,8 @@ public class Ideas_2011_05_26 {
         }
 
     static class Inner extends Ideas_2011_05_26 {
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             return standardEquals(o);
         }
     }

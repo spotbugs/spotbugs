@@ -16,7 +16,8 @@ public class Bug3589328 {
 
     public static class UriToString implements Function<URI, String> {
 
-        @NoWarning(value="NP")
+        @Override
+		@NoWarning(value="NP")
         public String apply(@Nonnull URI input) {
             return input.toString();
         }

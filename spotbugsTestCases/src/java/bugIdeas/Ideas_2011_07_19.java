@@ -24,7 +24,8 @@ public class Ideas_2011_07_19 {
             return result;
         }
 
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (!(o instanceof Unhashable1))
                 return false;
             Unhashable1 that = (Unhashable1) o;
@@ -50,7 +51,8 @@ public class Ideas_2011_07_19 {
             return result;
         }
 
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (!(o instanceof Unhashable2))
                 return false;
             Unhashable2 that = (Unhashable2) o;
@@ -76,7 +78,8 @@ public class Ideas_2011_07_19 {
             return result;
         }
 
-        public boolean equals(Object o) {
+        @Override
+		public boolean equals(Object o) {
             if (!(o instanceof Unhashable3))
                 return false;
             Unhashable3 that = (Unhashable3) o;

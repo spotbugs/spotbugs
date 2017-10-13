@@ -42,6 +42,7 @@ public final class ResourceChangeListener implements IResourceChangeListener {
         this.refreshJob = refreshJob;
     }
 
+    @Override
     public void resourceChanged(IResourceChangeEvent event) {
 
         boolean postBuild = event.getType() == IResourceChangeEvent.POST_BUILD;

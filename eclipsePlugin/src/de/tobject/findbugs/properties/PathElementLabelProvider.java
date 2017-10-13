@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 
 public class PathElementLabelProvider extends LabelProvider implements IColorProvider {
 
+    @Override
     public Color getForeground(Object element) {
         if(!(element instanceof IPathElement)) {
             return null;
@@ -24,6 +25,7 @@ public class PathElementLabelProvider extends LabelProvider implements IColorPro
         return Display.getDefault().getSystemColor(SWT.COLOR_RED);
     }
 
+    @Override
     public Color getBackground(Object element) {
         return null;
     }

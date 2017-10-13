@@ -41,6 +41,7 @@ public class BugByIdFilter extends ViewerFilter {
         final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         lastUsedFilter = FindbugsPlugin.getFilteredIds();
         store.addPropertyChangeListener(new IPropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 lastUsedFilter = FindbugsPlugin.getFilteredIds();
             }

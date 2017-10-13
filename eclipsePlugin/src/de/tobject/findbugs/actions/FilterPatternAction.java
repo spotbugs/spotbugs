@@ -52,6 +52,7 @@ public class FilterPatternAction implements IObjectActionDelegate {
         super();
     }
 
+    @Override
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
         if (targetPart instanceof CommonNavigator) {
             navigator = (CommonNavigator) targetPart;
@@ -59,6 +60,7 @@ public class FilterPatternAction implements IObjectActionDelegate {
         }
     }
 
+    @Override
     public void run(IAction action) {
         Set<String> sortedIds = FindbugsPlugin.getFilteredIds();
         String patternType = getPatternOrPatternType();
@@ -113,6 +115,7 @@ public class FilterPatternAction implements IObjectActionDelegate {
         return null;
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         if (!(selection instanceof IStructuredSelection)) {
             data = null;

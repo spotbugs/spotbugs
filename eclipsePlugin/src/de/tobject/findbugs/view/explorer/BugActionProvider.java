@@ -111,6 +111,7 @@ public class BugActionProvider extends CommonActionProvider {
             javaElement = MarkerUtil.findJavaElementForMarker(marker);
         }
 
+        @Override
         public void selectionChanged(SelectionChangedEvent event) {
             resetSelection();
             ISelection selection = event.getSelection();
@@ -156,6 +157,7 @@ public class BugActionProvider extends CommonActionProvider {
 
         filterChangeListener = new IPropertyChangeListener() {
 
+            @Override
             public void propertyChange(PropertyChangeEvent event) {
                 if (!initDone) {
                     return;

@@ -29,7 +29,8 @@ public class SpotBugsSpec implements Serializable {
       return debugEnabled;
   }
   
-  public String toString() {
+  @Override
+public String toString() {
       return new ToStringBuilder(this).append("arguments", arguments).append("debugEnabled", debugEnabled).toString();
   }
 }

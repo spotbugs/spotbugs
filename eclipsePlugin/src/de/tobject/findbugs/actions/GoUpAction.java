@@ -33,12 +33,14 @@ import de.tobject.findbugs.view.explorer.Grouping;
 public class GoUpAction implements IViewActionDelegate {
     private BugExplorerView navigator;
 
+    @Override
     public void init(IViewPart view) {
         if (view instanceof BugExplorerView) {
             navigator = (BugExplorerView) view;
         }
     }
 
+    @Override
     public void run(IAction action) {
         if (!action.isEnabled()) {
             return;
@@ -62,6 +64,7 @@ public class GoUpAction implements IViewActionDelegate {
         action.setEnabled(isEnabled());
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         action.setEnabled(isEnabled());
     }

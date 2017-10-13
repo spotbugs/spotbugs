@@ -42,6 +42,7 @@ public class MutexSchedulingRule implements ISchedulingRule {
         this.resource = resource;
     }
 
+    @Override
     public boolean isConflicting(ISchedulingRule rule) {
         if (!(rule instanceof MutexSchedulingRule)) {
             return false;
@@ -57,6 +58,7 @@ public class MutexSchedulingRule implements ISchedulingRule {
         return true;
     }
 
+    @Override
     public boolean contains(ISchedulingRule rule) {
         return isConflicting(rule);
     }

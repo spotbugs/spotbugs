@@ -110,6 +110,7 @@ public class BugContentProvider implements ICommonContentProvider {
         FindbugsPlugin.applyCustomDetectors(false);
     }
 
+    @Override
     public Object[] getChildren(Object parent) {
         if (grouping == null) {
             // on initialization
@@ -173,6 +174,7 @@ public class BugContentProvider implements ICommonContentProvider {
         return resources;
     }
 
+    @Override
     public Object getParent(Object element) {
         if (element instanceof BugGroup) {
             BugGroup groupElement = (BugGroup) element;
@@ -184,6 +186,7 @@ public class BugContentProvider implements ICommonContentProvider {
         return null;
     }
 
+    @Override
     public boolean hasChildren(Object element) {
         // if(element instanceof BugGroup){
         // BugGroup group = (BugGroup) element;
@@ -193,6 +196,7 @@ public class BugContentProvider implements ICommonContentProvider {
         return element instanceof BugGroup || element instanceof IWorkingSet || element instanceof IWorkspaceRoot;
     }
 
+    @Override
     public Object[] getElements(Object inputElement) {
         return getChildren(inputElement);
     }
@@ -430,16 +434,19 @@ public class BugContentProvider implements ICommonContentProvider {
         return grouping;
     }
 
+    @Override
     public void saveState(IMemento memento) {
         if (DEBUG) {
             System.out.println("Save state!");
         }
     }
 
+    @Override
     public void init(ICommonContentExtensionSite config) {
         this.site = config;
     }
 
+    @Override
     public void restoreState(IMemento memento) {
         if (DEBUG) {
             System.out.println("Restore state!");

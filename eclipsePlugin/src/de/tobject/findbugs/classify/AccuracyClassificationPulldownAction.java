@@ -71,6 +71,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
      * org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.
      * swt.widgets.Menu)
      */
+    @Override
     public Menu getMenu(Menu parent) {
         return null;
     }
@@ -82,6 +83,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
      * org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt
      * .widgets.Control)
      */
+    @Override
     public Menu getMenu(Control parent) {
         if (menu == null) {
             menu = new Menu(parent);
@@ -189,6 +191,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
      *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
      */
+    @Override
     public void dispose() {
         if (menu != null) {
             menu.dispose();
@@ -202,6 +205,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.
      * IWorkbenchWindow)
      */
+    @Override
     public void init(IWorkbenchWindow window) {
         // This just runs once when the action is created
     }
@@ -211,6 +215,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
      *
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
+    @Override
     public void run(IAction action) {
         // TODO: we should create a "Classify Warning" dialog here.
     }
@@ -222,6 +227,7 @@ public class AccuracyClassificationPulldownAction implements IWorkbenchWindowPul
      * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action
      * .IAction, org.eclipse.jface.viewers.ISelection)
      */
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
 
         bugInstance = null;

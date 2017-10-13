@@ -151,6 +151,7 @@ public class JavaProjectHelper {
      */
     public static void delete(final IResource elem) throws CoreException {
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+            @Override
             public void run(IProgressMonitor monitor) throws CoreException {
                 try {
                     elem.delete(true, monitor);
@@ -177,6 +178,7 @@ public class JavaProjectHelper {
         performDummySearch();
 
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+            @Override
             public void run(IProgressMonitor monitor) throws CoreException {
                 jproject.setRawClasspath(entries, null);
 
@@ -683,6 +685,7 @@ public class JavaProjectHelper {
     }
 
     private static class ImportOverwriteQuery implements IOverwriteQuery {
+        @Override
         public String queryOverwrite(String file) {
             return ALL;
         }

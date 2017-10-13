@@ -302,6 +302,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         String effortLevel = currentUserPreferences.getEffort();
         effortViewer.setSelection(new StructuredSelection(Effort.getEffort(effortLevel)), true);
         effortViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 Effort placeHolder = (Effort) ((IStructuredSelection) event.getSelection()).getFirstElement();
                 currentUserPreferences.setEffort(placeHolder.getEffortLevel());
@@ -325,6 +326,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 "These settings would be used for the current project only", projectPropsInitiallyEnabled, composite);
 
         enableProjectCheck.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 boolean enabled = enableProjectCheck.getSelection();
                 IProject currProject;
@@ -337,6 +339,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 setProjectEnabled(enabled);
             }
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 // ignored
             }
@@ -367,6 +370,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         link.setFont(composite.getFont());
         link.setText("<A>" + text + "</A>");
         link.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 String id = "FindBugsPreferencePage";
                 int result = PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[] { id }, null).open();
@@ -376,6 +380,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                 }
             }
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
@@ -704,6 +709,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         super.setErrorMessage(newMessage);
     }
 
+    @Override
     public void init(IWorkbench workbench) {
         // noop
     }

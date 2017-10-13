@@ -71,6 +71,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
             tv.setCheckStateProvider(this);
             tv.addCheckStateListener(new ICheckStateListener() {
+                @Override
                 public void checkStateChanged(CheckStateChangedEvent event) {
                     boolean checked = event.getChecked();
                     IPathElement element = (IPathElement) event.getElement();
@@ -193,10 +194,12 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         //
     }
 
+    @Override
     public Object[] getElements(Object inputElement) {
         return paths.toArray();
     }
 
+    @Override
     public boolean isChecked(Object element) {
         if(element instanceof IPathElement) {
             IPathElement elt = (IPathElement) element;
@@ -205,6 +208,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return false;
     }
 
+    @Override
     public boolean isGrayed(Object element) {
         return false;
     }

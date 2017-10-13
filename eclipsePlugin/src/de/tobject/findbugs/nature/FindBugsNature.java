@@ -49,6 +49,7 @@ public class FindBugsNature implements IProjectNature {
      * 
      * @see IProjectNature#configure
      */
+    @Override
     public void configure() throws CoreException {
         if (DEBUG) {
             System.out.println("Adding findbugs to the project build spec.");
@@ -62,6 +63,7 @@ public class FindBugsNature implements IProjectNature {
      * 
      * @see IProjectNature#deconfigure
      */
+    @Override
     public void deconfigure() throws CoreException {
         if (DEBUG) {
             System.out.println("Removing findbugs from the project build spec.");
@@ -149,6 +151,7 @@ public class FindBugsNature implements IProjectNature {
      * 
      * @see IProjectNature#getProject
      */
+    @Override
     public IProject getProject() {
         return this.project;
     }
@@ -158,6 +161,7 @@ public class FindBugsNature implements IProjectNature {
      * 
      * @see IProjectNature#setProject
      */
+    @Override
     public void setProject(IProject project) {
         this.project = project;
     }

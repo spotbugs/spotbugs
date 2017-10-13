@@ -45,10 +45,12 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
         super();
     }
 
+    @Override
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
         site = targetPart.getSite();
     }
 
+    @Override
     public void run(IAction action) {
         if (data == null) {
             return;
@@ -71,6 +73,7 @@ public class ShowInPackageExplorerAction implements IObjectActionDelegate {
         }
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         if (!(selection instanceof IStructuredSelection)) {
             data = null;

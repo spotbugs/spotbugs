@@ -33,18 +33,22 @@ import de.tobject.findbugs.util.ProjectUtilities;
  */
 public class FindbugsSaveParticipant implements ISaveParticipant {
 
+    @Override
     public void doneSaving(ISaveContext context) {
         // noop
     }
 
+    @Override
     public void prepareToSave(ISaveContext context) {
         // noop
     }
 
+    @Override
     public void rollback(ISaveContext context) {
         // noop
     }
 
+    @Override
     public void saving(ISaveContext context) {
         switch (context.getKind()) {
         case ISaveContext.FULL_SAVE:

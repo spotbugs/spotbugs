@@ -71,10 +71,12 @@ public class ManagePathsWidget extends Composite {
             details.setText(linkText);
             details.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false, 2, 1));
             details.addSelectionListener(new SelectionListener() {
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     Program.launch(e.text);
                 }
 
+                @Override
                 public void widgetDefaultSelected(SelectionEvent e) {
                     // noop
                 }
@@ -132,6 +134,7 @@ public class ManagePathsWidget extends Composite {
         removeButton.addSelectionListener(contentProvider);
 
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 if(selection.isEmpty()) {

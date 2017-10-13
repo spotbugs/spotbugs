@@ -119,6 +119,7 @@ public class GroupSelectionDialog extends SelectionDialog {
         checkList.setCheckedElements(preSelectedGroups.toArray());
 
         checkList.addCheckStateListener(new ICheckStateListener() {
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 boolean checked = event.getChecked();
                 GroupType element = (GroupType) event.getElement();

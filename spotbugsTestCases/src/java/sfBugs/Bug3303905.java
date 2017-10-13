@@ -21,13 +21,15 @@ public class Bug3303905 {
     @DesireNoWarning("JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS")
     private transient String toString;
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         if (hashCode == 0)
             hashCode = sourceName.hashCode() + lineNumber;
         return hashCode;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         if (toString == null)
             toString = sourceName + ":" + lineNumber;
         return toString;

@@ -69,6 +69,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent event) {
         if (CONSOLE_FONT.equals(event.getProperty())) {
             setConsoleFont();
@@ -88,6 +89,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
     private void setConsoleFont() {
         if (Display.getCurrent() == null) {
             PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                @Override
                 public void run() {
                     setConsoleFont();
                 }
@@ -101,6 +103,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     public static class FindBugsConsoleFactory implements IConsoleFactory {
 
+        @Override
         public void openConsole() {
             showConsole();
         }
@@ -139,14 +142,17 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
         private RemoveAction removeAction;
 
+        @Override
         public void activated() {
             // noop
         }
 
+        @Override
         public void deactivated() {
             // noop
         }
 
+        @Override
         public void dispose() {
             removeAction = null;
             // followed causes sometimes problems with console removal
@@ -156,12 +162,14 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
             // }
         }
 
+        @Override
         public void init(IPageBookViewPage page, IConsole console1) {
             removeAction = new RemoveAction();
             IActionBars bars = page.getSite().getActionBars();
             bars.getToolBarManager().appendToGroup(IConsoleConstants.LAUNCH_GROUP, removeAction);
         }
 
+        @Override
         public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
             return null;
         }

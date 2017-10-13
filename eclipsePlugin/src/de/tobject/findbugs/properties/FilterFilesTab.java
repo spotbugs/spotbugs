@@ -147,10 +147,12 @@ public class FilterFilesTab extends Composite {
                 + "<a href=\"http://spotbugs.readthedocs.io/en/latest/filter.html\">Details...</a>\n");
 
         label.addSelectionListener(new SelectionListener() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 Program.launch(e.text);
             }
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 // noop
             }
@@ -203,6 +205,7 @@ public class FilterFilesTab extends Composite {
     protected FilterProvider createFilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
         filterProvider.addListener(new Listener() {
+            @Override
             public void handleEvent(Event event) {
                 refreshTables();
             }

@@ -75,6 +75,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
     private final Reporter reporter;
 
     private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
+        @Override
         public void resourceChanged(IResourceChangeEvent event) {
             if(event.getSource() instanceof IProject) {
                 cleanClassClache((IProject) event.getSource());
@@ -85,6 +86,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
                 final IResourceDelta delta = event.getDelta();
                 try {
                     delta.accept(new IResourceDeltaVisitor() {
+                        @Override
                         public boolean visit(IResourceDelta d1) throws CoreException {
                             if(d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
                                 return true;

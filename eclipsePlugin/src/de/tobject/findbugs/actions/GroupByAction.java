@@ -38,12 +38,14 @@ public class GroupByAction implements IViewActionDelegate {
 
     private CommonNavigator navigator;
 
+    @Override
     public void init(IViewPart view) {
         if (view instanceof CommonNavigator) {
             navigator = (CommonNavigator) view;
         }
     }
 
+    @Override
     public void run(IAction action) {
         if (navigator == null) {
             return;
@@ -77,6 +79,7 @@ public class GroupByAction implements IViewActionDelegate {
         return Grouping.createFrom(types);
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         // noop
     }

@@ -49,51 +49,61 @@ public class TestNullnessRelaxation {
     }
 
     static interface SI2 extends I<Integer> {
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         String get();
 
-        @Nullable
+        @Override
+		@Nullable
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         String get2();
 
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        @Override
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@Nonnull Number o);
 
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@Nonnull Integer o);
 
-        @Nullable
+        @Override
+		@Nullable
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o);
     }
 
     static class SimpleClazz implements I<Integer> {
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public String get(){
             return null;
         }
 
-        @Nullable
+        @Override
+		@Nullable
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public String get2(){
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        @Override
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@Nonnull Number o){
             return null;
         }
 
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@Nonnull Integer o){
             return null;
         }
 
-        @Nullable
+        @Override
+		@Nullable
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o){
             return null;
@@ -106,30 +116,35 @@ public class TestNullnessRelaxation {
     abstract static class Clazz2 extends Clazz1 {}
 
     static class Clazz extends Clazz2 {
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public String get(){
             return null;
         }
 
-        @Nullable
+        @Override
+		@Nullable
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public String get2(){
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        @Override
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@Nonnull Number o){
             return null;
         }
 
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@Nonnull Integer o){
             return null;
         }
 
-        @Nullable
+        @Override
+		@Nullable
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o){
             return null;

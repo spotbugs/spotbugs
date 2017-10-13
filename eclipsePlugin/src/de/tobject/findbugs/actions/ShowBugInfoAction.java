@@ -49,14 +49,17 @@ public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDe
         this.targetPart = targetPart;
     }
 
+    @Override
     public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
         this.targetPart = targetPart;
     }
 
+    @Override
     public final void selectionChanged(final IAction action, final ISelection newSelection) {
         this.selection = newSelection;
     }
 
+    @Override
     public final void run(final IAction action) {
         if (targetPart == null) {
             return;
@@ -75,6 +78,7 @@ public class ShowBugInfoAction implements IObjectActionDelegate, IEditorActionDe
         }
     }
 
+    @Override
     public void setActiveEditor(IAction action, IEditorPart editor) {
         targetPart = editor.getSite().getPart();
     }

@@ -38,6 +38,7 @@ public class ExpectedViewMarker implements ExpectedViewElement {
         this.expectedBugType = expectedBugType;
     }
 
+    @Override
     public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
         Assert.assertTrue(actual instanceof IMarker);
         IMarker marker = (IMarker) actual;
@@ -45,6 +46,7 @@ public class ExpectedViewMarker implements ExpectedViewElement {
         Assert.assertEquals(expectedBugType, actualBugType);
     }
 
+    @Override
     public boolean matches(Object actual) throws CoreException {
         if (actual instanceof IMarker) {
             IMarker marker = (IMarker) actual;

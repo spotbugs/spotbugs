@@ -81,6 +81,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         markers = new ArrayList<>();
     }
 
+    @Override
     public void setActiveEditor(IAction callerAction, IEditorPart targetEditor) {
         Control control;
         // See if we're already listenting to an editor; if so, stop listening
@@ -117,6 +118,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         }
     }
 
+    @Override
     public void run(IAction action1) {
         this.action = action1;
         obtainFindBugsMarkers();
@@ -128,6 +130,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         }
     }
 
+    @Override
     public void selectionChanged(IAction action1, ISelection selection) {
         this.action = action1;
     }
@@ -164,6 +167,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         }
     }
 
+    @Override
     public void update() {
         if (markers.size() > 0) {
             IMarker marker = markers.get(0);
@@ -231,6 +235,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         return provider.getDocument(editor.getEditorInput());
     }
 
+    @Override
     public void menuAboutToShow(IMenuManager manager) {
         if (action != null) {
             obtainFindBugsMarkers();
@@ -238,10 +243,12 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         }
     }
 
+    @Override
     public void mouseDoubleClick(MouseEvent e) {
         //
     }
 
+    @Override
     public void mouseDown(MouseEvent e) {
         // Only capture left clicks.
         if (e.button == 1) {
@@ -252,6 +259,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         }
     }
 
+    @Override
     public void mouseUp(MouseEvent e) {
         //
     }

@@ -262,6 +262,7 @@ public class ReportConfigurationTab extends Composite {
             // table
             // to show only relevant entries
             checkBox.addListener(SWT.Selection, new Listener() {
+                @Override
                 public void handleEvent(Event e) {
                     syncSelectedCategories();
                 }

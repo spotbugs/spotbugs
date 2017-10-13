@@ -34,12 +34,14 @@ public class GoIntoAction implements IViewActionDelegate {
 
     private Object selectedElement;
 
+    @Override
     public void init(IViewPart view) {
         if (view instanceof BugExplorerView) {
             navigator = (BugExplorerView) view;
         }
     }
 
+    @Override
     public void run(IAction action) {
         if (action.isEnabled() && navigator != null && selectedElement != null) {
             CommonViewer viewer = navigator.getCommonViewer();
@@ -49,6 +51,7 @@ public class GoIntoAction implements IViewActionDelegate {
         }
     }
 
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         if (!(selection instanceof IStructuredSelection)) {
             action.setEnabled(false);

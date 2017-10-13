@@ -78,6 +78,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         }
     }
 
+    @Override
     final public boolean isVisible() {
         return getSite().getPage().isPartVisible(this);
     }
@@ -128,6 +129,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(new IMenuListener() {
+            @Override
             public void menuAboutToShow(IMenuManager manager) {
                 fillContextMenu(manager);
             }
@@ -270,6 +272,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @param marker
      *            may be null or existing FindBugs marker
      */
+    @Override
     public abstract void markerSelected(IWorkbenchPart thePart, IMarker marker);
 
 }

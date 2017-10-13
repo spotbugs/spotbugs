@@ -33,6 +33,7 @@ public class FindBugsPerspectiveFactory implements IPerspectiveFactory {
     /** perspective id, see plugin.xml */
     public static final String ID = "de.tobject.findbugs.FindBugsPerspective";
 
+    @Override
     public void createInitialLayout(IPageLayout layout) {
         String editorArea = layout.getEditorArea();
         IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, (float) 0.25, editorArea);

@@ -41,31 +41,37 @@ public class TestNullnessRelaxation2 {
 	}
 
 	static interface SI2 extends I<Integer> {
+		@Override
 		@CheckForNull
 		@ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
 		String get();
 
+		@Override
 		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
 		public Integer set(@NonNull Number o);
 
+		@Override
 		@CheckForNull
 		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
 		public Integer set2(@NonNull Integer o);
 	}
 
     static class SimpleClazz implements I<Integer> {
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public String get(){
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        @Override
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@NonNull Number o){
             return null;
         }
 
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@NonNull Integer o){
             return null;
@@ -78,18 +84,21 @@ public class TestNullnessRelaxation2 {
     abstract static class Clazz2 extends Clazz1 {}
 
     static class Clazz extends Clazz2 {
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public String get(){
             return null;
         }
 
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        @Override
+		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@NonNull Number o){
             return null;
         }
 
-        @CheckForNull
+        @Override
+		@CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@NonNull Integer o){
             return null;

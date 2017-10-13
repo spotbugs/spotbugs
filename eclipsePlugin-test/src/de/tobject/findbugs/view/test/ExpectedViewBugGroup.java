@@ -53,6 +53,7 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
         this.markers = markers;
     }
 
+    @Override
     public void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException {
         Assert.assertTrue(actual instanceof BugGroup);
         BugGroup bugGroup = (BugGroup) actual;
@@ -66,6 +67,7 @@ public class ExpectedViewBugGroup implements ExpectedViewElement {
         assertChildren(contentProvider, bugGroup);
     }
 
+    @Override
     public boolean matches(Object actual) throws CoreException {
         if (actual instanceof BugGroup) {
             BugGroup bugGroup = (BugGroup) actual;

@@ -10,7 +10,8 @@ public class Bug1244 {
         this.a = a;
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         return a;
     }
     
@@ -36,7 +37,8 @@ public class Bug1244 {
             this.a = a;
         }
 
-        public int hashCode() {
+        @Override
+		public int hashCode() {
             return a;
         }
         
