@@ -132,40 +132,37 @@ public class SplashFrame extends JWindow {
                 System.err.println(ie);
                 System.exit(1);
             }
-            animator = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    int deltaX = 1;
+            animator = new Thread((Runnable) () -> {
+                int deltaX = 1;
 
-                    while (true) {
-                        if (Thread.currentThread().isInterrupted()) {
-                            return;
-                        }
-
-                        callCount++;
-                        if (callCount == 10) {
-                            swap = !swap;
-                            callCount = 0;
-                        }
-
-                        xpos += deltaX;
-                        try {
-                            Thread.sleep(20);
-                        } catch (InterruptedException e) {
-                            break;
-                        }
-
-                        if (xpos > Viewer.this.getSize().width - image.getWidth(null)) {
-                            deltaX = -1;
-                            reverse = !reverse;
-                        }
-                        if (xpos < 0) {
-                            deltaX = 1;
-                            reverse = !reverse;
-                        }
-
-                        Viewer.this.repaint();
+                while (true) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
                     }
+
+                    callCount++;
+                    if (callCount == 10) {
+                        swap = !swap;
+                        callCount = 0;
+                    }
+
+                    xpos += deltaX;
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+
+                    if (xpos > Viewer.this.getSize().width - image.getWidth(null)) {
+                        deltaX = -1;
+                        reverse = !reverse;
+                    }
+                    if (xpos < 0) {
+                        deltaX = 1;
+                        reverse = !reverse;
+                    }
+
+                    Viewer.this.repaint();
                 }
             }, "SpotBugs Splash screen thread");
             animator.setDaemon(true);

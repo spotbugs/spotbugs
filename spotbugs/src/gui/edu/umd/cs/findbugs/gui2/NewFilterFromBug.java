@@ -20,8 +20,6 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,21 +52,13 @@ public class NewFilterFromBug extends FBDialog {
         JPanel south = new JPanel();
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Matcher matcherFromSelection = filterFromBugPicker.makeMatcherFromSelection();
-                applyNewFilter.fromMatcher(matcherFromSelection);
-                closeDialog();
-            }
+        okButton.addActionListener(evt -> {
+            Matcher matcherFromSelection = filterFromBugPicker.makeMatcherFromSelection();
+            applyNewFilter.fromMatcher(matcherFromSelection);
+            closeDialog();
         });
         JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                closeDialog();
-            }
-        });
+        cancelButton.addActionListener(evt -> closeDialog());
         GuiUtil.addOkAndCancelButtons(south, okButton, cancelButton);
         add(south, BorderLayout.SOUTH);
 

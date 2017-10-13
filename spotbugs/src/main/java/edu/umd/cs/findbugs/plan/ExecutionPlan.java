@@ -19,17 +19,7 @@
 
 package edu.umd.cs.findbugs.plan;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactory;
@@ -489,17 +479,14 @@ public class ExecutionPlan {
     private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass)
     {
         DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
-        Arrays.sort(unassignedList, new Comparator<DetectorFactory>() {
-            @Override
-            public int compare(DetectorFactory a, DetectorFactory b) {
-                // Sort first by plugin id...
-                int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
-                if (cmp != 0) {
-                    return cmp;
-                }
-                // Then by order specified in plugin descriptor
-                return a.getPositionSpecifiedInPluginDescriptor() - b.getPositionSpecifiedInPluginDescriptor();
+        Arrays.sort(unassignedList, (a, b) -> {
+            // Sort first by plugin id...
+            int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());
+            if (cmp != 0) {
+                return cmp;
             }
+            // Then by order specified in plugin descriptor
+            return a.getPositionSpecifiedInPluginDescriptor() - b.getPositionSpecifiedInPluginDescriptor();
         });
         for (DetectorFactory factory : unassignedList) {
             appendToPass(factory, pass);

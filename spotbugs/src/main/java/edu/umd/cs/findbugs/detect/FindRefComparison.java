@@ -786,33 +786,27 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         // Add method-wide properties to BugInstances
         final boolean likelyTestcase = TestCaseDetector.likelyTestCase(XFactory.createXMethod(jclass, method));
 
-        decorateWarnings(stringComparisonList, new WarningDecorator() {
-            @Override
-            public void decorate(WarningWithProperties warn) {
-                if (mightBeLaterCheckedUsingEquals(warn)) {
-                    warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
-                }
-
-                if (likelyTestcase) {
-                    warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
-                }
-                /*
-                if (false && !(method.isPublic() || method.isProtected())) {
-                    warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
-                }
-                 */
+        decorateWarnings(stringComparisonList, warn -> {
+            if (mightBeLaterCheckedUsingEquals(warn)) {
+                warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
             }
-        });
-        decorateWarnings(refComparisonList, new WarningDecorator() {
-            @Override
-            public void decorate(WarningWithProperties warn) {
-                if (likelyTestcase) {
-                    warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
-                }
 
-                if (mightBeLaterCheckedUsingEquals(warn)) {
-                    warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
-                }
+            if (likelyTestcase) {
+                warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
+            }
+            /*
+            if (false && !(method.isPublic() || method.isProtected())) {
+                warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
+            }
+             */
+        });
+        decorateWarnings(refComparisonList, warn -> {
+            if (likelyTestcase) {
+                warn.propertySet.addProperty(RefComparisonWarningProperty.COMPARE_IN_TEST_CASE);
+            }
+
+            if (mightBeLaterCheckedUsingEquals(warn)) {
+                warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
             }
         });
 

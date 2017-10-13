@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.util;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -61,12 +59,7 @@ public class TestDesktopIntegration extends JPanel {
         String u = SystemProperties.getProperty("findbugs.browserTestURL", "http://findbugs.sourceforge.net/");
         url = new URL(u);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                createAndShowGUI();
-            }
-        });
+        SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
 
     private static void createAndShowGUI() {
@@ -138,23 +131,19 @@ public class TestDesktopIntegration extends JPanel {
         }
         if (LaunchBrowser.desktopFeasible()) {
             JButton desktop = new JButton("Use java.awt.Desktop");
-            desktop.addActionListener(new ActionListener() {
+            desktop.addActionListener(e -> {
+                try {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
+                    writer.println("Launch via desktop of " + url);
+                    LaunchBrowser.viaDesktop(url.toURI());
+                    writer.println("Launch via desktop completed");
 
-                        writer.println("Launch via desktop of " + url);
-                        LaunchBrowser.viaDesktop(url.toURI());
-                        writer.println("Launch via desktop completed");
+                } catch (Throwable e1) {
+                    writer.println("Launch via desktop failed");
 
-                    } catch (Throwable e1) {
-                        writer.println("Launch via desktop failed");
-
-                        e1.printStackTrace(writer);
-                    }
-                    writer.flush();
+                    e1.printStackTrace(writer);
                 }
+                writer.flush();
             });
             top.add(desktop);
         } else {
@@ -163,22 +152,19 @@ public class TestDesktopIntegration extends JPanel {
         }
         if (LaunchBrowser.webstartFeasible()) {
             JButton jnlp = new JButton("Use jnlp");
-            jnlp.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
+            jnlp.addActionListener(e -> {
+                try {
 
-                        writer.println("Launch via jnlp of " + url);
-                        JavaWebStart.viaWebStart(url);
-                        writer.println("Launch via jnlp completed");
+                    writer.println("Launch via jnlp of " + url);
+                    JavaWebStart.viaWebStart(url);
+                    writer.println("Launch via jnlp completed");
 
-                    } catch (Throwable e1) {
-                        writer.println("Launch via jnlp failed");
+                } catch (Throwable e1) {
+                    writer.println("Launch via jnlp failed");
 
-                        e1.printStackTrace(writer);
-                    }
-                    writer.flush();
+                    e1.printStackTrace(writer);
                 }
+                writer.flush();
             });
             top.add(jnlp);
         }
@@ -186,24 +172,21 @@ public class TestDesktopIntegration extends JPanel {
         JButton exec = new JButton("exec " + LaunchBrowser.execCommand);
         top.add(exec);
         if (LaunchBrowser.launchViaExec) {
-            exec.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        writer.println("Launch via exec " + LaunchBrowser.execCommand);
-                        writer.println("url: " + url);
-                        Process p = LaunchBrowser.launchViaExec(url);
-                        Thread.sleep(3000);
-                        int exitValue = p.exitValue();
-                        writer.println("Exit code: " + exitValue);
-                        writer.println("Launch via exec completed");
+            exec.addActionListener(e -> {
+                try {
+                    writer.println("Launch via exec " + LaunchBrowser.execCommand);
+                    writer.println("url: " + url);
+                    Process p = LaunchBrowser.launchViaExec(url);
+                    Thread.sleep(3000);
+                    int exitValue = p.exitValue();
+                    writer.println("Exit code: " + exitValue);
+                    writer.println("Launch via exec completed");
 
-                    } catch (Throwable e1) {
-                        writer.println("Launch via exec threw exception");
-                        e1.printStackTrace(writer);
-                    }
-                    writer.flush();
+                } catch (Throwable e1) {
+                    writer.println("Launch via exec threw exception");
+                    e1.printStackTrace(writer);
                 }
+                writer.flush();
             });
 
         } else {
@@ -213,27 +196,23 @@ public class TestDesktopIntegration extends JPanel {
         if (SHOW_FILE_CHOOSER) {
             JButton chooseFile = new JButton("Choose file");
             top.add(chooseFile);
-            chooseFile.addActionListener(new ActionListener() {
+            chooseFile.addActionListener(e -> {
+                final JFileChooser fc = new JFileChooser();
+                int retvel = fc.showOpenDialog(TestDesktopIntegration.this);
+                if (retvel == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    try {
+                        writer.println("File chosen:");
+                        writer.println("File path: " + file.getAbsolutePath());
+                        writer.println("File canonical path: " + file.getCanonicalPath());
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    final JFileChooser fc = new JFileChooser();
-                    int retvel = fc.showOpenDialog(TestDesktopIntegration.this);
-                    if (retvel == JFileChooser.APPROVE_OPTION) {
-                        File file = fc.getSelectedFile();
-                        try {
-                            writer.println("File chosen:");
-                            writer.println("File path: " + file.getAbsolutePath());
-                            writer.println("File canonical path: " + file.getCanonicalPath());
+                        writer.println("File uri: " + file.toURI());
 
-                            writer.println("File uri: " + file.toURI());
-
-                            writer.println("File url: " + file.toURL());
-                        } catch (Exception e1) {
-                            e1.printStackTrace(writer);
-                        }
-                        writer.flush();
+                        writer.println("File url: " + file.toURL());
+                    } catch (Exception e1) {
+                        e1.printStackTrace(writer);
                     }
+                    writer.flush();
                 }
             });
         }

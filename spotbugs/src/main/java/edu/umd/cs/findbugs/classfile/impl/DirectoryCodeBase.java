@@ -19,13 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -96,17 +90,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
             throw new IllegalArgumentException();
         }
         this.directory = directory;
-        this.rfs = new RecursiveFileSearch(directory.getPath(), new FileFilter() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see java.io.FileFilter#accept(java.io.File)
-             */
-            @Override
-            public boolean accept(File pathname) {
-                return true;
-            }
-        });
+        this.rfs = new RecursiveFileSearch(directory.getPath(), pathname -> true);
         this.searchPerformed = false;
     }
 

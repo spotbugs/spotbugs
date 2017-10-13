@@ -375,12 +375,7 @@ public abstract class AbstractBugReporter implements BugReporter {
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
         Error[] errorList = errorSet.toArray(new Error[errorSet.size()]);
-        Arrays.sort(errorList, new Comparator<Error>() {
-            @Override
-            public int compare(Error o1, Error o2) {
-                return o1.getSequence() - o2.getSequence();
-            }
-        });
+        Arrays.sort(errorList, (o1, o2) -> o1.getSequence() - o2.getSequence());
         for (Error error : errorList) {
             reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
         }

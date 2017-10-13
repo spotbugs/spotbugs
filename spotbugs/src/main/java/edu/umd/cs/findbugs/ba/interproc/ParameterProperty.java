@@ -60,46 +60,39 @@ public class ParameterProperty {
     }
 
     public Iterable<Integer> iterable() {
-        return new Iterable<Integer>() {
-
-            @Override
-            public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
-                    int nextInt = 0;
-                    {
-                        advanceNextInt();
-                    }
-
-                    private void advanceNextInt() {
-                        while (!hasProperty(nextInt) && nextInt < 32) {
-                            nextInt++;
-                        }
-                        if (nextInt >= 32) {
-                            nextInt = -1;
-                        }
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return nextInt >= 0;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        int result = nextInt;
-                        nextInt++;
-                        advanceNextInt();
-                        return result;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-
-                    }
-                };
+        return () -> new Iterator<Integer>() {
+            int nextInt = 0;
+            {
+                advanceNextInt();
             }
 
+            private void advanceNextInt() {
+                while (!hasProperty(nextInt) && nextInt < 32) {
+                    nextInt++;
+                }
+                if (nextInt >= 32) {
+                    nextInt = -1;
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return nextInt >= 0;
+            }
+
+            @Override
+            public Integer next() {
+                int result = nextInt;
+                nextInt++;
+                advanceNextInt();
+                return result;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+
+            }
         };
     }
 

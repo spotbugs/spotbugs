@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.reporting.internal.CustomizableHtmlReportImpl;
-import org.gradle.api.specs.Spec;
 import org.gradle.util.CollectionUtils;
 
 import com.github.spotbugs.SpotBugsReports;
@@ -178,11 +177,7 @@ public class SpotBugsSpecBuilder {
             args.add("-auxclasspath");
 
             // Filter unexisting files as SpotBugs can't handle them.
-            args.add(classpath.filter(new Spec<File>() {
-                public boolean isSatisfiedBy(File element) {
-                    return element.exists();
-                }
-            }).getAsPath());
+            args.add(classpath.filter(element -> element.exists()).getAsPath());
         }
 
         if (has(effort)) {

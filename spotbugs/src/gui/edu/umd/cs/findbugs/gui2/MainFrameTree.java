@@ -9,7 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -78,30 +77,27 @@ public class MainFrameTree {
     }
 
     public void newTree(final JTree newTree, final BugTreeModel newModel) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                tree = newTree;
-                tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-                tree.setLargeModel(true);
-                tree.setCellRenderer(new BugRenderer());
-                treePanel.remove(treeScrollPane);
-                treeScrollPane = new JScrollPane(newTree);
-                treePanel.add(treeScrollPane);
-                mainFrame.setFontSizeHelper(Driver.getFontSize(), treeScrollPane);
-                tree.setRowHeight((int) (Driver.getFontSize() + 7));
-                mainFrame.getContentPane().validate();
-                mainFrame.getContentPane().repaint();
+        SwingUtilities.invokeLater(() -> {
+            tree = newTree;
+            tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+            tree.setLargeModel(true);
+            tree.setCellRenderer(new BugRenderer());
+            treePanel.remove(treeScrollPane);
+            treeScrollPane = new JScrollPane(newTree);
+            treePanel.add(treeScrollPane);
+            mainFrame.setFontSizeHelper(Driver.getFontSize(), treeScrollPane);
+            tree.setRowHeight((int) (Driver.getFontSize() + 7));
+            mainFrame.getContentPane().validate();
+            mainFrame.getContentPane().repaint();
 
-                setupTreeListeners();
-                newModel.openPreviouslySelected(((BugTreeModel) (tree.getModel())).getOldSelectedBugs());
-                expandTree(10);
-                expandToFirstLeaf(14);
-                mainFrame.getSorter().addColumnModelListener(newModel);
-                FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
-                mainFrame.mainFrameTree.setSorting(true);
+            setupTreeListeners();
+            newModel.openPreviouslySelected(((BugTreeModel) (tree.getModel())).getOldSelectedBugs());
+            expandTree(10);
+            expandToFirstLeaf(14);
+            mainFrame.getSorter().addColumnModelListener(newModel);
+            FilterActivity.addFilterListener(newModel.bugTreeFilterListener);
+            mainFrame.mainFrameTree.setSorting(true);
 
-            }
         });
     }
 
@@ -183,18 +179,15 @@ public class MainFrameTree {
 
         JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
 
-        filterMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                new NewFilterFromBug(new FilterFromBugPicker(currentSelectedBugLeaf.getBug(),
-                        Arrays.asList(mainFrame.getAvailableSortables())),
-                        new ApplyNewFilter(mainFrame.getProject().getSuppressionFilter(),
-                                PreferencesFrame.getInstance(),
-                                new FilterActivityNotifier()));
+        filterMenuItem.addActionListener(evt -> {
+            new NewFilterFromBug(new FilterFromBugPicker(currentSelectedBugLeaf.getBug(),
+                    Arrays.asList(mainFrame.getAvailableSortables())),
+                    new ApplyNewFilter(mainFrame.getProject().getSuppressionFilter(),
+                            PreferencesFrame.getInstance(),
+                            new FilterActivityNotifier()));
 
-                mainFrame.setProjectChanged(true);
-                mainFrame.getTree().setSelectionRow(0); // Selects the top of the Jtree so the CommentsArea syncs up.
-            }
+            mainFrame.setProjectChanged(true);
+            mainFrame.getTree().setSelectionRow(0); // Selects the top of the Jtree so the CommentsArea syncs up.
         });
 
         popupMenu.add(filterMenuItem);
@@ -211,77 +204,74 @@ public class MainFrameTree {
 
         JMenuItem filterMenuItem = MainFrameHelper.newJMenuItem("menu.filterTheseBugs", "Filter these bugs");
 
-        filterMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                // TODO This code does a smarter version of filtering that is
-                // only possible for branches, and does so correctly
-                // However, it is still somewhat of a hack, because if we ever
-                // add more tree listeners than simply the bugtreemodel,
-                // They will not be called by this code. Using FilterActivity to
-                // notify all listeners will however destroy any
-                // benefit of using the smarter deletion method.
+        filterMenuItem.addActionListener(evt -> {
+            // TODO This code does a smarter version of filtering that is
+            // only possible for branches, and does so correctly
+            // However, it is still somewhat of a hack, because if we ever
+            // add more tree listeners than simply the bugtreemodel,
+            // They will not be called by this code. Using FilterActivity to
+            // notify all listeners will however destroy any
+            // benefit of using the smarter deletion method.
 
-                try {
-                    int startCount;
-                    TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
-                    TreePath deletePath = path;
-                    startCount = ((BugAspects) (path.getLastPathComponent())).getCount();
-                    int count = ((BugAspects) (path.getParentPath().getLastPathComponent())).getCount();
-                    while (count == startCount) {
-                        deletePath = deletePath.getParentPath();
-                        if (deletePath.getParentPath() == null)// We are at the
-                            // top of the
-                            // tree, don't
-                            // let this be
-                            // removed,
-                            // rebuild tree
-                            // from root.
-                        {
-                            Matcher m = mainFrame.getCurrentSelectedBugAspects().getMatcher();
-                            Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
-                            suppressionFilter.addChild(m);
-                            PreferencesFrame.getInstance().updateFilterPanel();
-                            FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-                            return;
-                        }
-                        count = ((BugAspects) (deletePath.getParentPath().getLastPathComponent())).getCount();
+            try {
+                int startCount;
+                TreePath path = MainFrame.getInstance().getTree().getSelectionPath();
+                TreePath deletePath = path;
+                startCount = ((BugAspects) (path.getLastPathComponent())).getCount();
+                int count = ((BugAspects) (path.getParentPath().getLastPathComponent())).getCount();
+                while (count == startCount) {
+                    deletePath = deletePath.getParentPath();
+                    if (deletePath.getParentPath() == null)// We are at the
+                        // top of the
+                        // tree, don't
+                        // let this be
+                        // removed,
+                        // rebuild tree
+                        // from root.
+                    {
+                        Matcher m1 = mainFrame.getCurrentSelectedBugAspects().getMatcher();
+                        Filter suppressionFilter1 = MainFrame.getInstance().getProject().getSuppressionFilter();
+                        suppressionFilter1.addChild(m1);
+                        PreferencesFrame.getInstance().updateFilterPanel();
+                        FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+                        return;
                     }
-                    /*
-                     * deletePath should now be a path to the highest ancestor
-                     * branch with the same number of elements as the branch to
-                     * be deleted in other words, the branch that we actually
-                     * have to remove in order to correctly remove the selected
-                     * branch.
-                     */
-                    BugTreeModel model = MainFrame.getInstance().getBugTreeModel();
-                    TreeModelEvent event = new TreeModelEvent(mainFrame, deletePath.getParentPath(),
-                            new int[] { model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),
-                                    deletePath.getLastPathComponent()) }, new Object[] { deletePath.getLastPathComponent() });
-                    Matcher m = mainFrame.getCurrentSelectedBugAspects().getMatcher();
-                    Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
-                    suppressionFilter.addChild(m);
-                    PreferencesFrame.getInstance().updateFilterPanel();
-                    model.sendEvent(event, BugTreeModel.TreeModification.REMOVE);
-                    // FilterActivity.notifyListeners(FilterListener.Action.FILTERING,
-                    // null);
-
-                    mainFrame.setProjectChanged(true);
-
-                    MainFrame.getInstance().getTree().setSelectionRow(0);// Selects
-                    // the
-                    // top
-                    // of
-                    // the
-                    // Jtree
-                    // so
-                    // the
-                    // CommentsArea
-                    // syncs
-                    // up.
-                } catch (RuntimeException e) {
-                    MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
+                    count = ((BugAspects) (deletePath.getParentPath().getLastPathComponent())).getCount();
                 }
+                /*
+                 * deletePath should now be a path to the highest ancestor
+                 * branch with the same number of elements as the branch to
+                 * be deleted in other words, the branch that we actually
+                 * have to remove in order to correctly remove the selected
+                 * branch.
+                 */
+                BugTreeModel model = MainFrame.getInstance().getBugTreeModel();
+                TreeModelEvent event = new TreeModelEvent(mainFrame, deletePath.getParentPath(),
+                        new int[] { model.getIndexOfChild(deletePath.getParentPath().getLastPathComponent(),
+                                deletePath.getLastPathComponent()) }, new Object[] { deletePath.getLastPathComponent() });
+                Matcher m2 = mainFrame.getCurrentSelectedBugAspects().getMatcher();
+                Filter suppressionFilter2 = MainFrame.getInstance().getProject().getSuppressionFilter();
+                suppressionFilter2.addChild(m2);
+                PreferencesFrame.getInstance().updateFilterPanel();
+                model.sendEvent(event, BugTreeModel.TreeModification.REMOVE);
+                // FilterActivity.notifyListeners(FilterListener.Action.FILTERING,
+                // null);
+
+                mainFrame.setProjectChanged(true);
+
+                MainFrame.getInstance().getTree().setSelectionRow(0);// Selects
+                // the
+                // top
+                // of
+                // the
+                // Jtree
+                // so
+                // the
+                // CommentsArea
+                // syncs
+                // up.
+            } catch (RuntimeException e) {
+                MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
             }
         });
 
@@ -292,12 +282,9 @@ public class MainFrameTree {
 
     ActionListener treeActionAdapter(ActionMap map, String actionName) {
         final Action selectPrevious = map.get(actionName);
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                e.setSource(tree);
-                selectPrevious.actionPerformed(e);
-            }
+        return e -> {
+            e.setSource(tree);
+            selectPrevious.actionPerformed(e);
         };
     }
 
@@ -419,22 +406,18 @@ public class MainFrameTree {
         t.setTableHeader(getTableheader());
 
         textFieldForPackagesToDisplay = new JTextField();
-        ActionListener filterAction = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    String text = textFieldForPackagesToDisplay.getText();
-                    if (text.indexOf('/') >= 0) {
-                        text = text.replace('/', '.');
-                        textFieldForPackagesToDisplay.setText(text);
-                    }
-                    mainFrame.getViewFilter().setPackagesToDisplay(text);
-                    mainFrame.resetViewCache();
-                } catch (IllegalArgumentException err) {
-                    JOptionPane.showMessageDialog(mainFrame, err.getMessage(), "Bad class search string",
-                            JOptionPane.ERROR_MESSAGE);
+        ActionListener filterAction = e -> {
+            try {
+                String text = textFieldForPackagesToDisplay.getText();
+                if (text.indexOf('/') >= 0) {
+                    text = text.replace('/', '.');
+                    textFieldForPackagesToDisplay.setText(text);
                 }
+                mainFrame.getViewFilter().setPackagesToDisplay(text);
+                mainFrame.resetViewCache();
+            } catch (IllegalArgumentException err) {
+                JOptionPane.showMessageDialog(mainFrame, err.getMessage(), "Bad class search string",
+                        JOptionPane.ERROR_MESSAGE);
             }
         };
         textFieldForPackagesToDisplay.addActionListener(filterAction);
@@ -502,20 +485,17 @@ public class MainFrameTree {
     }
 
     void showCard(final MainFrame.BugCard card, final Cursor cursor, final Window window) {
-        Runnable doRun = new Runnable() {
-            @Override
-            public void run() {
-                mainFrame.enableRecentMenu(card == MainFrame.BugCard.TREECARD);
-                getTableheader().setReorderingAllowed(card == MainFrame.BugCard.TREECARD);
-                mainFrame.getMainFrameMenu().enablePreferencesMenuItem(card == MainFrame.BugCard.TREECARD);
-                window.setCursor(cursor);
-                CardLayout layout = (CardLayout) cardPanel.getLayout();
-                layout.show(cardPanel, card.name());
-                if (card == MainFrame.BugCard.TREECARD) {
-                    SorterDialog.getInstance().thaw();
-                } else {
-                    SorterDialog.getInstance().freeze();
-                }
+        Runnable doRun = () -> {
+            mainFrame.enableRecentMenu(card == MainFrame.BugCard.TREECARD);
+            getTableheader().setReorderingAllowed(card == MainFrame.BugCard.TREECARD);
+            mainFrame.getMainFrameMenu().enablePreferencesMenuItem(card == MainFrame.BugCard.TREECARD);
+            window.setCursor(cursor);
+            CardLayout layout = (CardLayout) cardPanel.getLayout();
+            layout.show(cardPanel, card.name());
+            if (card == MainFrame.BugCard.TREECARD) {
+                SorterDialog.getInstance().thaw();
+            } else {
+                SorterDialog.getInstance().freeze();
             }
         };
         if (SwingUtilities.isEventDispatchThread()) {

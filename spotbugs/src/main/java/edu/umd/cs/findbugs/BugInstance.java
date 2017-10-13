@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.*;
+
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -27,18 +29,6 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -2063,12 +2053,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             for(BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
                 props.add(prop);
             }
-            Collections.sort(props, new Comparator<BugProperty>() {
-                @Override
-                public int compare(BugProperty o1, BugProperty o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
+            Collections.sort(props, (o1, o2) -> o1.getName().compareTo(o2.getName()));
             for(BugProperty prop : props) {
                 prop.writeXML(xmlOutput);
             }

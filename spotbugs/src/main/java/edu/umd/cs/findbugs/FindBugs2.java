@@ -1004,18 +1004,14 @@ public class FindBugs2 implements IFindBugsEngine {
                     }
                 }
                 if (!isNonReportingFirstPass) {
-                    OutEdges<ClassDescriptor> outEdges = new OutEdges<ClassDescriptor>() {
+                    OutEdges<ClassDescriptor> outEdges = e -> {
+                        try {
+                            XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
+                            return classNameAndInfo.getCalledClassDescriptors();
+                        } catch (CheckedAnalysisException e2) {
+                            AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
+                            return Collections.emptyList();
 
-                        @Override
-                        public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
-                            try {
-                                XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, e);
-                                return classNameAndInfo.getCalledClassDescriptors();
-                            } catch (CheckedAnalysisException e2) {
-                                AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
-                                return Collections.emptyList();
-
-                            }
                         }
                     };
 

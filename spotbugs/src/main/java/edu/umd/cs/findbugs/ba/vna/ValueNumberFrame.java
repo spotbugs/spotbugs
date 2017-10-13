@@ -73,20 +73,16 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     static int reusedMutableMap;
 
     static {
-        Util.runLogAtShutdown(new Runnable() {
+        Util.runLogAtShutdown(() -> {
+            System.err.println("Getting updatable previously known as:");
+            System.err.println("  " + createdEmptyMap + " created empty map");
+            System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
+            System.err.println("  " + reusedMutableMap + " reused mutable map");
+            System.err.println("Copying map:");
+            System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
+            System.err.println("  " + reusedMap + " reused immutable map");
+            System.err.println();
 
-            @Override
-            public void run() {
-                System.err.println("Getting updatable previously known as:");
-                System.err.println("  " + createdEmptyMap + " created empty map");
-                System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
-                System.err.println("  " + reusedMutableMap + " reused mutable map");
-                System.err.println("Copying map:");
-                System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
-                System.err.println("  " + reusedMap + " reused immutable map");
-                System.err.println();
-
-            }
         });
     }
 

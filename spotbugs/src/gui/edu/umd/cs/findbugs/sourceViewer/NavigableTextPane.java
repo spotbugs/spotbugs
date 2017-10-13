@@ -90,12 +90,7 @@ public class NavigableTextPane extends JTextPane {
     private void scrollYToVisibleImpl(int y, int margin) {
         final Rectangle r = new Rectangle(0, y - margin, 4, 2 * margin);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                scrollRectToVisible(r);
-            }
-        });
+        SwingUtilities.invokeLater(() -> scrollRectToVisible(r));
     }
 
     private void scrollLineToVisibleImpl(int line, int margin) {

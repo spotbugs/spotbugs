@@ -70,15 +70,8 @@ public class ValueNumber implements Comparable<ValueNumber> {
     }
 
     static {
-        Util.runLogAtShutdown(new Runnable() {
-
-            @Override
-            public void run() {
-                System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused
-                        + " reused");
-
-            }
-        });
+        Util.runLogAtShutdown(() -> System.out.println("Value number statistics: " + valueNumbersCreated + " created, " + valueNumbersReused
+                + " reused"));
     }
 
     /**

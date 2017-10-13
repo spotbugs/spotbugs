@@ -454,23 +454,20 @@ public class MainFrame extends FBFrame implements LogSync {
             displayer.clearCache();
             mainFrameTree.updateBugTree();
             setProjectChanged(false);
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    PreferencesFrame.getInstance().updateFilterPanel();
-                    mainFrameMenu.getReconfigMenuItem().setEnabled(true);
-                    mainFrameMenu.setViewMenu();
-                    newProject();
-                    clearSourcePane();
-                    clearSummaryTab();
+            Runnable runnable = () -> {
+                PreferencesFrame.getInstance().updateFilterPanel();
+                mainFrameMenu.getReconfigMenuItem().setEnabled(true);
+                mainFrameMenu.setViewMenu();
+                newProject();
+                clearSourcePane();
+                clearSummaryTab();
 
-                    /*
-                     * This is here due to a threading issue. It can only be
-                     * called after curProject has been changed. Since this
-                     * method is called by both open methods it is put here.
-                     */
-                    updateTitle();
-                }
+                /*
+                 * This is here due to a threading issue. It can only be
+                 * called after curProject has been changed. Since this
+                 * method is called by both open methods it is put here.
+                 */
+                updateTitle();
             };
             if (SwingUtilities.isEventDispatchThread()) {
                 runnable.run();
@@ -549,17 +546,14 @@ public class MainFrame extends FBFrame implements LogSync {
         /// QQQ-TODO: new RuntimeException("Redo analysis called").printStackTrace();
         acquireDisplayWait();
         edu.umd.cs.findbugs.util.Util.runInDameonThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Project project = getProject();
-                            BugCollection bc = BugLoader.redoAnalysisKeepComments(project);
-                            updateProjectAndBugCollection(bc);
-                            setProjectAndBugCollectionInSwingThread(project, bc);
-                        } finally {
-                            releaseDisplayWait();
-                        }
+                () -> {
+                    try {
+                        Project project = getProject();
+                        BugCollection bc = BugLoader.redoAnalysisKeepComments(project);
+                        updateProjectAndBugCollection(bc);
+                        setProjectAndBugCollectionInSwingThread(project, bc);
+                    } finally {
+                        releaseDisplayWait();
                     }
                 });
     }
@@ -584,12 +578,9 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     void clearSourcePane() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                mainFrameComponentFactory.setSourceTab("", null);
-                sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
-            }
+        SwingUtilities.invokeLater(() -> {
+            mainFrameComponentFactory.setSourceTab("", null);
+            sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
         });
     }
 
@@ -724,37 +715,29 @@ public class MainFrame extends FBFrame implements LogSync {
     private void updateSummaryTab(BugLeafNode node) {
         final BugInstance bug = node.getBug();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                summaryTopPanel.removeAll();
+        SwingUtilities.invokeLater(() -> {
+            summaryTopPanel.removeAll();
 
-                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
+            summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(bug.getAbridgedMessage(), bug));
 
-                for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
-                    summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
-                }
-
-
-                BugPattern bugPattern = bug.getBugPattern();
-                String detailText =
-                        bugPattern.getDetailText()
-                        +"<br><p> <b>Bug kind and pattern: " +
-                        bugPattern.getAbbrev() + " - " + bugPattern.getType();
-                String txt = bugPattern.getDetailHTML(detailText);
-                summaryHtmlArea.setText(txt);
-
-                summaryTopPanel.add(Box.createVerticalGlue());
-                summaryTopPanel.revalidate();
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        summaryHtmlScrollPane.getVerticalScrollBar().setValue(
-                                summaryHtmlScrollPane.getVerticalScrollBar().getMinimum());
-                    }
-                });
+            for (BugAnnotation b : bug.getAnnotationsForMessage(true)) {
+                summaryTopPanel.add(mainFrameComponentFactory.bugSummaryComponent(b, bug));
             }
+
+
+            BugPattern bugPattern = bug.getBugPattern();
+            String detailText =
+                    bugPattern.getDetailText()
+                    +"<br><p> <b>Bug kind and pattern: " +
+                    bugPattern.getAbbrev() + " - " + bugPattern.getType();
+            String txt = bugPattern.getDetailHTML(detailText);
+            summaryHtmlArea.setText(txt);
+
+            summaryTopPanel.add(Box.createVerticalGlue());
+            summaryTopPanel.revalidate();
+
+            SwingUtilities.invokeLater(() -> summaryHtmlScrollPane.getVerticalScrollBar().setValue(
+                    summaryHtmlScrollPane.getVerticalScrollBar().getMinimum()));
         });
     }
 
@@ -973,12 +956,7 @@ public class MainFrame extends FBFrame implements LogSync {
         @Override
         public void setErrorMessage(String errorMsg) {
             MainFrame.this.errorMsg = errorMsg;
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    updateStatusBar();
-                }
-            });
+            SwingUtilities.invokeLater(() -> updateStatusBar());
         }
     }
 }

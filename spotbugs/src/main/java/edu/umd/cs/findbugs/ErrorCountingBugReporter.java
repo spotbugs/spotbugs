@@ -39,12 +39,7 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
         // Add an observer to record when bugs make it through
         // all priority and filter criteria, so our bug count is
         // accurate.
-        realBugReporter.addObserver(new BugReporterObserver() {
-            @Override
-            public void reportBug(BugInstance bugInstance) {
-                ++bugCount;
-            }
-        });
+        realBugReporter.addObserver(bugInstance -> ++bugCount);
     }
 
     public int getBugCount() {

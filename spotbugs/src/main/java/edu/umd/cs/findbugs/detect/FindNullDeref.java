@@ -68,27 +68,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowValueChooser;
-import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
-import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.ba.SignatureParser;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
@@ -445,21 +425,8 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
         }
          */
-        BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
-            @Override
-            public boolean choose(IsNullValue value) {
-                // Only choose non-exception values.
-                // Values null on an exception path might be due to
-                // infeasible control flow.
-                return value.mightBeNull() && !value.isException() && !value.isReturnValue();
-            }
-        });
-        BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
-            @Override
-            public boolean choose(IsNullValue value) {
-                return value.isDefinitelyNull();
-            }
-        });
+        BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, value -> value.mightBeNull() && !value.isException() && !value.isReturnValue());
+        BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, value -> value.isDefinitelyNull());
         nullArgSet.and(definitelyNullArgSet);
         if (nullArgSet.isEmpty()) {
             return;

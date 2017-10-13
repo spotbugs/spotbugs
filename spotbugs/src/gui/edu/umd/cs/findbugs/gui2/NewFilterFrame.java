@@ -23,8 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -115,17 +113,14 @@ public class NewFilterFrame extends FBDialog {
                 return result;
             }
         });
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Sortables filterBy = (Sortables) comboBox.getSelectedItem();
-                String[] rawValues = filterBy.getAllSorted();
-                String[] listData = new String[rawValues.length];
-                for (int i = 0; i < listData.length; i++) {
-                    listData[i] = filterBy.formatValue(rawValues[i]);
-                }
-                list.setListData(listData);
+        comboBox.addActionListener(evt -> {
+            Sortables filterBy = (Sortables) comboBox.getSelectedItem();
+            String[] rawValues = filterBy.getAllSorted();
+            String[] listData = new String[rawValues.length];
+            for (int i = 0; i < listData.length; i++) {
+                listData[i] = filterBy.formatValue(rawValues[i]);
             }
+            list.setListData(listData);
         });
         comboBox.validate();
         north.add(comboBox);
@@ -139,36 +134,28 @@ public class NewFilterFrame extends FBDialog {
         north.add(Box.createHorizontalGlue());
         JPanel south = new JPanel();
         JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Sortables key = (Sortables) comboBox.getSelectedItem();
-                String[] values = key.getAllSorted();
+        okButton.addActionListener(evt -> {
+            Sortables key = (Sortables) comboBox.getSelectedItem();
+            String[] values = key.getAllSorted();
 
-                ArrayList<SortableValue> filterMe = new ArrayList<>();
-                for (int i : list.getSelectedIndices()) {
-                    filterMe.add(new BugAspects.SortableValue(key, values[i]));
-                }
-                try {
-                    MainFrame.getInstance().getProject().getSuppressionFilter().addChild(FilterFactory.makeOrMatcher(filterMe));
-                } catch (RuntimeException e) {
-                    MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
-                    close();
-                    return;
-                }
-                FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
-                PreferencesFrame.getInstance().updateFilterPanel();
-                MainFrame.getInstance().setProjectChanged(true);
-                close();
+            ArrayList<SortableValue> filterMe = new ArrayList<>();
+            for (int i : list.getSelectedIndices()) {
+                filterMe.add(new BugAspects.SortableValue(key, values[i]));
             }
+            try {
+                MainFrame.getInstance().getProject().getSuppressionFilter().addChild(FilterFactory.makeOrMatcher(filterMe));
+            } catch (RuntimeException e) {
+                MainFrame.getInstance().showMessageDialog("Unable to create filter: " + e.getMessage());
+                close();
+                return;
+            }
+            FilterActivity.notifyListeners(FilterListener.Action.FILTERING, null);
+            PreferencesFrame.getInstance().updateFilterPanel();
+            MainFrame.getInstance().setProjectChanged(true);
+            close();
         });
         JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                close();
-            }
-        });
+        cancelButton.addActionListener(evt -> close());
         GuiUtil.addOkAndCancelButtons(south, okButton, cancelButton);
 
         list.addMouseListener(new MouseAdapter() {

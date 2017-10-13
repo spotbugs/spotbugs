@@ -323,12 +323,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * Get an Iterator over the Locations in the control flow graph.
      */
     public Iterable<Location> locations() {
-        return new Iterable<Location>() {
-            @Override
-            public Iterator<Location> iterator() {
-                return locationIterator();
-            }
-        };
+        return () -> locationIterator();
     }
 
     /**

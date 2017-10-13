@@ -212,33 +212,29 @@ public class SourceFinder {
 
     SourceRepository makeInMemorySourceRepository(final String url) {
         final BlockingSourceRepository r = new BlockingSourceRepository();
-        Util.runInDameonThread(new Runnable() {
+        Util.runInDameonThread(() -> {
+            InputStream in = null;
+            try {
 
-            @Override
-            public void run() {
-                InputStream in = null;
-                try {
-
-                    URLConnection connection = new URL(url).openConnection();
-                    in = connection.getInputStream();
-                    if (getProject().isGuiAvaliable()) {
-                        in = getProject().getGuiCallback().getProgressMonitorInputStream(in, connection.getContentLength(),
-                                "Downloading project source code...");
-                    }
-
-                    if (url.endsWith(".z0p.gz")) {
-                        in = new GZIPInputStream(in);
-                    }
-
-                    r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
-
-                } catch (IOException e) {
-                    if (getProject().isGuiAvaliable()) {
-                        getProject().getGuiCallback().setErrorMessage("Unable to load " + url + "; " + e.getMessage());
-                    }
-                    AnalysisContext.logError("Unable to load " + url, e);
-                    Util.closeSilently(in);
+                URLConnection connection = new URL(url).openConnection();
+                in = connection.getInputStream();
+                if (getProject().isGuiAvaliable()) {
+                    in = getProject().getGuiCallback().getProgressMonitorInputStream(in, connection.getContentLength(),
+                            "Downloading project source code...");
                 }
+
+                if (url.endsWith(".z0p.gz")) {
+                    in = new GZIPInputStream(in);
+                }
+
+                r.setBase(new InMemorySourceRepository(new ZipInputStream(in)));
+
+            } catch (IOException e) {
+                if (getProject().isGuiAvaliable()) {
+                    getProject().getGuiCallback().setErrorMessage("Unable to load " + url + "; " + e.getMessage());
+                }
+                AnalysisContext.logError("Unable to load " + url, e);
+                Util.closeSilently(in);
             }
         }, "Source loading thread");
         return r;
@@ -248,30 +244,26 @@ public class SourceFinder {
         final File file = File.createTempFile("jar_cache", null);
         file.deleteOnExit();
         final BlockingSourceRepository r = new BlockingSourceRepository();
-        Util.runInDameonThread(new Runnable() {
-
-            @Override
-            public void run() {
-                InputStream in = null;
-                OutputStream out = null;
-                try {
-                    URLConnection connection = new URL(url).openConnection();
-                    if (getProject().isGuiAvaliable()) {
-                        int size = connection.getContentLength();
-                        in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
-                                "Loading source via url");
-                    } else {
-                        in = connection.getInputStream();
-                    }
-                    out = new FileOutputStream(file);
-                    IO.copy(in, out);
-                    r.setBase(new ZipSourceRepository(new ZipFile(file)));
-                } catch (IOException e) {
-                    assert true;
-                } finally {
-                    Util.closeSilently(in);
-                    Util.closeSilently(out);
+        Util.runInDameonThread(() -> {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                URLConnection connection = new URL(url).openConnection();
+                if (getProject().isGuiAvaliable()) {
+                    int size = connection.getContentLength();
+                    in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
+                            "Loading source via url");
+                } else {
+                    in = connection.getInputStream();
                 }
+                out = new FileOutputStream(file);
+                IO.copy(in, out);
+                r.setBase(new ZipSourceRepository(new ZipFile(file)));
+            } catch (IOException e) {
+                assert true;
+            } finally {
+                Util.closeSilently(in);
+                Util.closeSilently(out);
             }
         }, "Source loading thread");
         return r;

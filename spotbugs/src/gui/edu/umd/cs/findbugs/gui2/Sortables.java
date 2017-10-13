@@ -372,12 +372,7 @@ public enum Sortables implements Comparator<String> {
 
     Sortables(String prettyName) {
         this.prettyName = prettyName;
-        this.bugLeafNodeComparator = new Comparator<BugLeafNode>() {
-            @Override
-            public int compare(BugLeafNode one, BugLeafNode two) {
-                return Sortables.this.compare(Sortables.this.getFrom(one.getBug()), Sortables.this.getFrom(two.getBug()));
-            }
-        };
+        this.bugLeafNodeComparator = (one, two) -> Sortables.this.compare(Sortables.this.getFrom(one.getBug()), Sortables.this.getFrom(two.getBug()));
     }
 
     @Override

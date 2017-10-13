@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -158,21 +156,18 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         browseButton.setText("Browse...");
         firstPanel.add(browseButton);
 
-        browseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                chooser.setMultiSelectionEnabled(true);
-                chooser.setApproveButtonText("Choose");
-                chooser.setDialogTitle("Choose the directory");
+        browseButton.addActionListener(evt -> {
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setMultiSelectionEnabled(true);
+            chooser.setApproveButtonText("Choose");
+            chooser.setDialogTitle("Choose the directory");
 
-                if (chooser.showOpenDialog(SourceDirectoryWizard.this) == JFileChooser.APPROVE_OPTION) {
-                    File[] selectedFiles = chooser.getSelectedFiles();
-                    for (File selectedFile : selectedFiles) {
-                        sourceRootBox.setText(selectedFile.getAbsolutePath());
-                    }
-                    nextButton.setEnabled(!"".equals(sourceRootBox.getText()));
+            if (chooser.showOpenDialog(SourceDirectoryWizard.this) == JFileChooser.APPROVE_OPTION) {
+                File[] selectedFiles = chooser.getSelectedFiles();
+                for (File selectedFile : selectedFiles) {
+                    sourceRootBox.setText(selectedFile.getAbsolutePath());
                 }
+                nextButton.setEnabled(!"".equals(sourceRootBox.getText()));
             }
         });
 
@@ -199,33 +194,17 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         contentPanel.setBounds(0, 0, 750, 300);
 
         previousButton.setText("<< Previous");
-        previousButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                previousButtonActionPerformed(evt);
-            }
-        });
+        previousButton.addActionListener(evt -> previousButtonActionPerformed(evt));
         getContentPane().add(previousButton);
         previousButton.setBounds(150, 350, 100, 29);
 
         nextButton.setText("Next >>");
-        nextButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextButtonActionPerformed(evt);
-
-            }
-        });
+        nextButton.addActionListener(evt -> nextButtonActionPerformed(evt));
         getContentPane().add(nextButton);
         nextButton.setBounds(250, 350, 100, 29);
 
         finshButton.setText("Finish");
-        finshButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                finshButtonActionPerformed(evt);
-            }
-        });
+        finshButton.addActionListener(evt -> finshButtonActionPerformed(evt));
         getContentPane().add(finshButton);
         finshButton.setBounds(350, 350, 100, 29);
 
@@ -371,13 +350,10 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
      *            the command line arguments
      */
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(),
-                        null);
-                dialog.setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(),
+                    null);
+            dialog.setVisible(true);
         });
     }
 

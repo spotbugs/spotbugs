@@ -121,12 +121,7 @@ public class Util {
     }
 
     public static Iterable<Integer> setBitIteratable(final BitSet b) {
-        return new Iterable<Integer>() {
-            @Override
-            public Iterator<Integer> iterator() {
-                return setBitIterator(b);
-            }
-        };
+        return () -> setBitIterator(b);
     }
 
     public static Iterator<Integer> setBitIterator(final BitSet b) {

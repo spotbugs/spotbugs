@@ -139,22 +139,17 @@ public  class StackMapAnalyzer {
     static {
         Field f;
         try {
-            f = AccessController.doPrivileged(new PrivilegedAction<Field>() {
-
-                @Override
-                public Field run() {
-                    Class<StackMapEntry> c = StackMapEntry.class;
-                    Field result;
-                    try {
-                        result = c.getDeclaredField("frame_type");
-                        result.setAccessible(true);
-                        return result;
-                    } catch (NoSuchFieldException e) {
-                        throw new AssertionError("frame_type field doesn't exist");
-                    } catch (SecurityException e) {
-                        return null;
-                    }
-
+            f = AccessController.doPrivileged((PrivilegedAction<Field>) () -> {
+                Class<StackMapEntry> c = StackMapEntry.class;
+                Field result;
+                try {
+                    result = c.getDeclaredField("frame_type");
+                    result.setAccessible(true);
+                    return result;
+                } catch (NoSuchFieldException e1) {
+                    throw new AssertionError("frame_type field doesn't exist");
+                } catch (SecurityException e2) {
+                    return null;
                 }
 
             });

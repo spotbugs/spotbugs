@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.ba.jsr305;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.Collections;
@@ -165,15 +164,11 @@ public class TypeQualifierValue<A extends Annotation> {
                         validator1 = getValidator(validatorClass);
                         qualifierClass = getQualifierClass(typeQualifier);
 
-                        InvocationHandler handler = new InvocationHandler() {
-
-                            @Override
-                            public Object invoke(Object arg0, Method arg1, Object[] arg2) throws Throwable {
-                                if ("value".equals(arg1.getName())) {
-                                    return TypeQualifierValue.this.value;
-                                }
-                                throw new UnsupportedOperationException("Can't handle " + arg1);
+                        InvocationHandler handler = (arg0, arg1, arg2) -> {
+                            if ("value".equals(arg1.getName())) {
+                                return TypeQualifierValue.this.value;
                             }
+                            throw new UnsupportedOperationException("Can't handle " + arg1);
                         };
 
                         proxy1 = qualifierClass.cast(Proxy.newProxyInstance(ValidatorClassLoader.INSTANCE,

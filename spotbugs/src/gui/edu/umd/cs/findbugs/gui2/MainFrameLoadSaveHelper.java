@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -437,24 +436,21 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     SaveReturn printHtml(final File f) {
 
-        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                HTMLBugReporter reporter = new HTMLBugReporter( mainFrame.getProject(), "default.xsl");
-                reporter.setIsRelaxed(true);
-                reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
-                for(BugInstance bug : mainFrame.getBugCollection().getCollection()) {
-                    try {
-                        if (mainFrame.getViewFilter().show(bug)) {
-                            reporter.reportBug(bug);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(() -> {
+            HTMLBugReporter reporter = new HTMLBugReporter( mainFrame.getProject(), "default.xsl");
+            reporter.setIsRelaxed(true);
+            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
+            for(BugInstance bug : mainFrame.getBugCollection().getCollection()) {
+                try {
+                    if (mainFrame.getViewFilter().show(bug)) {
+                        reporter.reportBug(bug);
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                reporter.finish();
-                return null;
             }
+            reporter.finish();
+            return null;
         });
         try {
             waiter.get();
@@ -475,12 +471,9 @@ public class MainFrameLoadSaveHelper implements Serializable {
      */
     SaveReturn saveAnalysis(final File f) {
 
-        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                BugSaver.saveBugs(f, mainFrame.getBugCollection(), mainFrame.getProject());
-                return null;
-            }
+        Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(() -> {
+            BugSaver.saveBugs(f, mainFrame.getBugCollection(), mainFrame.getProject());
+            return null;
         });
         try {
             waiter.get();
@@ -525,21 +518,18 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     void loadAnalysis(final File file) {
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mainFrame.acquireDisplayWait();
-                try {
-                    Project project = new Project();
-                    project.setGuiCallback(mainFrame.getGuiCallback());
-                    project.setCurrentWorkingDirectory(file.getParentFile());
-                    BugLoader.loadBugs(mainFrame, project, file);
-                    project.getSourceFinder(); // force source finder to be
-                    // initialized
-                    mainFrame.updateBugTree();
-                } finally {
-                    mainFrame.releaseDisplayWait();
-                }
+        Runnable runnable = () -> {
+            mainFrame.acquireDisplayWait();
+            try {
+                Project project = new Project();
+                project.setGuiCallback(mainFrame.getGuiCallback());
+                project.setCurrentWorkingDirectory(file.getParentFile());
+                BugLoader.loadBugs(mainFrame, project, file);
+                project.getSourceFinder(); // force source finder to be
+                // initialized
+                mainFrame.updateBugTree();
+            } finally {
+                mainFrame.releaseDisplayWait();
             }
         };
         if (EventQueue.isDispatchThread()) {
@@ -551,20 +541,17 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     void loadAnalysis(final URL url) {
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mainFrame.acquireDisplayWait();
-                try {
-                    Project project = new Project();
-                    project.setGuiCallback(mainFrame.getGuiCallback());
-                    BugLoader.loadBugs(mainFrame, project, url);
-                    project.getSourceFinder(); // force source finder to be
-                    // initialized
-                    mainFrame.updateBugTree();
-                } finally {
-                    mainFrame.releaseDisplayWait();
-                }
+        Runnable runnable = () -> {
+            mainFrame.acquireDisplayWait();
+            try {
+                Project project = new Project();
+                project.setGuiCallback(mainFrame.getGuiCallback());
+                BugLoader.loadBugs(mainFrame, project, url);
+                project.getSourceFinder(); // force source finder to be
+                // initialized
+                mainFrame.updateBugTree();
+            } finally {
+                mainFrame.releaseDisplayWait();
             }
         };
         if (EventQueue.isDispatchThread()) {
@@ -576,14 +563,11 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
     void loadProjectFromFile(final File f) {
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final Project project = BugLoader.loadProject(mainFrame, f);
-                final BugCollection bc = project == null ? null : BugLoader.doAnalysis(project);
-                mainFrame.updateProjectAndBugCollection(bc);
-                mainFrame.setProjectAndBugCollectionInSwingThread(project, bc);
-            }
+        Runnable runnable = () -> {
+            final Project project = BugLoader.loadProject(mainFrame, f);
+            final BugCollection bc = project == null ? null : BugLoader.doAnalysis(project);
+            mainFrame.updateProjectAndBugCollection(bc);
+            mainFrame.setProjectAndBugCollectionInSwingThread(project, bc);
         };
         if (EventQueue.isDispatchThread()) {
             new Thread(runnable).start();

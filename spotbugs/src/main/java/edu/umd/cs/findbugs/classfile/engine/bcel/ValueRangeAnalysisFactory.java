@@ -21,23 +21,8 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import static org.apache.bcel.Const.*;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -804,12 +789,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 }
                 redundantConditions = filtered;
             }
-            Collections.sort(redundantConditions, new Comparator<RedundantCondition>() {
-                @Override
-                public int compare(RedundantCondition o1, RedundantCondition o2) {
-                    return o1.location.compareTo(o2.location);
-                }
-            });
+            Collections.sort(redundantConditions, (o1, o2) -> o1.location.compareTo(o2.location));
             return new ValueRangeAnalysis(redundantConditions);
         }
         return null;
