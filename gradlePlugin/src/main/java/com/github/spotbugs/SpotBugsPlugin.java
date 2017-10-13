@@ -5,18 +5,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.Callable;
 import java.util.stream.StreamSupport;
 
+import org.gradle.api.Action;
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.ConventionMapping;
-import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.plugins.quality.CodeQualityExtension;
 import org.gradle.api.plugins.quality.internal.AbstractCodeQualityPlugin;
+import org.gradle.api.reporting.SingleFileReport;
+import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.util.GradleVersion;
 
@@ -93,7 +98,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     /**
      * Verify that given version is supported by {@link SpotBugsPlugin} or not.
-     * 
+     *
      * @param version
      *            to verify
      * @throws IllegalArgumentException
@@ -142,30 +147,93 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
     }
 
     private void configureDefaultDependencies(Configuration configuration) {
-        configuration.defaultDependencies(dependencies -> dependencies.add(project.getDependencies().create("com.github.spotbugs:spotbugs:" + extension.getToolVersion())));
+        configuration.defaultDependencies(new Action<DependencySet>() {
+            @Override
+            public void execute(DependencySet dependencies) {
+                dependencies.add(project.getDependencies().create("com.github.spotbugs:spotbugs:" + extension.getToolVersion()));
+            }
+        });
     }
 
     private void configureTaskConventionMapping(Configuration configuration, SpotBugsTask task) {
         ConventionMapping taskMapping = task.getConventionMapping();
         taskMapping.map("spotbugsClasspath", () -> configuration);
-        taskMapping.map("ignoreFailures", () -> extension.isIgnoreFailures());
-        taskMapping.map("effort", () -> extension.getEffort());
-        taskMapping.map("reportLevel", () -> extension.getReportLevel());
-        taskMapping.map("visitors", () -> extension.getVisitors());
-        taskMapping.map("omitVisitors", () -> extension.getOmitVisitors());
+        taskMapping.map("ignoreFailures", new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                return extension.isIgnoreFailures();
+            }
+        });
+        taskMapping.map("effort", new Callable<String>() {
+            @Override
+            public String call() {
+                return extension.getEffort();
+            }
+        });
+        taskMapping.map("reportLevel", new Callable<String>() {
+            @Override
+            public String call() {
+                return extension.getReportLevel();
+            }
+        });
+        taskMapping.map("visitors", new Callable<Collection<String>>() {
+            @Override
+            public Collection<String> call() {
+                return extension.getVisitors();
+            }
+        });
+        taskMapping.map("omitVisitors", new Callable<Collection<String>>() {
+            @Override
+            public Collection<String> call() {
+                return extension.getOmitVisitors();
+            }
+        });
 
-        taskMapping.map("excludeFilterConfig", () -> extension.getExcludeFilterConfig());
-        taskMapping.map("includeFilterConfig", () -> extension.getIncludeFilterConfig());
-        taskMapping.map("excludeBugsFilterConfig", () -> extension.getExcludeBugsFilterConfig());
+        taskMapping.map("excludeFilterConfig", new Callable<TextResource>() {
+            @Override
+            public TextResource call() {
+                return extension.getExcludeFilterConfig();
+            }
+        });
+        taskMapping.map("includeFilterConfig", new Callable<TextResource>() {
+            @Override
+            public TextResource call() {
+                return extension.getIncludeFilterConfig();
+            }
+        });
+        taskMapping.map("excludeBugsFilterConfig", new Callable<TextResource>() {
+            @Override
+            public TextResource call() {
+                return extension.getExcludeBugsFilterConfig();
+            }
+        });
 
-        taskMapping.map("extraArgs", () -> extension.getExtraArgs());
+        taskMapping.map("extraArgs", new Callable<Collection<String>>() {
+            @Override
+            public Collection<String> call() {
+                return extension.getExtraArgs();
+            }
+        });
     }
 
     private void configureReportsConventionMapping(SpotBugsTask task, final String baseName) {
-        task.getReports().all(report -> {
-            ConventionMapping reportMapping = conventionMappingOf(report);
-            reportMapping.map("enabled", () -> report.getName().equals("xml"));
-            reportMapping.map("destination", () -> new File(extension.getReportsDir(), baseName + "." + report.getName()));
+        task.getReports().all(new Action<SingleFileReport>() {
+            @Override
+            public void execute(final SingleFileReport report) {
+                ConventionMapping reportMapping = conventionMappingOf(report);
+                reportMapping.map("enabled", new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return report.getName().equals("xml");
+                    }
+                });
+                reportMapping.map("destination", new Callable<File>() {
+                    @Override
+                    public File call() {
+                        return new File(extension.getReportsDir(), baseName + "." + report.getName());
+                    }
+                });
+            }
         });
     }
 
@@ -174,18 +242,25 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
         task.setDescription("Run SpotBugs analysis for " + sourceSet.getName() + " classes");
         task.setSource(sourceSet.getAllJava());
         ConventionMapping taskMapping = task.getConventionMapping();
-        taskMapping.map("classes", () -> {
-            Set<File> files = StreamSupport.stream(sourceSet.getOutput().getClassesDirs().spliterator(), false)
-                    .map(dir -> {
-                        // the simple "classes = sourceSet.output" may lead to non-existing resources directory
-                        // being passed to SpotBugs Ant task, resulting in an error
-                        return project.fileTree(dir).builtBy(sourceSet.getOutput());
-                    })
-                    .map(ConfigurableFileTree::spliterator)
-                    .flatMap(spliterator -> StreamSupport.stream(spliterator, false))
-                    .collect(Collectors.toSet());
-            return new SimpleFileCollection(files);
+        taskMapping.map("classes", new Callable<FileCollection>() {
+            @Override
+            public FileCollection call() {
+                ConfigurableFileTree fileTree = StreamSupport.stream(sourceSet.getOutput().getClassesDirs().spliterator(), false)
+                    .map(project::fileTree)
+                    .reduce((lhs, rhs) -> {
+                        lhs.plus(rhs);
+                        return lhs;
+                    }).orElseThrow(() ->
+                        new InvalidUserDataException("No classes dir configured for source set " + sourceSet.getName())
+                    );
+                return fileTree.builtBy(sourceSet.getClassesTaskName());
+            }
         });
-        taskMapping.map("classpath", () -> sourceSet.getCompileClasspath());
+        taskMapping.map("classpath", new Callable<FileCollection>() {
+            @Override
+            public FileCollection call() {
+                return sourceSet.getCompileClasspath();
+            }
+        });
     }
 }
