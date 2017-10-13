@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Matches a String value against a predefined specification.
@@ -74,7 +73,7 @@ public class NameMatch {
         if (!(o instanceof NameMatch)) {
             return false;
         }
-        return Util.nullSafeEquals(spec, ((NameMatch) o).spec);
+        return Objects.equals(spec, ((NameMatch) o).spec);
     }
 
     public String getValue() {

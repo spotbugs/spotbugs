@@ -19,9 +19,9 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import javax.annotation.CheckForNull;
+import java.util.Objects;
 
-import edu.umd.cs.findbugs.util.Util;
+import javax.annotation.CheckForNull;
 
 /**
  * @author pugh
@@ -82,7 +82,7 @@ public class MemberMatcher {
 
     @Override
     public int hashCode() {
-        return name.hashCode() + Util.nullSafeHashcode(signature);
+        return name.hashCode() + Objects.hashCode(signature);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class MemberMatcher {
         }
 
         MemberMatcher other = (MemberMatcher) o;
-        return name.equals(other.name) && Util.nullSafeEquals(signature, other.signature);
+        return name.equals(other.name) && Objects.equals(signature, other.signature);
     }
 
 }
