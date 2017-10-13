@@ -4,8 +4,9 @@ This is the changelog for SpotBugs Gradle Plugin. This follows [Keep a Changelog
 
 Currently the versioning policy of this project does not follow [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 1.5 - 2017-10-14
 
+* Use SpotBugs 3.1.0-RC7
 * Make build failed when user uses unsupported Gradle version ([#357](https://github.com/spotbugs/spotbugs/issues/357))
 * Make error message human readable ([#428](https://github.com/spotbugs/spotbugs/pull/428))
 * Fix missing dependency on compile task ([#440](https://github.com/spotbugs/spotbugs/issues/440))
