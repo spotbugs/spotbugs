@@ -1,7 +1,8 @@
 package sfBugsNew;
 
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

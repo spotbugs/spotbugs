@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1230 {

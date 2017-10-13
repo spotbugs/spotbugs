@@ -1,7 +1,7 @@
 package sfBugs;
 
-import junit.framework.TestCase;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import junit.framework.TestCase;
 
 public class Bug1551726 extends TestCase {
     /** Test will fail. */

@@ -1,6 +1,7 @@
 package sfBugsNew;
 
 import java.util.List;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1315 {

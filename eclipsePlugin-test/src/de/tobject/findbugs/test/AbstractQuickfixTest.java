@@ -18,7 +18,9 @@
  */
 package de.tobject.findbugs.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,14 +34,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.FindbugsTestPlugin;
-import de.tobject.findbugs.reporter.MarkerUtil;
-
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -51,6 +45,13 @@ import org.eclipse.ui.IMarkerResolutionGenerator2;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+
+import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.FindbugsTestPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
 /**
  * Base class for FindBugs quickfix tests.

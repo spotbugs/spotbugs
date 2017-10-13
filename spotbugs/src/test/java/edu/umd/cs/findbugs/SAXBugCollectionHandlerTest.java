@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+
 import org.junit.Test;
 
 public class SAXBugCollectionHandlerTest {

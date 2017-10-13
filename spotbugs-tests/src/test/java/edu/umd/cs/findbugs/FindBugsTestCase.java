@@ -24,8 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import junit.framework.TestCase;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import junit.framework.TestCase;
 
 /**
  * Abstract base class for TestCase classes that need to run in the context of a

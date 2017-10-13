@@ -19,19 +19,20 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import org.apache.bcel.generic.ReferenceType;
-import org.apache.bcel.generic.Type;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
+import org.junit.Test;
 
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
 

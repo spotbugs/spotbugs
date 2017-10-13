@@ -1,18 +1,18 @@
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.nio.file.Paths;
-
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import java.nio.file.Paths;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.test.SpotBugsRule;
 
 public class ResolveMethodReferencesTest {
     @Rule

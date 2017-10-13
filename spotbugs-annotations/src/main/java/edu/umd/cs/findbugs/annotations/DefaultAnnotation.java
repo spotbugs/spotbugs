@@ -26,9 +26,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.meta.TypeQualifierDefault;
-
 
 /**
  * Indicates that all members of the class or package should be annotated with

@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Const.*;
+import static org.apache.bcel.Const.I2D;
+import static org.apache.bcel.Const.INVOKESTATIC;
 
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;

@@ -55,7 +55,6 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.util.LaunchBrowser;
 
 public class MainFrameComponentFactory implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(MainFrameComponentFactory.class.getName());

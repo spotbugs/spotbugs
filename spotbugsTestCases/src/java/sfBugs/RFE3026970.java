@@ -1,7 +1,5 @@
 package sfBugs;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 
 public class RFE3026970 {

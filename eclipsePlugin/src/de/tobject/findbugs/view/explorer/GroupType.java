@@ -17,7 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package de.tobject.findbugs.view.explorer;
-import static de.tobject.findbugs.marker.FindBugsMarker.*;
+import static de.tobject.findbugs.marker.FindBugsMarker.BUG_TYPE;
+import static de.tobject.findbugs.marker.FindBugsMarker.DETECTOR_PLUGIN_ID;
+import static de.tobject.findbugs.marker.FindBugsMarker.PATTERN_TYPE;
+import static de.tobject.findbugs.marker.FindBugsMarker.PRIO_AKA_CONFIDENCE;
+import static de.tobject.findbugs.marker.FindBugsMarker.RANK;
+import static de.tobject.findbugs.marker.FindBugsMarker.UNIQUE_ID;
+import static de.tobject.findbugs.marker.FindBugsMarker.UNIQUE_JAVA_ID;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,8 +4,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import javax.xml.crypto.Data;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

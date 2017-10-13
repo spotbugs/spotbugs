@@ -18,19 +18,14 @@
  */
 package de.tobject.findbugs.quickfix.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import de.tobject.findbugs.reporter.MarkerUtil;
-import de.tobject.findbugs.test.AbstractQuickfixTest;
-import de.tobject.findbugs.test.TestScenario;
-
-import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -43,6 +38,11 @@ import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.test.AbstractQuickfixTest;
+import de.tobject.findbugs.test.TestScenario;
+import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 
 /**
  *  Tests the ability to fix multiple bugs at once from the Problems view

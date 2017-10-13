@@ -1,14 +1,15 @@
 package edu.umd.cs.findbugs.nullness;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 
-import static org.hamcrest.Matchers.emptyIterable;
-import static org.junit.Assert.assertThat;
+import org.junit.Rule;
+import org.junit.Test;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.test.SpotBugsRule;
 
 /**
  * Unit test to reproduce <a href="https://github.com/spotbugs/spotbugs/issues/259">#259</a>.

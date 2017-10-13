@@ -1,6 +1,5 @@
 package sfBugsNew.Bug1226b;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import sfBugsNew.Bug1226a.Super;
 

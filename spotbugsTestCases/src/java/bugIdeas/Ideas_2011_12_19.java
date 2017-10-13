@@ -4,11 +4,11 @@ import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
 
-import junit.framework.Assert;
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import junit.framework.Assert;
 
 public class Ideas_2011_12_19 {
 

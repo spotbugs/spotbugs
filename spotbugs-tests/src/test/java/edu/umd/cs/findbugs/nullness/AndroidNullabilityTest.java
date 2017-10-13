@@ -1,17 +1,18 @@
 package edu.umd.cs.findbugs.nullness;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.junit.Assert.assertThat;
+
+import java.nio.file.Paths;
+
+import org.junit.Rule;
+import org.junit.Test;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.SpotBugsRule;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.nio.file.Paths;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.Matchers.emptyIterable;
-import static org.junit.Assert.assertThat;
 
 /**
  * Check if NonNull and Nullable annotations from android.support.annotation are detected.

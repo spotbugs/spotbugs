@@ -3,7 +3,6 @@ package bugPatterns;
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 
 public class BC_IMPOSSIBLE_INSTANCEOF {
     // seen in edu.umd.cs.findbugs.ba.IncompatibleTypes

@@ -1,8 +1,8 @@
 package jcipAnnotations;
 
-import net.jcip.annotations.Immutable;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import net.jcip.annotations.Immutable;
 
 @Immutable
 public class TestImmutable {

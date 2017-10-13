@@ -1,7 +1,7 @@
 package sfBugs;
 
-import net.jcip.annotations.Immutable;
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
+import net.jcip.annotations.Immutable;
 
 @Immutable
 public class Bug3303905 {
