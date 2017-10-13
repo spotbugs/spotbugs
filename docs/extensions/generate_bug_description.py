@@ -3,51 +3,144 @@
 # It is necessary to generate localized list, because Sphinx i18n feature based on .po file
 # does not support translating raw HTML block.
 
-from xml.etree.ElementTree import *
-import codecs
+from __future__ import print_function, unicode_literals
 
-def generate_category_title(bug_category):
-    return "%s (%s)" % (bug_category.findtext('.//Description'), bug_category.get('category'))
+from collections import namedtuple
+import io
+import os
+import xml.etree.ElementTree as ET
+
+
+ETC_DIR = os.path.normpath(os.path.join(
+    os.path.dirname(__file__), "..", "..", "spotbugs", "etc"))
+
+
+BugCategory = namedtuple("BugCategory", "name hidden description")
+Bug = namedtuple("Bug", "name abbrev category deprecated description")
+
+
+def parse_bool_attr(element, attr_name):
+    return element.get(attr_name) == "true"  # missing attr = false
+
+
+def parse_bug_patterns(app, path):
+    document = ET.parse(path)
+
+    bugs = {}
+    categories = {}
+
+    # Index all bug patterns
+    for element in document.iterfind(".//BugPattern"):
+        bug = Bug(
+            name=element.get("type"),
+            abbrev=element.get("abbrev"),
+            category=element.get("category"),
+            deprecated=element.get("deprecated"),
+            description="")
+        if bug.category not in categories:
+            categories[bug.category] = BugCategory(name=bug.category, hidden=False, description="")
+        bugs[bug.name] = bug
+
+    # Update hidden categories
+    for element in document.iterfind(".//BugCategory"):
+        category_name = element.get("category")
+        hidden = parse_bool_attr(element, "hidden")
+        categories[category_name] = categories[category_name]._replace(hidden=hidden)
+
+    return categories, bugs
+
+
+def parse_i18n_messages(language):
+    filename = "messages.xml" if language == "en" else "messages_{}.xml".format(language)
+    return ET.parse(os.path.join(ETC_DIR, filename))
+
+
+def i18n_text(element, subtag):
+    value = element.findtext("./" + subtag)
+    # On Python2.7, ElementTree returns bytes if string is ASCII
+    return value.decode('utf-8') if isinstance(value, bytes) else value
+
 
 def generate_pattern_title(bug_pattern, message):
-    return "%s: %s (%s)" % (bug_pattern.get('abbrev'), message.findtext('.//ShortDescription'), bug_pattern.get('type'))
+    return "%s: %s (%s)" % (
+        bug_pattern.get("abbrev"),
+        i18n_text(message, "ShortDescription"),
+        bug_pattern.get("type"))
 
-def generate_bug_description(language):
-    print("Generating bug description page for %s..." % language)
-    findbugs = parse('../spotbugs/etc/findbugs.xml')
-    if language == 'ja':
-        messages = parse('../spotbugs/etc/messages_ja.xml')
-    else:
-        messages = parse('../spotbugs/etc/messages.xml')
 
-    with codecs.open('generated/bugDescriptionList.inc', 'w', encoding='UTF-8') as bug_description_page:
-        for bug_category in sorted(messages.getiterator('BugCategory'), key=lambda element: element.get('category')):
-            category = bug_category.get('category')
-            category_title = generate_category_title(bug_category)
-            bug_description_page.write(category_title)
-            bug_description_page.write('\n')
-            bug_description_page.write('-' * len(category_title))
-            bug_description_page.write('\n\n')
-            for line in bug_category.findtext('.//Details').splitlines():
-                bug_description_page.write(line.strip())
-                bug_description_page.write('\n')
-            bug_description_page.write('\n\n')
+def generate_category(messages, category):
+    msg_elem = messages.find(".//BugCategory[@category='%s']" % category.name)
 
-            for bug_pattern in findbugs.findall(".//BugPattern[@category='%s']" % category):
-                if (bug_pattern.get('deprecated') == 'true'):
-                    continue
-                type = bug_pattern.get('type')
-                bug_description_page.write(".. raw:: html\n\n  <a id='%s'></a>\n\n" % type)
-                message = messages.find(".//BugPattern[@type='%s']" % type)
-                pattern_title = generate_pattern_title(bug_pattern, message)
-                bug_description_page.write("%s\n%s\n\n" % (pattern_title, '^' * len(pattern_title)))
-                details = message.findtext('.//Details')
-                bug_description_page.write('.. raw:: html\n')
-                for line in details.splitlines():
-                    bug_description_page.write('  ')
-                    bug_description_page.write(line)
-                    bug_description_page.write('\n')
-                bug_description_page.write('\n')
+    title = "{0}: {1}".format(i18n_text(msg_elem, "Description"), category.name)
+
+    yield ".. _bug-category-{0}:".format(category.name.lower())
+    yield ""
+    yield title
+    yield "-" * len(title)
+    yield ""
+
+    for line in i18n_text(msg_elem, "Details").splitlines():
+        yield line.strip()
+
+    yield ""
+    yield ""
+
+
+def generate_raw_section(html):
+    yield ".. raw:: html"
+    for line in html.splitlines():
+        yield "   " + line.strip()
+    yield ""
+
+
+def generate_bug(messages, bug):
+    if bug.deprecated:
+        return
+
+    msg_elem = messages.find(".//BugPattern[@type='%s']" % bug.name)
+
+    description = i18n_text(msg_elem, "ShortDescription")
+    details = i18n_text(msg_elem, "Details")
+
+    title = "{bug.abbrev}: {short_desc} ({bug.name})".format(bug=bug, short_desc=description)
+
+    yield ".. _bug-pattern-{0}:".format(bug.name.lower())
+    yield ""
+    yield title
+    yield "^" * len(title)
+
+    for line in generate_raw_section(details):
+        yield line
+
+
+def generate_bug_description(app, messages, categories, bugs):
+    for category in sorted(categories.values(), key=lambda c: c.name):
+        app.debug("Generating %s", category)
+        if category.hidden:
+            continue
+
+        for line in generate_category(messages, category):
+            yield line
+
+        category_bugs = [bug for bug in bugs.values() if bug.category == category.name]
+        category_bugs.sort(key=lambda b: b.name)
+
+        for bug in category_bugs:
+            app.debug("Generating %s", bug)
+            for line in generate_bug(messages, bug):
+                yield line
+
+    yield ""
+
+
+def write_bug_description(app):
+    categories, bugs = parse_bug_patterns(app, os.path.join(ETC_DIR, "findbugs.xml"))
+    messages = parse_i18n_messages(app.config.language)
+
+    with io.open("./generated/bugDescriptionList.inc", mode="w", encoding="utf-8") as output:
+        for line in generate_bug_description(app, messages, categories, bugs):
+            print(line, file=output)
+
 
 def setup(app):
-    app.connect('builder-inited', lambda app: generate_bug_description(app.config.language))
+    app.connect('builder-inited', write_bug_description)
