@@ -108,23 +108,33 @@ public class DisplayNonmodelMessage {
         }
     }
 
+    // Following Runnable instances should be converted to lambdas in future:
+
     /*
-    static Runnable moveToFront = () -> {
-        JFrame frame = messageFrame;
-        if (frame != null)
-            frame.toFront();
+    static Runnable moveToFrontLater = new Runnable() {
+        @Override
+        public void run() {
+            sleep(5);
+            SwingUtilities.invokeLater(moveToFront);
+        }
     };
 
-    static Runnable moveToFrontLater = () -> {
-        sleep(5);
-        SwingUtilities.invokeLater(moveToFront);
+    static Runnable moveToFront = new Runnable() {
+        @Override
+        public void run() {
+            JFrame frame = messageFrame;
+            if (frame != null) {
+                frame.toFront();
+            }
+        }
     };
-    */
+     */
 
     static Runnable clearAlwaysOnTop = () -> {
         JFrame frame = messageFrame;
-        if (frame != null)
+        if (frame != null) {
             frame.setAlwaysOnTop(false);
+        }
     };
 
     static Runnable clearAlwaysOnTopLater = () -> {

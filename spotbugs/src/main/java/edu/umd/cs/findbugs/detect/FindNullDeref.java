@@ -425,7 +425,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             }
         }
          */
-        BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, value -> value.mightBeNull() && !value.isException() && !value.isReturnValue());
+
+        BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg,
+                                                 // Only choose non-exception values.
+                                                 value -> value.mightBeNull() && !value.isException() && !value.isReturnValue());
         BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, value -> value.isDefinitelyNull());
         nullArgSet.and(definitelyNullArgSet);
         if (nullArgSet.isEmpty()) {
