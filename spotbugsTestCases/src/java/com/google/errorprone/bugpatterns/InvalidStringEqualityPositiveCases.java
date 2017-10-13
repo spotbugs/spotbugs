@@ -24,7 +24,7 @@ public class InvalidStringEqualityPositiveCases {
   public boolean testEquality(String x, String y) {
     boolean retVal;
 
-    //BUG: Suggestion includes "x.equals(y)" 
+    //BUG: Suggestion includes "x.equals(y)"
     retVal = (x == y);
     //BUG: Suggestion includes "!x.equals(y)"
     retVal = (x != y);
@@ -32,16 +32,16 @@ public class InvalidStringEqualityPositiveCases {
     retVal = (x + y == y + x);
     //BUG: Suggestion includes "!(x + y).equals(y + x)"
     retVal = (x + y != y + x);
-    //BUG: Suggestion includes "(x + "str").equals(y + "str")" 
+    //BUG: Suggestion includes "(x + "str").equals(y + "str")"
     retVal = (x + "str" == y + "str");
-    //BUG: Suggestion includes "!(x + "str").equals(y + "str")" 
+    //BUG: Suggestion includes "!(x + "str").equals(y + "str")"
     retVal = (x + "str" != y + "str");
     //BUG: Suggestion includes ""str".equals(x)"
     retVal = ("str" == x);
      //BUG: Suggestion includes ""str".equals(x)"
     retVal = (x == "str") ;
     //BUG: Suggestion includes ""str2".equals("str")"
-    retVal = ("str2" == "str");    
+    retVal = ("str2" == "str");
     final String constValue = "str";
     //BUG: Suggestion includes "constValue.equals(x)"
     retVal = (x == constValue);

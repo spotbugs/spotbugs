@@ -24,11 +24,11 @@ public class SpotBugsSpec implements Serializable {
   public String getMaxHeapSize() {
       return maxHeapSize;
   }
-  
+
   public boolean isDebugEnabled() {
       return debugEnabled;
   }
-  
+
   @Override
 public String toString() {
       return new ToStringBuilder(this).append("arguments", arguments).append("debugEnabled", debugEnabled).toString();

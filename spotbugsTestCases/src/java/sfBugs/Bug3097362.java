@@ -5,17 +5,17 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Bug3097362 {
 
     int x;
-    
+
     public Bug3097362(int x) {
         this.x = x;
     }
-    
+
     @Override
 	public int hashCode() {
         return x;
-        
+
     }
-    
+
    @Override
 @NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
     public boolean equals(Object obj) {

@@ -3,10 +3,10 @@ package bugIdeas;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2013_03_15 {
-    
+
     String a,b;
-    
-    
+
+
     public String getA() {
         return a;
     }
@@ -19,7 +19,7 @@ public class Ideas_2013_03_15 {
         this.a = a;
         this.b = b;
     }
-    
+
     @ExpectWarning("SA")
     public static boolean checkEndsWith(String s, String t) {
         return s.endsWith(s);
@@ -60,5 +60,5 @@ public class Ideas_2013_03_15 {
     public int checkCompareToIgnoreCase() {
         return a.compareToIgnoreCase(a);
     }
-    
+
 }

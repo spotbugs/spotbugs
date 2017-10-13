@@ -27,7 +27,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 
 /**
  * Expected object for a FindBugs marker.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ExpectedViewMarker implements ExpectedViewElement {

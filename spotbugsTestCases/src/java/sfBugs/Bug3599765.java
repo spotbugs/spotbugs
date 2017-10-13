@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3599765 {
 
-    
+
     private final MultiValueMap<String, String> otherParams = new LinkedMultiValueMap<String, String>();
 
     @NoWarning("BC")

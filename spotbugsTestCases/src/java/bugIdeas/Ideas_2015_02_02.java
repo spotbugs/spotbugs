@@ -36,18 +36,18 @@ public class Ideas_2015_02_02 {
     public boolean isOneByte(char c) {
         return c >= 0 && c <= 255;
     }
-    
+
     @NoWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public boolean isASCIIBroken(char c) {
         return c >= 0 && c < 80;
     }
-   
-    
+
+
     @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public boolean isNonNegative(char c, char b) {
         return c >= 0 && b >= 0;
     }
-   
+
     @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public int isASCII2(char c, char b) {
         if (c >= 0 && b < 128)
@@ -59,6 +59,6 @@ public class Ideas_2015_02_02 {
         if (c<0||c>0xff) return -1;
         return c;
     }
-  
+
 
 }

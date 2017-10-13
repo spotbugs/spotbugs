@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Feature330 {
     private volatile List<String> list;
     private volatile Point pt;
-    
+
     @NoWarning("DC_DOUBLECHECK")
     @ExpectWarning("DC_PARTIALLY_CONSTRUCTED")
     public List<String> getList() {

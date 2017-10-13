@@ -5,8 +5,8 @@ import java.util.Collection;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2011_08_03 {
-    
-    
+
+
     @ExpectWarning("SA_LOCAL_SELF_COMPARISON")
     public static boolean easy(String s) {
         return s.equals(s);
@@ -24,7 +24,7 @@ public class Ideas_2011_08_03 {
             }
         }
         return found;
-        
+
     }
 
 }

@@ -43,7 +43,7 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the public methods for ResourceUtils.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ResourceUtilsTest extends AbstractFindBugsTest {

@@ -6,9 +6,9 @@ import java.util.Set;
 
 /**
  * equals and hashCode are blocking methods on URLs
- * 
+ *
  * @author pugh
- * 
+ *
  */
 public class BlockingMethodsOnURLs {
     static int f(URL u) {

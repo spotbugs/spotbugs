@@ -20,7 +20,7 @@ package com.google.errorprone.bugpatterns;
  * Positive cases for {@code LongLiteralLowerCaseSuffix}.
  */
 public class LongLiteralLowerCaseSuffixPositiveCase2 {
-  
+
   // This constant string includes non-ASCII characters to make sure that we're not confusing
   // bytes and chars:
   @SuppressWarnings("unused")

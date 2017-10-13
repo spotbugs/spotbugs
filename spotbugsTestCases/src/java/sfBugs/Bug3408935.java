@@ -14,7 +14,7 @@ public class Bug3408935<M extends Map<?, ?> & Serializable> implements Serializa
 
     /** Ambiguous case; no warning */
      public Map<?, ?> obj1;
-    
+
     @ExpectWarning("SE_BAD_FIELD")
     InputStream is;
 

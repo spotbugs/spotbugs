@@ -19,11 +19,11 @@ package com.google.errorprone.bugpatterns;
 
 /**
  * Defining an equals method with no body.
- * 
+ *
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class CovariantEqualsPositiveCase5 {
-  
+
   //BUG: Suggestion includes "@Override"
   public native boolean equals(CovariantEqualsPositiveCase5 other);
 }

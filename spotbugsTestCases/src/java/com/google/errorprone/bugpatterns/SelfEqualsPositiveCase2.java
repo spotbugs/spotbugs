@@ -20,19 +20,19 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class SelfEqualsPositiveCase2 {
-  
+
   public boolean test1() {
     Object obj = new Object();
     //BUG: Suggestion includes "true"
     return obj.equals(obj);
   }
-  
+
   private Object obj = new Object();
   public boolean test2() {
     //BUG: Suggestion includes "true"
     return obj.equals(this.obj);
   }
-  
+
   public boolean test3() {
     //BUG: Suggestion includes "true"
     return equals(this);

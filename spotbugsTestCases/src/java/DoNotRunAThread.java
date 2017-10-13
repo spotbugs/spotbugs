@@ -10,7 +10,7 @@ public class DoNotRunAThread {
     void g(Thread t) {
         f(t);
     }
-    
+
     @ExpectWarning("RU_INVOKE_RUN")
     void h(Thread t) {
         t.run();

@@ -12,10 +12,10 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 /**
  * More eclipse Null pointer false positives
- * 
+ *
  * From https://bugs.eclipse.org/bugs/show_bug.cgi?id=195638
- * 
- * 
+ *
+ *
  */
 public class Ideas_2010_04_29 {
 

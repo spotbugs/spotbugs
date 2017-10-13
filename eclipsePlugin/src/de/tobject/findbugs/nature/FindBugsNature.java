@@ -30,7 +30,7 @@ import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
  * This is the nature for FindBugs-enabled projects.
- * 
+ *
  * @author Peter Friese
  * @version 1.0
  * @since 25.9.2003
@@ -46,7 +46,7 @@ public class FindBugsNature implements IProjectNature {
 
     /**
      * Adds the FindBugs builder to the project.
-     * 
+     *
      * @see IProjectNature#configure
      */
     @Override
@@ -60,7 +60,7 @@ public class FindBugsNature implements IProjectNature {
 
     /**
      * Removes the FindBugs builder from the project.
-     * 
+     *
      * @see IProjectNature#deconfigure
      */
     @Override
@@ -148,7 +148,7 @@ public class FindBugsNature implements IProjectNature {
 
     /**
      * Returns the project reference.
-     * 
+     *
      * @see IProjectNature#getProject
      */
     @Override
@@ -158,7 +158,7 @@ public class FindBugsNature implements IProjectNature {
 
     /**
      * Sets the project reference.
-     * 
+     *
      * @see IProjectNature#setProject
      */
     @Override

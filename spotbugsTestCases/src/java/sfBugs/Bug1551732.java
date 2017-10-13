@@ -2,16 +2,16 @@ package sfBugs;
 
 /**
  * Shows false dead lock store warning.
- * 
+ *
  * @author <a href="mailto:rlenard@avaya.com">rlenard</a>
  */
 public class Bug1551732 extends Thread {
     /**
-     * 
+     *
      * {@inheritDoc}.
-     * 
+     *
      * @see java.lang.Thread#run()
-     * 
+     *
      */
     @Override
     public void run() {

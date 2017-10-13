@@ -2,9 +2,9 @@ package npe;
 
 /**
  * Bug found in analysis of Nutch-0.8.1
- * 
+ *
  * @author pugh
- * 
+ *
  */
 public class NutchBug {
 

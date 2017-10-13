@@ -7,9 +7,9 @@ import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2011_08_05 {
-    
-    
-    
+
+
+
     public String returnNonnull() {
         return "x";
     }
@@ -30,8 +30,8 @@ public class Ideas_2011_08_05 {
         return h;
     }
 
-   
-    
+
+
     @NoWarning("RCN")
     public int test4() {
         String x = returnNonnull();
@@ -39,7 +39,7 @@ public class Ideas_2011_08_05 {
             throw new RuntimeException();
         return x.hashCode();
     }
-    
+
     public int test4OK() {
         String x = returnNonnull();
         if (x == null)
@@ -85,7 +85,7 @@ public class Ideas_2011_08_05 {
         public int test5(String x) {
             if (x == null)
                 throw new RuntimeException();
-            
+
             return x.hashCode();
         }
     }

@@ -5,7 +5,7 @@ import org.eclipse.jdt.core.dom.Modifier;
 /**
  * The <CODE>MakeFieldStaticResolution</CODE> adds a <CODE>static</CODE>
  * modifier to a field.
- * 
+ *
  * @see <a
  *      href="http://findbugs.sourceforge.net/bugDescriptions.html#SS_SHOULD_BE_STATIC">SS_SHOULD_BE_STATIC</a>
  */

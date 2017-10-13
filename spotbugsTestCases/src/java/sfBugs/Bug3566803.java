@@ -48,7 +48,7 @@ public class Bug3566803 {
                 String url = "";
                 String username = "";
                 String password = "";
-                
+
                 // Bug: We only close the resources opened in the last iteration
                 for (int i = 0; i < 10; i++) {
                                 connection = DriverManager.getConnection(url, username,

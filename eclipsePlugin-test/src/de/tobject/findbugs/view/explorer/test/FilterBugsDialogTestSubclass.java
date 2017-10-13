@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.BugPattern;
 /**
  * Test subclass of FilterBugsDialog that overrides the opening behaviour for
  * testing purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FilterBugsDialogTestSubclass extends FilterBugsDialog {
@@ -40,7 +40,7 @@ public class FilterBugsDialogTestSubclass extends FilterBugsDialog {
 
     /**
      * Accessor method for tests to simulate the user selecting a bug code.
-     * 
+     *
      * @param code
      *            The BugCode to select.
      */
@@ -50,7 +50,7 @@ public class FilterBugsDialogTestSubclass extends FilterBugsDialog {
 
     /**
      * Accessor method for tests to simulate the user selecting a bug pattern.
-     * 
+     *
      * @param pattern
      *            The BugPattern to select.
      */

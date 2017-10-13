@@ -32,7 +32,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * Expected object for a bug group.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ExpectedViewBugGroup implements ExpectedViewElement {

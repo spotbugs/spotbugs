@@ -18,10 +18,10 @@ public class Bug1864793 {
          * Comparison of String parameter using == or != -> Comparison of String
          * parameter using == or !=
          * "[...] Consider using the equals(Object) method instead."
-         * 
+         *
          * while it should maybe report: Bad Practice -> Suspicious reference
          * comparison -> Suspicious reference comparison
-         * 
+         *
          * But at the very least, the point here is that == can indeed be used.
          */
 
@@ -37,7 +37,7 @@ public class Bug1864793 {
 
         /*
          * FindBugs reports nothing...
-         * 
+         *
          * while it should maybe report: Bad Practice -> Suspicious reference
          * comparison -> Suspicious reference comparison
          */

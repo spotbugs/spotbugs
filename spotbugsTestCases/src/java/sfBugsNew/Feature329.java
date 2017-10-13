@@ -35,7 +35,7 @@ public class Feature329 {
         rawInput = Math.max(100, rawInput);
         return rawInput;
     }
-    
+
     @ExpectWarning("DM_INVALID_MIN_MAX")
     public int getScore(int totalCount, int failCount, double scaleFactor) {
         // Based on https://github.com/marksinclair/junit-plugin/commit/c0dc11e08923edd23cee90962da638e4a7eb47d5

@@ -2,7 +2,7 @@ package sfBugs;
 
 /**
  * @author Bogdan Dimitriu
- * 
+ *
  */
 public class Bug1686158 {
     public static void main(String[] args) {

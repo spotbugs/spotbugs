@@ -49,7 +49,7 @@ public class Bug1181 {
         }
 
     }
-    
+
     @NoWarning("NP")
     public void test() {
         ClassA classA = new ClassA();
@@ -117,13 +117,13 @@ public class Bug1181 {
 
 
     }
-    
+
     @ExpectWarning("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
     public void methodThatTakesAStringArgumentButNotNull(@Nullable String string) {
         String lowerCase = string.trim();
         System.out.println(lowerCase);
     }
-    
+
     public void methodThatTakesAStringArgumentButNotNull2(String string) {
         String lowerCase = string.trim();
         System.out.println(lowerCase);

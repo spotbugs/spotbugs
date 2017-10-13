@@ -4,8 +4,8 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1172 {
-    
-    
+
+
     @ExpectWarning("SF_SWITCH_FALLTHROUGH")
     public int testFallThrough(int x) {
         switch (x) {
@@ -22,7 +22,7 @@ public class Bug1172 {
     /** Getting this requires parsing source */
     @DesireNoWarning("SF_SWITCH_FALLTHROUGH")
     public int testFallThroughGood(int x) {
-        
+
         switch (x) {
         case 0:
             System.out.println("Hello");

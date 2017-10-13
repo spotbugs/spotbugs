@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3553542 {
-    
+
     @DesireNoWarning( "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
     public static void checkIfNullIsReturned(GoodBehavingClass goodBehavingClass) {
         String isNullReturned;
@@ -27,7 +27,7 @@ public class Bug3553542 {
     // Assume this is class is defined in some the third party implementation
     // using this FalsePositive as library code.
     static class BadBehavingClass /* extends GoodBehavingClass */ {
-        
+
         public String isNullReturned() {
             return null;
         }
@@ -39,8 +39,8 @@ public class Bug3553542 {
         // FalsePositive as library code.
 //        checkIfNullIsReturned(new BadBehavingClass());
     }
-    
-    
+
+
     Object globalError;
 
     Object getGlobalError() {
@@ -51,7 +51,7 @@ public class Bug3553542 {
 
       if (Math.random() > 0.5)
           globalError = "x";
-      
+
 
       // some code
     }
@@ -67,5 +67,5 @@ public class Bug3553542 {
 
       }
     }
-    
+
 }

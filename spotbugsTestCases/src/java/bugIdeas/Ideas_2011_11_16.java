@@ -45,7 +45,7 @@ public abstract class Ideas_2011_11_16 {
         Statement statement = conn.createStatement();
         try {
             ResultSet rs =  statement.executeQuery(query);
-            if (rs.next()) 
+            if (rs.next())
                 return rs.getInt(1);
             return 0;
         } catch (SQLException e) {

@@ -25,9 +25,9 @@ public class Bug1350 {
             throw new IllegalStateException();
         field = 0;
     }
-    
+
     Object obj;
-    
+
     @NoWarning("NP_ALWAYS_NULL_EXCEPTION")
     public void test() {
         if(obj == null) {
@@ -49,7 +49,7 @@ public class Bug1350 {
             throw e;
         }
     }
-    
+
     boolean flag = false;
     @NoWarning("UC_USELESS_CONDITION")
     public void ucTest() {

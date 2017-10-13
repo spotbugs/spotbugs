@@ -33,7 +33,7 @@ public class CovariantEqualsNegativeCases {
 
   public void equals(CovariantEqualsNegativeCases other) {
   }
-  
+
   public List<Integer> equals(Integer other) {
     return null;
   }
@@ -50,7 +50,7 @@ class AnotherClass {
   public boolean equals(CovariantEqualsNegativeCases other) {
     return false;
   }
-  
+
   public int[] equals(int other) {
     return null;
   }
@@ -69,7 +69,7 @@ public boolean equals(Object other) {
       return false;
     }
   }
-  
+
   public boolean equals(ClassWithEqualsOverridden other) {
     return true;
   }

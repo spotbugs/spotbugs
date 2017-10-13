@@ -2,7 +2,7 @@ package sfBugs;
 
 /**
  * Submitted By: Jarek Pawlak Summary:
- * 
+ *
  * The rule FI: Explicit invocation of finalizer reports false positive
  * encountering a call to method "finalize" with signature other than
  * Object.finalize(). i.e. the rule will report a violation on a call to e.g.

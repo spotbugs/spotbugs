@@ -28,7 +28,7 @@ import de.tobject.findbugs.util.ProjectUtilities;
 /**
  * Callback object responsible for saving the uncomitted state of any
  * FindBugs-enabled projects.
- * 
+ *
  * @author David Hovemeyer
  */
 public class FindbugsSaveParticipant implements ISaveParticipant {

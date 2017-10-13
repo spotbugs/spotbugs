@@ -24,7 +24,7 @@ public class Bug3531425 {
     public int test2(Collection c) {
         precondition("dataset connection is not null", c != null && !c.isEmpty());
         return 0;
-        
+
     }
 
 }

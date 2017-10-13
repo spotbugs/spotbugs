@@ -32,7 +32,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 /**
  * This class tests the BugExplorerView and its related classes. This tests a
  * different scenario with two source folders.
- * 
+ *
  * @author Tomás Pollak
  */
 public class BugExplorerViewTwoSrcFoldersTest extends AbstractBugExplorerViewTest {

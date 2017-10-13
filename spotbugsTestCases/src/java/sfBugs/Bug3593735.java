@@ -16,7 +16,7 @@ public class Bug3593735 {
     /**
      * This class is serializable; thus, the field might be present for
      * backwards compatibility with serialized version of the class.
-     * 
+     *
      */
     public static abstract class OkExample implements Serializable {
 

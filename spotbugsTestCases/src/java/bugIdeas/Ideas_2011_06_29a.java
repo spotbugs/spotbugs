@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2011_06_29a {
 
-  
+
     static boolean b() {
         return true;
     }

@@ -3,10 +3,10 @@ package sfBugs;
 /**
  * Submitted By: Heiko W.Rupp - pilhuhn Summary: (?) NPE and NFE concerning
  * types like Integer not found
- * 
+ *
  * The attache file contains three Exception throwing locations that all are not
  * detected.
- * 
+ *
  * The first one is from autounboxing NULL as Integer into an int. The second
  * one is the explicit version of the previous one. The third is not a NPE, but
  * a guaranteed NumberFormatException.

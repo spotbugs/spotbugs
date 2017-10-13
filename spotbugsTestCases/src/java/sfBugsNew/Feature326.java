@@ -18,7 +18,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public int fp(int x) {
         if( x >= -1 )
@@ -28,15 +28,15 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public int condition(int x) {
         if(x > 10 && x > 5) {
-            return 2; 
+            return 2;
         }
         return 1;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public void testFinally(boolean c) {
         try {
@@ -129,7 +129,7 @@ public class Feature326 {
     }
 
     boolean c1, d1;
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public int testFinally2(boolean c) {
         try {
@@ -221,7 +221,7 @@ public class Feature326 {
     @ExpectWarning("UC_USELESS_CONDITION")
     public int testLong(long l) {
         if(l < 0) {
-            return 1; 
+            return 1;
         }
         if(l >= 0) {
             return 2;
@@ -232,7 +232,7 @@ public class Feature326 {
     @ExpectWarning("UC_USELESS_CONDITION")
     public int testLongInverse(long l) {
         if(10 < l) {
-            return 1; 
+            return 1;
         }
         if(10 >= l) {
             return 2;
@@ -243,7 +243,7 @@ public class Feature326 {
     @NoWarning("UC_USELESS_CONDITION")
     public int testLongInverseOk(long l) {
         if(-10 < l) {
-            return 1; 
+            return 1;
         }
         if(-10 > l) {
             return 2;
@@ -254,27 +254,27 @@ public class Feature326 {
     @ExpectWarning("UC_USELESS_CONDITION_TYPE")
     public int testLongMax(long l) {
         if(l > 0 && l <= Long.MAX_VALUE) {
-            return 1; 
+            return 1;
         }
         return 0;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION_TYPE")
     public int testLongMin(long l) {
         if(l < 0 && l >= Long.MIN_VALUE) {
-            return 1; 
+            return 1;
         }
         return 0;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION_TYPE")
     public int testCharMax(char c) {
         if(c < 0x10FFFF) {
-            return 1; 
+            return 1;
         }
         return 0;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION_TYPE")
     @ExpectWarning("INT_VACUOUS_COMPARISON")
     public int testIntMax(int i) {
@@ -283,7 +283,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION_TYPE")
     public int testChangingOk(int a) {
         if(a > 0) {
@@ -295,7 +295,7 @@ public class Feature326 {
         }
         return 3;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public int testChanging(int a) {
         if(a > 0) {
@@ -310,7 +310,7 @@ public class Feature326 {
         }
         return 4;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public void testLoop() {
         for(int i=0; i<10; i++) {
@@ -319,7 +319,7 @@ public class Feature326 {
             }
         }
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public void testLoop2() {
         for(int i=0; i<10; i++) {
@@ -332,7 +332,7 @@ public class Feature326 {
             }
         }
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public void testReuseSlotOk(boolean b, int i1, int i2) {
         if(b) {
@@ -394,7 +394,7 @@ public class Feature326 {
         assert y >= 0 && x >= 0;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public int arrayLengthTest(int[] x) {
         if(x.length > 20) {
@@ -405,7 +405,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public int arrayLengthTestOk(int[] x) {
         if(x.length > 20) {
@@ -417,7 +417,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public int stringLengthTest(String x) {
         if(x.length() > 20) {
@@ -428,7 +428,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION")
     public int unboxingTest(Integer a) {
         if(a > 20) {
@@ -439,7 +439,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @ExpectWarning("UC_USELESS_CONDITION_TYPE")
     public int unboxingByteTest(Byte b) {
         if(b >= -128) {
@@ -447,7 +447,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION_TYPE")
     @ExpectWarning("INT_BAD_COMPARISON_WITH_SIGNED_BYTE")
     public int unboxingByteTest2(Byte b) {
@@ -456,7 +456,7 @@ public class Feature326 {
         }
         return 0;
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public int branchingTest(int x, boolean b) {
         if((x > 0) == b) {
@@ -467,7 +467,7 @@ public class Feature326 {
         }
         return 3;
     }
-    
+
     public char cc;
 
     @ExpectWarning("UC_USELESS_CONDITION")
@@ -476,7 +476,7 @@ public class Feature326 {
             return 1;
         return 2;
     }
-    
+
     private int current;
 
     @NoWarning("UC_USELESS_CONDITION")
@@ -490,7 +490,7 @@ public class Feature326 {
             }
         }
     }
-    
+
     @NoWarning("UC_USELESS_CONDITION")
     public void testNextChar2() throws IOException {
         if (current != -1) {
@@ -502,9 +502,9 @@ public class Feature326 {
             }
         }
     }
-    
+
     private void update() throws IOException {
         current = System.in.read();
     }
-    
+
 }

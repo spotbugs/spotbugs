@@ -52,7 +52,7 @@ public class MutableStatic {
 
     @ExpectWarning("MS_MUTABLE_COLLECTION_PKGPROTECT")
     static public final Map MAP = new HashMap();
-    
+
     static {
         MAP.put("a", "b");
         MAP.put("c", "d");

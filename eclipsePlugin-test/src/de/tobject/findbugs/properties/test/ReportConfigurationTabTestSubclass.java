@@ -27,7 +27,7 @@ import de.tobject.findbugs.properties.ReportConfigurationTab;
 /**
  * Test subclass of ReportConfigurationTab that provides methods for testing
  * purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class ReportConfigurationTabTestSubclass extends ReportConfigurationTab {

@@ -43,7 +43,7 @@ abstract class Bug2672946B extends Bug2672946A {
         super(field);
     }
 
-    /** This method will inherit the @Nonnull annotation from Bug2672946A, rather than use the class annotation @MethodsAreCheckNullByDefault. 
+    /** This method will inherit the @Nonnull annotation from Bug2672946A, rather than use the class annotation @MethodsAreCheckNullByDefault.
      * Thus, we do not expect a warning about relaxing an annotation */
     @NoWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
     @Override
@@ -53,7 +53,7 @@ abstract class Bug2672946B extends Bug2672946A {
             System.out.println("Found it");
         return (Bug2672946B) field;
     }
-    
+
     /** However, the explicit warning here does override the inherited annotation */
     @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
     @CheckForNull
@@ -70,7 +70,7 @@ abstract class Bug2672946B extends Bug2672946A {
             return "x";
         return null;
     }
-    
+
     @NoWarning("NP")
     public Object foo2() {
         if (getField().hashCode() == 17)
@@ -90,9 +90,9 @@ abstract class Bug2672946B extends Bug2672946A {
         return null;
     }
     abstract Object bar();
-    
+
     abstract @CheckForNull Object bar2();
-    
+
 }
 
 @CheckForNull

@@ -26,7 +26,7 @@ public class Bug3110239 implements Serializable {
 
     @NoWarning("SE_BAD_FIELDS")
     private Set<String> companies = new HashSet<String>();
-    
+
     public List<Bug3110239> getSubSectors() {
         return subSectors;
     }
@@ -39,5 +39,5 @@ public class Bug3110239 implements Serializable {
     public void setCompanies(Set<String> companies) {
         this.companies = companies;
     }
-    
+
 }

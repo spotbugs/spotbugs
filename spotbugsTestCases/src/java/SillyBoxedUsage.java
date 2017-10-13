@@ -42,7 +42,7 @@ public class SillyBoxedUsage {
     public String testGood(byte b, char c, short s, long j, boolean z) {
         return Byte.toString(b) + Character.toString(c) + Short.toString(s) + Long.toString(j) + Boolean.toString(z);
     }
-    
+
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
     public int testParsingBad1(String value) {
         return new Integer(value).intValue();
@@ -51,12 +51,12 @@ public class SillyBoxedUsage {
     public int testParsingBad1a(String value) {
         return Integer.valueOf(value).intValue();
     }
-    
+
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
     public int testParsingGood1(String value) {
         return Integer.parseInt(value);
     }
-    
+
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
     public long testParsingBad2(String value) {
         return new Long(value).longValue();
@@ -65,7 +65,7 @@ public class SillyBoxedUsage {
     public long testParsingBad2a(String value) {
         return Long.valueOf(value).longValue();
     }
-    
+
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
     public long testParsingGood2(String value) {
         return Long.parseLong(value);

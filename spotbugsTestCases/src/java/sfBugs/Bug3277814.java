@@ -30,7 +30,7 @@ public class Bug3277814 {
             throw new RuntimeException("NULL");
         }
     }
-    
+
     @ExpectWarning("NP")
     public void test2() {
         String var = "";

@@ -37,7 +37,7 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the JdtUtil class.
- * 
+ *
  * @author Tomás Pollak
  */
 public class JdtUtilTest extends AbstractPluginTest {

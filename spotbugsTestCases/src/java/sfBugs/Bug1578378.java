@@ -12,10 +12,10 @@ import java.sql.SQLException;
  * subclass of CallableStatement, then Findbugs reports: M B ODR:
  * joe.FindBugsTest.doit() may fail to close database resource At
  * Bug1578378.java:[line 35]
- * 
+ *
  * In this particular test, the "stmt" variable exhibits proper behavior,
  * whereas "stmt2" does not.
- * 
+ *
  * dan.rabe@oracle.com October 16, 2006
  */
 public class Bug1578378 {

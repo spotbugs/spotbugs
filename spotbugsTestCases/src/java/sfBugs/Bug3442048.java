@@ -7,14 +7,14 @@ public class Bug3442048 {
     enum Day {
         SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
     };
-    
+
     @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public void switchOnInt(int x) {
         switch (x) {
         case 1:
             System.out.println("1 is bad.");
             break;
-        case 2: 
+        case 2:
             System.out.println("2 is bad.");
             break;
         case 3:
@@ -79,9 +79,9 @@ public class Bug3442048 {
         }
         System.out.println("How is your day?");
     }
-    
+
     @ExpectWarning("SF_SWITCH_NO_DEFAULT")
-    
+
     public void tellItLikeItIs3(Day day) {
         switch (day) {
 //        case SUNDAY:

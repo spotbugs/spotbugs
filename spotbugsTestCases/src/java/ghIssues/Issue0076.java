@@ -12,7 +12,7 @@ public class Issue0076 {
         public void uncaughtException(Thread t, Throwable e) {
         }
     }
-    
+
     @NoWarning("NP_NONNULL_PARAM_VIOLATION")
     public void testNominal() {
         new ForkJoinPool(2, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true);

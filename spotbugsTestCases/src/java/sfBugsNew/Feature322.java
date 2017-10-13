@@ -59,7 +59,7 @@ public class Feature322 {
             recursive(a-1);
         }
     }
-    
+
     @ExpectWarning("UC_USELESS_VOID_METHOD")
     public void testFinally(int a) {
         List<Integer> x = new ArrayList<>();

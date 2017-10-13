@@ -8,7 +8,7 @@ public class Bug1195 {
     public String test1(int myInt) {
         return new Integer(myInt).toString();
     }
-    
+
     public String test1a(int myInt) {
         return ((Integer) myInt).toString();
     }
@@ -25,14 +25,14 @@ public class Bug1195 {
     public int test2Good(String myString) {
         return Integer.parseInt(myString);
     }
-    
+
     @ExpectWarning("DM_NUMBER_CTOR")
     public Integer test3(String myString) {
         return new Integer(myString);
-        
+
     }
     public Integer test3Good(String myString) {
         return Integer.valueOf(myString);
-        
+
     }
 }

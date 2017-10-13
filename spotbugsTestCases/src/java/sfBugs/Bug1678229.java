@@ -6,9 +6,9 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 /**
  * Don't report UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR
  * http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1678229&amp;group_id=96405&amp;atid=614693
- * 
+ *
  * @author pugh
- * 
+ *
  */
 public class Bug1678229 {
 

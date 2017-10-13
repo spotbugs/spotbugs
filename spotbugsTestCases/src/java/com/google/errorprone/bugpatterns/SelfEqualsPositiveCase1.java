@@ -42,7 +42,7 @@ public class SelfEqualsPositiveCase1 {
     retVal &= Objects.equal(this.field, field);
     //BUG: Suggestion includes "Objects.equal(this.field, other.field)"
     retVal &= Objects.equal(this.field, this.field);
-    
+
     return retVal;
   }
 
@@ -50,13 +50,13 @@ public class SelfEqualsPositiveCase1 {
   public int hashCode() {
     return Objects.hashCode(field);
   }
-  
+
   public static void test() {
     ForTesting tester = new ForTesting();
     //BUG: Suggestion includes "Objects.equal(tester.testing.testing, tester.testing)"
     Objects.equal(tester.testing.testing, tester.testing.testing);
   }
-  
+
   private static class ForTesting {
     public ForTesting testing;
     public String string;

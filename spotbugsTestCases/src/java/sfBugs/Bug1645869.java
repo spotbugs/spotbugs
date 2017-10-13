@@ -9,7 +9,7 @@ public class Bug1645869 {
      * it makes no distinction between a normal method and a final method. A
      * final method could be a way to impose the default behavior inherited from
      * super class. Michele.
-     * 
+     *
      * The bug found is a low priority and FindBugs makes the distinction now. -
      * Kristin
      */

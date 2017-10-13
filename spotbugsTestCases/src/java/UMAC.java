@@ -70,7 +70,7 @@ public class UMAC {
     /**
      * bug 1487961 false positive UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS due
      * to bridge method?
-     * 
+     *
      * @author Dave Brosius
      */
     public static void brosius() {

@@ -36,11 +36,11 @@ public class InvalidStringEqualityNegativeCases {
   @SuppressWarnings("StringEquality")
   public boolean testSuppressWarnings(String x, String y) {
     boolean retVal;
- 
+
     retVal = (x != y);
     retVal = (x == y);
 
     return retVal;
-  } 
+  }
 
 }

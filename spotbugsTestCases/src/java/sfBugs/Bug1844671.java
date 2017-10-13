@@ -45,8 +45,8 @@ public class Bug1844671 {
         FileWriter tmp = null;
         FileWriter fw = null;
         try {
-            tmp = new FileWriter(new File("")); 
-            fw = new FileWriter(new File("")); 
+            tmp = new FileWriter(new File(""));
+            fw = new FileWriter(new File(""));
         } catch (IOException e) {
             System.out.println(e);
         } finally {

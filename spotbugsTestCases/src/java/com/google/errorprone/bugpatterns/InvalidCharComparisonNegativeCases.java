@@ -27,14 +27,14 @@ public class InvalidCharComparisonNegativeCases {
 
         if (c == 0)
             return true;
-        
+
         if (c == 0xffff)
             return true;
-      
+
         int d;
         if ( (d = r.read()) == -1)
             return true;
-        
+
 
         return false;
     }

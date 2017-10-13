@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 
 /**
  * Sample class for the StaticCalendarDetector
- * 
+ *
  * @author ds
  */
 public class StaticCalender {
@@ -118,7 +118,7 @@ public class StaticCalender {
 
 /**
  * Subclass of {@link DateFormat} for the detector to find.
- * 
+ *
  * @author ds
  */
 class CustomDateFormat extends DateFormat {
@@ -127,7 +127,7 @@ class CustomDateFormat extends DateFormat {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.text.DateFormat#format(java.util.Date, java.lang.StringBuffer,
      * java.text.FieldPosition)
      */
@@ -141,7 +141,7 @@ class CustomDateFormat extends DateFormat {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.text.DateFormat#parse(java.lang.String,
      * java.text.ParsePosition)
      */

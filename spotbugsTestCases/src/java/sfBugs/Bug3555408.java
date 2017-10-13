@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 @DefaultAnnotation(NonNull.class)
 public class Bug3555408 {
-    
+
 @NoWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 public static final String constant = "constant";
 

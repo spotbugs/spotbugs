@@ -19,17 +19,17 @@ public class Ideas_2012_12_03 {
     @TypeQualifier(applicableTo = CharSequence.class)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface SlashedClassName {
-        
+
         public static final String NOT_AVAILABLE = "./.";
 
         When when() default When.ALWAYS;
     }
-    
+
     @NoWarning("TQ")
     @PK int foo(@PK int x, int y) {
         return x;
     }
-    
+
     @NoWarning("TQ")
     @SlashedClassName String foo() {
         return null;

@@ -27,14 +27,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 /**
  * Interface for an object responsible for generating data to use when writing
  * the contents of a file in the Eclipse workspace.
- * 
+ *
  * @see de.tobject.findbugs.io.IO#writeFile(IFile, FileOutput, IProgressMonitor)
  * @author David Hovemeyer
  */
 public interface FileOutput {
     /**
      * Write data to file.
-     * 
+     *
      * @param os
      *            the OutputStream for the file
      * @throws IOException
@@ -43,7 +43,7 @@ public interface FileOutput {
 
     /**
      * Get a description of the task. E.g., "writing saved XML bug data".
-     * 
+     *
      * @return description of the task
      */
     public String getTaskDescription();

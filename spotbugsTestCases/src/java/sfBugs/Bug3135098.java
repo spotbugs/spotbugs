@@ -23,7 +23,7 @@ public class Bug3135098 {
         }
         return result;
     }
-    
+
     @DesireWarning("SF_SWITCH_NO_DEFAULT")
     public int test3(MyEnum e) {
         switch (e) {
@@ -31,7 +31,7 @@ public class Bug3135098 {
         }
         return 3;
     }
-    
+
     @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
     /** Has bytecode identical to the above */
     public int test3a(MyEnum e) {
@@ -40,9 +40,9 @@ public class Bug3135098 {
             default:
                 return 3;
         }
-       
+
     }
-    
+
     @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public int test4(MyEnum e) {
         int result = 0;
@@ -52,7 +52,7 @@ public class Bug3135098 {
         return result;
     }
 
-    
+
     private enum MyEnum { A, B}
 }
 

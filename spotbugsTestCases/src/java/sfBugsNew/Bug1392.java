@@ -11,7 +11,7 @@ public class Bug1392 {
         // a SF_SWITCH_NO_DEFAULT bug
         public static final TrafficLight GO = GREEN;
     }
-    
+
     @NoWarning("SF_SWITCH_NO_DEFAULT")
     public void allCovered(TrafficLight light) {
         // default case is missing, but all cases are covered
@@ -27,7 +27,7 @@ public class Bug1392 {
                 break;
         }
     }
-    
+
     @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public void notAllCovered(TrafficLight light) {
         // default case is missing, and not all the cases are covered

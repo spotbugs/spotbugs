@@ -19,7 +19,7 @@ public class Bug3554835 {
 
         System.out.println(new BigInteger("1").add(i));
     }
-    
+
     @ExpectWarning("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
     void y() {
         BigInteger i = BigInteger.ZERO;

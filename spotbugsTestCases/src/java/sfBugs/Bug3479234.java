@@ -37,7 +37,7 @@ public class Bug3479234 {
 
     @ExpectWarning("BC_UNCONFIRMED_CAST")
     public  String getName3(Parent o1, Parent o2) {
-        
+
         _p = o1;
         String s;
 
@@ -50,7 +50,7 @@ public class Bug3479234 {
     }
     @ExpectWarning("BC_UNCONFIRMED_CAST")
     public  String getName4(Parent o1, Parent o2) {
-        
+
         _p = o1;
         String s;
 
@@ -107,7 +107,7 @@ public class Bug3479234 {
             return null;
         }
     }
-    
+
     static class Original {
         private Parent _p;
         String _s;

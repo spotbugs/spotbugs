@@ -17,13 +17,13 @@ public class Bug1249 {
         case 2:
             System.out.println("2");
             break;
-       
+
         default:
             System.out.println("?");
             break;
         }
     }
-    
+
     @DesireNoWarning("SF_SWITCH_FALLTHROUGH")
     void foo2(int x) {
 
@@ -37,13 +37,13 @@ public class Bug1249 {
         case 2:
             System.out.println("2");
             break;
-       
+
         default:
             System.out.println("?");
             break;
         }
     }
-    
+
     @DesireNoWarning("SF_SWITCH_FALLTHROUGH")
     void foo3(int x) {
 
@@ -56,7 +56,7 @@ public class Bug1249 {
         case 2:
             System.out.println("2");
             break;
-       
+
         default:
             System.out.println("?");
             break;

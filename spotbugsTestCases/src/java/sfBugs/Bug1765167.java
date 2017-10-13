@@ -2,14 +2,14 @@ package sfBugs;
 
 /**
  * Submitted By: Ian Macfarlane Summary:
- * 
+ *
  * When assigning values to a variable in the middle of an if statement,
  * FindBugs sometimes seems to think that the statement does nothing.
- * 
+ *
  * In the attached test case, the code looking for the index of characters like
  * 'st' or 'th' in Strings like '21st' or '2nd'. However, FindBugs says that the
  * code does nothing.
- * 
+ *
  * Oddly enough, if you take out some of the lines in the long
  * if-elseif-elseif-etc block (from the bottom up to around the 3rd/3th entries)
  * the bug warning vanishes.

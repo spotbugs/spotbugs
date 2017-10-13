@@ -2,15 +2,15 @@ package sfBugs;
 
 /**
  * Test for bug 1890955 at
- * 
+ *
  * https://sourceforge.net/tracker/index.php?func=detail&amp;aid=1890955&amp;group_id=
  * 96405&amp;atid=614693
- * 
+ *
  * If the line "System.out.println("hi bugs!");" is commented out, then NPE in
  * OpcodeStack disappears.
- * 
+ *
  * @author Andrei
- * 
+ *
  */
 public class Bug1890955 {
 

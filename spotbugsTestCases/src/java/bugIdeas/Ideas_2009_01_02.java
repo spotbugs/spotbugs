@@ -4,9 +4,9 @@ public class Ideas_2009_01_02 {
 
     /**
      * The Zune 30 loop of death From http://pastie.org/349916
-     * 
+     *
      * This code goes into an infinite loop on Dec 31st of a leap year
-     * 
+     *
      * @param days
      *            since Jan 0, 1980
      * @return the year

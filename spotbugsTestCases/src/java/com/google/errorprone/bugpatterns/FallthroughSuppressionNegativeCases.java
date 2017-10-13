@@ -30,7 +30,7 @@ public class FallthroughSuppressionNegativeCases extends FallthroughSuppressionT
 
   @SuppressWarnings({"varargs", "unchecked"})
   public void suppressedMethod2() {}
-  
+
   @Override
   public void overriddenMethod() {}
 }

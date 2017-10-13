@@ -47,7 +47,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 
 /**
  * @author Andrei
- * 
+ *
  */
 public class GroupSelectionDialog extends SelectionDialog {
 

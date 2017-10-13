@@ -22,7 +22,7 @@ public class Ideas_2010_05_27 {
      public static boolean test(A a, B b) {
      return a.foo().equals(b);
      }
-    
+
     @ExpectWarning("EC_UNRELATED_TYPES")
     public static boolean test2(A a, B b) {
         Ideas_2010_05_27 o = a;

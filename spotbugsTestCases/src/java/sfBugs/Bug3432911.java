@@ -28,7 +28,7 @@ public class Bug3432911 {
 
         }
     }
-    
+
     @NoWarning("OS_OPEN_STREAM,OBL_UNSATISFIED_OBLIGATION")
 
     protected void doGet3(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -41,7 +41,7 @@ public class Bug3432911 {
 
         }
     }
-    
+
     @NoWarning("OS_OPEN_STREAM,OBL_UNSATISFIED_OBLIGATION")
     protected void doGet2(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

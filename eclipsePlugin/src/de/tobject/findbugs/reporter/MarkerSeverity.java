@@ -22,7 +22,7 @@ import org.eclipse.core.resources.IMarker;
 
 /**
  * Used for mapping between bug priorities and {@link IMarker} constants
- * 
+ *
  * @author Andrei Loskutov
  */
 public enum MarkerSeverity {

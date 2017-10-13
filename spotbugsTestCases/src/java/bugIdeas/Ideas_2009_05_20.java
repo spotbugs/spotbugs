@@ -49,7 +49,7 @@ public abstract class Ideas_2009_05_20 {
     /**
      * From Ant 1.5.2,
      * org.apache.tools.ant.taskdefs.optional.extension.Specification
-     * 
+     *
      * Reported as a FindBugs false positive in "Accurate Interprocedural
      * Null-Dereference Analysis for Java", Mangala Gowri Nanda and Saurabh
      * Sinha, ICSE 2009

@@ -35,7 +35,7 @@ class Bug2672946A {
     public Bug2672946A getField() {
         return this.field;
     }
-    
+
     @Nonnull
     public Bug2672946A getField2() {
         return this.field;

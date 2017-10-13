@@ -12,13 +12,13 @@ public class Bug3567801 {
     }
 
     static class Impl implements Test {
-        
+
         @Override
 		@NoWarning("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
         public int foo(@Nonnull Object x) {
             return x.hashCode();
         }
-        
+
         public int bar() {
             return foo("abc");
         }

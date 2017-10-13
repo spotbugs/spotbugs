@@ -9,7 +9,7 @@ public class Bug1964520a {
     @NoWarning("BC_UNCONFIRMED_CAST")
     public void setSomething(Superclass object) {
         this.something = object;
-        if (something instanceof Subclass && ((Subclass) something).bla()) 
+        if (something instanceof Subclass && ((Subclass) something).bla())
         {
             ((Subclass) something).foo();
         }

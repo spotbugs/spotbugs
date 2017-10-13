@@ -10,7 +10,7 @@ public class Bug1295jdk8 {
 
     public List<AncestorNodeReference> getAncestors() {
         List<AncestorNodeReference> ancestorNodes;
-        
+
         ancestorNodes = new ArrayList<AncesterNodeReferenceDTO>()
                 .stream()
                 .map(this::createAncestorNodeReference)

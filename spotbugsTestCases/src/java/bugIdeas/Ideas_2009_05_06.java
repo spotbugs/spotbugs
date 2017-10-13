@@ -19,7 +19,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
  * the old behavior - when changing logger configuration, it simply drops the
  * logger reference. That means that the garbage collector is free to reclaim
  * that memory, which means that the logger configuration is lost.
- * 
+ *
  */
 public class Ideas_2009_05_06 {
     /**

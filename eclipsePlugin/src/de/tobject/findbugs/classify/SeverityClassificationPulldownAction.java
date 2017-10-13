@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.BugProperty;
 
 /**
  * Pulldown menu action for classifying warning severity.
- * 
+ *
  * @author David Hovemeyer
  */
 public class SeverityClassificationPulldownAction implements IWorkbenchWindowPulldownDelegate2 {
@@ -40,7 +40,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.
      * swt.widgets.Menu)
@@ -52,7 +52,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IWorkbenchWindowPulldownDelegate#getMenu(org.eclipse.swt
      * .widgets.Control)
@@ -76,7 +76,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
         SelectionListener menuItemSelectionListener = new SelectionAdapter() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse
              * .swt.events.SelectionEvent)
@@ -112,7 +112,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
         menu.addMenuListener(new MenuAdapter() {
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * org.eclipse.swt.events.MenuAdapter#menuShown(org.eclipse.swt.
              * events.MenuEvent)
@@ -154,7 +154,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /**
      * Set the menu to given severity level.
-     * 
+     *
      * @param severity
      *            the severity level (1..5)
      */
@@ -171,7 +171,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /**
      * Reset menu items so they are unchecked.
-     * 
+     *
      * @param enable
      *            true if menu items should be enabled, false if they should be
      *            disabled
@@ -186,7 +186,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
      */
     @Override
@@ -199,7 +199,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.
      * IWorkbenchWindow)
      */
@@ -210,7 +210,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     @Override
@@ -220,7 +220,7 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action
      * .IAction, org.eclipse.jface.viewers.ISelection)

@@ -22,22 +22,22 @@ public abstract class Bug1169 {
         public abstract void update(byte[] buffer, int i, int get);
 
         public abstract R digest();
-        
+
     }
-    
+
     @NoWarning("RCN,NP")
     public int foo() throws IOException {
         try (FileChannel c = open()) {
-            final MappedByteBuffer mb 
+            final MappedByteBuffer mb
             = c.map(MapMode.READ_ONLY, 0L, c.size());
-            
+
             return mb.getInt();
           }
     }
 
      abstract FileChannel open();
-     
-     
+
+
      @NoWarning("RCN,NP")
      @Nonnull
      protected  <R> R executeEngine(@Nonnull final Engine<R> engine, @Nonnull final Path path) throws IOException {
@@ -58,7 +58,7 @@ public abstract class Bug1169 {
 
      }
 
-  
+
      @NoWarning("RCN,NP")
      @Nonnull
      public <R> R execute2(@Nonnull final Engine<R> engine, @Nonnull final Path path, @Nonnull final byte[] buffer)
@@ -80,9 +80,9 @@ public abstract class Bug1169 {
            }
          }
          return engine.digest();
-       } 
+       }
      }
-     
+
     abstract  FileChannel open(Path path, StandardOpenOption read);
 
     @NoWarning("RCN,NP")

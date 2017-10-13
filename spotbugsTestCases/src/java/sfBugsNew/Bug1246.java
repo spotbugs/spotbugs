@@ -12,7 +12,7 @@ public class Bug1246 {
     public static Reader getReader() throws FileNotFoundException {
         return new  FileReader("whatever");
     }
-    
+
     @DesireWarning("NP_DEREFERENCE_OF_READLINE_VALUE")
     public static String withoutLinebreak() throws Exception {
         try (BufferedReader reader = new BufferedReader(getReader())) {
@@ -20,11 +20,11 @@ public class Bug1246 {
             return sth;
         }
     }
-    
+
     @DesireWarning("NP_DEREFERENCE_OF_READLINE_VALUE")
     public static String withLinebreak() throws Exception {
         try (BufferedReader reader = new BufferedReader(getReader())) {
-            String sth = checkNotNull(reader.readLine(), 
+            String sth = checkNotNull(reader.readLine(),
                     "File Empty");
             return sth;
         }

@@ -3,11 +3,11 @@ package bugIdeas;
 import java.util.Random;
 
 public class Ideas_2011_06_29 {
-    
+
     int x;
     long y;
     double z;
-    
+
     void postIncrementAll() {
         x = x++;
         y = y++;
@@ -18,13 +18,13 @@ public class Ideas_2011_06_29 {
         y = ++y;
         z = ++z;
     }
-    
+
     @Override
     public String toString() {
         return "Ideas_2011_06_29 [x=" + x + ", y=" + y + ", z=" + z + "]";
     }
     public static void main(String args[]) {
-        
+
         String f = "foobar";
         f.format("Test %s", "xx");
         Random r = new Random();
@@ -35,8 +35,8 @@ public class Ideas_2011_06_29 {
         System.out.println(tst);
         tst.preIncrementAll();
         System.out.println(tst);
-       
-        
+
+
     }
 
 }

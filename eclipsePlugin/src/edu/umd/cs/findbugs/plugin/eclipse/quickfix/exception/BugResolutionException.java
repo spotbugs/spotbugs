@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 /**
  * This is the root of the quickfix-exceptions. Normally this exception is
  * thrown to indicate an abnormal state during the bug-repair.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0

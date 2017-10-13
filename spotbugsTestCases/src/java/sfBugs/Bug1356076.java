@@ -10,10 +10,10 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 /**
  * Submitted By: Len Trigg Summary:
- * 
+ *
  * OS reports failure to close stream when the stream is assigned to a member
  * array.
- * 
+ *
  * Test case attached that demonstrates the problem (and shows that the OS is
  * not reported upon assignment to non-array member).
  */
