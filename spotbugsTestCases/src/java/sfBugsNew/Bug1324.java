@@ -1,10 +1,10 @@
 package sfBugsNew;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
-
 import java.util.Arrays;
 import java.util.Iterator;
+
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1324 implements Iterable<String> {
     @Override

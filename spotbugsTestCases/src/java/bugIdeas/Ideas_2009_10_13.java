@@ -1,7 +1,6 @@
 package bugIdeas;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.annotations.DesireWarning;

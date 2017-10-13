@@ -1,7 +1,6 @@
 package sfBugsNew;
 
 import annotations.DetectorUnderTest;
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.detect.UnreadFields;

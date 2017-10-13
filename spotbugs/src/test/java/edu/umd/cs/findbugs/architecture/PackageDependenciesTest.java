@@ -23,11 +23,12 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
-import jdepend.framework.JDepend;
-import jdepend.framework.JavaPackage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import jdepend.framework.JDepend;
+import jdepend.framework.JavaPackage;
 
 /**
  * Verifies the package dependencies.

@@ -1,11 +1,11 @@
 package edu.umd.cs.findbugs.ba;
 
+import static org.hamcrest.core.Is.is;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.hamcrest.core.Is.is;
 
 /**
  * Verifies {@link NullnessAnnotation} parser.

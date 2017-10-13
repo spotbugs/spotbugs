@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.jaif;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
+
 import org.junit.Test;
 
 public class JAIFScannerTest {

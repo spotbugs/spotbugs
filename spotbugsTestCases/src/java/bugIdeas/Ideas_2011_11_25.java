@@ -1,11 +1,10 @@
 package bugIdeas;
 
-import junit.framework.Assert;
-
 import com.google.common.base.Preconditions;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import junit.framework.Assert;
 
 public class Ideas_2011_11_25 {
 

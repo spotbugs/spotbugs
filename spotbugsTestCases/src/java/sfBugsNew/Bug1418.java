@@ -1,8 +1,8 @@
 package sfBugsNew;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Bug1418 {
     @NoWarning("SIC")

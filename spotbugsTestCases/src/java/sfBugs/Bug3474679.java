@@ -2,12 +2,11 @@ package sfBugs;
 
 import java.math.BigDecimal;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import junit.framework.Assert;
 
 public class Bug3474679
 {

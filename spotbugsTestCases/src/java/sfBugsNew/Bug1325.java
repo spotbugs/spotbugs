@@ -1,6 +1,5 @@
 package sfBugsNew;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1325<P extends java.io.Serializable & Comparable<P>> implements java.io.Serializable, Comparable<Bug1325<P>> {

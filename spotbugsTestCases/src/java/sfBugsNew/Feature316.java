@@ -1,8 +1,12 @@
 package sfBugsNew;
 
-import java.sql.*;
-import java.util.*;
-import java.util.regex.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

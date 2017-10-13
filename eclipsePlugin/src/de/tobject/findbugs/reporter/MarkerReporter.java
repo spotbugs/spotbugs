@@ -19,7 +19,15 @@
  */
 
 package de.tobject.findbugs.reporter;
-import static de.tobject.findbugs.marker.FindBugsMarker.*;
+import static de.tobject.findbugs.marker.FindBugsMarker.BUG_TYPE;
+import static de.tobject.findbugs.marker.FindBugsMarker.DETECTOR_PLUGIN_ID;
+import static de.tobject.findbugs.marker.FindBugsMarker.FIRST_VERSION;
+import static de.tobject.findbugs.marker.FindBugsMarker.PATTERN_TYPE;
+import static de.tobject.findbugs.marker.FindBugsMarker.PRIMARY_LINE;
+import static de.tobject.findbugs.marker.FindBugsMarker.PRIO_AKA_CONFIDENCE;
+import static de.tobject.findbugs.marker.FindBugsMarker.RANK;
+import static de.tobject.findbugs.marker.FindBugsMarker.UNIQUE_ID;
+import static de.tobject.findbugs.marker.FindBugsMarker.UNIQUE_JAVA_ID;
 
 import java.util.HashMap;
 import java.util.Iterator;

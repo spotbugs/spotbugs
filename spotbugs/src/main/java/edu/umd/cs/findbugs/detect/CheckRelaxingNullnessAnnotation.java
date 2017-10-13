@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.ba.NullnessAnnotation.*;
+import static edu.umd.cs.findbugs.ba.NullnessAnnotation.CHECK_FOR_NULL;
+import static edu.umd.cs.findbugs.ba.NullnessAnnotation.NONNULL;
+import static edu.umd.cs.findbugs.ba.NullnessAnnotation.NULLABLE;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 import java.util.Arrays;

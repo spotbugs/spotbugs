@@ -3,9 +3,9 @@ package bugIdeas;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
+
+import junit.framework.TestCase;
 
 public class Ideas_2008_08_11 extends TestCase {
 

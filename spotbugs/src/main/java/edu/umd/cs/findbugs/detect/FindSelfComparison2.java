@@ -1,6 +1,29 @@
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Const.*;
+import static org.apache.bcel.Const.DCMPG;
+import static org.apache.bcel.Const.DCMPL;
+import static org.apache.bcel.Const.FCMPG;
+import static org.apache.bcel.Const.FCMPL;
+import static org.apache.bcel.Const.IAND;
+import static org.apache.bcel.Const.IF_ACMPEQ;
+import static org.apache.bcel.Const.IF_ACMPNE;
+import static org.apache.bcel.Const.IF_ICMPEQ;
+import static org.apache.bcel.Const.IF_ICMPGE;
+import static org.apache.bcel.Const.IF_ICMPGT;
+import static org.apache.bcel.Const.IF_ICMPLE;
+import static org.apache.bcel.Const.IF_ICMPLT;
+import static org.apache.bcel.Const.IF_ICMPNE;
+import static org.apache.bcel.Const.INVOKEINTERFACE;
+import static org.apache.bcel.Const.INVOKEVIRTUAL;
+import static org.apache.bcel.Const.IOR;
+import static org.apache.bcel.Const.ISUB;
+import static org.apache.bcel.Const.IXOR;
+import static org.apache.bcel.Const.LAND;
+import static org.apache.bcel.Const.LCMP;
+import static org.apache.bcel.Const.LOR;
+import static org.apache.bcel.Const.LSUB;
+import static org.apache.bcel.Const.LXOR;
+import static org.apache.bcel.Const.POP;
 
 import java.util.BitSet;
 import java.util.Iterator;

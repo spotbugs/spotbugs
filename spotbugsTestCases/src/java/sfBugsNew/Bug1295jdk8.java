@@ -3,8 +3,8 @@ package sfBugsNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1295jdk8 {
 

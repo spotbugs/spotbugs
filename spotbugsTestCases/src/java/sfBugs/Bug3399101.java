@@ -9,9 +9,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
 
-import sfBugs.Bug3399101.ParametersAreCheckForNullByDefault;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+import sfBugs.Bug3399101.ParametersAreCheckForNullByDefault;
 
 @DefaultAnnotationForParameters(CheckForNull.class)
 @ParametersAreCheckForNullByDefault
