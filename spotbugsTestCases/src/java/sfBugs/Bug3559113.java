@@ -1,6 +1,6 @@
 package sfBugs;
 //
-//(c) Copyright Information Builders, Inc. 2009  All rights reserved. 
+//(c) Copyright Information Builders, Inc. 2009  All rights reserved.
 //
 /*
 ** $Header: /home/cvs/webfocus/src/ibi/search/common/RequiredFields.java,v 1.11 2011/03/12 16:53:51 Peter_Lenahan Exp $:
@@ -63,14 +63,14 @@ import javax.servlet.http.HttpServletRequest;
 /**
 * This class centralizes the parsing of the URL parameters from the search for the
 * &amp;requiredfields= and the &amp;newrequiredfields= parameters.
-* 
+*
 * Because this was being done in 3 different places in the code it was important to centralize it.
 * These parameters may contain international characters which need to be consistency decoded.
-* These parameters are also used to generate the URL for 
-* 1 - the tree, 
-* 2 - The breadcrumbs, 
+* These parameters are also used to generate the URL for
+* 1 - the tree,
+* 2 - The breadcrumbs,
 * 3 - The Sort By links.
-* 
+*
 * @author Peter Lenahan
 *
 */
@@ -94,13 +94,13 @@ public class Bug3559113 {
   * then saves them in 2 tables which are accessed via the methods
   * getFields() and getValues().
   * The data stored in the table has had all the decoding applied.
-  * 
+  *
   * The data stored in the requiredfields= parameter must be double encoded because
   * it can contain a "." or a "|" which are the google and/or logical operations
   * to apply to the query. We only support the "." and operation.
-  * 
+  *
   * while the data stored in the newrequiredfields parameter can be singular decoded
-  * 
+  *
   * @param req the request object of the servlet
   */
  public Bug3559113(final HttpServletRequest req) {
@@ -108,13 +108,13 @@ public class Bug3559113 {
      if (reqfieldParameter != null) {
 
          // Decode the data after you split the expression apart
-         
+
          //String reqfields=decode(reqfieldParameter);
          String reqfields=reqfieldParameter;
 //       try {
 //           reqfields=new String(reqfieldParameter.getBytes(),"utf8");
 //       } catch (UnsupportedEncodingException e) {
-//           
+//
 //           e.printStackTrace();
 //       }
 
@@ -125,7 +125,7 @@ public class Bug3559113 {
                  ss_or=reqfields.split("\\|");
              else
                  ss_and=reqfields.split("\\.");
-     
+
              String [] ss_l=ss_or;
              // This is what we may be parsing
              // The Meta Tags can be separated by either a "." for and "and" operation
@@ -145,14 +145,14 @@ public class Bug3559113 {
                  for (int l_index=0;l_index<len;l_index++) {
                      final String [] ss=decode(ss_l[l_index]).split(":");
                      if (ss.length > 1) {
-                         // First we must separate the multiple keys if they exist. 
+                         // First we must separate the multiple keys if they exist.
                          addField(ss[0], // String fieldname,
                                   ss[1]); // String fieldvalue,
                      }
                  }
                  ss_l=ss_and;
              }
- 
+
          }
      }
      // Because of UTF-8 issues this is double encoded in the browser.
@@ -163,9 +163,9 @@ public class Bug3559113 {
          // If the URL is chopped off because it exceeds the browser limit of 2000 characters, then
          // the ":" may not be there, check to be sure that there is actually 2 items.
          if (newrequiredfields != null && newrequiredfields.length > 1
-                 
+
                  ) {
- 
+
              addField(newrequiredfields[0], // String fieldname,
                       newrequiredfields[1]); // String fieldvalue
          }
@@ -176,7 +176,7 @@ public class Bug3559113 {
  /**
   * This method does not decode the data, it must be called with the
   * data already decoded correctly by the caller
-  * 
+  *
   * @param fieldname Which is added to the required fieldnames array
   * @param fieldvalue Which is added to the required fieldvalues array
   */
@@ -185,15 +185,15 @@ public class Bug3559113 {
          String fieldvalue) {
      String decodedfieldname=fieldname;
      String decodedfieldvalue=fieldvalue;
-     
-     if (magnifySearchLogger.isLoggable(Level.FINER)) 
+
+     if (magnifySearchLogger.isLoggable(Level.FINER))
          magnifySearchLogger.finer("RequiredFields():adecodedfieldnameddField: decodedfieldname="+decodedfieldname+", decodedfieldvalue= "+decodedfieldvalue);
      fieldnames.add(fieldname);
      fieldvalues.add(fieldvalue);
-             
+
  }
  /**
-  * 
+  *
   * @param s
   * @return
   */
@@ -215,7 +215,7 @@ public class Bug3559113 {
      if (s == null)
          return null;
      return ibi.search.common.Encoders.requiredFieldsDecoder(s);
-     
+
  }
- */  
+ */
 }

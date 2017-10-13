@@ -22,7 +22,7 @@ public class Ideas_2012_02_01 {
     public @interface Bar {
     }
 
-    
+
     static  @Foo int getFoo() {
         return 42;
     }

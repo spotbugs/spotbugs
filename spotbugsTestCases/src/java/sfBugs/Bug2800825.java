@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Generates a false redundant null check warning.
- * 
+ *
  * Must set FindBugs to show low priority warnings.
  */
 

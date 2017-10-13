@@ -3,7 +3,7 @@ package tigerTraps;
 public class Parsing {
     /**
      * Returns Integer corresponding to s, or null if s is null.
-     * 
+     *
      * @throws NumberFormatException
      *             if s is nonnull and doesn't represent a valid integer.
      */

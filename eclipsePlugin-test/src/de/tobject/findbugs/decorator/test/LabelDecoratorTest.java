@@ -32,7 +32,7 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the ResourceBugCountDecorator.
- * 
+ *
  * @author Tomás Pollak
  */
 public class LabelDecoratorTest extends AbstractFindBugsTest {

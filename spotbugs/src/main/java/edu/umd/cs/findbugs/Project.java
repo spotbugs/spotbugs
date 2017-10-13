@@ -241,22 +241,22 @@ public class Project implements XMLWriteable {
      * Add a source directory to the project.
      *
      * @param sourceDir
-     *            The source directory to add. These can be either an absolute path 
+     *            The source directory to add. These can be either an absolute path
      *            or relative to any of the working directories in this project object.
      * @return true if the source directory was added or false if it was already present
-     * @deprecated Calling this method repeatedly performs poorly because a SourceFinder is created each time, 
+     * @deprecated Calling this method repeatedly performs poorly because a SourceFinder is created each time,
      *              which checks all files for existence each time. Use {@link #addSourceDirs} instead.
      */
     @Deprecated
     public boolean addSourceDir(String sourceDir) {
         return addSourceDirs(Collections.singletonList(sourceDir));
     }
-    
+
     /**
      * Add source directories to the project.
      *
      * @param sourceDirs
-     *            The source directories to add. These can be either absolute paths 
+     *            The source directories to add. These can be either absolute paths
      *            or relative to any of the working directories in this project object.
      * @return true if a source directory was added or false if all source
      *         directories were already present

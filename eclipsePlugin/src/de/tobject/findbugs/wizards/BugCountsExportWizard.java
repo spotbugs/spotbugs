@@ -41,7 +41,7 @@ public class BugCountsExportWizard extends Wizard implements IExportWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.Wizard#performFinish()
      */
     @Override
@@ -51,7 +51,7 @@ public class BugCountsExportWizard extends Wizard implements IExportWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
@@ -62,7 +62,7 @@ public class BugCountsExportWizard extends Wizard implements IExportWizard {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.wizard.Wizard#addPages()
      */
     @Override

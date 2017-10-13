@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotates members of your implementation class (constructors, methods and
  * fields) into which the Injector should inject values
- * 
+ *
  */
 @Target(value = { ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Retention(value = RetentionPolicy.RUNTIME)

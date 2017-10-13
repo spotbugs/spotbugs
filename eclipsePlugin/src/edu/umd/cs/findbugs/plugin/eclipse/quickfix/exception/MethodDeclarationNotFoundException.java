@@ -26,7 +26,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 /**
  * Thrown when no <CODE>MethodDeclaration</CODE> was found in the specified
  * <CODE>TypeDeclaration</CODE>.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0

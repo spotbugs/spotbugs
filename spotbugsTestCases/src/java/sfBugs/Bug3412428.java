@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3412428 {
-    
+
     float x0, xr, y0, yr, dn, tr, t0;
     boolean test;
 
@@ -21,7 +21,7 @@ public class Bug3412428 {
     public boolean test2() {
         return x0*xr != x0*xr;
     }
-    
+
     @NoWarning("FE_FLOATING_POINT_EQUALITY")
     public boolean test3() {
         float tmp = x0*xr;

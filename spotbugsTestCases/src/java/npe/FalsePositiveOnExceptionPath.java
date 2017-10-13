@@ -4,17 +4,17 @@ import java.io.IOException;
 
 /**
  * False positive on exception path, reported by John Penix.
- * 
+ *
  * <pre>
  * I'm surprised about this false positive - seems obvious.  Am I missing
  * something?
- * 
+ *
  * thanks
- * 
+ *
  * John
- * 
+ *
  * ---
- * 
+ *
  * try {
  *  r = a.MyClass.getInstance()
  * }
@@ -26,7 +26,7 @@ import java.io.IOException;
  *  log.warn("My Exeption" + e.getMessage());
  *    return null;
  * }
- * 
+ *
  * size = r.getSize();  // &lt;--NP_NULL_ON_SOME_PATH_EXCEPTION
  * </pre>
  **/

@@ -11,24 +11,24 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Feature332 {
     static class Point {
         int x, y;
-        
+
         Point(int... p) {
             x = p[0];
             y = p[1];
         }
-        
+
         Point() {}
-        
+
         void setX(int x) {
             this.x = x;
         }
     }
-    
+
     static class Circle {
         Point center;
         int radius;
     }
-    
+
     static class Point2 extends Point {
         @NoWarning("UC")
         Point2() {
@@ -42,7 +42,7 @@ public class Feature332 {
         p.x = 10;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessList() {
         List<String> list = new ArrayList<>();
@@ -50,7 +50,7 @@ public class Feature332 {
         list.add(list.get(0));
         System.out.println("test");
     }
-    
+
     // Currently unsupported: maybe later
     @DesireWarning("UC_USELESS_OBJECT")
     public void testUselessInteraction() {
@@ -62,7 +62,7 @@ public class Feature332 {
         p.y = p2.y;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessMultiArray() {
         int[][] x = new int[2][3];
@@ -70,7 +70,7 @@ public class Feature332 {
         x[0][2] = 2;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessMultiArray2(int[] arr) {
         int[][] x = new int[2][];
@@ -78,7 +78,7 @@ public class Feature332 {
         x[1] = x[0];
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessMultiArray3() {
         int[][] x = new int[2][];
@@ -86,14 +86,14 @@ public class Feature332 {
         x[0][1] = 1;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessMultiArray4() {
         int[][] x = new int[][] {{1,2,3},{4,5,6}};
         x[0][1] = 1;
         System.out.println("test");
     }
-    
+
     @NoWarning("UC")
     public void testUsefulMultiArray(int[] arr) {
         int[][] x = new int[2][];
@@ -101,21 +101,21 @@ public class Feature332 {
         x[0][1] = 1;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessObjectsArray() {
         Point[] pts = new Point[] {new Point(), new Point(1,2), new Point(2,3)};
         pts[0].x = 2;
         System.out.println("test");
     }
-    
+
     @NoWarning("UC")
     public void testUsefulObjectsArray(Point p) {
         Point[] pts = new Point[] {p, new Point(1,2), new Point(2,3)};
         pts[0].x = 2;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessReuse() {
         Point p = new Point();
@@ -123,7 +123,7 @@ public class Feature332 {
         p.y = p.x+1;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessArray() {
         int[] x = new int[3];
@@ -132,7 +132,7 @@ public class Feature332 {
         x[2] = x[0]+x[1];
         System.out.println("test");
     }
-    
+
     @SuppressWarnings("unchecked")
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessArrayOfLists() {
@@ -141,7 +141,7 @@ public class Feature332 {
         lists[0].add("test");
         System.out.println("test");
     }
-    
+
     @SuppressWarnings("unchecked")
     @NoWarning("UC")
     public void testUsefulArrayOfLists(List<?> l) {
@@ -161,31 +161,31 @@ public class Feature332 {
         c.center.y = 2;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT_STACK")
     public void testNonAssigned() {
         new Point().x = 2;
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT_STACK")
     public void testNonAssignedCall() {
         new Point().setX(2);
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT_STACK")
     public void testNonAssignedCall2() {
         new ArrayList<String>().add("test");
         System.out.println("test");
     }
-    
+
     @ExpectWarning("UC_USELESS_OBJECT_STACK")
     public void testNonAssignedArray() {
         (new double[1])[0] = 1;
         System.out.println("test");
     }
-    
+
     // False-positive appeared before we handle IINC properly
     @NoWarning("UC")
     public void testIncrement() {
@@ -195,7 +195,7 @@ public class Feature332 {
         i++;
         System.out.println(i);
     }
-    
+
     // False-positive appeared before we handle loops properly
     @NoWarning("UC")
     public void sizeUsed() {
@@ -207,12 +207,12 @@ public class Feature332 {
             System.out.println("qq");
         }
     }
-    
+
     @NoWarning("UC")
     public String testStringBuilder(Object obj) {
         return obj == null ? null : "test" + obj;
     }
-    
+
     @NoWarning("UC")
     public void testVarArgs(String f) {
         String.format(f, 0);
@@ -223,7 +223,7 @@ public class Feature332 {
     public void testUseThrower() throws Exception {
         raiseException("test", "best", "quest");
     }
-    
+
     public void raiseException(String... message) throws Exception {
         throw new Exception(Arrays.asList(message).toString());
     }

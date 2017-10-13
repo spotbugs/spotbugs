@@ -9,12 +9,12 @@ import java.util.Vector;
 
 /**
  * Submitted By: Steve Tousignant Summary:
- * 
+ *
  * find bug detect a false positive in some situation where you have a string
  * initialized before a for/while loop and concat stuff in the loop. The special
  * case here is that the next time the loop is run the string is reinitialized
  * with an other value and stay this way for the rest of the loop.
- * 
+ *
  */
 public class Bug1766405 {
     // Should not warn

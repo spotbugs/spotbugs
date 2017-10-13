@@ -3,14 +3,14 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class SelfFieldOperation {
-    
+
     public  SelfFieldOperation(int x, long y, int z, Integer a) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.a = a;
     }
-    
+
     int x;
     long y;
 
@@ -52,19 +52,19 @@ public class SelfFieldOperation {
             return 6;
         return 0;
     }
-    
+
     Integer a;
 
     @ExpectWarning("SA_FIELD_SELF_COMPARISON")
     boolean e() {
         return a.equals(a);
     }
-    
+
     @ExpectWarning("SA_FIELD_SELF_COMPARISON")
     int c() {
         return a.compareTo(a);
     }
 
-    
+
 
 }

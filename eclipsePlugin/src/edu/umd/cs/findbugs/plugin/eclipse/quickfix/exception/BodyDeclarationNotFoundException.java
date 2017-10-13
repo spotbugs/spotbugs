@@ -23,7 +23,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
 
 /**
  * Thrown to indicate that a <CODE>BodyDeclaration</CODE> couldn't be found.
- * 
+ *
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0

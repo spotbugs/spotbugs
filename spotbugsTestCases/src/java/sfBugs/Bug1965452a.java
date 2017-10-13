@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * 
+ *
  * @version $Id: NonNullFalsePositive.java,v 1.9 2008/05/16 15:35:01 ped Exp $
  */
 public class Bug1965452a {

@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 // now https://sourceforge.net/p/findbugs/bugs/1013/
 public class Bug3464107 {
-    
+
     @Test
     @NoWarning("EC_BAD_ARRAY_COMPARE")
     public void test() {
@@ -16,17 +16,17 @@ public class Bug3464107 {
         org.testng.Assert.assertEquals(numbers, numbers2);
         org.testng.Assert.assertEquals((Object) numbers, (Object) numbers2);
         org.testng.Assert.assertFalse(numbers.equals(numbers2));
-        
+
     }
-    
+
     @Test
     @ExpectWarning("EC_INCOMPATIBLE_ARRAY_COMPARE")
     public void test2() {
         int[] numbers = { 1, 2, 3 };
         long[] numbers2 = { 1, 2, 3 };
         org.testng.Assert.assertEquals(numbers, numbers2);
-        
-        
+
+
     }
     @Test
     @ExpectWarning("EC_INCOMPATIBLE_ARRAY_COMPARE")
@@ -34,7 +34,7 @@ public class Bug3464107 {
         int[] numbers = { 1, 2, 3 };
         long[] numbers2 = { 1, 2, 3 };
         org.testng.Assert.assertEquals((Object) numbers, (Object) numbers2);
-        
+
     }
     @Test
     @NoWarning("EC")
@@ -42,7 +42,7 @@ public class Bug3464107 {
         int[] numbers = { 1, 2, 3 };
         long[] numbers2 = { 1, 2, 3 };
         org.testng.Assert.assertFalse(numbers.equals(numbers2));
-        
+
     }
 
 }

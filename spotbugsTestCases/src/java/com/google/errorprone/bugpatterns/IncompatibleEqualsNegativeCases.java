@@ -34,54 +34,54 @@ public class  IncompatibleEqualsNegativeCases {
     @NoWarning("EC")
     public boolean testEquality(Object o, String s1, String s2, Integer i) {
 
-        if (o.equals(s1)) 
+        if (o.equals(s1))
             return true;
-        if (s1.equals(o)) 
+        if (s1.equals(o))
             return true;
         if (s1.equals(s1))
             return true;
         if (i.equals(17))
             return true;
-       
+
         return false;
     }
-    
+
     @NoWarning("EC")
     public boolean testObjectsEqual(Object o, String s1, String s2, Integer i) {
 
-        if (java.util.Objects.equals(o, s1)) 
+        if (java.util.Objects.equals(o, s1))
             return true;
-        if (java.util.Objects.equals(s1, o)) 
+        if (java.util.Objects.equals(s1, o))
             return true;
         if (java.util.Objects.equals(s1, s1))
             return true;
         if (java.util.Objects.equals(i, 17))
             return true;
-       
+
         return false;
     }
- 
-    
+
+
     @NoWarning("EC")
     public boolean testGuavaEqual(Object o, String s1, String s2, Integer i) {
 
-        if (Objects.equal(o, s1)) 
+        if (Objects.equal(o, s1))
             return true;
-        if (Objects.equal(s1, o)) 
+        if (Objects.equal(s1, o))
             return true;
         if (Objects.equal(s1, s1))
             return true;
         if (Objects.equal(i, 17))
             return true;
-       
+
         return false;
     }
- 
+
     @NoWarning("EC")
     public void testAssertFalse(String s, Integer i) {
         assertFalse(s.equals(i));
     }
-    
+
     @NoWarning("EC")
     public boolean testCollection(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3,  Object o) {
         if (c.equals(s))
@@ -94,7 +94,7 @@ public class  IncompatibleEqualsNegativeCases {
             return true;
         if (s2.equals(s3))
             return true;
-        
+
         return false;
     }
     @NoWarning("EC")
@@ -109,14 +109,14 @@ public class  IncompatibleEqualsNegativeCases {
             return true;
         if (Objects.equal(s2, s3))
             return true;
-        
+
         return false;
     }
-    
+
     public void assertFalse(boolean b) {
         if (b) throw new AssertionError();
     }
-    
+
     public static class DifferentClassesButMightBeEqual {
         DifferentClassesButMightBeEqual(int value) {
             this.value = value;

@@ -52,7 +52,7 @@ public class EmptyIfStatementPositiveCases {
     //BUG: Suggestion includes "remove this line"
     if (i == 10)            ;
   }
-  
+
   public static void positiveCase5() {
     int i = 10;
     if (i == 10)

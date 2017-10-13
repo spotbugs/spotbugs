@@ -8,11 +8,11 @@ public class Bug1352 {
 			System.out.println("ok");
 		}
 	}
-	
+
 	static class ChildOk extends Super {
-		
+
 	}
-	
+
 	static class ChildUnsupported extends Super {
 		@Override
 		public void test() {

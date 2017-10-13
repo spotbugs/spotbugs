@@ -11,14 +11,14 @@ public class ExpandWar {
     /**
      * Expand the specified input stream into the specified directory, creating
      * a file named from the specified relative path.
-     * 
+     *
      * @param input
      *            InputStream to be copied
      * @param docBase
      *            Document base directory into which we are expanding
      * @param name
      *            Relative pathname of the file to be created
-     * 
+     *
      * @exception IOException
      *                if an input/output error occurs
      */

@@ -3,11 +3,11 @@ package sfBugs;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug3279718 {
-    
+
     java.util.Date utilDate;
     java.sql.Date sqlDate;
     java.sql.Timestamp timestamp;
-    
+
     @ExpectWarning("EI_EXPOSE_REP")
     public java.util.Date getUtilDate() {
         return utilDate;
@@ -33,7 +33,7 @@ public class Bug3279718 {
         this.timestamp = timestamp;
     }
 
-    
-    
+
+
 
 }

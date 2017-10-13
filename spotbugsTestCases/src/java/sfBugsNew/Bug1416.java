@@ -14,7 +14,7 @@ public class Bug1416 {
     public static boolean hasUser(Connection c, String name) throws SQLException {
         return hasResult(c, "SELECT * FROM users WHERE name='"+name+"'");
     }
-    
+
     // passthru method: warning is generated on call site
     @NoWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public static boolean hasResult(Connection c, String query) throws SQLException {

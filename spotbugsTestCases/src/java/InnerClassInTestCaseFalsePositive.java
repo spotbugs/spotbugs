@@ -5,8 +5,8 @@ import junit.framework.TestCase;
  * objects in my test code like this: public void testFoo() { doSomething(new
  * FooBar() { public void overrideSomeMethod() { // ... } }); // ... } Note that
  * FooBar is not even derived from TestCase.
- * 
- * 
+ *
+ *
  */
 public class InnerClassInTestCaseFalsePositive extends TestCase {
     public void testFoo() {

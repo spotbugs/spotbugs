@@ -16,12 +16,12 @@ public class Bug3431227<T extends Bug3431227<T>> implements Comparable<T> {
         return other.getI() - getI();
     }
 
-    
+
     @Override
     public int hashCode() {
         return _i;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) {
@@ -29,7 +29,7 @@ public class Bug3431227<T extends Bug3431227<T>> implements Comparable<T> {
         }
         return _i == ((Bug3431227) obj)._i;
     }
-    
+
     static class Normal extends Bug3431227<Normal> {
         public Normal(int i) {
             super(i);

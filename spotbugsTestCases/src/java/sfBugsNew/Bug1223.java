@@ -12,7 +12,7 @@ public class Bug1223 {
             return true;
         return false;
     }
-    
+
     @ExpectWarning("RCN")
     public static boolean check2(Element e) {
         if (e.getAttributeNS("x", "y") == null)

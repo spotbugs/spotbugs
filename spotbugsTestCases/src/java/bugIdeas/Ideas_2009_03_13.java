@@ -42,7 +42,7 @@ public class Ideas_2009_03_13 {
     }
 
     @ExpectWarning(value="GC_UNRELATED_TYPES", confidence=Confidence.HIGH)
-    /** This bug would manifest itself by indicating that so matching key was found, so this might be occurring 
+    /** This bug would manifest itself by indicating that so matching key was found, so this might be occurring
      * in production without being noticed */
     Integer silentBug(String x) {
         return map.get(x);

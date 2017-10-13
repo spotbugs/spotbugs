@@ -14,7 +14,7 @@ public class Bug1120 {
 
       if (Math.random() > 0.5)
           globalError = "x";
-      
+
 
       // some code
     }
@@ -30,5 +30,5 @@ public class Bug1120 {
 
       }
     }
-    
+
 }

@@ -17,7 +17,7 @@ public class Ideas_2009_10_13a {
         h.entrySet().retainAll(i.entrySet());
         h.entrySet().removeAll(i.entrySet());
     }
-    
+
     @ExpectWarning("GC")
     public static void truePositive4(HashMap<Integer, String> i, HashMap<String, Integer> h) {
         Set<Entry<Integer, String>> iEntrySet = i.entrySet();

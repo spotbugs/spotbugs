@@ -16,7 +16,7 @@ public class Bug1298 {
           break;
         }
       }
-    
+
     @NoWarning("SF_SWITCH_NO_DEFAULT")
     public void testFallthrough2(int x) {
         switch (x) {

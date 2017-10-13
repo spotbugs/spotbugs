@@ -14,7 +14,7 @@ public class Bug1244 {
 	public int hashCode() {
         return a;
     }
-    
+
     @Override
     @NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
     public boolean equals(Object obj) {
@@ -29,7 +29,7 @@ public class Bug1244 {
             return false;
         return true;
     }
-    
+
    static public class Wrong {
         private final int a;
 
@@ -41,7 +41,7 @@ public class Bug1244 {
 		public int hashCode() {
             return a;
         }
-        
+
         @Override
         @ExpectWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
         public boolean equals(Object obj) {

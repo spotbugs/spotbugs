@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Feature328 {
     public static class FloatHolder implements Comparable<FloatHolder> {
         float d;
-        
+
         public FloatHolder(float d) {
             this.d = d;
         }
@@ -22,7 +22,7 @@ public class Feature328 {
 
     public static class FloatHolder2 implements Comparable<FloatHolder2> {
         float d;
-        
+
         public FloatHolder2(float d) {
             this.d = d;
         }
@@ -37,7 +37,7 @@ public class Feature328 {
 
     public static class FloatHolderOk implements Comparable<FloatHolderOk> {
         float d;
-        
+
         public FloatHolderOk(float d) {
             this.d = d;
         }
@@ -51,7 +51,7 @@ public class Feature328 {
 
     public static class DoubleHolder implements Comparable<DoubleHolder> {
         double d;
-        
+
         public DoubleHolder(double d) {
             this.d = d;
         }
@@ -67,7 +67,7 @@ public class Feature328 {
 
     public static class DoubleHolderOk implements Comparable<DoubleHolderOk> {
         double d;
-        
+
         public DoubleHolderOk(double d) {
             this.d = d;
         }

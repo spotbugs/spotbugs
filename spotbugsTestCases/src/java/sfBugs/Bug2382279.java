@@ -32,16 +32,16 @@ public class Bug2382279 {
      * returned by execute() has a method by which the statement that produced
      * it can be retrieved, and so the statement does not need to be closed in
      * this method. As such, no warnings should be thrown.
-     * 
+     *
      * warnings thrown => M B ODR_OPEN_DATABASE_RESOURCE ODR:
      * sfBugs.Bug2382279.execute(String) \ may fail to close Statement At
      * Bug2382279.java:[line 47]
-     * 
+     *
      * M X OBL_UNSATISFIED_OBLIGATION OBL: Method \
      * sfBugs.Bug2382279.execute(String) may fail to clean up stream or \
      * resource of type java.sql.Statement Obligation to clean up resource \
      * created at Bug2382279.java:[line 47] is not discharged
-     * 
+     *
      * ********************
      */
     @DesireNoWarning("ODR")

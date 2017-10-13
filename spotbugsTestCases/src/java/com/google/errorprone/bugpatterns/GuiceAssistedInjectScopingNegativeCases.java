@@ -24,15 +24,15 @@ import com.google.inject.assistedinject.AssistedInject;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class GuiceAssistedInjectScopingNegativeCases {
-  
+
   /**
-   * Class is not assisted and has no scoping annotation. 
+   * Class is not assisted and has no scoping annotation.
    */
   public class TestClass1 {
     public TestClass1(String unassisted1, String unassisted2) {
     }
   }
-  
+
   /**
    * Class is not assisted and has no scoping annotation, but has an unrelated annotation.
    */
@@ -41,7 +41,7 @@ public class GuiceAssistedInjectScopingNegativeCases {
     public TestClass2(String unassisted, @Assisted String assisted) {
     }
   }
-  
+
   /**
    * Class is not assisted but has scoping annotation.
    */
@@ -50,7 +50,7 @@ public class GuiceAssistedInjectScopingNegativeCases {
     public TestClass3(String unassisted1, String unassisted2) {
     }
   }
-    
+
   /**
    * Class is assisted via @Assisted param but has no scoping annotation.
    */
@@ -59,7 +59,7 @@ public class GuiceAssistedInjectScopingNegativeCases {
     public TestClass4(@Assisted String assisted) {
     }
   }
-  
+
   /**
    * Class is assisted via @AssistedInject constructor but has no scoping annotation.
    */
@@ -68,7 +68,7 @@ public class GuiceAssistedInjectScopingNegativeCases {
     public TestClass5(String unassisted) {
     }
   }
-  
+
   /**
    * Class is not assisted -- constructor with @Assisted param does not have @Inject.
    */
@@ -77,7 +77,7 @@ public class GuiceAssistedInjectScopingNegativeCases {
     public TestClass6(@Assisted String assisted) {
     }
   }
-  
+
   /**
    * Multiple constructors but not assisted.
    */
@@ -85,14 +85,14 @@ public class GuiceAssistedInjectScopingNegativeCases {
   public class TestClass7 {
     public TestClass7(String unassisted1, String unassisted2) {
     }
-    
+
     public TestClass7(String unassisted, int i) {
     }
-    
+
     public TestClass7(int i, String unassisted) {
     }
   }
-    
+
   /**
    * Multiple constructors, one with @Inject, non-@Inject ones match.
    */
@@ -101,16 +101,16 @@ public class GuiceAssistedInjectScopingNegativeCases {
     @Inject
     public TestClass8(String unassisted1, String unassisted2) {
     }
-    
+
     @AssistedInject
     public TestClass8(String param, int i) {
     }
-    
+
     @AssistedInject
     public TestClass8(int i, String param) {
     }
   }
-  
+
   /**
    * Multiple constructors, one with @Inject, non-@Inject ones match.
    */
@@ -119,24 +119,24 @@ public class GuiceAssistedInjectScopingNegativeCases {
     @Inject
     public TestClass9(String unassisted1, String unassisted2) {
     }
-    
+
     @AssistedInject
     public TestClass9(String param, int i) {
     }
-    
+
     @AssistedInject
     public TestClass9(int i, String param) {
     }
   }
-  
+
   @Singleton
   public class TestClass10 {
     public TestClass10(@Assisted String assisted, String unassisted) {
     }
-    
+
     public TestClass10(@Assisted String assisted, int i) {
     }
-    
+
     public TestClass10(int i, @Assisted String assisted) {
     }
   }

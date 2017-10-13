@@ -162,7 +162,7 @@ public abstract class BCELUtil {
 
     /**
      * Checks if the given member is synthetic
-     * 
+     *
      * @param m The member to be checked
      * @return True if the member is synthetic, false otherwise
      * @deprecated You probably don't care for synthetic members, but want to

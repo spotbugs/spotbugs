@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 public class Bug2843453 {
     /**
      * An extending class.
-     * 
+     *
      * Note: the issue does not occur when using {@link FileOutputStream}
      * directly.
      */

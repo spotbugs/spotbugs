@@ -10,13 +10,13 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2011_10_24 {
-    
+
     @Documented
     @TypeQualifier()
     @Retention(RetentionPolicy.RUNTIME)
     public @interface PK {}
-    
-    
+
+
     @NoWarning("TQ")
     @PK int asPK(int v) {
         return v;
@@ -36,5 +36,5 @@ public class Ideas_2011_10_24 {
         return v == x;
     }
 
-   
+
 }

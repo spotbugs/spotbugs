@@ -34,7 +34,7 @@ public class Version {
      * SpotBugs website.
      */
     public static final String WEBSITE = "https://spotbugs.github.io/";
-    
+
     public final static String VERSION_STRING;
 
     /**
@@ -42,14 +42,14 @@ public class Version {
     */
     @Deprecated
     public final static String RELEASE;
-    
+
     private static String applicationName = "";
     private static String applicationVersion = "";
 
     static {
         final URL u = Version.class.getResource(Version.class.getSimpleName() + ".class");
         final boolean fromFile = "file".equals(u.getProtocol());
-        
+
         String version = "(Unknown)";
         if (!fromFile) {
             try {
@@ -58,7 +58,7 @@ public class Version {
                 while (resources.hasMoreElements()) {
                     try (final InputStream is = resources.nextElement().openStream()) {
                         final Manifest manifest = new Manifest(is);
-                        
+
                         // is this the one we are looking for?
                         String mainClass = manifest.getMainAttributes().getValue("Main-Class");
                         if (LaunchAppropriateUI.class.getName().equals(mainClass)) {
@@ -73,7 +73,7 @@ public class Version {
         } else {
             version = "Development";
         }
-        
+
         RELEASE = VERSION_STRING = version;
     }
 

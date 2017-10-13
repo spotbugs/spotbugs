@@ -21,11 +21,11 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class ArrayEqualsPositiveCases {
-    
+
   public void intArray() {
     int[] a = {1, 2, 3};
     int[] b = {1, 2, 3};
-    
+
     //BUG: Suggestion includes "Arrays.equals(a, b)"
     if (a.equals(b)) {
       System.out.println("arrays are equal!");
@@ -33,11 +33,11 @@ public class ArrayEqualsPositiveCases {
       System.out.println("arrays are not equal!");
     }
   }
-  
+
   public void objectArray() {
     Object[] a = new Object[3];
     Object[] b = new Object[3];
-    
+
     //BUG: Suggestion includes "Arrays.equals(a, b)"
     if (a.equals(b)) {
       System.out.println("arrays are equal!");
@@ -45,11 +45,11 @@ public class ArrayEqualsPositiveCases {
       System.out.println("arrays are not equal!");
     }
   }
-  
+
   public void firstMethodCall() {
     String s = "hello";
     char[] b = new char[3];
-    
+
     //BUG: Suggestion includes "Arrays.equals(s.toCharArray(), b)"
     if (s.toCharArray().equals(b)) {
       System.out.println("arrays are equal!");
@@ -57,11 +57,11 @@ public class ArrayEqualsPositiveCases {
       System.out.println("arrays are not equal!");
     }
   }
-  
+
   public void secondMethodCall() {
     char[] a = new char[3];
     String s = "hello";
-    
+
     //BUG: Suggestion includes "Arrays.equals(a, s.toCharArray())"
     if (a.equals(s.toCharArray())) {
       System.out.println("arrays are equal!");
@@ -69,11 +69,11 @@ public class ArrayEqualsPositiveCases {
       System.out.println("arrays are not equal!");
     }
   }
-  
+
   public void bothMethodCalls() {
     String s1 = "hello";
     String s2 = "world";
-    
+
     //BUG: Suggestion includes "Arrays.equals(s1.toCharArray(), s2.toCharArray())"
     if (s1.toCharArray().equals(s2.toCharArray())) {
       System.out.println("arrays are equal!");

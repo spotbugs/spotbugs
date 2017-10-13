@@ -263,11 +263,11 @@ public class GenericUtilities {
             final Iterator<String> signatureIterator = new GenericSignatureParser("(" + signature + ")V")
                     .parameterSignatureIterator();
             signature = signatureIterator.next();
-            
+
             if (signatureIterator.hasNext()) {
                 throw new IllegalArgumentException("the following signature does not contain exactly one type: " + signature);
             }
-            
+
             int index = 0;
 
             if (signature.startsWith("L")) {

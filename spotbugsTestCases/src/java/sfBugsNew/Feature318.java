@@ -30,7 +30,7 @@ public class Feature318 {
 
     static class ABC {
         int a, b, c;
-        
+
         public ABC(int a, int b) {
             setA(a);
             setB(b);

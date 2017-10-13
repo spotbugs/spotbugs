@@ -14,8 +14,8 @@ public class Ideas_2011_03_27 implements Comparable<Ideas_2011_03_27>{
     public int hashCode() {
         return x;
     }
-    
-    
+
+
 
     @Override
     public boolean equals(Object obj) {

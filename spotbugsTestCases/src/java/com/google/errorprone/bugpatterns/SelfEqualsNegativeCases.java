@@ -41,16 +41,16 @@ public class SelfEqualsNegativeCases {
   public int hashCode() {
     return field != null ? field.hashCode() : 0;
   }
-  
+
   public boolean equals2(Object o) {
     if (!(o instanceof SelfEqualsNegativeCases)) {
       return false;
     }
-    
+
     SelfEqualsNegativeCases other = (SelfEqualsNegativeCases) o;
     return field.equals(other.field);
   }
-  
+
   public boolean test() {
     return Boolean.TRUE.toString().equals(Boolean.FALSE.toString());
   }

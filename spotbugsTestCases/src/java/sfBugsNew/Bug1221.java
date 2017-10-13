@@ -31,7 +31,7 @@ public class Bug1221 {
             if (ps != null)
                 ps.close();
             conn.close();
-           
+
         }
     }
     @NoWarning("OBL")
@@ -43,7 +43,7 @@ public class Bug1221 {
         } finally {
             ps.close();
             conn.close();
-           
+
         }
     }
 

@@ -8,7 +8,7 @@ public class Bug1418 {
     @NoWarning("SIC")
     @SuppressFBWarnings("SIC")
     private final ThreadLocal<Integer> field=new ThreadLocal<Integer>() {
-        @Override 
+        @Override
         protected Integer initialValue() {
             return 0;
         }
@@ -18,7 +18,7 @@ public class Bug1418 {
     @SuppressFBWarnings("SIC")
     public void test() {
         ThreadLocal<Integer> local=new ThreadLocal<Integer>() {
-            @Override 
+            @Override
             protected Integer initialValue() {
                 return 0;
             }
@@ -28,7 +28,7 @@ public class Bug1418 {
 
     @ExpectWarning("SIC")
     private final ThreadLocal<Integer> field2=new ThreadLocal<Integer>() {
-        @Override 
+        @Override
         protected Integer initialValue() {
             return 0;
         }
@@ -37,7 +37,7 @@ public class Bug1418 {
     @ExpectWarning("SIC")
     public void test2() {
         ThreadLocal<Integer> local=new ThreadLocal<Integer>() {
-            @Override 
+            @Override
             protected Integer initialValue() {
                 return 0;
             }

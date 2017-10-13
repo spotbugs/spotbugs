@@ -1,8 +1,8 @@
 /**
  * Issues from http://www.cigital.com/securitypack/view/index.html
- * 
+ *
  * No comment on whether these issues are worth reporting
- * 
+ *
  */
 public class CigitalJavaSecurityRulepack {
 

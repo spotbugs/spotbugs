@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 class BadZipFileCreator {
 
-    
+
     @ExpectWarning("AM_CREATES_EMPTY_ZIP_FILE_ENTRY")
     public static void main(String args[]) throws Exception {
         ZipOutputStream zipfile = new ZipOutputStream(new FileOutputStream("foo.zip"));

@@ -146,7 +146,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 if (className.charAt(0) != '[') {
                     try {
                         ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
-    
+
                         if (subtypes2.isSubtype(cDesc, calendarType) || subtypes2.isSubtype(cDesc, dateFormatType)) {
                             sawDateClass = true;
                             break;

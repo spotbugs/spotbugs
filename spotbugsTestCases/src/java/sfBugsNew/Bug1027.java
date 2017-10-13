@@ -43,7 +43,7 @@ public class Bug1027 {
             activationLock.unlock();
         }
     }
-    
+
     public Runnable getRunnable() {
         return new Runnable() {
             @Override

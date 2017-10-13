@@ -26,9 +26,9 @@ import javax.swing.JTextField;
 
 /**
  * Allows to delete a declaration from the database.
- * 
+ *
  * @author t722d
- * 
+ *
  */
 public class Bug3438355 extends JFrame {
 
@@ -137,7 +137,7 @@ public class Bug3438355 extends JFrame {
                             + "INNER JOIN edec_dekl_kopf k ON d.dek_id = k.dko_dek_id WHERE k.dko_spediteur_dekl_nr like ? )");
             statement.setString(1, spediDeklNr);
             statement.executeQuery();
-            
+
              // count again
              statement = null;
              statement =
@@ -145,7 +145,7 @@ public class Bug3438355 extends JFrame {
              statement.setString(1, spediDeklNr);
              statement.setString(2, spediNr);
              rs = statement.executeQuery();
-            
+
              rs.next();
              countAfter = rs.getInt("rowcount");
         } finally {

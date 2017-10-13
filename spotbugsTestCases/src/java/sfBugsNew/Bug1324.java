@@ -18,7 +18,7 @@ public class Bug1324 implements Iterable<String> {
             return Arrays.asList("super").iterator();
         }
     }
-    
+
     public class Inner extends Super {
         @ExpectWarning("IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD")
         public void testOk() {
@@ -30,7 +30,7 @@ public class Bug1324 implements Iterable<String> {
             }
         }
 
-        /* note that without local variables debug info we cannot distinguish 
+        /* note that without local variables debug info we cannot distinguish
          * this method from the previous one, thus warning will still be reported
          */
         @NoWarning("IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD")

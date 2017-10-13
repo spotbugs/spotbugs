@@ -15,7 +15,7 @@ public class Ideas_2012_09_27 {
     @Retention(RetentionPolicy.RUNTIME)
     @TypeQualifier
     public @interface PK {
-        
+
     }
 
     @PK static int asPK(int x) { return x; };
@@ -24,16 +24,16 @@ public class Ideas_2012_09_27 {
     @TypeQualifier
     public @interface PK2 {
     }
-    
-    
+
+
     static {
         System.out.println("Initializing class");
-        
+
     }
     @PK static final  int z = asPK(42)+1;
     long x;
 
-    
+
     @PK int getZ() {
         return z;
     }
@@ -45,11 +45,11 @@ public class Ideas_2012_09_27 {
     long getLongKey() {
         return 42;
     }
-    
+
     @PK Object getO() {
         return "42";
     }
-    
+
     @PK
     int getLongKey(int x) {
         return 42+x;
@@ -60,7 +60,7 @@ public class Ideas_2012_09_27 {
     long getLongKey3(@PK2 long x) {
         return x;
     }
-    
+
     @ExpectWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
     @PK
     long getLongKey(String s) {
@@ -107,7 +107,7 @@ public class Ideas_2012_09_27 {
     void setBoxedDoubleKey(@PK Double key) {
 
     }
-    
+
     @NoWarning("TQ")
     void boxLong() {
         setBoxedLongKey(getLongKey());

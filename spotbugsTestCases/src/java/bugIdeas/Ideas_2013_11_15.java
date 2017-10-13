@@ -11,7 +11,7 @@ public class Ideas_2013_11_15 {
     public void passingAnArray() {
         System.out.println(System.out.printf("%s", new int[] { 42, 17 }));
     }
-    
+
     @NoWarning("FS")
     public void valuesOtherThanInt() {
         System.out.println(String.format("%d%n%d", 42, (short) 42));

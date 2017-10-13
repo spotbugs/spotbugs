@@ -33,7 +33,7 @@ public class GuiceAssistedInjectScopingPositiveCases {
     public TestClass(String unassisted, @Assisted String assisted) {
     }
   }
-  
+
   //BUG: Suggestion includes "remove this line"
   @RequestScoped
   public class TestClass2 {
@@ -41,7 +41,7 @@ public class GuiceAssistedInjectScopingPositiveCases {
     public TestClass2(String unassisted, @Assisted String assisted) {
     }
   }
-  
+
   //BUG: Suggestion includes "remove this line"
   @Singleton
   public class TestClass3 {
@@ -49,7 +49,7 @@ public class GuiceAssistedInjectScopingPositiveCases {
     public TestClass3(String param) {
     }
   }
-    
+
   /**
    * Multiple constructors, but only one with @Inject, and that one matches.
    */
@@ -59,14 +59,14 @@ public class GuiceAssistedInjectScopingPositiveCases {
     @Inject
     public TestClass4(String unassisted, @Assisted String assisted) {
     }
-    
+
     public TestClass4(String unassisted, int i) {
     }
-    
+
     public TestClass4(int i, String unassisted) {
     }
   }
-    
+
   /**
    * Multiple constructors, none with @Inject, one matches.
    */
@@ -75,15 +75,15 @@ public class GuiceAssistedInjectScopingPositiveCases {
   public class TestClass5 {
     public TestClass5(String unassisted1, String unassisted2) {
     }
-    
+
     public TestClass5(String unassisted, int i) {
     }
-    
+
     @AssistedInject
     public TestClass5(int i, String unassisted) {
     }
   }
-  
+
   /**
    * JSR330 annotations.
    */

@@ -21,9 +21,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Preconditions;
 
 public class PreconditionsCheckNotNullPrimitivePositiveCases {
-  
-  private Tester field = new Tester(); 
-  
+
+  private Tester field = new Tester();
+
   public void test() {
     Object a = new Object();
     Object b = new Object();
@@ -36,9 +36,9 @@ public class PreconditionsCheckNotNullPrimitivePositiveCases {
     boolean boolean1 = false, boolean2 = false;
     char char1 = 0;
     Tester tester = new Tester();
-    
+
     // Do we detect all primitive types?
-    
+
     //BUG: Suggestion includes "remove this line"
     Preconditions.checkNotNull(byte1);
     //BUG: Suggestion includes "remove this line"
@@ -55,9 +55,9 @@ public class PreconditionsCheckNotNullPrimitivePositiveCases {
     Preconditions.checkNotNull(boolean1);
     //BUG: Suggestion includes "remove this line"
     Preconditions.checkNotNull(char1);
-    
-    // Do we give the right suggested fix? 
-    
+
+    // Do we give the right suggested fix?
+
     //BUG: Suggestion includes "boolean1 = boolean2;"
     boolean1 = Preconditions.checkNotNull(boolean2);
     //BUG: Suggestion includes "boolean1 = int1 == int2;"
@@ -68,9 +68,9 @@ public class PreconditionsCheckNotNullPrimitivePositiveCases {
     Preconditions.checkNotNull(tester.hasId(), "Must have ID!");
     //BUG: Suggestion includes "checkState(tester.hasId(), "Must have %s!", "ID")"
     Preconditions.checkNotNull(tester.hasId(), "Must have %s!", "ID");
-    
+
     // Do we handle arguments that evaluate to a primitive type?
-    
+
     //BUG: Suggestion includes "Preconditions.checkNotNull(a)"
     Preconditions.checkNotNull(a != null);
     //BUG: Suggestion includes "Preconditions.checkNotNull(a)"
@@ -81,19 +81,19 @@ public class PreconditionsCheckNotNullPrimitivePositiveCases {
     Preconditions.checkNotNull(int1 > int2);
     //BUG: Suggestion includes "remove this line"
     Preconditions.checkNotNull(boolean1 ? int1 : int2);
-    
+
     // Do we handle static imports?
-    
+
     //BUG: Suggestion includes "remove this line"
     checkNotNull(byte1);
     //BUG: Suggestion includes "'checkState(tester.hasId())"
     checkNotNull(tester.hasId());
   }
-  
+
   public void test2(Tester arg) {
     Tester local = new Tester();
     // Do we correctly distinguish checkArgument from checkState?
-    
+
     //BUG: Suggestion includes "checkArgument(arg.hasId())"
     checkNotNull(arg.hasId());
     //BUG: Suggestion includes "checkState(field.hasId())"
@@ -105,35 +105,35 @@ public class PreconditionsCheckNotNullPrimitivePositiveCases {
 
     //BUG: Suggestion includes "checkState(!(arg instanceof Tester))"
     checkNotNull(!(arg instanceof Tester));
-    
+
     //BUG: Suggestion includes "remove this line"
     checkNotNull(arg.getId());
     //BUG: Suggestion includes "id = arg.getId()"
     int id = checkNotNull(arg.getId());
-    
+
     //BUG: Suggestion includes "boolean b = arg.hasId();"
     boolean b = checkNotNull(arg.hasId());
-    
-    // Do we handle long chains of method calls? 
-    
+
+    // Do we handle long chains of method calls?
+
     //BUG: Suggestion includes "checkArgument(arg.getTester().getTester().hasId())"
     checkNotNull(arg.getTester().getTester().hasId());
-    
+
     //BUG: Suggestion includes "checkArgument(arg.tester.getTester().hasId())"
     checkNotNull(arg.tester.getTester().hasId());
   }
-  
+
   private static class Tester {
     public Tester tester;
-    
+
     public boolean hasId() {
       return true;
     }
-    
+
     public int getId() {
       return 10;
     }
-    
+
     public Tester getTester() {
       return tester;
     }

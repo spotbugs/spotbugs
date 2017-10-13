@@ -33,7 +33,7 @@ public class Ideas_2010_12_06 extends HttpServlet {
         out.close();
         r.close();
     }
-    
+
     @Override
 	@ExpectWarning("PT_ABSOLUTE_PATH_TRAVERSAL")
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -50,8 +50,8 @@ public class Ideas_2010_12_06 extends HttpServlet {
         out.close();
         r.close();
     }
-    
-    
+
+
     @NoWarning("NP_NONNULL_PARAM_VIOLATION,NP_NULL_PARAM_DEREF_NONVIRTUAL")
     public static void main(String args[]) {
         Comparator<Integer> comparator = (Comparator<Integer>) null;

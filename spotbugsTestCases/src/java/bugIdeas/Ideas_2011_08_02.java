@@ -44,20 +44,20 @@ public class Ideas_2011_08_02 {
         c.addAll(m.entrySet());
     }
 
-    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.HIGH) 
+    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.HIGH)
     public void addAll(IdentityHashMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
     @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.HIGH)
-    
+
     public void addAll(EnumMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
-    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.LOW) 
+    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.LOW)
     public void addAll(ConcurrentHashMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
-    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.LOW) 
+    @ExpectWarning(value="DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS", confidence=Confidence.LOW)
     public void addAll(ConcurrentSkipListMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
@@ -70,9 +70,9 @@ public class Ideas_2011_08_02 {
     public void addAll(TreeMap<Color, Integer> m) {
         c.addAll(m.entrySet());
     }
-    
+
     static abstract class BadIdea implements Map.Entry<String, Integer>, Iterator<Map.Entry<String, Integer>> {
-        
+
     }
 
 }

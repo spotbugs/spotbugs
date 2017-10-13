@@ -13,7 +13,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3415313 {
-    
+
     public void original(Connection sesscon) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -54,8 +54,8 @@ public class Bug3415313 {
             WorkflowUtils.closeStatement(ps);
         }
     }
-    
-    
+
+
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     public void fp1(PreparedStatement ps) throws SQLException {
         ResultSet rs = null;
@@ -69,7 +69,7 @@ public class Bug3415313 {
         }
     }
 
-    
+
 
     @ExpectWarning("OBL_UNSATISFIED_OBLIGATION")
     public void tp(Connection sesscon) throws SQLException {
@@ -131,15 +131,15 @@ public class Bug3415313 {
     }
 
 
-    
+
 
     static class WorkflowUtils {
-        private static void baz(PreparedStatement ps) {         
+        private static void baz(PreparedStatement ps) {
         }
 
         public static void bar(ResultSet rs) {
         }
-        
+
         private static void baz() {
         }
 

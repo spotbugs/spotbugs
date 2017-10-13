@@ -23,7 +23,7 @@ public class Bug3572704 {
         }
         return null;
     }
-    
+
     @NoWarning("DLS_DEAD_LOCAL_STORE")
     public static String test2(String name) {
         int pos = 0;

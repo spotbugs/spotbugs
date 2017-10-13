@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 /**
  * Based on bug pattern in
  * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6526376
- * 
+ *
  */
 public class RFE1698471 {
     private static LinkedHashSet<String> files = new LinkedHashSet<String>();

@@ -8,26 +8,26 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 public class Test  implements Serializable {
-    
-    
-    /** This class is for testing the sourceInfo capabilities of FindBugs 
+
+
+    /** This class is for testing the sourceInfo capabilities of FindBugs
      * @throws FileNotFoundException */
-    
-    
+
+
     public Test(File f) throws FileNotFoundException {
         is = new FileInputStream(f);
     }
     private InputStream is;
-    
-    
+
+
     public int infiniteLoop() {
         return infiniteLoop();
     }
-    
+
     public int read() throws IOException {
         return is.read();
     }
-    
+
     public void close() {
         try {
             is.close();
@@ -35,7 +35,7 @@ public class Test  implements Serializable {
             e.printStackTrace();
         }
     }
-    
+
     @Override
 	public boolean equals(Object o) {
         return this == o;

@@ -25,7 +25,7 @@ public class RFE2891944 {
         BigDecimal bd = new BigDecimal(1.0);
         System.out.println(bd);
     }
-    
+
     public static void main(String args[]) {
         bug1();
         bug2();

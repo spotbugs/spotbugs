@@ -26,7 +26,7 @@ public class Bug3506138 {
                 pstm.close();
         }
     }
-    
+
     @DesireWarning("ODR_OPEN_DATABASE_RESOURCE")
     public static void test1() throws Exception {
         Connection conn;
@@ -40,6 +40,6 @@ public class Bug3506138 {
                 pstm.close();
         }
     }
-    
-  
+
+
 }

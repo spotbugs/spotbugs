@@ -1,7 +1,7 @@
 package bugIdeas;
 
 public class Ideas_2012_05_21 {
-    
+
     String firstName;
 
     public Ideas_2012_05_21(String firstName) {
@@ -20,7 +20,7 @@ public class Ideas_2012_05_21 {
         Ideas_2012_05_21 guest = (Ideas_2012_05_21) obj;
         return firstName == guest.firstName || firstName != null && firstName.equals(guest.firstName);
     }
-    
-    
+
+
 
 }

@@ -30,7 +30,7 @@ import de.tobject.findbugs.properties.ReportConfigurationTab;
 /**
  * Test subclass of FindbugsPropertyPage that provides methods for handling the
  * properties page for testing purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
@@ -48,7 +48,7 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
      * Some widgets of the properties page are only created if it is opened for
      * a project and not for the workspace. This is a custom assertion that
      * verifies this behaviour.
-     * 
+     *
      * @param expectsProject
      *            true if expecting the controls for a project, false for the
      *            workspace
@@ -68,7 +68,7 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
      * properties, the workspace preferences are inherited. In that case, many
      * controls should be disabled. This is a custom assertion that verifies
      * this behaviour.
-     * 
+     *
      * @param enabled
      *            true if the controls should be enabled, false otherwise
      */

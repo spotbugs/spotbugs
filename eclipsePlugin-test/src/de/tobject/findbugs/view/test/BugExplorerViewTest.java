@@ -35,7 +35,7 @@ import de.tobject.findbugs.view.explorer.GroupType;
 
 /**
  * This class tests the BugExplorerView and its related classes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class BugExplorerViewTest extends AbstractBugExplorerViewTest {

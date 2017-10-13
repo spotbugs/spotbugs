@@ -37,7 +37,7 @@ import de.tobject.findbugs.test.TestScenario;
 
 /**
  * This class tests the FindBugsPerspectiveFactory.
- * 
+ *
  * @author Tomás Pollak
  */
 public class FindBugsPerspectiveTest extends AbstractFindBugsTest {

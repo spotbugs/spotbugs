@@ -138,7 +138,7 @@ public class PropPageTitleProvider extends BugLabelProvider {
         sb.append(priority.name());
         return sb.toString();
     }
-    
+
     String getTitle(MarkerRank rank) {
         if (rank == null) {
             return null;

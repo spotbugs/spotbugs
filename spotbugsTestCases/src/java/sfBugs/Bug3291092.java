@@ -23,7 +23,7 @@ public class Bug3291092 {
         sb.append(field.substring(start).toUpperCase());
         return sb.toString();
     }
-    
+
     public static void main(String args[]) {
         String s = "camelCase";
         System.out.println(constize(s));

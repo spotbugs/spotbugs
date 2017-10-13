@@ -46,11 +46,11 @@ public class Bug3598793 implements ServletResponse {
   public  Integer foo(Object x) {
       return (Integer) x;
   }
-    
+
     @Override
     public void flushBuffer() throws IOException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -98,45 +98,45 @@ public class Bug3598793 implements ServletResponse {
     @Override
     public void reset() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void resetBuffer() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setBufferSize(int arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setCharacterEncoding(String arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setContentLength(int arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setContentType(String arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setLocale(Locale arg0) {
         // TODO Auto-generated method stub
-        
+
     }
-    
+
 
 
 }

@@ -8,26 +8,26 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 /**
  * Submitted By: Bhavana Summary:
- * 
+ *
  * There are two while loops which iterate through the list. The first loop just
  * prints the different objects and the second one concatenates the objects.
- * 
+ *
  * Both the while loops are quite similar. There is an if clause which compares
  * if the field retrieve is not equal to null and not equal to empty string.
  * Findbugs detects a bug at line number 18(the if in the first while loop). ES:
  * Comparison of String objects using == or! = (ES_COMPARING_STRINGS_WITH_EQ).
  * It does not report any bug or warnings for line number 27(the if in the
  * second while loop).
- * 
+ *
  * If the bug at line no 18 is fixed, Findbugs still does not report a bug or
  * warning for line 27.
- * 
+ *
  * If the first while loop is commented out then Findbugs reports the bug at
  * line 27.
- * 
+ *
  * ES: Comparison of String objects using == or! =
  * (ES_COMPARING_STRINGS_WITH_EQ).
- * 
+ *
  * In this case Findbugs could not detect the second occurrence of the same bug
  * if the first occurrence is fixed. Also, Findbugs does not point out if there
  * are multiple occurrences of the same bug.

@@ -21,7 +21,7 @@ public abstract class StrictTest {
     Object g;
 
     @NoWarning("TQ")
-    public 
+    public
     @Strict
     Object coercionFunction(Object unknown) {
         return unknown;
@@ -69,50 +69,50 @@ public abstract class StrictTest {
         requiresStrict(get());
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public @Strict
     Object ok1DoNotReport(@Strict Object s) {
         return s;
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public void ok2DoNotReport(@Strict Object s) {
         f = s;
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public void ok3DoNotReport(@Strict Object s) {
         requiresStrict(s);
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public @Strict
     Object ok4DoNotReport() {
         return f;
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public void ok5DoNotReport() {
         f2 = f;
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public void ok6DoNotReport() {
         requiresStrict(f);
     }
 
     @NoWarning("TQ")
-    public   
+    public
     @Strict
     Object ok7DoNotReport() {
         return getStrict();
     }
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public void ok8DoNotReport() {
         f = getStrict();
     }
 
-    @NoWarning("TQ") 
+    @NoWarning("TQ")
     public void ok9DoNotReport() {
         requiresStrict(getStrict());
     }

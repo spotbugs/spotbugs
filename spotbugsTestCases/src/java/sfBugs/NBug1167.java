@@ -6,7 +6,7 @@ package sfBugs;
 public class NBug1167
 {
 //    @ExpectWarning("NP_ALWAYS_NULL")
-//    public void fails() 
+//    public void fails()
 //    {
 //        ResultSet rs = null;
 //

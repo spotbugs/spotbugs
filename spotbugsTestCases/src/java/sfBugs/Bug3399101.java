@@ -16,8 +16,8 @@ import sfBugs.Bug3399101.ParametersAreCheckForNullByDefault;
 @DefaultAnnotationForParameters(CheckForNull.class)
 @ParametersAreCheckForNullByDefault
 public class Bug3399101 {
-    
-    
+
+
     @Documented
     @CheckForNull
     @TypeQualifierDefault(ElementType.PARAMETER)
@@ -25,7 +25,7 @@ public class Bug3399101 {
     public
     @interface ParametersAreCheckForNullByDefault {
     }
-    
+
         @Nonnull
         public Object field;
 
@@ -33,7 +33,7 @@ public class Bug3399101 {
         public Bug3399101(Object param) {
                 field = param;
         }
-        
+
         @ExpectWarning("NP")
         public void setField(Object param) {
                 field = param;

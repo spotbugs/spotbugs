@@ -27,7 +27,7 @@ public class Ideas_2011_08_07 {
         x.plusOne();
         System.out.println(x);
     }
-    
+
     static class Bar{
         final int x;
 
@@ -46,7 +46,7 @@ public class Ideas_2011_08_07 {
         Bar print() {
             System.out.println("x is " + x);
             return new Bar();
-          
+
         }
 
         @ExpectWarning("")
@@ -55,16 +55,16 @@ public class Ideas_2011_08_07 {
             x.plusOne();
             System.out.println(x);
         }
-        
+
         @NoWarning("")
         public static void ignoredReturnValue() {
             Bar x = new Bar(42);
             x.print();
             System.out.println(x);
         }
-        
-        
-        
+
+
+
     }
 
     static class Foo<T> {
@@ -90,21 +90,21 @@ public class Ideas_2011_08_07 {
             x.plusOne();
             System.out.println(x);
         }
-        
+
         @DesireWarning("")
         public static void ignoredReturnValue() {
             Foo x = new Foo(42);
             x.plusTwo();
             System.out.println(x);
         }
-        
-        
+
+
         @Override
 		public String toString() {
             return Integer.toString(x);
         }
 
-        
+
     }
 //    @DesireWarning("")
 //    public static boolean test(@SlashedClassName String x, @DottedClassName String y) {

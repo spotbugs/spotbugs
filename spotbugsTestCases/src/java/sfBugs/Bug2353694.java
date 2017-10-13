@@ -30,7 +30,7 @@ public class Bug2353694 {
      * warning thrown for in2 warning thrown => M B OS_OPEN_STREAM OS:
      * Bug2353694.fp_warning_OS() may fail to close \ stream At
      * Bug2353694.java:[line 26]
-     * 
+     *
      * *no* OS warning thrown for in3 -- maybe false negative?
      * ********************
      */

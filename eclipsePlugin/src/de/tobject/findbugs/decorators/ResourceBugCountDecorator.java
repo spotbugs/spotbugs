@@ -33,7 +33,7 @@ import de.tobject.findbugs.util.Util;
  * A simple decorator which adds (in currently hardcoded way) bug counts to the
  * resources. There are 3 different decorators configured via plugin.xml
  * (project/folder/file), current implementation is the same for all.
- * 
+ *
  * @author Andrei
  */
 public class ResourceBugCountDecorator implements ILabelDecorator {

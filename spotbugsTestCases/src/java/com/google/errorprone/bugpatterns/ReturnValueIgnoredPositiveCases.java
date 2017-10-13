@@ -61,7 +61,7 @@ public class ReturnValueIgnoredPositiveCases {
     //BUG: Suggestion includes "a = a.substring(0, 1)"
     a.substring(0, 1);
   }
-  
+
   StringBuffer sb = new StringBuffer("hello");
   {
     //BUG: Suggestion includes "remove this line"
@@ -91,5 +91,5 @@ public class ReturnValueIgnoredPositiveCases {
     //BUG: Suggestion includes "remove this line"
     new BigDecimal("10").add(c);
   }
-  
+
 }

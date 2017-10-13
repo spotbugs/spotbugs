@@ -9,14 +9,14 @@ import java.io.OutputStream;
 import org.junit.Test;
 
 /**
- * 
+ *
  * FindBugs OBL false positive.
- * 
- * 
- * 
+ *
+ *
+ *
  * The difference is the argument to safeClose(). If it is a Closeable, FindBugs
  * OBL generates a
- * 
+ *
  * false positive.
  */
 

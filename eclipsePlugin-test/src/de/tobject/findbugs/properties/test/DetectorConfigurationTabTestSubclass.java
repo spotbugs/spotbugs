@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 /**
  * Test subclass of DetectorConfigurationTab that provides methods for testing
  * purposes.
- * 
+ *
  * @author Tomás Pollak
  */
 public class DetectorConfigurationTabTestSubclass extends DetectorConfigurationTab {

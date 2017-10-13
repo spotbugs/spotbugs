@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1359 {
     /* JumpInfo for this method was not properly converged, thus
-     * the variables defined near the end of the method was unnoticed 
+     * the variables defined near the end of the method was unnoticed
      */
     @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public int constSum() {

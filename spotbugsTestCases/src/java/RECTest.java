@@ -2,7 +2,7 @@ import java.io.IOException;
 
 /**
  * RECTest
- * 
+ *
  * @author Brian Goetz
  */
 public class RECTest {

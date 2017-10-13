@@ -21,7 +21,7 @@ public class Bug3393185 implements Serializable {
     @NoWarning("SE_BAD_FIELD")
     private Map<String, String> tags2_;
 
-    
+
     @NoWarning("SE_BAD_FIELD")
     private Set<String> events_;
 

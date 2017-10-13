@@ -84,7 +84,7 @@ public abstract class Bug3600398 {
             }
         }
     }
-    
+
     @WillClose
     protected void close(Object... objects) {
         if (objects != null) {

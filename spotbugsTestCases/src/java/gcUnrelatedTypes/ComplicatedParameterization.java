@@ -24,12 +24,12 @@ public class ComplicatedParameterization {
     boolean falsePositive(ArrayList<Integer> a) {
         return myFoo.contains(a);
     }
-    
+
     @NoWarning("GC")
     boolean falsePositive2(List<Integer> a) {
         return myFoo.contains(a);
     }
-  
+
     @DesireWarning("GC")
     boolean bug(ArrayList<Long> a) {
         return myFoo.contains(a);

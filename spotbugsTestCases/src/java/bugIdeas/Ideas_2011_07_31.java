@@ -21,13 +21,13 @@ public class Ideas_2011_07_31 {
     @ExpectWarning(value = "GC")
     public boolean test1a(Set<String> s) {
         return getIntegerSetPublic().contains("x");
-       
+
     }
 
     @ExpectWarning(value = "GC")
     public boolean test2a(Set<String> s) {
         return getIntegerSetPrivate().contains("x");
-       
+
     }
     @ExpectWarning(value = "GC,EC")
     public void test1(Set<String> s) {

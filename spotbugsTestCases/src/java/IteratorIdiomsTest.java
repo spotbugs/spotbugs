@@ -19,12 +19,12 @@ public class IteratorIdiomsTest implements Iterator {
     public Object next(boolean dummy) {
         return null;
     }
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     protected Object next(int dummy) {
         return null;
     }
-    
+
     @Override
     public boolean hasNext() {
         return false;
@@ -36,7 +36,7 @@ public class IteratorIdiomsTest implements Iterator {
 }
 
 class NotAnIterator {
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     public Object next() {
         return null;
@@ -46,7 +46,7 @@ class NotAnIterator {
     protected Object next(int dummy) {
         return null;
     }
-    
+
     public boolean hasNext() {
         return false;
     }
@@ -61,7 +61,7 @@ class StringIterator implements Iterator<String> {
     public String next() {
         return null;
     }
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     public Object next(boolean dummy) {
         return null;
@@ -71,7 +71,7 @@ class StringIterator implements Iterator<String> {
     protected Object next(int dummy) {
         return null;
     }
-    
+
     @Override
     public boolean hasNext() {
         return false;
@@ -88,22 +88,22 @@ class GenericIterator<X> implements Iterator<X> {
     public X next() {
         return null;
     }
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     public Object next(boolean dummy) {
         return null;
     }
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     protected Object next(int dummy) {
         return null;
-    }    
-    
+    }
+
     @Override
     public boolean hasNext() {
         return false;
     }
-    
+
     @Override
     public void remove() {
     }
@@ -115,22 +115,22 @@ class GenericIterator2<X extends Number> implements Iterator<X> {
     public X next() {
         return null;
     }
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     public Object next(boolean dummy) {
         return null;
     }
-    
+
     @NoWarning("IT_NO_SUCH_ELEMENT")
     protected Object next(int dummy) {
         return null;
-    }    
-    
+    }
+
     @Override
     public boolean hasNext() {
         return false;
     }
-    
+
     @Override
     public void remove() {
     }

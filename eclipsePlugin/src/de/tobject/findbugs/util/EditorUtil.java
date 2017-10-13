@@ -26,7 +26,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * Editor related stuff (line selection, annotation etc)
- * 
+ *
  * @author Andrei
  */
 public class EditorUtil {
@@ -41,7 +41,7 @@ public class EditorUtil {
      * Selects and reveals the given line in given editor.
      * <p>
      * Must be executed from UI thread.
-     * 
+     *
      * @param editorPart
      * @param lineNumber
      */

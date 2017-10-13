@@ -32,17 +32,17 @@ public @interface SlashedClassName {
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DottedClassName {
 }
-    
+
     @ExpectWarning("TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS")
     public boolean badCheck(@SlashedClassName String slashedClassName, @DottedClassName String dottedClassName) {
         return slashedClassName.equals(dottedClassName);
     }
-    
+
     @ExpectWarning("TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS")
     public boolean badCheck2(@SlashedClassName String slashedClassName, @DottedClassName String dottedClassName) {
         return slashedClassName == dottedClassName;
     }
-    
+
     public boolean badCheck(@PK int x) {
         return x == 5;
 

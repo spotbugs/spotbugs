@@ -45,7 +45,7 @@ public class OpenStream {
         // oops! exiting the method without closing the stream
     }
 
-    
+
     @NoWarning("OBL_UNSATISFIED_OBLIGATION,OS_OPEN_STREAM")
     public void byteArrayStreamDoNotReport() {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -100,7 +100,7 @@ public class OpenStream {
         return ch; // stream escapes via FileChannel
     }
 
-  
+
     public static long sizeViaChannel(String fname) throws IOException {
         FileInputStream fis = new FileInputStream(fname);
         FileChannel ch = fis.getChannel();

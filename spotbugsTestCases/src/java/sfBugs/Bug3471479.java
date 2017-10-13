@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 
 public class Bug3471479 {
 
-    
+
     @DesireNoWarning("OBL_UNSATISFIED_OBLIGATION")
     public String foo(Connection conn, String sql, String id) {
         String status = null;

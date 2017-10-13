@@ -17,7 +17,7 @@ public class Bug2515908 {
     /* ********************
      * Behavior at filing: IM false positive caused by int%2 test on necessarily
      * positive number
-     * 
+     *
      * warning thrown => M D IM_BAD_CHECK_FOR_ODD IM: Check for oddness that
      * won't work for \ negative numbers in
      * sfBugs.Bug2515908.testPositiveOdd(int) \ At Bug2515908.java:[line 29]

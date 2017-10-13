@@ -100,7 +100,7 @@ public class SpotBugsPlugin extends AbstractCodeQualityPlugin<SpotBugsTask> {
 
     /**
      * Verify that given version is supported by {@link SpotBugsPlugin} or not.
-     * 
+     *
      * @param version
      *            to verify
      * @throws IllegalArgumentException

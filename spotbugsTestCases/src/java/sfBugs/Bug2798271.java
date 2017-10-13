@@ -4,7 +4,7 @@ import java.util.Random;
 
 /**
  * Helper methods useful in JUnit test implementations
- * 
+ *
  * @author Piotr Swiecicki &lt;piotr.swiecicki@southyorks.pnn.police.uk&gt;
  */
 public class Bug2798271 {
@@ -15,7 +15,7 @@ public class Bug2798271 {
 
     /**
      * get random number generator, lazily instantiated
-     * 
+     *
      * @return
      */
     public Random getRandom() {

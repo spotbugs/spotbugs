@@ -3,7 +3,7 @@ package sfBugsNew;
 import java.util.List;
 
 public class Bug1152 {
-    
+
     private Bug1152(List<?>[] generations) {
         super();
         this.generations = generations;

@@ -9,7 +9,7 @@ public class Bug1192 {
     void mightThrow() {
 
     }
-    
+
     void mightThrow2() throws IOException, InterruptedException {
 
     }
@@ -27,7 +27,7 @@ public class Bug1192 {
             }
         }
     }
-    
+
     @NoWarning("BC_IMPOSSIBLE_INSTANCEOF")
     void check2() {
         try {

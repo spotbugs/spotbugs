@@ -29,12 +29,12 @@ public class InvalidCharComparisonPositiveCases {
         //BUG: Suggestion includes "false"
         if (c == -1)
             return true;
-        
+
         char d;
         //BUG: Suggestion includes "false"
         if ( (d = (char) r.read()) == -1)
             return true;
-        
+
 
         return false;
     }

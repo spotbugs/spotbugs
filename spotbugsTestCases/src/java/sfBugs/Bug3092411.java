@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3092411 {
     private Lock myLock = new ReentrantLock();
-    private final Condition myCondition1 = create(); 
+    private final Condition myCondition1 = create();
     private final Condition myCondition2 = myLock.newCondition();
 
     private Condition create() {
@@ -30,7 +30,7 @@ public class Bug3092411 {
             myLock.unlock();
         }
     }
-    
+
     @NoWarning("UL_UNRELEASED_LOCK_EXCEPTION_PATH")
     void func2() {
         myLock.lock();
@@ -43,7 +43,7 @@ public class Bug3092411 {
         finally {
             myLock.unlock();
             myCondition1.signalAll();
-           
+
         }
     }
     @ExpectWarning("UL_UNRELEASED_LOCK_EXCEPTION_PATH")
@@ -67,7 +67,7 @@ public class Bug3092411 {
         try {
             System.out.println("hi");
             myCondition1.signalAll();
-            
+
         }
         catch (Exception ex) {
             System.out.println("ex");

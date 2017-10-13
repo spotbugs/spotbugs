@@ -26,7 +26,7 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 
 /**
  * Dialog class to open the properties page.
- * 
+ *
  * @author Tomás Pollak
  */
 public class PropertiesTestDialog extends Dialog {
