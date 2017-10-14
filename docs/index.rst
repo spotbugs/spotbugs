@@ -28,6 +28,7 @@ Contents
    gui
    eclipse
    ant
+   maven
    gradle
    filter
    analysisprops
