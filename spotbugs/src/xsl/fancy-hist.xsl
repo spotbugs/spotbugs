@@ -18,7 +18,8 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -->
 
-<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" >
+<xsl:transform version="2.0"
+               xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
    <xsl:output
          method="xml" indent="yes"
          doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
