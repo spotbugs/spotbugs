@@ -50,8 +50,8 @@ public class DisplayNonmodelMessage {
 
     static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int) Driver.getFontSize());
 
-    static void setMessageFrame(JFrame messageFrame) {
-        DisplayNonmodelMessage.messageFrame = messageFrame;
+    static void setMessageFrame(JFrame frame) {
+        messageFrame = frame;
     }
 
     public static void displayNonmodelMessage(String title, String message, @CheckForNull Component centerOver, boolean onTop) {
@@ -108,6 +108,8 @@ public class DisplayNonmodelMessage {
         }
     }
 
+    // Following Runnable instances should be converted to lambdas in future:
+
     /*
     static Runnable moveToFrontLater = new Runnable() {
         @Override
@@ -116,17 +118,7 @@ public class DisplayNonmodelMessage {
             SwingUtilities.invokeLater(moveToFront);
         }
     };
-     */
 
-    static Runnable clearAlwaysOnTopLater = new Runnable() {
-        @Override
-        public void run() {
-            sleep(5);
-            SwingUtilities.invokeLater(clearAlwaysOnTop);
-        }
-    };
-
-    /*
     static Runnable moveToFront = new Runnable() {
         @Override
         public void run() {
@@ -138,13 +130,15 @@ public class DisplayNonmodelMessage {
     };
      */
 
-    static Runnable clearAlwaysOnTop = new Runnable() {
-        @Override
-        public void run() {
-            JFrame frame = messageFrame;
-            if (frame != null) {
-                frame.setAlwaysOnTop(false);
-            }
+    static Runnable clearAlwaysOnTop = () -> {
+        JFrame frame = messageFrame;
+        if (frame != null) {
+            frame.setAlwaysOnTop(false);
         }
+    };
+
+    static Runnable clearAlwaysOnTopLater = () -> {
+        sleep(5);
+        SwingUtilities.invokeLater(clearAlwaysOnTop);
     };
 }

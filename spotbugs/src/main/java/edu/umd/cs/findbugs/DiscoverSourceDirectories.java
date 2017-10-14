@@ -238,12 +238,7 @@ public class DiscoverSourceDirectories {
 
         // Find all directories underneath the root source directory
         progress.startRecursiveDirectorySearch();
-        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        });
+        RecursiveFileSearch rfs = new RecursiveFileSearch(rootSourceDirectory, pathname -> pathname.isDirectory());
         rfs.search();
         progress.doneRecursiveDirectorySearch();
         List<String> candidateSourceDirList = rfs.getDirectoriesScanned();

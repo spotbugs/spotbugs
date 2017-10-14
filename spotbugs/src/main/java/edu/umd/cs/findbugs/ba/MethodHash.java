@@ -116,12 +116,7 @@ public class MethodHash implements Comparable<MethodHash> {
             code = method.getCode().getCode();
         }
 
-        BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
-            @Override
-            public void handleInstruction(int opcode, int index) {
-                digest.update((byte) opcode);
-            }
-        };
+        BytecodeScanner.Callback callback = (opcode, index) -> digest.update((byte) opcode);
 
         BytecodeScanner bytecodeScanner = new BytecodeScanner();
         bytecodeScanner.scan(code, callback);

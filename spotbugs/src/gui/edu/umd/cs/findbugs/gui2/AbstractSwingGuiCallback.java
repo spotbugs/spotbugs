@@ -4,8 +4,6 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -53,12 +51,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
             JOptionPane.showMessageDialog(parent, message);
         } else {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        JOptionPane.showMessageDialog(parent, message);
-                    }
-                });
+                SwingUtilities.invokeAndWait(() -> JOptionPane.showMessageDialog(parent, message));
             } catch (InvocationTargetException e) {
                 throw new IllegalStateException(e);
             }
@@ -70,12 +63,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         if (SwingUtilities.isEventDispatchThread()) {
             JOptionPane.showMessageDialog(parent, message);
         } else {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    JOptionPane.showMessageDialog(parent, message);
-                }
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(parent, message));
         }
     }
 
@@ -273,12 +261,7 @@ public abstract class AbstractSwingGuiCallback implements IGuiCallback {
         } else {
             model.setSelectedItem(defaultValue);
         }
-        box.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateFormItemsFromGui(items);
-            }
-        });
+        box.addActionListener(e -> updateFormItemsFromGui(items));
         return box;
     }
 }

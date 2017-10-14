@@ -454,31 +454,25 @@ public class TextUICommandLine extends FindBugsCommandLine {
             // you can selectively enable and disable detectors,
             // starting from the default set (or whatever set
             // happens to be in effect).
-            choose(argument, "Detector choices", new Chooser() {
-                @Override
-                public void choose(boolean enabled, String what) {
-                    DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
-                    if (factory == null) {
-                        throw new IllegalArgumentException("Unknown detector: " + what);
-                    }
-                    if (FindBugs.DEBUG) {
-                        System.err.println("Detector " + factory.getShortName() + " " + (enabled ? "enabled" : "disabled")
-                                + ", userPreferences=" + System.identityHashCode(getUserPreferences()));
-                    }
-                    getUserPreferences().enableDetector(factory, enabled);
+            choose(argument, "Detector choices", (enabled, what) -> {
+                DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
+                if (factory == null) {
+                    throw new IllegalArgumentException("Unknown detector: " + what);
                 }
+                if (FindBugs.DEBUG) {
+                    System.err.println("Detector " + factory.getShortName() + " " + (enabled ? "enabled" : "disabled")
+                            + ", userPreferences=" + System.identityHashCode(getUserPreferences()));
+                }
+                getUserPreferences().enableDetector(factory, enabled);
             });
         } else if ("-choosePlugins".equals(option)) {
             // Selectively enable/disable plugins
-            choose(argument, "Plugin choices", new Chooser() {
-                @Override
-                public void choose(boolean enabled, String what) {
-                    Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
-                    if (plugin == null) {
-                        throw new IllegalArgumentException("Unknown plugin: " + what);
-                    }
-                    plugin.setGloballyEnabled(enabled);
+            choose(argument, "Plugin choices", (enabled, what) -> {
+                Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
+                if (plugin == null) {
+                    throw new IllegalArgumentException("Unknown plugin: " + what);
                 }
+                plugin.setGloballyEnabled(enabled);
             });
         } else if ("-adjustPriority".equals(option)) {
             // Selectively raise or lower the priority of warnings

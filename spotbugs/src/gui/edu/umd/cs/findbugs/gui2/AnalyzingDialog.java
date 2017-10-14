@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -147,12 +145,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
         cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                cancel();
-            }
-        });
+        cancelButton.addActionListener(evt -> cancel());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -161,27 +154,24 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
             }
         });
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-                add(statusLabel);
-                add(progressBar);
-                add(cancelButton);
-                statusLabel.setAlignmentX(CENTER_ALIGNMENT);
-                progressBar.setAlignmentX(CENTER_ALIGNMENT);
-                cancelButton.setAlignmentX(CENTER_ALIGNMENT);
-                pack();
-                setSize(300, getHeight());
-                setLocationRelativeTo(MainFrame.getInstance());
-                setResizable(false);
-                setModal(true);// Why was this set to false before?
-                try {
-                    setVisible(true);
-                } catch (Throwable e) {
-                    AnalyzingDialog.this.project.getGuiCallback().showMessageDialog("ERROR DURING ANALYSIS:\n\n"
-                            + e.getClass().getSimpleName() + ": " + e.getMessage());
-                }
+        SwingUtilities.invokeLater(() -> {
+            setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+            add(statusLabel);
+            add(progressBar);
+            add(cancelButton);
+            statusLabel.setAlignmentX(CENTER_ALIGNMENT);
+            progressBar.setAlignmentX(CENTER_ALIGNMENT);
+            cancelButton.setAlignmentX(CENTER_ALIGNMENT);
+            pack();
+            setSize(300, getHeight());
+            setLocationRelativeTo(MainFrame.getInstance());
+            setResizable(false);
+            setModal(true);// Why was this set to false before?
+            try {
+                setVisible(true);
+            } catch (Throwable e) {
+                AnalyzingDialog.this.project.getGuiCallback().showMessageDialog("ERROR DURING ANALYSIS:\n\n"
+                        + e.getClass().getSimpleName() + ": " + e.getMessage());
             }
         });
 
@@ -202,25 +192,19 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private void incrementCount() {
         count++;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setString(count + "/" + goal);
-                progressBar.setValue(count);
-            }
+        SwingUtilities.invokeLater(() -> {
+            progressBar.setString(count + "/" + goal);
+            progressBar.setValue(count);
         });
     }
 
     private void updateCount(final int count, final int goal) {
         this.count = count;
         this.goal = goal;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setString(count + "/" + goal);
-                progressBar.setValue(count);
-                progressBar.setMaximum(goal);
-            }
+        SwingUtilities.invokeLater(() -> {
+            progressBar.setString(count + "/" + goal);
+            progressBar.setValue(count);
+            progressBar.setMaximum(goal);
         });
     }
 
@@ -298,31 +282,11 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         }
 
         private void scheduleDialogCleanup() {
-            SwingUtilities.invokeLater(new Runnable() {
-                /*
-                 * (non-Javadoc)
-                 *
-                 * @see java.lang.Runnable#run()
-                 */
-                @Override
-                public void run() {
-                    AnalyzingDialog.this.setVisible(false);
-                }
-            });
+            SwingUtilities.invokeLater(() -> AnalyzingDialog.this.setVisible(false));
         }
 
         private void scheduleErrorDialog(final String title, final String message) {
-            SwingUtilities.invokeLater(new Runnable() {
-                /*
-                 * (non-Javadoc)
-                 *
-                 * @see java.lang.Runnable#run()
-                 */
-                @Override
-                public void run() {
-                    JOptionPane.showMessageDialog(MainFrame.getInstance(), message, title, JOptionPane.ERROR_MESSAGE);
-                }
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(MainFrame.getInstance(), message, title, JOptionPane.ERROR_MESSAGE));
         }
     }
 

@@ -141,36 +141,21 @@ public class AboutDialog extends javax.swing.JDialog {
         });
 
         aboutEditorPane.setEditable(false);
-        aboutEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                editorPaneHyperlinkUpdate(evt);
-            }
-        });
+        aboutEditorPane.addHyperlinkListener(evt -> editorPaneHyperlinkUpdate(evt));
 
         aboutScrollPane.setViewportView(aboutEditorPane);
 
         aboutTabPane.addTab("About", aboutScrollPane);
 
         licenseEditorPane.setEditable(false);
-        licenseEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                editorPaneHyperlinkUpdate(evt);
-            }
-        });
+        licenseEditorPane.addHyperlinkListener(evt -> editorPaneHyperlinkUpdate(evt));
 
         licenseScrollPane.setViewportView(licenseEditorPane);
 
         aboutTabPane.addTab("License", licenseScrollPane);
 
         acknowldgementsEditorPane.setEditable(false);
-        acknowldgementsEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                editorPaneHyperlinkUpdate(evt);
-            }
-        });
+        acknowldgementsEditorPane.addHyperlinkListener(evt -> editorPaneHyperlinkUpdate(evt));
 
         acknowledgmentsScrollPane.setViewportView(acknowldgementsEditorPane);
 
@@ -195,12 +180,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         okButton.setMnemonic('O');
         okButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        });
+        okButton.addActionListener(evt -> okButtonActionPerformed(evt));
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

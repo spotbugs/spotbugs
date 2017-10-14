@@ -28,16 +28,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -253,58 +244,55 @@ public class PreferencesFrame extends FBDialog {
         JPanel south = new JPanel();
 
         south.add(addButton);
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                chooser.addChoosableFileFilter(new FileFilter() {
+        addButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.addChoosableFileFilter(new FileFilter() {
 
-                    @Override
-                    public String getDescription() {
-                        return "SpotBugs Plugin (*.jar)";
+                @Override
+                public String getDescription() {
+                    return "SpotBugs Plugin (*.jar)";
+                }
+
+                @Override
+                public boolean accept(File f) {
+                    if (f.isDirectory()) {
+                        return true;
                     }
-
-                    @Override
-                    public boolean accept(File f) {
-                        if (f.isDirectory()) {
-                            return true;
-                        }
-                        if (!f.canRead()) {
-                            return false;
-                        }
-                        if (f.getName().endsWith(".jar")) {
-                            return true;
-                        }
+                    if (!f.canRead()) {
                         return false;
                     }
-                });
-                chooser.setDialogTitle("Select a SpotBugs plugin jar");
-                int retvalue = chooser.showDialog(PreferencesFrame.this, "Install");
-
-                if (retvalue == JFileChooser.APPROVE_OPTION) {
-                    File f = chooser.getSelectedFile();
-                    try {
-                        // load and enable for project (if loaded)
-                        Plugin plugin = Plugin.loadCustomPlugin(f, PreferencesFrame.this.getCurrentProject());
-
-                        GUISaveState guiSaveState = GUISaveState.getInstance();
-                        URL url = f.toURI().toURL();
-                        // add to FBGUI custom plugins list
-                        guiSaveState.addCustomPlugin(url);
-                        // add to list of enabled plugins
-                        guiSaveState.setPluginEnabled(plugin.getPluginId());
-                        plugin.setGloballyEnabled(true);
-                        guiSaveState.save();
-                        pluginsAdded = true;
-                        rebuildPluginCheckboxes();
-
-                    } catch (PluginException | MalformedURLException e1) {
-                        LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
-                        JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
-                        + "\n\n"
-                        + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
-                        "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
+                    if (f.getName().endsWith(".jar")) {
+                        return true;
                     }
+                    return false;
+                }
+            });
+            chooser.setDialogTitle("Select a SpotBugs plugin jar");
+            int retvalue = chooser.showDialog(PreferencesFrame.this, "Install");
+
+            if (retvalue == JFileChooser.APPROVE_OPTION) {
+                File f = chooser.getSelectedFile();
+                try {
+                    // load and enable for project (if loaded)
+                    Plugin plugin = Plugin.loadCustomPlugin(f, PreferencesFrame.this.getCurrentProject());
+
+                    GUISaveState guiSaveState = GUISaveState.getInstance();
+                    URL url = f.toURI().toURL();
+                    // add to FBGUI custom plugins list
+                    guiSaveState.addCustomPlugin(url);
+                    // add to list of enabled plugins
+                    guiSaveState.setPluginEnabled(plugin.getPluginId());
+                    plugin.setGloballyEnabled(true);
+                    guiSaveState.save();
+                    pluginsAdded = true;
+                    rebuildPluginCheckboxes();
+
+                } catch (PluginException | MalformedURLException e1) {
+                    LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
+                    JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
+                    + "\n\n"
+                    + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
+                    "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -379,12 +367,7 @@ public class PreferencesFrame extends FBDialog {
                         }
                     }
                 });
-                checkGlobal.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        pluginEnabledStatus.get(plugin).global = checkGlobal.isSelected();
-                    }
-                });
+                checkGlobal.addActionListener(e -> pluginEnabledStatus.get(plugin).global = checkGlobal.isSelected());
             }
             checkGlobal.setVerticalTextPosition(SwingConstants.TOP);
             String longText = plugin.getDetailedDescription();
@@ -436,17 +419,14 @@ public class PreferencesFrame extends FBDialog {
                         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                     }
                 });
-                combo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Boolean[] array = { null, false, true };
-                        int i = combo.getSelectedIndex();
-                        if (i < 0 || i > 2)
-                        {
-                            return; // ??
-                        }
-                        pluginEnabledStatus.get(plugin).project = array[i];
+                combo.addActionListener(e -> {
+                    Boolean[] array = { null, false, true };
+                    int i = combo.getSelectedIndex();
+                    if (i < 0 || i > 2)
+                    {
+                        return; // ??
                     }
+                    pluginEnabledStatus.get(plugin).project = array[i];
                 });
                 gbc.gridx = 2;
                 gbc.fill = GridBagConstraints.NONE;
@@ -651,53 +631,42 @@ public class PreferencesFrame extends FBDialog {
         gbc.weightx = 0;
         gbc.weighty = 0;
         filterPanel.add(addButton, gbc);
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                NewFilterFrame.open();
-            }
-        });
+        addButton.addActionListener(evt -> NewFilterFrame.open());
 
         gbc.gridy = 2;
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeButton, gbc);
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Object[] selected = filterCheckBoxList.getSelectedValues();
-                if (selected.length == 0) {
-                    return;
-                }
-                for (Object o : selected) {
-                    MatchBox box = (MatchBox) o;
-                    MainFrame.getInstance().getProject().getSuppressionFilter().removeChild(box.getMatcher());
-                }
-                FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
-                MainFrame.getInstance().setProjectChanged(true);
-                updateFilterPanel();
+        removeButton.addActionListener(evt -> {
+            Object[] selected = filterCheckBoxList.getSelectedValues();
+            if (selected.length == 0) {
+                return;
             }
+            for (Object o : selected) {
+                MatchBox box = (MatchBox) o;
+                MainFrame.getInstance().getProject().getSuppressionFilter().removeChild(box.getMatcher());
+            }
+            FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
+            MainFrame.getInstance().setProjectChanged(true);
+            updateFilterPanel();
         });
         gbc.gridy = 3;
         gbc.weighty = 0;
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeAllButton, gbc);
-        removeAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                boolean needsRebuild = false;
-                Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
-                if (!suppressionFilter.isEmpty()) {
-                    needsRebuild = true;
-                }
-                suppressionFilter.clear();
-
-                if (needsRebuild) {
-                    // filters being cleared were disabled
-                    FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
-                }
-                MainFrame.getInstance().setProjectChanged(true);
-                updateFilterPanel();
+        removeAllButton.addActionListener(evt -> {
+            boolean needsRebuild = false;
+            Filter suppressionFilter = MainFrame.getInstance().getProject().getSuppressionFilter();
+            if (!suppressionFilter.isEmpty()) {
+                needsRebuild = true;
             }
+            suppressionFilter.clear();
+
+            if (needsRebuild) {
+                // filters being cleared were disabled
+                FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
+            }
+            MainFrame.getInstance().setProjectChanged(true);
+            updateFilterPanel();
         });
         gbc.gridy = 4;
         gbc.weighty = 1;
@@ -726,18 +695,15 @@ public class PreferencesFrame extends FBDialog {
 
         for (final Matcher m : f.getChildren()) {
             MatchBox box = new MatchBox(m.toString(), m);
-            box.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(ItemEvent evt) {
-                    boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
-                    boolean wasSelected = f.isEnabled(m);
-                    if (isSelected == wasSelected) {
-                        return;
-                    }
-                    f.setEnabled(m, isSelected);
-                    updateFilters(isSelected);
-
+            box.addItemListener(evt -> {
+                boolean isSelected = ((JCheckBox) evt.getSource()).isSelected();
+                boolean wasSelected = f.isEnabled(m);
+                if (isSelected == wasSelected) {
+                    return;
                 }
+                f.setEnabled(m, isSelected);
+                updateFilters(isSelected);
+
             });
             box.setSelected(f.isEnabled(m));
             boxes.add(box);

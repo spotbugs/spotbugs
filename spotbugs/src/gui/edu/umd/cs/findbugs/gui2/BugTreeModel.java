@@ -378,17 +378,14 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
                     newModel.bugSet.sortList();
                 } finally {
                     rebuildingThread = null;
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (newModel != null) {
-                                JTree newTree = new JTree(newModel);
-                                newModel.tree = newTree;
-                                mainFrame.mainFrameTree.newTree(newTree, newModel);
-                                mainFrame.releaseDisplayWait();
-                            }
-                            getOffListenerList();
+                    SwingUtilities.invokeLater(() -> {
+                        if (newModel != null) {
+                            JTree newTree = new JTree(newModel);
+                            newModel.tree = newTree;
+                            mainFrame.mainFrameTree.newTree(newTree, newModel);
+                            mainFrame.releaseDisplayWait();
                         }
+                        getOffListenerList();
                     });
                 }
             }

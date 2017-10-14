@@ -11,8 +11,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -40,8 +38,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -96,12 +92,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         mainFrame.getSummaryHtmlArea().setContentType("text/html");
         mainFrame.getSummaryHtmlArea().setEditable(false);
-        mainFrame.getSummaryHtmlArea().addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent evt) {
-                AboutDialog.editorPaneHyperlinkUpdate(evt);
-            }
-        });
+        mainFrame.getSummaryHtmlArea().addHyperlinkListener(evt -> AboutDialog.editorPaneHyperlinkUpdate(evt));
         setStyleSheets();
         // JPanel temp = new JPanel(new BorderLayout());
         // temp.add(summaryTopPanel, BorderLayout.CENTER);
@@ -179,34 +170,19 @@ public class MainFrameComponentFactory implements Serializable {
         gridbag.setConstraints(mainFrame.getSourceSearchTextField(), c);
         thePanel.add(mainFrame.getSourceSearchTextField());
         // add the buttons
-        mainFrame.getFindButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                mainFrame.searchSource(0);
-            }
-        });
+        mainFrame.getFindButton().addActionListener(evt -> mainFrame.searchSource(0));
         c.gridx = 1;
         c.weightx = 0.0;
         c.fill = GridBagConstraints.NONE;
         gridbag.setConstraints(mainFrame.getFindButton(), c);
         thePanel.add(mainFrame.getFindButton());
-        mainFrame.getFindNextButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                mainFrame.searchSource(1);
-            }
-        });
+        mainFrame.getFindNextButton().addActionListener(evt -> mainFrame.searchSource(1));
         c.gridx = 2;
         c.weightx = 0.0;
         c.fill = GridBagConstraints.NONE;
         gridbag.setConstraints(mainFrame.getFindNextButton(), c);
         thePanel.add(mainFrame.getFindNextButton());
-        mainFrame.getFindPreviousButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                mainFrame.searchSource(2);
-            }
-        });
+        mainFrame.getFindPreviousButton().addActionListener(evt -> mainFrame.searchSource(2));
         c.gridx = 3;
         c.weightx = 0.0;
         c.fill = GridBagConstraints.NONE;

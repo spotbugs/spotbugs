@@ -27,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.security.MessageDigest;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,37 +146,26 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
         // Sort methods
         System.arraycopy(javaClass.getMethods(), 0, methodList, 0, javaClass.getMethods().length);
-        Arrays.sort(methodList, new Comparator<Method>() {
-            @Override
-            public int compare(Method o1, Method o2) {
-                // sort by name, then signature
-                int cmp = o1.getName().compareTo(o2.getName());
-                if (cmp != 0) {
-                    return cmp;
-                }
-                return o1.getSignature().compareTo(o2.getSignature());
-
+        Arrays.sort(methodList, (o1, o2) -> {
+            // sort by name, then signature
+            int cmp = o1.getName().compareTo(o2.getName());
+            if (cmp != 0) {
+                return cmp;
             }
+            return o1.getSignature().compareTo(o2.getSignature());
+
         });
 
         Field[] fieldList = new Field[javaClass.getFields().length];
 
         // Sort fields
         System.arraycopy(javaClass.getFields(), 0, fieldList, 0, javaClass.getFields().length);
-        Arrays.sort(fieldList, new Comparator<Field>() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see java.util.Comparator#compare(T, T)
-             */
-            @Override
-            public int compare(Field o1, Field o2) {
-                int cmp = o1.getName().compareTo(o2.getName());
-                if (cmp != 0) {
-                    return cmp;
-                }
-                return o1.getSignature().compareTo(o2.getSignature());
+        Arrays.sort(fieldList, (o1, o2) -> {
+            int cmp = o1.getName().compareTo(o2.getName());
+            if (cmp != 0) {
+                return cmp;
             }
+            return o1.getSignature().compareTo(o2.getSignature());
         });
 
         MessageDigest digest = Util.getMD5Digest();

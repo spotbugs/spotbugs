@@ -143,12 +143,9 @@ public class AnnotatedString {
         addButton(frame, "Cat & Dog");
         addButton(frame, "Cat && Dog");
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame.pack();
-                frame.setVisible(true);
-            }
+        SwingUtilities.invokeLater(() -> {
+            frame.pack();
+            frame.setVisible(true);
         });
 
     }

@@ -542,18 +542,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
      */
     private void addWorkListItemsForExtDir(LinkedList<WorkListItem> workList, String extDir) {
         File dir = new File(extDir);
-        File[] fileList = dir.listFiles(new FileFilter() {
-            /*
-             * (non-Javadoc)
-             *
-             * @see java.io.FileFilter#accept(java.io.File)
-             */
-            @Override
-            public boolean accept(File pathname) {
-                String path = pathname.getPath();
-                boolean isArchive = Archive.isArchiveFileName(path);
-                return isArchive;
-            }
+        File[] fileList = dir.listFiles((FileFilter) pathname -> {
+            String path = pathname.getPath();
+            boolean isArchive = Archive.isArchiveFileName(path);
+            return isArchive;
         });
         if (fileList == null) {
             return;

@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -144,11 +142,6 @@ public class FBFileChooser extends JFileChooser {
 
         setAccessory(accessory);
 
-        showHiddenFileCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                setFileHidingEnabled(!showHiddenFileCheckBox.isSelected());
-            }
-        });
+        showHiddenFileCheckBox.addActionListener(ae -> setFileHidingEnabled(!showHiddenFileCheckBox.isSelected()));
     }
 }

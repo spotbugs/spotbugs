@@ -180,12 +180,7 @@ public class SignatureParser {
     }
 
     public Iterable<String> parameterSignatures() {
-        return new Iterable<String>() {
-
-            @Override
-            public Iterator<String> iterator() {
-                return new ParameterSignatureIterator();
-            }};
+        return () -> new ParameterSignatureIterator();
 
     }
 

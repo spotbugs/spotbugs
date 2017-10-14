@@ -56,12 +56,7 @@ public class OSXAdapter extends ApplicationAdapter {
             // of the about Dialog, which results in a deadlock if a URL is
             // selected, and we get a ReOpenApplication event when user
             // switches back to Findbugs.
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    mainApp.about();
-                }
-            });
+            javax.swing.SwingUtilities.invokeLater(() -> mainApp.about());
         } else {
             throw new IllegalStateException("handleAbout: " + "MyApp instance detached from listener");
         }

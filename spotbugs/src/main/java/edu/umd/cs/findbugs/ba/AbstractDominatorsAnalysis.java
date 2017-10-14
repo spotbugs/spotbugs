@@ -60,14 +60,11 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
      *            true if exception edges should be ignored
      */
     public AbstractDominatorsAnalysis(CFG cfg, final boolean ignoreExceptionEdges) {
-        this(cfg, new EdgeChooser() {
-            @Override
-            public boolean choose(Edge edge) {
-                if (ignoreExceptionEdges && edge.isExceptionEdge()) {
-                    return false;
-                } else {
-                    return true;
-                }
+        this(cfg, edge -> {
+            if (ignoreExceptionEdges && edge.isExceptionEdge()) {
+                return false;
+            } else {
+                return true;
             }
         });
     }

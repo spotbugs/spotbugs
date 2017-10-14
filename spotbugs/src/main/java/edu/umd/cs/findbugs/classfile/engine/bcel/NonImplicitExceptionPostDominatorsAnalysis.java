@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
-import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.EdgeChooser;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
@@ -37,11 +35,6 @@ import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
  */
 public class NonImplicitExceptionPostDominatorsAnalysis extends PostDominatorsAnalysis {
     public NonImplicitExceptionPostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
-        super(cfg, rdfs, dfs, new EdgeChooser() {
-            @Override
-            public boolean choose(Edge edge) {
-                return !edge.isExceptionEdge() || edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG);
-            }
-        });
+        super(cfg, rdfs, dfs, edge -> !edge.isExceptionEdge() || edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG));
     }
 }

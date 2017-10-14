@@ -315,12 +315,7 @@ public class Plugin {
      * @return the DetectorFactory
      */
     public DetectorFactory getFactoryByShortName(final String shortName) {
-        return findFirstMatchingFactory(new FactoryChooser() {
-            @Override
-            public boolean choose(DetectorFactory factory) {
-                return factory.getShortName().equals(shortName);
-            }
-        });
+        return findFirstMatchingFactory(factory -> factory.getShortName().equals(shortName));
     }
 
     /**
@@ -331,12 +326,7 @@ public class Plugin {
      * @return the DetectorFactory
      */
     public DetectorFactory getFactoryByFullName(final String fullName) {
-        return findFirstMatchingFactory(new FactoryChooser() {
-            @Override
-            public boolean choose(DetectorFactory factory) {
-                return factory.getFullName().equals(fullName);
-            }
-        });
+        return findFirstMatchingFactory(factory -> factory.getFullName().equals(fullName));
     }
 
     /**
