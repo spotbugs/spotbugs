@@ -3,10 +3,8 @@
 # This file is distributed under the same license as the spotbugs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
-#, fuzzy
 msgid ""
-msgstr ""
-"Project-Id-Version: spotbugs 3.1\n"
+msgstr "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-23 14:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -19,38 +17,38 @@ msgstr ""
 
 #: ../../maven.rst:2
 msgid "Using the SpotBugs Maven Plugin"
-msgstr ""
+msgstr "SpotBugs Maven プラグインの使い方"
 
 #: ../../maven.rst:4
 msgid "This chapter describes how to integrate SpotBugs into a Maven project."
-msgstr ""
+msgstr "この章では，Maven プロジェクトに SpotBugs を統合する方法について説明します。"
 
 #: ../../maven.rst:7
 msgid "Add spotbugs-maven-plugin to your pom.xml"
-msgstr ""
+msgstr "pom.xml に spotbugs-maven-plugin を追加する"
 
 #: ../../maven.rst:9
 msgid "Add ``<plugin>`` into your ``pom.xml`` like below:"
-msgstr ""
+msgstr "次のように ``pom.xml`` に ``<plugin>`` を追加してください。"
 
 #: ../../maven.rst:28
 msgid "Goals of spotbugs-maven-plugin"
-msgstr ""
+msgstr "spotbugs-maven-plugin のゴール"
 
 #: ../../maven.rst:31
 msgid "spotbugs goal"
-msgstr ""
+msgstr "spotbugs ゴール"
 
 #: ../../maven.rst:33
 msgid ""
 "``spotbugs`` goal analyses target project by SpotBugs. For detail, please"
 " refer `spotbugs goal description in maven site "
 "<https://spotbugs.github.io/spotbugs-maven-plugin/spotbugs-mojo.html>`_."
-msgstr ""
+msgstr "``spotbugs`` ゴールは，SpotBugs によるターゲットプロジェクトの解析をします。詳細については，`maven サイトの spotbugs ゴールの説明 <https://spotbugs.github.io/spotbugs-maven-plugin/spotbugs-mojo.html>`_ を参照してください。"
 
 #: ../../maven.rst:37
 msgid "check goal"
-msgstr ""
+msgstr "check ゴール"
 
 #: ../../maven.rst:39
 msgid ""
@@ -58,26 +56,26 @@ msgid ""
 "failed if it found any bugs. For detail, please refer `check goal "
 "description in maven site <https://spotbugs.github.io/spotbugs-maven-"
 "plugin/check-mojo.html>`_."
-msgstr ""
+msgstr "``check`` ゴールは，``spotbugs`` ゴールのような解析を行い，バグが見つかったらビルドが失敗します。詳細については，`maven サイトの check ゴールの説明 <https://spotbugs.github.io/spotbugs-maven-plugin/check-mojo.html>`_ を参照してください。"
 
 #: ../../maven.rst:43
 msgid "gui goal"
-msgstr ""
+msgstr "gui ゴール"
 
 #: ../../maven.rst:45
 msgid ""
 "``gui`` goal launches SpotBugs GUI to check analysis result. For detail, "
 "please refer `gui goal description in maven site "
 "<https://spotbugs.github.io/spotbugs-maven-plugin/gui-mojo.html>`_."
-msgstr ""
+msgstr "``gui`` ゴールは，SpotBugs GUI を起動し，解析結果を確認します。詳細については，`maven サイトの gui ゴール <https://spotbugs.github.io/spotbugs-maven-plugin/gui-mojo.html>`_ を参照してください。"
 
 #: ../../maven.rst:49
 msgid "help goal"
-msgstr ""
+msgstr "help ゴール"
 
 #: ../../maven.rst:51
 msgid "``help`` goal displays usage of this Maven plugin."
-msgstr ""
+msgstr "``help`` ゴールは，この Maven プラグインの使い方を表示します。"
 
 #~ msgid "This goal launches SpotBugs GUI to check analysis result."
 #~ msgstr ""
