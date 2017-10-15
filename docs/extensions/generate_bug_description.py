@@ -6,6 +6,7 @@
 from __future__ import print_function, unicode_literals
 
 from collections import namedtuple
+from docutils.utils import column_width
 import io
 import os
 import xml.etree.ElementTree as ET
@@ -76,7 +77,7 @@ def generate_category(messages, category):
     yield ".. _bug-category-{0}:".format(category.name.lower())
     yield ""
     yield title
-    yield "-" * len(title)
+    yield "-" * column_width(title)
     yield ""
 
     for line in i18n_text(msg_elem, "Details").splitlines():
@@ -112,7 +113,7 @@ def generate_bug(messages, bug):
     yield ".. _{bug.name}:".format(bug=bug)
     yield ""
     yield title
-    yield "^" * len(title)
+    yield "^" * column_width(title)
 
     # This is needed because Sphinx turns FOO_BAR into foo-bar, but
     # we still want bugDescription.html#FOO_BAR to work
