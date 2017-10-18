@@ -2,10 +2,11 @@ language: java
 sudo: false
 dist: trusty
 
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+
 env:
-  matrix:
-    - JDK_FOR_TEST=oraclejdk9
-    - JDK_FOR_TEST=oraclejdk8
   global:
     - SONAR_HOST_URL="https://sonarcloud.io"
 
@@ -31,7 +32,6 @@ env:
 addons:
   apt:
     packages:
-      - oracle-java9-installer
       - oracle-java8-installer
       - oracle-java8-set-default
 
@@ -47,12 +47,13 @@ install:
   - echo eclipseRoot.dir=$(pwd)/eclipse > eclipsePlugin/local.properties
 
 script:
+  - jdk_switcher use oraclejdk8
   - ./gradlew compileJava compileTestJava -S
-  - jdk_switcher use $JDK_FOR_TEST
+  - jdk_switcher use $TRAVIS_JDK_VERSION
   - ./gradlew -v --no-daemon
   - ./gradlew build smoketest -S --no-daemon
   - jdk_switcher use oraclejdk8
-  - if [[ $JDK_FOR_TEST == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
+  - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -73,7 +74,7 @@ deploy:
     email: skypencil+spotbugs-bot@gmail.com
     on:
       branch: master
-      condition: "$JDK_FOR_TEST = oraclejdk8"
+      jdk: oraclejdk8
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
@@ -82,7 +83,7 @@ deploy:
     email: skypencil+spotbugs-bot@gmail.com
     on:
       tags: true
-      condition: "$JDK_FOR_TEST = oraclejdk8"
+      jdk: oraclejdk8
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
@@ -91,22 +92,23 @@ deploy:
     email: skypencil+spotbugs-bot@gmail.com
     on:
       tags: true
-      condition: "$JDK_FOR_TEST = oraclejdk8 && $TRAVIS_TAG != *'_RC'*"
+      jdk: oraclejdk8
+      condition: "$TRAVIS_TAG != *'_RC'*"
   - provider: script
     skip_cleanup: true
     script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
     on:
       branch: master
-      condition: "$JDK_FOR_TEST = oraclejdk8"
+      jdk: oraclejdk8
   - provider: script
     skip_cleanup: true
     script: ./gradlew publishPlugins -Pgradle.publish.key="$GRADLE_PUBLISH_KEY" -Pgradle.publish.secret="$GRADLE_PUBLISH_SECRET"
     on:
       tags: true
-      condition: "$JDK_FOR_TEST = oraclejdk8"
+      jdk: oraclejdk8
   - provider: script
     skip_cleanup: true
     script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD" -Psigning.keyId="$SIGNING_KEY_ID" -Psigning.password="$SIGNING_PASSWORD" -Psigning.secretKeyRingFile="$TRAVIS_BUILD_DIR/secring.gpg"
     on:
       tags: true
-      condition: "$JDK_FOR_TEST = oraclejdk8"
+      jdk: oraclejdk8
