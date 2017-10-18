@@ -86,10 +86,14 @@ def generate_category(messages, category):
     yield ""
 
 
-def generate_raw_section(html):
+def generate_raw_section(html, prolog=None):
     yield ".. raw:: html"
-    for line in html.splitlines():
-        yield "   " + line.strip()
+    yield ""
+    if prolog:
+        yield "   " + prolog
+        yield ""
+    for line in html.strip().splitlines():
+        yield "   " + line
     yield ""
 
 
@@ -102,14 +106,19 @@ def generate_bug(messages, bug):
     description = i18n_text(msg_elem, "ShortDescription")
     details = i18n_text(msg_elem, "Details")
 
-    title = "{bug.abbrev}: {short_desc} ({bug.name})".format(bug=bug, short_desc=description)
+    title = "{bug.abbrev}: {short_desc}".format(bug=bug, short_desc=description)
 
-    yield ".. _bug-pattern-{0}:".format(bug.name.lower())
+    # This creates a target for :ref:`my-bug-pattern` links
+    yield ".. _{bug.name}:".format(bug=bug)
     yield ""
     yield title
     yield "^" * len(title)
 
-    for line in generate_raw_section(details):
+    # This is needed because Sphinx turns FOO_BAR into foo-bar, but
+    # we still want bugDescription.html#FOO_BAR to work
+    anchor = '<p><em id="{bug.name}">{bug.name}</em></p>'.format(bug=bug)
+
+    for line in generate_raw_section(details, prolog=anchor):
         yield line
 
 
