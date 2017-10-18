@@ -1,0 +1,2 @@
+// for Gradle
+compileOnly 'com.github.spotbugs:spotbugs-annotations:|release|'

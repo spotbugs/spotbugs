@@ -275,6 +275,7 @@ def setup(app):
 sys.path.append(os.path.abspath('extensions'))
 extensions += ['generate_bug_description']
 
+extensions += ['code-template']
 
 # URL to distribute SpotBugs package
 # http://www.sphinx-doc.org/en/stable/ext/extlinks.html

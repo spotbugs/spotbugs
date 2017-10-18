@@ -1,0 +1,2 @@
+// for Gradle
+compile 'com.github.spotbugs:spotbugs:|release|'

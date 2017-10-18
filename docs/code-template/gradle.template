@@ -1,0 +1,3 @@
+spotbugs {
+  toolVersion = '|release|'
+}

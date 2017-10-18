@@ -1,0 +1,6 @@
+<!-- for Maven -->
+<dependency>
+  <groupId>com.github.spotbugs</groupId>
+  <artifactId>spotbugs</artifactId>
+  <version>|release|</version>
+</dependency>
