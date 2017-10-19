@@ -6,8 +6,7 @@ When you release fixed version of SpotBugs, please follow these procedures.
 
 * `version` in `build.gradle` and `gradlePlugin/build.gradle`
 * version number in `CHANGELOG.md` and `gradlePlugin/CHANGELOG.md`
-* `version` and `full_version` in `docs/conf.py`
-* version numbers in `docs/migration.rst`, `docs/introduction.rst` and `docs/installing.rst`
+* `version`, `full_version`, `maven_plugin_version` and `gradle_plugin_version` in `docs/conf.py`
 
 ## Release to Maven Central
 

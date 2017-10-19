@@ -8,21 +8,8 @@ Add spotbugs-maven-plugin to your pom.xml
 
 Add ``<plugin>`` into your ``pom.xml`` like below:
 
-.. code-block:: xml
-
-  <plugin>
-    <groupId>com.github.spotbugs</groupId>
-    <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>3.1.0-RC6</version>
-    <dependencies>
-      <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
-      <dependency>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs</artifactId>
-        <version>3.1.0-RC6</version>
-      </dependency>
-    </dependencies>
-  </plugin>
+.. literalinclude:: generated/maven.template.inc
+    :language: xml
 
 Goals of spotbugs-maven-plugin
 ------------------------------

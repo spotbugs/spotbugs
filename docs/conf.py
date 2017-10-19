@@ -17,7 +17,9 @@ import os
 
 html_context = {
   'version' : '3.1',
-  'full_version' : '3.1.0-RC7'
+  'full_version' : '3.1.0-RC7',
+  'maven_plugin_version' : '3.1.0-RC6',
+  'gradle_plugin_version' : '1.5'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -274,3 +276,10 @@ def setup(app):
 
 sys.path.append(os.path.abspath('extensions'))
 extensions += ['generate_bug_description']
+
+extensions += ['code-template']
+
+# URL to distribute SpotBugs package
+# http://www.sphinx-doc.org/en/stable/ext/extlinks.html
+extensions += ['sphinx.ext.extlinks']
+extlinks = {'dist': ('http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/' + release + '/spotbugs-' + release + '.%s', '')}

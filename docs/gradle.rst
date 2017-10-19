@@ -27,11 +27,8 @@ Current version of SpotBugs Gradle Plugin uses the same way with FindBugs Gradle
 
 For instance, to specify the version of SpotBugs, you can configure like below:
 
-.. code-block:: groovy
-
-  spotbugs {
-    toolVersion = '3.1.0-RC5'
-  }
+.. literalinclude:: generated/gradle.template.inc
+    :language: groovy
 
 Introduce SpotBugs Plugin
 -------------------------

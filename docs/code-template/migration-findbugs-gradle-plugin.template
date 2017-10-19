@@ -1,0 +1,14 @@
+plugins {
+  id  'com.github.spotbugs' version '|gradle-plugin|'
+}
+spotbugs {
+  toolVersion = '|release|'
+}
+
+// To generate an HTML report instead of XML
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
+}
