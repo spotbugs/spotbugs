@@ -18,7 +18,7 @@ This Gradle Plugin introduces two tasks: `spotbugsMain` and `spotbugsTest`.
 `spotbugsMain` task runs SpotBugs for your production Java source files. This task depends on `classes` task.
 `spotbugsTest` task runs SpotBugs for your test Java source files. This task depends on `testClasses` task.
 
-SpotBugs Gradle Plugin adds task dependency from `check` to these these tasks, so you can simply run ``./gradlew check`` to run SpotBugs.
+SpotBugs Gradle Plugin adds task dependency from `check` to these tasks, so you can simply run ``./gradlew check`` to run SpotBugs.
 
 Configure Gradle Plugin
 -----------------------
