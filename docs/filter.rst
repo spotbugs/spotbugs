@@ -311,7 +311,7 @@ Complete Example
     <FindBugsFilter
 		xmlns="https://github.com/spotbugs/filter/3.0.0"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0_RC6/spotbugs/etc/findbugsfilter.xsd">
+		xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
     <Match>
       <Class name="com.foobar.ClassNotToBeAnalyzed" />
     </Match>
