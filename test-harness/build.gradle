@@ -1,5 +1,5 @@
 plugins {
-  id "com.github.spotbugs" version "1.4"
+  id "com.github.spotbugs" version "1.5"
 }
 
 apply from: "$rootDir/gradle/checkstyle.gradle"
@@ -45,5 +45,4 @@ apply from: "$rootDir/gradle/jigsaw.gradle"
 spotbugs {
   effort = "max"
   reportLevel = "high"
-  toolVersion '3.1.0-RC6'
 }
