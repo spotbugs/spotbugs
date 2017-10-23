@@ -54,7 +54,7 @@ So define sourceSets explicitly, then SpotBugs Gradle plugin generates tasks for
   sourceSets {
     // we define `main` sourceSet here, so SpotBugs Gradle Plugin generates `spotbugsMain` task
     main {
-      srcDirs = ['src/main/java']
+      java.srcDirs = ['src/main/java']
     }
   }
 
