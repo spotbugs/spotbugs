@@ -682,6 +682,10 @@ public class ClassParserUsingASM implements ClassParserInterface {
             case Const.CONSTANT_MethodHandle:
                 size = 4;
                 break;
+            case Const.CONSTANT_Module:
+            case Const.CONSTANT_Package:
+                size = 3;
+                break;
             default:
                 throw new IllegalStateException("Unexpected tag of " + tag + " at offset " + offset + " while parsing "
                         + slashedClassName + " from " + codeBaseEntry);
