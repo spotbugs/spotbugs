@@ -304,7 +304,18 @@ public class DescriptorFactory {
      */
     public static boolean isClassResource(String resourceName) {
         // This could be more sophisticated.
-        return resourceName.endsWith(".class");
+        return resourceName.endsWith(".class") && !isModuleInfo(resourceName);
+    }
+
+    /**
+     * Determine whether or not the given resource name refers to a module-info class.
+     *
+     * @param resourceName
+     *            the resource name
+     * @return true if the resource is a module-info class, false otherwise
+     */
+    public static boolean isModuleInfo(String resourceName) {
+        return resourceName.equals("module-info.class");
     }
 
     public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
