@@ -209,6 +209,7 @@ public class ClassParser implements ClassParserInterface {
     // L: long
     // D: double
     // i: 2-byte constant pool index
+    // See https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.4
     private static final String[] CONSTANT_FORMAT_MAP = { null,
         "8", // 1:CONSTANT_Utf8
         null, // 2:
@@ -228,7 +229,8 @@ public class ClassParser implements ClassParserInterface {
         "i", // 16: CONSTANT_MethodType
         null, // 17:
         "ii", // 18: CONSTANT_InvokeDynamic
-
+        "i", // 19: CONSTANT_Module
+        "i", // 20: CONSTANT_Package
     };
 
     /**
