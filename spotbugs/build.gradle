@@ -1,6 +1,6 @@
-plugins {
-  id "com.github.spotbugs" version "1.5"
-}
+// plugins {
+//   id "com.github.spotbugs" version "1.5"
+// }
 
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
@@ -65,10 +65,10 @@ dependencies {
   compile fileTree(dir: 'lib', include: '*.jar')
 }
 
-spotbugs {
-  effort = "max"
-  reportLevel = "high"
-}
+// spotbugs {
+//   effort = "max"
+//   reportLevel = "high"
+// }
 
 clean {
   delete ".libs"
