@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+### Fixed
+
+* Do not try to parse module-info.class ([#408](https://github.com/spotbugs/spotbugs/issues/408))
+
 ## 3.1.0-RC7 - 2017-10-14
 
 ### Changed
@@ -18,7 +22,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Wrong Class-Path in MANIFEST.MF ([#407](https://github.com/spotbugs/spotbugs/pull/407))
 * Avoid ArithmeticExceptions while interpreting ldiv/lrem values ([#413](https://github.com/spotbugs/spotbugs/issues/413))
 * Parse `@CheckReturnValue` even in package-info from aux classpath ([#429](https://github.com/spotbugs/spotbugs/issues/429))
-* Do not try to parse module-info.class ([#408](https://github.com/spotbugs/spotbugs/issues/408))
 
 ## 3.1.0-RC6 - 2017-09-25
 
