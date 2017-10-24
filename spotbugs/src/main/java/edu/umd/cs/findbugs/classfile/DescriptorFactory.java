@@ -60,6 +60,8 @@ public class DescriptorFactory {
 
     private final Map<FieldDescriptor, FieldDescriptor> fieldDescriptorMap;
 
+    private static final ClassDescriptor MODULE_INFO = new ClassDescriptor("module-info");
+
     private DescriptorFactory() {
         this.classDescriptorMap = new HashMap<>();
         this.dottedClassDescriptorMap = new HashMap<>();
@@ -120,6 +122,11 @@ public class DescriptorFactory {
         assert className.indexOf('.') == -1;
         ClassDescriptor classDescriptor = classDescriptorMap.get(className);
         if (classDescriptor == null) {
+            if (MODULE_INFO.getClassName().equals(className)) {
+                // don't allow module info to be added to the map,
+                // which could be used to check referenced classes
+                return MODULE_INFO;
+            }
             classDescriptor = new ClassDescriptor(className);
             classDescriptorMap.put(className, classDescriptor);
         }
