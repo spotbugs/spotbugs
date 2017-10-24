@@ -69,7 +69,7 @@ task classesJava7(type:JavaCompile) {
   source = sourceSets.main.java
 }
 
-tasks['build'].dependsOn classesJava7
+tasks['classes'].dependsOn classesJava7
 
 sonarqube {
   // this project should not be analyzed with sonarqube
