@@ -48,7 +48,7 @@ install:
 
 script:
   - jdk_switcher use oraclejdk8
-  - ./gradlew compileJava compileTestJava -S
+  - ./gradlew classes testClasses -S
   - jdk_switcher use $TRAVIS_JDK_VERSION
   - ./gradlew -v --no-daemon
   - ./gradlew build smoketest -S --no-daemon
