@@ -87,7 +87,9 @@ public class AbstractIntegrationTest {
     private static File getFindbugsTestCasesFile(final String path) {
         File f = new File(getFindbugsTestCases(), path);
         if (!f.exists() && path.startsWith(BUILD_CLASSES_CLI)) {
-            File f2 = new File(getFindbugsTestCases(), path.replace(BUILD_CLASSES_CLI, BUILD_CLASSES_ECLIPSE));
+            String replaced = path.replace(BUILD_CLASSES_CLI, BUILD_CLASSES_ECLIPSE);
+            replaced = replaced.replace("../java9/", "");
+            File f2 = new File(getFindbugsTestCases(), replaced);
             if (f2.exists()) {
                 f = f2;
             }
