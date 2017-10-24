@@ -2,7 +2,7 @@
 
 This is the changelog for SpotBugs Gradle Plugin. This follows [Keep a Changelog v1.0.0](http://keepachangelog.com/en/1.0.0/).
 
-Currently the versioning policy of this project does not follow [Semantic Versioning](http://semver.org/).
+Currently the versioning policy of this project follows [Semantic Versioning](http://semver.org/) from version 1.6.0.
 
 ## 1.6.0 - 2017-10-23
 
