@@ -16,8 +16,8 @@ import sys
 import os
 
 html_context = {
-  'version' : '3.1',
-  'full_version' : '3.1.0',
+  'version' : '4.0',
+  'full_version' : '4.0.0',
   'maven_plugin_version' : '3.1.0-RC6',
   'gradle_plugin_version' : '1.6.0'
 }
