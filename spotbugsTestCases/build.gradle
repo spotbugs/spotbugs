@@ -47,6 +47,18 @@ javadoc {
   }
 }
 
+task classesJava9(type:JavaCompile) {
+  sourceCompatibility = '9'
+  targetCompatibility = '9'
+  destinationDir = file("$buildDir/classes/java/java9")
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java9')
+}
+
+if (System.getProperty("java.specification.version") == "9") {
+  tasks['classes'].dependsOn classesJava9
+}
+
 task classesJava7(type:JavaCompile) {
   exclude '**/*jdk8.java'
   exclude '**/lambdas/**'
