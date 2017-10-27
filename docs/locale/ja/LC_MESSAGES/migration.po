@@ -27,7 +27,7 @@ msgstr ""
 msgid ""
 "Simply replace ``com.google.code.findbugs:findbugs`` with "
 "``com.github.spotbugs:spotbugs``."
-msgstr "``com.google.code.findbugs:findbugs`` を ``com.github.spotbugs:spotbugs`` に換えてください。"
+msgstr "``com.google.code.findbugs:findbugs`` を ``com.github.spotbugs:spotbugs`` に替えてください。"
 
 #: ../../migration.rst:16
 msgid "com.google.code.findbugs:jsr305"
@@ -52,7 +52,6 @@ msgid "com.google.code.findbugs:annotations"
 msgstr ""
 
 #: ../../migration.rst:35
-#, fuzzy
 msgid ""
 "Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-"
 "annotations:1.0`` instead."
@@ -64,7 +63,7 @@ msgstr "FindBugs Ant タスク"
 
 #: ../../migration.rst:46
 msgid "Please replace ``findbugs-ant.jar`` with ``spotbugs-ant.jar``."
-msgstr "``findbugs-ant.jar`` を ``spotbugs-ant.jar`` に換えてください。"
+msgstr "``findbugs-ant.jar`` を ``spotbugs-ant.jar`` に替えてください。"
 
 #: ../../migration.rst:66
 msgid "FindBugs Maven plugin"
@@ -96,7 +95,7 @@ msgstr "代わりに次の更新サイトをご利用ください。"
 
 #: ../../migration.rst:100
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version, not ready yet)"
-msgstr "https://spotbugs.github.io/eclipse/ (安定バージョンを使用する (まだ利用できない))"
+msgstr "https://spotbugs.github.io/eclipse/ (安定バージョンを使用する)"
 
 #: ../../migration.rst:101
 msgid "https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)"
