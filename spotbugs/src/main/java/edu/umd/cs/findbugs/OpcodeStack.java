@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -273,32 +276,10 @@ public class OpcodeStack implements Constants2 {
         public static final @SpecialKind
         int TYPE_ONLY = 24;
 
-        /**
-         * @deprecated will be deleted at v4 release. use {@link #getSpecialKindName(int)} instead.
-         */
-        @Deprecated
         @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-        public static final HashMap<Integer, String> specialKindNames = new HashMap<>();
+        private static final ConcurrentMap<Integer, String> specialKindToName = new ConcurrentHashMap<>();
 
-        private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
-
-        /**
-         * Define new SpecialKind with given name, and return its {@code int} value
-         * @param name
-         *      the name of new SpecialKind, can be null
-         * @return
-         *      {@code int} value which expresses new SpecialKind
-         * @see <a href="https://github.com/spotbugs/spotbugs/pull/23">Known bug</a>
-         * @deprecated use {@link #defineSpecialKind(String)} instead.
-         */
-        @Deprecated
-        public static @SpecialKind
-        int defineNewSpecialKind(String name) {
-            specialKindNames.put(nextSpecialKind, name);
-            @SpecialKind int result = asSpecialKind( nextSpecialKind+1);
-            nextSpecialKind = result;
-            return result;
-        }
+        private static AtomicInteger nextSpecialKind = new AtomicInteger(TYPE_ONLY + 1);
 
         private static final int IS_INITIAL_PARAMETER_FLAG = 1;
 
@@ -477,7 +458,7 @@ public class OpcodeStack implements Constants2 {
                 break;
             default:
                 buf.append(", #" + specialKind);
-                buf.append("(" + specialKindNames.get(specialKind) + ")");
+                buf.append("(" + specialKindToName.get(specialKind) + ")");
                 break;
 
             }
@@ -1096,7 +1077,10 @@ public class OpcodeStack implements Constants2 {
          */
         public static @SpecialKind
         int defineSpecialKind(String name) {
-            return defineNewSpecialKind(name) - 1;
+            @SpecialKind
+            int specialKind = nextSpecialKind.getAndIncrement();
+            specialKindToName.put(Integer.valueOf(specialKind), name);
+            return specialKind;
         }
 
         /**
@@ -1105,7 +1089,7 @@ public class OpcodeStack implements Constants2 {
          * @since 3.1.0
          */
         public static Optional<String> getSpecialKindName(@SpecialKind int specialKind) {
-            return Optional.ofNullable(specialKindNames.get(Integer.valueOf(specialKind)));
+            return Optional.ofNullable(specialKindToName.get(Integer.valueOf(specialKind)));
         }
     }
 
