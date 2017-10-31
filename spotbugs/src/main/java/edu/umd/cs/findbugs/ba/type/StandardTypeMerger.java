@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -44,7 +43,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
  * @author David Hovemeyer
  * @see TypeMerger
  */
-public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
+public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     private final RepositoryLookupFailureCallback lookupFailureCallback;
 
     private final ExceptionSetFactory exceptionSetFactory;
