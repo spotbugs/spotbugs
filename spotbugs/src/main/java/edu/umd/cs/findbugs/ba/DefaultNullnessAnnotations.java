@@ -224,6 +224,11 @@ public class DefaultNullnessAnnotations {
         database.addMethodParameterAnnotation("java.util.concurrent.CancellationException", "<init>",
                 "(Ljava/lang/String;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
 
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "complete",
+                "(Ljava/lang/Object;)Z", false, 0, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "completedFuture",
+                "(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;", true, 0, NullnessAnnotation.NULLABLE);
+
         database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>", "(Ljava/lang/String;)V",
                 false, 0, NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>",
