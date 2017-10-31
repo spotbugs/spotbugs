@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+### Fixed
+
+* NP_NONNULL_PARAM_VIOLATION false positive ([#484](https://github.com/spotbugs/spotbugs/issues/484))
+
 ## 3.1.0 - 2017-10-25
 
 ### Fixed
