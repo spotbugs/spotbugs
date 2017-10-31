@@ -28,8 +28,7 @@ import org.dom4j.Node;
  */
 public class XMLUtil {
 
-    @SuppressWarnings("unchecked")
-    public static <T> List<T> selectNodes(Node node, String arg0) {
+    public static List<Node> selectNodes(Node node, String arg0) {
         return node.selectNodes(arg0);
     }
 

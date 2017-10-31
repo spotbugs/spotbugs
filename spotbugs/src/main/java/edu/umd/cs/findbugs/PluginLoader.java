@@ -49,6 +49,7 @@ import java.util.TreeSet;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -267,8 +268,8 @@ public class PluginLoader {
                 System.err.println(msg);
                 AnalysisContext.logError(msg);
 
-                for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
-                    Plugin.removePlugin(i.next().loadedFromUri);
+                for (PluginLoader pluginLoader : partiallyInitialized) {
+                    Plugin.removePlugin(pluginLoader.loadedFromUri);
                 }
                 partiallyInitialized.clear();
             }
@@ -870,7 +871,10 @@ public class PluginLoader {
         Node orderingConstraintsNode = pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
         if (orderingConstraintsNode != null) {
             // Get inter-pass and intra-pass constraints
-            List<Element> elements =  XMLUtil.selectNodes(orderingConstraintsNode, "./SplitPass|./WithinPass");
+            List<Element> elements = XMLUtil.selectNodes(orderingConstraintsNode, "./SplitPass|./WithinPass").stream()
+                    .filter(Element.class::isInstance)
+                    .map(Element.class::cast)
+                    .collect(Collectors.toList());
             for (Element constraintElement : elements) {
                 // Create the selectors which determine which detectors are
                 // involved in the constraint

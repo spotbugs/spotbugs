@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -63,7 +64,7 @@ public class AddMessages {
      * Add messages to the dom4j tree.
      */
     public void execute() {
-        Iterator<?> elementIter = XMLUtil.selectNodes(document, "/BugCollection/BugInstance").iterator();
+        Iterator<Node> elementIter = XMLUtil.selectNodes(document, "/BugCollection/BugInstance").iterator();
         Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
         Set<String> bugTypeSet = new HashSet<>();

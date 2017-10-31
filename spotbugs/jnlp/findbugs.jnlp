@@ -20,7 +20,7 @@
     <jar href="findbugs.jar"/>
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
-    <jar href="dom4j-1.6.1.jar"/>
+    <jar href="dom4j-2.1.0.jar"/>
     <jar href="asm-3.3.jar"/>
     <jar href="asm-tree-3.3.jar"/>
     <jar href="asm-commons-3.3.jar"/>
@@ -34,4 +34,3 @@
   </resources> 
   <application-desc main-class="edu.umd.cs.findbugs.gui2.Driver"/> 
 </jnlp> 
-
