@@ -6,6 +6,15 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+### Changed
+
+* Upgrade dom4j to 2.1.0 ([#300](https://github.com/spotbugs/spotbugs/issues/300))
+
+### Removed
+
+* non thread-safe implementation in `OpcodeStack.Item` ([#28](https://github.com/spotbugs/spotbugs/issues/28))
+* stop implementing deprecated `org.apache.bcel.Constants` interface ([#262](https://github.com/spotbugs/spotbugs/issues/262))
+
 ## 3.1.0 - 2017-10-25
 
 ### Fixed
