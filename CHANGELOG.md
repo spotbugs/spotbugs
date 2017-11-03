@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 
+* NP_NONNULL_PARAM_VIOLATION false positive ([#484](https://github.com/spotbugs/spotbugs/issues/484))
 * Add missing package exports to plugin manifest ([#478](https://github.com/spotbugs/spotbugs/issues/478))
 
 ## 3.1.0 - 2017-10-25
