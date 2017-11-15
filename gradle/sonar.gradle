@@ -1,15 +1,13 @@
 apply plugin: 'org.sonarqube'
 
-// sonar should analyze project with single target branch only
-// In case feature branch should be analyzed, then sonar.branch variable should be specified
-def isMaster = 'master'.equals(System.env.TRAVIS_BRANCH)
+def isTarget = 'master'.equals(System.env.TRAVIS_BRANCH) || 'release-3.1'.equals(System.env.TRAVIS_BRANCH)
 
 // for security reasons travis secure variables are defined when build is
 // initiated by a pull request from same repository only
 // so pull requests from external repositories can not be analysed by sonar
 def isSecure = 'true'.equals(System.env.TRAVIS_SECURE_ENV_VARS)
 
-if (!isSecure || !isMaster) {
+if (!isSecure || !isTarget) {
     rootProject.tasks['sonarqube'].setEnabled(false)
     return
 }
@@ -27,6 +25,8 @@ sonarqube {
         property 'sonar.projectName', 'SpotBugs'
         property 'sonar.projectVersion', rootProject.version
         property 'sonar.organization', 'spotbugs'
+        // https://docs.sonarqube.org/display/PLUG/Branch+Plugin
+        property 'sonar.branch.name', System.env.TRAVIS_BRANCH
     }
 }
 
