@@ -57,7 +57,7 @@ public class SplitCamelCaseIdentifier {
             buf.append(first);
             int i = 1;
 
-            if (s.length() > 1) {
+            if (first != '$' && s.length() > 1) {
                 boolean camelWord;
                 if (Character.isLowerCase(first)) {
                     camelWord = true;
