@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase;
 import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
 
 class SplitCamelCaseIdentifierTest {
@@ -56,5 +57,19 @@ class SplitCamelCaseIdentifierTest {
         for (String anExpected : expected) {
             Assertions.assertTrue(words.contains(anExpected));
         }
+    }
+
+    /**
+     * {@link BuildObligationPolicyDatabase} uses {@link SplitCamelCaseIdentifier} to separate method name, and it
+     * should separate {@literal "$closeResource"} into {@literal "$"}, {@literal "close"} and {@literal "resource"} to
+     * handle generated $closeResource method as resource closer.
+     * 
+     * @see BuildObligationPolicyDatabase#INFER_CLOSE_METHODS
+     */
+    @Test
+    public void testDollarMark() {
+        SplitCamelCaseIdentifier sut = new SplitCamelCaseIdentifier("$closeResource");
+        Collection<String> words = sut.split();
+        checkContents(words, "$", "close", "resource");
     }
 }
