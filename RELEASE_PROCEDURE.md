@@ -28,10 +28,6 @@ See `deploy` phase in `.travis.yml` for detail.
 No action necessary. Just push latest plugin to Eclipse Update Site then it's enough.
 If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin), please contact with @KengoTODA or @iloveeclipse.
 
-## Update installation manual
-
-`docs/installing.rst` includes link to released binaries, update them.
-
 ## Release to ReadTheDocs
 
 See [docs/README.md](docs/README.md) for detail.
