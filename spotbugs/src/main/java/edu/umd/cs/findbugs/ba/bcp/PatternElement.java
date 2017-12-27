@@ -136,7 +136,7 @@ public abstract class PatternElement {
      *            the BindingSet to look in
      * @return the Variable, or null if no Variable is bound to the name
      */
-    public static Variable lookup(String varName, BindingSet bindingSet) {
+    public static Variable lookup(String varName, @CheckForNull BindingSet bindingSet) {
         if (bindingSet == null) {
             return null;
         }
@@ -205,7 +205,8 @@ public abstract class PatternElement {
      *         previous bindings), or null if the new variable is inconsistent
      *         with the previous bindings
      */
-    protected static BindingSet addOrCheckDefinition(String varName, Variable variable, BindingSet bindingSet) {
+    protected static BindingSet addOrCheckDefinition(String varName, Variable variable,
+            @CheckForNull BindingSet bindingSet) {
         Variable existingVariable = lookup(varName, bindingSet);
         if (existingVariable == null) {
             bindingSet = new BindingSet(new Binding(varName, variable), bindingSet);

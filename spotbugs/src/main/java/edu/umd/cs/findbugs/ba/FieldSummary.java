@@ -63,7 +63,7 @@ public class FieldSummary {
 
     private boolean complete = false;
 
-    public OpcodeStack.Item getSummary(XField field) {
+    public OpcodeStack.Item getSummary(@CheckForNull XField field) {
         if (field == null) {
             return new OpcodeStack.Item();
         }

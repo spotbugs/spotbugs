@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -135,8 +134,6 @@ public class SourceLineAnnotation implements BugAnnotation {
      */
     public SourceLineAnnotation(@Nonnull @DottedClassName String className, @Nonnull String sourceFile, int startLine, int endLine,
             int startBytecode, int endBytecode) {
-        Objects.requireNonNull(className, "class name is null");
-        Objects.requireNonNull(sourceFile, "source file is null");
         this.description = DEFAULT_ROLE;
         this.className = className;
         this.sourceFile = sourceFile;

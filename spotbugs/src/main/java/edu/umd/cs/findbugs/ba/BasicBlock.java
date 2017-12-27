@@ -261,7 +261,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         private InstructionHandle next;
         private final InstructionHandle last;
 
-        public InstructionIterator(InstructionHandle first, InstructionHandle last) {
+        public InstructionIterator(@CheckForNull InstructionHandle first, @CheckForNull InstructionHandle last) {
             this.next = first;
             this.last = last;
         }
@@ -343,7 +343,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         private InstructionHandle next;
         private final InstructionHandle first;
 
-        public InstructionReverseIterator(InstructionHandle last, InstructionHandle first) {
+        public InstructionReverseIterator(@CheckForNull InstructionHandle last, @CheckForNull InstructionHandle first) {
             this.next = last;
             this.first = first;
         }

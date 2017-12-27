@@ -36,6 +36,7 @@ import static org.apache.bcel.Const.IF_ICMPNE;
 import java.util.*;
 import java.util.Map.Entry;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import org.apache.bcel.classfile.Constant;
@@ -390,7 +391,8 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         final Map<Integer, Value> types;
         final ValueNumberDataflow vnaDataflow;
 
-        public Context(ConstantPool cp, LocalVariableTable lvTable, Map<Integer, Value> types, ValueNumberDataflow vnaDataflow) {
+        public Context(ConstantPool cp, @CheckForNull LocalVariableTable lvTable, Map<Integer, Value> types,
+                ValueNumberDataflow vnaDataflow) {
             this.cp = cp;
             this.lvTable = lvTable;
             this.types = types;

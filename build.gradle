@@ -1,5 +1,6 @@
 plugins {
   id 'org.sonarqube' version '2.5'
+  id 'tech.harmonysoft.oss.traute' version '1.1.7'
 }
 
 version = '4.0.0-SNAPSHOT'
@@ -9,6 +10,7 @@ apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/sonar.gradle"
 
 subprojects {
+  apply plugin: 'tech.harmonysoft.oss.traute'
   apply from: "$rootDir/gradle/java.gradle"
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"

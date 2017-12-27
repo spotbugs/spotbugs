@@ -26,6 +26,8 @@ import org.objectweb.asm.MethodVisitor;
 
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
+import javax.annotation.CheckForNull;
+
 /**
  * @author pwilliam
  */
@@ -259,7 +261,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
      * java.lang.String)
      */
     @Override
-    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+    public void visitTryCatchBlock(Label start, Label end, Label handler, @CheckForNull String type) {
         // TODO Auto-generated method stub
 
     }

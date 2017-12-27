@@ -2092,8 +2092,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public BugInstance add(@Nonnull BugAnnotation annotation) {
-        requireNonNull(annotation, "Missing BugAnnotation!");
-
         // Add to list
         annotationList.add(annotation);
 

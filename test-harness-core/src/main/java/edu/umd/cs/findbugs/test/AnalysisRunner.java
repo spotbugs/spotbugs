@@ -17,7 +17,6 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -72,8 +71,7 @@ public class AnalysisRunner {
     }
 
     @Nonnull
-    public AnalysisRunner addAuxClasspathEntry(Path path) {
-        Objects.requireNonNull(path);
+    public AnalysisRunner addAuxClasspathEntry(@Nonnull Path path) {
         if (!path.toFile().canRead()) {
             throw new IllegalArgumentException("Cannot read " + path.toAbsolutePath());
         }

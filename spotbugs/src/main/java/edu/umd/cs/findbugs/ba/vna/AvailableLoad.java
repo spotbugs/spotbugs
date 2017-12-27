@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba.vna;
 
 import edu.umd.cs.findbugs.ba.XField;
 
+import javax.annotation.CheckForNull;
+
 /**
  * <p>An AvailableLoad indicates a field and (optionally) object reference for
  * which a value is available. It is used to implement redundant load
@@ -119,7 +121,7 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@CheckForNull Object o) {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }

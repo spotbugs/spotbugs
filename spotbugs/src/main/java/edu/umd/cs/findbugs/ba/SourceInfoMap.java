@@ -150,7 +150,7 @@ public class SourceInfoMap {
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@CheckForNull Object obj) {
             if (obj == null || obj.getClass() != this.getClass()) {
                 return false;
             }

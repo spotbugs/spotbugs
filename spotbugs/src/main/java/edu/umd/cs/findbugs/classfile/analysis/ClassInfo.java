@@ -190,7 +190,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             return classDescriptor;
         }
 
-        public void setSourceSignature(String classSourceSignature) {
+        public void setSourceSignature(@CheckForNull String classSourceSignature) {
             this.classSourceSignature = classSourceSignature;
         }
 
@@ -215,7 +215,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             methodInfoList.add(method);
         }
 
-        public void addBridgeMethodDescriptor(MethodInfo from, String bridgedSignature) {
+        public void addBridgeMethodDescriptor(MethodInfo from, @CheckForNull String bridgedSignature) {
             if (bridgedSignature != null) {
                 bridgedSignatures.put(from, bridgedSignature);
             }
@@ -280,12 +280,14 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
      * @param methodInfoList
      *            MethodDescriptors of methods defined in the class
      */
-    private ClassInfo(ClassDescriptor classDescriptor, String classSourceSignature, ClassDescriptor superclassDescriptor,
-            ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags, String source,
-            int majorVersion, int minorVersion, Collection<ClassDescriptor> referencedClassDescriptorList,
+    private ClassInfo(ClassDescriptor classDescriptor, @CheckForNull String classSourceSignature,
+            @CheckForNull ClassDescriptor superclassDescriptor,
+            @CheckForNull ClassDescriptor[] interfaceDescriptorList, @CheckForNull ICodeBaseEntry codeBaseEntry,
+            int accessFlags, @CheckForNull String source, int majorVersion, int minorVersion,
+            @CheckForNull Collection<ClassDescriptor> referencedClassDescriptorList,
             Set<ClassDescriptor> calledClassDescriptors, Map<ClassDescriptor, AnnotationValue> classAnnotations,
-            FieldInfo[] fieldDescriptorList, MethodInfo[] methodInfoList, ClassDescriptor immediateEnclosingClass,
-            boolean usesConcurrency, boolean hasStubs) {
+            FieldInfo[] fieldDescriptorList, MethodInfo[] methodInfoList,
+            @CheckForNull ClassDescriptor immediateEnclosingClass, boolean usesConcurrency, boolean hasStubs) {
         super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags,
                 referencedClassDescriptorList, calledClassDescriptors, majorVersion, minorVersion);
         this.source = source;

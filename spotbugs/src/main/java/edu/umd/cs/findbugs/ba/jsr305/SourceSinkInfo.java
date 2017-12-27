@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.ba.Location;
@@ -168,7 +169,7 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
         return constantValue;
     }
 
-    public void setConstantValue(Object constantValue) {
+    public void setConstantValue(@CheckForNull Object constantValue) {
         this.constantValue = constantValue;
     }
 

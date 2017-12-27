@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.objectweb.asm.Opcodes;
@@ -140,19 +141,17 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
     }
 
 
-    ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, ClassDescriptor superclassDescriptor,
-            ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
+    ClassNameAndSuperclassInfo(ClassDescriptor classDescriptor, @CheckForNull ClassDescriptor superclassDescriptor,
+            @CheckForNull ClassDescriptor[] interfaceDescriptorList, @CheckForNull ICodeBaseEntry codeBaseEntry,
+            int accessFlags,
             /* TODO: We aren't doing anything with this */
-            Collection<ClassDescriptor> referencedClassDescriptorList,
+            @CheckForNull Collection<ClassDescriptor> referencedClassDescriptorList,
             @Nonnull Set<ClassDescriptor> calledClassDescriptors, int majorVersion, int minorVersion) {
         super(classDescriptor.getClassName());
         this.superclassDescriptor = superclassDescriptor;
         this.interfaceDescriptorList = interfaceDescriptorList;
         this.codeBaseEntry = codeBaseEntry;
         this.accessFlags = accessFlags;
-        if (calledClassDescriptors == null) {
-            throw new NullPointerException("calledClassDescriptors must not be null");
-        }
         this.calledClassDescriptors = calledClassDescriptors;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
