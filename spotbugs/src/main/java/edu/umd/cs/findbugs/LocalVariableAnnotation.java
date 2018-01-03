@@ -151,17 +151,6 @@ public class LocalVariableAnnotation implements BugAnnotation {
             }
             if (lv1 != null) {
                 localName = lv1.getName();
-            } else {
-                for (LocalVariable lv : localVariableTable.getLocalVariableTable()) {
-                    if (lv.getIndex() == local) {
-                        if (!"?".equals(localName) && !localName.equals(lv.getName())) {
-                            // not a single consistent name
-                            localName = "?";
-                            break;
-                        }
-                        localName = lv.getName();
-                    }
-                }
             }
         }
         LineNumberTable lineNumbers = method.getLineNumberTable();
