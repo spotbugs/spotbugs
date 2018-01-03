@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.Confidence;
@@ -40,6 +41,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
     private final String className;
     private final String methodName;
     private final String fieldName;
+    private final String variableName;
     private final Integer lineNumber;
     private final Integer lineNumberApprox;
     private final Confidence confidence;
@@ -49,21 +51,35 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
     /**
      * All the parameters are optional. Only the non-null parameters are used.
      *
-     * @param bugType    Expected bug type
-     * @param className  Class name
-     * @param methodName Method name
-     * @param fieldName  Field name
-     * @param lineNumber Line number
-     * @param lineNumberApprox Approximate line for test samples that are unstable (Historically the JSP samples)
-     * @param confidence Confidence
-     * @param jspFile JSP file name
-     * @param multipleChoicesLine At least of the line (JSP samples specific)
+     * @param bugType
+     *            Expected bug type
+     * @param className
+     *            Class name
+     * @param methodName
+     *            Method name
+     * @param fieldName
+     *            Field name
+     * @param variableName
+     *            Variable name
+     * @param lineNumber
+     *            Line number
+     * @param lineNumberApprox
+     *            Approximate line for test samples that are unstable (Historically the JSP samples)
+     * @param confidence
+     *            Confidence
+     * @param jspFile
+     *            JSP file name
+     * @param multipleChoicesLine
+     *            At least of the line (JSP samples specific)
      */
-    public BugInstanceMatcher(String bugType, String className, String methodName, String fieldName, Integer lineNumber, Integer lineNumberApprox, Confidence confidence, String jspFile, List<Integer> multipleChoicesLine) {
+    public BugInstanceMatcher(String bugType, String className, String methodName, String fieldName,
+            String variableName, Integer lineNumber, Integer lineNumberApprox, Confidence confidence, String jspFile,
+            List<Integer> multipleChoicesLine) {
         this.bugType = bugType;
         this.className = className;
         this.methodName = methodName;
         this.fieldName = fieldName;
+        this.variableName = variableName;
         this.lineNumber = lineNumber;
         this.lineNumberApprox = lineNumberApprox;
         this.confidence = confidence;
@@ -71,6 +87,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
         this.multipleChoicesLine = multipleChoicesLine;
     }
 
+    @SuppressWarnings("boxing")
     @Override
     public boolean matches(Object obj) {
         if (obj instanceof BugInstance) {
@@ -121,6 +138,13 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                 }
                 criteriaMatches &= fieldAnn.getFieldName().equals(fieldName);
             }
+            if (variableName != null) {
+                LocalVariableAnnotation localVarAnn = extractBugAnnotation(bugInstance, LocalVariableAnnotation.class);
+                if (localVarAnn == null) {
+                    return false;
+                }
+                criteriaMatches &= localVarAnn.getName().equals(variableName);
+            }
             if (lineNumber != null) {
                 SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
                 if (srcAnn == null) {
@@ -158,16 +182,14 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                 criteriaMatches &= found;
             }
             return criteriaMatches;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T extractBugAnnotation(BugInstance bugInstance, Class<T> annotationType) {
+    private static <T> T extractBugAnnotation(BugInstance bugInstance, Class<T> annotationType) {
         for (BugAnnotation annotation : bugInstance.getAnnotations()) {
             if (annotation.getClass().equals(annotationType)) {
-                return (T) annotation;
+                return annotationType.cast(annotation);
             }
         }
         return null;
@@ -187,6 +209,9 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
         }
         if (fieldName != null) {
             description.appendText("fieldName=").appendValue(fieldName).appendText(",");
+        }
+        if (variableName != null) {
+            description.appendText("variableName=").appendValue(variableName).appendText(",");
         }
         if (lineNumber != null) {
             description.appendText("lineNumber=").appendValue(lineNumber);
