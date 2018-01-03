@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+### Fixed
+
+* Unused variable reported with wrong name ([#516](https://github.com/spotbugs/spotbugs/issues/516))
+
 ## 3.1.1 - 2017-11-29
 
 ### Fixed
