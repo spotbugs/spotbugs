@@ -27,6 +27,8 @@ import edu.umd.cs.findbugs.ba.ComparableMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
+import javax.annotation.CheckForNull;
+
 /**
  * Descriptor uniquely identifying a method in a class.
  *
@@ -65,7 +67,7 @@ public class MethodDescriptor extends FieldOrMethodDescriptor implements Compara
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public final boolean equals(@CheckForNull Object obj) {
         if (obj instanceof MethodDescriptor) {
             return haveEqualFields((MethodDescriptor) obj);
         }

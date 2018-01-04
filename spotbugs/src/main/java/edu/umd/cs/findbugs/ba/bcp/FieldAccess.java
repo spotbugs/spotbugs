@@ -28,6 +28,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
+import javax.annotation.CheckForNull;
+
 /**
  * Base class for Load and Store PatternElements. Handles some of the grunt work
  * of representing fields and extracting field values from the stack frame.
@@ -68,7 +70,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
      * @return a MatchResult containing an updated BindingSet if successful, or
      *         null if unsuccessful
      */
-    protected MatchResult checkConsistent(Variable field, Variable value, BindingSet bindingSet) {
+    protected MatchResult checkConsistent(Variable field, Variable value, @CheckForNull BindingSet bindingSet) {
         // Ensure that the field and value variables are consistent with
         // previous definitions (if any)
         bindingSet = addOrCheckDefinition(fieldVarName, field, bindingSet);

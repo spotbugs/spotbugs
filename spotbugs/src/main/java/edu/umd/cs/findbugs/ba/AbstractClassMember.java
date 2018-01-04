@@ -24,6 +24,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
+import javax.annotation.CheckForNull;
+
 public abstract class AbstractClassMember implements ClassMember {
     private final @DottedClassName
     String className;
@@ -183,7 +185,7 @@ public abstract class AbstractClassMember implements ClassMember {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@CheckForNull Object o) {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }

@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import static java.util.Objects.requireNonNull;
-
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
@@ -279,8 +277,6 @@ public class BugLoader {
      */
     public static @CheckForNull
     BugCollection doAnalysis(@Nonnull Project p) {
-        requireNonNull(p, "null project");
-
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
 
         AnalyzingDialog.show(p, ac, true);
@@ -302,8 +298,6 @@ public class BugLoader {
      */
     public static @CheckForNull
     BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
-        requireNonNull(p, "null project");
-
         BugCollection current = MainFrame.getInstance().getBugCollection();
 
         Update update = new Update();

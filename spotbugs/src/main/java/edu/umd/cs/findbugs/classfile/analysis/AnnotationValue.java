@@ -30,6 +30,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
+import javax.annotation.CheckForNull;
+
 /**
  * The "raw" version of an annotation appearing in a class file.
  *
@@ -204,7 +206,7 @@ public class AnnotationValue {
         }
 
         @Override
-        public void visit(String name, Object value) {
+        public void visit(@CheckForNull String name, Object value) {
             result.add(value);
         }
 
@@ -230,7 +232,7 @@ public class AnnotationValue {
         }
 
         @Override
-        public void visitEnum(String name, String desc, String value) {
+        public void visitEnum(@CheckForNull String name, String desc, String value) {
             result.add(new EnumValue(desc, value));
 
         }

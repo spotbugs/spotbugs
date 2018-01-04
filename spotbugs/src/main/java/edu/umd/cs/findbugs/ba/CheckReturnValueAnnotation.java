@@ -66,7 +66,7 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
         CHECK_RETURN_VALUE_LOW_BAD_PRACTICE, CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE, CHECK_RETURN_VALUE_INFERRED};
 
     @CheckForNull
-    public static CheckReturnValueAnnotation parse(String priority) {
+    public static CheckReturnValueAnnotation parse(@CheckForNull String priority) {
         if (priority == null) {
             return CHECK_RETURN_VALUE_MEDIUM;
         }

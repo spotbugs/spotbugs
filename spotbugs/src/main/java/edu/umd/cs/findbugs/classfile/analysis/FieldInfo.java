@@ -69,7 +69,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
             this.accessFlags = accessFlags;
         }
 
-        public void setSourceSignature(String fieldSourceSignature) {
+        public void setSourceSignature(@CheckForNull String fieldSourceSignature) {
             this.fieldSourceSignature = fieldSourceSignature;
         }
 

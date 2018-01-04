@@ -23,6 +23,8 @@ import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 
+import javax.annotation.CheckForNull;
+
 /**
  * PatternElementMatch represents matching a PatternElement against a single
  * instruction. The "prev" field points to the previous PatternElementMatch. By
@@ -57,7 +59,7 @@ public class PatternElementMatch {
      *            the previous PatternElementMatch
      */
     public PatternElementMatch(PatternElement patternElement, InstructionHandle matchedInstruction, BasicBlock basicBlock,
-            int matchCount, PatternElementMatch prev) {
+            int matchCount, @CheckForNull PatternElementMatch prev) {
         this.patternElement = patternElement;
         this.matchedInstruction = matchedInstruction;
         this.basicBlock = basicBlock;

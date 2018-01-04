@@ -186,7 +186,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         public
         void visitLocalVariable(String name,
                 String desc,
-                String signature,
+                @CheckForNull String signature,
                 Label start,
                 Label end,
                 int index) {
@@ -521,7 +521,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
             //            boolean isInnerClass = false;
 
             @Override
-            public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            public void visit(int version, int access, String name, @CheckForNull String signature,
+                    @CheckForNull String superName, String[] interfaces) {
                 ClassParserUsingASM.this.slashedClassName = name;
                 cBuilder.setClassfileVersion(version >>> 16, version & 0xffff);
                 cBuilder.setAccessFlags(access);
@@ -556,7 +557,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
 
             @Override
-            public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+            public FieldVisitor visitField(int access, String name, String desc, @CheckForNull String signature,
+                                           @CheckForNull Object value) {
                 //                if (name.equals("this$0"))
                 //                    isInnerClass = true;
 
@@ -592,7 +594,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
 
             @Override
-            public void visitInnerClass(String name, String outerName, String innerName, int access) {
+            public void visitInnerClass(String name, @CheckForNull String outerName, @CheckForNull String innerName,
+                    int access) {
                 if (name.equals(slashedClassName) && outerName != null) {
                     if (cBuilder instanceof ClassInfo.Builder) {
                         ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(outerName);
@@ -606,7 +609,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             @Override
             public MethodVisitor visitMethod(final int access, final String methodName, final String methodDesc,
-                    String signature, String[] exceptions) {
+                                             @CheckForNull String signature, @CheckForNull String[] exceptions) {
                 if (cBuilder instanceof ClassInfo.Builder) {
                     final MethodInfo.Builder mBuilder = new MethodInfo.Builder(slashedClassName, methodName, methodDesc, access);
                     mBuilder.setSourceSignature(signature);
@@ -622,12 +625,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
 
             @Override
-            public void visitOuterClass(String owner, String name, String desc) {
+            public void visitOuterClass(String owner, @CheckForNull String name, @CheckForNull String desc) {
 
             }
 
             @Override
-            public void visitSource(String arg0, String arg1) {
+            public void visitSource(String arg0, @CheckForNull String arg1) {
                 if (cBuilder instanceof ClassInfo.Builder) {
                     ((ClassInfo.Builder) cBuilder).setSource(arg0);
                 }

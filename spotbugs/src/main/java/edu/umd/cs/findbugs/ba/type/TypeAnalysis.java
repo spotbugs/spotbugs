@@ -141,7 +141,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
 
         final Type type;
 
-        InstanceOfCheck(ValueNumber valueNumber, Type type) {
+        InstanceOfCheck(@CheckForNull ValueNumber valueNumber, @CheckForNull Type type) {
             this.valueNumber = valueNumber;
             this.type = type;
         }
@@ -560,7 +560,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         mergeInto(fact, result);
     }
 
-    private TypeFrame handleInstanceOfBranch(TypeFrame fact, TypeFrame tmpFact, Edge edge) {
+    private TypeFrame handleInstanceOfBranch(TypeFrame fact, @CheckForNull TypeFrame tmpFact, Edge edge) {
 
         InstanceOfCheck check = instanceOfCheckMap.get(edge.getSource());
         if (check == null) {

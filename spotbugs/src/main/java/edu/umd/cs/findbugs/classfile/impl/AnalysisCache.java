@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -139,7 +137,7 @@ public class AnalysisCache implements IAnalysisCache {
     static final AbnormalAnalysisResult NULL_ANALYSIS_RESULT = new AbnormalAnalysisResult();
 
     @SuppressWarnings("unchecked")
-    static <E> E checkedCast(Class<E> analysisClass, Object o) {
+    static <E> E checkedCast(Class<E> analysisClass, @CheckForNull Object o) {
         if (SystemProperties.ASSERTIONS_ENABLED) {
             return analysisClass.cast(o);
         }
@@ -238,7 +236,6 @@ public class AnalysisCache implements IAnalysisCache {
     @Override
     @SuppressWarnings("unchecked")
     public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-        requireNonNull(classDescriptor, "classDescriptor is null");
         // Get the descriptor->result map for this analysis class,
         // creating if necessary
         Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap,
@@ -313,7 +310,6 @@ public class AnalysisCache implements IAnalysisCache {
 
     @Override
     public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
-        requireNonNull(methodDescriptor, "methodDescriptor is null");
         ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
         Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
 

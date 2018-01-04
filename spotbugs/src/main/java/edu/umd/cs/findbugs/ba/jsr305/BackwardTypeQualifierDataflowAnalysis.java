@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
@@ -180,7 +181,8 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
         }
     }
 
-    private void modelReturn(TypeQualifierAnnotation returnValueAnnotation, Location location) throws DataflowAnalysisException {
+    private void modelReturn(@CheckForNull TypeQualifierAnnotation returnValueAnnotation, Location location)
+            throws DataflowAnalysisException {
         When when = (returnValueAnnotation != null) ? returnValueAnnotation.when : When.UNKNOWN;
 
         // Model return statement

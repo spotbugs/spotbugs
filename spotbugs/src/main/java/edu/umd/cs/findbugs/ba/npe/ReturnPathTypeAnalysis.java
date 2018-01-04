@@ -31,6 +31,8 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.ReverseDFSOrder;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 
+import javax.annotation.CheckForNull;
+
 /**
  * A dataflow analysis to determine, at each location in a method's CFG, whether
  * or not it is possible to return normally at that location.
@@ -165,7 +167,8 @@ public class ReturnPathTypeAnalysis extends BasicAbstractDataflowAnalysis<Return
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, InstructionHandle end, ReturnPathType start, ReturnPathType result)
+    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, ReturnPathType start,
+            ReturnPathType result)
             throws DataflowAnalysisException {
         // just copy the start fact
         result.copyFrom(start);

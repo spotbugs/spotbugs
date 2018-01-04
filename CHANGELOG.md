@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+### Changed
+
+* Replaced explicit *null*-checks by automatically generated ([#512](https://github.com/spotbugs/spotbugs/pull/512))
+
 ## 3.1.0 - 2017-10-25
 
 ### Fixed

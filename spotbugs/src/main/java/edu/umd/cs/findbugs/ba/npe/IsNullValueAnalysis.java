@@ -839,8 +839,9 @@ IsNullValueAnalysisFeatures {
      *            the IsNullValue representing the updated is-null information
      * @return a modified IsNullValueFrame with updated is-null information
      */
-    private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, IsNullValueFrame frame, ValueNumber replaceMe,
-            ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame, IsNullValue replacementValue) {
+    private IsNullValueFrame replaceValues(IsNullValueFrame origFrame, @CheckForNull IsNullValueFrame frame,
+            ValueNumber replaceMe, ValueNumberFrame prevVnaFrame, ValueNumberFrame targetVnaFrame,
+            IsNullValue replacementValue) {
 
         if (!targetVnaFrame.isValid()) {
             throw new IllegalArgumentException("Invalid frame in " + methodGen.getClassName() + "." + methodGen.getName() + " : "

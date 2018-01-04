@@ -89,7 +89,7 @@ public class JCIPAnnotationDatabase {
     }
 
     public void addEntryForClass(@DottedClassName String dottedClassName,
-            String annotationClass, ElementValue value) {
+            String annotationClass, @CheckForNull ElementValue value) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         if (map == null) {
             map = new HashMap<>(3);

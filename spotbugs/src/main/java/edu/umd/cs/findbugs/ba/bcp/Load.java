@@ -30,6 +30,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
+import javax.annotation.CheckForNull;
+
 /**
  * A PatternElement representing a load from a field. Variables represent the
  * field and the result of the load.
@@ -53,7 +55,7 @@ public class Load extends FieldAccess {
 
     @Override
     public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
-            BindingSet bindingSet) throws DataflowAnalysisException {
+            @CheckForNull BindingSet bindingSet) throws DataflowAnalysisException {
 
         Variable field;
         Instruction ins = handle.getInstruction();

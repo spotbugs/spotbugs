@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.vna;
 import edu.umd.cs.findbugs.util.MapCache;
 import edu.umd.cs.findbugs.util.Util;
 
+import javax.annotation.CheckForNull;
+
 /**
  * <p>A "value number" is a value produced somewhere in a methods. We use value
  * numbers as dataflow values in Frames. When two frame slots have the same
@@ -140,7 +142,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@CheckForNull Object o) {
         if (o instanceof ValueNumber) {
             return number == ((ValueNumber) o).number && flags == ((ValueNumber) o).flags;
         }

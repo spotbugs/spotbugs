@@ -195,8 +195,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result)
-            throws DataflowAnalysisException {
+    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, ValueNumberFrame start,
+            ValueNumberFrame result) throws DataflowAnalysisException {
         if(basicBlock.isExceptionThrower() && isFactValid(start)) {
             /* If exceptionThrower is invoke instruction then it's possible that
              * it was partially executed before an exception occurred
@@ -320,7 +320,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 
     @Override
-    public ValueNumberFrame getFactAfterLocation(Location location) {
+    public ValueNumberFrame getFactAfterLocation(@CheckForNull Location location) {
         if (TRACE) {
             System.out.println("getting fact after " + location);
         }

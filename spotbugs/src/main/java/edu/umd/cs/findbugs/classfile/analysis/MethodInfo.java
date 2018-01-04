@@ -121,7 +121,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             accessMethodForField = new FieldDescriptor(owner, name, sig, isStatic);
         }
 
-        public void setSourceSignature(String methodSourceSignature) {
+        public void setSourceSignature(@CheckForNull String methodSourceSignature) {
             this.methodSourceSignature = methodSourceSignature;
         }
 
@@ -149,7 +149,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             this.hasBackBranch = true;
         }
 
-        public void setThrownExceptions(String[] exceptions) {
+        public void setThrownExceptions(@CheckForNull String[] exceptions) {
             this.exceptions = exceptions;
         }
 
@@ -281,7 +281,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         return getDatabase().invokeDynamicMethods;
     }
 
-    MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
+    MethodInfo(@SlashedClassName String className, String methodName, String methodSignature,
+            @CheckForNull String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency,
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
             boolean usesInvokeDynamic, int methodCallCount, @CheckForNull String[] exceptions,

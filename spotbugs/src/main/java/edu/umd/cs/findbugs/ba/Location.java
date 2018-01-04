@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.Objects;
-
 import javax.annotation.Nonnull;
 
 import org.apache.bcel.generic.InstructionHandle;
@@ -57,8 +55,6 @@ public class Location implements Comparable<Location> {
      *            the basic block containing the instruction
      */
     public Location(@Nonnull InstructionHandle handle, @Nonnull BasicBlock basicBlock) {
-        Objects.requireNonNull(handle, "handle cannot be null");
-        Objects.requireNonNull(basicBlock, "basicBlock cannot be null");
         this.handle = handle;
         this.basicBlock = basicBlock;
     }

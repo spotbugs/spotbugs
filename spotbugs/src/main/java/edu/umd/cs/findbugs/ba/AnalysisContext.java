@@ -18,7 +18,6 @@
  */
 
 package edu.umd.cs.findbugs.ba;
-import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -173,7 +172,6 @@ public class AnalysisContext {
 
 
     public AnalysisContext(@Nonnull Project project) {
-        requireNonNull(project);
         this.project = project;
         this.boolPropertySet = new BitSet();
         this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
@@ -291,7 +289,6 @@ public class AnalysisContext {
      * @see #getLookupFailureCallback()
      */
     static public void reportMissingClass(ClassNotFoundException e) {
-        requireNonNull(e, "argument is null");
         String missing = AbstractBugReporter.getMissingClassName(e);
         if (skipReportingMissingClass(missing)) {
             return;
@@ -307,7 +304,6 @@ public class AnalysisContext {
     }
 
     static public void reportMissingClass(edu.umd.cs.findbugs.ba.MissingClassException e) {
-        requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
@@ -324,12 +320,10 @@ public class AnalysisContext {
     }
 
     static public void reportMissingClass(edu.umd.cs.findbugs.classfile.MissingClassException e) {
-        requireNonNull(e, "argument is null");
         reportMissingClass(e.getClassDescriptor());
     }
 
     static public void reportMissingClass(ClassDescriptor c) {
-        requireNonNull(c, "argument is null");
         if (!analyzingApplicationClass()) {
             return;
         }
@@ -535,7 +529,6 @@ public class AnalysisContext {
     public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository
         // implementation
-        requireNonNull (className, "className is null");
         if (originalRepository == null) {
             throw new IllegalStateException("originalRepository is null");
         }
@@ -559,7 +552,6 @@ public class AnalysisContext {
      *         determine
      */
     public final String lookupSourceFile(@Nonnull @DottedClassName String dottedClassName) {
-        requireNonNull(dottedClassName, "className is null");
         try {
             XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                     DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName));

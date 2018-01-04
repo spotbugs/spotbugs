@@ -253,7 +253,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public final boolean equals(Object obj) {
+    public final boolean equals(@CheckForNull Object obj) {
         if (obj == null || !(obj instanceof ClassDescriptor)) {
             return false;
         }

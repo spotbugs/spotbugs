@@ -35,6 +35,8 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 
+import javax.annotation.CheckForNull;
+
 /**
  * Perform dataflow analysis on a method using a control flow graph. Both
  * forward and backward analyses can be performed.
@@ -511,7 +513,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
      * @return the dataflow value after given Location
      * @throws DataflowAnalysisException
      */
-    public/* final */Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
+    public/* final */Fact getFactAfterLocation(@CheckForNull Location location) throws DataflowAnalysisException {
         return analysis.getFactAfterLocation(location);
     }
 

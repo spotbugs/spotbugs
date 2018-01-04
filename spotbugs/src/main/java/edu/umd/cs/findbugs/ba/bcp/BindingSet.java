@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import javax.annotation.CheckForNull;
+
 /**
  * A set of Bindings, which are definitions of variables occurring in a
  * ByteCodePattern. BindingSets are immutable; to add a binding, a new cell is
@@ -40,7 +42,7 @@ public class BindingSet {
      * @param parent
      *            the parent BindingSet, containing other bindings
      */
-    public BindingSet(Binding binding, BindingSet parent) {
+    public BindingSet(Binding binding, @CheckForNull BindingSet parent) {
         this.binding = binding;
         this.parent = parent;
     }

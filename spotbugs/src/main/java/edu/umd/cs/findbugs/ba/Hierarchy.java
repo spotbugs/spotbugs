@@ -119,7 +119,7 @@ public class Hierarchy {
      *            the ObjectType of the exception handler
      * @return true if catchType is null, or if catchType is java.lang.Throwable
      */
-    public static boolean isUniversalExceptionHandler(ObjectType catchType) {
+    public static boolean isUniversalExceptionHandler(@CheckForNull ObjectType catchType) {
         return catchType == null || catchType.equals(Type.THROWABLE);
     }
 

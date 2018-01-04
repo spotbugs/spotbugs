@@ -36,6 +36,8 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 
+import javax.annotation.CheckForNull;
+
 /**
  * A TypeMerger which applies standard Java semantics when merging Types.
  * Subclasses may override mergeReferenceTypes() in order to implement special
@@ -65,7 +67,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
     }
 
     @Override
-    public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException {
+    public Type mergeTypes(@CheckForNull Type a, @CheckForNull Type b) throws DataflowAnalysisException {
         if (a == null) {
             return b;
         }

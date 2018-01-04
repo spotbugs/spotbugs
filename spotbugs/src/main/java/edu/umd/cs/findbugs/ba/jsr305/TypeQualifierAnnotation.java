@@ -41,7 +41,7 @@ public class TypeQualifierAnnotation {
 
     public final When when;
 
-    private TypeQualifierAnnotation(TypeQualifierValue<?> typeQualifier, When when) {
+    private TypeQualifierAnnotation(@CheckForNull TypeQualifierValue<?> typeQualifier, @CheckForNull When when) {
         this.typeQualifier = typeQualifier;
         this.when = when;
     }

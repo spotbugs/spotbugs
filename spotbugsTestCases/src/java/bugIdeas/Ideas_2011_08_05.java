@@ -49,8 +49,6 @@ public class Ideas_2011_08_05 {
 
     @NoWarning("RCN")
     public int test5(@Nonnull String x) {
-        if (x == null)
-            throw new RuntimeException();
         return x.hashCode();
     }
     public int test5OK(@Nonnull String x) {

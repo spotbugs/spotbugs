@@ -25,7 +25,6 @@
 
 package edu.umd.cs.findbugs;
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
-import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -132,7 +131,6 @@ public class Project implements XMLWriteable {
      * @param configuration The configuration to set, non null
      */
     public void setConfiguration(@Nonnull UserPreferences configuration) {
-        requireNonNull(configuration);
         this.configuration = configuration;
     }
 
@@ -1074,7 +1072,6 @@ public class Project implements XMLWriteable {
     }
 
     public void setSuppressionFilter(@Nonnull Filter suppressionFilter) {
-        requireNonNull(suppressionFilter);
         this.suppressionFilter = suppressionFilter;
     }
 

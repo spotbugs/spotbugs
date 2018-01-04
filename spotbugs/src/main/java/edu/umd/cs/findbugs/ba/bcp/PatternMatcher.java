@@ -24,6 +24,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import org.apache.bcel.classfile.Method;
@@ -208,7 +209,7 @@ public class PatternMatcher implements DFSEdgeTypes {
          * Constructor.
          */
         public State(@Nullable State parent, BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
-                PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
+                @Nullable PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
                 @Nullable BindingSet bindingSet, boolean canFork) {
             this.basicBlock = basicBlock;
             this.instructionIterator = instructionIterator;
@@ -349,7 +350,7 @@ public class PatternMatcher implements DFSEdgeTypes {
          *            a MatchResult representing the match of the last
          *            instruction in the predecessor block; null if none
          */
-        public State advanceToSuccessor(Edge edge, MatchResult matchResult) {
+        public State advanceToSuccessor(Edge edge, @CheckForNull MatchResult matchResult) {
             // If we have just matched an instruction, then we allow the
             // matching PatternElement to choose which edges are acceptable.
             // This allows PatternElements to select particular control edges;

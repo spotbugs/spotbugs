@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -148,7 +147,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      *            the value(s) loaded
      */
     public void addAvailableLoad(AvailableLoad availableLoad, @Nonnull ValueNumber[] value) {
-        Objects.requireNonNull(value);
         getUpdateableAvailableLoadMap().put(availableLoad, value);
 
         for (ValueNumber v : value) {

@@ -35,6 +35,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 import edu.umd.cs.findbugs.util.MultiMap;
 
+import javax.annotation.CheckForNull;
+
 /**
  * @author pugh
  */
@@ -57,8 +59,8 @@ public class SelfMethodCalls {
         reader.accept(new ClassVisitor(FindBugsASM.ASM_VERSION) {
 
             @Override
-            public MethodVisitor visitMethod(final int access, final String name, final String desc, String signature,
-                    String[] exceptions) {
+            public MethodVisitor visitMethod(final int access, final String name, final String desc,
+                    @CheckForNull String signature, @CheckForNull String[] exceptions) {
                 return new MethodVisitor(FindBugsASM.ASM_VERSION) {
                     @Override
                     public void visitMethodInsn(int opcode, String owner, String name2, String desc2, boolean itf) {

@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.classfile;
 import edu.umd.cs.findbugs.ba.ComparableField;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
+import javax.annotation.CheckForNull;
+
 /**
  * Descriptor uniquely identifying a field in a class.
  *
@@ -56,7 +58,7 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public final boolean equals(@CheckForNull Object obj) {
         if (obj instanceof FieldDescriptor) {
             return haveEqualFields((FieldDescriptor) obj);
         }
