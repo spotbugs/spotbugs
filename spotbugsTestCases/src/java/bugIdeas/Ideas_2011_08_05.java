@@ -1,4 +1,4 @@
-    package bugIdeas;
+package bugIdeas;
 
 import javax.annotation.Nonnull;
 
