@@ -55,6 +55,12 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @see BugAnnotation
  */
 public class LocalVariableAnnotation implements BugAnnotation {
+
+    /**
+     * Default value for the "unknown" local variable name
+     */
+    public static final String UNKNOWN_NAME = "?";
+
     private static final long serialVersionUID = 1L;
 
     public static final String DEFAULT_ROLE = "LOCAL_VARIABLE_DEFAULT";
@@ -108,7 +114,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         this.pc = pc;
         this.line = -1;
         this.description = DEFAULT_ROLE;
-        this.setDescription("?".equals(name) ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+        this.setDescription(UNKNOWN_NAME.equals(name) ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
     }
 
     /**
@@ -128,7 +134,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         this.pc = pc;
         this.line = line;
         this.description = DEFAULT_ROLE;
-        this.setDescription("?".equals(name) ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+        this.setDescription(UNKNOWN_NAME.equals(name) ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
     }
 
     public static LocalVariableAnnotation getLocalVariableAnnotation(Method method, Location location, IndexedInstruction ins) {
@@ -142,7 +148,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
     public static LocalVariableAnnotation getLocalVariableAnnotation(Method method, int local, int position1, int position2) {
 
         LocalVariableTable localVariableTable = method.getLocalVariableTable();
-        String localName = "?";
+        String localName = UNKNOWN_NAME;
         if (localVariableTable != null) {
             LocalVariable lv1 = localVariableTable.getLocalVariable(local, position1);
             if (lv1 == null) {
@@ -151,17 +157,6 @@ public class LocalVariableAnnotation implements BugAnnotation {
             }
             if (lv1 != null) {
                 localName = lv1.getName();
-            } else {
-                for (LocalVariable lv : localVariableTable.getLocalVariableTable()) {
-                    if (lv.getIndex() == local) {
-                        if (!"?".equals(localName) && !localName.equals(lv.getName())) {
-                            // not a single consistent name
-                            localName = "?";
-                            break;
-                        }
-                        localName = lv.getName();
-                    }
-                }
             }
         }
         LineNumberTable lineNumbers = method.getLineNumberTable();
@@ -216,7 +211,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
             return name;
         }
         if (register < 0) {
-            return "?";
+            return UNKNOWN_NAME;
         }
         if ("register".equals(key)) {
             return String.valueOf(register);
@@ -224,7 +219,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
             return String.valueOf(pc);
         } else if ("name".equals(key) || "givenClass".equals(key)) {
             return name;
-        } else if (!"?".equals(name)) {
+        } else if (!UNKNOWN_NAME.equals(name)) {
             return name;
         }
         return "$L" + register;
@@ -297,7 +292,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
     }
 
     public boolean isNamed() {
-        return register >= 0 && !"?".equals(name);
+        return register >= 0 && !UNKNOWN_NAME.equals(name);
     }
 
     /**
@@ -317,7 +312,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     @Override
     public boolean isSignificant() {
-        return !"?".equals(name);
+        return !UNKNOWN_NAME.equals(name);
     }
 
     public static @CheckForNull
