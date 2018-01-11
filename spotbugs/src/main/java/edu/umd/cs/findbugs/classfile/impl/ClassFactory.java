@@ -120,7 +120,11 @@ public class ClassFactory implements IClassFactory {
         } else if (fileName.endsWith(File.separator + "jrt-fs.jar")) {
             return new JrtfsCodeBase(codeBaseLocator, fileName);
         } else {
-            return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
+            try {
+                return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
+            } catch (IOException e) {
+                return new EmptyCodeBase(codeBaseLocator);
+            }
         }
     }
 
