@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.objectweb.asm.Opcodes;
@@ -615,7 +616,16 @@ public class XFactory {
         String className = invokeInstruction.getClassName(cpg);
         String methodName = invokeInstruction.getName(cpg);
         String methodSig = invokeInstruction.getSignature(cpg);
-
+        if (invokeInstruction instanceof INVOKEDYNAMIC) {
+            // XXX the lambda representation makes no sense for XMethod
+            // "classical" instruction attributes are filled with garbage, causing
+            // the code later to produce crazy errors (looking for non existing types etc)
+            // We should NOT be called here from our code, but 3rd party code still may
+            // use this method. So *at least* provide a valid class name, which is
+            // (don't ask me why) is encoded in the first argument type of the lambda
+            // className = invokeInstruction.getArgumentTypes(cpg)[0].toString();
+            className = "java.lang.Object";
+        }
         return createXMethod(className, methodName, methodSig, invokeInstruction.getOpcode() == Const.INVOKESTATIC);
     }
 
