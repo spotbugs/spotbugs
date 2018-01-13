@@ -30,8 +30,8 @@ To prepare Eclipse environment only, run `./gradlew eclipse`. See also [detailed
 SpotBugs can be used standalone and through several integrations, including:
 
 * [Ant](http://spotbugs.readthedocs.io/en/latest/ant.html)
-* [Maven](https://github.com/hazendaz/findbugs-maven-plugin/tree/spotbugs)
-* [Gradle](https://plugins.gradle.org/plugin/com.github.spotbugs)
+* [Maven](http://spotbugs.readthedocs.io/en/latest/maven.html)
+* [Gradle](http://spotbugs.readthedocs.io/en/latest/gradle.html)
 * [Eclipse](http://spotbugs.readthedocs.io/en/latest/eclipse.html)
 
 # Questions?
