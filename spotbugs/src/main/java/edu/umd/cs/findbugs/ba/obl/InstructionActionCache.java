@@ -32,6 +32,7 @@ import javax.annotation.WillClose;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -90,7 +91,9 @@ public class InstructionActionCache {
             Instruction ins = handle.getInstruction();
             actionList = Collections.emptyList();
             if (ins instanceof InvokeInstruction) {
-
+                if (ins instanceof INVOKEDYNAMIC) {
+                    return actionList;
+                }
                 InvokeInstruction inv = (InvokeInstruction) ins;
                 XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
                 String signature = invokedMethod.getSignature();

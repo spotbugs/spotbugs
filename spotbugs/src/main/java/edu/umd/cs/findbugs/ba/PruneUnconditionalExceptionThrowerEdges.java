@@ -29,6 +29,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
@@ -119,6 +120,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             InstructionHandle instructionHandle = basicBlock.getExceptionThrower();
             Instruction exceptionThrower = instructionHandle.getInstruction();
             if (!(exceptionThrower instanceof InvokeInstruction)) {
+                continue;
+            }
+            if (exceptionThrower instanceof INVOKEDYNAMIC) {
                 continue;
             }
 

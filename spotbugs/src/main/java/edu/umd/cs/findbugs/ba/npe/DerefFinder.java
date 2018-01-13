@@ -28,6 +28,7 @@ import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -119,6 +120,9 @@ public class DerefFinder {
                 TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
                 if (ins instanceof InvokeInstruction) {
                     InvokeInstruction inv = (InvokeInstruction) ins;
+                    if (inv instanceof INVOKEDYNAMIC) {
+                        continue;
+                    }
                     XMethod m = XFactory.createXMethod(inv, cpg);
                     SignatureParser sigParser = new SignatureParser(m.getSignature());
                     int numParams = sigParser.getNumParameters();
