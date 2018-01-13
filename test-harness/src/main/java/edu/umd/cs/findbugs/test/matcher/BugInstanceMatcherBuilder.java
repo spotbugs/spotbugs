@@ -37,6 +37,7 @@ public class BugInstanceMatcherBuilder {
     private String className;
     private String methodName;
     private String fieldName;
+    private String variableName;
     private Integer lineNumber;
     private Integer lineNumberApprox;
     private Confidence confidence;
@@ -60,6 +61,11 @@ public class BugInstanceMatcherBuilder {
 
     public BugInstanceMatcherBuilder atField(String fieldName) {
         this.fieldName = fieldName;
+        return this;
+    }
+
+    public BugInstanceMatcherBuilder atVariable(String variableName) {
+        this.variableName = variableName;
         return this;
     }
 
@@ -117,7 +123,7 @@ public class BugInstanceMatcherBuilder {
             }
         }
 
-        return new BugInstanceMatcher(bugType, className, methodName, fieldName, lineNumber,
+        return new BugInstanceMatcher(bugType, className, methodName, fieldName, variableName, lineNumber,
                 lineNumberApprox, confidence, jspFile, multipleChoicesLine);
     }
 

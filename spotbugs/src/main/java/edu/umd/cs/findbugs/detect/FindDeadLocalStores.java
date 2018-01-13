@@ -281,11 +281,8 @@ public class FindDeadLocalStores implements Detector {
                 LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);
 
                 String sourceFileName = javaClass.getSourceFileName();
-                if ("?".equals(lvAnnotation.getName())) {
+                if (LocalVariableAnnotation.UNKNOWN_NAME.equals(lvAnnotation.getName())) {
                     if (sourceFileName.endsWith(".groovy")) {
-                        continue;
-                    }
-                    if (method.getCode().getLocalVariableTable() != null) {
                         continue;
                     }
                 }
