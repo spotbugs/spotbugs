@@ -18,6 +18,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INSTANCEOF;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -211,6 +212,9 @@ public class FindBadCast2 implements Detector {
             boolean wasMethodInvocationWasGeneric = methodInvocationWasGeneric;
             methodInvocationWasGeneric = false;
             if (ins instanceof InvokeInstruction) {
+                if (ins instanceof INVOKEDYNAMIC) {
+                    continue;
+                }
                 InvokeInstruction iinv = (InvokeInstruction) ins;
                 XMethod m = XFactory.createXMethod(iinv, cpg);
                 if (m != null) {

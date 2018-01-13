@@ -46,6 +46,7 @@ import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionTargeter;
@@ -68,7 +69,26 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.UseAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
+import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
@@ -439,8 +459,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             System.out.println("Null arguments passed: " + nullArgSet);
             System.out.println("Frame is: " + frame);
             System.out.println("# arguments: " + frame.getNumArguments(invokeInstruction, cpg));
-            XMethod xm = XFactory.createXMethod(invokeInstruction, cpg);
-            System.out.print("Signature: " + xm.getSignature());
+            if (!(invokeInstruction instanceof INVOKEDYNAMIC)) {
+                XMethod xm = XFactory.createXMethod(invokeInstruction, cpg);
+                System.out.print("Signature: " + xm.getSignature());
+            }
         }
 
         if (unconditionalDerefParamDatabase != null) {
@@ -616,7 +638,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (caught && skipIfInsideCatchNull()) {
             return;
         }
-
+        if (invokeInstruction instanceof INVOKEDYNAMIC) {
+            return;
+        }
         // See what methods might be called here
         XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
         if (true) {
@@ -827,7 +851,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (caught && skipIfInsideCatchNull()) {
             return;
         }
-
+        if (invokeInstruction instanceof INVOKEDYNAMIC) {
+            return;
+        }
         XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
 
         INullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();

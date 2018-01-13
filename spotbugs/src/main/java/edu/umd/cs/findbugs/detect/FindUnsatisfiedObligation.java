@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -512,7 +513,9 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                 // there must be an instance of InputStream at
                 // the transfer point.
                 //
-
+                if (inv instanceof INVOKEDYNAMIC) {
+                    return;
+                }
                 if (DEBUG_FP) {
                     System.out.println("Checking " + handle + " as possible obligation transfer...:");
                 }

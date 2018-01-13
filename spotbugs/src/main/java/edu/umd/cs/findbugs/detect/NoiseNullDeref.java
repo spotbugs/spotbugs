@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionTargeter;
@@ -269,6 +270,9 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         final ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
         if (ins instanceof InvokeInstruction) {
+            if (ins instanceof INVOKEDYNAMIC) {
+                return;
+            }
             InvokeInstruction iins = (InvokeInstruction) ins;
             XMethod invokedMethod = XFactory.createXMethod((InvokeInstruction) ins, cpg);
             cause = MethodAnnotation.fromXMethod(invokedMethod);
