@@ -65,7 +65,7 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse-daily
+    local_dir: eclipsePlugin/build/site/eclipse-daily
     repo: spotbugs/eclipse-latest
     email: skypencil+spotbugs-bot@gmail.com
     on:
@@ -74,7 +74,7 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse-candidate
+    local_dir: eclipsePlugin/build/site/eclipse-candidate
     repo: spotbugs/eclipse-candidate
     email: skypencil+spotbugs-bot@gmail.com
     on:
@@ -83,7 +83,7 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse
+    local_dir: eclipsePlugin/build/site/eclipse
     repo: spotbugs/eclipse
     email: skypencil+spotbugs-bot@gmail.com
     on:
