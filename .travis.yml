@@ -55,6 +55,11 @@ script:
   - jdk_switcher use oraclejdk8
   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
+after_success:
+  # Some task above (sonarqube?) deletes generated Eclipse site data, so we should re-generate it
+  # to deploy the daily build on the update site, see "deploy" task below
+  - ./gradlew eclipsePlugin:eclipseSite
+
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
