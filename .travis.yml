@@ -55,11 +55,6 @@ script:
   - jdk_switcher use oraclejdk8
   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
-after_success:
-  # Some task above (sonarqube?) deletes generated Eclipse site data, so we should re-generate it
-  # to deploy the daily build on the update site, see "deploy" task below
-  - ./gradlew eclipsePlugin:eclipseSite
-
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
@@ -74,7 +69,7 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse-daily
+    local_dir: eclipsePlugin/build/site/eclipse-daily
     repo: spotbugs/eclipse-latest
     email: skypencil+spotbugs-bot@gmail.com
     on:
@@ -83,7 +78,7 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse-candidate
+    local_dir: eclipsePlugin/build/site/eclipse-candidate
     repo: spotbugs/eclipse-candidate
     email: skypencil+spotbugs-bot@gmail.com
     on:
@@ -92,7 +87,7 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
-    local_dir: $TRAVIS_BUILD_DIR/eclipsePlugin/build/site/eclipse
+    local_dir: eclipsePlugin/build/site/eclipse
     repo: spotbugs/eclipse
     email: skypencil+spotbugs-bot@gmail.com
     on:
