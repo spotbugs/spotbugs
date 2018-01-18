@@ -6,6 +6,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+* Added support for Checker Framework's Nullable annotations.
+
 ### Fixed
 
 * Error on lambda analysis: "Constant pool at index 0 is null." ([#547](https://github.com/spotbugs/spotbugs/issues/547))
