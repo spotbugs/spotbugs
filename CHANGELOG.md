@@ -6,6 +6,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+* Added support for Checker Framework's Nullable annotations.
+
 ### Fixed
 
 * Unused variable reported with wrong name ([#516](https://github.com/spotbugs/spotbugs/issues/516))
