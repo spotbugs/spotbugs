@@ -30,6 +30,7 @@ import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
@@ -172,6 +173,9 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
     private void registerReturnValueSource(Location location) throws DataflowAnalysisException {
         // Nothing to do if called method does not return a value
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+        if (inv instanceof INVOKEDYNAMIC) {
+            return;
+        }
         String calledMethodSig = inv.getSignature(cpg);
         if (calledMethodSig.endsWith(")V")) {
             return;
