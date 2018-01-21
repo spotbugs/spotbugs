@@ -42,6 +42,7 @@ import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -412,7 +413,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             if (!(ins instanceof InvokeInstruction)) {
                 continue;
             }
-
+            if (ins instanceof INVOKEDYNAMIC) {
+                continue;
+            }
             InvokeInstruction inv = (InvokeInstruction) ins;
 
             XMethod invokedMethod = XFactory.createXMethod(inv, cpg);
@@ -511,7 +514,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                         InstructionHandle next = handle.getNext();
                         if (next != null) {
                             Instruction nextIns = next.getInstruction();
-
+                            if (nextIns instanceof INVOKEDYNAMIC) {
+                                continue;
+                            }
                             if (nextIns instanceof InvokeInstruction) {
                                 XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
                                 if ("assertFalse".equals(nextMethod.getName())) {
@@ -600,7 +605,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     InstructionHandle next = handle.getNext();
                     if (next != null) {
                         Instruction nextIns = next.getInstruction();
-
+                        if (nextIns instanceof INVOKEDYNAMIC) {
+                            continue;
+                        }
                         if (nextIns instanceof InvokeInstruction) {
                             XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
                             if ("assertFalse".equals(nextMethod.getName())) {
@@ -612,7 +619,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                     InstructionHandle next = handle.getNext();
                     if (next != null) {
                         Instruction nextIns = next.getInstruction();
-
+                        if (nextIns instanceof INVOKEDYNAMIC) {
+                            continue;
+                        }
                         if (nextIns instanceof InvokeInstruction) {
                             XMethod nextMethod = XFactory.createXMethod((InvokeInstruction) nextIns, cpg);
                             if ("assertNull".equals(nextMethod.getName())) {

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -322,6 +323,9 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
         Instruction i = handle.getInstruction();
         if (i instanceof InvokeInstruction) {
             InvokeInstruction ii = (InvokeInstruction) i;
+            if (i instanceof INVOKEDYNAMIC) {
+                return;
+            }
             XMethod m = XFactory.createXMethod(ii, cpg);
             if (TypeQualifierDataflowAnalysis.isIdentifyFunctionForTypeQualifiers(m)) {
                 ValueNumberFrame vnaFrameAtLocation = vnaDataflow.getFactAtLocation(location);

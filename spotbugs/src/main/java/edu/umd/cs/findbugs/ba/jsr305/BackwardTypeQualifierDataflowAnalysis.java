@@ -27,6 +27,7 @@ import javax.annotation.meta.When;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -212,6 +213,9 @@ public class BackwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflow
     private void modelArguments(Location location) throws DataflowAnalysisException {
         // Model arguments to called method
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+        if (inv instanceof INVOKEDYNAMIC) {
+            return;
+        }
         XMethod calledMethod = XFactory.createXMethod(inv, cpg);
 
         SignatureParser sigParser = new SignatureParser(calledMethod.getSignature());

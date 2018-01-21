@@ -28,6 +28,7 @@ import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -173,6 +174,10 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
      * information following a call to a likely exception thrower or assertion.
      */
     private void handleInvoke(InvokeInstruction obj) {
+        if (obj instanceof INVOKEDYNAMIC) {
+            // should not happen
+            return;
+        }
         Type returnType = obj.getReturnType(getCPG());
 
         Location location = getLocation();

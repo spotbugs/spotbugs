@@ -25,6 +25,7 @@ import java.util.Set;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -98,7 +99,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
             boolean foundThrower = false;
             boolean foundNonThrower = false;
 
-            if (inv instanceof INVOKEINTERFACE) {
+            if (inv instanceof INVOKEINTERFACE || inv instanceof INVOKEDYNAMIC) {
                 continue;
             }
 
