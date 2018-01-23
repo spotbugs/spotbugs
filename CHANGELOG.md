@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 
+* Error on lambda analysis: "Constant pool at index 0 is null." ([#547](https://github.com/spotbugs/spotbugs/issues/547))
 * Lambda methods reported as missing classes ([#527](https://github.com/spotbugs/spotbugs/issues/527))
 * Unused variable reported with wrong name ([#516](https://github.com/spotbugs/spotbugs/issues/516))
 * Require gradle 4.2.1 to fix gradle build failures on Java 9.0.1

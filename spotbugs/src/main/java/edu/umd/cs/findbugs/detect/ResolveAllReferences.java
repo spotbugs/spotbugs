@@ -11,6 +11,7 @@ import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFieldref;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
@@ -150,6 +151,9 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
             } else if (co instanceof ConstantFieldref) {
                 // do nothing until we handle static fields defined in
                 // interfaces
+
+            } else if (co instanceof ConstantInvokeDynamic) {
+                // ignore. BCEL puts garbage data into ConstantInvokeDynamic
             } else if (co instanceof ConstantCP) {
                 ConstantCP co2 = (ConstantCP) co;
                 String className = getClassName(obj, co2.getClassIndex());
