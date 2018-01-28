@@ -30,6 +30,9 @@ public class NullnessAnnotationTest {
                 {"org.jetbrains.annotations.NotNull", NullnessAnnotation.NONNULL},
                 {"org.jetbrains.annotations.Nullable", NullnessAnnotation.CHECK_FOR_NULL},
 
+                {"org.checkerframework.checker.nullness.qual.Nullable", NullnessAnnotation.CHECK_FOR_NULL},
+                {"org.checkerframework.checker.nullness.compatqual.NullableDecl", NullnessAnnotation.CHECK_FOR_NULL},
+
                 {edu.umd.cs.findbugs.annotations.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL},
                 {edu.umd.cs.findbugs.annotations.PossiblyNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL},
 
