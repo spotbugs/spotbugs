@@ -121,6 +121,8 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
             n = CheckReturnValueAnnotation.parse(getAnnotationParameterAsString(map, "priority"));
         } else if ("CheckReturnValue".equals(annotationClassSimpleName)) {
             n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
+        } else if ("CanIgnoreReturnValue".equals(annotationClassSimpleName)) {
+            n = CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;
         } else {
             return;
         }
