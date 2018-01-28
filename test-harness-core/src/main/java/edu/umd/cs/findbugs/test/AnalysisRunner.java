@@ -90,11 +90,13 @@ public class AnalysisRunner {
         project.setProjectName(getClass().getSimpleName());
         engine.setProject(project);
 
-        if (PLUGIN_JAR != null) try {
-            String pluginId = Plugin.addCustomPlugin(PLUGIN_JAR.toURI()).getPluginId();
-            project.setPluginStatusTrinary(pluginId, Boolean.TRUE);
-        } catch (PluginException e) {
-            throw new AssertionError("Failed to load plugin", e);
+        if (PLUGIN_JAR != null) {
+            try {
+                String pluginId = Plugin.addCustomPlugin(PLUGIN_JAR.toURI()).getPluginId();
+                project.setPluginStatusTrinary(pluginId, Boolean.TRUE);
+            } catch (PluginException e) {
+                throw new AssertionError("Failed to load plugin", e);
+            }
         }
         final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
         engine.setDetectorFactoryCollection(detectorFactoryCollection);
@@ -106,6 +108,7 @@ public class AnalysisRunner {
         engine.setBugReporter(bugReporter);
         final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
         preferences.getFilterSettings().clearAllCategories();
+        preferences.enableAllDetectors(true);
         engine.setUserPreferences(preferences);
 
         for (Path file : files) {
