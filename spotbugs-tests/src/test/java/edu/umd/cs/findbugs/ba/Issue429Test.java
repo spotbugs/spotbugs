@@ -1,7 +1,9 @@
 package edu.umd.cs.findbugs.ba;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import java.nio.file.Paths;
 
@@ -22,7 +24,9 @@ public class Issue429Test {
 
     @Test
     public void test() {
-        for (String path : System.getProperty("AUX_CLASSPATH").split(",")) {
+        String property = System.getProperty("AUX_CLASSPATH");
+        assumeThat(property, notNullValue());
+        for (String path : property.split(",")) {
             spotbugs.addAuxClasspathEntry(Paths.get(path));
         }
         BugCollection bugCollection = spotbugs.performAnalysis(
