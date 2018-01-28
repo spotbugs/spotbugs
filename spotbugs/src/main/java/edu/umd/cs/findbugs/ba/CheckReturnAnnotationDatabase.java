@@ -292,6 +292,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             .createClassDescriptor(CheckReturnValue.class);
     private static final ClassDescriptor CHECK_RETURN_NULL_JSR305 = DescriptorFactory
             .createClassDescriptor("javax/annotation/CheckReturnValue");
+    private static final ClassDescriptor CAN_IGNORE_RETURN_VALUE = DescriptorFactory
+            .createClassDescriptor("com/google/errorprone/annotations/CanIgnoreReturnValue");
 
     private final Map<String, CheckReturnValueAnnotation> packageInfoCache = new HashMap<>();
 
@@ -338,6 +340,12 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 return CheckReturnValueAnnotation.createFor(When.ALWAYS);
             }
         }
+
+        annotation = clazz.getAnnotation(CAN_IGNORE_RETURN_VALUE);
+        if (annotation != null) {
+            return CheckReturnValueAnnotation.createFor(When.NEVER);
+        }
+
         return null;
     }
 }
