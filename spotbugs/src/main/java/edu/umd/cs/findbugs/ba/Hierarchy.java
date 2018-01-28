@@ -345,26 +345,27 @@ public class Hierarchy {
         if (opcode == Const.INVOKESPECIAL) {
             // Non-virtual dispatch
             return findExactMethod(inv, cpg, methodChooser);
-        } else {
-            String className = inv.getClassName(cpg);
-            String methodName = inv.getName(cpg);
-            String methodSig = inv.getSignature(cpg);
-            if (DEBUG_METHOD_LOOKUP) {
-                System.out.println("[Class name is " + className + "]");
-                System.out.println("[Method name is " + methodName + "]");
-                System.out.println("[Method signature is " + methodSig + "]");
-            }
-
-            if (className.startsWith("[")) {
-                // Java 1.5 allows array classes to appear as the class name
-                className = "java.lang.Object";
-            }
-
-            JavaClass jClass = Repository.lookupClass(className);
-            return findInvocationLeastUpperBound(jClass, methodName, methodSig, methodChooser,
-                    opcode == Const.INVOKEINTERFACE);
-
         }
+        if (opcode == Const.INVOKEDYNAMIC) {
+            return null;
+        }
+        String className = inv.getClassName(cpg);
+        String methodName = inv.getName(cpg);
+        String methodSig = inv.getSignature(cpg);
+        if (DEBUG_METHOD_LOOKUP) {
+            System.out.println("[Class name is " + className + "]");
+            System.out.println("[Method name is " + methodName + "]");
+            System.out.println("[Method signature is " + methodSig + "]");
+        }
+
+        if (className.startsWith("[")) {
+            // Java 1.5 allows array classes to appear as the class name
+            className = "java.lang.Object";
+        }
+
+        JavaClass jClass = Repository.lookupClass(className);
+        return findInvocationLeastUpperBound(jClass, methodName, methodSig, methodChooser,
+                opcode == Const.INVOKEINTERFACE);
     }
 
     public static @CheckForNull
