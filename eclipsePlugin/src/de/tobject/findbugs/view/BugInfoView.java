@@ -609,7 +609,7 @@ public class BugInfoView extends AbstractFindbugsView {
         if(bug == null) {
             return;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(removeHtmlMarkup(getHtml()));
         sb.append("\n\n");
         for(BugAnnotation ba : bug.getAnnotationsForMessage(true)) {

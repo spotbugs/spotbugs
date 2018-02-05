@@ -390,7 +390,7 @@ public class DetectorConfigurationTab extends Composite {
         if (factory == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer(factory.getFullName());
+        StringBuilder sb = new StringBuilder(factory.getFullName());
         sb.append("\n");
         sb.append(getDescriptionWithoutHtml(factory));
         sb.append("\n\nReported patterns:\n");
@@ -689,7 +689,7 @@ public class DetectorConfigurationTab extends Composite {
 
     @Nonnull
     private String createBugsAbbreviation(DetectorFactory factory) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         LinkedHashSet<String> abbrs = new LinkedHashSet<>();
         for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {

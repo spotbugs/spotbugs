@@ -21,7 +21,7 @@ public class SBConcatTest {
 
     public String doConcat3DoNotReport(String[] tokens) {
         // should not complain
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append("Results:");
         for (int i = 0; i < tokens.length; i++)
             result.append(tokens[i]);
@@ -31,7 +31,7 @@ public class SBConcatTest {
     public String doConcat4DoNotReport(String[] tokens) {
         // should not complain
         int a = 0, b = 1, c = 2, d = 3, e = 4, f = 5, g = 6;
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append("Results:");
         for (int i = 0; i < tokens.length; i++)
             result.append(tokens[i]);
@@ -46,7 +46,7 @@ public class SBConcatTest {
 
     public void doConcat6DoNotReport(int n) {
         for (int i = 0; i < n; ++i) {
-            StringBuffer b = new StringBuffer();
+            StringBuilder b = new StringBuilder();
             b.append("yeah");
             b.append(i);
             System.out.println(b.toString());

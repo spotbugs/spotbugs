@@ -27,7 +27,7 @@ public class GuaranteedDereference {
 
     String test3Report(Object x) {
         String value = null;
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         String xAsString = null;
         if (x instanceof String)
             xAsString = (String) x;
