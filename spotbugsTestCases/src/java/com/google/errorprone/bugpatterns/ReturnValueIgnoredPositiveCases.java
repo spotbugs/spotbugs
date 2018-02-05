@@ -62,7 +62,7 @@ public class ReturnValueIgnoredPositiveCases {
     a.substring(0, 1);
   }
 
-  StringBuffer sb = new StringBuffer("hello");
+  StringBuilder sb = new StringBuilder("hello");
   {
     //BUG: Suggestion includes "remove this line"
     sb.toString().trim();

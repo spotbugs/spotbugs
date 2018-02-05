@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2017-??-??
 
+###
+Use StringBuilder instead of StringBuffer as it offers high performance in single thread places as it is generally the case.
+
 ### Added
 
 * Support for errorprone @CanIgnoreReturnValue annotation ([#463](https://github.com/spotbugs/spotbugs/issues/463))

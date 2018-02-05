@@ -40,7 +40,7 @@ public class GuaranteedFieldDereference {
 
     String test3Report() {
         String value = null;
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         String xAsString = null;
         if (x instanceof String)
             xAsString = (String) x;
