@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.FindBugs2;
 import java.io.File;
 import java.io.IOException;
 
@@ -107,11 +108,11 @@ public class ClassFactory implements IClassFactory {
         File file = new File(fileName);
 
         if (!file.exists() || !file.canRead()) {
-            return new EmptyCodeBase(codeBaseLocator);
+            return createEmptyCodeBase(codeBaseLocator, file);
         } else if (file.isDirectory()) {
             return new DirectoryCodeBase(codeBaseLocator, file);
         } else if (!file.isFile()) {
-            return new EmptyCodeBase(codeBaseLocator);
+            return createEmptyCodeBase(codeBaseLocator, file);
         } else if (fileName.endsWith(".class")) {
             return new SingleFileCodeBase(codeBaseLocator, fileName);
         } else if (fileName.endsWith(File.separator + "jrt-fs.jar")) {
@@ -120,9 +121,16 @@ public class ClassFactory implements IClassFactory {
             try {
                 return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
             } catch (IOException e) {
-                return new EmptyCodeBase(codeBaseLocator);
+                return createEmptyCodeBase(codeBaseLocator, file);
             }
         }
+    }
+
+    private static IScannableCodeBase createEmptyCodeBase(FilesystemCodeBaseLocator codeBaseLocator, File file) {
+        if (FindBugs2.DEBUG) {
+            System.out.println("Ignoring unreadable or non-existent file " + file);
+        }
+        return new EmptyCodeBase(codeBaseLocator);
     }
 
     static IScannableCodeBase createNestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
