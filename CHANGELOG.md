@@ -17,6 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Lambda methods reported as missing classes ([#527](https://github.com/spotbugs/spotbugs/issues/527))
 * Unused variable reported with wrong name ([#516](https://github.com/spotbugs/spotbugs/issues/516))
 * Require gradle 4.2.1 to fix gradle build failures on Java 9.0.1
+* Update dom4j to 2.1.0 to fix Illegal reflective access on Java 9
 * Do not print exceptions for unsupported classpath files ([#497](https://github.com/spotbugs/spotbugs/issues/497))
 
 ## 3.1.1 - 2017-11-29
