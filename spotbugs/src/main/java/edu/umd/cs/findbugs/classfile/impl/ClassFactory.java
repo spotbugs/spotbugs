@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import edu.umd.cs.findbugs.FindBugs2;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -107,21 +107,30 @@ public class ClassFactory implements IClassFactory {
 
         File file = new File(fileName);
 
-        if (!file.exists()) {
-            throw new FileNotFoundException("File " + file.getAbsolutePath() + " doesn't exist");
-        } else if (!file.canRead()) {
-            throw new IOException("File " + file.getAbsolutePath() + " not readable");
+        if (!file.exists() || !file.canRead()) {
+            return createEmptyCodeBase(codeBaseLocator, file);
         } else if (file.isDirectory()) {
             return new DirectoryCodeBase(codeBaseLocator, file);
         } else if (!file.isFile()) {
-            throw new IOException("File " + file.getAbsolutePath() + " is not a normal file");
+            return createEmptyCodeBase(codeBaseLocator, file);
         } else if (fileName.endsWith(".class")) {
             return new SingleFileCodeBase(codeBaseLocator, fileName);
         } else if (fileName.endsWith(File.separator + "jrt-fs.jar")) {
             return new JrtfsCodeBase(codeBaseLocator, fileName);
         } else {
-            return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
+            try {
+                return ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, file);
+            } catch (IOException e) {
+                return createEmptyCodeBase(codeBaseLocator, file);
+            }
         }
+    }
+
+    private static IScannableCodeBase createEmptyCodeBase(FilesystemCodeBaseLocator codeBaseLocator, File file) {
+        if (FindBugs2.DEBUG) {
+            System.out.println("Ignoring unreadable or non-existent file " + file);
+        }
+        return new EmptyCodeBase(codeBaseLocator);
     }
 
     static IScannableCodeBase createNestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
