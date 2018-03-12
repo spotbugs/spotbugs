@@ -202,6 +202,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 
+        addMethodAnnotation("com.google.common.base.Preconditions", "checkNotNull", "(Ljava/lang/Object;)Ljava/lang/Object;", true,
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelLongArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelDoubleArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
