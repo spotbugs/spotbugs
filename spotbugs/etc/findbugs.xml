@@ -644,6 +644,8 @@
                     reports="DM_DEFAULT_ENCODING"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" speed="fast"
                     reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum" speed="fast"
+                    reports="FS_LOG_PARAM_NUM" hidden="false"/>
 
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
@@ -1038,6 +1040,7 @@
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED"
                     category="CORRECTNESS"/>
+          <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM" category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
