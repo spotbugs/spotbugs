@@ -179,6 +179,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         }
                         String bugPattern = implicitNullCheckForEquals ? "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT"
                                 : "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE";
+                        priority = implicitNullCheckForEquals ? HIGH_PRIORITY : priority;
                         reportBug(new BugInstance(this, bugPattern, priority).addClassAndMethod(jclass, method).add(
                                 LocalVariableAnnotation.getParameterLocalVariableAnnotation(method, paramLocal)));
                     }

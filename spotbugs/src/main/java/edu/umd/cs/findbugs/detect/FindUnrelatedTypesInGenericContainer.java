@@ -683,6 +683,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
                 }
                 String bugPattern = "GC_UNRELATED_TYPES";
 
+                priority = Priorities.HIGH_PRIORITY;
                 BugInstance bug = new BugInstance(this, bugPattern, priority)
                 .addClassAndMethod(methodGen, sourceFile)
                 .addFoundAndExpectedType(actualType, expectedType)

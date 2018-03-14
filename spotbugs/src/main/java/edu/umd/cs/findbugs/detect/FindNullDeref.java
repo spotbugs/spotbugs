@@ -979,6 +979,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             if (caught) {
                 priority++;
             }
+            if ("NP_NULL_ON_SOME_PATH".equals(type)) {
+                priority = HIGH_PRIORITY;
+            }
             reportNullDeref(propertySet, location, type, priority, variable);
         } else if (refValue.mightBeNull() && refValue.isParamValue()) {
 
@@ -1296,6 +1299,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
         SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, method, location);
         sourceLine.setDescription("SOURCE_REDUNDANT_NULL_CHECK");
+        if ("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE".equals(bugInstance.getType())
+                || "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE".equals((bugInstance.getType()))) {
+            bugInstance.setPriority(HIGH_PRIORITY);
+        }
         bugAccumulator.accumulateBug(bugInstance, sourceLine);
     }
 
@@ -1602,6 +1609,9 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
 
         propertySet.decorateBugInstance(bugInstance);
+        if ("NP_NULL_ON_SOME_PATH".equals(bugType) || "NP_NULL_PARAM_DEREF".equals(bugType)) {
+            bugInstance.setPriority(HIGH_PRIORITY);
+        }
 
         if ("NP_DEREFERENCE_OF_READLINE_VALUE".equals(bugType)) {
 

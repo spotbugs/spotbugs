@@ -149,7 +149,7 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
                         }
 
                     } else {
-                        bug = new BugInstance(this, "NP_NULL_ON_SOME_PATH", NORMAL_PRIORITY).addClassAndMethod(this);
+                        bug = new BugInstance(this, "NP_NULL_ON_SOME_PATH", HIGH_PRIORITY).addClassAndMethod(this);
                         bug.addOptionalAnnotation(variableAnnotation);
                         for (Location dereferenced : unconditionalDerefLocationSet) {
                             bug.addSourceLine(getClassContext(), getMethod(), dereferenced).describe("SOURCE_LINE_DEREF");

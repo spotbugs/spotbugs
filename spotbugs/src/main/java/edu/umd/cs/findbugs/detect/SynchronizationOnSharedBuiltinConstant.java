@@ -79,6 +79,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
 
     @Override
     public void sawOpcode(int seen) {
+    	final int priority = HIGH_PRIORITY;
         switch (seen) {
         case Const.MONITORENTER:
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -93,7 +94,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
             Object constant = top.getConstant();
             if ("Ljava/lang/String;".equals(syncSignature) && constant instanceof String) {
 
-                pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
+                pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", priority)
                 .addClassAndMethod(this);
 
                 String value = (String) constant;
@@ -106,12 +107,8 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
                 XField field = top.getXField();
                 FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
                 OpcodeStack.Item summary = fieldSummary.getSummary(field);
-                int priority = NORMAL_PRIORITY;
-                if (isSyncOnBoolean) {
-                    priority--;
-                }
                 if (newlyConstructedObject(summary)) {
-                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
+                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", priority)
                     .addClassAndMethod(this).addType(syncSignature).addOptionalField(field)
                     .addOptionalLocalVariable(this, top);
                 } else if (isSyncOnBoolean) {

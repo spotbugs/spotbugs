@@ -1003,6 +1003,34 @@ null.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ForbiddenSystemOut">
+    <Details>
+<![CDATA[
+<p> Can not use System.out and System.err .</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ForbiddenHashtable">
+    <Details>
+<![CDATA[
+<p> Can not use Hashtable.</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum">
+    <Details>
+<![CDATA[
+<p> Use org.slf4j.Logger with wrong placeholder count.</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindLockOnLocal">
+    <Details>
+<![CDATA[
+<p> Locked on a local variable.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation">
     <Details>
 <![CDATA[
@@ -2547,6 +2575,51 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       <p>
       Unless the class must be compatible with JVMs predating Java 1.5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of <code>Double</code> and <code>Float</code>.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_SYSTEMOUT">
+    <ShortDescription>Can not use System.out and System.err</ShortDescription>
+    <LongDescription>{1} invokes System.out or System.err; use Logger instead</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      System.out or System.err will print nothing to diagnose file.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_NO_HASHTABLE">
+    <ShortDescription>Can not use Hashtable</ShortDescription>
+    <LongDescription>{1} used Hashtable; use HashMap or ConcurrentHashMap instead</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      See the last section of Hashtable's javodoc comment.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="FS_LOG_PARAM_NUM">
+    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
+    <LongDescription>{1} calls org.slf4j.Logger.{3}, the count of braces placeholder is incorrect, need {2}.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      The number of placeholders must be the same as the number of parameters. 
+      If the last parameter is 'Throwable', it does not need a placeholder.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_LOCK_ON_LOCAL">
+    <ShortDescription>Locked on a local variable.</ShortDescription>
+    <LongDescription>{1} locked on an local variable.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      Two callers calls the same function, they will lock on different objects.
       </p>
       ]]>
     </Details>
@@ -8503,6 +8576,7 @@ after the call to initLogging, the logger configuration is lost
    BugCodes
   **********************************************************************
    -->
+  <BugCode abbrev="SPEC">Bugs find by extra developed detectors</BugCode>
   <BugCode abbrev="FS">Format string problem</BugCode>
   <BugCode abbrev="SKIPPED">Analysis skipped</BugCode>
   <BugCode abbrev="IL">Infinite Loop</BugCode>

@@ -273,6 +273,19 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
      */
     public void decorateBugInstance(BugInstance bugInstance) {
         int priority = computePriority(bugInstance.getPriority());
+        switch (bugInstance.getType()) {
+        case "NP_NULL_ON_SOME_PATH":
+        case "NP_NULL_PARAM_DEREF":
+        case "NP_LOAD_OF_KNOWN_NULL_VALUE":
+        case "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT":
+        case "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE":
+        case "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE":
+        case "DLS_DEAD_LOCAL_STORE":
+            priority = Priorities.HIGH_PRIORITY;
+            break;
+        default:
+            break;
+        }
         bugInstance.setPriority(priority);
         for (Map.Entry<T, Object> entry : map.entrySet()) {
             WarningProperty prop = entry.getKey();

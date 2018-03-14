@@ -644,6 +644,14 @@
                     reports="DM_DEFAULT_ENCODING"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" speed="fast"
                     reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum" speed="fast"
+                    reports="FS_LOG_PARAM_NUM" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ForbiddenSystemOut" speed="fast"
+                    reports="SPEC_SYSTEMOUT" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ForbiddenHashtable" speed="fast"
+                    reports="SPEC_NO_HASHTABLE" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindLockOnLocal" speed="fast"
+                    reports="SPEC_LOCK_ON_LOCAL" hidden="false"/>
 
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
@@ -673,6 +681,9 @@
           <BugCode abbrev="AT"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_SYSTEMOUT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_NO_HASHTABLE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_LOCK_ON_LOCAL" category="CORRECTNESS"/>
 
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
                     category="MT_CORRECTNESS"/>
@@ -1038,6 +1049,7 @@
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED"
                     category="CORRECTNESS"/>
+          <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM" category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>

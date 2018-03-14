@@ -58,7 +58,8 @@ public class FindBugsPreferenceInitializer extends AbstractPreferenceInitializer
         store.setDefault(KEY_CACHE_CLASS_DATA, false);
         store.setDefault(KEY_RUN_ANALYSIS_AS_EXTRA_JOB, true);
 
-        store.setDefault(DISABLED_CATEGORIES, "EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY");
+        //store.setDefault(DISABLED_CATEGORIES, "EXPERIMENTAL,I18N,MALICIOUS_CODE,SECURITY");
+        store.setDefault(DISABLED_CATEGORIES, "");
         store.setDefault(RUN_ANALYSIS_AUTOMATICALLY, false);
         store.setDefault(RUN_ANALYSIS_ON_FULL_BUILD, false);
         store.setDefault(ASK_ABOUT_PERSPECTIVE_SWITCH, true);

@@ -96,9 +96,9 @@ task copyLibsForEclipse(type: Copy) {
     into "lib"
 }
 
-task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
-}
+// task distSrcZip(type:Exec) {
+//   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
+// }
 
 task updateManifest {
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse

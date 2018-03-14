@@ -245,7 +245,7 @@ public class LoadOfKnownNullValue implements Detector {
                 // lineMentionedMultipleTimes);
                 // System.out.println("linesWithLoadsOfNonNullValues: " +
                 // linesWithLoadsOfNotDefinitelyNullValues);
-
+                priority = HIGH_PRIORITY;
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "NP_LOAD_OF_KNOWN_NULL_VALUE", priority).addClassAndMethod(methodGen, sourceFile)
                         .addOptionalAnnotation(variableAnnotation),
