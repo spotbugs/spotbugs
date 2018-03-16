@@ -34,12 +34,13 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 public class CheckLogParamNum extends OpcodeStackDetector {
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
     /** The last AASTORE value before INVOKEINTERFACE, is the last parameter if the method is varArgs. */
     private OpcodeStack.Item lastAastoreItem = null;
 
-    private List<String> loggerMethods = Arrays.asList(new String[] { "error", "warn", "info", "debug", "trace" });
+    private final List<String> loggerMethods = Arrays
+            .asList(new String[] { "error", "warn", "info", "debug", "trace" });
 
     public CheckLogParamNum(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -84,7 +85,7 @@ public class CheckLogParamNum extends OpcodeStackDetector {
 
     /**
      * Check if placeholder correct when call log.[info|error|warn|debug|trace].
-     * 
+     *
      * @return When the first parameter is a formatted string, and the number of brace in it does not match the number
      *         of parameters, it returns a bug, or else return null
      */
@@ -113,7 +114,7 @@ public class CheckLogParamNum extends OpcodeStackDetector {
         } else {
             /* If have one or more formatter parameters, the parameters may be var args */
             XMethod m = getXMethodOperand();
-            if (m.isVarArgs()) {
+            if (m != null && m.isVarArgs()) {
                 /* parameter is varArgs, need placeholder count is varArgs.len, except last Throwable */
                 OpcodeStack.Item varArgsItem = stack.getStackItem(0);
                 needCount = (Integer) (varArgsItem.getConstant());
