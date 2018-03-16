@@ -19,6 +19,7 @@ dependencies {
   compile 'joda-time:joda-time:2.9.9'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.springframework:spring-core:4.3.8.RELEASE'
+  compile 'org.slf4j:slf4j-api:1.7.25'
 
   compile 'junit:junit:4.12'
   compile 'org.testng:testng:6.11'
