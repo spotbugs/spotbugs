@@ -43,6 +43,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import javax.annotation.WillClose;
+import javax.annotation.WillCloseWhenClosed;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -55,7 +56,7 @@ import edu.umd.cs.findbugs.util.Util;
  * which is like a classpath, but for finding source files instead of class
  * files.
  */
-public class SourceFinder {
+public class SourceFinder implements AutoCloseable {
     private static final boolean DEBUG = SystemProperties.getBoolean("srcfinder.debug");
 
     private static final int CACHE_SIZE = 50;
@@ -85,12 +86,15 @@ public class SourceFinder {
     /**
      * A repository of source files.
      */
-    private interface SourceRepository {
+    private interface SourceRepository extends AutoCloseable {
         public boolean contains(String fileName);
 
         public boolean isPlatformDependent();
 
         public SourceFileDataSource getDataSource(String fileName);
+
+        @Override
+        void close() throws IOException;
     }
 
     /**
@@ -130,6 +134,10 @@ public class SourceFinder {
 
         private String getFullFileName(String fileName) {
             return baseDir + File.separator + fileName;
+        }
+
+        @Override
+        public void close() {
         }
     }
 
@@ -208,6 +216,10 @@ public class SourceFinder {
         public boolean isPlatformDependent() {
             return false;
         }
+
+        @Override
+        public void close() {
+        }
     }
 
     SourceRepository makeInMemorySourceRepository(final String url) {
@@ -281,7 +293,7 @@ public class SourceFinder {
             return ready.getCount() == 0;
         }
 
-        public void setBase(SourceRepository base) {
+        public void setBase(@WillCloseWhenClosed SourceRepository base) {
             this.base = base;
             ready.countDown();
         }
@@ -312,6 +324,10 @@ public class SourceFinder {
             return base.isPlatformDependent();
         }
 
+        @Override
+        public void close() throws IOException {
+            base.close();
+        }
     }
 
     /**
@@ -320,7 +336,7 @@ public class SourceFinder {
     static class ZipSourceRepository implements SourceRepository {
         ZipFile zipFile;
 
-        public ZipSourceRepository(ZipFile zipFile) {
+        public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) {
             this.zipFile = zipFile;
         }
 
@@ -337,6 +353,11 @@ public class SourceFinder {
         @Override
         public SourceFileDataSource getDataSource(String fileName) {
             return new ZipSourceFileDataSource(zipFile, fileName);
+        }
+
+        @Override
+        public void close() throws IOException {
+            zipFile.close();
         }
     }
 
@@ -577,6 +598,13 @@ public class SourceFinder {
         repositoryList = new LinkedList<>();
         cache = new Cache();
         setSourceBaseList(project.getResolvedSourcePaths());
+    }
+
+    @Override
+    public void close() {
+        for (SourceRepository repo : repositoryList) {
+            IO.close(repo);
+        }
     }
 }
 
