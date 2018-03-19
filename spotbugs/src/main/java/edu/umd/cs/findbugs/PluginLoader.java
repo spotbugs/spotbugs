@@ -267,8 +267,8 @@ public class PluginLoader {
                 System.err.println(msg);
                 AnalysisContext.logError(msg);
 
-                for (Iterator<PluginLoader> i = partiallyInitialized.iterator(); i.hasNext();) {
-                    Plugin.removePlugin(i.next().loadedFromUri);
+                for (PluginLoader pluginLoader : partiallyInitialized) {
+                    Plugin.removePlugin(pluginLoader.loadedFromUri);
                 }
                 partiallyInitialized.clear();
             }
@@ -1590,9 +1590,7 @@ public class PluginLoader {
             throw new IllegalArgumentException(message);
         }
 
-        ZipFile zip = null;
-        try {
-            zip = new ZipFile(file);
+        try (ZipFile zip = new ZipFile(file)) {
             ZipEntry findbugsXML = zip.getEntry("findbugs.xml");
             if (findbugsXML == null) {
                 throw new IllegalArgumentException(
@@ -1623,8 +1621,6 @@ public class PluginLoader {
             throw new IllegalArgumentException(e);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
-        } finally {
-            Util.closeSilently(zip);
         }
     }
 
@@ -1639,4 +1635,3 @@ public class PluginLoader {
         }
     }
 }
-
