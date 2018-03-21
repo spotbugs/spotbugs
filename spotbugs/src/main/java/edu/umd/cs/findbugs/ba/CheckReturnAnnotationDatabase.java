@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
@@ -239,6 +240,28 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
     }
 
+    @Nullable
+    private CheckReturnValueAnnotation getResolvedAnnotationOnConstructor(XMethod m) {
+        try {
+            if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass)) {
+                return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+        if ("java.lang.Thread".equals(m.getClassName())) {
+            return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
+        }
+        try {
+            if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass)) {
+                return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW;
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+        return null;
+    }
+
     @Override
     public CheckReturnValueAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
         if (!(o instanceof XMethod)) {
@@ -248,23 +271,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         if (m.getName().startsWith("access$")) {
             return null;
         } else if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
-            try {
-                if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass)) {
-                    return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
-                }
-            } catch (ClassNotFoundException e) {
-                AnalysisContext.reportMissingClass(e);
-            }
-            if ("java.lang.Thread".equals(m.getClassName())) {
-                return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
-            }
-            try {
-
-                if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass)) {
-                    return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW;
-                }
-            } catch (ClassNotFoundException e) {
-                AnalysisContext.reportMissingClass(e);
+            CheckReturnValueAnnotation a = getResolvedAnnotationOnConstructor(m);
+            if (a != null) {
+              return a;
             }
         } else if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
@@ -278,9 +287,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             // BuildCheckReturnAnnotationDatabase does not visit non-application classes,
             // so we need to check package info dynamically
 
-            CheckReturnValueAnnotation annotationOnPackage = packageInfoCache.computeIfAbsent(m.getPackageName(),
-                    this::parsePackage);
-            return annotationOnPackage;
+            return packageInfoCache.computeIfAbsent(m.getPackageName(), this::parsePackage);
         }
         return annotationOnMethod;
     }
