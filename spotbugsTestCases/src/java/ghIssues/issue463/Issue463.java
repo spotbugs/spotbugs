@@ -1,13 +1,10 @@
-package ghIssues;
+package ghIssues.issue463;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-
-import javax.annotation.CheckReturnValue;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/463">GitHub issue</a>
  */
-@CheckReturnValue
 public class Issue463 {
     private String value;
 
