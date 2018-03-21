@@ -31,16 +31,14 @@ import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.Confidence;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -304,45 +302,41 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
     private CheckReturnValueAnnotation parsePackage(@DottedClassName String packageName) {
         String className = ClassName.toSlashedClassName(packageName) + "/package-info";
         ClassDescriptor descriptor = DescriptorFactory.createClassDescriptor(className);
-        XClass clazz;
+        // ClassInfoAnalysisEngine doesn't support parsing package-info to generate XClass, so use JavaClass instead
+        JavaClass clazz;
         try {
-            clazz = descriptor.getXClass();
-        } catch (ResourceNotFoundException e) {
+            clazz = AnalysisContext.currentAnalysisContext().lookupClass(descriptor);
+        } catch (ClassNotFoundException e) {
             // no annotation on package
             return null;
-        } catch (CheckedAnalysisException e) {
-            // ignore unexpected error to keep backward compatibility
-            if (FindBugs2.DEBUG) {
-                e.printStackTrace();
-            }
-            return null;
         }
 
-        AnnotationValue annotation = clazz.getAnnotation(CHECK_RETURN_NULL_SPOTBUGS);
-        if (annotation != null) {
-            Confidence confidence = (Confidence) annotation.getValue("confidence");
-            if (confidence != null) {
-                return CheckReturnValueAnnotation.parse(confidence.name());
-            } else {
-                // use default name
+        for (AnnotationEntry entry : clazz.getAnnotationEntries()) {
+            System.err.println(entry);
+            String type = entry.getAnnotationType();
+            if (type.equals(CHECK_RETURN_NULL_SPOTBUGS.getClassName())) {
+                for (ElementValuePair pair : entry.getElementValuePairs()) {
+                    if (!pair.getNameString().equals("confidence")) {
+                        continue;
+                    }
+                    return CheckReturnValueAnnotation.parse(pair.getValue().stringifyValue());
+                }
+                // use default value
                 return CheckReturnValueAnnotation.parse(Confidence.MEDIUM.name());
             }
-        }
-
-        annotation = clazz.getAnnotation(CHECK_RETURN_NULL_JSR305);
-        if (annotation != null) {
-            When when = (When) annotation.getValue("when");
-            if (when != null) {
-                return CheckReturnValueAnnotation.createFor(when);
-            } else {
+            if (type.equals(CHECK_RETURN_NULL_JSR305.getClassName())) {
+                for (ElementValuePair pair : entry.getElementValuePairs()) {
+                    if (!pair.getNameString().equals("when")) {
+                        continue;
+                    }
+                    return CheckReturnValueAnnotation.createFor(When.valueOf(pair.getValue().stringifyValue()));
+                }
                 // use default value
                 return CheckReturnValueAnnotation.createFor(When.ALWAYS);
             }
-        }
-
-        annotation = clazz.getAnnotation(CAN_IGNORE_RETURN_VALUE);
-        if (annotation != null) {
-            return CheckReturnValueAnnotation.createFor(When.NEVER);
+            if (type.equals(CAN_IGNORE_RETURN_VALUE.getClassName())) {
+                return CheckReturnValueAnnotation.createFor(When.NEVER);
+            }
         }
 
         return null;
