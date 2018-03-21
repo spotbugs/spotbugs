@@ -314,7 +314,6 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         }
 
         for (AnnotationEntry entry : clazz.getAnnotationEntries()) {
-            System.err.println(entry);
             String type = entry.getAnnotationType();
             if (type.equals(CHECK_RETURN_NULL_SPOTBUGS.getClassName())) {
                 for (ElementValuePair pair : entry.getElementValuePairs()) {
