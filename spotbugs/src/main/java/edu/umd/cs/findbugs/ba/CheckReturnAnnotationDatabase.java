@@ -274,18 +274,17 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 && ("java.lang.StringBuffer".equals(m.getClassName()) || "java.lang.StringBuilder".equals(m.getClassName()))) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         }
-        if (!AnalysisContext.currentAnalysisContext().isApplicationClass(m.getClassDescriptor())) {
+        CheckReturnValueAnnotation annotationOnMethod = super.getResolvedAnnotation(o, getMinimal);
+        if (annotationOnMethod == null) {
             // https://github.com/spotbugs/spotbugs/issues/429
             // BuildCheckReturnAnnotationDatabase does not visit non-application classes,
             // so we need to check package info dynamically
 
-            CheckReturnValueAnnotation packageDefault = packageInfoCache.computeIfAbsent(m.getPackageName(),
+            CheckReturnValueAnnotation annotationOnPackage = packageInfoCache.computeIfAbsent(m.getPackageName(),
                     this::parsePackage);
-            if (packageDefault != null) {
-                return packageDefault;
-            }
+            return annotationOnPackage;
         }
-        return super.getResolvedAnnotation(o, getMinimal);
+        return annotationOnMethod;
     }
 
     private static final ClassDescriptor CHECK_RETURN_NULL_SPOTBUGS = DescriptorFactory
