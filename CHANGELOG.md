@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+
+* Close source file after analysis ([#591](https://github.com/spotbugs/spotbugs/issues/591))
+
 ## 3.1.2 - 2018-02-24
 
 ### Added
