@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
@@ -317,9 +318,7 @@ public class FindBugs2 implements IFindBugsEngine {
         // Make sure the codebases on the classpath are closed
         AnalysisContext.removeCurrentAnalysisContext();
         Global.removeAnalysisCacheForCurrentThread();
-        if (classPath != null) {
-            classPath.close();
-        }
+        IO.close(classPath);
     }
 
     /**
@@ -342,11 +341,13 @@ public class FindBugs2 implements IFindBugsEngine {
         analysisOptions.analysisFeatureSettingList = null;
         bugReporter = null;
         classFactory = null;
+        IO.close(classPath);
         classPath = null;
         classScreener = null;
         detectorFactoryCollection = null;
         executionPlan = null;
         progress = null;
+        IO.close(project);
         project = null;
         analysisOptions.userPreferences = null;
     }
