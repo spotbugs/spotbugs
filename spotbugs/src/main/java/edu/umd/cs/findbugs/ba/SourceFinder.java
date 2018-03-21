@@ -138,6 +138,7 @@ public class SourceFinder implements AutoCloseable {
 
         @Override
         public void close() {
+            // this class keeps no file handler
         }
     }
 
@@ -219,6 +220,7 @@ public class SourceFinder implements AutoCloseable {
 
         @Override
         public void close() {
+            // this class keeps no file handler
         }
     }
 
@@ -607,4 +609,3 @@ public class SourceFinder implements AutoCloseable {
         }
     }
 }
-
