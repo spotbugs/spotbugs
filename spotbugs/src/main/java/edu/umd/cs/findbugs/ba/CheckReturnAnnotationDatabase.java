@@ -36,11 +36,11 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -292,14 +292,14 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         return annotationOnMethod;
     }
 
-    private static final ClassDescriptor CHECK_RETURN_NULL_SPOTBUGS = DescriptorFactory
-            .createClassDescriptor(CheckReturnValue.class);
-    private static final ClassDescriptor CHECK_RETURN_NULL_JSR305 = DescriptorFactory
-            .createClassDescriptor("javax/annotation/CheckReturnValue");
-    private static final ClassDescriptor CHECK_RETURN_NULL_ERRORPRONE = DescriptorFactory
-            .createClassDescriptor("com/google/errorprone/annotations/CheckReturnValue");
-    private static final ClassDescriptor CAN_IGNORE_RETURN_VALUE = DescriptorFactory
-            .createClassDescriptor("com/google/errorprone/annotations/CanIgnoreReturnValue");
+    @SlashedClassName
+    private static final String NAME_OF_CHECK_RETURN_NULL_SPOTBUGS = "edu/umd/cs/findbugs/annotations/CheckReturnValue";
+    @SlashedClassName
+    private static final String NAME_OF_CHECK_RETURN_NULL_JSR305 = "javax/annotation/CheckReturnValue";
+    @SlashedClassName
+    private static final String NAME_OF_CHECK_RETURN_NULL_ERRORPRONE = "com/google/errorprone/annotations/CheckReturnValue";
+    @SlashedClassName
+    private static final String NAME_OF_CAN_IGNORE_RETURN_VALUE = "com/google/errorprone/annotations/CanIgnoreReturnValue";
 
     private final Map<String, CheckReturnValueAnnotation> packageInfoCache = new HashMap<>();
 
@@ -321,35 +321,45 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         }
 
         for (AnnotationEntry entry : clazz.getAnnotationEntries()) {
+            @SlashedClassName
             String type = entry.getAnnotationType();
-            if (type.equals(CHECK_RETURN_NULL_SPOTBUGS.getClassName())) {
-                for (ElementValuePair pair : entry.getElementValuePairs()) {
-                    if (!pair.getNameString().equals("confidence")) {
-                        continue;
-                    }
-                    return CheckReturnValueAnnotation.parse(pair.getValue().stringifyValue());
-                }
-                // use default value
-                return CheckReturnValueAnnotation.parse(Confidence.MEDIUM.name());
-            }
-            if (type.equals(CHECK_RETURN_NULL_JSR305.getClassName())) {
-                for (ElementValuePair pair : entry.getElementValuePairs()) {
-                    if (!pair.getNameString().equals("when")) {
-                        continue;
-                    }
-                    return CheckReturnValueAnnotation.createFor(When.valueOf(pair.getValue().stringifyValue()));
-                }
-                // use default value
+
+            switch (type) {
+            case NAME_OF_CHECK_RETURN_NULL_SPOTBUGS:
+                return createSpotBugsAnnotation(entry);
+            case NAME_OF_CHECK_RETURN_NULL_JSR305:
+                return createJSR305Annotation(entry);
+            case NAME_OF_CHECK_RETURN_NULL_ERRORPRONE:
                 return CheckReturnValueAnnotation.createFor(When.ALWAYS);
-            }
-            if (type.equals(CHECK_RETURN_NULL_ERRORPRONE.getClassName())) {
-                return CheckReturnValueAnnotation.createFor(When.ALWAYS);
-            }
-            if (type.equals(CAN_IGNORE_RETURN_VALUE.getClassName())) {
+            case NAME_OF_CAN_IGNORE_RETURN_VALUE:
                 return CheckReturnValueAnnotation.createFor(When.NEVER);
+            default:
+                // check next annotation
             }
         }
 
         return null;
+    }
+
+    private CheckReturnValueAnnotation createJSR305Annotation(AnnotationEntry entry) {
+        for (ElementValuePair pair : entry.getElementValuePairs()) {
+            if (!pair.getNameString().equals("when")) {
+                continue;
+            }
+            return CheckReturnValueAnnotation.createFor(When.valueOf(pair.getValue().stringifyValue()));
+        }
+        // use default value
+        return CheckReturnValueAnnotation.createFor(When.ALWAYS);
+    }
+
+    private CheckReturnValueAnnotation createSpotBugsAnnotation(AnnotationEntry entry) {
+        for (ElementValuePair pair : entry.getElementValuePairs()) {
+            if (!pair.getNameString().equals("confidence")) {
+                continue;
+            }
+            return CheckReturnValueAnnotation.parse(pair.getValue().stringifyValue());
+        }
+        // use default value
+        return CheckReturnValueAnnotation.parse(Confidence.MEDIUM.name());
     }
 }
