@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+
+* RANGE_ARRAY_LENGHT and RANGE_ARRAY_OFFSET false negative ([#595](https://github.com/spotbugs/spotbugs/issues/595))
+
 ## 3.1.2 - 2018-02-24
 
 ### Added
