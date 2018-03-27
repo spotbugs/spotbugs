@@ -58,7 +58,7 @@ public class ProjectFilterSettings implements Cloneable {
     public static final String EXPERIMENTAL_PRIORITY = "Experimental";
 
     /** Default warning threshold priority. */
-    public static final String DEFAULT_PRIORITY = MEDIUM_PRIORITY;
+    public static final String DEFAULT_PRIORITY = LOW_PRIORITY;
 
     /** Map of priority level names to their numeric values. */
     @StaticConstant
@@ -82,7 +82,7 @@ public class ProjectFilterSettings implements Cloneable {
      */
     private static final String LISTITEM_DELIMITER = ",";
 
-    private static final int DEFAULT_MIN_RANK = 15;
+    private static final int DEFAULT_MIN_RANK = 20;
 
     // Fields
     private Set<String> activeBugCategorySet; // not used for much:

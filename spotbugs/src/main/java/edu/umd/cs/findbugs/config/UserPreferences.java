@@ -134,11 +134,11 @@ public class UserPreferences implements Cloneable {
         recentProjectsList = new LinkedList<>();
         detectorEnablementMap = new HashMap<>();
         runAtFullBuild = true;
-        effort = EFFORT_DEFAULT;
-        includeFilterFiles = new TreeMap<>();
-        excludeFilterFiles = new TreeMap<>();
-        excludeBugsFiles = new TreeMap<>();
-        customPlugins = new TreeMap<>();
+        effort = EFFORT_MAX;
+        includeFilterFiles = new TreeMap<String, Boolean>();
+        excludeFilterFiles = new TreeMap<String, Boolean>();
+        excludeBugsFiles = new TreeMap<String, Boolean>();
+        customPlugins = new TreeMap<String, Boolean>();
     }
 
     /**
@@ -255,7 +255,7 @@ public class UserPreferences implements Cloneable {
         if (props.get(RUN_AT_FULL_BUILD) != null) {
             runAtFullBuild = Boolean.parseBoolean(props.getProperty(RUN_AT_FULL_BUILD));
         }
-        effort = props.getProperty(EFFORT_KEY, EFFORT_DEFAULT);
+        effort = props.getProperty(EFFORT_KEY, EFFORT_MAX);
         includeFilterFiles = readProperties(props, KEY_INCLUDE_FILTER);
         excludeFilterFiles = readProperties(props, KEY_EXCLUDE_FILTER);
         excludeBugsFiles = readProperties(props, KEY_EXCLUDE_BUGS);
