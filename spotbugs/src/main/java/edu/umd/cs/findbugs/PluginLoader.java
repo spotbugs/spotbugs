@@ -1480,12 +1480,8 @@ public class PluginLoader {
 
     private static void installDefaultPlugins() {
         String dir = "dropins" + File.separator + "spotbugs" + File.separator + "optPlugins";
-        DebugPrinter.printStrToFile(dir);
         File dirFile = new File(dir);
-        DebugPrinter.printStrToFile("Can Read:" + dirFile.canRead());
-        DebugPrinter.printStrToFile("isDirectory:" + dirFile.isDirectory());
         if (dirFile.canRead() && dirFile.isDirectory()) {
-            DebugPrinter.printStrToFile(dir);
             loadPluginsInDir(dirFile, false);
         }
     }
