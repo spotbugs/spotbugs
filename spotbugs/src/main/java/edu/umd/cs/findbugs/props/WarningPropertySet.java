@@ -280,7 +280,6 @@ public class WarningPropertySet<T extends WarningProperty> implements Cloneable 
         case "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT":
         case "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE":
         case "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE":
-        case "DLS_DEAD_LOCAL_STORE":
             priority = Priorities.HIGH_PRIORITY;
             break;
         default:

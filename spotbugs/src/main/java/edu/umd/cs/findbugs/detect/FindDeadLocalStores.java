@@ -576,7 +576,7 @@ public class FindDeadLocalStores implements Detector {
                 } else {
                     bugPattern = "DLS_DEAD_LOCAL_STORE";
                 }
-                BugInstance bugInstance = new BugInstance(this, bugPattern, HIGH_PRIORITY).addClassAndMethod(methodGen,
+                BugInstance bugInstance = new BugInstance(this, bugPattern, NORMAL_PRIORITY).addClassAndMethod(methodGen,
                         sourceFileName).add(lvAnnotation);
 
                 if (shadowedField != null) {
@@ -592,7 +592,6 @@ public class FindDeadLocalStores implements Detector {
                 }
                 // Turn all warning properties into BugProperties
                 propertySet.decorateBugInstance(bugInstance);
-                bugInstance.setPriority(HIGH_PRIORITY);
                 if (DEBUG) {
                     System.out.println(sourceFileName + " : " + methodGen.getName());
                     System.out.println("priority: " + bugInstance.getPriority());
