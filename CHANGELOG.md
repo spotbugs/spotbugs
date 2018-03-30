@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 
+* Update asm to 6.1.1 to support Java 10
 * Close source file after analysis ([#591](https://github.com/spotbugs/spotbugs/issues/591))
 
 ## 3.1.2 - 2018-02-24
