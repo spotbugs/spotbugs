@@ -10,9 +10,12 @@
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/dom4j-2.1.0.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/AppleJavaExtensions.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/junit.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-3.3.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-commons-3.3.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-tree-3.3.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-6.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-analysis-6.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-commons-6.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-tree-6.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-util-6.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-xml-6.1.1.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jaxen-1.1.6.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jsr305.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jFormatString.jar</AuxClasspathEntry>
