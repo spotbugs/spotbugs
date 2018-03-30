@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -49,6 +50,8 @@ import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.util.Util;
 
 public class IO {
@@ -253,7 +256,7 @@ public class IO {
         InputStream i = null;
 
         try {
-            URLConnection uc = u.openConnection();
+            URLConnection uc = openNonCachedConnection(u);
             i = uc.getInputStream();
             int firstByte = i.read();
             i.close();
@@ -267,4 +270,35 @@ public class IO {
         }
 
     }
+
+    /**
+     * When URL Connection uses cache, it may keep file handler. This method open connection without caching to avoid
+     * file handler leak.
+     *
+     * @return opened {@link URLConnection} which does not use cache to load data
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/589">related GitHub issue</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    public static URLConnection openNonCachedConnection(@NonNull URL u) throws IOException {
+        URLConnection uc = u.openConnection();
+        if (uc instanceof JarURLConnection) {
+            uc.setUseCaches(false);
+        }
+        return uc;
+    }
+
+    /**
+     * When URL Connection uses cache, it may keep file handler. This method open connection without caching to avoid
+     * file handler leak.
+     *
+     * @return opened {@link URLConnection} which does not use cache to load data
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/589">related GitHub issue</a>
+     */
+    @CheckReturnValue
+    @NonNull
+    public static InputStream openNonCachedStream(@NonNull URL u) throws IOException {
+        return openNonCachedConnection(u).getInputStream();
+    }
+
 }

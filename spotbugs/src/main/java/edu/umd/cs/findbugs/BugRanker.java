@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Util;
 
 /**
@@ -137,7 +138,7 @@ public class BugRanker {
         if (u == null) {
             return;
         }
-        BufferedReader in = UTF8.bufferedReader(u.openStream());
+        BufferedReader in = UTF8.bufferedReader(IO.openNonCachedStream(u));
         try {
             while (true) {
                 String s = in.readLine();

@@ -1189,16 +1189,13 @@ public class PluginLoader {
         }
         SAXReader reader = new SAXReader();
 
-        Reader r = null;
-        try {
-            r = UTF8.bufferedReader(findbugsXML_URL.openStream());
+        try (InputStream input = IO.openNonCachedStream(findbugsXML_URL);
+                Reader r = UTF8.bufferedReader(input)) {
             pluginDescriptor = reader.read(r);
         } catch (DocumentException e) {
             throw new PluginException("Couldn't parse \"" + findbugsXML_URL + "\" using " + reader.getClass().getName(), e);
         } catch (IOException e) {
             throw new PluginException("Couldn't open \"" + findbugsXML_URL + "\"", e);
-        } finally {
-            IO.close(r);
         }
         return pluginDescriptor;
     }
@@ -1319,14 +1316,10 @@ public class PluginLoader {
         URL messageURL = getResource(filename);
         if (messageURL != null) {
             SAXReader reader = new SAXReader();
-            try {
-                Reader stream = UTF8.bufferedReader(messageURL.openStream());
+            try (InputStream input = IO.openNonCachedStream(messageURL);
+                    Reader stream = UTF8.bufferedReader(input)) {
                 Document messageCollection;
-                try {
-                    messageCollection = reader.read(stream);
-                } finally {
-                    stream.close();
-                }
+                messageCollection = reader.read(stream);
                 messageCollectionList.add(messageCollection);
             } catch (IOException | DocumentException e) {
                 throw new PluginException("Couldn't parse \"" + messageURL + "\"", e);
