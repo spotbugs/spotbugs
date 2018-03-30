@@ -680,10 +680,11 @@ public class Project implements XMLWriteable, AutoCloseable {
         isModified = false;
     }
 
-    public static Project readXML(File f) throws IOException,  SAXException {
-        InputStream in = new BufferedInputStream(new FileInputStream(f));
+    public static Project readXML(File f) throws IOException, SAXException {
+        @SuppressWarnings("resource") // will be closed by caller
         Project project = new Project();
-        try {
+
+        try (InputStream in = new BufferedInputStream(new FileInputStream(f))) {
             String tag = Util.getXMLType(in);
             SAXBugCollectionHandler handler;
             if ("Project".equals(tag)) {
@@ -700,11 +701,12 @@ public class Project implements XMLWriteable, AutoCloseable {
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
 
-            Reader reader = Util.getReader(in);
-
-            xr.parse(new InputSource(reader));
-        } finally {
-            in.close();
+            try (Reader reader = Util.getReader(in)) {
+                xr.parse(new InputSource(reader));
+            }
+        } catch (IOException | SAXException e) {
+            project.close();
+            throw e;
         }
 
         // Presumably, project is now up-to-date
