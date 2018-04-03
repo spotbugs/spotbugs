@@ -6,8 +6,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Added
+
+* Support for errorprone @CheckReturnValue annotation ([#592](https://github.com/spotbugs/spotbugs/issues/592))
+
 ### Fixed
 
+* Handle annotation on `package-info.class` properly ([#592](https://github.com/spotbugs/spotbugs/issues/592))
 * Update asm to 6.1.1 to support Java 10
 
 ## 3.1.2 - 2018-02-24
