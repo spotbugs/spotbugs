@@ -10,26 +10,24 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
- * @see <a href="https://github.com/spotbugs/spotbugs/issues/463">GitHub issue</a>
+ * SpotBugs should support both of {@code javax.annotation.CheckReturnValue} and
+ * {@code com.google.errorprone.annotations.CheckReturnValue} annotations.
+ *
+ * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">GitHub issue</a>
+ * @since 3.1.3
  */
-public class Issue463Test extends AbstractIntegrationTest {
+public class Issue582Test extends AbstractIntegrationTest {
     @Test
-    public void testAnnotatedClass() {
-        performAnalysis("ghIssues/Issue463.class");
+    public void testAnnnotatedClass() {
+        performAnalysis("ghIssues/Issue582.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
-                .atLine(37).build();
+                .atLine(35).build();
         assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
     }
 
-    /**
-     * When package is annotated with {@code @CheckReturnValue} and method is not annotated with
-     * {@code @CanIgnoreReturnValue}, SpotBugs should report a bug for invocation which doesn't use returned value.
-     *
-     * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">Issue 582</a>
-     */
     @Test
     public void testAnnotatedPackage() {
-        performAnalysis("ghIssues/issue463/Issue463.class", "ghIssues/issue463/package-info.class");
+        performAnalysis("ghIssues/issue582/Issue582.class", "ghIssues/issue582/package-info.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
                 .atLine(34).build();
         assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
