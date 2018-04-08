@@ -82,7 +82,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  *
  * @author David Hovemeyer
  */
-public class FindBugs2 implements IFindBugsEngine {
+public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
 
     private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
@@ -1227,6 +1227,11 @@ public class FindBugs2 implements IFindBugsEngine {
     public void setBugReporterDecorators(Set<String> explicitlyEnabled, Set<String> explicitlyDisabled) {
         explicitlyEnabledBugReporterDecorators = explicitlyEnabled;
         explicitlyDisabledBugReporterDecorators = explicitlyDisabled;
+    }
+
+    @Override
+    public void close() {
+        clearCaches();
     }
 
 }
