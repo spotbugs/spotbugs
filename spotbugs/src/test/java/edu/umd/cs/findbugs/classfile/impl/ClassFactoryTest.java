@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeFalse;
 
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
@@ -59,6 +60,7 @@ public class ClassFactoryTest {
         File file = createZipFile();
         file.deleteOnExit();
         file.setReadable(false);
+        assumeFalse("File cannot be marked as unreadable, skipping test.", file.canRead());
         FilesystemCodeBaseLocator locator = buildLocator(file);
         assertHasNoCodeBase(ClassFactory.createFilesystemCodeBase(locator));
     }

@@ -1,14 +1,12 @@
 package ghIssues;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-
-import javax.annotation.CheckReturnValue;
-
+import com.google.errorprone.annotations.CheckReturnValue;
 /**
- * @see <a href="https://github.com/spotbugs/spotbugs/issues/463">GitHub issue</a>
+ * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">GitHub issue</a>
  */
 @CheckReturnValue
-public class Issue463 {
+public class Issue582 {
     private String value;
 
     String getValue() {
@@ -27,13 +25,13 @@ public class Issue463 {
     }
 
     public static String testNoError() {
-        Issue463 i = new Issue463();
+        Issue582 i = new Issue582();
         i.returnAValue("foobar");
         return i.getValue();
     }
 
     public static String testWithError() {
-        Issue463 i = new Issue463();
+        Issue582 i = new Issue582();
         i.returnAnotherValue("foobar");
         return i.getValue();
     }
