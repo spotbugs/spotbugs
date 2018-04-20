@@ -400,9 +400,10 @@ task eclipseSite() {
   dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
 }
 
+// create zip file to upload to GitHub release page
 task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
-  from("${buildDir}/site")
-  archiveName = "${eclipsePluginId}_site_${project.version}.zip"
+  from("${buildDir}/site/eclipse")
+  archiveName = "eclipsePlugin.zip"
 }
 
-tasks['assemble'].dependsOn eclipseSite
+tasks['assemble'].dependsOn eclipseSite, eclipseSiteZip
