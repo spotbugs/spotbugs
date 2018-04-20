@@ -1,29 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?> 
-<jnlp 
-  spec="1.0+" 
-  codebase="http://findbugs.cs.umd.edu/demo/jnlp" 
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+  spec="1.0+"
+  codebase="http://findbugs.cs.umd.edu/demo/jnlp"
   href="findbugs.jnlp">
-  <information> 
+  <information>
     <title>FindBugs</title>
-    <vendor>University of Maryland</vendor> 
-    <homepage href="http://findbugs.sourceforge.net"/> 
-    <description>Findbugs: Static Bug Finder</description> 
-    <description kind="short">Static analysis tool for defect detection</description> 
-    <icon href="buggy-sm.png"/> 
-    <offline-allowed/> 
-  </information> 
-  <security> 
-      <all-permissions/> 
-  </security> 
-  <resources> 
+    <vendor>University of Maryland</vendor>
+    <homepage href="http://findbugs.sourceforge.net"/>
+    <description>Findbugs: Static Bug Finder</description>
+    <description kind="short">Static analysis tool for defect detection</description>
+    <icon href="buggy-sm.png"/>
+    <offline-allowed/>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
     <j2se version="1.5+" initial-heap-size="300m" max-heap-size="600m"/>
     <jar href="findbugs.jar"/>
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
     <jar href="dom4j-2.1.0.jar"/>
-    <jar href="asm-3.3.jar"/>
-    <jar href="asm-tree-3.3.jar"/>
-    <jar href="asm-commons-3.3.jar"/>
+    <jar href="asm-6.1.1.jar"/>
+    <jar href="asm-analysis-6.1.1.jar"/>
+    <jar href="asm-commons-6.1.1.jar"/>
+    <jar href="asm-tree-6.1.1.jar"/>
+    <jar href="asm-util-6.1.1.jar"/>
+    <jar href="asm-xml-6.1.1.jar"/>
     <jar href="jaxen-1.1.6.jar"/>
     <jar href="jFormatString.jar"/>
     <jar href="commons-lang-2.6.jar"/>
@@ -31,7 +34,6 @@
     <property name="findbugs.jaws" value="true"/>
     <property name="findbugs.noSummary" value="true"/>
     <property name="apple.laf.useScreenMenuBar" value="true"/>
-  </resources> 
-  <application-desc main-class="edu.umd.cs.findbugs.gui2.Driver"/> 
-</jnlp> 
-
+  </resources>
+  <application-desc main-class="edu.umd.cs.findbugs.gui2.Driver"/>
+</jnlp>
