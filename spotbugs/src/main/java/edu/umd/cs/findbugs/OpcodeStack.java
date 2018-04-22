@@ -634,20 +634,29 @@ public class OpcodeStack implements Constants2 {
             this.signature = signature;
             if (constValue instanceof Number) {
                 Number constantNumericValue = (Number) constValue;
-                if ("B".equals(signature)) {
-                    this.constValue = constantNumericValue.byteValue();
-                } else if ("S".equals(signature)) {
-                    this.constValue = constantNumericValue.shortValue();
-                } else if ("C".equals(signature)) {
-                    this.constValue = (char) constantNumericValue.intValue();
-                } else if ("I".equals(signature)) {
-                    this.constValue = constantNumericValue.intValue();
-                } else if ("D".equals(signature)) {
-                    this.constValue = constantNumericValue.doubleValue();
-                } else if ("F".equals(signature)) {
-                    this.constValue = constantNumericValue.floatValue();
+                switch (signature) {
+                    case "B":
+                        this.constValue = constantNumericValue.byteValue();
+                    break;
+                    case "S":
+                        this.constValue = constantNumericValue.shortValue();
+                    break;
+                    case "C":
+                        this.constValue = (char) constantNumericValue.intValue();
+                    break;
+                    case "I":
+                        this.constValue = constantNumericValue.intValue();
+                    break;
+                    case "J":
+                        this.constValue = constantNumericValue.longValue();
+                    break;
+                    case "D":
+                        this.constValue = constantNumericValue.doubleValue();
+                    break;
+                    case "F":
+                        this.constValue = constantNumericValue.floatValue();
+                    break;
                 }
-
             }
             char s = signature.charAt(0);
             if (s != 'L' && s != '[') {
