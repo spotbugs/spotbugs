@@ -282,6 +282,45 @@ task featureDailyJar(type:Zip) {
   destinationDir = file("${buildDir}/site/eclipse-daily/features/")
 }
 
+task siteHtml(type:Copy) {
+  filter(tokens:[
+    'URL': 'https://spotbugs.github.io/eclipse/'
+  ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site.html'
+  destinationDir = file("${buildDir}/site/eclipse")
+  rename { 'index.html' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
+}
+
+task siteCandidateHtml(type:Copy) {
+  filter(tokens:[
+    'URL': 'https://spotbugs.github.io/eclipse-candidate/'
+  ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site.html'
+  destinationDir = file("${buildDir}/site/eclipse-candidate")
+  rename { 'index.html' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
+}
+
+task siteDailyHtml(type:Copy) {
+  filter(tokens:[
+    'URL': 'https://spotbugs.github.io/eclipse-latest/'
+  ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site.html'
+  destinationDir = file("${buildDir}/site/eclipse-daily")
+  rename { 'index.html' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
+}
+
 task siteXml(type:Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.xml'
@@ -321,7 +360,7 @@ task generateP2Metadata(type:Exec) {
     project.delete "${buildDir}/site/eclipse/content.xml"
   }
   inputs.file 'local.properties'
-  dependsOn pluginJar, featureJar, siteXml
+  dependsOn pluginJar, featureJar, siteXml, siteHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
@@ -335,7 +374,7 @@ task generateCandidateP2Metadata(type:Exec) {
     project.delete "${buildDir}/site/eclipse-candidate/content.xml"
   }
   inputs.file 'local.properties'
-  dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml
+  dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
@@ -349,7 +388,7 @@ task generateP2MetadataDaily(type:Exec) {
     project.delete "${buildDir}/site/eclipse-daily/content.xml"
   }
   inputs.file 'local.properties'
-  dependsOn pluginDailyJar, featureDailyJar, siteDailyXml
+  dependsOn pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
@@ -361,9 +400,10 @@ task eclipseSite() {
   dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
 }
 
+// create zip file to upload to GitHub release page
 task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
-  from("${buildDir}/site")
-  archiveName = "${eclipsePluginId}_site_${project.version}.zip"
+  from("${buildDir}/site/eclipse")
+  archiveName = "eclipsePlugin.zip"
 }
 
-tasks['assemble'].dependsOn eclipseSite
+tasks['assemble'].dependsOn eclipseSite, eclipseSiteZip
