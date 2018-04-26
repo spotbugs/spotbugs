@@ -94,6 +94,13 @@ deploy:
       tags: true
       jdk: oraclejdk8
       condition: "$TRAVIS_TAG != *'_RC'*"
+  - provider: releases
+    api_key: $GITHUB_TOKEN
+    file: "eclipsePlugin/build/distributions/eclipsePlugin.zip"
+    skip_cleanup: true
+    on:
+      tags: true
+      jdk: oraclejdk8
   - provider: script
     skip_cleanup: true
     script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
