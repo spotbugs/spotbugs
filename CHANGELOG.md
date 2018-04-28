@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+
+* Close source file after analysis ([#591](https://github.com/spotbugs/spotbugs/issues/591))
+
 ## 3.1.3 - 2018-04-18
 
 ### Added
@@ -17,7 +21,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Handle annotation on `package-info.class` properly ([#592](https://github.com/spotbugs/spotbugs/issues/592))
 * Update asm to 6.1.1 to support Java 10
 * Update Apache BCEL to 6.2 to support Java 9 package & module reference
-* Close source file after analysis ([#591](https://github.com/spotbugs/spotbugs/issues/591))
 
 ## 3.1.2 - 2018-02-24
 
