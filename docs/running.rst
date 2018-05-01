@@ -126,17 +126,12 @@ Common command-line options
 
 These options may be used with both the GUI and command-line interfaces.
 
--effort:min:
-  This option disables analyses that increase precision but also increase memory consumption.
-  You may want to try this option if you find that SpotBugs runs out of memory, or takes an unusually long time to complete its analysis.
-  See :doc:`effort`.
-
--effort:max:
-  Enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
-  See :doc:`effort`.
-
--effort[:less|default|more]:
-  Set other options in analysis effort level.
+-effort[:min|less|default|more|max]:
+  Set analysis effort level. 
+  The -effort:min disables several analyses that increase precision but also increase memory consumption. You may want to try this option if you find that SpotBugs with the -effort:less still runs out of memory, or takes an unusually long time to complete its analysis.
+  The -effort:less disables some analyses that increase precision but also increase memory consumption. You may want to try this option if you find that SpotBugs with the -effort:more/-effort:default runs out of memory, or takes an unusually long time to complete its analysis.
+  The -effort:more runs several analyses to find bugs, this is the -effort:default.
+  The -effort:max enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
   See :doc:`effort`.
 
 -project *project*:
