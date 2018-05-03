@@ -49,7 +49,7 @@ public class TypeQualifierResolver {
             .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
 
     static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
-            .createClassDescriptor(java.lang.annotation.ElementType.class);
+            .createClassDescriptor(ElementType.class);
 
     static final ClassDescriptor androidNullable = DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable");
 

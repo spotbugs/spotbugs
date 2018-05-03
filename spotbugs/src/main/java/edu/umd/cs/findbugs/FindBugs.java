@@ -279,10 +279,10 @@ public abstract class FindBugs {
                 }
             }
             if (maxRank > rankThreshold) {
-                if (false) {
-                    System.out.println("Detector " + factory.getShortName() + " has max rank " + maxRank + ", disabling");
-                    System.out.println("Reports : " + reportedBugPatterns);
-                }
+                //~ if (false) {
+                    //~ System.out.println("Detector " + factory.getShortName() + " has max rank " + maxRank + ", disabling");
+                    //~ System.out.println("Reports : " + reportedBugPatterns);
+                //~ }
                 return false;
             }
         }

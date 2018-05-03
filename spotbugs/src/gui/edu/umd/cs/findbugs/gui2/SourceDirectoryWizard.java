@@ -24,9 +24,19 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 import edu.umd.cs.findbugs.DiscoverSourceDirectories;
 import edu.umd.cs.findbugs.Project;
@@ -42,7 +52,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  *
  * @author David Hovemeyer
  */
-public class SourceDirectoryWizard extends javax.swing.JDialog {
+public class SourceDirectoryWizard extends JDialog {
 
     private static final int MIN_STEP = 1;
 
@@ -73,38 +83,38 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
 
         foundModel = new DefaultListModel<>();
         progressModel = new DefaultListModel<>();
-        contentPanel = new javax.swing.JPanel();
-        secondPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jList2 = new javax.swing.JList<>();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        firstPanel = new javax.swing.JPanel();
-        sourceRootLabel = new javax.swing.JLabel();
-        sourceRootBox = new javax.swing.JTextField();
-        srcFileIconLabel = new javax.swing.JLabel();
-        card1TitleLabel = new javax.swing.JLabel();
+        contentPanel = new JPanel();
+        secondPanel = new JPanel();
+        jScrollPane1 = new JScrollPane();
+        jScrollPane2 = new JScrollPane();
+        jList1 = new JList<>();
+        jList2 = new JList<>();
+        jLabel1 = new JLabel();
+        jLabel2 = new JLabel();
+        jLabel3 = new JLabel();
+        firstPanel = new JPanel();
+        sourceRootLabel = new JLabel();
+        sourceRootBox = new JTextField();
+        srcFileIconLabel = new JLabel();
+        card1TitleLabel = new JLabel();
         chooser = new JFileChooser();
-        browseButton = new javax.swing.JButton();
-        card1Explanation1Label = new javax.swing.JLabel();
-        card1Explanation2Label = new javax.swing.JLabel();
-        card1Explanation3Label = new javax.swing.JLabel();
-        previousButton = new javax.swing.JButton();
-        nextButton = new javax.swing.JButton();
-        finshButton = new javax.swing.JButton();
-        errorMessageLabel = new javax.swing.JLabel();
+        browseButton = new JButton();
+        card1Explanation1Label = new JLabel();
+        card1Explanation2Label = new JLabel();
+        card1Explanation3Label = new JLabel();
+        previousButton = new JButton();
+        nextButton = new JButton();
+        finshButton = new JButton();
+        errorMessageLabel = new JLabel();
         Dimension d = new Dimension(600, 425);
         this.setPreferredSize(d);
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("SpotBugs Source Directory Configuration Wizard");
         getContentPane().setLayout(null);
 
         jList2.setModel(progressModel);
 
-        contentPanel.setLayout(new java.awt.CardLayout());
+        contentPanel.setLayout(new CardLayout());
 
         secondPanel.setLayout(null);
 
@@ -135,7 +145,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         firstPanel.add(jScrollPane2);
         jScrollPane2.setBounds(200, 250, 250, 75);
 
-        firstPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        firstPanel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         firstPanel.setLayout(null);
 
         sourceRootLabel.setText("Top-level source directory:");
@@ -144,7 +154,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
         firstPanel.add(sourceRootBox);
         sourceRootBox.setBounds(200, 210, 250, 29);
 
-        srcFileIconLabel.setIcon(new javax.swing.ImageIcon("/usr/share/icons/default.kde/128x128/mimetypes/source_java.png")); // NOI18N
+        srcFileIconLabel.setIcon(new ImageIcon("/usr/share/icons/default.kde/128x128/mimetypes/source_java.png")); // NOI18N
         firstPanel.add(srcFileIconLabel);
         srcFileIconLabel.setBounds(50, 80, 128, 128);
 
@@ -351,7 +361,7 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
      */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
-            final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new javax.swing.JFrame(), true, new Project(),
+            final SourceDirectoryWizard dialog = new SourceDirectoryWizard(new JFrame(), true, new Project(),
                     null);
             dialog.setVisible(true);
         });
@@ -372,47 +382,47 @@ public class SourceDirectoryWizard extends javax.swing.JDialog {
     public Thread discover;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton browseButton;
+    private JButton browseButton;
 
-    private javax.swing.JLabel card1Explanation1Label;
+    private JLabel card1Explanation1Label;
 
-    private javax.swing.JLabel card1Explanation2Label;
+    private JLabel card1Explanation2Label;
 
-    private javax.swing.JLabel card1Explanation3Label;
+    private JLabel card1Explanation3Label;
 
-    private javax.swing.JLabel card1TitleLabel;
+    private JLabel card1TitleLabel;
 
-    private javax.swing.JPanel contentPanel;
+    private JPanel contentPanel;
 
-    private javax.swing.JLabel errorMessageLabel;
+    private JLabel errorMessageLabel;
 
-    private javax.swing.JButton finshButton;
+    private JButton finshButton;
 
-    private javax.swing.JPanel firstPanel;
+    private JPanel firstPanel;
 
-    private javax.swing.JLabel jLabel1;
+    private JLabel jLabel1;
 
-    private javax.swing.JLabel jLabel2;
+    private JLabel jLabel2;
 
-    private javax.swing.JLabel jLabel3;
+    private JLabel jLabel3;
 
-    private javax.swing.JList<String> jList1;
+    private JList<String> jList1;
 
-    private javax.swing.JScrollPane jScrollPane1;
+    private JScrollPane jScrollPane1;
 
-    private javax.swing.JScrollPane jScrollPane2;
+    private JScrollPane jScrollPane2;
 
-    private javax.swing.JButton nextButton;
+    private JButton nextButton;
 
-    private javax.swing.JButton previousButton;
+    private JButton previousButton;
 
-    private javax.swing.JPanel secondPanel;
+    private JPanel secondPanel;
 
-    private javax.swing.JTextField sourceRootBox;
+    private JTextField sourceRootBox;
 
-    private javax.swing.JLabel sourceRootLabel;
+    private JLabel sourceRootLabel;
 
-    private javax.swing.JLabel srcFileIconLabel;
+    private JLabel srcFileIconLabel;
 
     // End of variables declaration//GEN-END:variables
 

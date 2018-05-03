@@ -25,6 +25,7 @@
 
 package edu.umd.cs.findbugs;
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
+import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeFileList;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;
@@ -67,7 +68,6 @@ import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
@@ -825,14 +825,14 @@ public class Project implements XMLWriteable {
             for (File file : currentWorkingDirectoryList) {
                 cwdStrings.add(file.getPath());
             }
-            XMLOutputUtil.writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
+            writeElementList(xmlOutput, WRK_DIR_ELEMENT_NAME, convertToRelative(cwdStrings, base));
         } else {
             // TODO to allow relative paths: refactor the code which uses null
             // file arguments
             writeElementList(xmlOutput, JAR_ELEMENT_NAME, analysisTargets);
             writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
             writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
-            XMLOutputUtil.writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
+            writeFileList(xmlOutput, WRK_DIR_ELEMENT_NAME, currentWorkingDirectoryList);
         }
 
         if (!suppressionFilter.isEmpty()) {
