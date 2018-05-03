@@ -2982,7 +2982,7 @@ public class OpcodeStack implements Constants2 {
                 setJumpInfoChangedByBackwardBranch("locals", from, target);
             }
             List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
-            if (stack.size() > 0 && stackAtTarget != null && mergeLists(stackAtTarget, stack, false)) {
+            if (!stack.isEmpty() && stackAtTarget != null && mergeLists(stackAtTarget, stack, false)) {
                 setJumpInfoChangedByBackwardBranch("stack", from, target);
             }
         }
