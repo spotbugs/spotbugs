@@ -170,24 +170,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     LinkedList<Jump> forwardJumps = new LinkedList<>();
 
-    void purgeForwardJumps(int before) {
-        if (true) {
-            return;
-            /*
-        for (Iterator<Jump> i = forwardJumps.iterator(); i.hasNext();) {
-            Jump j = i.next();
-            if (j.to < before)
-                i.remove();
-        }
-             */
-        }
-    }
-
     void addForwardJump(int from, int to) {
         if (from >= to) {
             return;
         }
-        purgeForwardJumps(from);
         forwardJumps.add(new Jump(from, to));
     }
 

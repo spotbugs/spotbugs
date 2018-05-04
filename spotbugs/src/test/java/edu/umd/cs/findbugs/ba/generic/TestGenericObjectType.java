@@ -19,7 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +74,7 @@ public class TestGenericObjectType {
 
         if (typeCategory == TypeCategory.PARAMETERIZED) {
             assertTrue(obj.hasParameters());
-            assertTrue(obj.getNumParameters() == parameters.size());
+            assertEquals(parameters.size(), obj.getNumParameters());
             for (int i = 0; i < obj.getNumParameters(); i++) {
                 compareTypes(obj.getParameterAt(i), parameters.get(i));
             }

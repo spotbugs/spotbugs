@@ -45,7 +45,7 @@ public class SourceMatcherTest {
     private String fileName;
 
     @Before
-    public void setup() {
+    public void setUp() {
         bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         fileName = "bla.groovy";
     }

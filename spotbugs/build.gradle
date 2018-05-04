@@ -67,10 +67,8 @@ dependencies {
 }
 
 pmd {
-    ruleSets = [
-        'java-braces',
-        'java-imports'
-    ]
+    ruleSets = []
+    ruleSetFiles = files("pmd-rules.xml")
 }
 
 // spotbugs {

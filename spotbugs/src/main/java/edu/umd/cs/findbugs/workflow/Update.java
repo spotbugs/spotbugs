@@ -621,7 +621,9 @@ public class Update {
                 if (q == null) {
                     continue;
                 }
-                for (Iterator<BugInstance> i = q.iterator(); i.hasNext();) {
+                Iterator<BugInstance> i = q.iterator();
+                boolean foundLiveBug = false;
+                while (!foundLiveBug && i.hasNext()) {
                     BugInstance matchedBug = i.next();
 
                     if (matchedBug.isDead()) {
@@ -635,6 +637,7 @@ public class Update {
                         // System.out.println("  resurrected " +
                         // bug.getMessageWithoutPrefix());
                     }
+                    foundLiveBug = true;
 
                     //                    matchedBugs++;
                     mapFromNewToOldBug.put(bug, matchedBug);
@@ -643,7 +646,6 @@ public class Update {
                     if (q.isEmpty()) {
                         set.remove(bug);
                     }
-                    break;
                 }
             }
         }

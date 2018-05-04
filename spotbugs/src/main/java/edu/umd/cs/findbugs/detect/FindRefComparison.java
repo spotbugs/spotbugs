@@ -1206,22 +1206,20 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 looksLikeTestCase = false;
                 priorityModifier = 0;
             }
-            if (true) {
-                Set<XMethod> targets = new HashSet<>();
-                boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
-                if (allOk) {
-                    priorityModifier += 2;
-                }
-
-                int priority = result.getPriority() + priorityModifier;
-                bugAccumulator.accumulateBug(
-                        new BugInstance(this, "EC_UNRELATED_TYPES", priority)
-                        .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                        .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
-                        .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
-                        SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
-                                location.getHandle()));
+            Set<XMethod> targets = new HashSet<>();
+            boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
+            if (allOk) {
+                priorityModifier += 2;
             }
+
+            int priority = result.getPriority() + priorityModifier;
+            bugAccumulator.accumulateBug(
+                    new BugInstance(this, "EC_UNRELATED_TYPES", priority)
+                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
+                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
+                            location.getHandle()));
         } else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE
                 || result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
             bugAccumulator.accumulateBug(

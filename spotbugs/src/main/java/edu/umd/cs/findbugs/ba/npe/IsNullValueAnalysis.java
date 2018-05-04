@@ -430,18 +430,16 @@ IsNullValueAnalysisFeatures {
 
                 // Downgrade NULL and NSP to DNR if the handler is for
                 // CloneNotSupportedException or InterruptedException
-                if (true) {
-                    CodeExceptionGen handler = destBlock.getExceptionGen();
-                    ObjectType catchType = handler.getCatchType();
-                    if (catchType != null) {
-                        String catchClass = catchType.getClassName();
-                        if ("java.lang.CloneNotSupportedException".equals(catchClass)
-                                || "java.lang.InterruptedException".equals(catchClass)) {
-                            for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
-                                IsNullValue value = tmpFact.getValue(i);
-                                if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
-                                    tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
-                                }
+                CodeExceptionGen handler = destBlock.getExceptionGen();
+                ObjectType catchType = handler.getCatchType();
+                if (catchType != null) {
+                    String catchClass = catchType.getClassName();
+                    if ("java.lang.CloneNotSupportedException".equals(catchClass)
+                            || "java.lang.InterruptedException".equals(catchClass)) {
+                        for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
+                            IsNullValue value = tmpFact.getValue(i);
+                            if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
+                                tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
                             }
                         }
                     }
