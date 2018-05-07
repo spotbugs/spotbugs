@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.bcel.Const;
 
@@ -537,10 +538,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     @Override
     public boolean isSignificant() {
         String role = getDescription();
-        if (METHOD_DANGEROUS_TARGET.equals(role) || METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL.equals(role)
-                || METHOD_SAFE_TARGET.equals(role) || METHOD_EQUALS_USED.equals(role) || METHOD_COMPUTED_IN.equals(role)) {
-            return false;
-        }
-        return true;
+        return !Arrays.asList(METHOD_DANGEROUS_TARGET, METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL,
+            METHOD_SAFE_TARGET, METHOD_EQUALS_USED, METHOD_COMPUTED_IN).contains(role);
     }
 }

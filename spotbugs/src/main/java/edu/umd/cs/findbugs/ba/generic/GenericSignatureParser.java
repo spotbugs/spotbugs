@@ -249,11 +249,7 @@ public class GenericSignatureParser {
         GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
         GenericSignatureParser genericParser = new GenericSignatureParser(genericSignature);
 
-        if (plainParser.getNumParameters() != genericParser.getNumParameters()) {
-            return false;
-        }
-
-        return true;
+        return plainParser.getNumParameters() == genericParser.getNumParameters();
     }
 
     public static void main(String[] args) {

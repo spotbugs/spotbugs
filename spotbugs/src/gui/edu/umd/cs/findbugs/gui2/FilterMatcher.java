@@ -160,10 +160,8 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
             return false;
         }
 
-        if (filterBy.equals(((FilterMatcher) o).filterBy) && value.equals(((FilterMatcher) o).value)) {
-            return true;
-        }
-        return false;
+        FilterMatcher other = (FilterMatcher) o;
+        return filterBy.equals(other.filterBy) && value.equals(other.value);
     }
 
     @Override

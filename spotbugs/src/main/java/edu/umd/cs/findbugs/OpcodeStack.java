@@ -3653,10 +3653,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     public boolean isTop() {
-        if (top) {
-            return true;
-        }
-        return false;
+        return top;
     }
 
     void setReachOnlyByBranch(boolean reachOnlyByBranch) {

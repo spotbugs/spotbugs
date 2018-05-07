@@ -1064,10 +1064,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         if(inst.getOpcode() == Const.ALOAD_0) {
             return true;
         }
-        if(inst instanceof GETFIELD && ((GETFIELD)inst).getFieldName(cpg).startsWith("this$")) {
-            return true;
-        }
-        return false;
+        return inst instanceof GETFIELD && ((GETFIELD) inst).getFieldName(cpg).startsWith("this$");
     }
 
     /**

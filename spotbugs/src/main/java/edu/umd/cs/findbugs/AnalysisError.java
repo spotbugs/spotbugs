@@ -71,10 +71,7 @@ public class AnalysisError {
         if (!Arrays.equals(nestedStackTrace, other.nestedStackTrace)) {
             return false;
         }
-        if (!Arrays.equals(stackTrace, other.stackTrace)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(stackTrace, other.stackTrace);
     }
 
     /**

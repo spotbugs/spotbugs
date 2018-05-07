@@ -438,9 +438,6 @@ public class DetectorFactory {
         if (!className.equals(other.className)) {
             return false;
         }
-        if (!plugin.equals(other.plugin)) {
-            return false;
-        }
-        return true;
+        return plugin.equals(other.plugin);
     }
 }

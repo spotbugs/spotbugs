@@ -219,11 +219,8 @@ public class AssertionMethods implements Constants {
             if ("java.util.logging.Level".equals(className) && "SEVERE".equals(fieldName)) {
                 return true;
             }
-            if ("org.apache.log4j.Level".equals(className) && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName))) {
-                return true;
-            }
-            return false;
-
+            return "org.apache.log4j.Level".equals(className)
+                && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName));
         }
         return false;
     }

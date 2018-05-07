@@ -367,10 +367,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
             return true;
         }
         String name = getMethod().getName();
-        if ("hashCode".equals(name) || "equals".equals(name)) {
-            return true;
-        }
-        return false;
+        return "hashCode".equals(name) || "equals".equals(name);
 
     }
 

@@ -325,16 +325,9 @@ public class PreorderVisitor extends BetterVisitor implements Constants2 {
         if (!visitingMethod) {
             throw new IllegalStateException("Not visiting a method");
         }
-        if (!method.isStatic()) {
-            return false;
-        }
-        if (!"main".equals(getMethodName())) {
-            return false;
-        }
-        if (!"([Ljava/lang/String;)V".equals(getMethodSig())) {
-            return false;
-        }
-        return true;
+        return method.isStatic()
+            && "main".equals(getMethodName())
+            && "([Ljava/lang/String;)V".equals(getMethodSig());
 
     }
 

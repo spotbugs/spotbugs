@@ -631,7 +631,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet)
                     throws DataflowAnalysisException, ClassNotFoundException {
 
-        if (inExplictCatchNullBlock(location)) {
+        if (inExplicitCatchNullBlock(location)) {
             return;
         }
         boolean caught = inIndirectCatchNullBlock(location);
@@ -842,7 +842,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private void checkNonNullParam(Location location, ConstantPoolGen cpg, TypeDataflow typeDataflow,
             InvokeInstruction invokeInstruction, BitSet nullArgSet, BitSet definitelyNullArgSet) {
 
-        if (inExplictCatchNullBlock(location)) {
+        if (inExplicitCatchNullBlock(location)) {
             return;
         }
         boolean caught = inIndirectCatchNullBlock(location);
@@ -955,7 +955,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
         boolean duplicated = isDuplicated(propertySet, pc, isConsistent);
 
-        if (inExplictCatchNullBlock(location)) {
+        if (inExplicitCatchNullBlock(location)) {
             return;
         }
         boolean caught = inIndirectCatchNullBlock(location);
@@ -1650,7 +1650,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         boolean allDerefsAtDoomedLocations = true;
 
         for (Location loc : derefLocationSet) {
-            if (!inExplictCatchNullBlock(loc)) {
+            if (!inExplicitCatchNullBlock(loc)) {
                 derefOutsideCatchNullBlock = true;
                 if (!inIndirectCatchNullBlock(loc)) {
                     derefOutsideCatchBlock = true;
@@ -1765,14 +1765,11 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     }
 
-    boolean inExplictCatchNullBlock(Location loc) {
+    boolean inExplicitCatchNullBlock(Location loc) {
         int pc = loc.getHandle().getPosition();
         int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
                 "java/lang/NullPointerException", pc);
-        if (catchSize < Integer.MAX_VALUE) {
-            return true;
-        }
-        return false;
+        return catchSize < Integer.MAX_VALUE;
     }
 
     boolean inIndirectCatchNullBlock(Location loc) {
@@ -1789,9 +1786,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
         catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
                 "java/lang/Throwable", pc);
-        if (catchSize < 5) {
-            return true;
-        }
-        return false;
+        return catchSize < 5;
     }
 }

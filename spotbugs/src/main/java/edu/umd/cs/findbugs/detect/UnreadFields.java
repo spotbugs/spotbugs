@@ -328,10 +328,7 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         int lastDot = annotationClass.lastIndexOf('.');
         String lastPart = annotationClass.substring(lastDot + 1);
-        if (lastPart.startsWith("Inject")) {
-            return true;
-        }
-        return false;
+        return lastPart.startsWith("Inject");
     }
 
     @Override

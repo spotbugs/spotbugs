@@ -249,14 +249,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
             return false;
         }
         IsNullValueFrame o2 = (IsNullValueFrame) other;
-        if (!Util.nullSafeEquals(decision, o2.decision)) {
-            return false;
-        }
-        if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) {
-            return false;
-        }
-
-        return true;
+        return Util.nullSafeEquals(decision, o2.decision)
+            && !(trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap));
     }
 
     @Override

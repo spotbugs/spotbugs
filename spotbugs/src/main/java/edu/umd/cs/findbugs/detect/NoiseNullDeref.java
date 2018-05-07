@@ -474,10 +474,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         }
         catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
                 "java/lang/Throwable", pc);
-        if (catchSize < 5) {
-            return true;
-        }
-        return false;
+        return catchSize < 5;
 
     }
 }

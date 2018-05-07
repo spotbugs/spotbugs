@@ -296,12 +296,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
         if (!f.isFinal()) {
             return true;
         }
-        boolean isArray = f.getSignature().charAt(0) == '[';
-        if (!(isArray || isCollection(f.getSignature()))) {
-            return false;
-        }
-        return true;
-
+        String fieldSig = f.getSignature();
+        return fieldSig.charAt(0) == '[' || isCollection(fieldSig);
     }
 
     @Override

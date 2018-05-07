@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -188,15 +189,7 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
     }
 
     static boolean sameField(Item i1, Item i2) {
-        if (i1.getXField() == null) {
-            return false;
-        }
-        if (!i1.getXField().equals(i2.getXField())) {
-            return false;
-        }
-        if (i1.getFieldLoadedFromRegister() != i2.getFieldLoadedFromRegister()) {
-            return false;
-        }
-        return true;
+        return Objects.equals(i1.getXField(), i2.getXField())
+            && i1.getFieldLoadedFromRegister() == i2.getFieldLoadedFromRegister();
     }
 }

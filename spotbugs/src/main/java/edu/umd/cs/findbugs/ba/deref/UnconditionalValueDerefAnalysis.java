@@ -224,13 +224,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             return false;
         }
         IsNullValue value = invFrame.getTopValue();
-        if (value.isDefinitelyNotNull()) {
-            return false;
-        }
-        if (value.isDefinitelyNull()) {
-            return false;
-        }
-        return true;
+        return !(value.isDefinitelyNotNull() || value.isDefinitelyNull());
     }
 
     @Override
@@ -664,16 +658,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     }
 
     private static boolean reportDereference(IsNullValue value) {
-        if (value.isDefinitelyNotNull()) {
-            return false;
-        }
-        if (value.isDefinitelyNull()) {
-            return false;
-        }
-        if (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()) {
-            return false;
-        }
-        return true;
+        return !(value.isDefinitelyNotNull()
+            || value.isDefinitelyNull()
+            || (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()));
     }
 
     /**
@@ -685,7 +672,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      */
     private boolean isAssertion(InstructionHandle handle) {
         return assertionMethods.isAssertionHandle(handle, methodGen.getConstantPool());
-
     }
 
     @Override
@@ -963,12 +949,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             return false;
         }
         InstructionHandle h = edge.getSource().getLastInstruction();
-        if (h != null && h.getInstruction() instanceof IFNONNULL && isNullCheck(h, methodGen.getConstantPool())) {
-            return true;
-        }
-
-        return false;
-
+        return h != null
+            && h.getInstruction() instanceof IFNONNULL
+            && isNullCheck(h, methodGen.getConstantPool());
     }
 
     @Override

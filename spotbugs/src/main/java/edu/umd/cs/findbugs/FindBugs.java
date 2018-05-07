@@ -290,11 +290,7 @@ public abstract class FindBugs {
             return isTrainingDetector || isNonReportingDetector;
         }
 
-        if (isTrainingDetector) {
-            return false;
-        }
-
-        return true;
+        return !isTrainingDetector;
     }
 
     /**
