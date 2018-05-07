@@ -277,7 +277,7 @@ public class OpcodeStack implements Constants2 {
          * @deprecated will be deleted at v4 release. use {@link #getSpecialKindName(int)} instead.
          */
         @Deprecated
-        @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
+        @StaticConstant
         public static final HashMap<Integer, String> specialKindNames = new HashMap<>();
 
         private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
@@ -2770,13 +2770,10 @@ public class OpcodeStack implements Constants2 {
                 System.out.println("jump items: " + mergeFrom);
             }
         } else {
-            if (DEBUG2) {
-                if (intoSize != fromSize) {
-                    System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
-                    System.out.println("current items: " + mergeInto);
-                    System.out.println("jump items: " + mergeFrom);
-                }
-
+            if (DEBUG2 && intoSize != fromSize) {
+                System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
+                System.out.println("current items: " + mergeInto);
+                System.out.println("jump items: " + mergeFrom);
             }
 
             List<Item> mergeIntoCopy = null;
@@ -2952,9 +2949,8 @@ public class OpcodeStack implements Constants2 {
                     break;
                 }
             } while (myStack.isJumpInfoChangedByBackwardsBranch() && myStack.backwardsBranch);
-            if (iteration > 20&& iteration <= 40) {
+            if (iteration > 20 && iteration <= 40) {
                 AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
-
             }
             return new JumpInfo(myStack.jumpEntries, myStack.jumpStackEntries, myStack.jumpEntryLocations);
         }
@@ -2986,10 +2982,8 @@ public class OpcodeStack implements Constants2 {
                 setJumpInfoChangedByBackwardBranch("locals", from, target);
             }
             List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
-            if (stack.size() > 0 && stackAtTarget != null) {
-                if (mergeLists(stackAtTarget, stack, false)) {
-                    setJumpInfoChangedByBackwardBranch("stack", from, target);
-                }
+            if (!stack.isEmpty() && stackAtTarget != null && mergeLists(stackAtTarget, stack, false)) {
+                setJumpInfoChangedByBackwardBranch("stack", from, target);
             }
         }
 

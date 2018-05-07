@@ -493,8 +493,7 @@ public class Hierarchy2 {
      */
     public static @CheckForNull
     ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)  {
-        XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? Hierarchy.STATIC_METHOD
-                : Hierarchy.INSTANCE_METHOD);
+        XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD);
 
         if (method == null) {
             return null;

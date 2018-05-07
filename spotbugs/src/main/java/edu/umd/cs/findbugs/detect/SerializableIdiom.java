@@ -260,29 +260,26 @@ public class SerializableIdiom extends OpcodeStackDetector {
         // Is this a GUI or other class that is rarely serialized?
 
         isGUIClass = false;
-        isEjbImplClass = false;
-        if (true /*|| !directlyImplementsExternalizable && !implementsSerializableDirectly*/) {
-            isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
-            isJSPClass = Subtypes2.isJSP(obj);
-            isGUIClass = (Subtypes2.instanceOf(obj, "java.lang.Throwable") || Subtypes2.instanceOf(obj, "java.awt.Component")
-                    || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
-                    || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener") || Subtypes2.instanceOf(obj,
-                            "java.util.EventListener"));
-            if (!isGUIClass) {
-                JavaClass o = obj;
-                while (o != null) {
-                    if (o.getClassName().startsWith("java.awt") || o.getClassName().startsWith("javax.swing")) {
-                        isGUIClass = true;
-                        break;
-                    }
-                    try {
-                        o = o.getSuperClass();
-                    } catch (ClassNotFoundException e) {
-                        break;
-                    }
+        isEjbImplClass = Subtypes2.instanceOf(obj, "javax.ejb.SessionBean");
+        isJSPClass = Subtypes2.isJSP(obj);
+        isGUIClass = (Subtypes2.instanceOf(obj, "java.lang.Throwable") || Subtypes2.instanceOf(obj, "java.awt.Component")
+                || Subtypes2.instanceOf(obj, "java.awt.Component$AccessibleAWTComponent")
+                || Subtypes2.instanceOf(obj, "java.awt.event.ActionListener") || Subtypes2.instanceOf(obj,
+                        "java.util.EventListener"));
+        if (!isGUIClass) {
+            JavaClass o = obj;
+            while (o != null) {
+                if (o.getClassName().startsWith("java.awt") || o.getClassName().startsWith("javax.swing")) {
+                    isGUIClass = true;
+                    break;
                 }
-
+                try {
+                    o = o.getSuperClass();
+                } catch (ClassNotFoundException e) {
+                    break;
+                }
             }
+
         }
 
         foundSynthetic = false;

@@ -820,15 +820,6 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
             // XXX More to come
         }
-        // If one is a Parameter Type and the other is not, then they
-        // are incompatible. (We already know neither is java.lang.Object)
-        if (false) {
-            // not true. Consider class Foo extends ArrayList<String>
-            if (expectedCat == TypeCategory.PARAMETERIZED ^ argCat == TypeCategory.PARAMETERIZED) {
-                return IncompatibleTypes.SEEMS_OK; // fix this when we know what
-                // we are doing here
-            }
-        }
 
         // -~- Wildcard e.g. List<*>.contains(...)
         if (expectedCat == TypeCategory.WILDCARD) {

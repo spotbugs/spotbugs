@@ -643,6 +643,8 @@ public class DumbMethods extends OpcodeStackDetector {
 
     MethodDescriptor previousMethodCall = null;
 
+    // we're specifically checking for the mistake of constructing a BigDecimal from a floating point primitive
+    @SuppressWarnings("PMD.AvoidDecimalLiteralsInBigDecimalConstructor")
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS", justification = "False positive, see https://github.com/spotbugs/spotbugs/issues/87")
     @Override
     public void sawOpcode(int seen) {
@@ -1040,17 +1042,6 @@ public class DumbMethods extends OpcodeStackDetector {
                 if(stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE) {
                     OpcodeStack.Item top = stack.getStackItem(0);
                     if (top.getRegisterNumber() != -1 && getMaxPC() > getNextPC() + 6) {
-                        if (false) {
-                            for(int i = -2; i <= 0; i++) {
-                                int o = getPrevOpcode(-i);
-                                System.out.printf("%2d %3d  %2x %s%n",  i, o, o, Const.getOpcodeName(o));
-                            }
-                            for(int i = 0; i < 7; i++) {
-                                int o = getNextCodeByte(i);
-                                System.out.printf("%2d %3d %2x %s%n",  i, o, o, Const.getOpcodeName(o));
-
-                            }
-                        }
                         int jump1, jump2;
                         if (seen == Const.IFGE) {
                             jump1 = Const.IF_ICMPLT;

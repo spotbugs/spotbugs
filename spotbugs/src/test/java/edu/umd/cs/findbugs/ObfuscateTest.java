@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class ObfuscateTest {
     public void testMethodSignature() {
         String sig = "([Lcom.google.Search;I)Lcom.google.Money;";
         String result = Obfuscate.hashMethodSignature(sig);
-        assertTrue("hash of " + sig + " gives " + result, result.indexOf("google") == -1);
+        assertEquals("hash of " + sig + " gives " + result, result.indexOf("google"), -1);
         System.out.println(result);
     }
 
