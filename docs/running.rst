@@ -137,6 +137,21 @@ These options may be used with both the GUI and command-line interfaces.
 -project *project*:
   Specify a project to be analyzed. The project file you specify should be one that was created using the GUI interface.
   It will typically end in the extension .fb or .fbp.
+  
+-pluginList <jar1[;jar2...]>:
+  Specify list of plugin Jar files to load.
+  
+-home <home directory>:
+  Specify SpotBugs home directory.
+    
+-adjustExperimental:
+  Lower priority of experimental Bug Patterns.
+  
+-workHard:
+  Ensure analysis effort is at least 'default'.
+
+-conserveSpace:
+  Same as -effort:min (for backward compatibility).
 
 GUI Options
 ^^^^^^^^^^^
@@ -233,24 +248,9 @@ These options are only accepted by the Text User Interface.
 
 -showPlugins:
   Show list of available detector plugins.
-  
--pluginList <jar1[;jar2...]>:
-  Specify list of plugin Jar files to load.
-  
--home <home directory>:
-  Specify SpotBugs home directory.
-    
--adjustExperimental:
-  Lower priority of experimental Bug Patterns.
-  
--workHard:
-  Ensure analysis effort is at least 'default'.
-
--conserveSpace:
-  Same as -effort:min (for backward compatibility).
 
 Output options
-^^^^^^^^^^^^^^
+**************
 -timestampNow:
   Set timestamp of results to be current time.
 
@@ -291,7 +291,7 @@ Output options
   Redo analysis in provided file.
   
 Output filtering options
-^^^^^^^^^^^^^^^^^^^^^^^^
+************************
 -bugCategories <cat1[,cat2...]>:
   Only report bugs in given categories.
 
@@ -302,7 +302,7 @@ Output filtering options
   Exclude any bugs that match suppression filter loaded from fbp file.
 
 Detector (visitor) configuration options
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+****************************************
 -visitors <v1[,v2...]>:
   Run only named visitors.
 
@@ -319,7 +319,7 @@ Detector (visitor) configuration options
   Raise/lower priority of warnings for given visitor(s)
 
 Project configuration options
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*****************************
 -sourcepath <source path>:
   Set source path for analyzed classes.
 
