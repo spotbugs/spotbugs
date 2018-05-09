@@ -1169,24 +1169,21 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         }
 
         // Create FindBugs2 engine
-        FindBugs2 findBugs = new FindBugs2();
+        try (FindBugs2 findBugs = new FindBugs2()) {
+            // Parse command line and configure the engine
+            TextUICommandLine commandLine = new TextUICommandLine();
+            FindBugs.processCommandLine(commandLine, args, findBugs);
 
-        // Parse command line and configure the engine
-        TextUICommandLine commandLine = new TextUICommandLine();
-        FindBugs.processCommandLine(commandLine, args, findBugs);
+            boolean justPrintConfiguration = commandLine.justPrintConfiguration();
+            if (justPrintConfiguration || commandLine.justPrintVersion()) {
+                Version.printVersion(justPrintConfiguration);
 
+                return;
+            }
+            // Away we go!
 
-        boolean justPrintConfiguration = commandLine.justPrintConfiguration();
-        if (justPrintConfiguration || commandLine.justPrintVersion()) {
-            Version.printVersion(justPrintConfiguration);
-
-            return;
+            FindBugs.runMain(findBugs, commandLine);
         }
-        // Away we go!
-
-
-        FindBugs.runMain(findBugs, commandLine);
-
     }
 
 
@@ -1231,7 +1228,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
     @Override
     public void close() {
-        clearCaches();
+        dispose();
     }
 
 }
