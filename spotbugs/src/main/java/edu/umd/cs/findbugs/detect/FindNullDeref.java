@@ -147,7 +147,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
     //    private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
-    private static final String METHOD = SystemProperties.getProperty("fnd.method");
+    private static final String METHOD_NAME = SystemProperties.getProperty("fnd.method");
 
     private static final String CLASS = SystemProperties.getProperty("fnd.class");
 
@@ -200,7 +200,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
 
                 currentMethod = SignatureConverter.convertMethodSignature(jclass, method);
 
-                if (METHOD != null && !method.getName().equals(METHOD)) {
+                if (METHOD_NAME != null && !method.getName().equals(METHOD_NAME)) {
                     continue;
                 }
                 if (DEBUG || DEBUG_NULLARG) {

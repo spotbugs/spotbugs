@@ -247,7 +247,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public static MethodAnnotation fromCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
 
         MethodAnnotation methodAnnotation = fromForeignMethod(className, methodName, methodSig, isStatic);
-        methodAnnotation.setDescription("METHOD_CALLED");
+        methodAnnotation.setDescription(METHOD_CALLED);
         return methodAnnotation;
 
     }
