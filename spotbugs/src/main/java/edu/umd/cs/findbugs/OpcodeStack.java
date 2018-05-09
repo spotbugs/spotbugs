@@ -2747,6 +2747,18 @@ public class OpcodeStack implements Constants2 {
             push(i);
         }
 
+        if (seen == Const.INVOKESTATIC && topItem != null && topItem.isInitialParameter()
+                && isMethodThatReturnsGivenReference(clsName, methodName)) {
+            assert getStackDepth() > 0;
+            assert !getStackItem(0).isInitialParameter();
+            // keep returned StackItem as initial parameter
+            getStackItem(0).setInitialParameter(true);
+        }
+    }
+
+    private boolean isMethodThatReturnsGivenReference(String clsName, String methodName) {
+        return "java/util/Objects".equals(clsName) && "requireNonNull".equals(methodName)
+                || "com/google/common/base/Preconditions".equals(clsName) && "checkNotNull".equals(methodName);
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
