@@ -41,7 +41,7 @@ public class AnalysisError {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof AnalysisError)) {
+        if (!(obj instanceof AnalysisError)) {
             return false;
         }
         AnalysisError other = (AnalysisError) obj;

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * @author David Hovemeyer
@@ -40,7 +41,7 @@ public class DefaultNullnessAnnotations {
 
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
-        database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
+        database.addDefaultAnnotation(AnnotationDatabase.Target.METHOD, Values.DOTTED_JAVA_LANG_STRING, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
         database.addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
@@ -60,15 +61,15 @@ public class DefaultNullnessAnnotations {
                 NullnessAnnotation.CHECK_FOR_NULL);
 
 
-        database.addMethodAnnotation("java.io.File", "list", "()[Ljava/lang/String;", false,
+        database.addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "list", "()[Ljava/lang/String;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodAnnotation("java.io.File", "list", "(Ljava/io/FilenameFilter;)[Ljava/lang/String;", false,
+        database.addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "list", "(Ljava/io/FilenameFilter;)[Ljava/lang/String;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodAnnotation("java.io.File", "listFiles", "()[Ljava/io/File;", false,
+        database.addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "listFiles", "()[Ljava/io/File;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodAnnotation("java.io.File", "listFiles", "(Ljava/io/FilenameFilter;)[Ljava/io/File;", false,
+        database.addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "listFiles", "(Ljava/io/FilenameFilter;)[Ljava/io/File;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
-        database.addMethodAnnotation("java.io.File", "listFiles", "(Ljava/io/FileFilter;)[Ljava/io/File;", false,
+        database.addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "listFiles", "(Ljava/io/FileFilter;)[Ljava/io/File;", false,
                 NullnessAnnotation.CHECK_FOR_NULL);
 
         database.addMethodAnnotation("java.lang.ref.ReferenceQueue", "poll", "()Ljava/lang/ref/Reference;", false,
@@ -80,19 +81,19 @@ public class DefaultNullnessAnnotations {
                 NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false,
                 NullnessAnnotation.NONNULL);
-        database.addMethodAnnotation("java.lang.Object", "clone", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
-        database.addMethodAnnotation("java.lang.Object", "toString", "()Ljava/lang/String;", false, NullnessAnnotation.NONNULL);
-        database.addMethodAnnotation("java.lang.Object", "getClass", "()Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation(Values.DOTTED_JAVA_LANG_OBJECT, "clone", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation(Values.DOTTED_JAVA_LANG_OBJECT, "toString", "()Ljava/lang/String;", false, NullnessAnnotation.NONNULL);
+        database.addMethodAnnotation(Values.DOTTED_JAVA_LANG_OBJECT, "getClass", "()Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 
-        database.addMethodParameterAnnotation("java.lang.Object", "equals", "(Ljava/lang/Object;)Z", false, 0,
+        database.addMethodParameterAnnotation(Values.DOTTED_JAVA_LANG_OBJECT, "equals", "(Ljava/lang/Object;)Z", false, 0,
                 NullnessAnnotation.CHECK_FOR_NULL);
         database.addMethodParameterAnnotation("java.util.Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", true, 0,
                 NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("java.lang.Integer", "<init>", "(Ljava/lang/String;)V", false, 0,
+        database.addMethodParameterAnnotation(Values.DOTTED_JAVA_LANG_INTEGER, "<init>", "(Ljava/lang/String;)V", false, 0,
                 NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;I)I", true, 0,
+        database.addMethodParameterAnnotation(Values.DOTTED_JAVA_LANG_INTEGER, "parseInt", "(Ljava/lang/String;I)I", true, 0,
                 NullnessAnnotation.NONNULL);
-        database.addMethodParameterAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true, 0,
+        database.addMethodParameterAnnotation(Values.DOTTED_JAVA_LANG_INTEGER, "parseInt", "(Ljava/lang/String;)I", true, 0,
                 NullnessAnnotation.NONNULL);
         database.addMethodAnnotation("java.nio.channels.SocketChannel", "open", "()Ljava/nio/channels/SocketChannel;", true,
                 NullnessAnnotation.NONNULL);

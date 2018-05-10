@@ -342,7 +342,7 @@ public abstract class FindBugs {
         try {
             argCount = commandLine.parse(argv);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            LOGGER.severe(e.getMessage());
             showHelp(commandLine);
         } catch (HelpRequestedException e) {
             showHelp(commandLine);
@@ -357,7 +357,7 @@ public abstract class FindBugs {
         commandLine.configureEngine(findBugs);
         if (commandLine.getProject().getFileCount() == 0 &&
                 !commandLine.justPrintConfiguration() && !commandLine.justPrintVersion()) {
-            System.out.println("No files to be analyzed");
+            LOGGER.warning("No files to be analyzed");
 
             showHelp(commandLine);
         }
@@ -405,27 +405,27 @@ public abstract class FindBugs {
         int errorCount = findBugs.getErrorCount();
 
         if (verbose) {
-            System.err.println("Warnings generated: " + bugCount);
-            System.err.println("Missing classes: " + missingClassCount);
-            System.err.println("Analysis errors: " + errorCount);
+            LOGGER.fine("Warnings generated: " + bugCount);
+            LOGGER.fine("Missing classes: " + missingClassCount);
+            LOGGER.fine("Analysis errors: " + errorCount);
         }
 
         if (commandLine.setExitCode()) {
             int exitCode = 0;
-            System.err.println("Calculating exit code...");
+            LOGGER.info("Calculating exit code...");
             if (errorCount > 0) {
                 exitCode |= ExitCodes.ERROR_FLAG;
-                System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                LOGGER.fine("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
             }
             if (missingClassCount > 0) {
                 exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                System.err.println("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
+                LOGGER.fine("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
             }
             if (bugCount > 0) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+                LOGGER.fine("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
             }
-            System.err.println("Exit code set to: " + exitCode);
+            LOGGER.info("Exit code set to: " + exitCode);
 
             System.exit(exitCode);
         }
@@ -463,7 +463,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        System.out.println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOGGER.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**

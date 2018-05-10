@@ -75,6 +75,7 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 /**
@@ -574,7 +575,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 int catchSizeNFE = Util.getSizeOfSurroundingTryBlock(method, "java/lang/NumberFormatException", location
                         .getHandle().getPosition());
                 if (catchSizeNPE == Integer.MAX_VALUE
-                        && (!"java.lang.Integer".equals(called.getClassName()) || catchSizeNFE == Integer.MAX_VALUE)) {
+                        && (!Values.DOTTED_JAVA_LANG_INTEGER.equals(called.getClassName()) || catchSizeNFE == Integer.MAX_VALUE)) {
                     // Get the corresponding value number
                     ValueNumber vn = vnaFrame.getArgument(inv, constantPool, i, sigParser);
                     result.add(vn);

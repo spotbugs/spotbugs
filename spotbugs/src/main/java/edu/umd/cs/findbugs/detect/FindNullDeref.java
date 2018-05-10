@@ -124,6 +124,7 @@ import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 /**
@@ -144,8 +145,6 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private static final boolean DEBUG_NULLRETURN = SystemProperties.getBoolean("fnd.debug.nullreturn");
 
     private static final boolean MARK_DOOMED = SystemProperties.getBoolean("fnd.markdoomed", true);
-
-    //    private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
     private static final String METHOD_NAME = SystemProperties.getProperty("fnd.method");
 
@@ -599,7 +598,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
     private boolean safeCallToPrimateParseMethod(XMethod calledMethod, Location location) {
         int position = location.getHandle().getPosition();
 
-        if ("java.lang.Integer".equals(calledMethod.getClassName())) {
+        if (Values.DOTTED_JAVA_LANG_INTEGER.equals(calledMethod.getClassName())) {
 
             ConstantPool constantPool = classContext.getJavaClass().getConstantPool();
             Code code = method.getCode();

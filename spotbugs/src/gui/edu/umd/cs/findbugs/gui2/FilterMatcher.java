@@ -148,7 +148,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
             result.append(L10N.getLocalString("mode.not_equal_to", "not equal to"));
             break;
         default:
-            throw new RuntimeException();
+            throw new IllegalStateException("Invalid filter mode: " + mode);
         }
         result.append(' ').append(filterBy.formatValue(value));
         return result.toString();

@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * <p>
@@ -84,9 +85,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
 
         @Override
         public void loadAuxiliaryAnnotations() {
-            addMethodAnnotation("java.lang.String", "getBytes", "()[B", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([B)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
-            addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([BII)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "getBytes", "()[B", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([B)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
+            addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([BII)V", false, DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.ByteArrayOutputStream", "toString", "()Ljava/lang/String;", false,
                     DefaultEncodingAnnotation.DEFAULT_ENCODING);
             addMethodAnnotation("java.io.FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,

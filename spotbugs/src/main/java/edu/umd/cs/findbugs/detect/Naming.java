@@ -59,6 +59,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Naming extends PreorderVisitor implements Detector {
@@ -303,7 +304,7 @@ public class Naming extends PreorderVisitor implements Detector {
         }
 
         String superClassName = obj.getSuperclassName();
-        if (!"java.lang.Object".equals(name)) {
+        if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(name)) {
             if (sameSimpleName(superClassName, name)) {
                 bugReporter.reportBug(new BugInstance(this, "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", HIGH_PRIORITY).addClass(name)
                         .addClass(superClassName));
@@ -319,7 +320,7 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if ("java.lang.Object".equals(superClassName) && !visited.contains(superClassName)) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName) && !visited.contains(superClassName)) {
             try {
                 visitJavaClass(obj.getSuperClass());
             } catch (ClassNotFoundException e) {
