@@ -84,13 +84,13 @@ public class GenericSignatureParser {
                         i++;
                         c = signature.charAt(i);
                         switch (c) {
-                        case ';':
-                            break;
                         case '<':
                             leftCount++;
                             break;
                         case '>':
                             leftCount--;
+                            break;
+                        default:
                             break;
                         }
                     } while (c != ';' || leftCount != 0);

@@ -395,10 +395,7 @@ public abstract class FindBugs {
             assert false; // should not occur
             checkExitCodeFail(commandLine, e);
             throw new RuntimeException(e);
-        } catch (RuntimeException e) {
-            checkExitCodeFail(commandLine, e);
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             checkExitCodeFail(commandLine, e);
             throw e;
         }
@@ -408,15 +405,9 @@ public abstract class FindBugs {
         int errorCount = findBugs.getErrorCount();
 
         if (verbose) {
-            if (bugCount > 0) {
-                System.err.println("Warnings generated: " + bugCount);
-            }
-            if (missingClassCount > 0) {
-                System.err.println("Missing classes: " + missingClassCount);
-            }
-            if (errorCount > 0) {
-                System.err.println("Analysis errors: " + errorCount);
-            }
+            System.err.println("Warnings generated: " + bugCount);
+            System.err.println("Missing classes: " + missingClassCount);
+            System.err.println("Analysis errors: " + errorCount);
         }
 
         if (commandLine.setExitCode()) {
@@ -472,8 +463,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        System.out
-        .println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        System.out.println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**
@@ -520,25 +510,25 @@ public abstract class FindBugs {
      */
     public static void configureBugCollection(IFindBugsEngine findBugs) {
         BugCollection bugs = findBugs.getBugReporter().getBugCollection();
+        if (bugs == null) {
+            return;
+        }
 
-        if (bugs != null) {
-            bugs.setReleaseName(findBugs.getReleaseName());
+        bugs.setReleaseName(findBugs.getReleaseName());
 
-            Project project = findBugs.getProject();
+        Project project = findBugs.getProject();
 
-            String projectName = project.getProjectName();
+        String projectName = project.getProjectName();
 
-            if (projectName == null) {
-                projectName = findBugs.getProjectName();
-                project.setProjectName(projectName);
-            }
+        if (projectName == null) {
+            projectName = findBugs.getProjectName();
+            project.setProjectName(projectName);
+        }
 
-            long timestamp = project.getTimestamp();
-            if (FindBugs.validTimestamp(timestamp)) {
-                bugs.setTimestamp(timestamp);
-                bugs.getProjectStats().setTimestamp(timestamp);
-            }
-
+        long timestamp = project.getTimestamp();
+        if (FindBugs.validTimestamp(timestamp)) {
+            bugs.setTimestamp(timestamp);
+            bugs.getProjectStats().setTimestamp(timestamp);
         }
     }
 

@@ -503,6 +503,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
+        writeXML(xmlOutput, false, false);
     }
 
     @Override
