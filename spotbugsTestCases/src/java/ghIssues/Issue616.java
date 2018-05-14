@@ -1,23 +1,21 @@
 package ghIssues;
 
-import com.google.common.base.Preconditions;
+import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 public enum Issue616 {
-    TEST("one", "two", null);
+	TEST("one", "two", null);
 
-    @NonNull
-    public final String one;
-    @NonNull
-    public final String two;
-    @Nullable
-    public final String three;
+	public final @NonNull String one;
+	public final @NonNull String two;
+	@Nullable
+	public final String three;
 
-    private Issue616(@NonNull String one, @NonNull String two, @Nullable Object three) {
-        this.one = Preconditions.checkNotNull(one);
-        this.two = Preconditions.checkNotNull(two);
-        this.three = three == null ? null : three.toString();
-    }
+	private Issue616(@NonNull String one, @NonNull String two, @Nullable Object three) {
+		this.one = Objects.requireNonNull(one);
+		this.two = Objects.requireNonNull(two);
+		this.three = three == null ? null : three.toString();
+	}
 }
