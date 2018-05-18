@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
@@ -81,7 +82,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  *
  * @author David Hovemeyer
  */
-public class FindBugs2 implements IFindBugsEngine {
+public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
 
     private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
@@ -317,9 +318,7 @@ public class FindBugs2 implements IFindBugsEngine {
         // Make sure the codebases on the classpath are closed
         AnalysisContext.removeCurrentAnalysisContext();
         Global.removeAnalysisCacheForCurrentThread();
-        if (classPath != null) {
-            classPath.close();
-        }
+        IO.close(classPath);
     }
 
     /**
@@ -342,11 +341,13 @@ public class FindBugs2 implements IFindBugsEngine {
         analysisOptions.analysisFeatureSettingList = null;
         bugReporter = null;
         classFactory = null;
+        IO.close(classPath);
         classPath = null;
         classScreener = null;
         detectorFactoryCollection = null;
         executionPlan = null;
         progress = null;
+        IO.close(project);
         project = null;
         analysisOptions.userPreferences = null;
     }
@@ -1168,24 +1169,21 @@ public class FindBugs2 implements IFindBugsEngine {
         }
 
         // Create FindBugs2 engine
-        FindBugs2 findBugs = new FindBugs2();
+        try (FindBugs2 findBugs = new FindBugs2()) {
+            // Parse command line and configure the engine
+            TextUICommandLine commandLine = new TextUICommandLine();
+            FindBugs.processCommandLine(commandLine, args, findBugs);
 
-        // Parse command line and configure the engine
-        TextUICommandLine commandLine = new TextUICommandLine();
-        FindBugs.processCommandLine(commandLine, args, findBugs);
+            boolean justPrintConfiguration = commandLine.justPrintConfiguration();
+            if (justPrintConfiguration || commandLine.justPrintVersion()) {
+                Version.printVersion(justPrintConfiguration);
 
+                return;
+            }
+            // Away we go!
 
-        boolean justPrintConfiguration = commandLine.justPrintConfiguration();
-        if (justPrintConfiguration || commandLine.justPrintVersion()) {
-            Version.printVersion(justPrintConfiguration);
-
-            return;
+            FindBugs.runMain(findBugs, commandLine);
         }
-        // Away we go!
-
-
-        FindBugs.runMain(findBugs, commandLine);
-
     }
 
 
@@ -1226,6 +1224,11 @@ public class FindBugs2 implements IFindBugsEngine {
     public void setBugReporterDecorators(Set<String> explicitlyEnabled, Set<String> explicitlyDisabled) {
         explicitlyEnabledBugReporterDecorators = explicitlyEnabled;
         explicitlyDisabledBugReporterDecorators = explicitlyDisabled;
+    }
+
+    @Override
+    public void close() {
+        dispose();
     }
 
 }
