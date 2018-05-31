@@ -239,7 +239,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
     <Details>
 <![CDATA[
-<p> Looks for problems with arising from Java 1.5 var args.</p>
+<p> Looks for problems with arising from Java 1.5 varargs.</p>
 ]]>
     </Details>
   </Detector>
@@ -8617,14 +8617,14 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="WL">Possible locking on wrong object</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
-  <BugCode abbrev="VA">Var arg problems</BugCode>
+  <BugCode abbrev="VA">Vararg problems</BugCode>
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
   <BugCode abbrev="USELESS_STRING">Useless/non-informative string generated</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
-  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
+  <BugCode abbrev="PZ">Warning inspired by Joshua Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
