@@ -74,7 +74,7 @@ public class TestGenericObjectType {
 
         if (typeCategory == TypeCategory.PARAMETERIZED) {
             assertTrue(obj.hasParameters());
-            assertTrue(obj.getNumParameters() == parameters.size());
+            assertEquals(parameters.size(), obj.getNumParameters());
             for (int i = 0; i < obj.getNumParameters(); i++) {
                 compareTypes(obj.getParameterAt(i), parameters.get(i));
             }

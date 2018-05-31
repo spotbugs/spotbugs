@@ -643,22 +643,20 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         }
         // See what methods might be called here
         XMethod calledMethod = XFactory.createXMethod(invokeInstruction, cpg);
-        if (true) {
-            // If a parameter is already marked as nonnull, don't complain about
-            // it here.
-            nullArgSet = (BitSet) nullArgSet.clone();
-            definitelyNullArgSet = (BitSet) definitelyNullArgSet.clone();
-            ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
-            TypeQualifierValue<?> nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
-            for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet.nextSetBit(i + 1)) {
-                TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, i,
-                        nonnullTypeQualifierValue);
-                if (tqa != null && tqa.when == When.ALWAYS) {
-                    nullArgSet.clear(i);
-                    definitelyNullArgSet.clear(i);
-                }
-
+        // If a parameter is already marked as nonnull, don't complain about
+        // it here.
+        nullArgSet = (BitSet) nullArgSet.clone();
+        definitelyNullArgSet = (BitSet) definitelyNullArgSet.clone();
+        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(Nonnull.class);
+        TypeQualifierValue<?> nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
+        for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet.nextSetBit(i + 1)) {
+            TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, i,
+                    nonnullTypeQualifierValue);
+            if (tqa != null && tqa.when == When.ALWAYS) {
+                nullArgSet.clear(i);
+                definitelyNullArgSet.clear(i);
             }
+
         }
         TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
         Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);

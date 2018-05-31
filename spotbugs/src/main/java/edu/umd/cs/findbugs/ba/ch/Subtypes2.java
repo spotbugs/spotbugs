@@ -764,8 +764,8 @@ public class Subtypes2 {
                 }
             }
 
-            for (ClassDescriptor c : aSuperTypes) {
-                return ObjectTypeFactory.getInstance(c.toDottedClassName());
+            if (!aSuperTypes.isEmpty()) {
+                return ObjectTypeFactory.getInstance(aSuperTypes.iterator().next().toDottedClassName());
             }
         }
 

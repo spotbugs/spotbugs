@@ -2,6 +2,7 @@
 //   id "com.github.spotbugs" version "1.5"
 // }
 
+apply plugin: 'pmd'
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
@@ -63,6 +64,11 @@ dependencies {
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+pmd {
+    ruleSets = []
+    ruleSetFiles = files("pmd-rules.xml")
 }
 
 // spotbugs {

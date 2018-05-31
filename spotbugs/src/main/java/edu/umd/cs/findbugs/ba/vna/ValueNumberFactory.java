@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,23 +84,7 @@ public class ValueNumberFactory {
      */
     @Deprecated
     public void compact(int[] map, int numValuesAllocated) {
-        if (true) {
-            throw new UnsupportedOperationException();
-        }
-        ArrayList<ValueNumber> oldList = this.allocatedValueList;
-        ArrayList<ValueNumber> newList = new ArrayList<>(Collections.<ValueNumber> nCopies(numValuesAllocated, null));
-
-        for (ValueNumber value : oldList) {
-            int newNumber = map[value.getNumber()];
-            if (newNumber >= 0) {
-                // Note: because we are simply assigning new numbers to the
-                // old ValueNumber objects, their flags remain valid.
-                // value.number = newNumber;
-                newList.set(newNumber, value);
-            }
-        }
-
-        this.allocatedValueList = newList;
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -19,19 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
-import static org.apache.bcel.Const.CONSTANT_Class;
-import static org.apache.bcel.Const.IFEQ;
-import static org.apache.bcel.Const.IFGE;
-import static org.apache.bcel.Const.IFGT;
-import static org.apache.bcel.Const.IFLE;
-import static org.apache.bcel.Const.IFLT;
-import static org.apache.bcel.Const.IFNE;
-import static org.apache.bcel.Const.IF_ICMPEQ;
-import static org.apache.bcel.Const.IF_ICMPGE;
-import static org.apache.bcel.Const.IF_ICMPGT;
-import static org.apache.bcel.Const.IF_ICMPLE;
-import static org.apache.bcel.Const.IF_ICMPLT;
-import static org.apache.bcel.Const.IF_ICMPNE;
+import static org.apache.bcel.Const.*;
 
 import java.util.*;
 import java.util.Map.Entry;

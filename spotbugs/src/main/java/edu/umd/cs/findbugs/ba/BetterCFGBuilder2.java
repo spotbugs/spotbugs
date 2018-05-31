@@ -427,12 +427,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
          *            the type of edge
          */
         public void addEdge(BasicBlock sourceBlock, BasicBlock destBlock, @Edge.Type int edgeType) {
-            if (VERIFY_INTEGRITY) {
-                if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE) {
-                    throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen)
-                            + ": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type "
-                            + edgeType);
-                }
+            if (VERIFY_INTEGRITY && destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE) {
+                throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen)
+                        + ": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type "
+                        + edgeType);
             }
             cfgSub.createEdge(sourceBlock, destBlock, edgeType);
         }
@@ -793,14 +791,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         InstructionList il = new InstructionList();
         entryBlock.addInstruction(il.append(new NOP()));
 
-        if (VERIFY_INTEGRITY) {
-            cfg.checkIntegrity();
-        }
-
-        if (true) {
-            cfg.checkIntegrity();
-
-        }
+        cfg.checkIntegrity();
     }
 
     @Override
