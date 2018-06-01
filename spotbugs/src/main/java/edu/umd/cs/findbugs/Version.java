@@ -96,7 +96,7 @@ public class Version {
         return applicationVersion;
     }
 
-    public static void main(String[] argv) throws InterruptedException {
+    public static void main(String[] argv) {
         if (argv.length == 0) {
             printVersion(false);
             return;
