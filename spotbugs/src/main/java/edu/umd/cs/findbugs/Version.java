@@ -41,13 +41,13 @@ public class Version {
      */
     public static final String WEBSITE = "https://spotbugs.github.io/";
 
-    public final static String VERSION_STRING;
+    public static final String VERSION_STRING;
 
     /**
      * @deprecated Use {@link #VERSION_STRING} instead.
     */
     @Deprecated
-    public final static String RELEASE;
+    public static final String RELEASE;
 
     private static String applicationName = "";
     private static String applicationVersion = "";
@@ -118,7 +118,7 @@ public class Version {
                 }
                 String website = p.getWebsite();
                 if (website != null && website.length() > 0) {
-                    LOGGER.log(Level.INFO, "      website: ", website);
+                    LOGGER.log(Level.INFO, "      website: {0}", website);
                 }
                 LOGGER.info("");
             }
@@ -136,9 +136,8 @@ public class Version {
 
     /**
      * @param justPrintConfiguration
-     * @throws InterruptedException
      */
-    public static void printVersion(boolean justPrintConfiguration) throws InterruptedException {
+    public static void printVersion(boolean justPrintConfiguration) {
         LOGGER.log(Level.INFO, "SpotBugs {0}", Version.VERSION_STRING);
         if (!justPrintConfiguration) {
             return;
