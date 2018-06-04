@@ -38,12 +38,12 @@ sourceSets {
 }
 
 dependencies {
-  compile 'org.ow2.asm:asm:6.1.1'
-  compile 'org.ow2.asm:asm-analysis:6.1.1'
-  compile 'org.ow2.asm:asm-commons:6.1.1'
-  compile 'org.ow2.asm:asm-tree:6.1.1'
-  compile 'org.ow2.asm:asm-util:6.1.1'
-  compile 'org.ow2.asm:asm-xml:6.1.1'
+  compile 'org.ow2.asm:asm:6.2'
+  compile 'org.ow2.asm:asm-analysis:6.2'
+  compile 'org.ow2.asm:asm-commons:6.2'
+  compile 'org.ow2.asm:asm-tree:6.2'
+  compile 'org.ow2.asm:asm-util:6.2'
+  compile 'org.ow2.asm:asm-xml:6.2'
   compile 'org.apache.bcel:bcel:6.2'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.dom4j:dom4j:2.1.0'
