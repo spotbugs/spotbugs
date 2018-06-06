@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantMethodref;
@@ -49,7 +48,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  *
  * @author David Hovemeyer
  */
-public class AssertionMethods implements Constants {
+public class AssertionMethods {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("assertionmethods.debug");
 
