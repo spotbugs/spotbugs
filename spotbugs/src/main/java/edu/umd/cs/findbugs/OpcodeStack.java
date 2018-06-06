@@ -79,7 +79,6 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -103,7 +102,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * <li>wide</li>
  * </ul>
  */
-public class OpcodeStack implements Constants2 {
+public class OpcodeStack {
 
     /** You can put this annotation on a OpcodeStack detector
      * to indicate that it uses {@link OpcodeStack.Item#userValue},
