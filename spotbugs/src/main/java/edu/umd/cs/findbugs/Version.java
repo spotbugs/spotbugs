@@ -24,17 +24,18 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
+
+import static java.util.logging.Level.*;
 
 /**
  * Version number and release date information.
  */
 public class Version {
 
-    private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     /**
      * SpotBugs website.
@@ -105,22 +106,22 @@ public class Version {
         String arg = argv[0];
 
         if ("-release".equals(arg)) {
-            LOGGER.info(VERSION_STRING);
+            LOG.info(VERSION_STRING);
         } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
-                LOGGER.log(Level.INFO, "Plugin: {0}", p.getPluginId());
-                LOGGER.log(Level.INFO, "  description: {0}", p.getShortDescription());
-                LOGGER.log(Level.INFO, "     provider: {0}", p.getProvider());
+                LOG.log(INFO, "Plugin: {0}", p.getPluginId());
+                LOG.log(INFO, "  description: {0}", p.getShortDescription());
+                LOG.log(INFO, "     provider: {0}", p.getProvider());
                 String version = p.getVersion();
                 if (version != null && version.length() > 0) {
-                    LOGGER.log(Level.INFO, "      version: {0}", version);
+                    LOG.log(INFO, "      version: {0}", version);
                 }
                 String website = p.getWebsite();
                 if (website != null && website.length() > 0) {
-                    LOGGER.log(Level.INFO, "      website: {0}", website);
+                    LOG.log(INFO, "      website: {0}", website);
                 }
-                LOGGER.info("");
+                LOG.info("");
             }
         } else if ("-configuration".equals(arg)){
             printVersion(true);
@@ -131,41 +132,41 @@ public class Version {
     }
 
     private static void usage() {
-        LOGGER.log(Level.SEVERE, "Usage: {0} [(-release|-date|-props|-configuration)]", Version.class.getName());
+        LOG.log(SEVERE, "Usage: {0} [(-release|-date|-props|-configuration)]", Version.class.getName());
     }
 
     /**
      * @param justPrintConfiguration
      */
     public static void printVersion(boolean justPrintConfiguration) {
-        LOGGER.log(Level.INFO, "SpotBugs {0}", Version.VERSION_STRING);
+        LOG.log(INFO, "SpotBugs {0}", Version.VERSION_STRING);
         if (!justPrintConfiguration) {
             return;
         }
         for (Plugin plugin : Plugin.getAllPlugins()) {
-            LOGGER.log(Level.INFO, "Plugin {0}, version {1}, loaded from {2}",
+            LOG.log(INFO, "Plugin {0}, version {1}, loaded from {2}",
                 new Object[] {plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL()});
             if (plugin.isCorePlugin()) {
-                LOGGER.info("  is core plugin");
+                LOG.info("  is core plugin");
             }
             if (plugin.isInitialPlugin()) {
-                LOGGER.info("  is initial plugin");
+                LOG.info("  is initial plugin");
             }
             if (plugin.isEnabledByDefault()) {
-                LOGGER.info("  is enabled by default");
+                LOG.info("  is enabled by default");
             }
             if (plugin.isGloballyEnabled()) {
-                LOGGER.info("  is globally enabled");
+                LOG.info("  is globally enabled");
             }
             Plugin parent = plugin.getParentPlugin();
             if (parent != null) {
-                LOGGER.log(Level.INFO, "  has parent plugin {0}", parent.getPluginId());
+                LOG.log(INFO, "  has parent plugin {0}", parent.getPluginId());
             }
 
             for (DetectorFactory factory : plugin.getDetectorFactories()) {
-                LOGGER.log(Level.INFO, "  detector {0}", factory.getShortName());
+                LOG.log(INFO, "  detector {0}", factory.getShortName());
             }
-            LOGGER.info("");
+            LOG.info("");
         }
     }
 }
