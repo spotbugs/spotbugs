@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
@@ -39,6 +38,8 @@ import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+
+import static java.util.logging.Level.*;
 
 /**
  * Static methods and fields useful for working with instances of
@@ -172,10 +173,10 @@ public abstract class FindBugs {
         return noMains;
     }
 
-    public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
+    public static final Logger LOG = Logger.getLogger(FindBugs.class.getPackage().getName());
 
     static {
-        LOGGER.setLevel(Level.WARNING);
+        LOG.setLevel(WARNING);
     }
 
     /**
@@ -342,7 +343,7 @@ public abstract class FindBugs {
         try {
             argCount = commandLine.parse(argv);
         } catch (IllegalArgumentException e) {
-            LOGGER.severe(e.getMessage());
+            LOG.severe(e.getMessage());
             showHelp(commandLine);
         } catch (HelpRequestedException e) {
             showHelp(commandLine);
@@ -357,7 +358,7 @@ public abstract class FindBugs {
         commandLine.configureEngine(findBugs);
         if (commandLine.getProject().getFileCount() == 0 &&
                 !commandLine.justPrintConfiguration() && !commandLine.justPrintVersion()) {
-            LOGGER.warning("No files to be analyzed");
+            LOG.warning("No files to be analyzed");
 
             showHelp(commandLine);
         }
@@ -405,27 +406,27 @@ public abstract class FindBugs {
         int errorCount = findBugs.getErrorCount();
 
         if (verbose) {
-            LOGGER.fine("Warnings generated: {0}", bugCount);
-            LOGGER.fine("Missing classes: {0}", missingClassCount);
-            LOGGER.fine("Analysis errors: {0}", errorCount);
+            LOG.log(FINE, "Warnings generated: {0}", bugCount);
+            LOG.log(FINE, "Missing classes: {0}", missingClassCount);
+            LOG.log(FINE, "Analysis errors: {0}", errorCount);
         }
 
         if (commandLine.setExitCode()) {
             int exitCode = 0;
-            LOGGER.info("Calculating exit code...");
+            LOG.info("Calculating exit code...");
             if (errorCount > 0) {
                 exitCode |= ExitCodes.ERROR_FLAG;
-                LOGGER.fine("Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
+                LOG.log(FINE, "Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
             }
             if (missingClassCount > 0) {
                 exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                LOGGER.fine("Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
+                LOG.log(FINE, "Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
             }
             if (bugCount > 0) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                LOGGER.fine("Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
+                LOG.log(FINE, "Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
             }
-            LOGGER.info("Exit code set to: {0}", exitCode);
+            LOG.log(FINE, "Exit code set to: {0}", exitCode);
 
             System.exit(exitCode);
         }
@@ -463,7 +464,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        LOGGER.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOG.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**
