@@ -405,9 +405,9 @@ public abstract class FindBugs {
         int errorCount = findBugs.getErrorCount();
 
         if (verbose) {
-            LOGGER.fine("Warnings generated: " + bugCount);
-            LOGGER.fine("Missing classes: " + missingClassCount);
-            LOGGER.fine("Analysis errors: " + errorCount);
+            LOGGER.fine("Warnings generated: {0}", bugCount);
+            LOGGER.fine("Missing classes: {0}", missingClassCount);
+            LOGGER.fine("Analysis errors: {0}", errorCount);
         }
 
         if (commandLine.setExitCode()) {
@@ -415,17 +415,17 @@ public abstract class FindBugs {
             LOGGER.info("Calculating exit code...");
             if (errorCount > 0) {
                 exitCode |= ExitCodes.ERROR_FLAG;
-                LOGGER.fine("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                LOGGER.fine("Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
             }
             if (missingClassCount > 0) {
                 exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                LOGGER.fine("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
+                LOGGER.fine("Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
             }
             if (bugCount > 0) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                LOGGER.fine("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+                LOGGER.fine("Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
             }
-            LOGGER.info("Exit code set to: " + exitCode);
+            LOGGER.info("Exit code set to: {0}", exitCode);
 
             System.exit(exitCode);
         }
