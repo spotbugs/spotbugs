@@ -12,6 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Close source file after analysis ([#591](https://github.com/spotbugs/spotbugs/issues/591))
 * Inconsistent reporting for EI_EXPOSE_REP2 ([#603](https://github.com/spotbugs/spotbugs/issues/603))
 * Update asm to 6.2 for better Java 11 support ([#648](https://github.com/spotbugs/spotbugs/issues/648))
+* False positive: 'return value ignored' on Guavas Preconditions.checkNotNull() ([#578](https://github.com/spotbugs/spotbugs/issues/578))
 
 ## 3.1.3 - 2018-04-18
 
