@@ -120,7 +120,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
     private String currentClassName;
 
-    private FindBugsProgress progress;
+    private FindBugsProgress progressReporter;
 
     private IClassScreener classScreener;
 
@@ -132,7 +132,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     public FindBugs2() {
         this.classObserverList = new LinkedList<>();
         this.analysisOptions.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
-        this.progress = new NoOpFindBugsProgress();
+        this.progressReporter = new NoOpFindBugsProgress();
 
         // By default, do not exclude any classes via the class screener
         this.classScreener = new IClassScreener() {
@@ -202,7 +202,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 // The class path object
                 createClassPath();
 
-                progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
+                progressReporter.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
                 profiler.start(this.getClass());
 
                 // The analysis cache object
@@ -346,7 +346,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         classScreener = null;
         detectorFactoryCollection = null;
         executionPlan = null;
-        progress = null;
+        progressReporter = null;
         IO.close(project);
         project = null;
         analysisOptions.userPreferences = null;
@@ -441,7 +441,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
     @Override
     public void setProgressCallback(FindBugsProgress progressCallback) {
-        this.progress = progressCallback;
+        this.progressReporter = progressCallback;
     }
 
     @Override
@@ -672,7 +672,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
         builder.scanNestedArchives(analysisOptions.scanNestedArchives);
 
-        builder.build(classPath, progress);
+        builder.build(classPath, progressReporter);
 
         appClassList = builder.getAppClassList();
 
@@ -960,7 +960,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
             for (int i = 0; i < classesPerPass.length; i++) {
                 classesPerPass[i] = i == 0 ? referencedClassSet.size() : appClassList.size();
             }
-            progress.predictPassCount(classesPerPass);
+            progressReporter.predictPassCount(classesPerPass);
             XFactory factory = AnalysisContext.currentXFactory();
             Collection<ClassDescriptor> badClasses = new LinkedList<>();
             for (ClassDescriptor desc : referencedClassSet) {
@@ -1027,7 +1027,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
                 currentAnalysisContext.updateDatabases(passCount);
 
-                progress.startAnalysis(classCollection.size());
+                progressReporter.startAnalysis(classCollection.size());
                 int count = 0;
                 Global.getAnalysisCache().purgeAllMethodAnalysis();
                 Global.getAnalysisCache().purgeClassAnalysis(FBClassReader.class);
@@ -1092,7 +1092,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                         }
                     } finally {
 
-                        progress.finishClass();
+                        progressReporter.finishClass();
                         profiler.endContext(currentClassName);
                         currentAnalysisContext.clearClassBeingAnalyzed();
                         if (PROGRESS) {
@@ -1115,7 +1115,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     detector.finishPass();
                 }
 
-                progress.finishPerClassAnalysis();
+                progressReporter.finishPerClassAnalysis();
 
                 passCount++;
             }
