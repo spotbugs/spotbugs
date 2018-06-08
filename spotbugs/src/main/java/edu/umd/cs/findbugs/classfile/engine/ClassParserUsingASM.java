@@ -448,7 +448,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             if (sawBackBranch) {
                 mBuilder.setHasBackBranch();
             }
-            boolean sawThrow = sawNormalThrow | sawUnsupportedThrow | sawStubThrow;
+            boolean sawThrow = sawNormalThrow || sawUnsupportedThrow || sawStubThrow;
             if (sawThrow && !sawReturn || sawSystemExit && !sawBranch) {
 
                 mBuilder.setIsUnconditionalThrower();
