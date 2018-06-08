@@ -32,9 +32,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -102,10 +99,8 @@ public abstract class IO {
      *            the FileOutput object responsible for generating the data
      */
     public static void writeFile(final File file, final FileOutput output, final IProgressMonitor monitor) throws CoreException {
-        FileOutputStream fout = null;
-        try {
-            fout = new FileOutputStream(file);
-            BufferedOutputStream bout = new BufferedOutputStream(fout);
+        try (FileOutputStream fout = new FileOutputStream(file);
+                BufferedOutputStream bout = new BufferedOutputStream(fout)) {
             if (monitor != null) {
                 monitor.subTask("writing data to " + file.getName());
             }
@@ -114,8 +109,6 @@ public abstract class IO {
         } catch (IOException e) {
             IStatus status = FindbugsPlugin.createErrorStatus("Exception while " + output.getTaskDescription(), e);
             throw new CoreException(status);
-        } finally {
-            closeQuietly(fout);
         }
     }
 
