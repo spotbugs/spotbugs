@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
