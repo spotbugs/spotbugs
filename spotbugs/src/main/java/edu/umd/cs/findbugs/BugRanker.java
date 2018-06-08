@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.io.IO;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Bug rankers are used to compute a bug rank for each bug instance. Bug ranks
@@ -138,8 +137,7 @@ public class BugRanker {
         if (u == null) {
             return;
         }
-        BufferedReader in = UTF8.bufferedReader(IO.openNonCachedStream(u));
-        try {
+        try (BufferedReader in = UTF8.bufferedReader(IO.openNonCachedStream(u))) {
             while (true) {
                 String s = in.readLine();
                 if (s == null) {
@@ -171,8 +169,6 @@ public class BugRanker {
                             + "Valid kind must be either 'BugPattern', 'BugKind' or 'Category'.");
                 }
             }
-        } finally {
-            Util.closeSilently(in);
         }
     }
 
