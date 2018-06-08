@@ -259,28 +259,33 @@ public class SourceFinder implements AutoCloseable {
         file.deleteOnExit();
         final BlockingSourceRepository r = new BlockingSourceRepository();
         Util.runInDameonThread(() -> {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                URLConnection connection = new URL(url).openConnection();
-                if (getProject().isGuiAvaliable()) {
-                    int size = connection.getContentLength();
-                    in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
-                            "Loading source via url");
-                } else {
-                    in = connection.getInputStream();
-                }
-                out = new FileOutputStream(file);
+            try (InputStream in = open(url); OutputStream out = new FileOutputStream(file);) {
                 IO.copy(in, out);
                 r.setBase(new ZipSourceRepository(new ZipFile(file)));
             } catch (IOException e) {
                 assert true;
-            } finally {
-                Util.closeSilently(in);
-                Util.closeSilently(out);
             }
         }, "Source loading thread");
         return r;
+    }
+
+    /**
+     * @param url
+     * @return
+     * @throws IOException
+     * @throws MalformedURLException
+     */
+    private InputStream open(final String url) throws IOException, MalformedURLException {
+        InputStream in = null;
+        URLConnection connection = new URL(url).openConnection();
+        if (getProject().isGuiAvaliable()) {
+            int size = connection.getContentLength();
+            in = getProject().getGuiCallback().getProgressMonitorInputStream(connection.getInputStream(), size,
+                    "Loading source via url");
+        } else {
+            in = connection.getInputStream();
+        }
+        return in;
     }
 
     static class BlockingSourceRepository implements SourceRepository {
