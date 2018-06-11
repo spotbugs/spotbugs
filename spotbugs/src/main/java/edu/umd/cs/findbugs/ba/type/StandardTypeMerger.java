@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
  * @author David Hovemeyer
  * @see TypeMerger
  */
-public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
+public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     private final RepositoryLookupFailureCallback lookupFailureCallback;
 
     private final ExceptionSetFactory exceptionSetFactory;
