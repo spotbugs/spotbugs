@@ -35,6 +35,7 @@ package edu.umd.cs.findbugs.io;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,10 +168,26 @@ public class IO {
     }
 
     /**
-     * Close given InputStream, ignoring any resulting exception.
+     * Close given AutoCloseable instance, ignoring any resulting exception.
      *
      */
     public static void close(@CheckForNull AutoCloseable c) {
+        if (c == null) {
+            return;
+        }
+
+        try {
+            c.close();
+        } catch (Exception e) {
+            // Ignore
+        }
+    }
+
+    /**
+     * Close given Closeable instance, ignoring any resulting exception.
+     *
+     */
+    public static void close(@CheckForNull Closeable c) {
         if (c == null) {
             return;
         }

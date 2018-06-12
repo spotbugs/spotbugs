@@ -6,7 +6,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
-## 3.1.4 - 2018-06-11
+### Fixed
+
+* Keep IO.close(Closeable) that was deleted by 3.1.4 ([#661](https://github.com/spotbugs/spotbugs/issues/661))
+
+## 3.1.4 - 2018-06-11 [YANKED]
 
 ### Fixed
 
