@@ -188,15 +188,7 @@ public class IO {
      *
      */
     public static void close(@CheckForNull Closeable c) {
-        if (c == null) {
-            return;
-        }
-
-        try {
-            c.close();
-        } catch (Exception e) {
-            // Ignore
-        }
+        close((AutoCloseable) c);
     }
 
     /**
