@@ -190,7 +190,7 @@ public class TestDesktopIntegration extends JPanel {
             });
 
         } else {
-            exec.disable();
+            exec.setEnabled(false);
         }
 
         if (SHOW_FILE_CHOOSER) {
@@ -208,7 +208,7 @@ public class TestDesktopIntegration extends JPanel {
 
                         writer.println("File uri: " + file.toURI());
 
-                        writer.println("File url: " + file.toURL());
+                        writer.println("File url: " + file.toURI().toURL());
                     } catch (Exception e1) {
                         e1.printStackTrace(writer);
                     }
