@@ -595,7 +595,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     public @CheckForNull <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
         for(BugAnnotation a : annotationList) {
-            if (c.isInstance(a) && Util.nullSafeEquals(role, a.getDescription())) {
+            if (c.isInstance(a) && Objects.equals(role, a.getDescription())) {
                 return c.cast(a);
             }
         }
