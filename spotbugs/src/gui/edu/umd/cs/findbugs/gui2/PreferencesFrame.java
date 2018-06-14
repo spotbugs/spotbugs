@@ -637,12 +637,11 @@ public class PreferencesFrame extends FBDialog {
         gbc.insets = new Insets(5, 0, 0, 0);
         filterPanel.add(removeButton, gbc);
         removeButton.addActionListener(evt -> {
-            Object[] selected = filterCheckBoxList.getSelectedValues();
-            if (selected.length == 0) {
+            List<MatchBox> selected = filterCheckBoxList.getSelectedValuesList();
+            if (selected.size() == 0) {
                 return;
             }
-            for (Object o : selected) {
-                MatchBox box = (MatchBox) o;
+            for (MatchBox box : selected) {
                 MainFrame.getInstance().getProject().getSuppressionFilter().removeChild(box.getMatcher());
             }
             FilterActivity.notifyListeners(FilterListener.Action.UNFILTERING, null);
