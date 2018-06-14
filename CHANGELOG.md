@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+
+* Remove unused field in StandardTypeManager. ([#667](https://github.com/spotbugs/spotbugs/pull/667))
+
 ## 3.1.5 - 2018-06-15
 
 ### Fixed
