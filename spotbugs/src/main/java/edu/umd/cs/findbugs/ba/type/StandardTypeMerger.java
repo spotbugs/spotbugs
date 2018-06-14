@@ -48,8 +48,6 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
 
     private final ExceptionSetFactory exceptionSetFactory;
 
-    private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance("java.lang.Object");
-
     /**
      * Constructor.
      *
