@@ -638,7 +638,7 @@ public class PreferencesFrame extends FBDialog {
         filterPanel.add(removeButton, gbc);
         removeButton.addActionListener(evt -> {
             List<MatchBox> selected = filterCheckBoxList.getSelectedValuesList();
-            if (selected.size() == 0) {
+            if (selected.isEmpty()) {
                 return;
             }
             for (MatchBox box : selected) {
