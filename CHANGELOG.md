@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+
+* Potential NPE in test-harness-core ([#671](https://github.com/spotbugs/spotbugs/issues/671))
+
 ## 3.1.5 - 2018-06-15
 
 ### Fixed
