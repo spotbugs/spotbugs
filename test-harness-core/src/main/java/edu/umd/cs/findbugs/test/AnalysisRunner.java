@@ -110,8 +110,7 @@ public class AnalysisRunner {
             if (!bugReporter.getQueuedErrors().isEmpty()) {
                 AssertionError assertionError = new AssertionError(
                         "Analysis failed with exception. Check stderr for detail.");
-                bugReporter.getQueuedErrors().stream().map(error -> error.getCause())
-                        .forEach(assertionError::addSuppressed);
+                bugReporter.reportQueuedErrors();
                 throw assertionError;
             }
             return bugReporter;
