@@ -29,7 +29,6 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
@@ -47,8 +46,6 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     private final RepositoryLookupFailureCallback lookupFailureCallback;
 
     private final ExceptionSetFactory exceptionSetFactory;
-
-    private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance("java.lang.Object");
 
     /**
      * Constructor.
