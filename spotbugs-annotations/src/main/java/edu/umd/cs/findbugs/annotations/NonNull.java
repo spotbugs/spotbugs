@@ -34,7 +34,7 @@ import javax.annotation.meta.When;
  * Annotated methods must have non-null return values.
  **/
 @Documented
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.CLASS)
 @javax.annotation.Nonnull(when = When.ALWAYS)
 @TypeQualifierNickname

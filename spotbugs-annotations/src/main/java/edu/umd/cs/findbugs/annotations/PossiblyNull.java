@@ -39,7 +39,7 @@ import javax.annotation.meta.When;
  *             coding practice requires that the value be checked for null.
  **/
 @Documented
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.CLASS)
 @javax.annotation.Nonnull(when = When.MAYBE)
 @TypeQualifierNickname

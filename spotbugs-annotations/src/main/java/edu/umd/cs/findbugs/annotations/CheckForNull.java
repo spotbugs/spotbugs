@@ -35,7 +35,7 @@ import javax.annotation.meta.When;
  * value.
  **/
 @Documented
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.TYPE_USE })
 @Retention(RetentionPolicy.CLASS)
 @javax.annotation.Nonnull(when = When.MAYBE)
 @TypeQualifierNickname
