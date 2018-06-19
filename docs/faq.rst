@@ -75,4 +75,3 @@ Q7: Where is the Maven plugin for SpotBugs?
 -------------------------------------------
 
 The Maven Plugin for SpotBugs may be found `here <https://github.com/spotbugs/spotbugs-maven-plugin/>`_.
-Please note that the Maven plugin is not maintained by the SpotBugs developers, so we can't answer questions about it.
