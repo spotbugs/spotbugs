@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Added
+
+* Adding ElementType.TYPE_USE to Spotbugs Null-Annotations ([#470](https://github.com/spotbugs/spotbugs/issues/470))
+
 ## 3.1.5 - 2018-06-15
 
 ### Fixed
