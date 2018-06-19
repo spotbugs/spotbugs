@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -35,6 +34,7 @@ import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
@@ -57,13 +57,14 @@ public abstract class AbstractBugReporter implements BugReporter {
 
         private final String message;
 
+        @Nullable
         private final Throwable cause;
 
         public Error(int sequence, String message) {
             this(sequence, message, null);
         }
 
-        public Error(int sequence, String message, Throwable cause) {
+        public Error(int sequence, String message, @Nullable Throwable cause) {
             this.sequence = sequence;
             this.message = message;
             this.cause = cause;
@@ -77,6 +78,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return message;
         }
 
+        @CheckForNull
         public Throwable getCause() {
             return cause;
         }
