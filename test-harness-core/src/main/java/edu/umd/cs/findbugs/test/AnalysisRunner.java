@@ -108,10 +108,9 @@ public class AnalysisRunner {
                 throw new AssertionError("Analysis failed with exception", e);
             }
             if (!bugReporter.getQueuedErrors().isEmpty()) {
-                AssertionError assertionError = new AssertionError(
-                        "Analysis failed with exception. Check stderr for detail.");
                 bugReporter.reportQueuedErrors();
-                throw assertionError;
+                throw new AssertionError(
+                        "Analysis failed with exception. Check stderr for detail.");
             }
             return bugReporter;
         }
