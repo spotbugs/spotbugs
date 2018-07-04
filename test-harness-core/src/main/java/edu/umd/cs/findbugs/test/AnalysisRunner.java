@@ -156,7 +156,7 @@ public class AnalysisRunner {
         if ("jar".equals(uri.getScheme())) {
             JarURLConnection connection = (JarURLConnection) resource.openConnection();
             URL url = connection.getJarFileURL();
-            return new File(url.getFile());
+            return new File(url.toURI());
         }
 
         Path tempJar = File.createTempFile("SpotBugsAnalysisRunner", ".jar").toPath();
