@@ -101,7 +101,7 @@ deploy:
     skip_cleanup: true
     # wait until uploading task finishes, because it may cost more than 10 minutes without any output
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    script: travis_wait ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
+    script: .travis/travis_wait "./gradlew uploadArchives -PossrhUsername='$SONATYPE_USERNAME' -PossrhPassword='$SONATYPE_PASSWORD'"
     on:
       branch: release-3.1
       jdk: oraclejdk8
@@ -109,7 +109,7 @@ deploy:
     skip_cleanup: true
     # wait until uploading task finishes, because it may cost more than 10 minutes without any output
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    script: travis_wait ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
+    script: .travis/travis_wait "./gradlew uploadArchives -PossrhUsername='$SONATYPE_USERNAME' -PossrhPassword='$SONATYPE_PASSWORD'"
     on:
       branch: master
       jdk: oraclejdk8
@@ -117,7 +117,7 @@ deploy:
     skip_cleanup: true
     # wait until uploading task finishes, because it may cost more than 10 minutes without any output
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    script: travis_wait ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD" -Psigning.keyId="$SIGNING_KEY_ID" -Psigning.password="$SIGNING_PASSWORD" -Psigning.secretKeyRingFile="$TRAVIS_BUILD_DIR/secring.gpg"
+    script: .travis/travis_wait "./gradlew uploadArchives -PossrhUsername='$SONATYPE_USERNAME' -PossrhPassword="$SONATYPE_PASSWORD" -Psigning.keyId="$SIGNING_KEY_ID" -Psigning.password='$SIGNING_PASSWORD' -Psigning.secretKeyRingFile='$TRAVIS_BUILD_DIR/secring.gpg'"
     on:
       tags: true
       jdk: oraclejdk8
