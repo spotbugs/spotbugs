@@ -9,7 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 
 * Potential NPE in test-harness-core ([#671](https://github.com/spotbugs/spotbugs/issues/671))
-* Support project path with spaces ([#683](https://github.com/spotbugs/spotbugs/issues/683))
+* Support project path with spaces in test-harness-core ([#683](https://github.com/spotbugs/spotbugs/issues/683))
 
 ## 3.1.5 - 2018-06-15
 
