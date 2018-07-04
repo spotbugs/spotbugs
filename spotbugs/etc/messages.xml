@@ -1220,7 +1220,7 @@ is always called on the current thread.
 <![CDATA[
 <p>
 This detector uses data flow analysis to look for invocations of execute methods
-on SQL statements in switch something other than a constant string is passed as an argument.
+on SQL statements in which something other than a constant string is passed as an argument.
 </p>
 ]]>
     </Details>
