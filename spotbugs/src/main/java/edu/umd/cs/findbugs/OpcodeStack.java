@@ -655,6 +655,8 @@ public class OpcodeStack {
                     case "F":
                         this.constValue = constantNumericValue.floatValue();
                     break;
+                default:
+                    throw new IllegalArgumentException("Unknown signature for number: " + signature);
                 }
             }
             char s = signature.charAt(0);
