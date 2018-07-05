@@ -3,12 +3,9 @@
 
 [![Build Status](https://travis-ci.org/spotbugs/spotbugs.svg?branch=master)](https://travis-ci.org/spotbugs/spotbugs)
 [![Documentation Status](https://readthedocs.org/projects/spotbugs/badge/?version=latest)](http://spotbugs.readthedocs.io/en/latest/?badge=latest)
-[![Coverage Status](https://sonarcloud.io/api/badges/measure?key=com.github.spotbugs.spotbugs&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.spotbugs.spotbugs&metric=coverage)
+[![Coverage Status](https://sonarcloud.io/api/project_badges/measure?branch=release-3.1&project=com.github.spotbugs.spotbugs&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.spotbugs.spotbugs&metric=coverage)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spotbugs/spotbugs)
 [![Javadocs](http://javadoc.io/badge/com.github.spotbugs/spotbugs.svg)](http://javadoc.io/doc/com.github.spotbugs/spotbugs)
-
-[![Coverage on New Code](https://sonarcloud.io/api/badges/measure?key=com.github.spotbugs.spotbugs&metric=new_coverage&template=FLAT)](https://sonarcloud.io/dashboard?id=com.github.spotbugs.spotbugs)
-[![New Debt](https://sonarcloud.io/api/badges/measure?key=com.github.spotbugs.spotbugs&metric=new_sqale_debt_ratio&template=FLAT)](https://sonarcloud.io/component_measures/domain/Maintainability?id=com.github.spotbugs.spotbugs)
 
 [SpotBugs](https://spotbugs.github.io/) is the spiritual successor of [FindBugs](https://github.com/findbugsproject/findbugs), carrying on from the point where it left off with support of its community.
 
