@@ -634,29 +634,41 @@ public class OpcodeStack {
             if (constValue instanceof Number) {
                 Number constantNumericValue = (Number) constValue;
                 switch (signature) {
-                    case "B":
-                        this.constValue = constantNumericValue.byteValue();
+                case "Z":
+                case "Ljava/lang/Boolean;":
+                    this.constValue = constantNumericValue.intValue() != 0;
                     break;
-                    case "S":
-                        this.constValue = constantNumericValue.shortValue();
+                case "B":
+                case "Ljava/lang/Byte;":
+                    this.constValue = constantNumericValue.byteValue();
                     break;
-                    case "C":
-                        this.constValue = (char) constantNumericValue.intValue();
+                case "S":
+                case "Ljava/lang/Short;":
+                    this.constValue = constantNumericValue.shortValue();
                     break;
-                    case "I":
-                        this.constValue = constantNumericValue.intValue();
+                case "C":
+                case "Ljava/lang/Character;":
+                    this.constValue = (char) constantNumericValue.intValue();
                     break;
-                    case "J":
-                        this.constValue = constantNumericValue.longValue();
+                case "I":
+                case "Ljava/lang/Integer;":
+                    this.constValue = constantNumericValue.intValue();
                     break;
-                    case "D":
-                        this.constValue = constantNumericValue.doubleValue();
+                case "J":
+                case "Ljava/lang/Long;":
+                    this.constValue = constantNumericValue.longValue();
                     break;
-                    case "F":
-                        this.constValue = constantNumericValue.floatValue();
+                case "D":
+                case "Ljava/lang/Double;":
+                    this.constValue = constantNumericValue.doubleValue();
+                    break;
+                case "F":
+                case "Ljava/lang/Float;":
+                    this.constValue = constantNumericValue.floatValue();
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown signature for number: " + signature);
+                    throw new IllegalArgumentException(
+                            String.format("Unknown signature %s for number %s", signature, constantNumericValue));
                 }
             }
             char s = signature.charAt(0);
