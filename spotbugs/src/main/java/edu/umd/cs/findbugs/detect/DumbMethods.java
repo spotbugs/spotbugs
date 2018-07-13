@@ -1373,6 +1373,12 @@ public class DumbMethods extends OpcodeStackDetector {
                                 .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addString(dblString)
                                 .addString(bigDecimalString).addSourceLine(this));
                     }
+                } else {
+                    bugReporter.reportBug(new BugInstance(this, "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE",
+                            NORMAL_PRIORITY).addClassAndMethod(this).addCalledMethod(this)
+                            .addMethod("java.math.BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;", true)
+                            .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addString(top.getSignature())
+                            .addSourceLine(this));
                 }
 
             }
