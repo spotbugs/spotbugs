@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
+* DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE was only reported when the double argument was a constant
 
 ## 3.1.12 - 2019-02-28
 
