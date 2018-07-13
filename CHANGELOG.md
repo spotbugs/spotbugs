@@ -26,6 +26,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Processing of "J" (long value constants) was not processed in `OpcodeStack.Item(OpcodeStack.Item, String)`
 * Processing of "Z" (boolean value constants) was not processed in `OpcodeStack.Item(OpcodeStack.Item, String)`
 * Processing of Box classes like `java.lang.Integer` was not processed in `OpcodeStack.Item(OpcodeStack.Item, String)`
+* DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE was only reported when the double argument was a constant
 
 ## 3.1.5 - 2018-06-15
 
