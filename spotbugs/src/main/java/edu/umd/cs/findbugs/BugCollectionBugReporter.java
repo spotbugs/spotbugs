@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintWriter;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;

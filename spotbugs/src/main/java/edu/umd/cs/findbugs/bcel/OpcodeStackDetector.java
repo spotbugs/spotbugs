@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
+import com.github.spotbugs.jsr305.annotation.OverridingMethodsMustInvokeSuper;
 
 import org.apache.bcel.classfile.Code;
 

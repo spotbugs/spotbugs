@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;

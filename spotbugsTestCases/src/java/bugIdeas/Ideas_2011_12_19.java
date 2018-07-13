@@ -2,7 +2,7 @@ package bugIdeas;
 
 import java.util.logging.Logger;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;

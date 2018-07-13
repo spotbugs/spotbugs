@@ -30,9 +30,9 @@ import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
@@ -2167,7 +2167,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     }
 
-    public static @javax.annotation.CheckForNull
+    public static @com.github.spotbugs.jsr305.annotation.CheckForNull
     BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
         LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
         if (lv != null && lv.isNamed()) {

@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.dom4j.DocumentException;
 

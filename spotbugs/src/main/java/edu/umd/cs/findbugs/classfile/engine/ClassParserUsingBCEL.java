@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;

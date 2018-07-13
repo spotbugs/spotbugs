@@ -1,4 +1,4 @@
-@javax.annotation.ParametersAreNonnullByDefault
+@com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault
 @FieldsNonNullByDefault
 package nullnessAnnotations.packageDefault;
 

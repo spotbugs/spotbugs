@@ -304,7 +304,8 @@ public class ClassPathBuilder implements IClassPathBuilder {
                         "edu/umd/cs/findbugs/annotations/Nonnull.class");
             }
             if (!foundJSR305Annotations) {
-                foundJSR305Annotations = probeCodeBaseForResource(discoveredCodeBase, "javax/annotation/meta/TypeQualifier.class");
+                //FIXME do we still need to support the old JSR305 implementation?
+                foundJSR305Annotations = probeCodeBaseForResource(discoveredCodeBase, "com/github/spotbugs/jsr305/annotation/meta/TypeQualifier.class");
                 if (DEBUG) {
                     System.out.println("foundJSR305Annotations: " + foundJSR305Annotations);
                 }

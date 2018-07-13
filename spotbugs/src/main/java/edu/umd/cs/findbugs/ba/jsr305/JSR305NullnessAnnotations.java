@@ -30,10 +30,10 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 public abstract class JSR305NullnessAnnotations {
 
     public static final ClassDescriptor CHECK_FOR_NULL = DescriptorFactory
-            .createClassDescriptor(javax.annotation.CheckForNull.class);
+            .createClassDescriptor(com.github.spotbugs.jsr305.annotation.CheckForNull.class);
 
-    public static final ClassDescriptor NONNULL = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
+    public static final ClassDescriptor NONNULL = DescriptorFactory.createClassDescriptor(com.github.spotbugs.jsr305.annotation.Nonnull.class);
 
-    public static final ClassDescriptor NULLABLE = DescriptorFactory.createClassDescriptor(javax.annotation.Nullable.class);
+    public static final ClassDescriptor NULLABLE = DescriptorFactory.createClassDescriptor(com.github.spotbugs.jsr305.annotation.Nullable.class);
 
 }

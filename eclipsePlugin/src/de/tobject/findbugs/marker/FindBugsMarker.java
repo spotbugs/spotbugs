@@ -20,7 +20,7 @@
 
 package de.tobject.findbugs.marker;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import org.eclipse.jdt.core.IJavaElement;
 

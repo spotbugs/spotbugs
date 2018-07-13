@@ -42,8 +42,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import javax.annotation.WillClose;
-import javax.annotation.WillCloseWhenClosed;
+import com.github.spotbugs.jsr305.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillCloseWhenClosed;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;

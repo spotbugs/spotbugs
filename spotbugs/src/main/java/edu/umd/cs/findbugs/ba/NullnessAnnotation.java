@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;

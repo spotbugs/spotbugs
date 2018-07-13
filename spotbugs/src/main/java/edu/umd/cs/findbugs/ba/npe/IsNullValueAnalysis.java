@@ -23,7 +23,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ATHROW;

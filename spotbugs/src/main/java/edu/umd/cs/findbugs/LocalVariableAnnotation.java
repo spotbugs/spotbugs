@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;

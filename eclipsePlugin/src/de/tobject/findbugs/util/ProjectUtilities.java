@@ -22,7 +22,7 @@ package de.tobject.findbugs.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;

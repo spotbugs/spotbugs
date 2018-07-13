@@ -24,7 +24,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;

@@ -28,9 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import org.dom4j.DocumentException;
 

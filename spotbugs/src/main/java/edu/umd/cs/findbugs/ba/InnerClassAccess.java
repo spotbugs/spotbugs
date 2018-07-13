@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 public class InnerClassAccess {
     private final String methodName;

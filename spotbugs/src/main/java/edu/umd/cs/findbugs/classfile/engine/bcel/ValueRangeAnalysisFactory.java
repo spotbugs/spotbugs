@@ -36,7 +36,7 @@ import static org.apache.bcel.Const.IF_ICMPNE;
 import java.util.*;
 import java.util.Map.Entry;
 
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;

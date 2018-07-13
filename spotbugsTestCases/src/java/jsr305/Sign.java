@@ -1,9 +1,9 @@
 package jsr305;
 
-import javax.annotation.meta.Exhaustive;
-import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.TypeQualifierNickname;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.Exhaustive;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierNickname;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 public @TypeQualifier
 @interface Sign {

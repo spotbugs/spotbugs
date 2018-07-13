@@ -31,7 +31,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import javax.annotation.WillCloseWhenClosed;
+import com.github.spotbugs.jsr305.annotation.WillCloseWhenClosed;
 
 /**
  * @author pugh

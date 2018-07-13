@@ -23,7 +23,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
 
 /**
  * Boolean analysis properties for use in the AnalysisContext. These can be used

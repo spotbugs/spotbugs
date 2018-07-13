@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;

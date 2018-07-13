@@ -30,7 +30,7 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 
-@javax.annotation.ParametersAreNonnullByDefault
+@com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> implements
 EdgeTypes {
 

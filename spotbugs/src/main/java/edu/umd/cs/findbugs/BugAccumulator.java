@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;

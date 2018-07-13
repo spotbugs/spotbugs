@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.annotation.WillClose;
-import javax.annotation.WillCloseWhenClosed;
-import javax.annotation.WillNotClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillCloseWhenClosed;
+import com.github.spotbugs.jsr305.annotation.WillNotClose;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;

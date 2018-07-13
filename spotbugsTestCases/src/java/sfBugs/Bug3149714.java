@@ -1,6 +1,6 @@
 package sfBugs;
 
-import javax.annotation.concurrent.Immutable;
+import com.github.spotbugs.jsr305.annotation.concurrent.Immutable;
 
 @Immutable
 public class Bug3149714 {

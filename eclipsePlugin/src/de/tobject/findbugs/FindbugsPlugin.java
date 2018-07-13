@@ -42,7 +42,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.internal.preferences.EclipsePreferences;

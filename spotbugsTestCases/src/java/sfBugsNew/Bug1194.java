@@ -1,6 +1,6 @@
 package sfBugsNew;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;

@@ -1,6 +1,6 @@
 package jcipAnnotations;
 
-import javax.annotation.concurrent.Immutable;
+import com.github.spotbugs.jsr305.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;

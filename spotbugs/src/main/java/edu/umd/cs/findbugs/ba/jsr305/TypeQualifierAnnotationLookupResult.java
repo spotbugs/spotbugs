@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 

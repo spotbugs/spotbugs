@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.bcp;
 
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;

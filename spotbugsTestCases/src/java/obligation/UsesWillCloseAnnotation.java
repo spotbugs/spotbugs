@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

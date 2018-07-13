@@ -20,7 +20,7 @@ package de.tobject.findbugs.actions;
 
 import java.util.ArrayList;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;

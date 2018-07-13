@@ -16,7 +16,7 @@
 
 package com.google.errorprone.bugpatterns;
 
-import javax.annotation.CheckReturnValue;
+import com.github.spotbugs.jsr305.annotation.CheckReturnValue;
 
 /**
  * @author eaftan@google.com (Eddie Aftandilian)

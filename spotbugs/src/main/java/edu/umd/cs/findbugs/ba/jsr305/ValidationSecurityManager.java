@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import java.lang.annotation.Annotation;
 import java.security.Permission;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.TypeQualifierValidator;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierValidator;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 final class ValidationSecurityManager extends SecurityManager {
 

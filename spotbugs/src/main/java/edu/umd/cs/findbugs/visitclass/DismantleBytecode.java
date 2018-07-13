@@ -24,7 +24,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;

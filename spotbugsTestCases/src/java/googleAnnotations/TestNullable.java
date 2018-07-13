@@ -1,6 +1,6 @@
 package googleAnnotations;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 import com.google.common.base.Nullable;
 

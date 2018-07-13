@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
- * SpotBugs should support both of {@code javax.annotation.CheckReturnValue} and
+ * SpotBugs should support both of {@code com.github.spotbugs.jsr305.annotation.CheckReturnValue} and
  * {@code com.google.errorprone.annotations.CheckReturnValue} annotations.
  *
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">GitHub issue</a>

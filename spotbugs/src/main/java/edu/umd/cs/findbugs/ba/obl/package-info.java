@@ -5,6 +5,6 @@
  * See <a href="https://doi.org/10.1145/1035292.1029011">Weimer and Necula, Finding and preventing run-time error
  * handling mistakes</a>.
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault
 @edu.umd.cs.findbugs.internalAnnotations.AnalysisContextContained
 package edu.umd.cs.findbugs.ba.obl;

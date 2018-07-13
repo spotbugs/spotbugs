@@ -21,7 +21,7 @@ package de.tobject.findbugs.properties;
 import java.io.File;
 import java.net.URI;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

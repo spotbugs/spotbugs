@@ -26,7 +26,7 @@ import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDe
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;

@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 

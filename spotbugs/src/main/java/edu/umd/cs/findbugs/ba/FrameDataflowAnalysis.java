@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 /**
  * A convenient base class for dataflow analysis classes which use Frames as

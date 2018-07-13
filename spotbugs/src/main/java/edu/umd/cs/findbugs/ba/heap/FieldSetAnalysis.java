@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.heap;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;

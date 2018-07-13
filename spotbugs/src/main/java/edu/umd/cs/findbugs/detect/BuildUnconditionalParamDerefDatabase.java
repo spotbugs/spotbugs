@@ -23,7 +23,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -68,12 +68,12 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 
-    public final TypeQualifierValue<javax.annotation.Nonnull> nonnullTypeQualifierValue;
+    public final TypeQualifierValue<com.github.spotbugs.jsr305.annotation.Nonnull> nonnullTypeQualifierValue;
 
     abstract protected void reportBug(BugInstance bug);
 
     public BuildUnconditionalParamDerefDatabase() {
-        this.nonnullTypeQualifierValue =  TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
+        this.nonnullTypeQualifierValue =  TypeQualifierValue.getValue(com.github.spotbugs.jsr305.annotation.Nonnull.class, null);
     }
 
     @Override

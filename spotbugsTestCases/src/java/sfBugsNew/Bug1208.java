@@ -2,7 +2,7 @@ package sfBugsNew;
 
 import java.util.Random;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 public class Bug1208 {
 

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 /**
  * Filter reported warnings by category.

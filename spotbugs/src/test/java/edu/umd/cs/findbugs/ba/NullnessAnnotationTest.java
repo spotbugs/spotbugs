@@ -36,9 +36,9 @@ public class NullnessAnnotationTest {
                 {edu.umd.cs.findbugs.annotations.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL},
                 {edu.umd.cs.findbugs.annotations.PossiblyNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL},
 
-                {javax.annotation.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL},
-                {javax.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL},
-                {javax.annotation.Nullable.class.getName(), NullnessAnnotation.NULLABLE},
+                {com.github.spotbugs.jsr305.annotation.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL},
+                {com.github.spotbugs.jsr305.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL},
+                {com.github.spotbugs.jsr305.annotation.Nullable.class.getName(), NullnessAnnotation.NULLABLE},
 
                 {"something different", null},
         };

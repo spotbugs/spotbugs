@@ -26,7 +26,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;

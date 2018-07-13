@@ -1,5 +1,5 @@
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;

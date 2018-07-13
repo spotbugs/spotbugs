@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 public class Ideas_2009_07_26 {
     int x;

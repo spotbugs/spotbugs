@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

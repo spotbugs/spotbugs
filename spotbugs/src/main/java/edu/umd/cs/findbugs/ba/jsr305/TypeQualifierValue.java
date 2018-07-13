@@ -29,10 +29,10 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifierValidator;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierValidator;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -63,10 +63,10 @@ public class TypeQualifierValue<A extends Annotation> {
     public static final boolean DEBUG_CLASSLOADING = SystemProperties.getBoolean("tqv.debug.classloading");
 
     private static final ClassDescriptor EXCLUSIVE_ANNOTATION = DescriptorFactory.instance().getClassDescriptor(
-            javax.annotation.meta.Exclusive.class);
+            com.github.spotbugs.jsr305.annotation.meta.Exclusive.class);
 
     private static final ClassDescriptor EXHAUSTIVE_ANNOTATION = DescriptorFactory.instance().getClassDescriptor(
-            javax.annotation.meta.Exhaustive.class);
+            com.github.spotbugs.jsr305.annotation.meta.Exhaustive.class);
 
     public final ClassDescriptor typeQualifier;
     public final Class<A> typeQualifierClass;
@@ -107,7 +107,10 @@ public class TypeQualifierValue<A extends Annotation> {
             // So, if the type qualifier annotation has specified a default When
             // value,
             // it will appear as an abstract method called "when".
-            XMethod whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
+            XMethod whenMethod = xclass.findMethod("when", "()Lcom/github/spotbugs/jsr305/annotation/meta/When;", false);
+            if (whenMethod == null) {
+                whenMethod = xclass.findMethod("when", "()Ljavax/annotation/meta/When;", false);
+            }
             if (whenMethod == null) {
                 isStrict1 = true;
             }
@@ -213,7 +216,7 @@ public class TypeQualifierValue<A extends Annotation> {
         if (DEBUG_CLASSLOADING) {
             System.out.println("Getting qualifier class for " + className);
         }
-        if (className.startsWith("javax.annotation")) {
+        if (className.startsWith("javax.annotation") || className.startsWith("com.github.spotbugs.jsr305.annotation")) {
             return (Class<A>) Class.forName(className);
         }
         try {

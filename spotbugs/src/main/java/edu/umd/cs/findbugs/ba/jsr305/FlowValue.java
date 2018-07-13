@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.jsr305;
 
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 /**
  * Flow value type for type qualifier dataflow analysis.

@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.Serializable;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;

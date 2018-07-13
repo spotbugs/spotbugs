@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
@@ -64,10 +64,10 @@ import edu.umd.cs.findbugs.log.Profiler;
 public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotationDatabase {
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.npe.tq.debug");
 
-    public final TypeQualifierValue<javax.annotation.Nonnull> nonnullTypeQualifierValue;
+    public final TypeQualifierValue<com.github.spotbugs.jsr305.annotation.Nonnull> nonnullTypeQualifierValue;
 
     public TypeQualifierNullnessAnnotationDatabase() {
-        this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
+        this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(com.github.spotbugs.jsr305.annotation.Nonnull.class, null);
     }
 
     @Override
@@ -234,7 +234,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     }
 
     private static final ClassDescriptor PARAMETERS_ARE_NONNULL_BY_DEFAULT = DescriptorFactory
-            .createClassDescriptor(javax.annotation.ParametersAreNonnullByDefault.class);
+            .createClassDescriptor(com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault.class);
 
     private static final ClassDescriptor RETURN_VALUES_ARE_NONNULL_BY_DEFAULT = DescriptorFactory
             .createClassDescriptor(edu.umd.cs.findbugs.annotations.ReturnValuesAreNonnullByDefault.class);

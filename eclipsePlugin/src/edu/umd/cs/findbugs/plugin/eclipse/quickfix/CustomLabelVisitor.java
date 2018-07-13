@@ -17,7 +17,7 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 /**
  * This visitor should traverse the AST as much as needed to determine if a proposed resolution

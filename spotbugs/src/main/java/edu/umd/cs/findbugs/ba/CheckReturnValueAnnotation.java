@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.annotations.NonNull;

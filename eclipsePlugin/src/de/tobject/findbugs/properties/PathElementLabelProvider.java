@@ -1,6 +1,6 @@
 package de.tobject.findbugs.properties;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.IColorProvider;

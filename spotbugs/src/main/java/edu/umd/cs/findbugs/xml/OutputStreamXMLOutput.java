@@ -25,7 +25,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import javax.annotation.WillCloseWhenClosed;
+import com.github.spotbugs.jsr305.annotation.WillCloseWhenClosed;
 
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

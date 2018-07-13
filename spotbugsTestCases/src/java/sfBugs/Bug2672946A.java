@@ -11,8 +11,8 @@
 
 package sfBugs;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 import jsr305.FieldsNonNullByDefault;
 

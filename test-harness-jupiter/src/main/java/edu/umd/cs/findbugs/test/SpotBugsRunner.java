@@ -2,7 +2,7 @@ package edu.umd.cs.findbugs.test;
 
 import java.nio.file.Path;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.BugCollection;
 

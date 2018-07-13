@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 public class Ideas_2011_09_20 {
     Object foo;

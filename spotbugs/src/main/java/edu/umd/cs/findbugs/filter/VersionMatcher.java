@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 /**
  * @author pugh

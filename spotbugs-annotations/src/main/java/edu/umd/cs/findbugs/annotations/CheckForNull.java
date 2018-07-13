@@ -24,8 +24,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.annotation.meta.TypeQualifierNickname;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierNickname;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 /**
  * The annotated element might be null, and uses of the element should check for
@@ -37,7 +37,7 @@ import javax.annotation.meta.When;
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)
-@javax.annotation.Nonnull(when = When.MAYBE)
+@com.github.spotbugs.jsr305.annotation.Nonnull(when = When.MAYBE)
 @TypeQualifierNickname
 public @interface CheckForNull {
 

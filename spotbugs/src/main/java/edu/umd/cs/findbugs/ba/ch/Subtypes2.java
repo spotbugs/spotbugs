@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  *
  * @author David Hovemeyer
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault
 public class Subtypes2 {
     public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES = true; // SystemProperties.getBoolean("findbugs.subtypes2.superclass");
 

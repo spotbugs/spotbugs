@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import edu.umd.cs.findbugs.gui2.BugTreeModel.BranchOperationException;
 

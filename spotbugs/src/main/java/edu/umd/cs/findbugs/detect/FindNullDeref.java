@@ -31,9 +31,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -648,7 +648,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             // it here.
             nullArgSet = (BitSet) nullArgSet.clone();
             definitelyNullArgSet = (BitSet) definitelyNullArgSet.clone();
-            ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
+            ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(com.github.spotbugs.jsr305.annotation.Nonnull.class);
             TypeQualifierValue<?> nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
             for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet.nextSetBit(i + 1)) {
                 TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, i,

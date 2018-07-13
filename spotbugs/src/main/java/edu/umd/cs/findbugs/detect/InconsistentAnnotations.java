@@ -18,7 +18,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -46,7 +46,7 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
     final BugReporter reporter;
 
     public InconsistentAnnotations(BugReporter reporter) {
-        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
+        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(com.github.spotbugs.jsr305.annotation.Nonnull.class);
         this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
         this.reporter = reporter;
     }

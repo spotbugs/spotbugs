@@ -5,11 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.sql.ResultSet;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.TypeQualifierNickname;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierNickname;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 public class Ideas_2013_01_29 {
 

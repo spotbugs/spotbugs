@@ -24,11 +24,13 @@ subprojects {
 
   repositories {
     jcenter()
+    mavenLocal()
   }
 }
 
 repositories {
   jcenter()
+  mavenLocal()
 }
 
 wrapper {

@@ -24,9 +24,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.regex.Pattern;
 
-import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.TypeQualifierValidator;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierValidator;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 /**
  * * Denotes a class name or package name where the / character is used to

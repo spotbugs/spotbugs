@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ARETURN;

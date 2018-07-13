@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;

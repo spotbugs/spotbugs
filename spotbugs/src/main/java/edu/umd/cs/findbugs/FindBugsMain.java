@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Method;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author pugh

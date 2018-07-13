@@ -6,6 +6,6 @@
  * <b>ClassData</b>, which represents the raw data of a class, and <b>ClassInfo</b>,
  * which represents symbolic information parsed from the class data.
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault
 @edu.umd.cs.findbugs.internalAnnotations.AnalysisContextContained
 package edu.umd.cs.findbugs.classfile.analysis;

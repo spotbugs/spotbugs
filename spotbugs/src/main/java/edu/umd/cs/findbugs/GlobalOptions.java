@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 public interface GlobalOptions {
     @CheckForNull

@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.BugCollection;

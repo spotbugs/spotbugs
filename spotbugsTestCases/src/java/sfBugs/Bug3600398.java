@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 import javax.servlet.http.HttpServletRequest;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;

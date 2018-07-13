@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.filter;
 
 import java.util.Objects;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 /**
  * @author pugh

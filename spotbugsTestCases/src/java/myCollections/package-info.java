@@ -1,5 +1,5 @@
 @ParametersAreNonnullByDefault
 package myCollections;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 

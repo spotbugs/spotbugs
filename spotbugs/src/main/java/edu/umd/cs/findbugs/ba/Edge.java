@@ -25,8 +25,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.generic.InstructionHandle;
 

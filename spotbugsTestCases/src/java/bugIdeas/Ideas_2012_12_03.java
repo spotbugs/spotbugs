@@ -4,8 +4,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifier;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 

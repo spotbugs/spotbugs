@@ -2,8 +2,8 @@ package jsr305;
 
 import java.lang.annotation.ElementType;
 
-import javax.annotation.meta.TypeQualifierDefault;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierDefault;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 @Foo(when = When.ALWAYS)
 @TypeQualifierDefault(ElementType.PARAMETER)

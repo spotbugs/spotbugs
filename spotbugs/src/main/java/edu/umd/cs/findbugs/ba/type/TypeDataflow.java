@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.type;
 
 import java.util.Collection;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;

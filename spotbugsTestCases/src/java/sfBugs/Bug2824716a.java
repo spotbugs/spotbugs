@@ -1,7 +1,7 @@
 package sfBugs;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckReturnValue;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 @CheckReturnValue
 public class Bug2824716a {

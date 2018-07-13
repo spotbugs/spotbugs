@@ -25,9 +25,9 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifierValidator;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.meta.TypeQualifierValidator;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.junit.Test;
 

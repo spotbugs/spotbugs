@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

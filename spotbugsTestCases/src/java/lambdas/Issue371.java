@@ -1,5 +1,5 @@
 package lambdas;
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 public class Issue371 {
 

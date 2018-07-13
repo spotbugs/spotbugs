@@ -28,7 +28,7 @@ import java.io.Reader;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
-import javax.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillClose;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

@@ -40,13 +40,13 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
  * @author William Pugh
  */
 public class TypeQualifierResolver {
-    static final ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor(javax.annotation.meta.TypeQualifier.class);
+    static final ClassDescriptor typeQualifier = DescriptorFactory.createClassDescriptor(com.github.spotbugs.jsr305.annotation.meta.TypeQualifier.class);
 
     static final ClassDescriptor typeQualifierNickname = DescriptorFactory
-            .createClassDescriptor(javax.annotation.meta.TypeQualifierNickname.class);
+            .createClassDescriptor(com.github.spotbugs.jsr305.annotation.meta.TypeQualifierNickname.class);
 
     static final ClassDescriptor typeQualifierDefault = DescriptorFactory
-            .createClassDescriptor(javax.annotation.meta.TypeQualifierDefault.class);
+            .createClassDescriptor(com.github.spotbugs.jsr305.annotation.meta.TypeQualifierDefault.class);
 
     static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
             .createClassDescriptor(java.lang.annotation.ElementType.class);
@@ -175,7 +175,7 @@ public class TypeQualifierResolver {
 
     public static void logMissingAnnotationClass(MissingClassException e) {
         ClassDescriptor c = e.getClassDescriptor();
-        if (c.getClassName().startsWith("javax.annotation")) {
+        if (c.getClassName().startsWith("javax.annotation") || c.getClassName().startsWith("com.github.spotbugs.jsr305.annotation")) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(c);
         }
     }

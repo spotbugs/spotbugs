@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.generic;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Method;

@@ -24,7 +24,7 @@ public class Getter {
 
     @NoWarning("IS2_INCONSISTENT_SYNC")
     @ExpectWarning("IS_FIELD_NOT_GUARDED")
-    @javax.annotation.concurrent.GuardedBy("this")
+    @com.github.spotbugs.jsr305.annotation.concurrent.GuardedBy("this")
     int y;
 
     public synchronized int getY(){

@@ -47,9 +47,9 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.WillClose;
-import javax.annotation.WillNotClose;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.WillClose;
+import com.github.spotbugs.jsr305.annotation.WillNotClose;
 
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;

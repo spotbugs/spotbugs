@@ -4,5 +4,5 @@
  * layer.
  */
 
-@javax.annotation.ParametersAreNonnullByDefault
+@com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault
 package edu.umd.cs.findbugs.classfile.impl;

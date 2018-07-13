@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.Objects;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;

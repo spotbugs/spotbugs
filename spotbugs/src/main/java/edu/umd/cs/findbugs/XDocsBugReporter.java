@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;

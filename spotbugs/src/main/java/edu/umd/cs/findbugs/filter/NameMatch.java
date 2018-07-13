@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.filter;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 /**
  * Matches a String value against a predefined specification.

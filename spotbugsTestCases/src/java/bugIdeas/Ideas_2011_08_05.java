@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 

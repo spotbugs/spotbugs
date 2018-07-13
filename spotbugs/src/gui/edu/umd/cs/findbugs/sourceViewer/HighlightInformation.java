@@ -23,7 +23,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 
 public class HighlightInformation {

@@ -26,9 +26,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
@@ -313,8 +313,10 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
     @SlashedClassName
     private static final String NAME_OF_CHECK_RETURN_NULL_SPOTBUGS = "edu/umd/cs/findbugs/annotations/CheckReturnValue";
+    
+    //FIXME do we still need to support the old JSR305 implementation?
     @SlashedClassName
-    private static final String NAME_OF_CHECK_RETURN_NULL_JSR305 = "javax/annotation/CheckReturnValue";
+    private static final String NAME_OF_CHECK_RETURN_NULL_JSR305 = "com/github/spotbugs/jsr305/annotation/CheckReturnValue";
     @SlashedClassName
     private static final String NAME_OF_CHECK_RETURN_NULL_ERRORPRONE = "com/google/errorprone/annotations/CheckReturnValue";
     @SlashedClassName

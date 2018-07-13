@@ -2,9 +2,9 @@ package sfBugs;
 
 import java.io.File;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 /**
  *

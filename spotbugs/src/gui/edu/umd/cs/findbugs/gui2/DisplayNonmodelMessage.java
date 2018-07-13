@@ -28,7 +28,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;

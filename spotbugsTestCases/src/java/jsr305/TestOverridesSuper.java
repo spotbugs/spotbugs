@@ -1,6 +1,6 @@
 package jsr305;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
+import com.github.spotbugs.jsr305.annotation.OverridingMethodsMustInvokeSuper;
 
 public class TestOverridesSuper {
 

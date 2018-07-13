@@ -1,7 +1,7 @@
 package sfBugs;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.CheckReturnValue;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.annotations.DefaultAnnotation;
 

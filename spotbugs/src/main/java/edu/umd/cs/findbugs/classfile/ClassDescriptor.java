@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.classfile;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.JavaClass;
 

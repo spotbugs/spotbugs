@@ -1,3 +1,3 @@
 @CheckReturnValue
 package ghIssues.issue463;
-import javax.annotation.CheckReturnValue;
+import com.github.spotbugs.jsr305.annotation.CheckReturnValue;

@@ -1,7 +1,7 @@
 package bugIdeas;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import com.github.spotbugs.jsr305.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class Ideas_2010_08_06 {

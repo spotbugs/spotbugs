@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.Debug;

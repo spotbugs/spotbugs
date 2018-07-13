@@ -3,7 +3,7 @@ package bugIdeas;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 public final class Ideas_2010_08_30 implements Runnable {
 

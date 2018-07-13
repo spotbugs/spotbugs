@@ -1,6 +1,6 @@
 package jcipAnnotations;
 
-import javax.annotation.concurrent.GuardedBy;
+import com.github.spotbugs.jsr305.annotation.concurrent.GuardedBy;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 

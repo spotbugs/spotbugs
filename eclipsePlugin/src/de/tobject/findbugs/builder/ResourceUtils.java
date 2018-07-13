@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -375,7 +375,7 @@ public class ResourceUtils {
      *            IResource
      * @return resource object or null
      */
-    @javax.annotation.CheckForNull
+    @com.github.spotbugs.jsr305.annotation.CheckForNull
     public static IResource getResource(Object element) {
         if (element instanceof IJavaElement) {
             return ((IJavaElement) element).getResource();

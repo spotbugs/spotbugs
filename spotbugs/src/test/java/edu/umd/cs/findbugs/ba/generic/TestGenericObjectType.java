@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;

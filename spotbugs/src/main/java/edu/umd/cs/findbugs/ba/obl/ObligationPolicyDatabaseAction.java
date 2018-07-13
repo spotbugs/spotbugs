@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import javax.annotation.Nullable;
+import com.github.spotbugs.jsr305.annotation.Nullable;
 
 /**
  * An action applied by an entry in the ObligationPolicyDatabase. Adds or

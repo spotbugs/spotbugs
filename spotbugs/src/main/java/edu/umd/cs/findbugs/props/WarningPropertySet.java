@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.props;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckReturnValue;
+import com.github.spotbugs.jsr305.annotation.CheckReturnValue;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;

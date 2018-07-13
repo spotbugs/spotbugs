@@ -1,6 +1,6 @@
 package sfBugs;
 
-import javax.annotation.Nonnull;
+import com.github.spotbugs.jsr305.annotation.Nonnull;
 
 
 

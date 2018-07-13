@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import javax.annotation.CheckForNull;
+import com.github.spotbugs.jsr305.annotation.CheckForNull;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;

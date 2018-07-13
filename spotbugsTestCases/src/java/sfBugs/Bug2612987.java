@@ -11,8 +11,8 @@
 
 package sfBugs;
 
-import javax.annotation.CheckForSigned;
-import javax.annotation.Nonnegative;
+import com.github.spotbugs.jsr305.annotation.CheckForSigned;
+import com.github.spotbugs.jsr305.annotation.Nonnegative;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 

@@ -62,7 +62,7 @@ class ValidatorClassLoader extends ClassLoader {
             System.out.println("Looking for class data for " + name);
         }
 
-        if (name.startsWith("javax.annotation")) {
+        if (name.startsWith("javax.annotation") || name.startsWith("com.github.spotbugs.jsr305.annotation")) {
             return Class.forName(name);
         }
 

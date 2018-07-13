@@ -1,8 +1,8 @@
 package jsr305;
 
-import javax.annotation.Tainted;
-import javax.annotation.Untainted;
-import javax.annotation.meta.When;
+import com.github.spotbugs.jsr305.annotation.Tainted;
+import com.github.spotbugs.jsr305.annotation.Untainted;
+import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
