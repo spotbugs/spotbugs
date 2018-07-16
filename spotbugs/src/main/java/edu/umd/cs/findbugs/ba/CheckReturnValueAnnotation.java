@@ -20,10 +20,8 @@
 package edu.umd.cs.findbugs.ba;
 
 import com.github.spotbugs.jsr305.annotation.CheckForNull;
-import com.github.spotbugs.jsr305.annotation.meta.When;
 
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author pugh
@@ -108,8 +106,8 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
     }
 
     @CheckForNull
-    public static CheckReturnValueAnnotation createFor(@NonNull When when) {
-        switch (when.name()) {
+    public static CheckReturnValueAnnotation createFor(String when) {
+        switch (when) {
         case "NEVER":
         case "UNKNOWN":
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE;

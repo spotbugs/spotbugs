@@ -51,6 +51,8 @@ dependencies {
   compile 'commons-lang:commons-lang:2.6'
   compile 'com.google.code.findbugs:jFormatString:3.0.0'
 
+  compile 'com.google.code.findbugs:jsr305:3.0.2'  //added old dep, new spotbugs jsr305 dependency is pulled in transitively
+
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   compile project(':spotbugs-annotations')

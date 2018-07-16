@@ -314,11 +314,15 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
     @SlashedClassName
     private static final String NAME_OF_CHECK_RETURN_NULL_SPOTBUGS = "edu/umd/cs/findbugs/annotations/CheckReturnValue";
     
-    //FIXME do we still need to support the old JSR305 implementation?
     @SlashedClassName
-    private static final String NAME_OF_CHECK_RETURN_NULL_JSR305 = "com/github/spotbugs/jsr305/annotation/CheckReturnValue";
+    private static final String NAME_OF_CHECK_RETURN_NULL_FINDBUGS_JSR305 = "javax/annotation/CheckReturnValue";
+    
+    @SlashedClassName
+    private static final String NAME_OF_CHECK_RETURN_NULL_SPOTBUGS_JSR305 = "com/github/spotbugs/jsr305/annotation/CheckReturnValue";
+
     @SlashedClassName
     private static final String NAME_OF_CHECK_RETURN_NULL_ERRORPRONE = "com/google/errorprone/annotations/CheckReturnValue";
+
     @SlashedClassName
     private static final String NAME_OF_CAN_IGNORE_RETURN_VALUE = "com/google/errorprone/annotations/CanIgnoreReturnValue";
 
@@ -348,12 +352,13 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             switch (type) {
             case NAME_OF_CHECK_RETURN_NULL_SPOTBUGS:
                 return createSpotBugsAnnotation(entry);
-            case NAME_OF_CHECK_RETURN_NULL_JSR305:
+            case NAME_OF_CHECK_RETURN_NULL_FINDBUGS_JSR305:
+            case NAME_OF_CHECK_RETURN_NULL_SPOTBUGS_JSR305:
                 return createJSR305Annotation(entry);
             case NAME_OF_CHECK_RETURN_NULL_ERRORPRONE:
-                return CheckReturnValueAnnotation.createFor(When.ALWAYS);
+                return CheckReturnValueAnnotation.createFor(When.ALWAYS.name());
             case NAME_OF_CAN_IGNORE_RETURN_VALUE:
-                return CheckReturnValueAnnotation.createFor(When.NEVER);
+                return CheckReturnValueAnnotation.createFor(When.NEVER.name());
             default:
                 // check next annotation
             }
@@ -367,10 +372,10 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             if (!pair.getNameString().equals("when")) {
                 continue;
             }
-            return CheckReturnValueAnnotation.createFor(When.valueOf(pair.getValue().stringifyValue()));
+            return CheckReturnValueAnnotation.createFor(pair.getValue().stringifyValue());
         }
         // use default value
-        return CheckReturnValueAnnotation.createFor(When.ALWAYS);
+        return CheckReturnValueAnnotation.createFor(When.ALWAYS.name());
     }
 
     private CheckReturnValueAnnotation createSpotBugsAnnotation(AnnotationEntry entry) {
