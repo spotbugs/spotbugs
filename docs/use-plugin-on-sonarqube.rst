@@ -9,7 +9,7 @@ Create Maven Project
 Follow the interaction in the `SonarQube official guidelines <https://docs.sonarqube.org/display/DEV/Build+Plugin#BuildPlugin-CreateaMavenProject>`_.
 It is recommended to use sub-modules, to manage both the SpotBugs plugin and the SonarQube plugin in one project. You can refer to `this module <https://github.com/KengoTODA/guava-helper-for-java-8/tree/master/sonarqube-plugin>`_ as an example.
 
-You also need to configure the ``sonar-packaging-maven-plugin``, to make your plugin depends on `the SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_. For instance, if you're using SonarQube 6.7 LTS, your plugin requires SpotBugs SonarQube Plugin version 3.7, so your configuration should be like below:
+You also need to configure the ``sonar-packaging-maven-plugin``, to make your plugin depend on `the SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_. For instance, if you're using SonarQube 6.7 LTS, your plugin requires SpotBugs SonarQube Plugin version 3.7, so your configuration should be like below:
 
 .. code:: xml
 
@@ -29,7 +29,7 @@ If your SpotBugs plugin isn't complex, you can simply introduce `the SonarQube r
 Update RulesDefinition.java
 ---------------------------
 
-Your ``SonarQubeRulesDefinition.java`` should load the generated ``rules.xml`` to FindBugs repository.
+Your ``SonarQubeRulesDefinition.java`` should load the generated ``rules.xml`` to the FindBugs repository.
 
 When you create a ``NewRepository`` instance, use ``FindbugsRulesDefinition.REPOSITORY_KEY`` as the repository key, and do _not_ rename it by calling ``NewRepository#setName(String)``. It is necessary to fulfill the requirement from `SonarQube API <https://github.com/SonarSource/sonarqube/blob/6.7.4/sonar-plugin-api/src/main/java/org/sonar/api/server/rule/RulesDefinition.java#L393-L395>`_. Here is an example:
 
