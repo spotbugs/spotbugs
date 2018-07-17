@@ -23,16 +23,14 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class SourceMatcher implements Matcher {
-    private static final Logger LOG = LoggerFactory.getLogger(SourceMatcher.class);
+    private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
     private final NameMatch fileName;
 
@@ -56,7 +54,21 @@ public class SourceMatcher implements Matcher {
             return false;
         }
         boolean result = fileName.match(bugFileName);
-        LOG.debug("Matching {} with {}, result = {}", bugFileName, fileName, result);
+        if (DEBUG) {
+            System.out.println("Matching " + bugFileName + " with " + fileName + ", result = " + result);
+        }
+        if (!result
+                && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
+          String bugSourcePath = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
+
+          if(bugSourcePath == null || bugSourcePath.isEmpty()){
+            return result;
+          }
+          result = fileName.match(bugSourcePath);
+          if (DEBUG) {
+              System.out.println("Matching Known source path " + bugSourcePath + " with " + fileName + ", result = " + result);
+          }
+        }
         return result;
     }
 
