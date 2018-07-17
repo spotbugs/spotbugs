@@ -62,7 +62,7 @@ public class SourceMatcher implements Matcher {
           String bugSourcePath = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
 
           if(bugSourcePath == null || bugSourcePath.isEmpty()){
-            return false;
+            return result;
           }
           result = fileName.match(bugSourcePath);
           if (DEBUG) {

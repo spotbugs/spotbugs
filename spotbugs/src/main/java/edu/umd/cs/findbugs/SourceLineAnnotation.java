@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-import javax.annotation.CheckReturnValue;
 
 /**
  * A BugAnnotation that records a range of source lines in a class.
@@ -970,6 +969,13 @@ public class SourceLineAnnotation implements BugAnnotation {
         return getSourcePath();
     }
 
+    /**
+     * This method hands back a SourceFinder for this SourceLineAnnotation.
+     * It can be used to identify the full path of a source file rather than
+     * just the class name. The method either tries to find it in the currently
+     * set project or in the Analysis Context.
+     * @return the currently available SourceFinder, or null if it could not be found
+     */
     private @CheckReturnValue SourceFinder getSourceFinder() {
         Project project = myProject.get();
         if (project != null) {
@@ -981,7 +987,7 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
         return null;
     }
-
+    
     public void setSynthetic(boolean synthetic) {
         this.synthetic = synthetic;
     }
