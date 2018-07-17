@@ -944,6 +944,34 @@ public class SourceLineAnnotation implements BugAnnotation {
         return sourcePath;
     }
 
+    public String getRealSourcePath() {
+        if (isSourceFileKnown()) {
+            Project project = myProject.get();
+            if (project != null) {
+                try {
+                    SourceFinder mySourceFinder = project.getSourceFinder();
+                    return new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
+
+                } catch (IOException e) {
+                    assert true;
+                }
+            }
+            else {
+              AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+              if (currentAnalysisContext != null) {
+                try {
+                  SourceFinder sourceFinder = currentAnalysisContext.getSourceFinder();
+                  return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
+                } catch (IOException e) {
+                  e.printStackTrace(System.out);
+                    assert true;
+                }
+              }
+            }
+        }
+        return getSourcePath();
+    }
+
     public void setSynthetic(boolean synthetic) {
         this.synthetic = synthetic;
     }

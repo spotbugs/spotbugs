@@ -57,6 +57,18 @@ public class SourceMatcher implements Matcher {
         if (DEBUG) {
             System.out.println("Matching " + bugFileName + " with " + fileName + ", result = " + result);
         }
+        if (!result
+                && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
+          String bugSourcePath = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
+
+          if(bugSourcePath == null || bugSourcePath.isEmpty()){
+            return result;
+          }
+          result = fileName.match(bugSourcePath);
+          if (DEBUG) {
+              System.out.println("Matching Known source path " + bugSourcePath + " with " + fileName + ", result = " + result);
+          }
+        }
         return result;
     }
 
