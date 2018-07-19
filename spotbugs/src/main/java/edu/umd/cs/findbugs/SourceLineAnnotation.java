@@ -946,30 +946,30 @@ public class SourceLineAnnotation implements BugAnnotation {
 
     public String getRealSourcePath() {
         if (isSourceFileKnown()) {
-            Project project = myProject.get();
-            if (project != null) {
+            SourceFinder sourceFinder = getSourceFinder();
+            if (sourceFinder != null)
+            {
                 try {
-                    SourceFinder mySourceFinder = project.getSourceFinder();
-                    return new File(mySourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
-
+                    return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
                 } catch (IOException e) {
-                    assert true;
+                    AnalysisContext.logError("Error resolving Real SourcePath (only relative source path will be available) ", e);
                 }
             }
-            else {
-              AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-              if (currentAnalysisContext != null) {
-                try {
-                  SourceFinder sourceFinder = currentAnalysisContext.getSourceFinder();
-                  return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
-                } catch (IOException e) {
-                  e.printStackTrace(System.out);
-                    assert true;
-                }
-              }
-            }
+            AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
         }
         return getSourcePath();
+    }
+
+    private SourceFinder getSourceFinder() {
+        Project project = myProject.get();
+        if (project != null) {
+            return project.getSourceFinder();
+        }
+        AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+        if (currentAnalysisContext != null) {
+            return currentAnalysisContext.getSourceFinder();
+        }
+        return null;
     }
 
     public void setSynthetic(boolean synthetic) {
