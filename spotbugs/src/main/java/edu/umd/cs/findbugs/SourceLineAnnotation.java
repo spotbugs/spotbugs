@@ -955,7 +955,9 @@ public class SourceLineAnnotation implements BugAnnotation {
                     AnalysisContext.logError("Error resolving Real SourcePath (only relative source path will be available) ", e);
                 }
             }
-            AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
+            else {
+                AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
+            }
         }
         return getSourcePath();
     }
