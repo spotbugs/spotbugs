@@ -74,6 +74,15 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
+    local_dir: eclipsePlugin/build/site/eclipse-stable-latest
+    repo: spotbugs/eclipse-stable-latest
+    email: skypencil+spotbugs-bot@gmail.com
+    on:
+      branch: release-3.1
+      jdk: oraclejdk8
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
     local_dir: eclipsePlugin/build/site/eclipse-candidate
     repo: spotbugs/eclipse-candidate
     email: skypencil+spotbugs-bot@gmail.com
