@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+
 public class BugInstanceTest {
 
     private BugInstance b;
@@ -40,6 +42,19 @@ public class BugInstanceTest {
     public void testRemoveThroughIterator3() {
         removeThroughIterator(b.propertyIterator(), "C");
         checkPropertyIterator(b.propertyIterator(), new String[] { "A", "B" }, new String[] { "a", "b" });
+    }
+
+    @Test
+    public void testSameHashForMultipleRunsOfABugInstance() {
+        BugInstance firstRunBugInstance = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
+        firstRunBugInstance.addString("a");
+        firstRunBugInstance.addString("k");
+
+        BugInstance secondRunBugInstance = new BugInstance("NP_NULL_ON_SOME_PATH", Priorities.NORMAL_PRIORITY);
+        secondRunBugInstance.addString("k");
+        secondRunBugInstance.addString("a");
+
+        Assert.assertThat(firstRunBugInstance.getInstanceHash(), equalTo(secondRunBugInstance.getInstanceHash()));
     }
 
     @Test(expected = NoSuchElementException.class)

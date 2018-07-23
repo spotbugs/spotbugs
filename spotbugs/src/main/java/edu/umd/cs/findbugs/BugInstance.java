@@ -552,7 +552,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     private String getInstanceKeyNew() {
         StringBuilder buf = new StringBuilder(type);
-        for (BugAnnotation annotation : annotationList) {
+        Set<BugAnnotation> sortedAnnotationList = new TreeSet<>(annotationList);
+        for (BugAnnotation annotation : sortedAnnotationList) {
             if (annotation.isSignificant() || annotation instanceof IntAnnotation
                     || annotation instanceof LocalVariableAnnotation) {
                 buf.append(":");
