@@ -34,6 +34,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.ba.bcp.LocalVariable;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -150,8 +151,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
 
+    public String getBrokenInstanceHashForBackwardCompatibility() {
+        return createHash(getInstanceKeyNew());
+    }
+
     public static class NoSuchBugPattern extends IllegalArgumentException {
         public final String type;
+
         public NoSuchBugPattern(String type) {
             super("Can't find definition of bug type " + type);
             this.type = type;
@@ -161,10 +167,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Constructor.
      *
-     * @param type
-     *            the bug type
-     * @param priority
-     *            the bug priority
+     * @param type     the bug type
+     * @param priority the bug priority
      */
     public BugInstance(String type, int priority) {
         this.type = type.intern();
@@ -175,7 +179,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
         BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
         if (p == null) {
-            if ( missingBugTypes.add(type)) {
+            if (missingBugTypes.add(type)) {
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new NoSuchBugPattern(type));
             }
@@ -213,7 +217,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
                 dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
             }
             dup.propertyListHead = dup.propertyListTail = null;
-            for (Iterator<BugProperty> i = propertyIterator(); i.hasNext();) {
+            for (Iterator<BugProperty> i = propertyIterator(); i.hasNext(); ) {
                 dup.addProperty((BugProperty) i.next().clone());
             }
 
@@ -227,12 +231,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Create a new BugInstance. This is the constructor that should be used by
      * Detectors.
      *
-     * @param detector
-     *            the Detector that is reporting the BugInstance
-     * @param type
-     *            the bug type
-     * @param priority
-     *            the bug priority
+     * @param detector the Detector that is reporting the BugInstance
+     * @param type     the bug type
+     * @param priority the bug priority
      */
     public BugInstance(Detector detector, String type, int priority) {
         this(type, priority);
@@ -266,12 +267,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Create a new BugInstance. This is the constructor that should be used by
      * Detectors.
      *
-     * @param detector
-     *            the Detector2 that is reporting the BugInstance
-     * @param type
-     *            the bug type
-     * @param priority
-     *            the bug priority
+     * @param detector the Detector2 that is reporting the BugInstance
+     * @param type     the bug type
+     * @param priority the bug priority
      */
     public BugInstance(Detector2 detector, String type, int priority) {
         this(type, priority);
@@ -304,7 +302,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Get the BugPattern.
      */
-    public @Nonnull BugPattern getBugPattern() {
+    public @Nonnull
+    BugPattern getBugPattern() {
         BugPattern result = DetectorFactoryCollection.instance().lookupBugPattern(getType());
         if (result != null) {
             return result;
@@ -369,8 +368,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
         } else if (value == Priorities.EXP_PRIORITY) {
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
-        }
-        else {
+        } else {
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
         }
         // probably shouldn't ever happen, but what the hell, let's be complete
@@ -461,15 +459,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Find the first BugAnnotation in the list of annotations that is the same
      * type or a subtype as the given Class parameter.
      *
-     * @param cls
-     *            the Class parameter
+     * @param cls the Class parameter
      * @return the first matching BugAnnotation of the given type, or null if
-     *         there is no such BugAnnotation
+     * there is no such BugAnnotation
      */
     @CheckForNull
     private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T> cls) {
         T firstMatch = null;
-        for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
+        for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext(); ) {
             BugAnnotation annotation = i.next();
             if (cls.isAssignableFrom(annotation.getClass())) {
                 if (annotation.getDescription().endsWith("DEFAULT")) {
@@ -550,10 +547,33 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return newValue;
     }
 
-    private String getInstanceKeyNew() {
+    private String getSortedInstanceKeyNew() {
         StringBuilder buf = new StringBuilder(type);
         Set<BugAnnotation> sortedAnnotationList = new TreeSet<>(annotationList);
         for (BugAnnotation annotation : sortedAnnotationList) {
+            if (annotation.isSignificant() || annotation instanceof IntAnnotation
+                    || annotation instanceof LocalVariableAnnotation) {
+                buf.append(":");
+                buf.append(annotation.format("hash", null));
+                if (annotation instanceof LocalVariableAnnotation || annotation instanceof SourceLineAnnotation) {
+                    buf.append(":");
+                    if (annotation instanceof LocalVariableAnnotation) {
+                        buf.append(((LocalVariableAnnotation) annotation).line);
+                    } else {
+                        buf.append(((SourceLineAnnotation) annotation).getStartLine());
+                        buf.append(":");
+                        buf.append(((SourceLineAnnotation) annotation).getEndLine());
+                    }
+                }
+            }
+        }
+
+        return buf.toString();
+    }
+
+    private String getInstanceKeyNew() {
+        StringBuilder buf = new StringBuilder(type);
+        for (BugAnnotation annotation : annotationList) {
             if (annotation.isSignificant() || annotation instanceof IntAnnotation
                     || annotation instanceof LocalVariableAnnotation) {
                 buf.append(":");
@@ -568,10 +588,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * If given PackageMemberAnnotation is non-null, return its
      * SourceLineAnnotation.
      *
-     * @param packageMember
-     *            a PackageMemberAnnotation
+     * @param packageMember a PackageMemberAnnotation
      * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
-     *         there is no SourceLineAnnotation
+     * there is no SourceLineAnnotation
      */
     private SourceLineAnnotation inspectPackageMemberSourceLines(PackageMemberAnnotation packageMember) {
         return (packageMember != null) ? packageMember.getSourceLines() : null;
@@ -591,11 +610,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return annotationList;
     }
 
-    /** Get the first bug annotation with the specified class and role; return null if no
+    /**
+     * Get the first bug annotation with the specified class and role; return null if no
      * such annotation exists;
      */
-    public @CheckForNull <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
-        for(BugAnnotation a : annotationList) {
+    public @CheckForNull
+    <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
+        for (BugAnnotation a : annotationList) {
             if (c.isInstance(a) && Objects.equals(role, a.getDescription())) {
                 return c.cast(a);
             }
@@ -665,10 +686,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Get value of given property.
      *
-     * @param name
-     *            name of the property to get
+     * @param name name of the property to get
      * @return the value of the named property, or null if the property has not
-     *         been set
+     * been set
      */
     public String getProperty(String name) {
         BugProperty prop = lookupProperty(name);
@@ -679,12 +699,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Get value of given property, returning given default value if the
      * property has not been set.
      *
-     * @param name
-     *            name of the property to get
-     * @param defaultValue
-     *            default value to return if propery is not set
+     * @param name         name of the property to get
+     * @param defaultValue default value to return if propery is not set
      * @return the value of the named property, or the default value if the
-     *         property has not been set
+     * property has not been set
      */
     public String getProperty(String name, String defaultValue) {
         String value = getProperty(name);
@@ -703,10 +721,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Set value of given property.
      *
-     * @param name
-     *            name of the property to set
-     * @param value
-     *            the value of the property
+     * @param name  name of the property to set
+     * @param value the value of the property
      * @return this object, so calls can be chained
      */
     @Nonnull
@@ -724,10 +740,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Look up a property by name.
      *
-     * @param name
-     *            name of the property to look for
+     * @param name name of the property to look for
      * @return the BugProperty with the given name, or null if the property has
-     *         not been set
+     * not been set
      */
     public BugProperty lookupProperty(String name) {
         BugProperty prop = propertyListHead;
@@ -745,10 +760,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Delete property with given name.
      *
-     * @param name
-     *            name of the property to delete
+     * @param name name of the property to delete
      * @return true if a property with that name was deleted, or false if there
-     *         is no such property
+     * is no such property
      */
     public boolean deleteProperty(String name) {
         BugProperty prev = null;
@@ -802,8 +816,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a Collection of BugAnnotations.
      *
-     * @param annotationCollection
-     *            Collection of BugAnnotations
+     * @param annotationCollection Collection of BugAnnotations
      */
     @Nonnull
     public BugInstance addAnnotations(Collection<? extends BugAnnotation> annotationCollection) {
@@ -833,8 +846,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation and a method annotation for the class and method
      * which the given visitor is currently visiting.
      *
-     * @param visitor
-     *            the BetterVisitor
+     * @param visitor the BetterVisitor
      * @return this object
      */
     @Nonnull
@@ -852,7 +864,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         if (annotationList.size() != 2) {
             return;
         }
-        priority+=2;
+        priority += 2;
         setProperty("FOUND_IN_SYNTHETIC_METHOD", "true");
         if (SystemProperties.ASSERTIONS_ENABLED && AnalysisContext.analyzingApplicationClass() && priority <= 3) {
             AnalysisContext.logError("Adding error " + getBugPattern().getType() + " to synthetic method " + getPrimaryMethod());
@@ -862,8 +874,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add class and method annotations for given method.
      *
-     * @param methodAnnotation
-     *            the method
+     * @param methodAnnotation the method
      * @return this object
      */
     @Nonnull
@@ -876,10 +887,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add class and method annotations for given method.
      *
-     * @param methodGen
-     *            the method
-     * @param sourceFile
-     *            source file the method is defined in
+     * @param methodGen  the method
+     * @param sourceFile source file the method is defined in
      * @return this object
      */
     @Nonnull
@@ -895,10 +904,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add class and method annotations for given class and method.
      *
-     * @param javaClass
-     *            the class
-     * @param method
-     *            the method
+     * @param javaClass the class
+     * @param method    the method
      * @return this object
      */
     @Nonnull
@@ -922,10 +929,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
      *
-     * @param className
-     *            the name of the class
-     * @param sourceFileName
-     *            the source file of the class
+     * @param className      the name of the class
+     * @param sourceFileName the source file of the class
      * @return this object
      */
     @Nonnull
@@ -939,12 +944,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
      *
-     * @param className
-     *            the name of the class
+     * @param className the name of the class
      * @return this object
      */
     @Nonnull
-    public BugInstance addClass(@SlashedClassName(when = When.UNKNOWN)  String className) {
+    public BugInstance addClass(@SlashedClassName(when = When.UNKNOWN) String className) {
         ClassAnnotation classAnnotation = new ClassAnnotation(ClassName.toDottedClassName(className));
         add(classAnnotation);
         return this;
@@ -953,8 +957,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a class annotation for the classNode.
      *
-     * @param classNode
-     *            the ASM visitor
+     * @param classNode the ASM visitor
      * @return this object
      */
     @Nonnull
@@ -969,8 +972,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
      *
-     * @param classDescriptor
-     *            the class to add
+     * @param classDescriptor the class to add
      * @return this object
      */
     @Nonnull
@@ -983,8 +985,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation. If this is the first class annotation added, it
      * becomes the primary class annotation.
      *
-     * @param jclass
-     *            the JavaClass object for the class
+     * @param jclass the JavaClass object for the class
      * @return this object
      */
     @Nonnull
@@ -997,8 +998,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation for the class that the visitor is currently
      * visiting.
      *
-     * @param visitor
-     *            the BetterVisitor
+     * @param visitor the BetterVisitor
      * @return this object
      */
     @Nonnull
@@ -1012,8 +1012,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a class annotation for the superclass of the class the visitor is
      * currently visiting.
      *
-     * @param visitor
-     *            the BetterVisitor
+     * @param visitor the BetterVisitor
      * @return this object
      */
     @Nonnull
@@ -1039,8 +1038,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * or http://www.murrayc.com/learning/java/java_classfileformat.shtml#
      * TypeDescriptors
      *
-     * @param typeDescriptor
-     *            a jvm type descriptor, such as "[I"
+     * @param typeDescriptor a jvm type descriptor, such as "[I"
      * @return this object
      */
     @Nonnull
@@ -1122,14 +1120,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation.
      *
-     * @param className
-     *            name of the class containing the field
-     * @param fieldName
-     *            the name of the field
-     * @param fieldSig
-     *            type signature of the field
-     * @param isStatic
-     *            whether or not the field is static
+     * @param className name of the class containing the field
+     * @param fieldName the name of the field
+     * @param fieldSig  type signature of the field
+     * @param isStatic  whether or not the field is static
      * @return this object
      */
     @Nonnull
@@ -1141,14 +1135,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation.
      *
-     * @param className
-     *            name of the class containing the field
-     * @param fieldName
-     *            the name of the field
-     * @param fieldSig
-     *            type signature of the field
-     * @param accessFlags
-     *            access flags for the field
+     * @param className   name of the class containing the field
+     * @param fieldName   the name of the field
+     * @param fieldSig    type signature of the field
+     * @param accessFlags access flags for the field
      * @return this object
      */
     @Nonnull
@@ -1166,8 +1156,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation
      *
-     * @param fieldAnnotation
-     *            the field annotation
+     * @param fieldAnnotation the field annotation
      * @return this object
      */
     @Nonnull
@@ -1179,8 +1168,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation for a FieldVariable matched in a ByteCodePattern.
      *
-     * @param field
-     *            the FieldVariable
+     * @param field the FieldVariable
      * @return this object
      */
     @Nonnull
@@ -1191,8 +1179,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation for an XField.
      *
-     * @param xfield
-     *            the XField
+     * @param xfield the XField
      * @return this object
      */
     @Nonnull
@@ -1206,8 +1193,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation for an XField.
      *
-     * @param xfield
-     *            the XField
+     * @param xfield the XField
      * @return this object
      */
     @Nonnull
@@ -1218,8 +1204,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a field annotation for a FieldDescriptor.
      *
-     * @param fieldDescriptor
-     *            the FieldDescriptor
+     * @param fieldDescriptor the FieldDescriptor
      * @return this object
      */
     @Nonnull
@@ -1234,8 +1219,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * method currently being visited by given visitor. Assumes that a
      * getfield/putfield or getstatic/putstatic has just been seen.
      *
-     * @param visitor
-     *            the DismantleBytecode object
+     * @param visitor the DismantleBytecode object
      * @return this object
      */
     @Nonnull
@@ -1259,8 +1243,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation for the field which is being visited by given
      * visitor.
      *
-     * @param visitor
-     *            the visitor
+     * @param visitor the visitor
      * @return this object
      */
     @Nonnull
@@ -1293,14 +1276,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
      *
-     * @param className
-     *            name of the class containing the method
-     * @param methodName
-     *            name of the method
-     * @param methodSig
-     *            type signature of the method
-     * @param isStatic
-     *            true if the method is static, false otherwise
+     * @param className  name of the class containing the method
+     * @param methodName name of the method
+     * @param methodSig  type signature of the method
+     * @param isStatic   true if the method is static, false otherwise
      * @return this object
      */
     @Nonnull
@@ -1313,14 +1292,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
      *
-     * @param className
-     *            name of the class containing the method
-     * @param methodName
-     *            name of the method
-     * @param methodSig
-     *            type signature of the method
-     * @param accessFlags
-     *            accessFlags for the method
+     * @param className   name of the class containing the method
+     * @param methodName  name of the method
+     * @param methodSig   type signature of the method
+     * @param accessFlags accessFlags for the method
      * @return this object
      */
     @Nonnull
@@ -1334,10 +1309,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * becomes the primary method annotation. If the method has source line
      * information, then a SourceLineAnnotation is added to the method.
      *
-     * @param methodGen
-     *            the MethodGen object for the method
-     * @param sourceFile
-     *            source file method is defined in
+     * @param methodGen  the MethodGen object for the method
+     * @param sourceFile source file method is defined in
      * @return this object
      */
     @Nonnull
@@ -1355,10 +1328,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * becomes the primary method annotation. If the method has source line
      * information, then a SourceLineAnnotation is added to the method.
      *
-     * @param javaClass
-     *            the class the method is defined in
-     * @param method
-     *            the method
+     * @param javaClass the class the method is defined in
+     * @param method    the method
      * @return this object
      */
     @Nonnull
@@ -1376,8 +1347,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * becomes the primary method annotation. If the method has source line
      * information, then a SourceLineAnnotation is added to the method.
      *
-     * @param classAndMethod
-     *            JavaClassAndMethod identifying the method to add
+     * @param classAndMethod JavaClassAndMethod identifying the method to add
      * @return this object
      */
     @Nonnull
@@ -1390,8 +1360,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * currently visiting. If the method has source line information, then a
      * SourceLineAnnotation is added to the method.
      *
-     * @param visitor
-     *            the BetterVisitor
+     * @param visitor the BetterVisitor
      * @return this object
      */
     @Nonnull
@@ -1407,8 +1376,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * method currently being visited by given visitor. Assumes that the visitor
      * has just looked at an invoke instruction of some kind.
      *
-     * @param visitor
-     *            the DismantleBytecode object
+     * @param visitor the DismantleBytecode object
      * @return this object
      */
     @Nonnull
@@ -1424,14 +1392,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a method annotation.
      *
-     * @param className
-     *            name of class containing called method
-     * @param methodName
-     *            name of called method
-     * @param methodSig
-     *            signature of called method
-     * @param isStatic
-     *            true if called method is static, false if not
+     * @param className  name of class containing called method
+     * @param methodName name of called method
+     * @param methodSig  signature of called method
+     * @param isStatic   true if called method is static, false if not
      * @return this object
      */
     @Nonnull
@@ -1444,10 +1408,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a method annotation for the method which is called by given
      * instruction.
      *
-     * @param cpg
-     *            the constant pool for the method containing the call
-     * @param inv
-     *            the InvokeInstruction
+     * @param cpg the constant pool for the method containing the call
+     * @param inv the InvokeInstruction
      * @return this object
      */
     @Nonnull
@@ -1464,10 +1426,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a method annotation for the method which is called by given
      * instruction.
      *
-     * @param methodGen
-     *            the method containing the call
-     * @param inv
-     *            the InvokeInstruction
+     * @param methodGen the method containing the call
+     * @param inv       the InvokeInstruction
      * @return this object
      */
     @Nonnull
@@ -1479,8 +1439,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a MethodAnnotation from an XMethod.
      *
-     * @param xmethod
-     *            the XMethod
+     * @param xmethod the XMethod
      * @return this object
      */
     @Nonnull
@@ -1492,8 +1451,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a MethodAnnotation from an MethodDescriptor.
      *
-     * @param method
-     *            the method
+     * @param method the method
      * @return this object
      */
     @Nonnull
@@ -1506,8 +1464,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a method annotation. If this is the first method annotation added, it
      * becomes the primary method annotation.
      *
-     * @param methodAnnotation
-     *            the method annotation
+     * @param methodAnnotation the method annotation
      * @return this object
      */
     @Nonnull
@@ -1525,8 +1482,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add an integer annotation.
      *
-     * @param value
-     *            the integer value
+     * @param value the integer value
      * @return this object
      */
     @Nonnull
@@ -1539,8 +1495,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add an annotation about a parameter
      *
      * @param index parameter index, starting from 0
-     *
-     * @param role the role used to describe the parameter
+     * @param role  the role used to describe the parameter
      */
     @Nonnull
     public BugInstance addParameterAnnotation(int index, String role) {
@@ -1550,8 +1505,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a String annotation.
      *
-     * @param value
-     *            the String value
+     * @param value the String value
      * @return this object
      */
     @Nonnull
@@ -1563,8 +1517,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a String annotation.
      *
-     * @param c
-     *            the char value
+     * @param c the char value
      * @return this object
      */
     @Nonnull
@@ -1582,8 +1535,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a source line annotation.
      *
-     * @param sourceLine
-     *            the source line annotation
+     * @param sourceLine the source line annotation
      * @return this object
      */
     @Nonnull
@@ -1598,11 +1550,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * method does not have line number information, then no source line
      * annotation will be added.
      *
-     * @param visitor
-     *            a BytecodeScanningDetector that is currently visiting the
-     *            method
-     * @param pc
-     *            bytecode offset of the instruction
+     * @param visitor a BytecodeScanningDetector that is currently visiting the
+     *                method
+     * @param pc      bytecode offset of the instruction
      * @return this object
      */
     @Nonnull
@@ -1621,12 +1571,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * method does not have line number information, then no source line
      * annotation will be added.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param visitor
-     *            a PreorderVisitor that is currently visiting the method
-     * @param pc
-     *            bytecode offset of the instruction
+     * @param classContext the ClassContext
+     * @param visitor      a PreorderVisitor that is currently visiting the method
+     * @param pc           bytecode offset of the instruction
      * @return this object
      */
     @Nonnull
@@ -1643,19 +1590,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * method. Note that if the method does not have line number information,
      * then no source line annotation will be added.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param methodGen
-     *            the method being visited
-     * @param sourceFile
-     *            source file the method is defined in
-     * @param handle
-     *            the InstructionHandle containing the visited instruction
+     * @param classContext the ClassContext
+     * @param methodGen    the method being visited
+     * @param sourceFile   source file the method is defined in
+     * @param handle       the InstructionHandle containing the visited instruction
      * @return this object
      */
     @Nonnull
     public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile,
-            @Nonnull InstructionHandle handle) {
+                                     @Nonnull InstructionHandle handle) {
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, handle);
         if (sourceLineAnnotation != null) {
@@ -1667,21 +1610,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a source line annotation describing a range of instructions.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param methodGen
-     *            the method
-     * @param sourceFile
-     *            source file the method is defined in
-     * @param start
-     *            the start instruction in the range
-     * @param end
-     *            the end instruction in the range (inclusive)
+     * @param classContext the ClassContext
+     * @param methodGen    the method
+     * @param sourceFile   source file the method is defined in
+     * @param start        the start instruction in the range
+     * @param end          the end instruction in the range (inclusive)
      * @return this object
      */
     @Nonnull
     public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle start,
-            InstructionHandle end) {
+                                     InstructionHandle end) {
         // Make sure start and end are really in the right order.
         if (start.getPosition() > end.getPosition()) {
             InstructionHandle tmp = start;
@@ -1699,12 +1637,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add source line annotation for given Location in a method.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param method
-     *            the Method
-     * @param location
-     *            the Location in the method
+     * @param classContext the ClassContext
+     * @param method       the Method
+     * @param location     the Location in the method
      * @return this BugInstance
      */
     @Nonnull
@@ -1715,10 +1650,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add source line annotation for given Location in a method.
      *
-     * @param methodDescriptor
-     *            the method
-     * @param location
-     *            the Location in the method
+     * @param methodDescriptor the method
+     * @param location         the Location in the method
      * @return this BugInstance
      */
     @Nonnull
@@ -1737,12 +1670,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add source line annotation for given Location in a method.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param method
-     *            the Method
-     * @param handle
-     *            InstructionHandle of an instruction in the method
+     * @param classContext the ClassContext
+     * @param method       the Method
+     * @param handle       InstructionHandle of an instruction in the method
      * @return this BugInstance
      */
     @Nonnull
@@ -1761,12 +1691,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Note that if the method does not have line number information, then no
      * source line annotation will be added.
      *
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
-     * @param startPC
-     *            the bytecode offset of the start instruction in the range
-     * @param endPC
-     *            the bytecode offset of the end instruction in the range
+     * @param visitor a BetterVisitor which is visiting the method
+     * @param startPC the bytecode offset of the start instruction in the range
+     * @param endPC   the bytecode offset of the end instruction in the range
      * @return this object
      */
     @Nonnull
@@ -1784,14 +1711,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Note that if the method does not have line number information, then no
      * source line annotation will be added.
      *
-     * @param classContext
-     *            the ClassContext
-     * @param visitor
-     *            a BetterVisitor which is visiting the method
-     * @param startPC
-     *            the bytecode offset of the start instruction in the range
-     * @param endPC
-     *            the bytecode offset of the end instruction in the range
+     * @param classContext the ClassContext
+     * @param visitor      a BetterVisitor which is visiting the method
+     * @param startPC      the bytecode offset of the start instruction in the range
+     * @param endPC        the bytecode offset of the end instruction in the range
      * @return this object
      */
     @Nonnull
@@ -1808,9 +1731,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * given visitor. Note that if the method does not have line number
      * information, then no source line annotation will be added.
      *
-     * @param visitor
-     *            a BytecodeScanningDetector visitor that is currently visiting
-     *            the instruction
+     * @param visitor a BytecodeScanningDetector visitor that is currently visiting
+     *                the instruction
      * @return this object
      */
     @Nonnull
@@ -1826,10 +1748,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a non-specific source line annotation. This will result in the entire
      * source file being displayed.
      *
-     * @param className
-     *            the class name
-     * @param sourceFile
-     *            the source file name
+     * @param className  the class name
+     * @param sourceFile the source file name
      * @return this object
      */
     @Nonnull
@@ -1920,8 +1840,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Add a description to the most recently added bug annotation.
      *
-     * @param description
-     *            the description to add
+     * @param description the description to add
      * @return this object
      */
     @Nonnull
@@ -1962,6 +1881,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         BugCode bugCode = pattern.getBugCode();
         return bugCode.getCWEid();
     }
+
     public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("type", type).addAttribute("priority",
                 String.valueOf(priority));
@@ -2033,7 +1953,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             primaryAnnotations.put(getPrimaryField(), null);
             primaryAnnotations.put(getPrimaryMethod(), null);
         } else {
-            primaryAnnotations = Collections.<BugAnnotation, Void> emptyMap();
+            primaryAnnotations = Collections.<BugAnnotation, Void>emptyMap();
         }
 
         boolean foundSourceAnnotation = false;
@@ -2051,11 +1971,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
         if (propertyListHead != null) {
             List<BugProperty> props = new ArrayList<>();
-            for(BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
+            for (BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
                 props.add(prop);
             }
             Collections.sort(props, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-            for(BugProperty prop : props) {
+            for (BugProperty prop : props) {
                 prop.writeXML(xmlOutput);
             }
         }
@@ -2391,7 +2311,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         this.lastVersion = lastVersion;
     }
 
-    /** Mark the bug instance is being alive (still present in the last version) */
+    /**
+     * Mark the bug instance is being alive (still present in the last version)
+     */
     public void setLive() {
         this.lastVersion = -1;
     }
@@ -2434,17 +2356,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             return hash;
         }
 
+        String key = getSortedInstanceKeyNew();
+        instanceHash = createHash(key);
+        return instanceHash;
+    }
+
+    private String createHash(String key) {
         MessageDigest digest = Util.getMD5Digest();
-        String key = getInstanceKey();
         byte[] data;
         try {
             data = digest.digest(key.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
-        hash = new BigInteger(1, data).toString(16);
-        instanceHash = hash;
-        return hash;
+        return new BigInteger(1, data).toString(16);
     }
 
     public boolean isInstanceHashConsistent() {

@@ -62,8 +62,8 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
 
     @Override
     public void reportBug(@Nonnull BugInstance bugInstance) {
-        String instanceHash = bugInstance.getInstanceHash();
-        if (!excludedHashes.contains(instanceHash)) {
+        if (!excludedHashes.contains(bugInstance.getBrokenInstanceHashForBackwardCompatibility())
+                && !excludedHashes.contains(bugInstance.getInstanceHash())) {
             getDelegate().reportBug(bugInstance);
         }
     }
