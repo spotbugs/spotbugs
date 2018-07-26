@@ -5967,7 +5967,7 @@ use <code>0xff &amp; b</code>.
 <![CDATA[
 <p> This code compares an int value with a long constant that is outside
 the range of values that can be represented as an int value.
-This comparison is vacuous and possibly to be incorrect.
+This comparison is vacuous and possibly incorrect.
 </p>
 ]]>
     </Details>
