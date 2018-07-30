@@ -6,6 +6,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+* Don't print exit code related output if '-quiet' is passed ([#714](https://github.com/spotbugs/spotbugs/pull/714))
+
 ## 3.1.6 - 2018-07-18
 
 ### Fixed
