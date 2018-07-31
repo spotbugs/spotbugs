@@ -281,10 +281,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         if (reg >= 0) {
             return bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates;
         }
-        if (item0.getConstant() != null) {
-            return true;
-        }
-        return false;
+        return item0.getConstant() != null;
     }
 
     @Override
@@ -468,10 +465,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         if (reg >= 0) {
             return stack.getLastUpdate(reg) < getBackwardsReach(branchTarget);
         }
-        if (item1.getConstant() != null) {
-            return true;
-        }
-        return false;
+        return item1.getConstant() != null;
     }
 
     private int constantSince(Item item1) {

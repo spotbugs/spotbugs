@@ -156,17 +156,12 @@ public class FieldSummary {
         if (field.isFinal()) {
             return false;
         }
-        if (writtenOutsideOfConstructor.contains(field)) {
-            return true;
-        }
-        if (!AnalysisContext.currentAnalysisContext().unreadFieldsAvailable()) {
+        if (writtenOutsideOfConstructor.contains(field)
+                || !AnalysisContext.currentAnalysisContext().unreadFieldsAvailable()) {
             return true;
         }
         UnreadFieldsData unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFieldsData();
-        if (unreadFields.isReflexive(field)) {
-            return true;
-        }
-        return false;
+        return unreadFields.isReflexive(field);
     }
 
     public boolean addWrittenOutsideOfConstructor(XField field) {

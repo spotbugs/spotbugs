@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.MapCache;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Class for performing class hierarchy queries. Does <em>not</em> require
@@ -199,7 +200,7 @@ public class Subtypes2 {
         if (subtype.getClassName().equals(dottedSupertype) || subtype.getSuperclassName().equals(dottedSupertype)) {
             return true;
         }
-        if ("java.lang.Object".equals(subtype.getSuperclassName()) && subtype.getInterfaceIndices().length == 0) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(subtype.getSuperclassName()) && subtype.getInterfaceIndices().length == 0) {
             return false;
         }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();

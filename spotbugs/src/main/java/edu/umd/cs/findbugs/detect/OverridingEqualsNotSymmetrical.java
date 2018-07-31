@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.Values;
 
 public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implements FirstPassDetector {
 
@@ -154,7 +155,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
             String superClassName = getSuperclassName().replace('/', '.');
-            if (!"java.lang.Object".equals(superClassName)) {
+            if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName)) {
                 parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
             }
             equalsMethod.put(classAnnotation, getMethodDescriptor());

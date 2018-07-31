@@ -67,10 +67,7 @@ public class Profiler implements XMLWriteable {
         @Override
         public boolean accepts(Profile p) {
             long time = p.totalTime.get();
-            if (time < minNanoSeconds) {
-                return false;
-            }
-            return true;
+            return time >= minNanoSeconds;
         }
     }
 
@@ -85,10 +82,7 @@ public class Profiler implements XMLWriteable {
         public boolean accepts(Profile p) {
             int totalCalls = p.totalCalls.get();
             long time = p.totalTime.get();
-            if (time / totalCalls < minNanoSeconds) {
-                return false;
-            }
-            return true;
+            return time / totalCalls >= minNanoSeconds;
         }
     }
 
@@ -102,10 +96,7 @@ public class Profiler implements XMLWriteable {
         @Override
         public boolean accepts(Profile p) {
             int totalCalls = p.totalCalls.get();
-            if (totalCalls < minCalls) {
-                return false;
-            }
-            return true;
+            return totalCalls >= minCalls;
         }
     }
 

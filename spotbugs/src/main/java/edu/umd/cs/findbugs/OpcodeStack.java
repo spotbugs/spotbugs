@@ -79,6 +79,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -535,12 +536,12 @@ public class OpcodeStack implements Constants2 {
             if (i1.equals(i2)) {
                 return i1;
             }
-            Item m = new Item();
             if (i1.getSpecialKind() == TYPE_ONLY && i2.getSpecialKind() != TYPE_ONLY) {
                 return i2;
             } else if (i2.getSpecialKind() == TYPE_ONLY && i1.getSpecialKind() != TYPE_ONLY) {
                 return i1;
             }
+            Item m = new Item();
             m.flags = i1.flags & i2.flags;
             m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
             if (i1.pc == i2.pc) {
@@ -1444,7 +1445,7 @@ public class OpcodeStack implements Constants2 {
                 }
                 FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
                 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
-                if ("separator".equals(field.getFieldName()) && "java.io.File".equals(field.getClassName())) {
+                if ("separator".equals(field.getFieldName()) && Values.DOTTED_JAVA_IO_FILE.equals(field.getClassName())) {
                     i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
                 }
                 i.setPC(dbc.getPC());
@@ -3653,10 +3654,7 @@ public class OpcodeStack implements Constants2 {
     }
 
     public boolean isTop() {
-        if (top) {
-            return true;
-        }
-        return false;
+        return top;
     }
 
     void setReachOnlyByBranch(boolean reachOnlyByBranch) {

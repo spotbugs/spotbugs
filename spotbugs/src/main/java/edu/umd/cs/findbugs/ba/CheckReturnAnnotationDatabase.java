@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * @author pugh
@@ -64,21 +65,21 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
         addMethodAnnotation("java.util.Iterator", "hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.io.File", "createNewFile", "()Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "createNewFile", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "delete", "()Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "delete", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "mkdir", "()Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "mkdir", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "mkdirs", "()Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "mkdirs", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "renameTo", "(Ljava/io/File;)Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "renameTo", "(Ljava/io/File;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "setLastModified", "(J)Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "setLastModified", "(J)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "setReadOnly", "()Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "setReadOnly", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.io.File", "setWritable", "(ZZ)Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "setWritable", "(ZZ)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
         addMethodAnnotation("java.util.Enumeration", "hasMoreElements", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -142,22 +143,22 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 
-        addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false,
+        addDefaultMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "getBytes", "(Ljava/lang/String;)[B", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.lang.String", "charAt", "(I)C", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.lang.String", "toString", "()Ljava/lang/String;", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "charAt", "(I)C", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "toString", "()Ljava/lang/String;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.lang.String", "length", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.lang.String", "matches", "(Ljava/lang/String;)Z", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "length", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "matches", "(Ljava/lang/String;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.lang.String", "intern", "()Ljava/lang/String;", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "intern", "()Ljava/lang/String;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "([BLjava/lang/String;)V", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([BLjava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation("java.lang.String", Const.CONSTRUCTOR_NAME, "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
         addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
         addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);

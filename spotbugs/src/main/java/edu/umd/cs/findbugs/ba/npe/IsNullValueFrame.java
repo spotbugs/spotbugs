@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -249,14 +250,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
             return false;
         }
         IsNullValueFrame o2 = (IsNullValueFrame) other;
-        if (!Util.nullSafeEquals(decision, o2.decision)) {
-            return false;
-        }
-        if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(decision, o2.decision)
+            && !(trackValueNumbers && !Objects.equals(knownValueMap, o2.knownValueMap));
     }
 
     @Override

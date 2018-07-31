@@ -78,25 +78,22 @@ public class GenericSignatureParser {
                 case 'T':
                     int startsemi = index;
                     int leftCount = 0;
-                    int i = startsemi + 1;
-                    loop: while (true) {
-                        char c = signature.charAt(i);
+                    int i = startsemi;
+                    char c;
+                    do {
+                        i++;
+                        c = signature.charAt(i);
                         switch (c) {
-                        case ';':
-                            if (leftCount == 0) {
-                                break loop;
-                            }
-                            break;
                         case '<':
                             leftCount++;
                             break;
                         case '>':
                             leftCount--;
                             break;
+                        default:
+                            break;
                         }
-                        i++;
-
-                    }
+                    } while (c != ';' || leftCount != 0);
                     String foo = signature.substring(startsemi, i + 1);
                     result.append(foo);
                     index = i + 1;
@@ -249,11 +246,7 @@ public class GenericSignatureParser {
         GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
         GenericSignatureParser genericParser = new GenericSignatureParser(genericSignature);
 
-        if (plainParser.getNumParameters() != genericParser.getNumParameters()) {
-            return false;
-        }
-
-        return true;
+        return plainParser.getNumParameters() == genericParser.getNumParameters();
     }
 
     public static void main(String[] args) {

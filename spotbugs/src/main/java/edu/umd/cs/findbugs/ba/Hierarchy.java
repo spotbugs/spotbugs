@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Facade for class hierarchy queries. These typically access the class
@@ -358,9 +359,9 @@ public class Hierarchy {
             System.out.println("[Method signature is " + methodSig + "]");
         }
 
-        if (className.startsWith("[")) {
+        if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
             // Java 1.5 allows array classes to appear as the class name
-            className = "java.lang.Object";
+            className = Values.DOTTED_JAVA_LANG_OBJECT;
         }
 
         JavaClass jClass = Repository.lookupClass(className);
@@ -804,7 +805,7 @@ public class Hierarchy {
         // Array method calls aren't virtual.
         // They should just resolve to Object methods.
         if (receiverType instanceof ArrayType) {
-            JavaClass javaLangObject = AnalysisContext.currentAnalysisContext().lookupClass("java.lang.Object");
+            JavaClass javaLangObject = AnalysisContext.currentAnalysisContext().lookupClass(Values.DOTTED_JAVA_LANG_OBJECT);
             JavaClassAndMethod classAndMethod = findMethod(javaLangObject, methodName, methodSig, INSTANCE_METHOD);
             if (classAndMethod != null) {
                 result.add(classAndMethod);
@@ -842,7 +843,7 @@ public class Hierarchy {
                 && !receiverTypeIsExact;
 
         if (virtualCall) {
-            if (!"java.lang.Object".equals(receiverClassName)) {
+            if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(receiverClassName)) {
 
                 // This is a true virtual call: assume that any concrete
                 // subtype method may be called.
