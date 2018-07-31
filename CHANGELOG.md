@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2018-??-??
+### Changed
+* ASM_VERSION changed to ASM7_EXPERIMENTAL to support Java 11
 
 ## 3.1.6 - 2018-07-18
 
