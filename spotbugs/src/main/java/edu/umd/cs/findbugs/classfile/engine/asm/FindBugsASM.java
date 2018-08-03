@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine.asm;
 
-import static java.lang.Boolean.parseBoolean;
-import static java.util.Objects.isNull;
-
 import org.objectweb.asm.Opcodes;
 
 /**
@@ -29,8 +26,7 @@ import org.objectweb.asm.Opcodes;
  */
 public class FindBugsASM {
 
-    private static final String EXPERIMENTAL_PROPERTY_VALUE = System.getProperty("spotbugs.experimental");
-    private static final boolean USE_EXPERIMENTAL = isNull(EXPERIMENTAL_PROPERTY_VALUE) || parseBoolean(EXPERIMENTAL_PROPERTY_VALUE);
+    private static final boolean USE_EXPERIMENTAL = Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
 
     public static final int ASM_VERSION = USE_EXPERIMENTAL ? Opcodes.ASM7_EXPERIMENTAL : Opcodes.ASM6;
 
