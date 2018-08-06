@@ -6,7 +6,14 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
 * Don't print exit code related output if '-quiet' is passed ([#714](https://github.com/spotbugs/spotbugs/pull/714))
+
+### CHANGED
+* ASM_VERSION=ASM7_EXPERIMENTAL by default to support Java 11
+
+### ADDED
+* Set ASM_VERSION=ASM6 if system property spotbugs.experimental=false
 
 ## 3.1.6 - 2018-07-18
 
