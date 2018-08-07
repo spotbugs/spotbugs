@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2013_11_15 {
-    @ExpectWarning("VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY")
+    // @ExpectWarning("VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY")
     public void passingAnArray() {
         System.out.println(System.out.printf("%s", new int[] { 42, 17 }));
     }

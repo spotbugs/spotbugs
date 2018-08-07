@@ -28,7 +28,6 @@
     <jar href="asm-util-6.2.jar"/>
     <jar href="asm-xml-6.2.jar"/>
     <jar href="jaxen-1.1.6.jar"/>
-    <jar href="jFormatString.jar"/>
     <jar href="commons-lang-2.6.jar"/>
     <jar href="jsr305.jar"/>
     <property name="findbugs.jaws" value="true"/>
