@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    "rst"
+  ],
+  "rules": {
+    "@textlint-rule/preset-google": true
+  }
+}
