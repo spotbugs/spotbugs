@@ -27,7 +27,7 @@ You can increase this using the ``-maxHeap n`` option, where n is the number of 
 Q3: What is the "auxiliary classpath"? Why should I specify it?
 ---------------------------------------------------------------
 
-Many important facts about a Java class require information about the classes that it references.  For example:
+Many important facts about a Java class require information about the classes that it references. For example:
 
 * What other classes and interfaces the class inherits from
 * What exceptions can be thrown by methods in external classes and interfaces
@@ -41,7 +41,7 @@ Also, some bug detectors (such as the suspicious reference comparison detector) 
 For these reasons, we strongly recommend that you completely specify the auxiliary classpath when you run SpotBugs.
 You can do this by using the ``-auxclasspath`` command line option, or the "Classpath entries" list in the GUI project editor dialog.
 
-If SpotBugs cannot find a class referenced by your application, it will print out a message when the analysis completes, specifying the classes that were missing.
+If SpotBugs cannot find a class referenced by your app, it will print out a message when the analysis completes, specifying the classes that were missing.
 You should modify the auxiliary classpath to specify how to find the missing classes, and then run SpotBugs again.
 
 
@@ -70,7 +70,7 @@ Q6: The Eclipse plugin loads, but doesn't work correctly
 --------------------------------------------------------
 
 * Make sure the Java code you trying to analyze is built properly and has no classpath or compile errors.
-* Make sure the project and workspace SpotBugs settings are valid - in doubt, revert them to defaults.
+* Make sure the project and workspace SpotBugs settings are valid. In doubt, revert them to defaults.
 * Make sure the Error log view does not show errors.
 
 Q7: Where is the Maven plugin for SpotBugs?

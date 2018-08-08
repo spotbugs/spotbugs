@@ -13,7 +13,7 @@ You will see a dialog which looks like this:
 
 Use the "Add" button next to "Classpath to analyze" to select a Java archive file (zip, jar, ear, or war file) or directory containing java classes to analyze for bugs. You may add multiple archives/directories.
 
-You can also add the source directories which contain the source code for the Java archives you are analyzing. This will enable SpotBugs to highlight the source code which contains a possible error. The source directories you add should be the roots of the Java package hierarchy. For example, if your application is contained in the ``org.foobar.myapp`` package, you should add the parent directory of the org directory to the source directory list for the project.
+You can also add the source directories which contain the source code for the Java archives you are analyzing. This will enable SpotBugs to highlight the source code which contains a possible error. The source directories you add should be the roots of the Java package hierarchy. For example, if your app is contained in the ``org.foobar.myapp`` package, you should add the parent directory of the org directory to the source directory list for the project.
 
 Another optional step is to add additional Jar files or directories as "Auxiliary classpath locations" entries. You should do this if the archives and directories you are analyzing have references to other classes which are not included in the analyzed archives/directories and are not in the standard runtime classpath. Some of the bug pattern detectors in FindBugs make use of class hierarchy information, so you will get more accurate results if the entire class hierarchy is available which FindBugs performs its analysis.
 
