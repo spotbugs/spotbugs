@@ -4,6 +4,19 @@
 
 This repository hosts official SpotBugs manual built by [Sphinx](http://www.sphinx-doc.org/en/stable/).
 
+## How to text
+
+We use textlint to lint `.rst` files. To run lint, execute following commands:
+
+```sh
+$ nvm use
+$ virtualenv -p python3 env
+$ source env/bin/activate
+(env) $ pip install -r requirements.txt
+(env) $ npm install
+(env) $ npm run lint
+```
+
 ## How to build
 
 We provide a `Dockerfile` and a script file to build documents.
