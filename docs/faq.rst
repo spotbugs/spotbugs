@@ -41,7 +41,7 @@ Also, some bug detectors (such as the suspicious reference comparison detector) 
 For these reasons, we strongly recommend that you completely specify the auxiliary classpath when you run SpotBugs.
 You can do this by using the ``-auxclasspath`` command line option, or the "Classpath entries" list in the GUI project editor dialog.
 
-If SpotBugs cannot find a class referenced by your application, it will print out a message when the analysis completes, specifying the classes that were missing.
+If SpotBugs cannot find a class referenced by your app, it will print out a message when the analysis completes, specifying the classes that were missing.
 You should modify the auxiliary classpath to specify how to find the missing classes, and then run SpotBugs again.
 
 

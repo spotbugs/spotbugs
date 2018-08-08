@@ -3,7 +3,7 @@ Analysis Properties
 
 SpotBugs allows several aspects of the analyses it performs to be customized. System properties are used to configure these options. This chapter describes the configurable analysis options.
 
-The analysis options have two main purposes. First, they allow you to inform SpotBugs about the meaning of methods in your application, so that it can produce more accurate results, or produce fewer false warnings. Second, they allow you to configure the precision of the analysis performed. Reducing analysis precision can save memory and analysis time, at the expense of missing some real bugs, or producing more false warnings.
+The analysis options have two main purposes. First, they allow you to inform SpotBugs about the meaning of methods in your app, so that it can produce more accurate results, or produce fewer false warnings. Second, they allow you to configure the precision of the analysis performed. Reducing analysis precision can save memory, and analysis time, at the expense of missing some real bugs, or producing more false warnings.
 
 The analysis options are set using the ``-property`` command line option. For example:
 
