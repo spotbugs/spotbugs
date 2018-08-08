@@ -1,11 +1,11 @@
 {
   "scripts": {
-    "lint": "textlint *.rst",
-    "fix": "textlint --fix *.rst"
+    "lint": "textlint '!(bugDescriptions).rst'",
+    "fix": "textlint --fix '!(bugDescriptions).rst'"
   },
   "dependencies": {
-    "@textlint-rule/textlint-rule-preset-google": "^0.1.0",
-    "textlint": "^10.2.0",
+    "@textlint-rule/textlint-rule-preset-google": "^0.1.2",
+    "textlint": "^11.0.0",
     "textlint-plugin-rst": "^0.1.1"
   }
 }
