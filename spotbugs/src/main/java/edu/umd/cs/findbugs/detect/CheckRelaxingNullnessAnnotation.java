@@ -289,7 +289,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             }
             for (AnnotationNode annotation : annotations) {
                 NullnessAnnotation nullness = getNullness(annotation.desc);
-                if (nullness == null || nullness == CHECK_FOR_NULL) {
+                if (nullness == null || nullness == CHECK_FOR_NULL || nullness == NULLABLE) {
                     continue;
                 }
                 nonNullParameter.put(i, nullness);
