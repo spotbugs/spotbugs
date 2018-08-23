@@ -167,7 +167,7 @@ public class MethodParamNullCheck implements Detector {
                             position, lineNumberTable.getSourceLine(handle.getPosition()));
                     variableAnnotation.setDescription("LOCAL_VARIABLE_VALUE_OF");
                     bugAccumulator.accumulateBug(
-                            new BugInstance(this, "SPEC_MEHTOD_PARAM_NULL_CHECK", HIGH_PRIORITY)
+                            new BugInstance(this, "SPEC_MEHTOD_PARAM_NULL_CHECK", NORMAL_PRIORITY)
                                     .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
                             sourceLineAnnotation);
                 }
