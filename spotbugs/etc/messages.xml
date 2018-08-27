@@ -1683,8 +1683,15 @@ factory pattern to create these objects.</p>
   <Detector class="edu.umd.cs.findbugs.detect.LocalVariableAssignmentCheck">
     <Details>
     <![CDATA[ 
-       <p>The localvariable is not assignmented correctly.
+       <p>The localvariable is not assignmented correctly.</p>
        ]]>  
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MethodParamNullCheck">
+    <Details>
+    <![CDATA[
+       <p>The method should check its parameter before query something.</p>
+    ]]>
     </Details>
   </Detector>
   <!--
@@ -8583,8 +8590,17 @@ after the call to initLogging, the logger configuration is lost
         <LongDescription>Method {1} doesn't assignment its local variable correctly</LongDescription>  
         <Details>  
       <![CDATA[ 
-        <p>The localvariable is not assignmented correctly</p> 
+        <p>The localvariable is not assignmented correctly.</p> 
       ]]>  
+        </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_MEHTOD_PARAM_NULL_CHECK">
+  <ShortDescription>Method Parameter Null Check</ShortDescription>
+        <LongDescription>Method {1} should check its parameter before query something</LongDescription>
+        <Details>
+      <![CDATA[
+        <p>Method should check its parameter before query something.</p>
+      ]]>
         </Details>
   </BugPattern>
   <!--
