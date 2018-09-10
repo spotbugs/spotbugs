@@ -166,7 +166,7 @@ This plugin contains all of the standard SpotBugs detectors.
   Detectors
   **********************************************************************
    -->
-  <Detector class="edu.umd.cs.findbugs.detect.CbeckMustOverrideSuperAnnotation">
+  <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
     <Details>
 <![CDATA[
 <p> Finds methods that must call super.
