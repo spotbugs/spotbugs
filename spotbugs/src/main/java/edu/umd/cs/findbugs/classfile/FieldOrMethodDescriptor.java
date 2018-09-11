@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import java.util.Objects;
+
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
@@ -52,7 +54,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     }
 
     public static int getNameSigHashCode(String name, String signature) {
-        return name.hashCode() * 3119 + signature.hashCode() * 131;
+        return Objects.hash(name, signature);
     }
 
     public int getNameSigHashCode() {
@@ -132,7 +134,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
     @Override
     public final int hashCode() {
         if (cachedHashCode == 0) {
-            cachedHashCode = slashedClassName.hashCode() * 7919 + nameSigHashCode + (isStatic ? 1 : 0);
+            cachedHashCode = Objects.hash(slashedClassName, nameSigHashCode, isStatic);
         }
         return cachedHashCode;
     }
