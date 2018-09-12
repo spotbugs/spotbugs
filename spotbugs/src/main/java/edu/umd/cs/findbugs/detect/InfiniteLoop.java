@@ -170,24 +170,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     LinkedList<Jump> forwardJumps = new LinkedList<>();
 
-    void purgeForwardJumps(int before) {
-        if (true) {
-            return;
-            /*
-        for (Iterator<Jump> i = forwardJumps.iterator(); i.hasNext();) {
-            Jump j = i.next();
-            if (j.to < before)
-                i.remove();
-        }
-             */
-        }
-    }
-
     void addForwardJump(int from, int to) {
         if (from >= to) {
             return;
         }
-        purgeForwardJumps(from);
         forwardJumps.add(new Jump(from, to));
     }
 
@@ -295,10 +281,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         if (reg >= 0) {
             return bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates;
         }
-        if (item0.getConstant() != null) {
-            return true;
-        }
-        return false;
+        return item0.getConstant() != null;
     }
 
     @Override
@@ -482,10 +465,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
         if (reg >= 0) {
             return stack.getLastUpdate(reg) < getBackwardsReach(branchTarget);
         }
-        if (item1.getConstant() != null) {
-            return true;
-        }
-        return false;
+        return item1.getConstant() != null;
     }
 
     private int constantSince(Item item1) {

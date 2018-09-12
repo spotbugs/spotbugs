@@ -382,13 +382,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
             return true;
         }
         Instruction instruction = nextHandle.getInstruction();
-        if (instruction instanceof ReturnInstruction) {
-            return false;
-        }
-        if (instruction instanceof IfInstruction) {
-            return false;
-        }
-        return true;
+        return !(instruction instanceof ReturnInstruction
+            || instruction instanceof IfInstruction);
     }
 
 }

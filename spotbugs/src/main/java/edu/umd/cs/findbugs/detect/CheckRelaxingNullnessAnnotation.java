@@ -327,10 +327,9 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             while (params.hasNext()) {
                 String param = params.next();
                 String superParam = superParams.next();
-                if (areRelated(param, superParam)) {
-                    continue;
+                if (!areRelated(param, superParam)) {
+                    return false;
                 }
-                return false;
             }
             String retSig = sig.getReturnTypeSignature();
             String superRetSig = superSig.getReturnTypeSignature();

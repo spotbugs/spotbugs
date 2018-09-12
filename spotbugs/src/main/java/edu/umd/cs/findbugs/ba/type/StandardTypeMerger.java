@@ -247,4 +247,3 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     }
 
 }
-

@@ -253,11 +253,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (!Objects.equals(decision, o2.decision)) {
             return false;
         }
-        if (trackValueNumbers && !Objects.equals(knownValueMap, o2.knownValueMap)) {
-            return false;
-        }
-
-        return true;
+        return !trackValueNumbers || Objects.equals(knownValueMap, o2.knownValueMap);
     }
 
     @Override
@@ -306,4 +302,3 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
     }
 }
-

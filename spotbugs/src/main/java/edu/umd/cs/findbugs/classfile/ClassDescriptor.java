@@ -254,7 +254,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      */
     @Override
     public final boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof ClassDescriptor)) {
+        if (!(obj instanceof ClassDescriptor)) {
             return false;
         }
 

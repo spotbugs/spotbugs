@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### CHANGED
+* Start migrating STDOUT/STDERR usage to a logging framework
+
 ## 3.1.7 - 2018-09-12
 
 ### Fixed

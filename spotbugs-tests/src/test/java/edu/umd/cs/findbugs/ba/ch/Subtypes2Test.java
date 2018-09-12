@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.RunnableWithExceptions;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.FindRefComparison;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Tests for Subtypes2.
@@ -99,9 +100,9 @@ public class Subtypes2Test extends FindBugsTestCase {
         super.setUp();
         typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
         typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
-        typeObject = ObjectTypeFactory.getInstance("java.lang.Object");
+        typeObject = ObjectTypeFactory.getInstance(Values.DOTTED_JAVA_LANG_OBJECT);
         typeInteger = ObjectTypeFactory.getInstance("java.lang.Integer");
-        typeString = ObjectTypeFactory.getInstance("java.lang.String");
+        typeString = ObjectTypeFactory.getInstance(Values.DOTTED_JAVA_LANG_STRING);
         typeComparable = ObjectTypeFactory.getInstance("java.lang.Comparable");
 
         typeList = ObjectTypeFactory.getInstance("java.util.List");

@@ -301,10 +301,6 @@ public class BugRanker {
             if (plugin.isCorePlugin()) {
                 continue;
             }
-            if (false) {
-                rankers.add(plugin.getBugRanker());
-                continue pluginLoop;
-            }
             for (DetectorFactory df : plugin.getDetectorFactories()) {
 
                 if (df.getReportedBugPatterns().contains(pattern)) {

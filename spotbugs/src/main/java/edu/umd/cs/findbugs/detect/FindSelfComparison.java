@@ -39,7 +39,6 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.EditDistance;
-import edu.umd.cs.findbugs.util.Util;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 

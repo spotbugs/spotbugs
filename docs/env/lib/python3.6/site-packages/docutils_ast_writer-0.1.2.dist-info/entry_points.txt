@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        rst2ast = rst2ast.cmd:run
+    
