@@ -14,6 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * Don't print exit code related output if '-quiet' is passed ([#714](https://github.com/spotbugs/spotbugs/pull/714))
 * Don't underflow the stack at INVOKEDYNAMIC when modeling stack frame types ([#500](https://github.com/spotbugs/spotbugs/issues/500))
+* Fix hash code collision ([#751](https://github.com/spotbugs/spotbugs/pull/751))
 
 ### CHANGED
 * ASM_VERSION=ASM7_EXPERIMENTAL by default to support Java 11
