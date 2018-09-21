@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 * Fix hash code collision ([#751](https://github.com/spotbugs/spotbugs/pull/751))
+* Partially revert [#688](https://github.com/spotbugs/spotbugs/pull/688) because of the error in specific case with `checkcast` opcode ([#760](https://github.com/spotbugs/spotbugs/pull/760))
 
 ## 3.1.7 - 2018-09-12
 
