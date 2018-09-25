@@ -51,7 +51,7 @@ script:
   - ./gradlew classes testClasses -S
   - jdk_switcher use $TRAVIS_JDK_VERSION
   - ./gradlew -v --no-daemon
-  - ./gradlew build smoketest -S --no-daemon
+  - ./gradlew build smoketest -x signArchives -S --no-daemon
   - jdk_switcher use oraclejdk8
   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
