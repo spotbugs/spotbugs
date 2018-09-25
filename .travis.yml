@@ -116,6 +116,6 @@ deploy:
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
     script: .travis/travis_wait "./gradlew uploadArchives"
     on:
-      jdk: oraclejdk8
       all_branches: true
-      condition: branch IN (master, "release-3.1") AND type = push
+      jdk: oraclejdk8
+      condition: (branch = master || branch = "release-3.1") && type = push
