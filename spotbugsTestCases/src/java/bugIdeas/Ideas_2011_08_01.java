@@ -17,7 +17,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2011_08_01 {
 
-    @DesireNoWarning("VA_FORMAT_STRING_BAD_CONVERSION")
+    // @DesireNoWarning("VA_FORMAT_STRING_BAD_CONVERSION")
     public static void main(String args[]) {
         Time t = new Time(System.currentTimeMillis());
         System.out.printf("%tr%n", t);

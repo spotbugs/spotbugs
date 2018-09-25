@@ -12,6 +12,7 @@ dependencies {
   compile fileTree(dir: 'lib', include: '*.jar')
 
   compile 'com.google.code.gson:gson:2.8.1'
+  compile 'com.google.guava:guava:25.0-jre'
   compile 'com.google.inject:guice:4.1.0'
   compile 'com.google.inject.extensions:guice-assistedinject:4.1.0'
   compile 'com.google.inject.extensions:guice-servlet:4.1.0'

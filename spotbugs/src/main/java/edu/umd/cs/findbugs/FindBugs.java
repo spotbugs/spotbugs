@@ -388,7 +388,7 @@ public abstract class FindBugs {
      */
     @SuppressFBWarnings("DM_EXIT")
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
-        boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
+        boolean verbose = !commandLine.quiet();
 
         try {
             findBugs.execute();
@@ -405,7 +405,7 @@ public abstract class FindBugs {
         int missingClassCount = findBugs.getMissingClassCount();
         int errorCount = findBugs.getErrorCount();
 
-        if (verbose) {
+        if (verbose || commandLine.setExitCode()) {
             LOG.log(FINE, "Warnings generated: {0}", bugCount);
             LOG.log(FINE, "Missing classes: {0}", missingClassCount);
             LOG.log(FINE, "Analysis errors: {0}", errorCount);
@@ -540,4 +540,3 @@ public abstract class FindBugs {
         return timestamp > MINIMUM_TIMESTAMP;
     }
 }
-

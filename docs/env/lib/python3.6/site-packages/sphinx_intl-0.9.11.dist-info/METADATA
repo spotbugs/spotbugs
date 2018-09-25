@@ -1,0 +1,210 @@
+Metadata-Version: 2.0
+Name: sphinx-intl
+Version: 0.9.11
+Summary: Sphinx utility that make it easy to translate and to apply translation.
+Home-page: https://github.com/sphinx-doc/sphinx-intl
+Author: Takayuki SHIMIZUKAWA
+Author-email: shimizukawa@gmail.com
+License: UNKNOWN
+Description-Content-Type: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Other Environment
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Topic :: Documentation
+Classifier: Topic :: Software Development :: Documentation
+Classifier: Topic :: Text Processing :: General
+Classifier: Topic :: Utilities
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Requires-Dist: setuptools
+Requires-Dist: six
+Requires-Dist: click
+Requires-Dist: babel
+Requires-Dist: sphinx
+Provides-Extra: test
+Requires-Dist: pytest; extra == 'test'
+Requires-Dist: mock; extra == 'test'
+Provides-Extra: transifex
+Requires-Dist: transifex-client (>=0.11); extra == 'transifex'
+
+======================================================
+sphinx-intl: translation support utility for Sphinx
+======================================================
+
+.. image:: https://travis-ci.org/sphinx-doc/sphinx-intl.svg?branch=master
+   :target: https://travis-ci.org/sphinx-doc/sphinx-intl
+
+`sphinx-intl` is a utility tool that provides several features that make it
+easy to translate and to apply translation to Sphinx_ generated document.
+Optional: support the Transifex service for translation with Sphinx_ .
+
+
+.. contents::
+   :local:
+
+QuickStart for sphinx translation
+===================================
+
+This section describe to translate with Sphinx_ and `sphinx-intl` command.
+
+1. Create your document by using Sphinx.
+
+2. Add configurations to your `conf.py`::
+
+      locale_dirs = ['locale/']   #path is example but recommended.
+      gettext_compact = False     #optional.
+
+   `locale_dirs` is required and `gettext_compact` is optional.
+
+3. Extract document's translatable messages into pot files::
+
+      $ make gettext
+
+4. Setup/Update your `locale_dir`::
+
+      $ sphinx-intl update -p _build/locale -l de -l ja
+
+   Done. You got these directories that contain po files:
+
+   * `./locale/de/LC_MESSAGES/`
+   * `./locale/ja/LC_MESSAGES/`
+
+5. Translate your po files under `./locale/<lang>/LC_MESSAGES/`.
+
+6. Build mo files and make translated document::
+
+      $ sphinx-intl build
+      $ make -e SPHINXOPTS="-D language='ja'" html
+
+That's all!
+
+
+Basic Features
+===============
+
+* create or update po files from pot files.
+* build mo files from po files.
+
+Requirements for basic
+-----------------------
+
+- Python 3.6, 3.5, 3.4, 2.7, pypy.
+- external library: setuptools_, six_, babel_, click_
+
+
+Optional features
+==================
+These features need `transifex-client`_ library.
+
+* create .transifexrc file from environment variable, without interactive
+  input.
+* create .tx/config file without interactive input.
+* update .tx/config file from locale/pot files automatically.
+* build mo files from po files in the locale directory.
+
+You need to use `tx` command for below features:
+
+* `tx push -s` : push pot (translation catalogs) to transifex.
+* `tx pull -l ja` : pull po (translated catalogs) from transifex.
+
+Requirements for optional
+--------------------------
+
+- Your transifex_ account if you want to download po files from transifex
+  or you want to translate on transifex.
+
+- external library: `transifex-client`_
+
+
+Installation
+=============
+
+Recommend strongly: use virtualenv for this procedure::
+
+   $ pip install sphinx-intl
+
+If you want to use `Optional Features`_, you need install additional library::
+
+   $ pip install sphinx-intl[transifex]
+
+
+Commands, options, environment variables
+=========================================
+
+Commands
+--------
+
+Type `sphinx-intl` without arguments, options to show command help.
+
+
+Setup environment variables
+---------------------------
+
+All command-line options can be set with environment variables using the
+format SPHINXINTL_<UPPER_LONG_NAME> . Dashes (-) have to replaced with
+underscores (_).
+
+For example, to set the languages::
+
+   export SPHINXINTL_LANGUAGE=de,ja
+
+This is the same as passing the option to sphinx-intl directly::
+
+   sphinx-intl <command> --language=de --language=ja
+
+
+Setup sphinx conf.py
+---------------------
+
+Add below settings to sphinx document's conf.py if not exists::
+
+   locale_dirs = ['locale/']   #for example
+   gettext_compact = False     #optional
+
+
+Setup Makefile / make.bat
+-------------------------
+
+`make gettext` will generate pot files into `_build/locale` directory,
+however pot files should be generated in the `locale/pot` is convenient.
+You can be done by replacing `_build/locale` with `locale/pot` in your
+`Makefile` and/or `make.bat` that was generated by sphinx-quickstart.
+
+
+License
+=======
+Licensed under the BSD license.
+See the LICENSE file for specific terms.
+
+
+Original
+========
+
+This utilty derived from these projects.
+
+* https://bitbucket.org/tk0miya/sphinx-gettext-helper
+* https://bitbucket.org/shimizukawa/sphinx-transifex
+
+
+CHANGES
+=======
+
+See: https://github.com/sphinx-doc/sphinx-intl/blob/master/CHANGES
+
+.. _Sphinx: http://sphinx-doc.org
+.. _transifex: https://transifex.com
+.. _transifex-client: https://pypi.python.org/pypi/transifex-client
+.. _setuptools: https://pypi.python.org/pypi/setuptools
+.. _six: https://pypi.python.org/pypi/six
+.. _babel: https://pypi.python.org/pypi/babel
+.. _click: https://pypi.python.org/pypi/click
+
+
+

@@ -25,6 +25,9 @@ https://spotbugs.github.io/eclipse-candidate/
 https://spotbugs.github.io/eclipse-latest/
   Provides latest SpotBugs Eclipse plugin built from master branch.
 
+https://spotbugs.github.io/eclipse-stable-latest/
+  Provides latest SpotBugs Eclipse plugin built from release-3.1 branch.
+
 Or just use `Eclipse marketplace <https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin>`_ to install SpotBugs Eclipse plugin.
 
 Using the Plugin

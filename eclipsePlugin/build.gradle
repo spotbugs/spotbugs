@@ -233,6 +233,11 @@ task pluginDailyJar(type:Copy, dependsOn:pluginJar) {
   into "${buildDir}/site/eclipse-daily/plugins/"
 }
 
+task pluginStableLatestJar(type:Copy, dependsOn:pluginJar) {
+  from pluginJar.outputs.files
+  into "${buildDir}/site/eclipse-stable-latest/plugins/"
+}
+
 def siteFilterTokens = [
   'PLUGIN_ID': eclipsePluginId,
   'PLUGIN_VERSION':"${project.version}".toString(),
@@ -282,6 +287,20 @@ task featureDailyJar(type:Zip) {
   destinationDir = file("${buildDir}/site/eclipse-daily/features/")
 }
 
+task featureStableLatestJar(type:Zip) {
+  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
+  from('plugin_feature-stable_latest.xml') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'feature.xml' }
+  }
+  from('feature_p2.inf') {
+    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    rename { 'p2.inf' }
+  }
+  destinationDir = file("${buildDir}/site/eclipse-stable-latest/features/")
+}
+
 task siteHtml(type:Copy) {
   filter(tokens:[
     'URL': 'https://spotbugs.github.io/eclipse/'
@@ -321,6 +340,19 @@ task siteDailyHtml(type:Copy) {
   }
 }
 
+task siteStableLatestHtml(type:Copy) {
+  filter(tokens:[
+    'URL': 'https://spotbugs.github.io/eclipse-stable-latest/'
+  ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site.html'
+  destinationDir = file("${buildDir}/site/eclipse-stable-latest")
+  rename { 'index.html' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
+}
+
 task siteXml(type:Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.xml'
@@ -347,6 +379,17 @@ task siteDailyXml(type:Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-daily.xml'
   destinationDir = file("${buildDir}/site/eclipse-daily")
+  rename { 'site.xml' }
+  outputs.upToDateWhen {
+    // even if we have generated file, we should rerun this task to overwrite it.
+    false
+  }
+}
+
+task siteStableLatestXml(type:Copy) {
+  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+  from 'plugin_site-stable_latest.xml'
+  destinationDir = file("${buildDir}/site/eclipse-stable-latest")
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -396,8 +439,22 @@ task generateP2MetadataDaily(type:Exec) {
     '-source', "${buildDir}/site/eclipse-daily"
 }
 
+task generateP2MetadataStableLatest(type:Exec) {
+  doFirst {
+    project.delete "${buildDir}/site/eclipse-stable-latest/artifacts.xml"
+    project.delete "${buildDir}/site/eclipse-stable-latest/content.xml"
+  }
+  inputs.file 'local.properties'
+  dependsOn pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
+  commandLine "${eclipseExecutable}", '-nosplash',
+    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+    '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
+    '-artifactRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
+    '-source', "${buildDir}/site/eclipse-stable-latest"
+}
+
 task eclipseSite() {
-  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
+  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily, generateP2MetadataStableLatest
 }
 
 // create zip file to upload to GitHub release page

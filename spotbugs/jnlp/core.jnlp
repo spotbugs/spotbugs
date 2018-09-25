@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?> 
+<?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+" >
-  <information> 
+  <information>
     <title>SpotBugs</title>
-    <vendor>https://github.com/spotbugs</vendor> 
-    <homepage href="https://github.com/spotbugs"/> 
-    <description>SpotBugs: Static Bug Finder</description> 
-    <description kind="short">Static analysis tool for defect detection</description> 
-    <icon href="buggy-sm.png"/> 
-    <offline-allowed/> 
-  </information> 
-  <security> 
-      <all-permissions/> 
-  </security> 
-  <resources> 
+    <vendor>https://github.com/spotbugs</vendor>
+    <homepage href="https://github.com/spotbugs"/>
+    <description>SpotBugs: Static Bug Finder</description>
+    <description kind="short">Static analysis tool for defect detection</description>
+    <icon href="buggy-sm.png"/>
+    <offline-allowed/>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
     <jar href="dom4j-2.1.0.jar"/>
@@ -20,12 +20,11 @@
     <jar href="asm-tree-3.3.jar"/>
     <jar href="asm-commons-3.3.jar"/>
     <jar href="jaxen-1.1.6.jar"/>
-    <jar href="jFormatString.jar"/>
     <jar href="commons-lang-2.6.jar"/>
     <jar href="jsr305.jar"/>
-  </resources> 
+  </resources>
   <component-desc />
-</jnlp> 
+</jnlp>
 
 
 

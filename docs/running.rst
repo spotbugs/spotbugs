@@ -126,18 +126,32 @@ Common command-line options
 
 These options may be used with both the GUI and command-line interfaces.
 
--effort:min:
-  This option disables analyses that increase precision but also increase memory consumption.
-  You may want to try this option if you find that SpotBugs runs out of memory, or takes an unusually long time to complete its analysis.
-  See :doc:`effort`.
-
--effort:max:
-  Enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
+-effort[:min|less|default|more|max]:
+  Set analysis effort level. 
+  The -effort:min disables several analyses that increase precision but also increase memory consumption. You may want to try this option if you find that SpotBugs with the -effort:less still runs out of memory, or takes an unusually long time to complete its analysis.
+  The -effort:less disables some analyses that increase precision but also increase memory consumption. You may want to try this option if you find that SpotBugs with the -effort:more/-effort:default runs out of memory, or takes an unusually long time to complete its analysis.
+  The -effort:more runs several analyses to find bugs, this is the -effort:default.
+  The -effort:max enable analyses which increase precision and find more bugs, but which may require more memory and take more time to complete.
   See :doc:`effort`.
 
 -project *project*:
   Specify a project to be analyzed. The project file you specify should be one that was created using the GUI interface.
   It will typically end in the extension .fb or .fbp.
+  
+-pluginList <jar1[;jar2...]>:
+  Specify list of plugin Jar files to load.
+  
+-home <home directory>:
+  Specify SpotBugs home directory.
+    
+-adjustExperimental:
+  Lower priority of experimental Bug Patterns.
+  
+-workHard:
+  Ensure analysis effort is at least 'default'.
+
+-conserveSpace:
+  Same as -effort:min (for backward compatibility).
 
 GUI Options
 ^^^^^^^^^^^
@@ -231,3 +245,95 @@ These options are only accepted by the Text User Interface.
   Set the path of the user preferences file to use, which might override some of the options above.
   Specifying userPrefs as first argument would mean some later options will override them, as last argument would mean they will override some previous options).
   This rationale behind this option is to reuse SpotBugs Eclipse project settings for command line execution.
+
+-showPlugins:
+  Show list of available detector plugins.
+
+Output options
+**************
+-timestampNow:
+  Set timestamp of results to be current time.
+
+-quiet:
+  Suppress error messages.
+
+-longBugCodes:
+  Report long bug codes.
+
+-progress:
+  Display progress in terminal window.
+
+-release <release name>:
+  Set the release name of the analyzed application.
+
+-maxRank <rank>:
+  Only report issues with a bug rank at least as scary as that provided.
+
+-dontCombineWarnings:
+  Don't combine warnings that differ only in line number.
+
+-train[:outputDir]:
+  Save training data (experimental); output dir defaults to '.'.
+
+-useTraining[:inputDir]:
+  Use training data (experimental); input dir defaults to '.'.
+
+-redoAnalysis <filename>:
+  Redo analysis using configureation from previous analysis.
+
+-sourceInfo <filename>:
+  Specify source info file (line numbers for fields/classes).
+
+-projectName <project name>:
+  Descriptive name of project.
+
+-reanalyze <filename>:
+  Redo analysis in provided file.
+  
+Output filtering options
+************************
+-bugCategories <cat1[,cat2...]>:
+  Only report bugs in given categories.
+
+-excludeBugs <baseline bugs>:
+  Exclude bugs that are also reported in the baseline xml output.
+
+-applySuppression:
+  Exclude any bugs that match suppression filter loaded from fbp file.
+
+Detector (visitor) configuration options
+****************************************
+-visitors <v1[,v2...]>:
+  Run only named visitors.
+
+-omitVisitors <v1[,v2...]>:
+  Omit named visitors.
+
+-chooseVisitors <+v1,-v2,...>:
+  Selectively enable/disable detectors.
+
+-choosePlugins <+p1,-p2,...>:
+  Selectively enable/disable plugins.
+
+-adjustPriority <v1=(raise|lower)[,...]>:
+  Raise/lower priority of warnings for given visitor(s)
+
+Project configuration options
+*****************************
+-sourcepath <source path>:
+  Set source path for analyzed classes.
+
+-exitcode:
+  Set exit code of process.
+
+-noClassOk:
+  Output empty warning file if no classes are specified.
+
+-xargs:
+  Get list of classfiles/jarfiles from standard input rather than command line.
+
+-bugReporters <name,name2,-name3>:
+  Bug reporter decorators to explicitly enable/disable.
+
+-printConfiguration:
+  Print configuration and exit, without running analysis.
