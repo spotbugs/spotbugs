@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.Objects;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -38,7 +39,6 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.EditDistance;
-import edu.umd.cs.findbugs.util.Util;
 
 public class FindSelfComparison extends OpcodeStackDetector {
 
@@ -168,7 +168,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
         } else if (isReturn(seen)) {
             resetDoubleAssignmentState();
-        } else if (seen == Const.GETFIELD && Util.nullSafeEquals(getXFieldOperand(), putFieldXField)) {
+        } else if (seen == Const.GETFIELD && Objects.equals(getXFieldOperand(), putFieldXField)) {
             OpcodeStack.Item obj = stack.getStackItem(0);
             if (obj.sameValue(putFieldObj)) {
                 resetDoubleAssignmentState();

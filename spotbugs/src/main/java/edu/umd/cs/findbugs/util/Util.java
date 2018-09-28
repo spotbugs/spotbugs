@@ -318,6 +318,10 @@ public class Util {
         }
     }
 
+    /**
+     * @deprecated Use try-with-resources instead.
+     */
+    @Deprecated
     public static void closeSilently(@WillClose Reader in) {
         try {
             if (in != null) {
@@ -328,6 +332,11 @@ public class Util {
         }
     }
 
+    /**
+     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
+     *             is not good to ignore.
+     */
+    @Deprecated
     public static void closeSilently(@WillClose OutputStream out) {
         try {
             if (out != null) {
@@ -338,6 +347,11 @@ public class Util {
         }
     }
 
+    /**
+     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
+     *             is not good to ignore.
+     */
+    @Deprecated
     public static void closeSilently(@WillClose Closeable out) {
         try {
             if (out != null) {
@@ -348,6 +362,10 @@ public class Util {
         }
     }
 
+    /**
+     * @deprecated Use try-with-resources instead.
+     */
+    @Deprecated
     public static void closeSilently(@WillClose ZipFile zip) {
         try {
             if (zip != null) {

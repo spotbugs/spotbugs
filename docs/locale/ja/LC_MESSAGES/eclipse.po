@@ -4,16 +4,17 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 msgid ""
-msgstr "Project-Id-Version: spotbugs 3.1\n"
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-17 15:12+0900\n"
+"POT-Creation-Date: 2018-07-23 02:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 1.3\n"
 
 #: ../../eclipse.rst:2
 msgid "Using the SpotBugs Eclipse plugin"
@@ -25,7 +26,10 @@ msgid ""
 " IDE. The SpotBugs Eclipse plugin was generously contributed by Peter "
 "Friese. Phil Crosby and Andrey Loskutov contributed major improvements to"
 " the plugin."
-msgstr "SpotBugs Eclipseプラグインを使用すると SpotBugs を Eclipse IDE 内で使用できます。SpotBugs Eclipseプラグインは，Peter Friese 氏の多大なる貢献によるものです。Phil Crosby 氏と Andrey Loskutov 氏は，プラグインの大幅な改善に貢献しました。"
+msgstr ""
+"SpotBugs Eclipseプラグインを使用すると SpotBugs を Eclipse IDE 内で使用できます。SpotBugs "
+"Eclipseプラグインは，Peter Friese 氏の多大なる貢献によるものです。Phil Crosby 氏と Andrey Loskutov"
+" 氏は，プラグインの大幅な改善に貢献しました。"
 
 #: ../../eclipse.rst:9
 msgid "Requirements"
@@ -46,7 +50,9 @@ msgid ""
 "We provide update sites that allow you to automatically install SpotBugs "
 "into Eclipse and also query and install updates. There are three "
 "different update sites:"
-msgstr "私たちは，SpotBugs を Eclipse に自動的にインストールしたり，アップデートを照会してインストールもできる更新サイトを提供しています。3 つの異なる更新サイトがあります。"
+msgstr ""
+"私たちは，SpotBugs を Eclipse "
+"に自動的にインストールしたり，アップデートを照会してインストールもできる更新サイトを提供しています。3 つの異なる更新サイトがあります。"
 
 #: ../../eclipse.rst:20
 msgid "https://spotbugs.github.io/eclipse/"
@@ -74,26 +80,39 @@ msgstr ""
 msgid "Provides latest SpotBugs Eclipse plugin built from master branch."
 msgstr "最新の SpotBugs Eclipse プラグインをマスターブランチからビルドします。"
 
-#: ../../eclipse.rst:28
+#: ../../eclipse.rst:29
+msgid "https://spotbugs.github.io/eclipse-stable-latest/"
+msgstr ""
+
+#: ../../eclipse.rst:29
+msgid "Provides latest SpotBugs Eclipse plugin built from release-3.1 branch."
+msgstr "最新で安定している SpotBugs Eclipse プラグインを release-3.1 ブランチからビルドします。"
+
+#: ../../eclipse.rst:31
 msgid ""
 "Or just use `Eclipse marketplace <https://marketplace.eclipse.org/content"
 "/spotbugs-eclipse-plugin>`_ to install SpotBugs Eclipse plugin."
-msgstr "または `Eclipse marketplace <https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin>`_ を使って SpotBugs Eclipse プラグインをインストールします。"
+msgstr ""
+"または `Eclipse marketplace <https://marketplace.eclipse.org/content"
+"/spotbugs-eclipse-plugin>`_ を使って SpotBugs Eclipse プラグインをインストールします。"
 
-#: ../../eclipse.rst:31
+#: ../../eclipse.rst:34
 msgid "Using the Plugin"
 msgstr "プラグインの使い方"
 
-#: ../../eclipse.rst:33
+#: ../../eclipse.rst:36
 msgid ""
 "To get started, right click on a Java project in Package Explorer, and "
 "select the option labeled \"Spot Bugs\". SpotBugs will run, and problem "
 "markers (displayed in source windows, and also in the Eclipse Problems "
 "view) will point to locations in your code which have been identified as "
 "potential instances of bug patterns."
-msgstr "開始するには，パッケージエクスプローラで Java プロジェクトを右クリックして，「Spot Bugs」というラベルの付いたオプションを選択します。SpotBugs が実行され，問題マーカー (ソースウインドウと Eclipse の問題ビューに表示されます) は，バグパターンの潜在的なインスタンスとして特定されたコード内の場所を示します。"
+msgstr ""
+"開始するには，パッケージエクスプローラで Java プロジェクトを右クリックして，「Spot "
+"Bugs」というラベルの付いたオプションを選択します。SpotBugs が実行され，問題マーカー (ソースウインドウと Eclipse "
+"の問題ビューに表示されます) は，バグパターンの潜在的なインスタンスとして特定されたコード内の場所を示します。"
 
-#: ../../eclipse.rst:36
+#: ../../eclipse.rst:39
 msgid ""
 "You can also run SpotBugs on existing java archives (jar, ear, zip, war "
 "etc). Simply create an empty Java project and attach archives to the "
@@ -101,49 +120,61 @@ msgid ""
 "in Package Explorer and select the option labeled \"Spot Bugs\". If you "
 "additionally configure the source code locations for the binaries, "
 "SpotBugs will also link the generated warnings to the right source files."
-msgstr "既存の Java アーカイブ (jar，ear，zip，war など) で SpotBugs を実行できます。空の Java プロジェクトを作成し，プロジェクトのクラスパスにアーカイブを追加するだけです。これで，パッケージエクスプローラでアーカイブノードを右クリックして，「SpotBugs」というラベルの付いたオプションを選択できます。さらに，バイナリのソースコードの場所を設定すると，SpotBugs は生成された警告を正しいソースファイルにリンクします。"
+msgstr ""
+"既存の Java アーカイブ (jar，ear，zip，war など) で SpotBugs を実行できます。空の Java "
+"プロジェクトを作成し，プロジェクトのクラスパスにアーカイブを追加するだけです。これで，パッケージエクスプローラでアーカイブノードを右クリックして，「SpotBugs」というラベルの付いたオプションを選択できます。さらに，バイナリのソースコードの場所を設定すると，SpotBugs"
+" は生成された警告を正しいソースファイルにリンクします。"
 
-#: ../../eclipse.rst:41
+#: ../../eclipse.rst:44
 msgid ""
 "You may customize how SpotBugs runs by opening the Properties dialog for "
 "a Java project, and choosing the \"SpotBugs\" property page. Options you "
 "may choose include:"
-msgstr "SpotBugs の実行方法をカスタマイズするには，Java プロジェクトのプロパティダイアログを開き，「SpotBugs」プロパティページを選択します。選択できるオプションは次のとおりです。"
+msgstr ""
+"SpotBugs の実行方法をカスタマイズするには，Java "
+"プロジェクトのプロパティダイアログを開き，「SpotBugs」プロパティページを選択します。選択できるオプションは次のとおりです。"
 
-#: ../../eclipse.rst:44
+#: ../../eclipse.rst:47
 msgid ""
 "Enable or disable the \"Run SpotBugs Automatically\" checkbox. When "
 "enabled, SpotBugs will run every time you modify a Java class within the "
 "project."
-msgstr "「Run SpotBugs Automatically」チェックボックスを有効または無効にします。有効にすると，プロジェクト内の Java クラスを変更するたびに SpotBugs が実行されます。"
+msgstr ""
+"「Run SpotBugs Automatically」チェックボックスを有効または無効にします。有効にすると，プロジェクト内の Java "
+"クラスを変更するたびに SpotBugs が実行されます。"
 
-#: ../../eclipse.rst:46
+#: ../../eclipse.rst:49
 msgid ""
 "Choose minimum warning priority and enabled bug categories. These options"
 " will choose which warnings are shown. For example, if you select the "
 "\"Medium\" warning priority, only Medium and High priority warnings will "
 "be shown. Similarly, if you uncheck the \"Style\" checkbox, no warnings "
 "in the Style category will be displayed."
-msgstr "最低限の優先度を選択し，バグカテゴリを有効にします。これらのオプションは，表示される警告を選択します。たとえば，優先度で「Medium」を選択すると，優先度 (中) と優先度 (高) の警告だけが表示されます同様に，「Style」チェックボックスのチェックを外すと，Style カテゴリの警告は表示されません。"
+msgstr ""
+"最低限の優先度を選択し，バグカテゴリを有効にします。これらのオプションは，表示される警告を選択します。たとえば，優先度で「Medium」を選択すると，優先度"
+" (中) と優先度 (高) の警告だけが表示されます同様に，「Style」チェックボックスのチェックを外すと，Style "
+"カテゴリの警告は表示されません。"
 
-#: ../../eclipse.rst:48
+#: ../../eclipse.rst:51
 msgid ""
 "Select detectors. The table allows you to select which detectors you want"
 " to enable for your project."
 msgstr "ディテクタの選択。この表では，プロジェクトで有効にするディテクタを選択できます。"
 
-#: ../../eclipse.rst:51
+#: ../../eclipse.rst:54
 msgid "Extending the Eclipse Plugin (since 2.0.0)"
 msgstr "Eclipse プラグインの拡張 (2.0.0 以降)"
 
-#: ../../eclipse.rst:53
+#: ../../eclipse.rst:56
 msgid ""
 "Eclipse plugin supports contribution of custom SpotBugs detectors (see "
 "also AddingDetectors.txt for more information). There are two ways to "
 "contribute custom plugins to the Eclipse:"
-msgstr "Eclipse プラグインは，カスタム SpotBugs ディテクタの寄贈をサポートします (詳細については AddingDetectors.txt も参照してください)。カスタムプラグインを Eclipse に提供するには 2 つの方法があります。"
+msgstr ""
+"Eclipse プラグインは，カスタム SpotBugs ディテクタの寄贈をサポートします (詳細については "
+"AddingDetectors.txt も参照してください)。カスタムプラグインを Eclipse に提供するには 2 つの方法があります。"
 
-#: ../../eclipse.rst:55
+#: ../../eclipse.rst:58
 msgid ""
 "Existing standard SpotBugs detector packages can be configured via "
 "``Window → Preferences → Java → FindBugs → Misc. Settings → Custom "
@@ -153,15 +184,19 @@ msgid ""
 "quality of third party detectors. The drawback is that you have to apply "
 "this settings in each new Eclipse workspace, and this settings can't be "
 "shared between team members."
-msgstr "既存の標準 SpotBugs ディテクタパッケージは，``Window → Preferences → Java → FindBugs → Misc. Settings → Custom Detectors`` で設定できます。追加のプラグインの場所を指定するだけです。このソリューションの利点は，既存のディテクタパッケージを「そのまま」使用でき，サードパーティのディテクタの品質を迅速に検証できることです。欠点は，新しい Eclipse ワークスペースごとにこの設定を適用する必要があり，この設定をチームメンバ間で共有できないことです。"
+msgstr ""
+"既存の標準 SpotBugs ディテクタパッケージは，``Window → Preferences → Java → FindBugs → "
+"Misc. Settings → Custom Detectors`` "
+"で設定できます。追加のプラグインの場所を指定するだけです。このソリューションの利点は，既存のディテクタパッケージを「そのまま」使用でき，サードパーティのディテクタの品質を迅速に検証できることです。欠点は，新しい"
+" Eclipse ワークスペースごとにこの設定を適用する必要があり，この設定をチームメンバ間で共有できないことです。"
 
-#: ../../eclipse.rst:58
+#: ../../eclipse.rst:61
 msgid ""
 "It is possible to contribute custom detectors via standard Eclipse "
 "extensions mechanism."
 msgstr "標準の Eclipse 拡張機構を用いてカスタムディテクタを提供できます。"
 
-#: ../../eclipse.rst:60
+#: ../../eclipse.rst:63
 msgid ""
 "Please check the documentation of the "
 "``eclipsePlugin/schema/detectorPlugins.exsd`` extension point how to "
@@ -170,9 +205,14 @@ msgid ""
 "Usually you only need to add ``META-INF/MANIFEST.MF`` and ``plugin.xml`` "
 "to the jar and update your build scripts to not to override the "
 "``MANIFEST.MF`` during the build."
-msgstr "``eclipsePlugin/schema/detectorPlugins.exsd`` 拡張ポイントのドキュメントを参照して，plugin.xml の更新方法を確認してください。既存の SpotBugs ディテクタプラグインは，完全に機能する SpotBugs ディテクタプラグインになるように簡単に「拡張」できます。通常は，``META-INF/MANIFEST.MF`` と ``plugin.xml`` を jar ファイルに追加し，ビルド時に ``MANIFEST.MF`` を上書きしないようにビルドスクリプトを更新するだけです。"
+msgstr ""
+"``eclipsePlugin/schema/detectorPlugins.exsd`` "
+"拡張ポイントのドキュメントを参照して，plugin.xml の更新方法を確認してください。既存の SpotBugs "
+"ディテクタプラグインは，完全に機能する SpotBugs ディテクタプラグインになるように簡単に「拡張」できます。通常は，``META-"
+"INF/MANIFEST.MF`` と ``plugin.xml`` を jar ファイルに追加し，ビルド時に ``MANIFEST.MF`` "
+"を上書きしないようにビルドスクリプトを更新するだけです。"
 
-#: ../../eclipse.rst:64
+#: ../../eclipse.rst:67
 msgid ""
 "The benefit of this solution is that for given (shared) Eclipse "
 "installation each team member has exactly same detectors set, and there "
@@ -182,37 +222,48 @@ msgid ""
 "Another major differentiator is the ability to extend the default "
 "SpotBugs classpath at runtime with required third party libraries (see "
 "AddingDetectors.txt for more information)."
-msgstr "このソリューションの利点は，Eclipse インストールが共有されていれば，それぞれのチームメンバが正確に同じディテクタセットを持ち，何も設定する必要がないことです。(本当に小さな) 前提条件は，既存のディテクタパッケージを有効な Eclipse プラグインに変換しておくことです。サードパーティのディテクタでもこれを行うことができます。もうひとつの大きな違いは，実行時に必要なサードパーティのライブラリでデフォルトの SpotBugs クラスパスを拡張する能力です (詳細については AddingDetectors.txt を参照してください)。"
+msgstr ""
+"このソリューションの利点は，Eclipse "
+"インストールが共有されていれば，それぞれのチームメンバが正確に同じディテクタセットを持ち，何も設定する必要がないことです。(本当に小さな) "
+"前提条件は，既存のディテクタパッケージを有効な Eclipse "
+"プラグインに変換しておくことです。サードパーティのディテクタでもこれを行うことができます。もうひとつの大きな違いは，実行時に必要なサードパーティのライブラリでデフォルトの"
+" SpotBugs クラスパスを拡張する能力です (詳細については AddingDetectors.txt を参照してください)。"
 
-#: ../../eclipse.rst:69
+#: ../../eclipse.rst:72
 msgid "Troubleshooting"
 msgstr "トラブルシューティング"
 
-#: ../../eclipse.rst:71
+#: ../../eclipse.rst:74
 msgid ""
 "This section lists common problems with the plugin and (if known) how to "
 "resolve them."
 msgstr "この節では，プラグインの一般的な問題と (既知の) 問題を解決する方法について説明します。"
 
-#: ../../eclipse.rst:73
+#: ../../eclipse.rst:76
 msgid ""
 "If you see OutOfMemory error dialogs after starting SpotBugs analysis in "
 "Eclipse, please increase JVM available memory: change ``eclipse.ini`` and"
 " add the lines below to the end of the file:"
-msgstr "Eclipse で SpotBugs の解析を開始した後に OutOfMemory エラーダイアログが表示されるときは，JVM の使用可能なメモリを増やしてください。``eclipse.ini`` を変更し次の行をファイルの最後に追加してください。"
+msgstr ""
+"Eclipse で SpotBugs の解析を開始した後に OutOfMemory エラーダイアログが表示されるときは，JVM "
+"の使用可能なメモリを増やしてください。``eclipse.ini`` を変更し次の行をファイルの最後に追加してください。"
 
-#: ../../eclipse.rst:81
+#: ../../eclipse.rst:84
 msgid ""
 "Important: the configuration arguments starting with the line ``-vmargs``"
 " must be last lines in the ``eclipse.ini`` file, and only one argument "
 "per line is allowed!"
-msgstr "重要: ``-vmargs`` 行から始まる設定引数は ``eclipse.ini`` ファイルの最後でなければならず，1 行につき 1 つの引数しか許されません!"
+msgstr ""
+"重要: ``-vmargs`` 行から始まる設定引数は ``eclipse.ini`` ファイルの最後でなければならず，1 行につき 1 "
+"つの引数しか許されません!"
 
-#: ../../eclipse.rst:83
+#: ../../eclipse.rst:86
 msgid ""
 "If you do not see any SpotBugs problem markers (in your source windows or"
 " in the Problems View), you may need to change your ``Problems View`` "
 "filter settings. See `FAQ <faq.html#q6-the-eclipse-plugin-loads-but-"
 "doesn-t-work-correctly>`__ for more information."
-msgstr "SpotBugs の問題マーカーが (ソースファイルや問題ビューに) 表示されないときは，``問題ビュー`` のフィルタ設定を変更する必要があります。詳細は `FAQ <faq.html#q6-the-eclipse-plugin-loads-but-doesn-t-work-correctly>`__ を参照してください。"
-
+msgstr ""
+"SpotBugs の問題マーカーが (ソースファイルや問題ビューに) 表示されないときは，``問題ビュー`` "
+"のフィルタ設定を変更する必要があります。詳細は `FAQ <faq.html#q6-the-eclipse-plugin-loads-but-"
+"doesn-t-work-correctly>`__ を参照してください。"

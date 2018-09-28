@@ -300,4 +300,3 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
     }
 }
-

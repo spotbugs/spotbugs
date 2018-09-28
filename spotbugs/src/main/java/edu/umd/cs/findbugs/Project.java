@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -83,7 +84,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  *
  * @author David Hovemeyer
  */
-public class Project implements XMLWriteable {
+public class Project implements XMLWriteable, AutoCloseable {
     private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
     private final List<File> currentWorkingDirectoryList;
@@ -273,7 +274,7 @@ public class Project implements XMLWriteable {
                 isNew = addToListInternal(srcDirList, dir) || isNew;
             }
         }
-
+        IO.close(sourceFinder);
         sourceFinder = new SourceFinder(this);
         return isNew;
     }
@@ -359,6 +360,7 @@ public class Project implements XMLWriteable {
      */
     public void removeSourceDir(int num) {
         srcDirList.remove(num);
+        IO.close(sourceFinder);
         sourceFinder = new SourceFinder(this);
         isModified = true;
     }
@@ -678,10 +680,11 @@ public class Project implements XMLWriteable {
         isModified = false;
     }
 
-    public static Project readXML(File f) throws IOException,  SAXException {
-        InputStream in = new BufferedInputStream(new FileInputStream(f));
+    public static Project readXML(File f) throws IOException, SAXException {
+        @SuppressWarnings("resource") // will be closed by caller
         Project project = new Project();
-        try {
+
+        try (InputStream in = new BufferedInputStream(new FileInputStream(f))) {
             String tag = Util.getXMLType(in);
             SAXBugCollectionHandler handler;
             if ("Project".equals(tag)) {
@@ -698,11 +701,12 @@ public class Project implements XMLWriteable {
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
 
-            Reader reader = Util.getReader(in);
-
-            xr.parse(new InputSource(reader));
-        } finally {
-            in.close();
+            try (Reader reader = Util.getReader(in)) {
+                xr.parse(new InputSource(reader));
+            }
+        } catch (IOException | SAXException e) {
+            project.close();
+            throw e;
         }
 
         // Presumably, project is now up-to-date
@@ -1121,5 +1125,10 @@ public class Project implements XMLWriteable {
 
         }
         return result;
+    }
+
+    @Override
+    public void close() {
+        IO.close(sourceFinder);
     }
 }
