@@ -70,6 +70,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DumbMethods extends OpcodeStackDetector {
@@ -636,6 +637,8 @@ public class DumbMethods extends OpcodeStackDetector {
 
     MethodDescriptor previousMethodCall = null;
 
+    // we're specifically checking for the mistake of constructing a BigDecimal from a floating point primitive
+    @SuppressWarnings("PMD.AvoidDecimalLiteralsInBigDecimalConstructor")
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS", justification = "False positive, see https://github.com/spotbugs/spotbugs/issues/87")
     @Override
     public void sawOpcode(int seen) {
@@ -649,7 +652,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         && "valueOf".equals(previousMethodCall.getName())
                         && "(I)Ljava/lang/Integer;".equals(previousMethodCall.getSignature())
                         ) {
-                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "toString", "(I)Ljava/lang/String;", true);
+                    MethodAnnotation preferred = new MethodAnnotation(Values.DOTTED_JAVA_LANG_INTEGER, "toString", "(I)Ljava/lang/String;", true);
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_TOSTRING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
@@ -663,7 +666,7 @@ public class DumbMethods extends OpcodeStackDetector {
                                 && "(Ljava/lang/String;)Ljava/lang/Integer;".equals(previousMethodCall.getSignature())
                                 )) {
 
-                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Integer", "parseInt", "(Ljava/lang/String;)I", true);
+                    MethodAnnotation preferred = new MethodAnnotation(Values.DOTTED_JAVA_LANG_INTEGER, "parseInt", "(Ljava/lang/String;)I", true);
 
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
@@ -1033,17 +1036,6 @@ public class DumbMethods extends OpcodeStackDetector {
                 if(stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.NON_NEGATIVE) {
                     OpcodeStack.Item top = stack.getStackItem(0);
                     if (top.getRegisterNumber() != -1 && getMaxPC() > getNextPC() + 6) {
-                        if (false) {
-                            for(int i = -2; i <= 0; i++) {
-                                int o = getPrevOpcode(-i);
-                                System.out.printf("%2d %3d  %2x %s%n",  i, o, o, Const.getOpcodeName(o));
-                            }
-                            for(int i = 0; i < 7; i++) {
-                                int o = getNextCodeByte(i);
-                                System.out.printf("%2d %3d %2x %s%n",  i, o, o, Const.getOpcodeName(o));
-
-                            }
-                        }
                         int jump1, jump2;
                         if (seen == Const.IFGE) {
                             jump1 = Const.IF_ICMPLT;
@@ -1193,23 +1185,6 @@ public class DumbMethods extends OpcodeStackDetector {
                         new BugInstance(this, "SW_SWING_METHODS_INVOKED_IN_SWING_THREAD", LOW_PRIORITY).addClassAndMethod(this),
                         this);
             }
-
-            // if ((seen == Const.INVOKEVIRTUAL)
-            // && getClassConstantOperand().equals("java/lang/String")
-            // && getNameConstantOperand().equals("substring")
-            // && getSigConstantOperand().equals("(I)Ljava/lang/String;")
-            // && stack.getStackDepth() > 1) {
-            // OpcodeStack.Item item = stack.getStackItem(0);
-            // Object o = item.getConstant();
-            // if (o != null && o instanceof Integer) {
-            // int v = ((Integer) o).intValue();
-            // if (v == 0)
-            // accumulator.accumulateBug(new BugInstance(this,
-            // "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
-            // .addClassAndMethod(this)
-            // .addSourceLine(this));
-            // }
-            // }
 
             if ((seen == Const.INVOKEVIRTUAL) && "isAnnotationPresent".equals(getNameConstantOperand())
                     && "(Ljava/lang/Class;)Z".equals(getSigConstantOperand()) && stack.getStackDepth() > 0) {

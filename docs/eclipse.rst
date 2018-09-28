@@ -8,7 +8,7 @@ Phil Crosby and Andrey Loskutov contributed major improvements to the plugin.
 Requirements
 ------------
 
-To use the SpotdBugs Plugin for Eclipse, you need Eclipse Neon (4.6) or later.
+To use the SpotBugs Plugin for Eclipse, you need Eclipse Neon (4.6) or later.
 
 Installation
 ------------

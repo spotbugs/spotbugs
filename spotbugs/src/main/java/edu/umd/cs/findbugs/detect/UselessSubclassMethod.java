@@ -307,6 +307,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         }
         return result;
     }
+
+    // TODO awaiting https://github.com/spotbugs/spotbugs/issues/626
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean differentAttributes(Method m1, Method m2) {
         if (m1.getAnnotationEntries().length > 0 || m2.getAnnotationEntries().length > 0) {
             return true;

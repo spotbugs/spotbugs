@@ -21,7 +21,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;

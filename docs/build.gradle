@@ -1,3 +1,0 @@
-// We generate bug description page by Sphinx extension, so gradle does not need
-// to parse XML files to generate.
-// https://github.com/spotbugs/spotbugs/pull/343

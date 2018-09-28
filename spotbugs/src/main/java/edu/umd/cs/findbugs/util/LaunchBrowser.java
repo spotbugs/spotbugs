@@ -158,19 +158,9 @@ public class LaunchBrowser {
      * @return true on success
      */
     public static boolean showDocument(URL url) {
-
-        if (showDocumentViaDesktop(url)) {
-            return true;
-        }
-        if (showDocumentViaExec(url)) {
-            return true;
-        }
-        if (JavaWebStart.showViaWebStart(url)) {
-            return true;
-        }
-
-        return false;
-
+        return showDocumentViaDesktop(url)
+            || showDocumentViaExec(url)
+            || JavaWebStart.showViaWebStart(url);
     }
 
 }

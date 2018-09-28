@@ -75,6 +75,7 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 /**
@@ -224,13 +225,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             return false;
         }
         IsNullValue value = invFrame.getTopValue();
-        if (value.isDefinitelyNotNull()) {
-            return false;
-        }
-        if (value.isDefinitelyNull()) {
-            return false;
-        }
-        return true;
+        return !(value.isDefinitelyNotNull() || value.isDefinitelyNull());
     }
 
     @Override
@@ -580,7 +575,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
                 int catchSizeNFE = Util.getSizeOfSurroundingTryBlock(method, "java/lang/NumberFormatException", location
                         .getHandle().getPosition());
                 if (catchSizeNPE == Integer.MAX_VALUE
-                        && (!"java.lang.Integer".equals(called.getClassName()) || catchSizeNFE == Integer.MAX_VALUE)) {
+                        && (!Values.DOTTED_JAVA_LANG_INTEGER.equals(called.getClassName()) || catchSizeNFE == Integer.MAX_VALUE)) {
                     // Get the corresponding value number
                     ValueNumber vn = vnaFrame.getArgument(inv, constantPool, i, sigParser);
                     result.add(vn);
@@ -664,16 +659,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
     }
 
     private static boolean reportDereference(IsNullValue value) {
-        if (value.isDefinitelyNotNull()) {
-            return false;
-        }
-        if (value.isDefinitelyNull()) {
-            return false;
-        }
-        if (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()) {
-            return false;
-        }
-        return true;
+        return !(value.isDefinitelyNotNull()
+            || value.isDefinitelyNull()
+            || (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()));
     }
 
     /**
@@ -685,7 +673,6 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      */
     private boolean isAssertion(InstructionHandle handle) {
         return assertionMethods.isAssertionHandle(handle, methodGen.getConstantPool());
-
     }
 
     @Override
@@ -963,12 +950,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             return false;
         }
         InstructionHandle h = edge.getSource().getLastInstruction();
-        if (h != null && h.getInstruction() instanceof IFNONNULL && isNullCheck(h, methodGen.getConstantPool())) {
-            return true;
-        }
-
-        return false;
-
+        return h != null
+            && h.getInstruction() instanceof IFNONNULL
+            && isNullCheck(h, methodGen.getConstantPool());
     }
 
     @Override

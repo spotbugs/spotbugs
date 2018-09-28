@@ -2167,7 +2167,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     }
 
-    public static @javax.annotation.CheckForNull
+    public static @CheckForNull
     BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
         LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
         if (lv != null && lv.isNamed()) {

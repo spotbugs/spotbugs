@@ -65,10 +65,7 @@ public class MutableEnum extends OpcodeStackDetector {
     @Override
     public boolean shouldVisitCode(Code obj) {
         skip = false;
-        if(getXMethod().isPublic() && getNumberMethodArguments() > 0) {
-            return true;
-        }
-        return false;
+        return getXMethod().isPublic() && getNumberMethodArguments() > 0;
     }
 
     @Override
