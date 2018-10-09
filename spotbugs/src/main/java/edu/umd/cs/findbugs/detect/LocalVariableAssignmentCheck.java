@@ -106,6 +106,10 @@ public class LocalVariableAssignmentCheck implements Detector {
             throws CFGBuilderException, DataflowAnalysisException {
         LocalVariableTable localVariableTable = method.getLocalVariableTable();
         LineNumberTable lineNumberTable = method.getLineNumberTable();
+
+        if (null == localVariableTable) {
+            return;
+        }
         int variableCount = localVariableTable.getTableLength();
         // The variable count of the method is 0,return
         if (variableCount == 0) {

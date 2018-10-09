@@ -1694,6 +1694,13 @@ factory pattern to create these objects.</p>
     ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ChildListNeedsOrderBy">
+    <Details>
+    <![CDATA[
+       <p>ChildList may needs Orderby annotation.</p>
+    ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8594,12 +8601,21 @@ after the call to initLogging, the logger configuration is lost
       ]]>  
         </Details>
   </BugPattern>
-  <BugPattern type="SPEC_MEHTOD_PARAM_NULL_CHECK">
+  <BugPattern type="SPEC_METHOD_PARAM_NULL_CHECK">
   <ShortDescription>Method Parameter Null Check</ShortDescription>
         <LongDescription>Method {1} should check its parameter before query something</LongDescription>
         <Details>
       <![CDATA[
         <p>Method should check its parameter before query something.</p>
+      ]]>
+        </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION">
+  <ShortDescription>ChildList may needs OrderBy annotation.</ShortDescription>
+        <LongDescription>ChildList {1} may needs OrderBy annotation.</LongDescription>
+        <Details>
+      <![CDATA[
+        <p>ChildList may needs OrderBy annotation.</p>
       ]]>
         </Details>
   </BugPattern>

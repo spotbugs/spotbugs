@@ -656,6 +656,8 @@
                     reports="SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.MethodParamNullCheck" speed="fast" disabled="false"
                     reports="SPEC_METHOD_PARAM_NULL_CHECK"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ChildListNeedsOrderBy" speed="fast" disabled="false"
+                    reports="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1271,5 +1273,6 @@
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
           <BugPattern abbrev="SPEC" type="SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK" category="CORRECTNESS"/>
-          <BugPattern abbrev="SPEC" type="SPEC_MEHTOD_PARAM_NULL_CHECK" category="CORRECTNESS"/>
+          <BugPattern abbrev="SPEC" type="SPEC_METHOD_PARAM_NULL_CHECK" category="CORRECTNESS"/>
+          <BugPattern abbrev="SPEC" type="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION" category="CORRECTNESS"/>
 </FindbugsPlugin>
