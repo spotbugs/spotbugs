@@ -118,4 +118,4 @@ deploy:
     on:
       all_branches: true
       jdk: oraclejdk8
-      condition: (branch = master || branch = "release-3.1") && type = push
+      condition: (branch = master || branch = "release-3.1" || tag IS present) && type = push
