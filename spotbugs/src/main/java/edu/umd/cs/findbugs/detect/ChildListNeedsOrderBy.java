@@ -79,7 +79,8 @@ public class ChildListNeedsOrderBy implements Detector {
 
             String className = javaClass.getClassName();
             if (isElementCollection && !isOrderBy) {
-                bugReporter.reportBug(new BugInstance(this, "SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION", LOW_PRIORITY)
+                bugReporter
+                        .reportBug(new BugInstance(this, "SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION", NORMAL_PRIORITY)
                         .addClass(className).addField(new FieldAnnotation(className, field.getName(),
                                 field.getSignature(), field.isStatic())));
             }
