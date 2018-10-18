@@ -11,6 +11,7 @@
         <exclude name="OverrideBothEqualsAndHashcode"/>
     </rule>
     <rule ref="rulesets/java/braces.xml"/>
+    <rule ref="rulesets/java/design.xml/SimplifyBooleanReturns"/>
     <rule ref="rulesets/java/finalizers.xml"/>
     <rule ref="rulesets/java/imports.xml">
         <exclude name="TooManyStaticImports"/>

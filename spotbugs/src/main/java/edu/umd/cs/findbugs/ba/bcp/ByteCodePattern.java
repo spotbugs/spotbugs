@@ -120,7 +120,7 @@ public class ByteCodePattern {
     }
 
     private Wild isLastWild() {
-        if (last != null && last instanceof Wild) {
+        if (last instanceof Wild) {
             return (Wild) last;
         } else {
             return null;

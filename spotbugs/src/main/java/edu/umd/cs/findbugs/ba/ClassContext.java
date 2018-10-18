@@ -46,7 +46,6 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
@@ -525,17 +524,13 @@ public class ClassContext {
             return false;
         }
         int branchTarget = pos + getBranchOffset(codeBytes, pos + 1);
-        if (branchTarget - 3 < pos || branchTarget >= codeBytes.length) {
-            return false;
-        }
-        if ((codeBytes[branchTarget - 3] & 0xff) != Const.GOTO) {
+        if (branchTarget - 3 < pos
+            || branchTarget >= codeBytes.length
+            || (codeBytes[branchTarget - 3] & 0xff) != Const.GOTO) {
             return false;
         }
         int backBranchTarget = branchTarget + getBranchOffset(codeBytes, branchTarget - 2);
-        if (backBranchTarget <= pos && backBranchTarget + 12 >= pos) {
-            return true;
-        }
-        return false;
+        return (backBranchTarget <= pos && backBranchTarget + 12 >= pos);
     }
 
     /**
@@ -546,14 +541,13 @@ public class ClassContext {
      *
      * @param method
      *            the method
-     * @return map of bytecode offsets to opcodes, or null if the method has no
+     * @return map of bytecode offsets to opcodes, empty if the method has no
      *         code
      */
-    @CheckForNull
-    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
+    @Nonnull
     public short[] getOffsetToOpcodeMap(Method method) {
         UnpackedCode unpackedCode = getMethodAnalysisNoException(UnpackedCode.class, method);
-        return unpackedCode != null ? unpackedCode.getOffsetToBytecodeMap() : null;
+        return unpackedCode == null ? new short[0] : unpackedCode.getOffsetToBytecodeMap();
     }
 
     /**

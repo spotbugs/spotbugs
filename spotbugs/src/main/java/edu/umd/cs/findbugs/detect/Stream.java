@@ -285,19 +285,10 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             return false;
         }
         Stream other = (Stream) o;
-        if (!getLocation().equals(other.getLocation())) {
-            return false;
-        }
-        if (!streamBase.equals(other.streamBase)) {
-            return false;
-        }
-        if (!getResourceClass().equals(other.getResourceClass())) {
-            return false;
-        }
-        if (instanceParam != other.instanceParam) {
-            return false;
-        }
-        return true;
+        return getLocation().equals(other.getLocation())
+            && streamBase.equals(other.streamBase)
+            && getResourceClass().equals(other.getResourceClass())
+            && instanceParam == other.instanceParam;
     }
 
     @Override

@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.dom4j.DocumentException;
@@ -39,6 +38,8 @@ import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
+
+import static java.util.logging.Level.*;
 
 /**
  * Static methods and fields useful for working with instances of
@@ -172,10 +173,10 @@ public abstract class FindBugs {
         return noMains;
     }
 
-    public static final Logger LOGGER = Logger.getLogger(FindBugs.class.getPackage().getName());
+    public static final Logger LOG = Logger.getLogger(FindBugs.class.getPackage().getName());
 
     static {
-        LOGGER.setLevel(Level.WARNING);
+        LOG.setLevel(WARNING);
     }
 
     /**
@@ -290,11 +291,7 @@ public abstract class FindBugs {
             return isTrainingDetector || isNonReportingDetector;
         }
 
-        if (isTrainingDetector) {
-            return false;
-        }
-
-        return true;
+        return !isTrainingDetector;
     }
 
     /**
@@ -346,7 +343,7 @@ public abstract class FindBugs {
         try {
             argCount = commandLine.parse(argv);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            LOG.severe(e.getMessage());
             showHelp(commandLine);
         } catch (HelpRequestedException e) {
             showHelp(commandLine);
@@ -361,7 +358,7 @@ public abstract class FindBugs {
         commandLine.configureEngine(findBugs);
         if (commandLine.getProject().getFileCount() == 0 &&
                 !commandLine.justPrintConfiguration() && !commandLine.justPrintVersion()) {
-            System.out.println("No files to be analyzed");
+            LOG.warning("No files to be analyzed");
 
             showHelp(commandLine);
         }
@@ -399,10 +396,7 @@ public abstract class FindBugs {
             assert false; // should not occur
             checkExitCodeFail(commandLine, e);
             throw new RuntimeException(e);
-        } catch (RuntimeException e) {
-            checkExitCodeFail(commandLine, e);
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             checkExitCodeFail(commandLine, e);
             throw e;
         }
@@ -412,33 +406,27 @@ public abstract class FindBugs {
         int errorCount = findBugs.getErrorCount();
 
         if (verbose) {
-            if (bugCount > 0) {
-                System.err.println("Warnings generated: " + bugCount);
-            }
-            if (missingClassCount > 0) {
-                System.err.println("Missing classes: " + missingClassCount);
-            }
-            if (errorCount > 0) {
-                System.err.println("Analysis errors: " + errorCount);
-            }
+            LOG.log(FINE, "Warnings generated: {0}", bugCount);
+            LOG.log(FINE, "Missing classes: {0}", missingClassCount);
+            LOG.log(FINE, "Analysis errors: {0}", errorCount);
         }
 
         if (commandLine.setExitCode()) {
             int exitCode = 0;
-            System.err.println("Calculating exit code...");
+            LOG.info("Calculating exit code...");
             if (errorCount > 0) {
                 exitCode |= ExitCodes.ERROR_FLAG;
-                System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                LOG.log(FINE, "Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
             }
             if (missingClassCount > 0) {
                 exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                System.err.println("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
+                LOG.log(FINE, "Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
             }
             if (bugCount > 0) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+                LOG.log(FINE, "Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
             }
-            System.err.println("Exit code set to: " + exitCode);
+            LOG.log(FINE, "Exit code set to: {0}", exitCode);
 
             System.exit(exitCode);
         }
@@ -476,8 +464,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        System.out
-        .println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOG.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**
@@ -524,25 +511,25 @@ public abstract class FindBugs {
      */
     public static void configureBugCollection(IFindBugsEngine findBugs) {
         BugCollection bugs = findBugs.getBugReporter().getBugCollection();
+        if (bugs == null) {
+            return;
+        }
 
-        if (bugs != null) {
-            bugs.setReleaseName(findBugs.getReleaseName());
+        bugs.setReleaseName(findBugs.getReleaseName());
 
-            Project project = findBugs.getProject();
+        Project project = findBugs.getProject();
 
-            String projectName = project.getProjectName();
+        String projectName = project.getProjectName();
 
-            if (projectName == null) {
-                projectName = findBugs.getProjectName();
-                project.setProjectName(projectName);
-            }
+        if (projectName == null) {
+            projectName = findBugs.getProjectName();
+            project.setProjectName(projectName);
+        }
 
-            long timestamp = project.getTimestamp();
-            if (FindBugs.validTimestamp(timestamp)) {
-                bugs.setTimestamp(timestamp);
-                bugs.getProjectStats().setTimestamp(timestamp);
-            }
-
+        long timestamp = project.getTimestamp();
+        if (FindBugs.validTimestamp(timestamp)) {
+            bugs.setTimestamp(timestamp);
+            bugs.getProjectStats().setTimestamp(timestamp);
         }
     }
 

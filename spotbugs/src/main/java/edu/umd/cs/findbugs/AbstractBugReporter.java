@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * An abstract class which provides much of the functionality required of all
@@ -243,7 +244,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
         message = message.trim();
 
-        if (message.startsWith("[")) {
+        if (message.startsWith(Values.SIG_ARRAY_PREFIX)) {
             // Sometimes we see methods called on array classes.
             // Obviously, these don't exist as class files.
             // So, we should just ignore the exception.
@@ -264,10 +265,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             // we ignore all "package-info" issues
             return false;
         }
-        if ("java.lang.Synthetic".equals(message)) {
-            return false;
-        }
-        return true;
+        return !"java.lang.Synthetic".equals(message);
     }
 
     /*

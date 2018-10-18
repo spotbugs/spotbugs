@@ -216,20 +216,13 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             if (this == obj) {
                 return true;
             }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
             MethodCall other = (MethodCall) obj;
-            if (!method.equals(other.method)) {
-                return false;
-            }
-            if (!target.equals(other.target)) {
-                return false;
-            }
-            return true;
+
+            return method.equals(other.method)
+                && target.equals(other.target);
         }
     }
 
@@ -694,21 +687,15 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             return true;
         }
         XMethod returnValueOf = item.getReturnValueOf();
-        if(returnValueOf == null) {
+        if (returnValueOf == null) {
             return false;
         }
-        if("iterator".equals(returnValueOf.getName())
+        return ("iterator".equals(returnValueOf.getName())
                 && "()Ljava/util/Iterator;".equals(returnValueOf.getSignature())
-                && Subtypes2.instanceOf(returnValueOf.getClassName(), "java.lang.Iterable")) {
-            return true;
-        }
-        if(returnValueOf.getClassName().startsWith("[") && returnValueOf.getName().equals("clone")) {
-            return true;
-        }
-        if(NEW_OBJECT_RETURNING_METHODS.contains(returnValueOf.getMethodDescriptor())) {
-            return true;
-        }
-        return false;
+                && Subtypes2.instanceOf(returnValueOf.getClassName(), "java.lang.Iterable"))
+            || (returnValueOf.getClassName().startsWith("[")
+                && returnValueOf.getName().equals("clone"))
+            || NEW_OBJECT_RETURNING_METHODS.contains(returnValueOf.getMethodDescriptor());
     }
 
     private boolean changesOnlyNewObjects(MethodDescriptor methodDescriptor) {
@@ -717,10 +704,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             return false;
         }
         int nArgs = getNumberArguments(methodDescriptor.getSignature());
-        if(!isNew(getStack().getStackItem(nArgs-arg-1))) {
-            return false;
-        }
-        return true;
+        return isNew(getStack().getStackItem(nArgs - arg - 1));
     }
 
     /**
@@ -749,69 +733,61 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      */
     private static boolean hasNoSideEffect(MethodDescriptor m) {
         String className = m.getSlashedClassName();
-        if("java/lang/String".equals(className)) {
-            return !(m.getName().equals("getChars") || (m.getName().equals("getBytes") && m.getSignature().equals("(II[BI)V")));
+        String methodName = m.getName();
+        String methodSig = m.getSignature();
+        if ("java/lang/String".equals(className)) {
+            return !(methodName.equals("getChars") || (methodName.equals("getBytes") && methodSig.equals("(II[BI)V")));
         }
-        if("java/lang/Math".equals(className)) {
-            return !m.getName().equals("random");
+        if ("java/lang/Math".equals(className)) {
+            return !methodName.equals("random");
         }
-        if("java/lang/Throwable".equals(className)) {
-            return m.getName().startsWith("get");
+        if ("java/lang/Throwable".equals(className)) {
+            return methodName.startsWith("get");
         }
-        if("java/lang/Character".equals(className)) {
-            return !m.getName().equals("toChars");
+        if ("java/lang/Character".equals(className)) {
+            return !methodName.equals("toChars");
         }
-        if("java/lang/Class".equals(className) && m.getName().startsWith("is")) {
+        if ("java/lang/Class".equals(className) && methodName.startsWith("is")) {
             return true;
         }
-        if("java/awt/Color".equals(className) && m.getName().equals(Const.CONSTRUCTOR_NAME)) {
+        if ("java/awt/Color".equals(className) && methodName.equals(Const.CONSTRUCTOR_NAME)) {
             return true;
         }
-        if("java/util/regex/Pattern".contains(className)) {
+        if ("java/util/regex/Pattern".contains(className)) {
             // Pattern.compile is often used to check the PatternSyntaxException, thus we consider it as side-effect method
-            return !m.getName().equals("compile") && !m.getName().equals(Const.CONSTRUCTOR_NAME);
+            return !methodName.equals("compile") && !methodName.equals(Const.CONSTRUCTOR_NAME);
         }
-        if(className.startsWith("[") && m.getName().equals("clone")) {
+        if (className.startsWith("[") && methodName.equals("clone")) {
             return true;
         }
-        if(className.startsWith("org/w3c/dom/") && (m.getName().startsWith("get") || m.getName().startsWith("has") || m.getName().equals("item"))) {
+        if (className.startsWith("org/w3c/dom/") && (methodName.startsWith("get") || methodName.startsWith("has") || methodName.equals("item"))) {
             return true;
         }
-        if(className.startsWith("java/util/") &&
+        if (className.startsWith("java/util/") &&
                 (className.endsWith("Set") || className.endsWith("Map") || className.endsWith("Collection")
                         || className.endsWith("List") || className.endsWith("Queue") || className.endsWith("Deque")
                         || className.endsWith("Vector")) || className.endsWith("Hashtable") || className.endsWith("Dictionary")) {
             // LinkedHashSet in accessOrder mode changes internal state during get/getOrDefault
-            if(className.equals("java/util/LinkedHashMap") && m.getName().startsWith("get")) {
+            if (className.equals("java/util/LinkedHashMap") && methodName.startsWith("get")) {
                 return false;
             }
-            if(NO_SIDE_EFFECT_COLLECTION_METHODS.contains(m.getName()) || (m.getName().equals("toArray") && m.getSignature().equals("()[Ljava/lang/Object;"))) {
+            if (NO_SIDE_EFFECT_COLLECTION_METHODS.contains(methodName) || (methodName.equals("toArray") && methodSig.equals("()[Ljava/lang/Object;"))) {
                 return true;
             }
         }
-        if(m.getName().equals("binarySearch") && (m.getSlashedClassName().equals("java/util/Arrays") || m.getSlashedClassName().equals("java/util/Collections"))) {
+        if ((methodName.equals("binarySearch") && (className.equals("java/util/Arrays") || className.equals("java/util/Collections")))
+                || methodName.startsWith("$SWITCH_TABLE$")
+                || (methodName.equals(Const.CONSTRUCTOR_NAME) && isObjectOnlyClass(className))
+                || (methodName.equals("toString") && methodSig.equals("()Ljava/lang/String;") && className.startsWith("java/")) ) {
             return true;
         }
-        if(m.getName().startsWith("$SWITCH_TABLE$")) {
-            return true;
+        if (NUMBER_CLASSES.contains(className)) {
+            return !methodSig.startsWith("(Ljava/lang/String;");
         }
-        if(m.getName().equals(Const.CONSTRUCTOR_NAME) && isObjectOnlyClass(className)) {
-            return true;
-        }
-        if(m.getName().equals("toString") && m.getSignature().equals("()Ljava/lang/String;") && m.getSlashedClassName().startsWith("java/")) {
-            return true;
-        }
-        if(NUMBER_CLASSES.contains(className)) {
-            return !m.getSignature().startsWith("(Ljava/lang/String;");
-        }
-        if(!m.isStatic() && m.getName().equals("equals") &&
-                m.getSignature().equals("(Ljava/lang/Object;)Z")) {
-            return true;
-        }
-        if(NO_SIDE_EFFECT_METHODS.contains(m)) {
-            return true;
-        }
-        return false;
+        return (!m.isStatic()
+                && methodName.equals("equals")
+                && methodSig.equals("(Ljava/lang/Object;)Z"))
+            || NO_SIDE_EFFECT_METHODS.contains(m);
     }
 
     /**
@@ -819,23 +795,26 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      * @return true if we may assume that given unseen method has no side effect
      */
     private static boolean hasNoSideEffectUnknown(MethodDescriptor m) {
-        if(m.isStatic() && m.getName().equals(Const.STATIC_INITIALIZER_NAME)) {
-            // No side effect for class initializer of unseen class
-            return true;
+        switch (m.getName()) {
+            case Const.STATIC_INITIALIZER_NAME:
+                // No side effect for class initializer of unseen class
+                return m.isStatic();
+            case "values":
+                // We assume no side effect for unseen enums
+                return m.isStatic()
+                    && m.getSignature().startsWith("()")
+                    && Subtypes2.instanceOf(m.getClassDescriptor(), "java.lang.Enum");
+            case "toString":
+                // We assume no side effect for unseen toString methods
+                return !m.isStatic()
+                    && m.getSignature().equals("()Ljava/lang/String;");
+            case "hashCode":
+                // We assume no side effect for unseen hashCode methods
+                return !m.isStatic()
+                    && m.getSignature().equals("()I");
+            default:
+                return false;
         }
-        if(!m.isStatic() && m.getName().equals("toString") && m.getSignature().equals("()Ljava/lang/String;")) {
-            // We assume no side effect for unseen toString methods
-            return true;
-        }
-        if(!m.isStatic() && m.getName().equals("hashCode") && m.getSignature().equals("()I")) {
-            // We assume no side effect for unseen hashCode methods
-            return true;
-        }
-        if(m.isStatic() && m.getName().equals("values") && m.getSignature().startsWith("()")) {
-            // We assume no side effect for unseen enums
-            return Subtypes2.instanceOf(m.getClassDescriptor(), "java.lang.Enum");
-        }
-        return false;
     }
 
     /**
@@ -843,24 +822,16 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
      * @return true if given method is known to change its object only
      */
     private static boolean isObjectOnlyMethod(MethodDescriptor m) {
-        if (m.isStatic() || m.getName().equals(Const.CONSTRUCTOR_NAME) || m.getName().equals("forEach")) {
+        String methodName = m.getName();
+        if (m.isStatic() || methodName.equals(Const.CONSTRUCTOR_NAME) || methodName.equals("forEach")) {
             return false;
         }
         String className = m.getSlashedClassName();
-        if(isObjectOnlyClass(className)) {
-            return true;
-        }
-        if(className.startsWith("javax/xml/") && m.getName().startsWith("next")) {
-            return true;
-        }
-        if ((className.startsWith("java/net/") || className.startsWith("javax/servlet"))
-                && (m.getName().startsWith("remove") || m.getName().startsWith("add") || m.getName().startsWith("set"))) {
-            return true;
-        }
-        if(OBJECT_ONLY_METHODS.contains(m)) {
-            return true;
-        }
-        return false;
+        return isObjectOnlyClass(className)
+            || (className.startsWith("javax/xml/") && methodName.startsWith("next"))
+            || ((className.startsWith("java/net/") || className.startsWith("javax/servlet"))
+                && (methodName.startsWith("remove") || methodName.startsWith("add") || methodName.startsWith("set")))
+            || OBJECT_ONLY_METHODS.contains(m);
     }
 
     /**

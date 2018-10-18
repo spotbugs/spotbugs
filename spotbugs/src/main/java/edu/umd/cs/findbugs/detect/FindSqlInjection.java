@@ -72,6 +72,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.MethodParameter;
 import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.StringPassthruDatabase;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
@@ -337,7 +338,7 @@ public class FindSqlInjection implements Detector {
                 if (sig2.indexOf("java/lang/String") >= 0) {
                     String methodName = inv.getMethodName(cpg);
                     String className = inv.getClassName(cpg);
-                    if ("valueOf".equals(methodName) && "java.lang.String".equals(className)
+                    if ("valueOf".equals(methodName) && Values.DOTTED_JAVA_LANG_STRING.equals(className)
                             && "(Ljava/lang/Object;)Ljava/lang/String;".equals(sig1)) {
                         try {
                             TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -358,8 +359,8 @@ public class FindSqlInjection implements Detector {
                         } catch (CheckedAnalysisException e) {
                             stringAppendState.setSawTaint(handle);
                         }
-                    } else if (className.startsWith("java.lang.String") || "java.lang.Long".equals(className)
-                            || "java.lang.Integer".equals(className) || "java.lang.Float".equals(className)
+                    } else if (className.startsWith(Values.DOTTED_JAVA_LANG_STRING) || "java.lang.Long".equals(className)
+                            || Values.DOTTED_JAVA_LANG_INTEGER.equals(className) || "java.lang.Float".equals(className)
                             || "java.lang.Double".equals(className) || "java.lang.Short".equals(className)
                             || "java.lang.Byte".equals(className) || "java.lang.Character".equals(className)) {
                         // ignore it

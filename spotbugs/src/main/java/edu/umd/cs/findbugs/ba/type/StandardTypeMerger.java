@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * A TypeMerger which applies standard Java semantics when merging Types.
@@ -49,7 +50,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 
     private final ExceptionSetFactory exceptionSetFactory;
 
-    private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance("java.lang.Object");
+    private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance(Values.DOTTED_JAVA_LANG_OBJECT);
 
     /**
      * Constructor.

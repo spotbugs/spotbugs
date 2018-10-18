@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Lookup;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.util.Values;
 
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements StatelessDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("ffi.debug");
@@ -65,7 +66,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
             return;
         }
         String overridesFinalizeIn = Lookup.findSuperImplementor(getDottedClassName(), "finalize", "()V", bugReporter);
-        boolean superHasNoFinalizer = "java.lang.Object".equals(overridesFinalizeIn);
+        boolean superHasNoFinalizer = Values.DOTTED_JAVA_LANG_OBJECT.equals(overridesFinalizeIn);
         // System.out.println("superclass: " + superclassName);
         if (obj.getCode().length == 1) {
             if (superHasNoFinalizer) {

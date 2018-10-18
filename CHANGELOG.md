@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2018-??-??
 
 * Add management for source filter using full source path, if available ([#694](https://github.com/spotbugs/spotbugs/issues/694))
+* Start migrating STDOUT/STDERR usage to a logging framework
 
 ## 3.1.3 - 2018-04-18
 

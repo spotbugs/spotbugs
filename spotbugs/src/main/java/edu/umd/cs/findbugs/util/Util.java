@@ -608,22 +608,12 @@ public class Util {
     }
 
     public static boolean isPowerOfTwo(int i) {
-        if (i <= 0) {
-            return false;
-        }
-        if ((i | (i - 1)) + 1 == 2 * i) {
-            return true;
-        }
-        return false;
+        return i > 0
+            && (i | (i - 1)) + 1 == 2 * i;
     }
 
     public static boolean isPowerOfTwo(long i) {
-        if (i <= 0) {
-            return false;
-        }
-        if ((i | (i - 1)) + 1 == 2 * i) {
-            return true;
-        }
-        return false;
+        return i > 0
+            && (i | (i - 1)) + 1 == 2 * i;
     }
 }

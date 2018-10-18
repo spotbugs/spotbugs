@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Object recording a recoverable error that occurred during analysis.
@@ -40,41 +41,15 @@ public class AnalysisError {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
         if (!(obj instanceof AnalysisError)) {
             return false;
         }
         AnalysisError other = (AnalysisError) obj;
-        if (exceptionMessage == null) {
-            if (other.exceptionMessage != null) {
-                return false;
-            }
-        } else if (!exceptionMessage.equals(other.exceptionMessage)) {
-            return false;
-        }
-        if (message == null) {
-            if (other.message != null) {
-                return false;
-            }
-        } else if (!message.equals(other.message)) {
-            return false;
-        }
-        if (nestedExceptionMessage == null) {
-            if (other.nestedExceptionMessage != null) {
-                return false;
-            }
-        } else if (!nestedExceptionMessage.equals(other.nestedExceptionMessage)) {
-            return false;
-        }
-        if (!Arrays.equals(nestedStackTrace, other.nestedStackTrace)) {
-            return false;
-        }
-        if (!Arrays.equals(stackTrace, other.stackTrace)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(exceptionMessage, other.exceptionMessage)
+            && Objects.equals(message, other.message)
+            && Objects.equals(nestedExceptionMessage, other.nestedExceptionMessage)
+            && Arrays.equals(nestedStackTrace, other.nestedStackTrace)
+            && Arrays.equals(stackTrace, other.stackTrace);
     }
 
     /**
