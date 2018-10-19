@@ -18,8 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -97,6 +95,10 @@ public class MethodParamNullCheck implements Detector {
 
             // No param,skip
             String signature = method.getSignature();
+
+            if (null == signature) {
+                continue;
+            }
             int returnTypeStart = signature.indexOf(')');
             if (returnTypeStart < 0) {
                 continue;
@@ -131,6 +133,10 @@ public class MethodParamNullCheck implements Detector {
     private void analyzeMethod(ClassContext classContext, Method method)
             throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
+        if (null == cfg) {
+            return;
+        }
+
         LocalVariableTable localVariableTable = method.getLocalVariableTable();
         LineNumberTable lineNumberTable = method.getLineNumberTable();
         IsNullValueDataflow nullValueDataflow = classContext.getIsNullValueDataflow(method);
@@ -138,6 +144,10 @@ public class MethodParamNullCheck implements Detector {
         String sourceFile = classContext.getJavaClass().getSourceFileName();
 
         Map<Integer, LocalVariable> variablePcMap = getvariablePcMap(classContext, method);
+        if (variablePcMap.isEmpty()) {
+            return;
+        }
+
         Collection<Location> locationCollection = cfg.orderedLocations();
         ArrayList<Location> locationList = new ArrayList<>();
         locationList.addAll(locationCollection);
@@ -156,10 +166,10 @@ public class MethodParamNullCheck implements Detector {
                     continue;
                 }
 
-                boolean varUnChecked = this.ifVariableChecked(locationList, localVariableTable, nullValueDataflow,
+                boolean varChecked = this.ifVariableChecked(locationList, localVariableTable, nullValueDataflow,
                         local, i);
 
-                if (!varUnChecked) {
+                if (!varChecked) {
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
                             .fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
@@ -167,7 +177,7 @@ public class MethodParamNullCheck implements Detector {
                             position, lineNumberTable.getSourceLine(handle.getPosition()));
                     variableAnnotation.setDescription("LOCAL_VARIABLE_VALUE_OF");
                     bugAccumulator.accumulateBug(
-                            new BugInstance(this, "SPEC_MEHTOD_PARAM_NULL_CHECK", NORMAL_PRIORITY)
+                            new BugInstance(this, "SPEC_METHOD_PARAM_NULL_CHECK", NORMAL_PRIORITY)
                                     .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
                             sourceLineAnnotation);
                 }
@@ -264,6 +274,9 @@ public class MethodParamNullCheck implements Detector {
         IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
         LocalVariableTable localVariableTable = method.getLocalVariableTable();
         Map<Integer, LocalVariable> variablePcMap = new HashMap<>();
+        if (null == localVariableTable) {
+            return variablePcMap;
+        }
         Iterator<BasicBlock> bbIter = invDataflow.getCFG().blockIterator();
         // Find the receiver of InvokeInstruction or GetField
         while (bbIter.hasNext()) {
@@ -337,16 +350,4 @@ public class MethodParamNullCheck implements Detector {
         // TODO Auto-generated method stub
 
     }
-
-    public String getErrorInfoFromException(Exception e) {
-        try {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return "\r\n" + sw.toString() + "\r\n";
-        } catch (Exception e2) {
-            return "bad getErrorInfoFromException";
-        }
-    }
-
 }

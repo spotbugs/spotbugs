@@ -106,6 +106,10 @@ public class LocalVariableAssignmentCheck implements Detector {
             throws CFGBuilderException, DataflowAnalysisException {
         LocalVariableTable localVariableTable = method.getLocalVariableTable();
         LineNumberTable lineNumberTable = method.getLineNumberTable();
+
+        if (null == localVariableTable) {
+            return;
+        }
         int variableCount = localVariableTable.getTableLength();
         // The variable count of the method is 0,return
         if (variableCount == 0) {
@@ -189,6 +193,7 @@ public class LocalVariableAssignmentCheck implements Detector {
                         continue;
                     }
 
+                    storeMessage.setPriority(HIGH_PRIORITY);
                     storeMessage.setLocation(location);
                 }
             }
@@ -230,7 +235,7 @@ public class LocalVariableAssignmentCheck implements Detector {
                 BugAnnotation variableAnnotation = new LocalVariableAnnotation(varName, index, position, line);
                 variableAnnotation.setDescription("LOCAL_VARIABLE_VALUE_OF");
                 bugAccumulator.accumulateBug(
-                        new BugInstance(this, "SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK", HIGH_PRIORITY)
+                        new BugInstance(this, "SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK", varStoreMessage.getPriority())
                                 .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
                         sourceLineAnnotation);
             }
@@ -341,6 +346,7 @@ public class LocalVariableAssignmentCheck implements Detector {
         private boolean bIsSameValue = true;
         private Location location;
         private String value;
+        private int priority = NORMAL_PRIORITY;
 
         public LocalVariable getVariable() {
             return variable;
@@ -372,6 +378,14 @@ public class LocalVariableAssignmentCheck implements Detector {
 
         public void setValue(String value) {
             this.value = value;
+        }
+
+        public int getPriority() {
+            return this.priority;
+        }
+
+        public void setPriority(int priority) {
+            this.priority = priority;
         }
 
         LocalVariableStoreMessage(LocalVariable variable) {
