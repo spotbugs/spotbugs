@@ -6,8 +6,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
-* Add a detector to check if placeholder correct for slf4j. ([#587](https://github.com/spotbugs/spotbugs/issues/587))
-
 ## 3.1.2 - 2018-02-24
 
 ### Added
