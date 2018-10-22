@@ -35,9 +35,8 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class Lookup implements Constants2 {
+public class Lookup {
 
     /*
     private static Subtypes2 subtypes2() {

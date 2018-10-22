@@ -14,11 +14,24 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  */
 public class Issue463Test extends AbstractIntegrationTest {
     @Test
-    public void test() {
+    public void testAnnotatedClass() {
         performAnalysis("ghIssues/Issue463.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
-                .build();
+                .atLine(37).build();
         assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
     }
 
+    /**
+     * When package is annotated with {@code @CheckReturnValue} and method is not annotated with
+     * {@code @CanIgnoreReturnValue}, SpotBugs should report a bug for invocation which doesn't use returned value.
+     *
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">Issue 582</a>
+     */
+    @Test
+    public void testAnnotatedPackage() {
+        performAnalysis("ghIssues/issue463/Issue463.class", "ghIssues/issue463/package-info.class");
+        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
+                .atLine(34).build();
+        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+    }
 }

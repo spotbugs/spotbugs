@@ -648,9 +648,7 @@ public class RejarClassesForAnalysis {
             System.out.println("empty zip file: '" + f + "'");
             return false;
         }
-        ZipFile zipInputFile;
-        try {
-            zipInputFile = new ZipFile(f);
+        try (ZipFile zipInputFile = new ZipFile(f)) {
             for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
                 ZipEntry ze = e.nextElement();
                 if (!ze.isDirectory() && ze.getName().endsWith(".class") && ze.getSize() != 0) {
@@ -658,7 +656,6 @@ public class RejarClassesForAnalysis {
                 }
 
             }
-            zipInputFile.close();
         } catch (ClassFileNameMismatch e) {
             return false;
         } catch (IOException e) {
