@@ -1039,21 +1039,6 @@
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN" category="STYLE"/>
-          <BugPattern abbrev="USELESS_STRING" type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_ARG_MISMATCH" category="CORRECTNESS"
-                    deprecated="true"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_ARGUMENT" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_MISSING_ARGUMENT" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_ILLEGAL" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED"
-                    category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM" category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
