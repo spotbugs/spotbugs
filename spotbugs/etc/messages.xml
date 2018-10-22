@@ -1003,13 +1003,6 @@ null.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum">
-    <Details>
-<![CDATA[
-<p> Use org.slf4j.Logger with wrong placeholder count.</p>
-]]>
-    </Details>
-  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation">
     <Details>
 <![CDATA[
@@ -2554,18 +2547,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       <p>
       Unless the class must be compatible with JVMs predating Java 1.5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of <code>Double</code> and <code>Float</code>.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="FS_LOG_PARAM_NUM">
-    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
-    <LongDescription>{1} calls org.slf4j.Logger.{3}, the count of braces placeholder is incorrect, need {2}.</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-      The number of placeholders must be the same as the number of parameters. 
-      If the last parameter is 'Throwable', it does not need a placeholder.
       </p>
       ]]>
     </Details>
