@@ -34,6 +34,7 @@ Contents
    analysisprops
    effort
    implement-plugin
+   use-plugin-on-sonarqube
    faq
    links
    bugDescriptions

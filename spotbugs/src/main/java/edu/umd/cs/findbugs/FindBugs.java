@@ -395,7 +395,7 @@ public abstract class FindBugs {
      */
     @SuppressFBWarnings("DM_EXIT")
     public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine) throws IOException {
-        boolean verbose = !commandLine.quiet() || commandLine.setExitCode();
+        boolean verbose = !commandLine.quiet();
 
         try {
             findBugs.execute();
@@ -415,7 +415,7 @@ public abstract class FindBugs {
         int missingClassCount = findBugs.getMissingClassCount();
         int errorCount = findBugs.getErrorCount();
 
-        if (verbose) {
+        if (verbose || commandLine.setExitCode()) {
             if (bugCount > 0) {
                 System.err.println("Warnings generated: " + bugCount);
             }
@@ -429,20 +429,30 @@ public abstract class FindBugs {
 
         if (commandLine.setExitCode()) {
             int exitCode = 0;
-            System.err.println("Calculating exit code...");
+            if (verbose) {
+                System.err.println("Calculating exit code...");
+            }
             if (errorCount > 0) {
                 exitCode |= ExitCodes.ERROR_FLAG;
-                System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                if (verbose) {
+                    System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                }
             }
             if (missingClassCount > 0) {
                 exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                System.err.println("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
+                if (verbose) {
+                    System.err.println("Setting 'missing class' flag (" + ExitCodes.MISSING_CLASS_FLAG + ")");
+                }
             }
             if (bugCount > 0) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+                if (verbose) {
+                    System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+                }
             }
-            System.err.println("Exit code set to: " + exitCode);
+            if (verbose) {
+                System.err.println("Exit code set to: " + exitCode);
+            }
 
             System.exit(exitCode);
         }

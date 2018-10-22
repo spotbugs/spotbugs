@@ -239,7 +239,7 @@ applied to method parameters and uses of those method parameters. </p>
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
     <Details>
 <![CDATA[
-<p> Looks for problems with arising from Java 1.5 var args.</p>
+<p> Looks for problems with arising from Java 1.5 varargs.</p>
 ]]>
     </Details>
   </Detector>
@@ -1220,7 +1220,7 @@ is always called on the current thread.
 <![CDATA[
 <p>
 This detector uses data flow analysis to look for invocations of execute methods
-on SQL statements in switch something other than a constant string is passed as an argument.
+on SQL statements in which something other than a constant string is passed as an argument.
 </p>
 ]]>
     </Details>
@@ -5967,7 +5967,7 @@ use <code>0xff &amp; b</code>.
 <![CDATA[
 <p> This code compares an int value with a long constant that is outside
 the range of values that can be represented as an int value.
-This comparison is vacuous and possibly to be incorrect.
+This comparison is vacuous and possibly incorrect.
 </p>
 ]]>
     </Details>
@@ -7130,23 +7130,6 @@ If the object is, indeed, non-serializable, an error will result.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT">
-    <ShortDescription>No previous argument for format string</ShortDescription>
-    <LongDescription>No previous argument for format string argument to {2} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-The format string specifies a relative index to request that the argument for the previous format specifier
-be reused. However, there is no previous argument.
-For example,
-</p>
-<p><code>formatter.format("%&lt;s %s", "a", "b")</code>
-</p>
-<p>would throw a MissingFormatArgumentException when executed.
-</p>
-]]>
-     </Details>
-  </BugPattern>
   <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE">
     <ShortDescription>Format string should use %n rather than \n</ShortDescription>
     <LongDescription>Format string should use %n rather than \n in {1}</LongDescription>
@@ -7155,137 +7138,6 @@ For example,
 <p>
 This format string includes a newline character (\n). In format strings, it is generally
  preferable to use %n, which will produce the platform-specific line separator.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION">
-    <ShortDescription>The type of a supplied argument doesn't match format specifier</ShortDescription>
-    <LongDescription>Argument of type {3} can't be handled by format specifier {4} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-One of the arguments is incompatible with the corresponding format string specifier.
-As a result, this will generate a runtime exception when executed.
-For example, <code>String.format("%d", "1")</code> will generate an exception, since
-the String "1" is incompatible with the format specifier %d.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN">
-    <ShortDescription>Non-Boolean argument formatted using %b format specifier</ShortDescription>
-    <LongDescription>Non-Boolean argument formatted using %b format specifier in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-An argument not of type Boolean is being formatted with a %b format specifier. This won't throw an
-exception; instead, it will print true for any non-null value, and false for null.
-This feature of format strings is strange, and may not be what you intended.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY">
-    <ShortDescription>Array formatted in useless way using format string</ShortDescription>
-    <LongDescription>Argument of type {3} formatted in useless way in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-One of the arguments being formatted with a format string is an array. This will be formatted
-using a fairly useless format, such as [I@304282, which doesn't actually show the contents
-of the array.
-Consider wrapping the array using <code>Arrays.asList(...)</code> before handling it off to a formatted.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_ARG_MISMATCH">
-    <ShortDescription>Number of format-string arguments does not correspond to number of placeholders</ShortDescription>
-    <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-A format-string method with a variable number of arguments is called,
-but the number of arguments passed does not match with the number of
-% placeholders in the format string.  This is probably not what the
-author intended.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED">
-    <ShortDescription>MessageFormat supplied where printf style format expected</ShortDescription>
-    <LongDescription>{2} needs printf-style format but called with MessageFormat</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-A method is called that expects a Java printf format string and a list of arguments.
-However, the format string doesn't contain any format specifiers (e.g., %s) but
-does contain message format elements (e.g., {0}).  It is likely
-that the code is supplying a MessageFormat string when a printf-style format string
-is required. At runtime, all of the arguments will be ignored
-and the format string will be returned exactly as provided without any formatting.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED">
-    <ShortDescription>More arguments are passed than are actually used in the format string</ShortDescription>
-    <LongDescription>Format-string method {2} called with format string "{3}" wants {4} arguments but is given {5} in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-A format-string method with a variable number of arguments is called,
-but more arguments are passed than are actually used by the format string.
-This won't cause a runtime exception, but the code may be silently omitting
-information that was intended to be included in the formatted string.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_ILLEGAL">
-    <ShortDescription>Illegal format string</ShortDescription>
-    <LongDescription>Illegal format string "{3}" in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-The format string is syntactically invalid,
-and a runtime exception will occur when
-this statement is executed.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_MISSING_ARGUMENT">
-    <ShortDescription>Format string references missing argument</ShortDescription>
-    <LongDescription>Format string "{3}" needs argument {5} but only {6} are provided in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-Not enough arguments are passed to satisfy a placeholder in the format string.
-A runtime exception will occur when
-this statement is executed.
-</p>
-]]>
-     </Details>
-  </BugPattern>
-  <BugPattern type="VA_FORMAT_STRING_BAD_ARGUMENT">
-    <ShortDescription>Format string placeholder incompatible with passed argument</ShortDescription>
-    <LongDescription>The placeholder {4} is incompatible with
-corresponding argument in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-The format string placeholder is incompatible with the corresponding
-argument. For example,
-<code>
-  System.out.println("%d\n", "hello");
-</code>
-<p>The %d placeholder requires a numeric argument, but a string value is
-passed instead.
-A runtime exception will occur when
-this statement is executed.
 </p>
 ]]>
      </Details>
@@ -8617,14 +8469,14 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="WL">Possible locking on wrong object</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
-  <BugCode abbrev="VA">Var arg problems</BugCode>
+  <BugCode abbrev="VA">Vararg problems</BugCode>
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
   <BugCode abbrev="USELESS_STRING">Useless/non-informative string generated</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
-  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
+  <BugCode abbrev="PZ">Warning inspired by Joshua Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>

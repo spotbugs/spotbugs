@@ -95,7 +95,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * @author <A HREF="http://www.inf.fu-berlin.de/~dahm">M. Dahm</A>
  * @version 970819
  */
-public class PreorderVisitor extends BetterVisitor implements Constants2 {
+public class PreorderVisitor extends BetterVisitor {
 
     // Available when visiting a class
     private ConstantPool constantPool;

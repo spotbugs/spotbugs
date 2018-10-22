@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.log.Profiler;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
@@ -81,7 +82,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  *
  * @author David Hovemeyer
  */
-public class FindBugs2 implements IFindBugsEngine {
+public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     private static final boolean LIST_ORDER = SystemProperties.getBoolean("findbugs.listOrder");
 
     private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
@@ -119,7 +120,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     private String currentClassName;
 
-    private FindBugsProgress progress;
+    private FindBugsProgress progressReporter;
 
     private IClassScreener classScreener;
 
@@ -131,7 +132,7 @@ public class FindBugs2 implements IFindBugsEngine {
     public FindBugs2() {
         this.classObserverList = new LinkedList<>();
         this.analysisOptions.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
-        this.progress = new NoOpFindBugsProgress();
+        this.progressReporter = new NoOpFindBugsProgress();
 
         // By default, do not exclude any classes via the class screener
         this.classScreener = new IClassScreener() {
@@ -201,7 +202,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 // The class path object
                 createClassPath();
 
-                progress.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
+                progressReporter.reportNumberOfArchives(project.getFileCount() + project.getNumAuxClasspathEntries());
                 profiler.start(this.getClass());
 
                 // The analysis cache object
@@ -317,9 +318,7 @@ public class FindBugs2 implements IFindBugsEngine {
         // Make sure the codebases on the classpath are closed
         AnalysisContext.removeCurrentAnalysisContext();
         Global.removeAnalysisCacheForCurrentThread();
-        if (classPath != null) {
-            classPath.close();
-        }
+        IO.close(classPath);
     }
 
     /**
@@ -342,11 +341,13 @@ public class FindBugs2 implements IFindBugsEngine {
         analysisOptions.analysisFeatureSettingList = null;
         bugReporter = null;
         classFactory = null;
+        IO.close(classPath);
         classPath = null;
         classScreener = null;
         detectorFactoryCollection = null;
         executionPlan = null;
-        progress = null;
+        progressReporter = null;
+        IO.close(project);
         project = null;
         analysisOptions.userPreferences = null;
     }
@@ -440,7 +441,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
     @Override
     public void setProgressCallback(FindBugsProgress progressCallback) {
-        this.progress = progressCallback;
+        this.progressReporter = progressCallback;
     }
 
     @Override
@@ -671,7 +672,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
         builder.scanNestedArchives(analysisOptions.scanNestedArchives);
 
-        builder.build(classPath, progress);
+        builder.build(classPath, progressReporter);
 
         appClassList = builder.getAppClassList();
 
@@ -959,7 +960,7 @@ public class FindBugs2 implements IFindBugsEngine {
             for (int i = 0; i < classesPerPass.length; i++) {
                 classesPerPass[i] = i == 0 ? referencedClassSet.size() : appClassList.size();
             }
-            progress.predictPassCount(classesPerPass);
+            progressReporter.predictPassCount(classesPerPass);
             XFactory factory = AnalysisContext.currentXFactory();
             Collection<ClassDescriptor> badClasses = new LinkedList<>();
             for (ClassDescriptor desc : referencedClassSet) {
@@ -1026,7 +1027,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
                 currentAnalysisContext.updateDatabases(passCount);
 
-                progress.startAnalysis(classCollection.size());
+                progressReporter.startAnalysis(classCollection.size());
                 int count = 0;
                 Global.getAnalysisCache().purgeAllMethodAnalysis();
                 Global.getAnalysisCache().purgeClassAnalysis(FBClassReader.class);
@@ -1091,7 +1092,7 @@ public class FindBugs2 implements IFindBugsEngine {
                         }
                     } finally {
 
-                        progress.finishClass();
+                        progressReporter.finishClass();
                         profiler.endContext(currentClassName);
                         currentAnalysisContext.clearClassBeingAnalyzed();
                         if (PROGRESS) {
@@ -1114,7 +1115,7 @@ public class FindBugs2 implements IFindBugsEngine {
                     detector.finishPass();
                 }
 
-                progress.finishPerClassAnalysis();
+                progressReporter.finishPerClassAnalysis();
 
                 passCount++;
             }
@@ -1168,24 +1169,21 @@ public class FindBugs2 implements IFindBugsEngine {
         }
 
         // Create FindBugs2 engine
-        FindBugs2 findBugs = new FindBugs2();
+        try (FindBugs2 findBugs = new FindBugs2()) {
+            // Parse command line and configure the engine
+            TextUICommandLine commandLine = new TextUICommandLine();
+            FindBugs.processCommandLine(commandLine, args, findBugs);
 
-        // Parse command line and configure the engine
-        TextUICommandLine commandLine = new TextUICommandLine();
-        FindBugs.processCommandLine(commandLine, args, findBugs);
+            boolean justPrintConfiguration = commandLine.justPrintConfiguration();
+            if (justPrintConfiguration || commandLine.justPrintVersion()) {
+                Version.printVersion(justPrintConfiguration);
 
+                return;
+            }
+            // Away we go!
 
-        boolean justPrintConfiguration = commandLine.justPrintConfiguration();
-        if (justPrintConfiguration || commandLine.justPrintVersion()) {
-            Version.printVersion(justPrintConfiguration);
-
-            return;
+            FindBugs.runMain(findBugs, commandLine);
         }
-        // Away we go!
-
-
-        FindBugs.runMain(findBugs, commandLine);
-
     }
 
 
@@ -1226,6 +1224,11 @@ public class FindBugs2 implements IFindBugsEngine {
     public void setBugReporterDecorators(Set<String> explicitlyEnabled, Set<String> explicitlyDisabled) {
         explicitlyEnabledBugReporterDecorators = explicitlyEnabled;
         explicitlyDisabledBugReporterDecorators = explicitlyDisabled;
+    }
+
+    @Override
+    public void close() {
+        dispose();
     }
 
 }

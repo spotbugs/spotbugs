@@ -67,6 +67,7 @@ import edu.umd.cs.findbugs.classfile.analysis.MethodInfo;
 import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.detect.UnreadFieldsData;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.ClassName;
 import net.jcip.annotations.NotThreadSafe;
 
@@ -85,7 +86,7 @@ import net.jcip.annotations.NotThreadSafe;
  * @see edu.umd.cs.findbugs.classfile.Global
  */
 @NotThreadSafe
-public class AnalysisContext {
+public class AnalysisContext implements AutoCloseable {
     public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
 
     public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
@@ -185,10 +186,14 @@ public class AnalysisContext {
         bridgeFrom = new IdentityHashMap<>();
     }
 
+    /**
+     * Clear cache and reference in this instances. Cleared {@link AnalysisContext} instance should not be reused.
+     */
     private void clear() {
         boolPropertySet = null;
         databaseInputDir = null;
         databaseOutputDir = null;
+        IO.close(project);
     }
 
     /**
@@ -1084,6 +1089,11 @@ public class AnalysisContext {
             Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
         }
 
+    }
+
+    @Override
+    public void close() {
+        clear();
     }
 
 }

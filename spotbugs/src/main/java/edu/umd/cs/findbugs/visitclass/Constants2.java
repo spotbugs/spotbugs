@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-public interface Constants2 extends org.apache.bcel.Constants {
+public interface Constants2 {
 
     // Nothing defined here for now
 

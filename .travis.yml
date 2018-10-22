@@ -15,7 +15,6 @@ env:
     # see https://docs.travis-ci.com/user/pull-requests/#Pull-Requests-and-Security-Restrictions
     - secure: "FjzPYgjdN9WRvAwvJDFP0MqWMOsqCG0tNO6ts7X1p6HWikpoHnTqWgMl0YOgGK93trvB6vtIisZVVdLZG1rCwnXlO4Xd+6f+nhsJDledd9b4EePQPECJbHZZ8Hg69ATIlm7chll73GZzWTAL2Q3pIdsEJbwtqPzJ/j0H4COkayDeQ4ERA50pvvkXTiQrwxc5URrNH36ZOn10hfUEKO03EKbAlD+5dOzcxqu5WiS7j10zbMBCrKqhzN+zJQSOuDCTQz2S8McJBTiz4kMEBkF1q4Ax+1ywz2vICL3/F5/xqnHvHOk9wZE/4OOiNxjqxVd+Ik6LGE1BbLuATQz0Cmc3DiqsGYBsKtlk88v1QX2hsND/K0hwda/uItzbh95HmnrRYHYhzOcgcIVRqVwoPkYYWPYr9S2f3DGlFEnlGwJHgvqjuwMJaBmm2zblxPammEx3XoWqrKQ7RrelH1tUTWXy/tRss4Fof+D33/NJqa71Xvph1meKMcu+OOVatCul1IJaTtf2pyyifLTNRntgl4C4ok57PN882lRp55/Ifmi+xbt3Nd7lM1Fpy2eDugK1UINmkjRQsyCZY3EVgcM/NkrMa6qHhZFu5F1iv3EBYRiV/WKJ9PtTErkTeX1JZtyZYo7yS+VlIXIJFLoxfrV9TH5B3kczVILxgfJJ6gVPQOY5984="
 
-    - SONATYPE_USERNAME="eller86"
     - secure: "bNbHxR43FHIWX/im5GUZD52UF0FszM5kxhw/3DFqpaOWEpf3BtvSTDpHvOdbVmcD+HtC8cCaXViCQaSIsDWuP2LrxxGlULl/a9yF5FLq+BxyTx28+Xi6c+mXSeava82poWEbF6whiLrn8GIIC+z2xwpphT+bBXj/3UmOmPj/cxfsuzb6gH95Xk1OhQJjhJ0Lt6muO0YmxA4dAtNDJHHwTU/GVn25+41WiAO1P4tDHRnPdAZFXnbM5kPV41KmYw4/0YbPgr5aJuAyrUD86ufwJR0Zp+TR4JJB+miw9+XYUgjRMgPBSS3VChOnYugKClfwVq8MwxRpUpBjG5eszt64TxgeEX0sTLBv9JwxUu5R+uCYgQvSdVKduyQYVTdJnMqTsVFCeOQlF0XHXvRXK7+SSNjkpaV/TMlfZ0vY+BAUnBIUAsMjvpX9RNMvDYx5D/5/cqj9WiEsaBLBLuQX90bZA0B8xbA1IHj9pRSxm9N8VAWMTzxhZzuqqMAi2IszBRZicKKYd66z83T1k9SFcTY4mvg0W2uVvZsoaBMIYmhvBZXPOLEgwadTbeiqFW2vox16k6k8xRlKzH+IIYQAChFPqxDxBtP8b7LZDa6ahreBMKtp3xBPbbCgbrviE647CwyPwb+DxOihua5GNfgxXby4kxiXcuglUXZ5NWCmvks2KIE="
 
     - SIGNING_KEY_ID="EECF0E90"
@@ -41,13 +40,18 @@ install:
   - rm -rf eclipse
   - tar xzvf deps/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
   - echo eclipseRoot.dir=$(pwd)/eclipse > eclipsePlugin/local.properties
+  - echo ossrhUsername=eller86 >> gradle.properties
+  - echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
+  - echo "signing.keyId=${SIGNING_KEY_ID}" >> gradle.properties
+  - echo "signing.password=${SIGNING_PASSWORD}" >> gradle.properties
+  - echo signing.secretKeyRingFile=secring.gpg >> gradle.properties
 
 script:
   - jdk_switcher use oraclejdk8
   - ./gradlew classes testClasses -S
   - jdk_switcher use $TRAVIS_JDK_VERSION
   - ./gradlew -v --no-daemon
-  - ./gradlew build smoketest -S --no-daemon
+  - ./gradlew build smoketest -x signArchives -S --no-daemon
   - jdk_switcher use oraclejdk8
   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 
@@ -74,6 +78,15 @@ deploy:
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
+    local_dir: eclipsePlugin/build/site/eclipse-stable-latest
+    repo: spotbugs/eclipse-stable-latest
+    email: skypencil+spotbugs-bot@gmail.com
+    on:
+      branch: release-3.1
+      jdk: oraclejdk8
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
     local_dir: eclipsePlugin/build/site/eclipse-candidate
     repo: spotbugs/eclipse-candidate
     email: skypencil+spotbugs-bot@gmail.com
@@ -90,15 +103,19 @@ deploy:
       tags: true
       jdk: oraclejdk8
       condition: "$TRAVIS_TAG != *'_RC'*"
-  - provider: script
+  - provider: releases
+    api_key: $GITHUB_TOKEN
+    file: "eclipsePlugin/build/distributions/eclipsePlugin.zip"
     skip_cleanup: true
-    script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD"
-    on:
-      branch: master
-      jdk: oraclejdk8
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew uploadArchives -PossrhUsername="$SONATYPE_USERNAME" -PossrhPassword="$SONATYPE_PASSWORD" -Psigning.keyId="$SIGNING_KEY_ID" -Psigning.password="$SIGNING_PASSWORD" -Psigning.secretKeyRingFile="$TRAVIS_BUILD_DIR/secring.gpg"
     on:
       tags: true
       jdk: oraclejdk8
+  - provider: script
+    skip_cleanup: true
+    # wait until uploading task finishes, because it may cost more than 10 minutes without any output
+    # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
+    script: .travis/travis_wait "./gradlew uploadArchives"
+    on:
+      all_branches: true
+      jdk: oraclejdk8
+      condition: (branch = master || branch = "release-3.1" || tag IS present) && type = push

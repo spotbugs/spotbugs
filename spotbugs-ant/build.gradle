@@ -8,7 +8,7 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   compile project(':spotbugs')
-  compile 'org.apache.ant:ant:1.9.4'
+  compileOnly 'org.apache.ant:ant:1.9.4'
 }
 
 javadoc {
