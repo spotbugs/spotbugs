@@ -645,7 +645,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" speed="fast"
                     reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum" speed="fast"
-                    reports="FS_LOG_PARAM_NUM" hidden="false"/>
+                    reports="FS_LOG_PARAM_NUM,FS_LOG_PARAM_NUM_OLD_SLF4J" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.ForbiddenSystemOut" speed="fast"
                     reports="SPEC_SYSTEMOUT" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.ForbiddenHashtable" speed="fast"
@@ -1040,6 +1040,7 @@
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM" category="CORRECTNESS"/>
+          <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM_OLD_SLF4J" category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>

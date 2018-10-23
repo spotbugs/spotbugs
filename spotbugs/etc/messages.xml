@@ -2634,6 +2634,20 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="FS_LOG_PARAM_NUM_OLD_SLF4J">
+    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
+    <LongDescription>{1} calls org.slf4j.Logger.{4}, the count of braces placeholder may be incorrect, need {2} or {3}.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      The number of placeholders must be the same as the number of parameters. 
+      If the last parameter is 'Throwable', it does not need an additional placeholder.
+      This alarm may be misreport, because the spotbugs runtime relies on an old version of slf4j-api.
+      You just need to check, if the number of placeholders is correct, ignore this alarm.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SPEC_LOCK_ON_LOCAL">
     <ShortDescription>Locked on a local variable.</ShortDescription>
     <LongDescription>{1} locked on an local variable.</LongDescription>

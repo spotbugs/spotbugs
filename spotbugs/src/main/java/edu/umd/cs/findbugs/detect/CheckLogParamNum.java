@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -39,7 +40,8 @@ public class CheckLogParamNum extends OpcodeStackDetector {
     /** The last AASTORE value before INVOKEINTERFACE, is the last parameter if the method is varArgs. */
     private OpcodeStack.Item lastAastoreItem = null;
 
-    private final List<String> loggerMethods = Arrays.asList(new String[] { "error", "warn", "info", "debug", "trace" });
+    private final List<String> loggerMethods = Arrays
+            .asList(new String[] { "error", "warn", "info", "debug", "trace" });
 
     public CheckLogParamNum(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -140,6 +142,12 @@ public class CheckLogParamNum extends OpcodeStackDetector {
                 if (isThrowable(param)) {
                     needCount--;
                     lastThrowable = true;
+                } else if (needCount == 1) {
+                    /* Only one param, and this parma is an arry */
+                    if (isOldSlf4j(param)) {
+                        /* this may be the old version of slf4j, so return */
+                        return bugOfOldSlf4j(placeholderCount, param);
+                    }
                 }
             }
         }
@@ -156,6 +164,47 @@ public class CheckLogParamNum extends OpcodeStackDetector {
         BugInstance bug = new BugInstance(this, "FS_LOG_PARAM_NUM", confidence).addClassAndMethod(this)
                 .addInt(needCount);
         return bug;
+    }
+
+    /**
+     * @param placeholderCount
+     *            real placeholder count
+     * @param param
+     *            array form parameters
+     * @return
+     */
+    private BugInstance bugOfOldSlf4j(int placeholderCount, Item param) {
+        Object constValue = param.getConstant();
+        if (!(constValue instanceof Integer)) {
+            return null;
+        }
+
+        int confidence = LOW_PRIORITY;
+        int needCount = (Integer) constValue;
+        int needCountIfThrowable = needCount - 1;
+        if ((needCount != placeholderCount) && (needCountIfThrowable != placeholderCount)) {
+            confidence = HIGH_PRIORITY;
+        }
+
+        BugInstance bug = new BugInstance(this, "FS_LOG_PARAM_NUM_OLD_SLF4J", confidence).addClassAndMethod(this)
+                .addInt(needCount).addInt(needCountIfThrowable);
+        return bug;
+    }
+
+    /**
+     * @param param
+     *            the last parameter of method
+     * @return
+     */
+    private static boolean isOldSlf4j(Item param) {
+        if ((param != null) && param.isArray()) {
+            String sig = param.getSignature();
+            if ((sig != null) && sig.startsWith("[Ljava/lang/Object")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
