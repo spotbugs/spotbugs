@@ -106,6 +106,11 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         MarkerUtil.removeMarkers(getProject());
     }
 
+    @Override
+    public ISchedulingRule getRule(int kind, Map<String, String> args) {
+    	return getProject();
+    }
+
     /**
      * Performs the build process. This method gets all files in the current
      * project and has a <code>FindBugsVisitor</code> run on them.
