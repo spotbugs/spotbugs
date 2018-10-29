@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+* Fix some out-of-bounds reports from LGTM
+
 ### CHANGED
 * Allow parallel workspace builds in Eclipse with Spotbugs installed
 
