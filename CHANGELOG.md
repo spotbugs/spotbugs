@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 * Fix some out-of-bounds reports from LGTM
+* Update asm to 7.0 for better Java 11 support ([#785](https://github.com/spotbugs/spotbugs/pull/785))
 
 ### CHANGED
 * Allow parallel workspace builds in Eclipse with Spotbugs installed
