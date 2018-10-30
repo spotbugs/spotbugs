@@ -32,7 +32,6 @@ repositories {
 }
 
 wrapper {
-  gradleVersion = '4.1'
   distributionType = Wrapper.DistributionType.ALL
 }
 
