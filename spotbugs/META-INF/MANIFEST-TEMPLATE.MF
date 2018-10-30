@@ -64,7 +64,7 @@ Export-Package: edu.umd.cs.findbugs,
  org.objectweb.asm.signature,
  org.objectweb.asm.tree,
  org.objectweb.asm.tree.analysis,
- org.objectweb.asm.util,
+ org.objectweb.asm.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ManifestVersion: 2
 Bundle-Name: spotbugs
