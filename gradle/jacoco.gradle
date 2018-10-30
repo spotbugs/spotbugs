@@ -14,5 +14,7 @@ test {
   jacoco {
     destinationFile = project(':spotbugs').file('build/jacoco/test.exec')
     includeNoLocationClasses = true
+    // https://github.com/gradle/gradle/issues/5184#issuecomment-391982009
+    excludes = ['jdk.internal.*']
   }
 }
