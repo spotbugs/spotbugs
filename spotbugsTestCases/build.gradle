@@ -56,12 +56,12 @@ task classesJava8(type:JavaCompile) {
   source = file('src/java8')
 }
 
-task classesJava9(type:JavaCompile) {
-  sourceCompatibility = '9'
-  targetCompatibility = '9'
-  destinationDir = file("$buildDir/classes/java/java9")
+task classesJava11(type:JavaCompile) {
+  sourceCompatibility = '11'
+  targetCompatibility = '11'
+  destinationDir = file("$buildDir/classes/java/java11")
   classpath = sourceSets.main.compileClasspath
-  source = file('src/java9')
+  source = file('src/java11')
 }
 
 if (System.getProperty("java.specification.version") == "1.8") {
@@ -69,7 +69,7 @@ if (System.getProperty("java.specification.version") == "1.8") {
   // so code that depends on them should be built only on JDK8.
   tasks['classes'].dependsOn classesJava8
 } else {
-  tasks['classes'].dependsOn classesJava9
+  tasks['classes'].dependsOn classesJava11
 }
 
 sonarqube {
