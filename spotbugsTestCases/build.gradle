@@ -1,8 +1,7 @@
 sourceSets {
   main {
     java {
-      // TODO : Ant currently ignores src/java7... we can probably move all files directly to src/java
-      srcDirs = ['src/java', 'src/java7', 'src/fakeAnnotations', 'src/fakeLibraries']
+      srcDirs = ['src/java', 'src/fakeAnnotations', 'src/fakeLibraries']
     }
   }
 }
@@ -56,21 +55,9 @@ task classesJava9(type:JavaCompile) {
   source = file('src/java9')
 }
 
-if (System.getProperty("java.specification.version") == "9") {
+if (System.getProperty("java.specification.version") != "1.8") {
   tasks['classes'].dependsOn classesJava9
 }
-
-task classesJava7(type:JavaCompile) {
-  exclude '**/*jdk8.java'
-  exclude '**/lambdas/**'
-  sourceCompatibility = '1.7'
-  targetCompatibility = '1.7'
-  destinationDir = file("$buildDir/classes-jdk7")
-  classpath = sourceSets.main.compileClasspath
-  source = sourceSets.main.java
-}
-
-tasks['classes'].dependsOn classesJava7
 
 sonarqube {
   // this project should not be analyzed with sonarqube
