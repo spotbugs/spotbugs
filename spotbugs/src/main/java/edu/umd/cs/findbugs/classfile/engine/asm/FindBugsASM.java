@@ -28,6 +28,6 @@ public class FindBugsASM {
 
     private static final boolean USE_EXPERIMENTAL = Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
 
-    public static final int ASM_VERSION = USE_EXPERIMENTAL ? Opcodes.ASM7_EXPERIMENTAL : Opcodes.ASM6;
+    public static final int ASM_VERSION = Opcodes.ASM7;
 
 }
