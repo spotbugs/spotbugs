@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * RANGE_ARRAY_LENGHT and RANGE_ARRAY_OFFSET false negative examples
+ * RANGE_ARRAY_LENGTH and RANGE_ARRAY_OFFSET false negative examples
  * 
  * @author yerayrodriguez@gmail.com
  *
