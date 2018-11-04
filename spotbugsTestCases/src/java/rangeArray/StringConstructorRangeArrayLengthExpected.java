@@ -1,7 +1,7 @@
 package rangeArray;
 
 /**
- * String constructors - RANGE_ARRAY_LENGHT expected
+ * String constructors - RANGE_ARRAY_LENGTH expected
  * 
  * @author yerayrodriguez@gmail.com
  *
