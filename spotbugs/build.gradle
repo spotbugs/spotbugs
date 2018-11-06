@@ -48,7 +48,7 @@ dependencies {
   compile 'org.dom4j:dom4j:2.1.0'
   compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
   compile 'commons-lang:commons-lang:2.6'
-  api 'org.slf4j:slf4j-api:1.7.25'
+  compile 'org.slf4j:slf4j-api:1.7.25'
 
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
