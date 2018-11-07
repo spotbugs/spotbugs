@@ -323,7 +323,8 @@ public class UnreadFields extends OpcodeStackDetector {
                 || annotationClass.startsWith("org.nuxeo.common.xmap.annotation")
                 || annotationClass.startsWith("com.google.gwt.uibinder.client")
                 || annotationClass.startsWith("org.springframework.beans.factory.annotation")
-                || "javax.ws.rs.core.Context".equals(annotationClass)) {
+                || "javax.ws.rs.core.Context".equals(annotationClass)
+                || "javafx.fxml.FXML".equals(annotationClass)) {
             return true;
         }
         int lastDot = annotationClass.lastIndexOf('.');
