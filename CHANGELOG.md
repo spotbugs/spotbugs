@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * Dataflow generates too much log ([#601](https://github.com/spotbugs/spotbugs/issues/601))
 
+### ADDED
+* Add new detector IRA\_INEFFICIENT\_REPLACEALL for detecting usage of String.replaceAll where no regex is being used ([#705](https://github.com/spotbugs/spotbugs/issues/705))
+
 ## 3.1.9 - 2018-11-20
 
 ### Fixed
