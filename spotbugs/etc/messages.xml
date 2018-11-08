@@ -1159,6 +1159,14 @@ an array argument which is zero-length.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientReplaceAll">
+    <Details>
+<![CDATA[
+<p> This detector finds occurrences of replaceAll(String regex, String replacement) without any special regex characters. 
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
@@ -6407,6 +6415,18 @@ If the array passed in is big enough to store all of the
 elements of the collection, then it is populated and returned
 directly. This avoids the need to create a second array
 (by reflection) to return as the result.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="IRA_INEFFICIENT_REPLACEALL">
+    <ShortDescription>Method uses replaceAll(String regex, String replacement) without any special regex characters</ShortDescription>
+    <LongDescription>{1} uses replaceAll(String regex, String replacement) without any special regex characters</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method uses replaceAll(String regex, String replacement) without any special regex characters. 
+It is more efficient to use
+<code>myString.replace(CharSequence target, CharSequence replacement)</code>
+if there is no need to use regular expressions.</p>
 ]]>
     </Details>
   </BugPattern>
