@@ -118,6 +118,21 @@ deploy:
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
     script: .travis/travis_wait "./gradlew uploadArchives"
     on:
-      all_branches: true
       jdk: oraclejdk8
-      condition: (branch = master || branch = "release-3.1" || tag IS present) && type = push
+      branch: master
+  - provider: script
+    skip_cleanup: true
+    # wait until uploading task finishes, because it may cost more than 10 minutes without any output
+    # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
+    script: .travis/travis_wait "./gradlew uploadArchives"
+    on:
+      jdk: oraclejdk8
+      branch: release-3.1
+  - provider: script
+    skip_cleanup: true
+    # wait until uploading task finishes, because it may cost more than 10 minutes without any output
+    # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
+    script: .travis/travis_wait "./gradlew uploadArchives"
+    on:
+      tags: true
+      jdk: oraclejdk8
