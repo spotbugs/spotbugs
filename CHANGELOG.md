@@ -32,6 +32,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### CHANGED
 * Allow parallel workspace builds in Eclipse with Spotbugs installed
+* Detect method parameter type annotations ([#743](https://github.com/spotbugs/spotbugs/issues/592))
 
 ## 3.1.8 - 2018-10-16
 
