@@ -1,3 +1,5 @@
+import static groovy.io.FileType.FILES
+
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
 // apply from: "$rootDir/gradle/maven.gradle"
 plugins {
@@ -397,10 +399,34 @@ task siteStableLatestXml(type:Copy) {
   }
 }
 
+// sign all .jar file under specified dir
+ext.signJar = { File dir ->
+  def keystorepass = project.hasProperty('keystorepass') ? keystorepass : '';
+  if (keystorepass.isEmpty()) {
+    print 'to sign eclipse plugins, set "keystorepass" project property'
+    return
+  }
+
+  dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) {
+    def relativePath = rootDir.toPath().relativize( it.toPath() )
+    println "signing ${relativePath}"
+    ant.signjar(
+        destDir: it.parentFile,
+        jar: it,
+        alias: 'eclipse-plugin',
+        keystore: "$rootDir/spotbugs.jks",
+        storepass: keystorepass,
+        tsaurl: 'http://timestamp.digicert.com',
+        verbose: true
+    )
+  }
+}
+
 task generateP2Metadata(type:Exec) {
   doFirst {
     project.delete "${buildDir}/site/eclipse/artifacts.xml"
     project.delete "${buildDir}/site/eclipse/content.xml"
+    signJar(file("${buildDir}/site/eclipse"))
   }
   inputs.file 'local.properties'
   dependsOn pluginJar, featureJar, siteXml, siteHtml
@@ -415,6 +441,7 @@ task generateCandidateP2Metadata(type:Exec) {
   doFirst {
     project.delete "${buildDir}/site/eclipse-candidate/artifacts.xml"
     project.delete "${buildDir}/site/eclipse-candidate/content.xml"
+    signJar(file("${buildDir}/site/eclipse-candidate"))
   }
   inputs.file 'local.properties'
   dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
@@ -429,6 +456,7 @@ task generateP2MetadataDaily(type:Exec) {
   doFirst {
     project.delete "${buildDir}/site/eclipse-daily/artifacts.xml"
     project.delete "${buildDir}/site/eclipse-daily/content.xml"
+    signJar(file("${buildDir}/site/eclipse-daily"))
   }
   inputs.file 'local.properties'
   dependsOn pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
@@ -443,6 +471,7 @@ task generateP2MetadataStableLatest(type:Exec) {
   doFirst {
     project.delete "${buildDir}/site/eclipse-stable-latest/artifacts.xml"
     project.delete "${buildDir}/site/eclipse-stable-latest/content.xml"
+    signJar(file("${buildDir}/site/eclipse-stable-latest"))
   }
   inputs.file 'local.properties'
   dependsOn pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
