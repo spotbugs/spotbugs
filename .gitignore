@@ -14,6 +14,9 @@ deps/
 eclipse/
 bin/
 
+# to sign eclipse plugin
+spotbugs.jks
+
 # generated manifest files
 spotbugs/META-INF/MANIFEST.MF
 spotbugs-annotations/META-INF/MANIFEST.MF
