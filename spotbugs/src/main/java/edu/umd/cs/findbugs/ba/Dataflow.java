@@ -141,8 +141,8 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
      */
     public void execute() throws DataflowAnalysisException {
         boolean change;
-        boolean debugWas = DEBUG;
-        if (DEBUG) {
+        boolean debug = DEBUG;
+        if (debug) {
             reportAnalysis("Executing");
         }
 
@@ -152,8 +152,8 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             change = false;
             boolean sawBackEdge = false;
             ++numIterations;
-            if (numIterations > MAX_ITERS && !DEBUG) {
-                DEBUG = true;
+            if (numIterations > MAX_ITERS && !debug) {
+                debug = true;
                 reportAnalysis("Too many iterations");
                 System.out.println(this.getClass().getName());
                 if (this.getClass() == UnconditionalValueDerefDataflow.class || this.getClass() == LiveLocalStoreDataflow.class) {
@@ -175,7 +175,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 }
             }
 
-            if (DEBUG) {
+            if (debug) {
                 System.out.println("----------------------------------------------------------------------");
                 System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
                 MethodGen mg = cfg.getMethodGen();
@@ -191,7 +191,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
             analysis.startIteration();
 
-            if (DEBUG && firstTime && blockOrder instanceof ReverseDFSOrder) {
+            if (debug && firstTime && blockOrder instanceof ReverseDFSOrder) {
                 ReverseDFSOrder rBlockOrder = (ReverseDFSOrder) blockOrder;
                 System.out.println("Entry point is: " + logicalEntryBlock());
                 System.out.println("Basic block order: ");
@@ -204,7 +204,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             }
             Iterator<BasicBlock> i = blockOrder.blockIterator();
             if (numIterations > 3 && numIterations % 2 == 0 && blockOrder instanceof ReverseDFSOrder) {
-                if (DEBUG) {
+                if (debug) {
                     System.out.println("Trying program order");
                 }
                 TreeSet<BasicBlock> bb = new TreeSet<>(new BackwardProgramOrder());
@@ -213,14 +213,14 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                     BasicBlock block = j.next();
                     bb.add(block);
                 }
-                if (DEBUG) {
+                if (debug) {
                     for (BasicBlock block : bb) {
                         debug(block, "\n");
                     }
                 }
                 i = bb.iterator();
             }
-            if (DEBUG) {
+            if (debug) {
                 dumpDataflow(analysis);
             }
 
@@ -248,7 +248,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 if (block == logicalEntryBlock()) {
                     analysis.makeFactTop(start);
                     analysis.initEntryFact(start);
-                    if (DEBUG) {
+                    if (debug) {
                         debug(block, "Init entry fact ==> " + analysis.factToString(start) + "\n");
                     }
                     needToRecompute = true;
@@ -274,7 +274,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
                         int direction = blockOrder.compare(block, logicalPred);
 
-                        if (DEBUG) {
+                        if (debug) {
                             debug(block, "direction " + direction + " for " + blockId(logicalPred) + "\n");
                         }
                         if (direction < 0) {
@@ -289,7 +289,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                             if (predLastUpdated >= lastCalculated) {
 
                                 needToRecompute = true;
-                                if (DEBUG) {
+                                if (debug) {
                                     debug(block, "\n Need to recompute. My timestamp = " + lastCalculated + ", pred timestamp = "
                                             + predLastUpdated + ",\n   pred fact = " + predFact + "\n");
                                 }
@@ -319,7 +319,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                         analysis.copy(predFact, edgeFact);
                         analysis.edgeTransfer(edge, edgeFact);
 
-                        if (DEBUG && !analysis.same(edgeFact, predFact)) {
+                        if (debug && !analysis.same(edgeFact, predFact)) {
                             debug(block, logicalPred, edge, "Edge transfer " + analysis.factToString(predFact) + " ==> "
                                     + analysis.factToString(edgeFact));
                         }
@@ -327,7 +327,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                         // Merge the predecessor fact (possibly transformed
                         // by the edge transfer function)
                         // into the block's start fact.
-                        if (DEBUG) {
+                        if (debug) {
                             if (analysis.isTop(start)) {
                                 debug(block, logicalPred, edge, "\n  First pred is " + analysis.factToString(edgeFact)
                                         + "\n   last updated at " + analysis.getLastUpdateTimestamp(predFact) + "\n");
@@ -351,13 +351,13 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                         if (block.getFirstInstruction() != null) {
                             pos = block.getFirstInstruction().getPosition();
                         }
-                        if (DEBUG) {
+                        if (debug) {
                             System.out.println(" [" + pos + "]==> " + analysis.factToString(start) + " @ " + timestamp
                                     + " \n");
                         }
                     }
                 }
-                if (DEBUG) {
+                if (debug) {
                     debug(block, "start fact is " + analysis.factToString(start) + "\n");
                 }
 
@@ -378,7 +378,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 //                    analysis.copy(start, result);
                 //                }
 
-                if (DEBUG && SystemProperties.getBoolean("dataflow.blockdebug")) {
+                if (debug && SystemProperties.getBoolean("dataflow.blockdebug")) {
                     debug(block, "Dumping flow values for block:\n");
                     Iterator<org.apache.bcel.generic.InstructionHandle> ii = block.instructionIterator();
                     while (ii.hasNext()) {
@@ -390,7 +390,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 }
 
                 // See if the result changed.
-                if (DEBUG) {
+                if (debug) {
                     debug(block, "orig result is " + (origResult == null ? "TOP" : analysis.factToString(origResult)) + "\n");
                 }
                 boolean thisResultChanged = false;
@@ -401,10 +401,10 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 }
                 if (thisResultChanged) {
                     timestamp++;
-                    if (DEBUG) {
+                    if (debug) {
                         debug(block, "result changed at timestamp " + timestamp + "\n");
                     }
-                    if (DEBUG && !needToRecompute) {
+                    if (debug && !needToRecompute) {
                         System.out.println("I thought I didn't need to recompute");
                     }
                     change = true;
@@ -413,7 +413,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                     analysis.setLastUpdateTimestamp(result, originalResultTimestamp);
                 }
 
-                if (DEBUG) {
+                if (debug) {
                     debug(block,
                             "result is " + analysis.factToString(result) + " @ timestamp "
                                     + analysis.getLastUpdateTimestamp(result) + "\n");
@@ -427,7 +427,7 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
         } while (change);
 
-        if (DEBUG) {
+        if (debug) {
             System.out.println("-- Quiescence achieved-------------------------------------------------");
             System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
             MethodGen mg = cfg.getMethodGen();
@@ -436,7 +436,6 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             .printStackTrace(System.out);
 
         }
-        DEBUG = debugWas;
     }
 
     private void reportAnalysis(String msg) {
