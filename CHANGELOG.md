@@ -7,6 +7,17 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2018-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
 
+### Fixed
+* Fix bug that enhanced xml options not recognized as textui mode
+* Dataflow generates too much log ([#601](https://github.com/spotbugs/spotbugs/issues/601))
+* Delete redundant put plugin ([#720](https://github.com/spotbugs/spotbugs/pull/720))
+
+### Added
+* Add new detector IRA\_INEFFICIENT\_REPLACEALL for detecting usage of String.replaceAll where no regex is being used ([#705](https://github.com/spotbugs/spotbugs/issues/705))
+
+### Changed
+* Eclipse plugin is now signed to establish validity ([#779](https://github.com/spotbugs/spotbugs/issues/779))
+
 ## 3.1.9 - 2018-11-20
 
 ### Fixed
