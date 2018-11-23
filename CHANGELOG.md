@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 
+### Fixed
+* Dataflow generates too much log ([#601](https://github.com/spotbugs/spotbugs/issues/601))
+
 ## 3.1.9 - 2018-11-20
 
 ### Fixed
