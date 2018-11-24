@@ -27,7 +27,6 @@ Install the plug-in
             |     commons-lang-2.6.jar
             |     dom4j-2.1.0.jar
             |     jaxen-1.1.6.jar
-            |     jFormatString.jar
             |     jsr305.jar
             |
             +- META-INF

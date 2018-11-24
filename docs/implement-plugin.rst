@@ -7,12 +7,8 @@ Create Maven project
 Use `spotbugs-archetype <https://github.com/spotbugs/spotbugs-archetype>`_ to create Maven project.
 Then Maven archetype plugin will ask you to decide plugin's groupId, artifactId, package and initial version.
 
-.. code-block:: bash
-
-  $ mvn archetype:generate \
-        -DarchetypeArtifactId=spotbugs-archetype \
-        -DarchetypeGroupId=com.github.spotbugs \
-        -DarchetypeVersion=0.1.0
+.. literalinclude:: generated/use-archetype.template.inc
+    :language: bash
 
 Write java code to represent bug to find
 ----------------------------------------

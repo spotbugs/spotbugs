@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2008 University of Maryland
+ * Contributions to SpotBugs
+ * Copyright (C) 2018, kengo
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,18 +16,23 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package edu.umd.cs.findbugs.ba;
 
-package edu.umd.cs.findbugs.classfile.engine.asm;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
-import org.objectweb.asm.Opcodes;
+import org.junit.Test;
 
-/**
- * @author pugh
- */
-public class FindBugsASM {
+import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.SortedBugCollection;
 
-    private static final boolean USE_EXPERIMENTAL = Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
+public class Issue758Test extends AbstractIntegrationTest {
 
-    public static final int ASM_VERSION = Opcodes.ASM7;
+    @Test
+    public void test() {
+        performAnalysis("ghIssues/Issue758.class");
+        SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
+        assertThat(bugCollection.getErrors(), hasSize(0));
+    }
 
 }

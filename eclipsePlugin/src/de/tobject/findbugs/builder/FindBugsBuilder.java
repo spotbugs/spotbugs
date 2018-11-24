@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.FindBugsJob;
@@ -104,6 +105,12 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
     @Override
     protected void clean(IProgressMonitor monitor) throws CoreException {
         MarkerUtil.removeMarkers(getProject());
+    }
+    
+    @Override
+    public ISchedulingRule getRule(int kind, Map<String, String> args) {
+    	// lock only the current project during analysis, not the complete workspace. that allows other builders to run in parallel
+    	return getProject();
     }
 
     /**

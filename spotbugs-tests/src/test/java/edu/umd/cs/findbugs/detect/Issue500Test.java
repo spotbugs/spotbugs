@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2003-2008 University of Maryland
+ * Contributions to SpotBugs
+ * Copyright (C) 2018, William R. Price
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,18 +16,27 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package edu.umd.cs.findbugs.detect;
 
-package edu.umd.cs.findbugs.classfile.engine.asm;
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.junit.Assert.assertThat;
 
-import org.objectweb.asm.Opcodes;
+import org.junit.Test;
+
+import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
- * @author pugh
+ * @author William R. Price
  */
-public class FindBugsASM {
+public class Issue500Test extends AbstractIntegrationTest {
 
-    private static final boolean USE_EXPERIMENTAL = Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
-
-    public static final int ASM_VERSION = Opcodes.ASM7;
+    @Test
+    public void test() {
+        performAnalysis("lambdas/Issue500.class");
+        BugInstanceMatcher bugMatcher = new BugInstanceMatcherBuilder().build();
+        assertThat(getBugCollection(), containsExactly(0, bugMatcher));
+    }
 
 }

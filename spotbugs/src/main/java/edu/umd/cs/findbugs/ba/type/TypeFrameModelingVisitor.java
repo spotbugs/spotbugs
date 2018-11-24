@@ -443,6 +443,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         visitInvokeInstructionCommon(obj);
     }
 
+    @Override
+    public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
+        visitInvokeInstructionCommon(obj);
+    }
+
     private boolean getResultTypeFromGenericType(TypeFrame frame, int index, int expectedParameters) {
         try {
             Type mapType = frame.getStackValue(0);

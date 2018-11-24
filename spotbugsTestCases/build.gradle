@@ -1,8 +1,7 @@
 sourceSets {
   main {
     java {
-      // TODO : Ant currently ignores src/java7... we can probably move all files directly to src/java
-      srcDirs = ['src/java', 'src/java7', 'src/fakeAnnotations', 'src/fakeLibraries']
+      srcDirs = ['src/java', 'src/fakeAnnotations', 'src/fakeLibraries']
     }
   }
 }
@@ -20,6 +19,7 @@ dependencies {
   compile 'joda-time:joda-time:2.9.9'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.springframework:spring-core:4.3.8.RELEASE'
+  compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
 
   compile 'junit:junit:4.12'
   compile 'org.testng:testng:6.11'
@@ -48,29 +48,29 @@ javadoc {
   }
 }
 
-task classesJava9(type:JavaCompile) {
-  sourceCompatibility = '9'
-  targetCompatibility = '9'
-  destinationDir = file("$buildDir/classes/java/java9")
+task classesJava8(type:JavaCompile) {
+  sourceCompatibility = '1.8'
+  targetCompatibility = '1.8'
+  destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
-  source = file('src/java9')
+  source = file('src/java8')
 }
 
-if (System.getProperty("java.specification.version") == "9") {
-  tasks['classes'].dependsOn classesJava9
-}
-
-task classesJava7(type:JavaCompile) {
-  exclude '**/*jdk8.java'
-  exclude '**/lambdas/**'
-  sourceCompatibility = '1.7'
-  targetCompatibility = '1.7'
-  destinationDir = file("$buildDir/classes-jdk7")
+task classesJava11(type:JavaCompile) {
+  sourceCompatibility = '11'
+  targetCompatibility = '11'
+  destinationDir = file("$buildDir/classes/java/java11")
   classpath = sourceSets.main.compileClasspath
-  source = sourceSets.main.java
+  source = file('src/java11')
 }
 
-tasks['classes'].dependsOn classesJava7
+if (System.getProperty("java.specification.version") == "1.8") {
+  // JDK11 removed several deprecated methods like Thread#destroy() and System.runFinalizersOnExit().
+  // so code that depends on them should be built only on JDK8.
+  tasks['classes'].dependsOn classesJava8
+} else {
+  tasks['classes'].dependsOn classesJava11
+}
 
 sonarqube {
   // this project should not be analyzed with sonarqube
