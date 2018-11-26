@@ -395,7 +395,6 @@ public class PluginLoader {
         jarName = getJarName(loadedFrom);
         plugin = init();
         loadPluginComponents();
-        Plugin.putPlugin(null, plugin);
     }
 
     /**
