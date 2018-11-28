@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2018-??-??
 
 * Start migrating STDOUT/STDERR usage to a logging framework
+* Fix bug that enhanced xml options not recognized as textui mode
 
 ## 3.1.3 - 2018-04-18
 
