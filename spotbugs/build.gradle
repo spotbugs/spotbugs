@@ -1,12 +1,16 @@
 // plugins {
-//   id "com.github.spotbugs" version "1.5"
+//   id "com.github.spotbugs" version "1.6.5"
 // }
 
-apply plugin: 'pmd'
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
+
+configurations {
+  // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
+  logBinding
+}
 
 sourceSets {
   main {
@@ -39,18 +43,18 @@ sourceSets {
 }
 
 dependencies {
-  compile 'org.ow2.asm:asm:6.1.1'
-  compile 'org.ow2.asm:asm-analysis:6.1.1'
-  compile 'org.ow2.asm:asm-commons:6.1.1'
-  compile 'org.ow2.asm:asm-tree:6.1.1'
-  compile 'org.ow2.asm:asm-util:6.1.1'
-  compile 'org.ow2.asm:asm-xml:6.1.1'
+  compile 'org.ow2.asm:asm:7.0'
+  compile 'org.ow2.asm:asm-analysis:7.0'
+  compile 'org.ow2.asm:asm-commons:7.0'
+  compile 'org.ow2.asm:asm-tree:7.0'
+  compile 'org.ow2.asm:asm-util:7.0'
   compile 'org.apache.bcel:bcel:6.2'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.dom4j:dom4j:2.1.0'
   compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
   compile 'commons-lang:commons-lang:2.6'
-  compile 'com.google.code.findbugs:jFormatString:3.0.0'
+  compile 'org.slf4j:slf4j-api:1.8.0-beta2'
+  logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
 
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
@@ -61,14 +65,10 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'jdepend:jdepend:2.9.1'
   testCompile 'org.apache.ant:ant:1.9.4'
+  testCompile 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
-}
-
-pmd {
-    ruleSets = []
-    ruleSetFiles = files("pmd-rules.xml")
 }
 
 // spotbugs {
@@ -108,6 +108,9 @@ task copyLibsForEclipse (type: Copy) {
     exclude "*xml-apis*.jar"
     exclude "*spotbugs-annotations*.jar"
 
+    from configurations.logBinding.files
+    into ".libs"
+    include "*.jar"
 
     from configurations.testCompile.files
     into ".libs"
@@ -140,10 +143,11 @@ jar {
 
   from sourceSets.main.output
   def jarInClasspath = project.configurations.runtime.collect{it.getName()}
+  jarInClasspath += project.configurations.logBinding.collect{it.getName()}
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': jarInClasspath.join(' ')
+               'Class-Path': jarInClasspath.join(' ') + ' config/'
   }
 }
 
@@ -223,12 +227,15 @@ distributions {
          include 'README'
       }
       from 'licenses'
-      from(configurations.compile) {
+      from([configurations.compile, configurations.logBinding]) {
         into 'lib'
         include '**/*.jar'
       }
       from([jar, project(':spotbugs-ant').jar]) {
         into 'lib'
+      }
+      from ('log4j2.xml') {
+        into 'lib/config'
       }
       from('src/xsl') {
         into 'src/xsl'

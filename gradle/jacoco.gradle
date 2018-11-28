@@ -1,7 +1,7 @@
 apply plugin: "jacoco"
 
 jacoco {
-  toolVersion = "0.7.9"
+  toolVersion = "0.8.2"
 }
 
 jacocoTestReport {
@@ -12,8 +12,9 @@ jacocoTestReport {
 
 test {
   jacoco {
-    append = true
     destinationFile = project(':spotbugs').file('build/jacoco/test.exec')
     includeNoLocationClasses = true
+    // https://github.com/gradle/gradle/issues/5184#issuecomment-391982009
+    excludes = ['jdk.internal.*']
   }
 }

@@ -6,6 +6,9 @@ signing {
   required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:uploadArchives") }
   sign configurations.archives
 }
+tasks.withType(Sign) {
+  onlyIf { isReleaseVersion }
+}
 
 uploadArchives {
   repositories {

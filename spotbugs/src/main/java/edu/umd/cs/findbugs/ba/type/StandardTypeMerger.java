@@ -23,14 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
@@ -45,12 +43,10 @@ import edu.umd.cs.findbugs.util.Values;
  * @author David Hovemeyer
  * @see TypeMerger
  */
-public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
+public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     private final RepositoryLookupFailureCallback lookupFailureCallback;
 
     private final ExceptionSetFactory exceptionSetFactory;
-
-    private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance(Values.DOTTED_JAVA_LANG_OBJECT);
 
     /**
      * Constructor.
@@ -252,4 +248,3 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
     }
 
 }
-
