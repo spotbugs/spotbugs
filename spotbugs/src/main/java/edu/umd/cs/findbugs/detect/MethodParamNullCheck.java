@@ -210,6 +210,10 @@ public class MethodParamNullCheck implements Detector {
                 int varIndex = load.getIndex();
                 LocalVariable loadVar = localVariableTable.getLocalVariable(varIndex);
                 IsNullValueFrame frame = nullValueDataflow.getFactAtLocation(location);
+
+                if (frame == null || !frame.isValid()) {
+                    return true;
+                }
                 if (local == loadVar) {
                     IsNullValue v = frame.getValue(varIndex);
                     if (v.isChecked()) {
