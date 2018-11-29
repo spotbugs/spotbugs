@@ -80,7 +80,6 @@ import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.Values;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -104,7 +103,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * <li>wide</li>
  * </ul>
  */
-public class OpcodeStack implements Constants2 {
+public class OpcodeStack {
 
     /** You can put this annotation on a OpcodeStack detector
      * to indicate that it uses {@link OpcodeStack.Item#userValue},
@@ -635,20 +634,42 @@ public class OpcodeStack implements Constants2 {
             this.signature = signature;
             if (constValue instanceof Number) {
                 Number constantNumericValue = (Number) constValue;
-                if ("B".equals(signature)) {
+                switch (signature) {
+                case "Z":
+                case "Ljava/lang/Boolean;":
+                    this.constValue = constantNumericValue.intValue() != 0;
+                    break;
+                case "B":
+                case "Ljava/lang/Byte;":
                     this.constValue = constantNumericValue.byteValue();
-                } else if ("S".equals(signature)) {
+                    break;
+                case "S":
+                case "Ljava/lang/Short;":
                     this.constValue = constantNumericValue.shortValue();
-                } else if ("C".equals(signature)) {
+                    break;
+                case "C":
+                case "Ljava/lang/Character;":
                     this.constValue = (char) constantNumericValue.intValue();
-                } else if ("I".equals(signature)) {
+                    break;
+                case "I":
+                case "Ljava/lang/Integer;":
                     this.constValue = constantNumericValue.intValue();
-                } else if ("D".equals(signature)) {
+                    break;
+                case "J":
+                case "Ljava/lang/Long;":
+                    this.constValue = constantNumericValue.longValue();
+                    break;
+                case "D":
+                case "Ljava/lang/Double;":
                     this.constValue = constantNumericValue.doubleValue();
-                } else if ("F".equals(signature)) {
+                    break;
+                case "F":
+                case "Ljava/lang/Float;":
                     this.constValue = constantNumericValue.floatValue();
+                    break;
+                default:
+                    break;
                 }
-
             }
             char s = signature.charAt(0);
             if (s != 'L' && s != '[') {
@@ -2748,6 +2769,18 @@ public class OpcodeStack implements Constants2 {
             push(i);
         }
 
+        if (seen == Const.INVOKESTATIC && topItem != null && topItem.isInitialParameter()
+                && isMethodThatReturnsGivenReference(clsName, methodName)) {
+            assert getStackDepth() > 0;
+            assert !getStackItem(0).isInitialParameter();
+            // keep returned StackItem as initial parameter
+            getStackItem(0).setInitialParameter(true);
+        }
+    }
+
+    private boolean isMethodThatReturnsGivenReference(String clsName, String methodName) {
+        return "java/util/Objects".equals(clsName) && "requireNonNull".equals(methodName)
+                || "com/google/common/base/Preconditions".equals(clsName) && "checkNotNull".equals(methodName);
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {

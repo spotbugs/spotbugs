@@ -1,5 +1,5 @@
 plugins {
-  id "com.github.spotbugs" version "1.5"
+  id "com.github.spotbugs" version "1.6.5"
 }
 
 apply from: "$rootDir/gradle/checkstyle.gradle"
@@ -8,7 +8,7 @@ apply from: "$rootDir/gradle/maven.gradle"
 
 dependencies {
   compile project(':spotbugs')
-  compile 'org.apache.ant:ant:1.9.4'
+  compileOnly 'org.apache.ant:ant:1.9.4'
 }
 
 javadoc {

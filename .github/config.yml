@@ -1,0 +1,7 @@
+rtd:
+  project: spotbugs
+newIssueWelcomeComment: >
+  Thanks for opening your first issue here! :smiley:
+
+  Please check [our contributing guideline](https://github.com/spotbugs/spotbugs/blob/release-3.1/.github/CONTRIBUTING.md).
+  Especially when you report a problem, make sure you share [a Minimal, Complete, and Verifiable example](https://stackoverflow.com/help/mcve) to reproduce it in this issue.

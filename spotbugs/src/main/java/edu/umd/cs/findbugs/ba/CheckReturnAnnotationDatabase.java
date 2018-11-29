@@ -49,6 +49,22 @@ import edu.umd.cs.findbugs.util.Values;
  */
 public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckReturnValueAnnotation> {
 
+    private static final String JAVA_MATH_BIG_INTEGER = "java.math.BigInteger";
+    private static final String SUBMIT = "submit";
+    private static final String REDIRECT_ERROR_STREAM = "redirectErrorStream";
+    private static final String JAVA_LANG_PROCESS_BUILDER = "java.lang.ProcessBuilder";
+    private static final String JAVA_NET_INET_ADDRESS = "java.net.InetAddress";
+    private static final String JAVA_LANG_STRING = "java.lang.String";
+    private static final String LJAVA_LANG_STRING_V = "(Ljava/lang/String;)V";
+    private static final String JAVA_MATH_BIG_DECIMAL = "java.math.BigDecimal";
+    private static final String LJAVA_LANG_OBJECT_Z = "(Ljava/lang/Object;)Z";
+    private static final String JAVA_UTIL_CONCURRENT_BLOCKING_QUEUE = "java.util.concurrent.BlockingQueue";
+    private static final String OFFER = "offer";
+    private static final String JAVA_UTIL_CONCURRENT_LOCKS_LOCK = "java.util.concurrent.locks.Lock";
+    private static final String J_LJAVA_UTIL_CONCURRENT_TIME_UNIT_Z = "(JLjava/util/concurrent/TimeUnit;)Z";
+    private static final String JAVA_UTIL_CONCURRENT_LOCKS_CONDITION = "java.util.concurrent.locks.Condition";
+    private static final String JAVA_IO_FILE = "java.io.File";
+
     private JavaClass throwableClass, threadClass;
 
     public CheckReturnAnnotationDatabase() {
@@ -65,21 +81,21 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 
         addMethodAnnotation("java.util.Iterator", "hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "createNewFile", "()Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "createNewFile", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "delete", "()Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "delete", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "mkdir", "()Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "mkdir", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "mkdirs", "()Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "mkdirs", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "renameTo", "(Ljava/io/File;)Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "renameTo", "(Ljava/io/File;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "setLastModified", "(J)Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "setLastModified", "(J)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "setReadOnly", "()Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "setReadOnly", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(Values.DOTTED_JAVA_IO_FILE, "setWritable", "(ZZ)Z", false,
+        addMethodAnnotation(JAVA_IO_FILE, "setWritable", "(ZZ)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
         addMethodAnnotation("java.util.Enumeration", "hasMoreElements", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -90,47 +106,47 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
         addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/Lock;",
                 false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.util.concurrent.locks.Condition", "await", "(JLjava/util/concurrent/TimeUnit;)Z", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_LOCKS_CONDITION, "await", J_LJAVA_UTIL_CONCURRENT_TIME_UNIT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.util.concurrent.CountDownLatch", "await", "(JLjava/util/concurrent/TimeUnit;)Z", false,
+        addMethodAnnotation("java.util.concurrent.CountDownLatch", "await", J_LJAVA_UTIL_CONCURRENT_TIME_UNIT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation("java.util.concurrent.locks.Condition", "awaitUntil", "(Ljava/util/Date;)Z", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_LOCKS_CONDITION, "awaitUntil", "(Ljava/util/Date;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.util.concurrent.locks.Condition", "awaitNanos", "(J)J", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_LOCKS_CONDITION, "awaitNanos", "(J)J", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.util.concurrent.Semaphore", "tryAcquire", "(JLjava/util/concurrent/TimeUnit;)Z", false,
+        addMethodAnnotation("java.util.concurrent.Semaphore", "tryAcquire", J_LJAVA_UTIL_CONCURRENT_TIME_UNIT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
         addMethodAnnotation("java.util.concurrent.Semaphore", "tryAcquire", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.util.concurrent.locks.Lock", "tryLock", "(JLjava/util/concurrent/TimeUnit;)Z", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_LOCKS_LOCK, "tryLock", J_LJAVA_UTIL_CONCURRENT_TIME_UNIT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.util.concurrent.locks.Lock", "newCondition", "()Ljava/util/concurrent/locks/Condition;", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_LOCKS_LOCK, "newCondition", "()Ljava/util/concurrent/locks/Condition;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.util.concurrent.locks.Lock", "tryLock", "()Z", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_LOCKS_LOCK, "tryLock", "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.util.concurrent.BlockingQueue", "offer",
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_BLOCKING_QUEUE, OFFER,
                 "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.util.concurrent.BlockingQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_BLOCKING_QUEUE, OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
 
-        addMethodAnnotation("java.util.concurrent.ConcurrentLinkedQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.concurrent.ConcurrentLinkedQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.util.concurrent.DelayQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.concurrent.DelayQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.util.concurrent.LinkedBlockingQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.concurrent.LinkedBlockingQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
-        addMethodAnnotation("java.util.LinkedList", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.LinkedList", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.util.Queue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.Queue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
-        addMethodAnnotation("java.util.concurrent.ArrayBlockingQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.concurrent.ArrayBlockingQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.util.concurrent.SynchronousQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.concurrent.SynchronousQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation("java.util.PriorityQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.PriorityQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.util.concurrent.PriorityBlockingQueue", "offer", "(Ljava/lang/Object;)Z", false,
+        addMethodAnnotation("java.util.concurrent.PriorityBlockingQueue", OFFER, LJAVA_LANG_OBJECT_Z, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 
         addWarningAboutSubmit(ExecutorService.class);
@@ -138,70 +154,73 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         addWarningAboutSubmit(ScheduledThreadPoolExecutor.class);
         addWarningAboutSubmit(AbstractExecutorService.class);
 
-        addMethodAnnotation("java.util.concurrent.BlockingQueue", "poll", "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
+        addMethodAnnotation(JAVA_UTIL_CONCURRENT_BLOCKING_QUEUE, "poll", "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
                 false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 
-        addDefaultMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "getBytes", "(Ljava/lang/String;)[B", false,
+        addDefaultMethodAnnotation(JAVA_LANG_STRING, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+        addMethodAnnotation(JAVA_LANG_STRING, "getBytes", "(Ljava/lang/String;)[B", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "charAt", "(I)C", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "toString", "()Ljava/lang/String;", false,
+        addMethodAnnotation(JAVA_LANG_STRING, "charAt", "(I)C", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addMethodAnnotation(JAVA_LANG_STRING, "toString", "()Ljava/lang/String;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "length", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "matches", "(Ljava/lang/String;)Z", false,
+        addMethodAnnotation(JAVA_LANG_STRING, "length", "()I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addMethodAnnotation(JAVA_LANG_STRING, "matches", "(Ljava/lang/String;)Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, "intern", "()Ljava/lang/String;", false,
+        addMethodAnnotation(JAVA_LANG_STRING, "intern", "()Ljava/lang/String;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([BLjava/lang/String;)V", false,
+        addMethodAnnotation(JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "([BLjava/lang/String;)V", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
+        addMethodAnnotation(JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, LJAVA_LANG_STRING_V, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addMethodAnnotation(Values.DOTTED_JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
-        addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigInteger;", false,
+        addMethodAnnotation(JAVA_LANG_STRING, Const.CONSTRUCTOR_NAME, "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+        addDefaultMethodAnnotation(JAVA_MATH_BIG_DECIMAL, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "inflate", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "precision", "()I", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "precision", "()I", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 
-        addMethodAnnotation("java.math.BigDecimal", "toBigIntegerExact", "()Ljava/math/BigInteger;", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "toBigIntegerExact", "()Ljava/math/BigInteger;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "longValueExact", "()J", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "longValueExact", "()J", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "intValueExact", "()I", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "intValueExact", "()I", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "shortValueExact", "()S", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "shortValueExact", "()S", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "byteValueExact", "()B", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "byteValueExact", "()B", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, Const.CONSTRUCTOR_NAME, LJAVA_LANG_STRING_V, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "intValue", "()I", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "intValue", "()I", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigDecimal", "stripZerosToMatchScale", "(J)Ljava/math/BigDecimal;", false,
+        addMethodAnnotation(JAVA_MATH_BIG_DECIMAL, "stripZerosToMatchScale", "(J)Ljava/math/BigDecimal;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 
-        addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-        addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true,
+        addDefaultMethodAnnotation(JAVA_MATH_BIG_INTEGER, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+        addMethodAnnotation(JAVA_MATH_BIG_INTEGER, "addOne", "([IIII)I", true,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true,
+        addMethodAnnotation(JAVA_MATH_BIG_INTEGER, "subN", "([I[II)I", true,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.math.BigInteger", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V", false,
+        addMethodAnnotation(JAVA_MATH_BIG_INTEGER, Const.CONSTRUCTOR_NAME, LJAVA_LANG_STRING_V, false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
         addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation("java.net.InetAddress", "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;", true,
+        addDefaultMethodAnnotation(JAVA_NET_INET_ADDRESS, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+        addMethodAnnotation(JAVA_NET_INET_ADDRESS, "getByName", "(Ljava/lang/String;)Ljava/net/InetAddress;", true,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.net.InetAddress", "getAllByName", "(Ljava/lang/String;)[Ljava/net/InetAddress;", true,
+        addMethodAnnotation(JAVA_NET_INET_ADDRESS, "getAllByName", "(Ljava/lang/String;)[Ljava/net/InetAddress;", true,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-        addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
+        addMethodAnnotation(JAVA_LANG_PROCESS_BUILDER, REDIRECT_ERROR_STREAM, "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 
-        addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
+        addMethodAnnotation(JAVA_LANG_PROCESS_BUILDER, REDIRECT_ERROR_STREAM, "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-        addMethodAnnotation("java.lang.ProcessBuilder", "redirectErrorStream", "()Z", false,
+        addMethodAnnotation(JAVA_LANG_PROCESS_BUILDER, REDIRECT_ERROR_STREAM, "()Z", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+
+        addMethodAnnotation("com.google.common.base.Preconditions", "checkNotNull", "(Ljava/lang/Object;)Ljava/lang/Object;", true,
+                CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
         addDefaultMethodAnnotation("jsr166z.forkjoin.ParallelLongArray", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -230,13 +249,13 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
      * @param c
      */
     private void addWarningAboutSubmit(Class<? extends ExecutorService> c) {
-        addMethodAnnotation(c.getName(), "submit",
+        addMethodAnnotation(c.getName(), SUBMIT,
                 "(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
-        addMethodAnnotation(c.getName(), "submit",
+        addMethodAnnotation(c.getName(), SUBMIT,
                 "(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW_BAD_PRACTICE);
-        addMethodAnnotation(c.getName(), "submit",
+        addMethodAnnotation(c.getName(), SUBMIT,
                 "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;", false,
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
     }
@@ -276,7 +295,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             if (a != null) {
               return a;
             }
-        } else if ("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()) && !m.isStatic()) {
+        } else if ("equals".equals(m.getName()) && LJAVA_LANG_OBJECT_Z.equals(m.getSignature()) && !m.isStatic()) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;
         } else if (m.getSignature().endsWith(")Ljava/lang/String;")
                 && ("java.lang.StringBuffer".equals(m.getClassName()) || "java.lang.StringBuilder".equals(m.getClassName()))) {

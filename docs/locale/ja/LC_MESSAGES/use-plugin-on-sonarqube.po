@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016-2017, spotbugs community
+# This file is distributed under the same license as the spotbugs package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-17 09:32+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: ../../use-plugin-on-sonarqube.rst:2
+msgid "Use SpotBugs Plugin on SonarQube"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:4
+msgid ""
+"`The SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-"
+"findbugs>`_ uses major SpotBugs plugins such as `fb-contrib <http://fb-"
+"contrib.sourceforge.net/>`_ and `Find Security Bugs "
+"<http://h3xstream.github.io/find-sec-bugs/>`_. However, if you want to "
+"use another SpotBugs plugin, you need to build your own SonarQube plugin."
+" For detailed requirements on SonarQube plugins, see `the SonarQube "
+"official guidelines "
+"<https://docs.sonarqube.org/display/DEV/Developing+a+Plugin>`_."
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:7
+msgid "Create Maven Project"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:9
+msgid ""
+"Follow the interaction in the `SonarQube official guidelines "
+"<https://docs.sonarqube.org/display/DEV/Build+Plugin#BuildPlugin-"
+"CreateaMavenProject>`_. It is recommended to use sub-modules, to manage "
+"both the SpotBugs plugin and the SonarQube plugin in one project. You can"
+" refer to `this module <https://github.com/KengoTODA/guava-helper-for-"
+"java-8/tree/master/sonarqube-plugin>`_ as an example."
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:12
+msgid ""
+"You also need to configure the ``sonar-packaging-maven-plugin``, to make "
+"your plugin depend on `the SpotBugs SonarQube Plugin "
+"<https://github.com/spotbugs/sonar-findbugs>`_. For instance, if you're "
+"using SonarQube 6.7 LTS, your plugin requires SpotBugs SonarQube Plugin "
+"version 3.7, so your configuration should be like below:"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:23
+msgid "Generate rules.xml"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:25
+msgid ""
+"SonarQube doesn't understand the Bug Pattern metadata provided for "
+"SpotBugs, so we need to convert ``findbugs.xml`` and ``messages.xml`` to "
+"the SonarQube format named ``rules.xml``."
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:27
+msgid ""
+"If your SpotBugs plugin isn't complex, you can simply introduce `the "
+"SonarQube rule xml generator Maven Plugin <https://github.com/KengoTODA"
+"/sonarqube-rule-xml-generator>`_ to generate ``rules.xml``. Follow `the "
+"interaction described in its README <https://github.com/KengoTODA"
+"/sonarqube-rule-xml-generator#how-to-use>`_."
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:30
+msgid "Update RulesDefinition.java"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:32
+msgid ""
+"Your ``SonarQubeRulesDefinition.java`` should load the generated "
+"``rules.xml`` to the FindBugs repository."
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:34
+msgid ""
+"When you create a ``NewRepository`` instance, use "
+"``FindbugsRulesDefinition.REPOSITORY_KEY`` as the repository key, and do "
+"_not_ rename it by calling ``NewRepository#setName(String)``. It is "
+"necessary to fulfill the requirement from `SonarQube API "
+"<https://github.com/SonarSource/sonarqube/blob/6.7.4/sonar-plugin-"
+"api/src/main/java/org/sonar/api/server/rule/RulesDefinition.java#L393-L395>`_."
+" Here is an example:"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:53
+msgid "Update Plugin.java"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:55
+msgid ""
+"``Plugin.java`` should be a simple implementation that just loads your "
+"``RulesDefinition`` class. Here is an example:"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:65
+msgid "Deploy onto SonarQube"
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:67
+msgid ""
+"``mvn package`` will generate a ``.jar`` file that works as a SonarQube "
+"plugin. Follow `the SonarQube official guidelines "
+"<https://docs.sonarqube.org/display/DEV/Build+Plugin#BuildPlugin-"
+"Deploy>`_ to deploy it onto SonarQube."
+msgstr ""
+
+#: ../../use-plugin-on-sonarqube.rst:69
+msgid ""
+"Note that you need to enable new rules manually in your SonarQube "
+"profile, or newly added rules will not be used at analysis."
+msgstr ""
+

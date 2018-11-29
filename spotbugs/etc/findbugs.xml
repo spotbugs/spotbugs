@@ -371,7 +371,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" speed="fast"
                     disabled="true" reports="DMI_UNSUPPORTED_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.FormatStringChecker" speed="fast"
-                    reports="VA_FORMAT_STRING_USES_NEWLINE,VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED,VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED,VA_FORMAT_STRING_ILLEGAL,VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT,VA_FORMAT_STRING_MISSING_ARGUMENT,VA_FORMAT_STRING_BAD_ARGUMENT,VA_FORMAT_STRING_BAD_CONVERSION,VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN,VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY"/>
+                    reports="VA_FORMAT_STRING_USES_NEWLINE"/>
           <Detector class="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" speed="fast"
                     reports="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"/>
           <Detector class="edu.umd.cs.findbugs.detect.TestingGround" speed="fast" reports="TESTING"
@@ -1023,21 +1023,6 @@
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_CONVERSION_TO_BOOLEAN" category="STYLE"/>
-          <BugPattern abbrev="USELESS_STRING" type="VA_FORMAT_STRING_BAD_CONVERSION_FROM_ARRAY"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_NO_PREVIOUS_ARGUMENT"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_ARG_MISMATCH" category="CORRECTNESS"
-                    deprecated="true"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_BAD_ARGUMENT" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_MISSING_ARGUMENT" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_ILLEGAL" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_EXTRA_ARGUMENTS_PASSED"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="VA_FORMAT_STRING_EXPECTED_MESSAGE_FORMAT_SUPPLIED"
-                    category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>

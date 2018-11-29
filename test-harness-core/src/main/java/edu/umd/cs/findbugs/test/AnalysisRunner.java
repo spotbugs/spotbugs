@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 
@@ -85,11 +86,40 @@ public class AnalysisRunner {
     public BugCollectionBugReporter run(Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
-        FindBugs2 engine = new FindBugs2();
+        try (FindBugs2 engine = new FindBugs2(); Project project = createProject(files)) {
+            engine.setProject(project);
+
+            final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
+            engine.setDetectorFactoryCollection(detectorFactoryCollection);
+
+            BugCollectionBugReporter bugReporter = new BugCollectionBugReporter(project);
+            bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
+            bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
+
+            engine.setBugReporter(bugReporter);
+            final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
+            preferences.getFilterSettings().clearAllCategories();
+            preferences.enableAllDetectors(true);
+            engine.setUserPreferences(preferences);
+
+            try {
+                engine.execute();
+            } catch (final IOException | InterruptedException e) {
+                throw new AssertionError("Analysis failed with exception", e);
+            }
+            if (!bugReporter.getQueuedErrors().isEmpty()) {
+                bugReporter.reportQueuedErrors();
+                throw new AssertionError(
+                        "Analysis failed with exception. Check stderr for detail.");
+            }
+            return bugReporter;
+        }
+    }
+
+    @CheckReturnValue
+    private Project createProject(Path[] files) {
         final Project project = new Project();
         project.setProjectName(getClass().getSimpleName());
-        engine.setProject(project);
-
         if (PLUGIN_JAR != null) {
             try {
                 String pluginId = Plugin.addCustomPlugin(PLUGIN_JAR.toURI()).getPluginId();
@@ -98,18 +128,6 @@ public class AnalysisRunner {
                 throw new AssertionError("Failed to load plugin", e);
             }
         }
-        final DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
-        engine.setDetectorFactoryCollection(detectorFactoryCollection);
-
-        BugCollectionBugReporter bugReporter = new BugCollectionBugReporter(project);
-        bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
-        bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
-
-        engine.setBugReporter(bugReporter);
-        final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
-        preferences.getFilterSettings().clearAllCategories();
-        preferences.enableAllDetectors(true);
-        engine.setUserPreferences(preferences);
 
         for (Path file : files) {
             project.addFile(file.toAbsolutePath().toString());
@@ -117,20 +135,7 @@ public class AnalysisRunner {
         for (Path auxClasspathEntry : auxClasspathEntries) {
             project.addAuxClasspathEntry(auxClasspathEntry.toAbsolutePath().toString());
         }
-
-        try {
-            engine.execute();
-        } catch (final IOException | InterruptedException e) {
-            throw new AssertionError("Analysis failed with exception", e);
-        }
-        if (!bugReporter.getQueuedErrors().isEmpty()) {
-            AssertionError assertionError = new AssertionError(
-                    "Analysis failed with exception. Check stderr for detail.");
-            bugReporter.getQueuedErrors().stream().map(error -> error.getCause())
-                    .forEach(assertionError::addSuppressed);
-            throw assertionError;
-        }
-        return bugReporter;
+        return project;
     }
 
     /**
@@ -151,7 +156,7 @@ public class AnalysisRunner {
         if ("jar".equals(uri.getScheme())) {
             JarURLConnection connection = (JarURLConnection) resource.openConnection();
             URL url = connection.getJarFileURL();
-            return new File(url.getFile());
+            return new File(url.toURI());
         }
 
         Path tempJar = File.createTempFile("SpotBugsAnalysisRunner", ".jar").toPath();

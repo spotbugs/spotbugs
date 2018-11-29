@@ -26,6 +26,8 @@ import org.objectweb.asm.Opcodes;
  */
 public class FindBugsASM {
 
-    public static final int ASM_VERSION = Opcodes.ASM6;
+    private static final boolean USE_EXPERIMENTAL = Boolean.parseBoolean(System.getProperty("spotbugs.experimental", "true"));
+
+    public static final int ASM_VERSION = Opcodes.ASM7;
 
 }

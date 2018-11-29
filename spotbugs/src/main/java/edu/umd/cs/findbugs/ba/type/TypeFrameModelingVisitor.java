@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.generic.*;
@@ -73,7 +72,7 @@ import edu.umd.cs.findbugs.util.Util;
  * @see TypeFrame
  * @see TypeAnalysis
  */
-public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame> implements Constants, Debug {
+public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame> implements Debug {
 
     private ValueNumberDataflow valueNumberDataflow;
 
@@ -441,6 +440,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     @Override
     public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+        visitInvokeInstructionCommon(obj);
+    }
+
+    @Override
+    public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
         visitInvokeInstructionCommon(obj);
     }
 

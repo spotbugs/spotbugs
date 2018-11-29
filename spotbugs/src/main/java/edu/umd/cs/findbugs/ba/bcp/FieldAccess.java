@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see Load
  * @see Store
  */
-public abstract class FieldAccess extends SingleInstruction implements org.apache.bcel.Constants {
+public abstract class FieldAccess extends SingleInstruction {
     private final String fieldVarName;
 
     private final String valueVarName;

@@ -59,7 +59,6 @@ import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Java main application to filter/transform an XML bug collection or bug
@@ -605,9 +604,7 @@ public class Filter {
                 }
             } else if ("-hashes".equals(option)) {
                 hashesFromFile = new HashSet<>();
-                BufferedReader in = null;
-                try {
-                    in = new BufferedReader(UTF8.fileReader(argument));
+                try (BufferedReader in = new BufferedReader(UTF8.fileReader(argument))) {
                     while (true) {
                         String h = in.readLine();
                         if (h == null) {
@@ -617,8 +614,6 @@ public class Filter {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException("Error reading hashes from " + argument, e);
-                } finally {
-                    Util.closeSilently(in);
                 }
             } else {
                 throw new IllegalArgumentException("can't handle command line argument of " + option);

@@ -24,18 +24,18 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
-import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
 
-import static java.util.logging.Level.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Version number and release date information.
  */
 public class Version {
 
-    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     /**
      * SpotBugs website.
@@ -110,16 +110,16 @@ public class Version {
         } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
-                LOG.log(INFO, "Plugin: {0}", p.getPluginId());
-                LOG.log(INFO, "  description: {0}", p.getShortDescription());
-                LOG.log(INFO, "     provider: {0}", p.getProvider());
+                LOG.info("Plugin: {}", p.getPluginId());
+                LOG.info("  description: {}", p.getShortDescription());
+                LOG.info("     provider: {}", p.getProvider());
                 String version = p.getVersion();
                 if (version != null && version.length() > 0) {
-                    LOG.log(INFO, "      version: {0}", version);
+                    LOG.info("      version: {}", version);
                 }
                 String website = p.getWebsite();
                 if (website != null && website.length() > 0) {
-                    LOG.log(INFO, "      website: {0}", website);
+                    LOG.info("      website: {}", website);
                 }
                 LOG.info("");
             }
@@ -132,20 +132,20 @@ public class Version {
     }
 
     private static void usage() {
-        LOG.log(SEVERE, "Usage: {0} [(-release|-date|-props|-configuration)]", Version.class.getName());
+        LOG.error("Usage: {} [(-release|-date|-props|-configuration)]", Version.class.getName());
     }
 
     /**
      * @param justPrintConfiguration
      */
     public static void printVersion(boolean justPrintConfiguration) {
-        LOG.log(INFO, "SpotBugs {0}", Version.VERSION_STRING);
+        LOG.info("SpotBugs {}", Version.VERSION_STRING);
         if (!justPrintConfiguration) {
             return;
         }
         for (Plugin plugin : Plugin.getAllPlugins()) {
-            LOG.log(INFO, "Plugin {0}, version {1}, loaded from {2}",
-                new Object[] {plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL()});
+            LOG.info("Plugin {}, version {}, loaded from {}",
+                plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL());
             if (plugin.isCorePlugin()) {
                 LOG.info("  is core plugin");
             }
@@ -160,14 +160,13 @@ public class Version {
             }
             Plugin parent = plugin.getParentPlugin();
             if (parent != null) {
-                LOG.log(INFO, "  has parent plugin {0}", parent.getPluginId());
+                LOG.info("  has parent plugin {}", parent.getPluginId());
             }
 
             for (DetectorFactory factory : plugin.getDetectorFactories()) {
-                LOG.log(INFO, "  detector {0}", factory.getShortName());
+                LOG.info("  detector {}", factory.getShortName());
             }
             LOG.info("");
         }
     }
 }
-

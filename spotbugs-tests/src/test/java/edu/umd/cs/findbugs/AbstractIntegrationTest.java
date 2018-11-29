@@ -61,7 +61,7 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  *
  * @author jmsotuyo
  */
-public class AbstractIntegrationTest {
+public abstract class AbstractIntegrationTest {
 
     /**
      * Build path if running command line build

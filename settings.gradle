@@ -1,9 +1,9 @@
 def eclipseFile = "eclipsePlugin/local.properties"
 if (new File(rootDir, eclipseFile).exists()) {
-  include ':eclipsePlugin', ':eclipsePlugin-test', ':eclipsePlugin-junit', ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':gradlePlugin', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant', 'gradlePlugin'
+  include ':eclipsePlugin', ':eclipsePlugin-test', ':eclipsePlugin-junit', ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant'
 } else {
   logger.lifecycle('Eclipse plugin configuration (' + eclipseFile + ') was not found. Skipping Eclipse plugin...')
-  include ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':gradlePlugin', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant', 'gradlePlugin'
+  include ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant'
 }
 
 include ':test-harness-core', ':test-harness-jupiter'

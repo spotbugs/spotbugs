@@ -25,8 +25,7 @@ See `deploy` phase in `.travis.yml` for detail.
 
 ## Release to Eclipse Marketplace
 
-No action necessary. Just push latest plugin to Eclipse Update Site then it's enough.
-If you need to update [entry at Eclipse Marketplace](https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin), please contact with @KengoTODA or @iloveeclipse.
+Update version in [Eclipse Marketplace page](https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin). If you have no permission, please contact with @KengoTODA or @iloveeclipse.
 
 ## Release to Gradle Plugin Portal
 

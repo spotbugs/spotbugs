@@ -209,13 +209,6 @@ public class DumbMethods extends OpcodeStackDetector {
         }
     }
 
-    static int saturatingIncrement(int value) {
-        if (value == Integer.MAX_VALUE) {
-            return Integer.MAX_VALUE;
-        }
-        return value+1;
-    }
-
     private class RangeCheckSubDetector extends SubDetector {
 
 
@@ -363,10 +356,10 @@ public class DumbMethods extends OpcodeStackDetector {
                         length = (int) arrayArg.getConstant();
                     }
                     if(offsetArg.getConstant() instanceof Integer) {
-                        checkRange(offsetArg, 0, saturatingIncrement(length), "RANGE_ARRAY_OFFSET");
+                        checkRange(offsetArg, 0, length, "RANGE_ARRAY_OFFSET");
                         length -= (int) offsetArg.getConstant();
                     }
-                    checkRange(lengthArg, 0, saturatingIncrement(length), "RANGE_ARRAY_LENGTH");
+                    checkRange(lengthArg, 0, length, "RANGE_ARRAY_LENGTH");
                 }
                 break;
             }
