@@ -669,7 +669,7 @@ IsNullValueAnalysisFeatures {
             }
             short secondToLastOpcode = prev.getInstruction().getOpcode();
             // System.out.println("Second last opcode: " +
-            // Const.OPCODE_NAMES[secondToLastOpcode]);
+            // Const.Const.getOpcodeName(secondToLastOpcode));
             if (secondToLastOpcode != Const.INSTANCEOF) {
                 return null;
             }

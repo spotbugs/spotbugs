@@ -89,10 +89,10 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " + stage1
         // + " " + stage2);
         // System.out.println(stack);
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " +
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " +
         // sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " +
         // stage2);
         distance++;

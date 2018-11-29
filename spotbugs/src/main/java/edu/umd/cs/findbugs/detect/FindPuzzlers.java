@@ -236,7 +236,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
             bugReporter.reportBug(new BugInstance(this, "DLS_DEAD_LOCAL_STORE_IN_RETURN", priority).addClassAndMethod(this)
                     .addSourceLine(this));
         }
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " +
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " +
         // ternaryConversionState);
         if (seen == Const.IMUL) {
             if (imul_distance != 1) {
