@@ -58,7 +58,7 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " +
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " +
         // currState);
         switch (currState) {
         case 0:

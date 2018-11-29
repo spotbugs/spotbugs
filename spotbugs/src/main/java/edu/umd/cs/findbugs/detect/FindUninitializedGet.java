@@ -153,7 +153,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
             if (nextOpcode != Const.POP && !initializedFields.contains(f) && declaredFields.contains(f) && !containerFields.contains(f)
                     && !unreadFields.isContainerField(xField)) {
                 // System.out.println("Next opcode: " +
-                // OPCODE_NAMES[nextOpcode]);
+                // Const.getOpcodeName(nextOpcode));
                 LocalVariableAnnotation possibleTarget = LocalVariableAnnotation.findMatchingIgnoredParameter(getClassContext(),
                         getMethod(), getNameConstantOperand(), xField.getSignature());
                 if (possibleTarget == null) {
