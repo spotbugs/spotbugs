@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2018, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -98,10 +98,13 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * Get the name of the class in dotted format.
      *
      * @return the name of the class in dotted format
+     * 
+     * @deprecated use {@link #getDottedClassName()} instead.
      */
+    @Deprecated
     public @DottedClassName
     String toDottedClassName() {
-        return ClassName.toDottedClassName(className);
+        return getDottedClassName();
     }
 
     /**
