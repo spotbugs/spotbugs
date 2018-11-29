@@ -207,7 +207,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
     @Override
     public void sawOpcode(int seen) {
         if (getPC() == 2 && seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
-            // System.out.println(OPCODE_NAMES[seen]);
+            // System.out.println(Const.getOpcodeName(seen));
             sawInitialIdentityCheck = false;
         }
         if (getPC() == 2

@@ -262,7 +262,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
         @Override
         public void sawOpcode(int seen) {
-            // System.out.printf("%4d %s%n", getPC(), OPCODE_NAMES[seen]);
+            // System.out.printf("%4d %s%n", getPC(), Const.getOpcodeName(seen));
             switch(seen) {
             case Const.IALOAD:
             case Const.AALOAD:
@@ -781,7 +781,7 @@ public class DumbMethods extends OpcodeStackDetector {
             }
         }
 
-        // System.out.printf("%4d %10s: %s\n", getPC(), OPCODE_NAMES[seen],
+        // System.out.printf("%4d %10s: %s\n", getPC(), Const.getOpcodeName(seen),
         // stack);
         if (seen == Const.IFLT && stack.getStackDepth() > 0 && stack.getStackItem(0).getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
             sawCheckForNonNegativeSignedByte = getPC();
@@ -801,10 +801,10 @@ public class DumbMethods extends OpcodeStackDetector {
                 /*
                 if (false)
                     try {
-                        pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + OPCODE_NAMES[seen] + ":"
+                        pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + Const.getOpcodeName(seen) + ":"
                                 + OPCODE_NAMES[getNextOpcode()]);
                     } catch (Exception e) {
-                        pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + OPCODE_NAMES[seen]);
+                        pendingAbsoluteValueBug.addString(OPCODE_NAMES[getPrevOpcode(1)] + ":" + Const.getOpcodeName(seen));
 
                     }
                  */
@@ -1126,7 +1126,7 @@ public class DumbMethods extends OpcodeStackDetector {
             prevOpcodeWasReadLine = (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
                     && "readLine".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand());
 
-            // System.out.println(randomNextIntState + " " + OPCODE_NAMES[seen]
+            // System.out.println(randomNextIntState + " " + Const.getOpcodeName(seen)
             // + " " + getMethodName());
             switch (randomNextIntState) {
             case 0:

@@ -62,7 +62,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println(state + " " + getPC() + " " + OPCODE_NAMES[seen]);
+        // System.out.println(state + " " + getPC() + " " + Const.getOpcodeName(seen));
         if (countDown == 2 && seen == Const.GOTO) {
             CodeException tryBlock = getSurroundingTryBlock(getPC());
             if (tryBlock != null && tryBlock.getEndPC() == getPC()) {
