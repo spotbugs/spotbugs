@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2006-2018, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,14 +37,14 @@ public abstract class ClassName {
         return "java/lang/Math".equals(className) || "java/lang/StrictMath".equals(className);
     }
 
-    public static @DottedClassName String assertIsDotted(@DottedClassName String className) {
+    public static void assertIsDotted(@DottedClassName String className) {
         assert className.indexOf('/') == -1 : "Not dotted: " + className;
-        return className;
     }
-    public static @SlashedClassName String assertIsSlashed(@SlashedClassName String className) {
+    
+    public static void assertIsSlashed(@SlashedClassName String className) {
         assert className.indexOf('.') == -1 : "Not slashed: " + className;
-        return className;
     }
+    
     public static String toSignature(@SlashedClassName String className) {
         if (className.length() == 0) {
             throw new IllegalArgumentException("classname can't be empty");

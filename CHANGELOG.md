@@ -17,6 +17,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 * Eclipse plugin is now signed to establish validity ([#779](https://github.com/spotbugs/spotbugs/issues/779))
+* edu.umd.cs.findbugs.util.ClassName#assertIsDotted return type is changed to void
+* edu.umd.cs.findbugs.util.ClassName#assertIsSlashed return type is changed to void
+
+### Deprecated
+* edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is depricated and getDottedClassName() can be used instead.
 
 ## 3.1.9 - 2018-11-20
 
