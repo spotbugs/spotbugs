@@ -161,7 +161,7 @@ public class CheckLogParamNum extends OpcodeStackDetector {
             confidence = NORMAL_PRIORITY;
         }
 
-        BugInstance bug = new BugInstance(this, "FS_LOG_PARAM_NUM", confidence).addClassAndMethod(this)
+        BugInstance bug = new BugInstance(this, "SPEC_LOG_PARAM_NUM", confidence).addClassAndMethod(this)
                 .addInt(needCount);
         return bug;
     }
@@ -186,7 +186,7 @@ public class CheckLogParamNum extends OpcodeStackDetector {
             confidence = HIGH_PRIORITY;
         }
 
-        BugInstance bug = new BugInstance(this, "FS_LOG_PARAM_NUM_OLD_SLF4J", confidence).addClassAndMethod(this)
+        BugInstance bug = new BugInstance(this, "SPEC_LOG_PARAM_NUM_OLD_SLF4J", confidence).addClassAndMethod(this)
                 .addInt(needCount).addInt(needCountIfThrowable);
         return bug;
     }

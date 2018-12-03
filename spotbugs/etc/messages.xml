@@ -1003,34 +1003,6 @@ null.  It is a slow detector.</p>
 ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.ForbiddenSystemOut">
-    <Details>
-<![CDATA[
-<p> Can not use System.out and System.err .</p>
-]]>
-    </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.ForbiddenHashtable">
-    <Details>
-<![CDATA[
-<p> Can not use Hashtable.</p>
-]]>
-    </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum">
-    <Details>
-<![CDATA[
-<p> Use org.slf4j.Logger with wrong placeholder count.</p>
-]]>
-    </Details>
-  </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.FindLockOnLocal">
-    <Details>
-<![CDATA[
-<p> Locked on a local variable.</p>
-]]>
-    </Details>
-  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation">
     <Details>
 <![CDATA[
@@ -1680,17 +1652,45 @@ factory pattern to create these objects.</p>
       ]]>
       </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ForbiddenSystemOut">
+    <Details>
+<![CDATA[
+<p> Can not use System.out and System.err .</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ForbiddenHashtable">
+    <Details>
+<![CDATA[
+<p> Can not use Hashtable.</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum">
+    <Details>
+<![CDATA[
+<p> Use org.slf4j.Logger with wrong placeholder count.</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindLockOnLocal">
+    <Details>
+<![CDATA[
+<p> Locked on a local variable.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.LocalVariableAssignmentCheck">
     <Details>
     <![CDATA[ 
-       <p>The localvariable is not assignmented correctly.</p>
+       <p>The assignment of local variables in all branches is the same, which may be incorrect.</p>
        ]]>  
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.MethodParamNullCheck">
     <Details>
     <![CDATA[
-       <p>The method should check its parameter before query something.</p>
+       <p>The public method should check the parameter not null before use it.</p>
     ]]>
     </Details>
   </Detector>
@@ -2596,65 +2596,6 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
       <p>
       Unless the class must be compatible with JVMs predating Java 1.5,
       use either autoboxing or the <code>valueOf()</code> method when creating instances of <code>Double</code> and <code>Float</code>.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="SPEC_SYSTEMOUT">
-    <ShortDescription>Can not use System.out and System.err</ShortDescription>
-    <LongDescription>{1} invokes System.out or System.err; use Logger instead</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-      System.out or System.err will print nothing to diagnose file.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="SPEC_NO_HASHTABLE">
-    <ShortDescription>Can not use Hashtable</ShortDescription>
-    <LongDescription>{1} used Hashtable; use HashMap or ConcurrentHashMap instead</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-      See the last section of Hashtable's javodoc comment.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="FS_LOG_PARAM_NUM">
-    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
-    <LongDescription>{1} calls org.slf4j.Logger.{3}, the count of braces placeholder is incorrect, need {2}.</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-      The number of placeholders must be the same as the number of parameters. 
-      If the last parameter is 'Throwable', it does not need a placeholder.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="FS_LOG_PARAM_NUM_OLD_SLF4J">
-    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
-    <LongDescription>{1} calls org.slf4j.Logger.{4}, the count of braces placeholder may be incorrect, need {2} or {3}.</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-      The number of placeholders must be the same as the number of parameters. 
-      If the last parameter is 'Throwable', it does not need an additional placeholder.
-      This alarm may be misreport, because the spotbugs runtime relies on an old version of slf4j-api.
-      You just need to check, if the number of placeholders is correct, ignore this alarm.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="SPEC_LOCK_ON_LOCAL">
-    <ShortDescription>Locked on a local variable.</ShortDescription>
-    <LongDescription>{1} locked on an local variable.</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>
-      Two callers calls the same function, they will lock on different objects.
       </p>
       ]]>
     </Details>
@@ -8458,14 +8399,81 @@ after the call to initLogging, the logger configuration is lost
         </p>]]>
       </Details>
   </BugPattern>
+  <BugPattern type="SPEC_SYSTEMOUT">
+    <ShortDescription>Can not use System.out and System.err</ShortDescription>
+    <LongDescription>{1} invokes System.out or System.err; use Logger instead</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      System.out or System.err will print nothing to diagnose file.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_NO_HASHTABLE">
+    <ShortDescription>Can not use Hashtable</ShortDescription>
+    <LongDescription>{1} used Hashtable; use HashMap or ConcurrentHashMap instead</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      See the last section of Hashtable's javodoc comment.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_LOG_PARAM_NUM">
+    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
+    <LongDescription>{1} calls org.slf4j.Logger.{3}, the count of braces placeholder is incorrect, need {2}.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      The number of placeholders must be the same as the number of parameters. 
+      If the last parameter is 'Throwable', it does not need a placeholder.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_LOG_PARAM_NUM_OLD_SLF4J">
+    <ShortDescription>Placeholder incorrect when calls org.slf4j.Logger.</ShortDescription>
+    <LongDescription>{1} calls org.slf4j.Logger.{4}, the count of braces placeholder may be incorrect, need {2} or {3}.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      The number of placeholders must be the same as the number of parameters. 
+      If the last parameter is 'Throwable', it does not need an additional placeholder.
+      This alarm may be misreport, because the spotbugs runtime relies on an old version of slf4j-api.
+      You just need to check, if the number of placeholders is correct, ignore this alarm.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_LOCK_ON_LOCAL">
+    <ShortDescription>Locked on a local variable.</ShortDescription>
+    <LongDescription>{1} locked on an local variable.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      Two callers calls the same function, they will lock on different objects.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK">
-  <ShortDescription>LocalVariable Assignment</ShortDescription>  
-        <LongDescription>Method {1} doesn't assignment its local variable correctly</LongDescription>  
-        <Details>  
+  <ShortDescription>The assignment of local variables is the same.</ShortDescription>  
+    <LongDescription>In method {1}, the assignment of local variables {2} in all branches is the same, which may be incorrect.</LongDescription>  
+    <Details>
       <![CDATA[ 
-        <p>The localvariable is not assignmented correctly.</p> 
+        <p>
+        If you use a local variable,
+        you should think that it has different assignment possibilities in different branches.
+        However, this variable is assigned the same constant value in all branches, 
+        so it is necessary to analyze whether the assignment of some branches is omitted,
+        or there are errors in the assignment of some branches.
+        If it's true that all branches need the same constant value, then you shouldn't define a variable,
+        you just need to use a constant directly.
+        </p>
       ]]>  
-        </Details>
+    </Details>
   </BugPattern>
   <BugPattern type="SPEC_METHOD_PARAM_NULL_CHECK">
   <ShortDescription>Method Parameter Null Check</ShortDescription>
@@ -8490,7 +8498,6 @@ after the call to initLogging, the logger configuration is lost
    BugCodes
   **********************************************************************
    -->
-  <BugCode abbrev="SPEC">Bugs find by extra developed detectors</BugCode>
   <BugCode abbrev="FS">Format string problem</BugCode>
   <BugCode abbrev="SKIPPED">Analysis skipped</BugCode>
   <BugCode abbrev="IL">Infinite Loop</BugCode>
@@ -8629,4 +8636,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   <BugCode abbrev="FB">SpotBugs did not produce the expected warnings on a method</BugCode>
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
+  <BugCode abbrev="SPEC">Bugs find by extra developed detectors</BugCode>
 </MessageCollection>

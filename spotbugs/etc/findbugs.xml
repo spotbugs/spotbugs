@@ -644,12 +644,12 @@
                     reports="DM_DEFAULT_ENCODING"/>
           <Detector class="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" speed="fast"
                     reports="NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION"/>
-          <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum" speed="fast"
-                    reports="FS_LOG_PARAM_NUM,FS_LOG_PARAM_NUM_OLD_SLF4J" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.ForbiddenSystemOut" speed="fast"
                     reports="SPEC_SYSTEMOUT" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.ForbiddenHashtable" speed="fast"
                     reports="SPEC_NO_HASHTABLE" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.CheckLogParamNum" speed="fast"
+                    reports="SPEC_LOG_PARAM_NUM,SPEC_LOG_PARAM_NUM_OLD_SLF4J" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindLockOnLocal" speed="fast"
                     reports="SPEC_LOCK_ON_LOCAL" hidden="false"/>
           <Detector class="edu.umd.cs.findbugs.detect.LocalVariableAssignmentCheck" speed="fast" disabled="false"
@@ -686,10 +686,6 @@
           <BugCode abbrev="AT"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="SPEC" type="SPEC_SYSTEMOUT" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="SPEC" type="SPEC_NO_HASHTABLE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="SPEC" type="SPEC_LOCK_ON_LOCAL" category="CORRECTNESS"/>
-
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
@@ -1039,8 +1035,6 @@
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM" category="CORRECTNESS"/>
-          <BugPattern abbrev="FS" type="FS_LOG_PARAM_NUM_OLD_SLF4J" category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
@@ -1258,6 +1252,11 @@
           <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
+          <BugPattern abbrev="SPEC" type="SPEC_SYSTEMOUT" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_NO_HASHTABLE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_LOG_PARAM_NUM" category="CORRECTNESS"/>
+          <BugPattern abbrev="SPEC" type="SPEC_LOG_PARAM_NUM_OLD_SLF4J" category="CORRECTNESS"/>
+          <BugPattern abbrev="SPEC" type="SPEC_LOCK_ON_LOCAL" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_METHOD_PARAM_NULL_CHECK" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION" category="CORRECTNESS"/>
