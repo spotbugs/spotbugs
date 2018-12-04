@@ -80,3 +80,15 @@ Build executable plug-in
 16) Right click on [eclipsePlugin] to refresh the Eclipse workspace
     a) In the [eclipsePlugin]/build folder you will find the site/eclipse-daily folder which contains plugin update site.
     b) Use the path to this folder in [Help | Install New Software] as the path to the update site to install it into Eclipse.
+
+Sign plug-in (optional)
+=======================
+17) If you want to sign your plug-in to avoid security warning,
+    generate JKS file by openssl command and keytool command,
+    and save it as spotbugs.jks in project root directory.
+
+    About detailed process to generate JKS file, please refer the following post:
+    https://dev.to/kengotoda/sign-eclipse-plugin-by-gradle-4md8
+
+18) When build, provide keystore pass via project property:
+    ./gradlew build -P keystorepass=$YOUR_KEYSTORE_PASS
