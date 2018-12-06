@@ -47,7 +47,7 @@ install:
   - echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
   - echo "signing.keyId=${SIGNING_KEY_ID}" >> gradle.properties
   - echo "signing.password=${SIGNING_PASSWORD}" >> gradle.properties
-  - echo signing.secretKeyRingFile=secring.gpg >> gradle.properties
+  - echo signing.secretKeyRingFile=${TRAVIS_BUILD_DIR}/secring.gpg >> gradle.properties
   - echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
 
 script:
