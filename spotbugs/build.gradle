@@ -15,7 +15,6 @@ configurations {
 sourceSets {
   main {
     java {
-      srcDirs = ['src/main/java', 'src/gui']
       exclude '**/*.properties'
       exclude '**/*.db'
       exclude '**/*.html'
@@ -26,7 +25,7 @@ sourceSets {
        * Because why put everything in a single folder when you can split it
        * and mix it with other files you don't actually need together
       */
-      srcDirs = ['src/xsl', 'etc', 'src/main/java', 'src/gui']
+      srcDirs = ['src/xsl', 'etc', 'src/main/java']
       include '*.xsd'
       include 'bugrank.txt'
       include 'findbugs.xml'
@@ -36,6 +35,14 @@ sourceSets {
       exclude 'script.properties'
       include '*.xsl'
       include '**/*.db'
+    }
+  }
+  gui {
+    java {
+      srcDirs = ['src/gui/main']
+    }
+    resources {
+      srcDirs = ['src/gui/main']
       include '**/*.html'
       include '**/*.png'
     }
@@ -60,15 +67,18 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   compile project(':spotbugs-annotations')
 
-  compileOnly 'com.apple:AppleJavaExtensions:1.4'
-
   testCompile 'junit:junit:4.12'
-  testCompile 'jdepend:jdepend:2.9.1'
   testCompile 'org.apache.ant:ant:1.9.4'
   testCompile 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
+
+  guiCompile sourceSets.main.output
+  guiCompile 'commons-lang:commons-lang:2.6'
+  guiCompile 'org.dom4j:dom4j:2.1.0'
+  guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
+  guiCompileOnly project(':spotbugs-annotations')
 }
 
 // spotbugs {
@@ -142,6 +152,7 @@ jar {
   archiveName "${baseName}.${extension}"
 
   from sourceSets.main.output
+  from sourceSets.gui.output
   def jarInClasspath = project.configurations.runtime.collect{it.getName()}
   jarInClasspath += project.configurations.logBinding.collect{it.getName()}
   manifest {
@@ -283,7 +294,7 @@ task smokeTest {
               maxRank:'20',
               timeout:'1800000',
               outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
-      sourcePath(path:'src/main/java:src/gui:src/tools')
+      sourcePath(path:'src/main/java:src/gui/main:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDir)
       configurations.compile.each { File file -> auxClasspath(path:file.path) }
     }
