@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
 Export-Package: edu.umd.cs.findbugs,
- edu.umd.cs.findbugs.architecture,
  edu.umd.cs.findbugs.asm,
  edu.umd.cs.findbugs.ba,
  edu.umd.cs.findbugs.ba.bcp,
