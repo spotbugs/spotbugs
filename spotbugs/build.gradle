@@ -47,6 +47,11 @@ sourceSets {
       include '**/*.png'
     }
   }
+  test {
+    java {
+      srcDirs = ['src/test/java','src/gui/test/java']
+    }
+  }
 }
 
 dependencies {
@@ -70,6 +75,7 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.apache.ant:ant:1.9.4'
   testCompile 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
+  testCompile sourceSets.gui.output
 
   // TODO : Some of these can be extracted to actual dependencies
   compile fileTree(dir: 'lib', include: '*.jar')
@@ -96,6 +102,11 @@ tasks.withType(Jar).all {
   //destinationDir = file("$projectDir/lib")
 }
 
+eclipse.classpath {
+  plusConfigurations += [ configurations.compileOnly ]
+  plusConfigurations += [ configurations.guiCompileOnly ]
+  plusConfigurations += [ configurations.testCompile ]
+}
 
 eclipse.classpath.file {
     whenMerged {
@@ -103,7 +114,8 @@ eclipse.classpath.file {
          classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
          classpath.entries.forEach {
              entry ->
-               if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')) {
+               if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')
+                   && !java.nio.file.Files.isDirectory(java.nio.file.Paths.get(entry.path))) {
                    entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
                    entry.exported = true
                }
@@ -127,6 +139,10 @@ task copyLibsForEclipse (type: Copy) {
     include "*.jar"
 
     from configurations.compileOnly.files
+    into ".libs"
+    include "*.jar"
+
+    from configurations.guiCompileOnly.files
     into ".libs"
     include "*.jar"
 }
