@@ -20,6 +20,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Eclipse plugin is now signed to establish validity ([#779](https://github.com/spotbugs/spotbugs/issues/779))
 * edu.umd.cs.findbugs.util.ClassName#assertIsDotted return type is changed to void
 * edu.umd.cs.findbugs.util.ClassName#assertIsSlashed return type is changed to void
+* Detect method parameter type annotations ([#743](https://github.com/spotbugs/spotbugs/issues/743))
 
 ### Deprecated
 * edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is depricated and getDottedClassName() can be used instead.
@@ -33,7 +34,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### CHANGED
 * Allow parallel workspace builds in Eclipse with Spotbugs installed
-* Detect method parameter type annotations ([#743](https://github.com/spotbugs/spotbugs/issues/592))
 
 ## 3.1.8 - 2018-10-16
 
