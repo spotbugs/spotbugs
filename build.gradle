@@ -2,7 +2,7 @@ plugins {
   id 'org.sonarqube' version '2.6.2'
 }
 
-version = '3.1.10-SNAPSHOT'
+version = '3.1.10'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
