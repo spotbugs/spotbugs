@@ -7,6 +7,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2018-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
 
+## 3.1.10 - 2018-12-19
+
 ### Fixed
 * Fix bug that enhanced xml options not recognized as textui mode
 * Dataflow generates too much log ([#601](https://github.com/spotbugs/spotbugs/issues/601))
