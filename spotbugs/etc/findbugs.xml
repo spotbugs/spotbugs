@@ -658,6 +658,8 @@
                     reports="SPEC_METHOD_PARAM_NULL_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.ChildListNeedsOrderBy" speed="fast" disabled="false"
                     reports="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MapTraversalWayCheck" speed="fast" disabled="false"
+                    reports="DM_TRAVERSAL_MAP_INEFFICIENT_CHECK"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1260,4 +1262,5 @@
           <BugPattern abbrev="SPEC" type="SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_METHOD_PARAM_NULL_CHECK" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION" category="CORRECTNESS"/>
+          <BugPattern abbrev="Dm" type="DM_TRAVERSAL_MAP_INEFFICIENT_CHECK" category="BAD_PRACTICE"/>
 </FindbugsPlugin>

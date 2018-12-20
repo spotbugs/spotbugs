@@ -1701,6 +1701,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MapTraversalWayCheck">
+    <Details>
+      <![CDATA[
+        <p>The way of traversing map is inefficient.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8500,6 +8507,18 @@ after the call to initLogging, the logger configuration is lost
       is the same as that it writes to the database, but this is not the case. 
       If you want to read data from a database into a List in a certain order,
       you should consider using the OrderBy annotation.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_TRAVERSAL_MAP_INEFFICIENT_CHECK">
+    <ShortDescription>The way of traversing map is inefficient.</ShortDescription>
+    <LongDescription>The way of Traversing Map {1} is inefficient.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>If only the key is used in the process, then just traversal the keyset. 
+         If key and value are both used in the process, then traversal the entryset.
+         Using key to get value is less efficient.
+      </p>
       ]]>
     </Details>
   </BugPattern>
