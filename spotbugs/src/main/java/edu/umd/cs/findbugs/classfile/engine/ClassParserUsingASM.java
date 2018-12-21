@@ -34,6 +34,8 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.TypePath;
+import org.objectweb.asm.TypeReference;
 
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -489,6 +491,19 @@ public class ClassParserUsingASM implements ClassParserInterface {
             AnnotationValue value = new AnnotationValue(desc);
             mBuilder.addParameterAnnotation(parameter, desc, value);
             return value.getAnnotationVisitor();
+        }
+
+        @Override
+        public org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
+                String desc, boolean visible) {
+            TypeReference typeRefObject = new TypeReference(typeRef);
+            if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER) {
+                // treat as parameter annotation
+                AnnotationValue value = new AnnotationValue(desc);
+                mBuilder.addParameterAnnotation(typeRefObject.getFormalParameterIndex(), desc, value);
+                return value.getAnnotationVisitor();
+            }
+            return null;
         }
     }
 

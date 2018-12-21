@@ -17,10 +17,10 @@ import os
 
 html_context = {
   'version' : '3.1',
-  'full_version' : '3.1.9',
-  'maven_plugin_version' : '3.1.8',
-  'gradle_plugin_version' : '1.6.5',
-  'archetype_version' : '0.2.1'
+  'full_version' : '3.1.10',
+  'maven_plugin_version' : '3.1.9',
+  'gradle_plugin_version' : '1.6.6',
+  'archetype_version' : '0.2.2'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'spotbugs'
-copyright = u'2016-2017, spotbugs community'
+copyright = u'2016-2018, spotbugs community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

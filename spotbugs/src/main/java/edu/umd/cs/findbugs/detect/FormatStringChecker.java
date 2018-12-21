@@ -64,7 +64,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + state);
+        // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " + state);
 
         if (stack.getStackDepth() < stackDepth) {
             state = FormatState.NONE;

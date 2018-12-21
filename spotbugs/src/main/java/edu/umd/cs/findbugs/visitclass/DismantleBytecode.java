@@ -562,7 +562,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
                 }
                 prevOpcode[currentPosInPrevOpcodeBuffer] = opcode;
                 i++;
-                // System.out.println(OPCODE_NAMES[opCode]);
+                // System.out.println(Const.getOpcodeName(opCode));
                 int byteStreamArgCount = Const.getNoOfOperands(opcode);
                 if (byteStreamArgCount == Const.UNPREDICTABLE) {
 

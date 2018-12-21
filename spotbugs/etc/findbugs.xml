@@ -524,6 +524,8 @@
                     reports="IIO_INEFFICIENT_INDEX_OF,IIO_INEFFICIENT_LAST_INDEX_OF"/>
           <Detector class="edu.umd.cs.findbugs.detect.InefficientToArray" speed="fast" disabled="true"
                     reports="ITA_INEFFICIENT_TO_ARRAY"/>
+          <Detector class="edu.umd.cs.findbugs.detect.InefficientReplaceAll" speed="fast" disabled="true"
+                    reports="IRA_INEFFICIENT_REPLACEALL"/>
           <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" speed="fast"
                     reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS,IJU_BAD_SUITE_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" speed="fast"
@@ -1088,6 +1090,8 @@
           <BugPattern abbrev="IIO" type="IIO_INEFFICIENT_LAST_INDEX_OF" category="PERFORMANCE"
                     experimental="true"/>
           <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
+                    experimental="true"/>
+          <BugPattern abbrev="IRA" type="IRA_INEFFICIENT_REPLACEALL" category="PERFORMANCE"
                     experimental="true"/>
           <BugPattern abbrev="IJU" type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD"
                     category="CORRECTNESS"/>

@@ -4,8 +4,27 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2018-??-??
+## Unreleased - 2019-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
+
+## 3.1.10 - 2018-12-19
+
+### Fixed
+* Fix bug that enhanced xml options not recognized as textui mode
+* Dataflow generates too much log ([#601](https://github.com/spotbugs/spotbugs/issues/601))
+* Delete redundant put plugin ([#720](https://github.com/spotbugs/spotbugs/pull/720))
+
+### Added
+* Add new detector IRA\_INEFFICIENT\_REPLACEALL for detecting usage of String.replaceAll where no regex is being used ([#705](https://github.com/spotbugs/spotbugs/issues/705))
+
+### Changed
+* Eclipse plugin is now signed to establish validity ([#779](https://github.com/spotbugs/spotbugs/issues/779))
+* edu.umd.cs.findbugs.util.ClassName#assertIsDotted return type is changed to void
+* edu.umd.cs.findbugs.util.ClassName#assertIsSlashed return type is changed to void
+* Detect method parameter type annotations ([#743](https://github.com/spotbugs/spotbugs/issues/743))
+
+### Deprecated
+* edu.umd.cs.findbugs.classfile.ClassDescriptor#toDottedClassName() is depricated and getDottedClassName() can be used instead.
 
 ## 3.1.9 - 2018-11-20
 

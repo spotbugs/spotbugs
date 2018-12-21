@@ -165,7 +165,7 @@ public class LaunchAppropriateUI {
 
         if (s == null) {
             for (String a : args) {
-                if ("-output".equals(a) || "-xml".equals(a) || a.endsWith(".class") || a.endsWith(".jar")) {
+                if ("-output".equals(a) || a.startsWith("-xml") || a.endsWith(".class") || a.endsWith(".jar")) {
                     return TEXTUI;
                 }
             }
