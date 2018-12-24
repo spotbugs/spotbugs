@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
+### Fixed
+* False positive: parameter must be non-null in inner class constructor ([#772](https://github.com/spotbugs/spotbugs/issues/772))
+
 ## 3.1.10 - 2018-12-19
 
 ### Fixed

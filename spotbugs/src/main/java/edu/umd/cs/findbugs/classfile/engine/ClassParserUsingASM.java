@@ -158,6 +158,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         HashSet<Label> labelsSeen = new HashSet<>();
 
+        private int parameterCount = -1;
+
         /**
          * @param calledClassSet
          * @param mBuilder
@@ -288,6 +290,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 String desc) {
             if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
                     && owner.equals(slashedClassName) && name.startsWith("this$")) {
+                // the field that has name starts with "this$" is generated for non-static inner class
+                // https://sourceforge.net/p/findbugs/bugs/1015/
                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
             }
             fieldInstructionCount++;
@@ -486,10 +490,20 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
+        public void visitAnnotableParameterCount(final int parameterCount, final boolean visible) {
+            this.parameterCount = parameterCount;
+        }
+
+        @Override
         public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                 boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
-            mBuilder.addParameterAnnotation(parameter, desc, value);
+            int shift = 0;
+            if (parameterCount >= 0) {
+                // if we have synthetic parameter, shift `parameter` value
+                shift = new SignatureParser(methodDesc).getNumParameters() - parameterCount;
+            }
+            mBuilder.addParameterAnnotation(parameter + shift, desc, value);
             return value.getAnnotationVisitor();
         }
 
