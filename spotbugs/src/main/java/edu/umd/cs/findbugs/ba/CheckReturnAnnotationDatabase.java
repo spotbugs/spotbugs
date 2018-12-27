@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * @author pugh
@@ -362,10 +363,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
     private CheckReturnValueAnnotation createJSR305Annotation(AnnotationEntry entry) {
         for (ElementValuePair pair : entry.getElementValuePairs()) {
-            if (!pair.getNameString().equals("when")) {
-                continue;
+            if (pair.getNameString().equals("when")) {
+                return CheckReturnValueAnnotation.createFor(When.valueOf(pair.getValue().stringifyValue()));
             }
-            return CheckReturnValueAnnotation.createFor(When.valueOf(pair.getValue().stringifyValue()));
         }
         // use default value
         return CheckReturnValueAnnotation.createFor(When.ALWAYS);
@@ -373,10 +373,9 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
     private CheckReturnValueAnnotation createSpotBugsAnnotation(AnnotationEntry entry) {
         for (ElementValuePair pair : entry.getElementValuePairs()) {
-            if (!pair.getNameString().equals("confidence")) {
-                continue;
+            if (pair.getNameString().equals("confidence")) {
+                return CheckReturnValueAnnotation.parse(pair.getValue().stringifyValue());
             }
-            return CheckReturnValueAnnotation.parse(pair.getValue().stringifyValue());
         }
         // use default value
         return CheckReturnValueAnnotation.parse(Confidence.MEDIUM.name());

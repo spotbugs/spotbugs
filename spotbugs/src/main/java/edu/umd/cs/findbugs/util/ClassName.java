@@ -178,10 +178,7 @@ public abstract class ClassName {
     public static boolean isValidClassName(String className) {
         // FIXME: should use a regex
 
-        if (className.indexOf('(') >= 0) {
-            return false;
-        }
-        return true;
+        return className.indexOf('(') < 0;
     }
 
     /**

@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Facade for class hierarchy queries. These typically access the class
@@ -138,9 +139,9 @@ public class Hierarchy2 {
                 System.out.println("[Method signature is " + methodSig + "]");
             }
 
-            if (className.startsWith("[")) {
+            if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
                 // Java 1.5 allows array classes to appear as the class name
-                className = "java.lang.Object";
+                className = Values.DOTTED_JAVA_LANG_OBJECT;
             }
 
             try {
@@ -493,8 +494,7 @@ public class Hierarchy2 {
      */
     public static @CheckForNull
     ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)  {
-        XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? Hierarchy.STATIC_METHOD
-                : Hierarchy.INSTANCE_METHOD);
+        XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD);
 
         if (method == null) {
             return null;

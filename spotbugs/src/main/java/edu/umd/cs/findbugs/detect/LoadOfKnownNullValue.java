@@ -290,19 +290,11 @@ public class LoadOfKnownNullValue implements Detector {
         INVOKEVIRTUAL invokeVirtual = (INVOKEVIRTUAL) nextNextNextInstruction;
         String methodName = invokeVirtual.getMethodName(classContext.getConstantPoolGen());
         String methodSig = invokeVirtual.getSignature(classContext.getConstantPoolGen());
-        if (!"close".equals(methodName)) {
-            return false;
-        }
-        if (!"()V".equals(methodSig)) {
+        if (!"close".equals(methodName) || !"()V".equals(methodSig)) {
             return false;
         }
         InstructionHandle nextNextNextNextHandle = nextNextNextHandle.getNext(); // after
-        if (ifNull.getTarget() != nextNextNextNextHandle) {
-            return false;
-        }
-
-        return true;
-
+        return ifNull.getTarget() == nextNextNextNextHandle;
     }
 
     @Override

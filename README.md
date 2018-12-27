@@ -22,5 +22,14 @@ To see a list of build options, run `gradle tasks` (or `gradlew tasks`). The `bu
 To build the SpotBugs plugin for Eclipse, you'll need to create the file `eclipsePlugin/local.properties`, containing a property `eclipseRoot.dir` that points to an Eclipse installation's root directory (see `.travis.yml` for an example), then run the build.
 To prepare Eclipse environment only, run `./gradlew eclipse`. See also [detailed steps](https://github.com/spotbugs/spotbugs/blob/release-3.1/eclipsePlugin/doc/building_spotbugs_plugin.txt).
 
+# Using SpotBugs
+
+SpotBugs can be used standalone and through several integrations, including:
+
+* [Ant](http://spotbugs.readthedocs.io/en/latest/ant.html)
+* [Maven](http://spotbugs.readthedocs.io/en/latest/maven.html)
+* [Gradle](http://spotbugs.readthedocs.io/en/latest/gradle.html)
+* [Eclipse](http://spotbugs.readthedocs.io/en/latest/eclipse.html)
+
 # Questions?
 You can contact us using [our general purpose mailing list](https://github.com/spotbugs/discuss/issues?q=).

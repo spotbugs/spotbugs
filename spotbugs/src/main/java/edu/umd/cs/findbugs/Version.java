@@ -42,13 +42,13 @@ public class Version {
      */
     public static final String WEBSITE = "https://spotbugs.github.io/";
 
-    public final static String VERSION_STRING;
+    public static final String VERSION_STRING;
 
     /**
      * @deprecated Use {@link #VERSION_STRING} instead.
     */
     @Deprecated
-    public final static String RELEASE;
+    public static final String RELEASE;
 
     private static String applicationName = "";
     private static String applicationVersion = "";
@@ -97,7 +97,7 @@ public class Version {
         return applicationVersion;
     }
 
-    public static void main(String[] argv) throws InterruptedException {
+    public static void main(String[] argv) {
         if (argv.length == 0) {
             printVersion(false);
             return;
@@ -106,7 +106,7 @@ public class Version {
         String arg = argv[0];
 
         if ("-release".equals(arg)) {
-            System.out.println(VERSION_STRING);
+            LOG.info(VERSION_STRING);
         } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
             for(Plugin p : Plugin.getAllPlugins()) {
@@ -121,7 +121,7 @@ public class Version {
                 if (website != null && website.length() > 0) {
                     LOG.info("      website: {}", website);
                 }
-                System.out.println();
+                LOG.info("");
             }
         } else if ("-configuration".equals(arg)){
             printVersion(true);
@@ -166,6 +166,7 @@ public class Version {
             for (DetectorFactory factory : plugin.getDetectorFactories()) {
                 LOG.info("  detector {}", factory.getShortName());
             }
+            LOG.info("");
         }
     }
 }

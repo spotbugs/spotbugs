@@ -392,7 +392,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                         .addValueSource(stack.getStackItem(1), this), this);
                     }
                 }
-                if (leftHandSide != null && leftHandSide instanceof Integer && ((Integer) leftHandSide) > 0) {
+                if (leftHandSide instanceof Integer && ((Integer) leftHandSide) > 0) {
                     // boring; lie so other detectors won't get concerned
                     constantArgumentToShift = true;
                     valueOfConstantArgumentToShift = 8;
@@ -406,7 +406,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 && "setMonth".equals(getNameConstantOperand()) && "(I)V".equals(getSigConstantOperand())) {
             OpcodeStack.Item item = stack.getStackItem(0);
             Object o = item.getConstant();
-            if (o != null && o instanceof Integer) {
+            if (o instanceof Integer) {
                 int v = (Integer) o;
                 if (v < 0 || v > 11) {
                     bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", HIGH_PRIORITY).addClassAndMethod(this).addInt(v)
@@ -427,7 +427,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 int pos = sig.length() - 5;
                 OpcodeStack.Item item = stack.getStackItem(pos);
                 Object o = item.getConstant();
-                if (o != null && o instanceof Integer) {
+                if (o instanceof Integer) {
                     int v = (Integer) o;
                     if (v < 0 || v > 11) {
                         bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY).addClassAndMethod(this)

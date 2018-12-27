@@ -97,13 +97,8 @@ public class BlockType extends BitSet {
         if (depth != other.depth) {
             return false;
         }
-        if (isTop != other.isTop) {
-            return false;
-        }
-        if (isValid != other.isValid) {
-            return false;
-        }
-        return true;
+        return isTop == other.isTop
+            && isValid == other.isValid;
     }
 
     /**

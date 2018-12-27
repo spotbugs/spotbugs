@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.IF_ACMPNE;
@@ -141,21 +142,21 @@ IsNullValueAnalysisFeatures {
                 state = PointerEqualityCheckState.START;
                 break;
             case START:
-                if (ins instanceof org.apache.bcel.generic.ALOAD) {
+                if (ins instanceof ALOAD) {
                     state = PointerEqualityCheckState.SAW1;
                 } else {
                     return null;
                 }
                 break;
             case SAW1:
-                if (ins instanceof org.apache.bcel.generic.ALOAD) {
+                if (ins instanceof ALOAD) {
                     state = PointerEqualityCheckState.SAW2;
                 } else {
                     return null;
                 }
                 break;
             case SAW2:
-                if (ins instanceof org.apache.bcel.generic.IF_ACMPNE) {
+                if (ins instanceof IF_ACMPNE) {
                     state = PointerEqualityCheckState.IFEQUAL;
                     target = ((IF_ACMPNE) ins).getIndex() + loc.getHandle().getPosition();
                     test = loc;
@@ -429,18 +430,16 @@ IsNullValueAnalysisFeatures {
 
                 // Downgrade NULL and NSP to DNR if the handler is for
                 // CloneNotSupportedException or InterruptedException
-                if (true) {
-                    CodeExceptionGen handler = destBlock.getExceptionGen();
-                    ObjectType catchType = handler.getCatchType();
-                    if (catchType != null) {
-                        String catchClass = catchType.getClassName();
-                        if ("java.lang.CloneNotSupportedException".equals(catchClass)
-                                || "java.lang.InterruptedException".equals(catchClass)) {
-                            for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
-                                IsNullValue value = tmpFact.getValue(i);
-                                if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
-                                    tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
-                                }
+                CodeExceptionGen handler = destBlock.getExceptionGen();
+                ObjectType catchType = handler.getCatchType();
+                if (catchType != null) {
+                    String catchClass = catchType.getClassName();
+                    if ("java.lang.CloneNotSupportedException".equals(catchClass)
+                            || "java.lang.InterruptedException".equals(catchClass)) {
+                        for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
+                            IsNullValue value = tmpFact.getValue(i);
+                            if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
+                                tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
                             }
                         }
                     }

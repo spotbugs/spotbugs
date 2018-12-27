@@ -213,12 +213,10 @@ public class FindInconsistentSync2 implements Detector {
                 return true;
             }
         } catch (ClassNotFoundException e) {
+            // TODO https://github.com/spotbugs/spotbugs/issues/629
             assert true;
         }
-        if (classDescriptor.getClassName().endsWith("Servlet")) {
-            return true;
-        }
-        return false;
+        return classDescriptor.getClassName().endsWith("Servlet");
     }
 
     /**

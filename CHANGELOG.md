@@ -5,6 +5,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2019-??-??
+* Start migrating STDOUT/STDERR usage to a logging framework
 
 ## 3.1.10 - 2018-12-19
 

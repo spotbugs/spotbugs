@@ -380,9 +380,9 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
                 if (debug && SystemProperties.getBoolean("dataflow.blockdebug")) {
                     debug(block, "Dumping flow values for block:\n");
-                    Iterator<org.apache.bcel.generic.InstructionHandle> ii = block.instructionIterator();
+                    Iterator<InstructionHandle> ii = block.instructionIterator();
                     while (ii.hasNext()) {
-                        org.apache.bcel.generic.InstructionHandle handle = ii.next();
+                        InstructionHandle handle = ii.next();
                         Fact tmpResult = analysis.createFact();
                         analysis.transfer(block, handle, start, tmpResult);
                         System.out.println("\t" + handle + " " + analysis.factToString(tmpResult));

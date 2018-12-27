@@ -53,9 +53,6 @@ public class Churn {
     }
 
     String getKey(BugInstance b) {
-        if (false) {
-            return b.getType();
-        }
         String result = b.getCategoryAbbrev();
         if ("C".equals(result) || "N".equals(result)) {
             return result;

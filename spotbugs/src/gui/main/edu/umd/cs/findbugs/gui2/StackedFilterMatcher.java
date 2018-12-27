@@ -179,7 +179,7 @@ public class StackedFilterMatcher extends FilterMatcher {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof StackedFilterMatcher)) {
+        if (!(o instanceof StackedFilterMatcher)) {
             return false;
         }
 

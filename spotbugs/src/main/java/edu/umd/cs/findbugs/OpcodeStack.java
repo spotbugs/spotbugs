@@ -79,6 +79,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
+import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -276,7 +277,7 @@ public class OpcodeStack {
          * @deprecated will be deleted at v4 release. use {@link #getSpecialKindName(int)} instead.
          */
         @Deprecated
-        @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
+        @StaticConstant
         public static final HashMap<Integer, String> specialKindNames = new HashMap<>();
 
         private static @SpecialKind int nextSpecialKind = asSpecialKind(TYPE_ONLY + 1);
@@ -534,12 +535,12 @@ public class OpcodeStack {
             if (i1.equals(i2)) {
                 return i1;
             }
-            Item m = new Item();
             if (i1.getSpecialKind() == TYPE_ONLY && i2.getSpecialKind() != TYPE_ONLY) {
                 return i2;
             } else if (i2.getSpecialKind() == TYPE_ONLY && i1.getSpecialKind() != TYPE_ONLY) {
                 return i1;
             }
+            Item m = new Item();
             m.flags = i1.flags & i2.flags;
             m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
             if (i1.pc == i2.pc) {
@@ -1465,7 +1466,7 @@ public class OpcodeStack {
                 }
                 FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
                 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
-                if ("separator".equals(field.getFieldName()) && "java.io.File".equals(field.getClassName())) {
+                if ("separator".equals(field.getFieldName()) && Values.DOTTED_JAVA_IO_FILE.equals(field.getClassName())) {
                     i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
                 }
                 i.setPC(dbc.getPC());
@@ -2803,13 +2804,10 @@ public class OpcodeStack {
                 System.out.println("jump items: " + mergeFrom);
             }
         } else {
-            if (DEBUG2) {
-                if (intoSize != fromSize) {
-                    System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
-                    System.out.println("current items: " + mergeInto);
-                    System.out.println("jump items: " + mergeFrom);
-                }
-
+            if (DEBUG2 && intoSize != fromSize) {
+                System.out.printf("Bad merging %d items from %d items%n", intoSize, fromSize);
+                System.out.println("current items: " + mergeInto);
+                System.out.println("jump items: " + mergeFrom);
             }
 
             List<Item> mergeIntoCopy = null;
@@ -2985,9 +2983,8 @@ public class OpcodeStack {
                     break;
                 }
             } while (myStack.isJumpInfoChangedByBackwardsBranch() && myStack.backwardsBranch);
-            if (iteration > 20&& iteration <= 40) {
+            if (iteration > 20 && iteration <= 40) {
                 AnalysisContext.logError("Iterative jump info converged after " + iteration + " iterations in " + xMethod + ", size " + method.getCode().getLength());
-
             }
             return new JumpInfo(myStack.jumpEntries, myStack.jumpStackEntries, myStack.jumpEntryLocations);
         }
@@ -3019,10 +3016,8 @@ public class OpcodeStack {
                 setJumpInfoChangedByBackwardBranch("locals", from, target);
             }
             List<Item> stackAtTarget = jumpStackEntries.get(Integer.valueOf(target));
-            if (stack.size() > 0 && stackAtTarget != null) {
-                if (mergeLists(stackAtTarget, stack, false)) {
-                    setJumpInfoChangedByBackwardBranch("stack", from, target);
-                }
+            if (!stack.isEmpty() && stackAtTarget != null && mergeLists(stackAtTarget, stack, false)) {
+                setJumpInfoChangedByBackwardBranch("stack", from, target);
             }
         }
 
@@ -3692,10 +3687,7 @@ public class OpcodeStack {
     }
 
     public boolean isTop() {
-        if (top) {
-            return true;
-        }
-        return false;
+        return top;
     }
 
     void setReachOnlyByBranch(boolean reachOnlyByBranch) {
