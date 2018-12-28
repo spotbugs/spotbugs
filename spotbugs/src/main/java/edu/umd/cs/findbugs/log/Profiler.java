@@ -27,6 +27,8 @@ import java.util.EmptyStackException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.lang.invoke.MethodHandles;
+import java.util.logging.Logger;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +58,8 @@ import org.jspecify.annotations.NonNull;
 @NotThreadSafe
 public class Profiler implements IProfiler, XMLWriteable {
 
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     static final boolean REPORT = SystemProperties.getBoolean("profiler.report");
     static final boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
@@ -76,7 +80,7 @@ public class Profiler implements IProfiler, XMLWriteable {
      */
     public Profiler() {
         if (REPORT) {
-            System.err.println("Profiling activated");
+            LOG.info("Profiling activated");
         }
     }
 
@@ -418,7 +422,7 @@ public class Profiler implements IProfiler, XMLWriteable {
             }
             stream.flush();
         } catch (RuntimeException e) {
-            System.err.println(e);
+            LOG.severe(e.getMessage());
         }
     }
 

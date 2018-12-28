@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs.model;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Logger;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.util.ClassName;
@@ -40,6 +42,8 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
+import static java.util.logging.Level.*;
+
 /**
  * Features of a class which may be used to identify it if it is renamed or
  * modified.
@@ -47,6 +51,9 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public class ClassFeatureSet implements XMLWriteable {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     public static final String CLASS_NAME_KEY = "Class:";
 
     public static final String METHOD_NAME_KEY = "Method:";
@@ -344,7 +351,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: " + ClassFeatureSet.class.getName() + " <class 1> <class 2>");
+            LOG.log(SEVERE, "Usage: {0} <class 1> <class 2>", ClassFeatureSet.class.getName());
             System.exit(1);
         }
 

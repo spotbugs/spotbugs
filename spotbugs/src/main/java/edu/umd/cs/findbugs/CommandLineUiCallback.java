@@ -21,11 +21,13 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -37,6 +39,9 @@ import edu.umd.cs.findbugs.charsets.UserTextFile;
  * @author andy.st
  */
 public class CommandLineUiCallback implements IGuiCallback {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
 
     public CommandLineUiCallback() {
@@ -104,7 +109,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     @Override
     public void setErrorMessage(String errorMsg) {
-        System.err.println(errorMsg);
+        LOG.severe(errorMsg);
     }
 
     @Override
