@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
 
@@ -37,6 +39,9 @@ import edu.umd.cs.findbugs.charsets.UTF8;
  * @author David Hovemeyer
  */
 public abstract class TextUIBugReporter extends AbstractBugReporter implements ConfigurableBugReporter {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private boolean reportStackTrace;
 
     private boolean useLongBugCodes = false;
@@ -192,7 +197,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
      */
     protected void emitLine(String line) {
         line = line.replaceAll("\t", "  ");
-        System.err.println(line);
+        LOG.severe(line);
     }
 
     public boolean getUseLongBugCodes() {

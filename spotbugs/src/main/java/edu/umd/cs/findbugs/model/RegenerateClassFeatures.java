@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs.model;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -32,6 +34,8 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
+import static java.util.logging.Level.*;
+
 /**
  * Repopulate a BugCollection with class features from the classes in a
  * specified jar file.
@@ -39,6 +43,9 @@ import edu.umd.cs.findbugs.SortedBugCollection;
  * @author David Hovemeyer
  */
 public class RegenerateClassFeatures {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private final BugCollection bugCollection;
 
     private final String jarFile;
@@ -90,7 +97,7 @@ public class RegenerateClassFeatures {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
+            LOG.log(SEVERE, "Usage: {0} <bug collection> <jar file>", RegenerateClassFeatures.class.getName());
             System.exit(1);
         }
 

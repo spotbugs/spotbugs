@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -63,6 +65,8 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
 
+import static java.util.logging.Level.*;
+
 /**
  * Check uses of the ExpectWarning and NoWarning annotations. This is for
  * internal testing of FindBugs (against spotbugsTestCases).
@@ -72,6 +76,8 @@ import edu.umd.cs.findbugs.classfile.analysis.EnumValue;
  */
 @Deprecated
 public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
     private static final boolean DEBUG = SystemProperties.getBoolean("cew.debug");
 
     private BugReporter reporter;
@@ -108,8 +114,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         if (reporter == null) {
             if (!warned) {
-                System.err
-                        .println("*** NOTE ***: CheckExpectedWarnings disabled because bug reporter doesn't use a BugCollection");
+                LOG.warning("*** NOTE ***: CheckExpectedWarnings disabled because bug reporter doesn't use a BugCollection");
                 warned = true;
             }
             return;

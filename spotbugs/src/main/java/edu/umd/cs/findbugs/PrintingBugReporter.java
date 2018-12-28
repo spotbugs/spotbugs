@@ -22,7 +22,9 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -35,11 +37,16 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.util.Bag;
 
+import static java.util.logging.Level.*;
+
 /**
  * A simple BugReporter which simply prints the formatted message to the output
  * stream.
  */
 public class PrintingBugReporter extends TextUIBugReporter {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private final HashSet<BugInstance> seenAlready = new HashSet<>();
 
     @Override
@@ -201,15 +208,15 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
         if (commandLine.setExitCode) {
             int exitCode = 0;
-            System.err.println("Calculating exit code...");
+            LOG.fine("Calculating exit code...");
             if (storedException != null) {
                 exitCode |= ExitCodes.ERROR_FLAG;
-                System.err.println("Setting 'errors encountered' flag (" + ExitCodes.ERROR_FLAG + ")");
+                LOG.log(FINE, "Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
                 storedException.printStackTrace(System.err);
             }
             if (bugsReported) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                System.err.println("Setting 'bugs found' flag (" + ExitCodes.BUGS_FOUND_FLAG + ")");
+                LOG.log(FINE, "Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
             }
             System.err.println("Exit code set to: " + exitCode);
             System.exit(exitCode);

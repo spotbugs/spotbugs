@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.xml;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -28,6 +30,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import static java.util.logging.Level.*;
 
 /**
  * Find nodes in a dom4j tree that match a particular XPath expression. The
@@ -42,6 +45,9 @@ import org.dom4j.io.SAXReader;
  * @author David Hovemeyer
  */
 public abstract class XPathFind {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private final Document document;
 
     protected XPathFind(Document document) {
@@ -59,7 +65,7 @@ public abstract class XPathFind {
 
     public static void main(String[] argv) throws Exception {
         if (argv.length != 2) {
-            System.err.println("Usage: " + XPathFind.class.getName() + ": <filename> <xpath expression>");
+            LOG.log(SEVERE, "Usage: {0}: <filename> <xpath expression>", XPathFind.class.getName());
             System.exit(1);
         }
 

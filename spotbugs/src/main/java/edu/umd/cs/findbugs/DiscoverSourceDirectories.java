@@ -22,10 +22,12 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.util.ClassName;
@@ -45,6 +47,8 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassParserUsingASM;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 
+import static java.util.logging.Level.*;
+
 /**
  * Based on the contents of the application directories/archives in a Project,
  * and a "root" source directory (under which some number of "real" source
@@ -54,6 +58,8 @@ import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
  * @author David Hovemeyer
  */
 public class DiscoverSourceDirectories {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
     private static boolean DEBUG = SystemProperties.getBoolean("findbugs.dsd.debug");
 
     private Project project;
@@ -242,9 +248,7 @@ public class DiscoverSourceDirectories {
 
             // Attempt to find source directories for all source files,
             // and add them to the discoveredSourceDirectoryList
-            if (DEBUG) {
-                System.out.println("looking for " + fullyQualifiedSourceFileNameList.size() + " files");
-            }
+            LOG.log(INFO, "looking for {0} file(s)", fullyQualifiedSourceFileNameList.size());
             findSourceDirectoriesForAllSourceFiles(fullyQualifiedSourceFileNameList, candidateSourceDirList);
         }
     }
@@ -366,7 +370,7 @@ public class DiscoverSourceDirectories {
      */
     public static void main(String[] args) throws IOException, CheckedAnalysisException, InterruptedException {
         if (args.length != 2) {
-            System.err.println("Usage: " + DiscoverSourceDirectories.class.getName() + " <project file> <root source dir>");
+            LOG.log(SEVERE, "Usage: {0} <project file> <root source dir>", DiscoverSourceDirectories.class.getName());
             System.exit(1);
         }
 
@@ -378,30 +382,34 @@ public class DiscoverSourceDirectories {
             public void reportMissingClass(ClassNotFoundException ex) {
                 String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
                 if (className != null) {
-                    logError("Missing class: " + className);
+                    logError("Missing class", className);
                 } else {
-                    logError("Missing class: " + ex);
+                    logError("Missing class", ex);
                 }
             }
 
             @Override
             public void reportMissingClass(ClassDescriptor classDescriptor) {
-                logError("Missing class: " + classDescriptor.getDottedClassName());
+                logError("Missing class", classDescriptor.getDottedClassName());
             }
 
             @Override
             public void logError(String message) {
-                System.err.println("Error: " + message);
+                LOG.log(SEVERE, "Error: {0}", message);
+            }
+
+            private void logError(Object message, Object subMessage) {
+                LOG.log(SEVERE, "Error: {0}: {1}", new Object[] {message, subMessage});
             }
 
             @Override
             public void logError(String message, Throwable e) {
-                logError(message + ": " + e.getMessage());
+                logError(message, e.getMessage());
             }
 
             @Override
             public void reportSkippedAnalysis(MethodDescriptor method) {
-                logError("Skipped analysis of method " + method.toString());
+                logError("Skipped analysis of method", method);
             }
 
         };
@@ -467,9 +475,9 @@ public class DiscoverSourceDirectories {
 
         discoverSourceDirectories.execute();
 
-        System.out.println("Found source directories:");
+        LOG.info("Found source directories:");
         for (String srcDir : discoverSourceDirectories.getDiscoveredSourceDirectoryList()) {
-            System.out.println("  " + srcDir);
+            LOG.log(INFO, "  {0}", srcDir);
         }
     }
 }

@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -27,12 +29,16 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.text.StringEscapeUtils;
 
 
+import static java.util.logging.Level.*;
+
 /**
  * A class for static String utility methods.
  *
  * @author Brian Cole
  */
 public class Strings {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     /**
      * This is intended to be semantically equivalent to
@@ -191,7 +197,7 @@ public class Strings {
 
     private static Pattern unescapePattern = null;
 
-    private static volatile boolean paternIsInitialized = false;
+    private static volatile boolean patternIsInitialized = false;
 
     private static final Object unescapeInitLockObject = new Object();
 
@@ -200,12 +206,12 @@ public class Strings {
      * invoked automatically the first time a string is unescaped.
      */
     public static boolean initializeUnescapePattern() {
-        if (paternIsInitialized == true) {
+        if (patternIsInitialized == true) {
             return true;
         }
 
         synchronized (unescapeInitLockObject) {
-            if (paternIsInitialized == true) {
+            if (patternIsInitialized == true) {
                 return true;
             }
 
@@ -216,11 +222,11 @@ public class Strings {
                  * the pattern is compiled from a final string, so this
                  * exception should never be thrown
                  */
-                System.err.println("Impossible error:  " + "static final regular expression pattern "
-                        + "failed to compile.  Exception:  " + pse.toString());
+                LOG.log(SEVERE, "Impossible error: static final regular expression pattern "
+                        + "failed to compile.  Exception:  {0}", pse);
                 return false;
             }
-            paternIsInitialized = true;
+            patternIsInitialized = true;
         }
         return true;
     }
@@ -275,8 +281,7 @@ public class Strings {
                      * the static regular expression string should guarantee
                      * that this exception is never thrown
                      */
-                    System.err.println("Impossible error: escape sequence '" + digits + "' is not a valid hex number!  "
-                            + "Exception: " + nfe.toString());
+                    LOG.log(SEVERE, "Impossible error: escape sequence '{0}' is not a valid hex number!  Exception: {1}", new Object[] {digits, nfe});
                     return s;
                 }
                 if (slashes != null && slashes.length() % 2 == 0 && isInvalidXMLCharacter(escapeCode)) {

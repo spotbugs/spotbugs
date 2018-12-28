@@ -21,8 +21,10 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Logger;
 import java.util.Set;
 
 import org.dom4j.Document;
@@ -33,6 +35,8 @@ import org.dom4j.io.XMLWriter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.xml.XMLUtil;
 
+import static java.util.logging.Level.*;
+
 /**
  * Add human-readable messages to a dom4j tree containing FindBugs XML output.
  * This transformation makes it easier to generate reports (such as HTML) from
@@ -42,6 +46,9 @@ import edu.umd.cs.findbugs.xml.XMLUtil;
  * @author David Hovemeyer
  */
 public class AddMessages {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private final BugCollection bugCollection;
 
     private final Document document;
@@ -169,7 +176,7 @@ public class AddMessages {
     @SuppressFBWarnings("DM_EXIT")
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
+            LOG.log(SEVERE, "Usage: {0} <input collection> <output collection>", AddMessages.class.getName());
             System.exit(1);
         }
 

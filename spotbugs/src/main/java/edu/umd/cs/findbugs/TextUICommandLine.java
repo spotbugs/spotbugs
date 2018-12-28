@@ -31,11 +31,13 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -55,6 +57,8 @@ import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.logging.Level.*;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -469,7 +473,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 }
                 outputStream = UTF8.printStream(oStream);
             } catch (IOException e) {
-                System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
+                LOG.error("Couldn't open {} for output: {1}", new Object[] {outputFile, e});
                 System.exit(1);
             }
         } else if ("-bugReporters".equals(option)) {
@@ -523,10 +527,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 if (factory == null) {
                     throw new IllegalArgumentException("Unknown detector: " + what);
                 }
-                if (FindBugs.DEBUG) {
-                    System.err.println("Detector " + factory.getShortName() + " " + (enabled ? "enabled" : "disabled")
-                            + ", userPreferences=" + System.identityHashCode(getUserPreferences()));
-                }
+                LOG.info("Detector {} {}, userPreferences={2}", new Object[] {
+                    factory.getShortName(), (enabled ? "enabled" : "disabled"), System.identityHashCode(getUserPreferences())
+                });
                 getUserPreferences().enableDetector(factory, enabled);
             });
         } else if ("-choosePlugins".equals(option)) {
