@@ -23,6 +23,11 @@ import edu.umd.cs.findbugs.model.ClassNameRewriter;
 import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
 import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
 
+import java.lang.invoke.MethodHandles;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.*;
+
 /**
  * Very sloppy bug comparator: if the warnings are of the same type, and in the
  * same class/method/field, assume they are the same.
@@ -31,7 +36,7 @@ import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
  */
 public class SloppyBugComparator implements WarningComparator {
 
-    private static final boolean DEBUG = SystemProperties.getBoolean("sloppyComparator.debug");
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 
@@ -68,14 +73,10 @@ public class SloppyBugComparator implements WarningComparator {
         String lhsClassName = classNameRewriter.rewriteClassName(lhs.getClassName());
         String rhsClassName = classNameRewriter.rewriteClassName(rhs.getClassName());
 
-        if (DEBUG) {
-            System.err.println("Comparing " + lhsClassName + " and " + rhsClassName);
-        }
+        LOG.log(FINE, "Comparing {0} and {1}", new Object[] {lhsClassName, rhsClassName});
 
         int cmp = lhsClassName.compareTo(rhsClassName);
-        if (DEBUG) {
-            System.err.println("\t==> " + cmp);
-        }
+        LOG.log(FINE, "\t==> {0}", cmp);
         return cmp;
     }
 
@@ -94,9 +95,7 @@ public class SloppyBugComparator implements WarningComparator {
         }
         lhs = convertField(lhs);
         rhs = convertField(rhs);
-        if (DEBUG) {
-            System.err.println("Compare fields: " + lhs + " and " + rhs);
-        }
+        LOG.log(FINE, "Compare fields: {0} and {1}", new Object[] {lhs, rhs});
         return lhs.compareTo(rhs);
     }
 
@@ -122,9 +121,7 @@ public class SloppyBugComparator implements WarningComparator {
         rhsAbbrev = rhsPattern.getAbbrev();
         cmp = lhsAbbrev.compareTo(rhsAbbrev);
         if (cmp != 0) {
-            if (DEBUG) {
-                System.err.println("bug abbrevs do not match");
-            }
+            LOG.fine("bug abbrevs do not match");
             return cmp;
         }
 
@@ -138,9 +135,7 @@ public class SloppyBugComparator implements WarningComparator {
         // Primary method must match (if any)
         cmp = compareMethodsAllowingNull(lhs.getPrimaryMethod(), rhs.getPrimaryMethod());
         if (cmp != 0) {
-            if (DEBUG) {
-                System.err.println("primary methods do not match");
-            }
+            LOG.fine("primary methods do not match");
             return cmp;
         }
 
@@ -148,9 +143,7 @@ public class SloppyBugComparator implements WarningComparator {
             // Primary field must match (if any)
             cmp = compareFieldsAllowingNull(lhs.getPrimaryField(), rhs.getPrimaryField());
             if (cmp != 0) {
-                if (DEBUG) {
-                    System.err.println("primary fields do not match");
-                }
+                LOG.fine("primary fields do not match");
                 return cmp;
             }
         }
