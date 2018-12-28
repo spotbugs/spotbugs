@@ -21,9 +21,13 @@ package edu.umd.cs.findbugs.jaif;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.invoke.MethodHandles;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
+
+import static java.util.logging.Level.*;
 
 /**
  * Parse an external annotation file.
@@ -34,6 +38,9 @@ import edu.umd.cs.findbugs.charsets.UTF8;
  *      File Utilities/</a>
  */
 public class JAIFParser {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
+
     private final JAIFScanner scanner;
 
     private final JAIFEvents callback;
@@ -365,14 +372,14 @@ public class JAIFParser {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
-            System.err.println("Usage: " + JAIFParser.class.getName() + " <jaif file>");
+            LOG.log(SEVERE, "Usage: {0} <jaif file>", JAIFParser.class.getName());
             System.exit(1);
         }
 
         JAIFEvents callback = new JAIFEvents() {
             @Override
             public void annotationField(String fieldName, Object constant) {
-                System.out.println("    " + fieldName + "=" + constant);
+                LOG.log(INFO, "    {0}={1}", new Object[] {fieldName, constant});
             }
 
             @Override
@@ -385,17 +392,17 @@ public class JAIFParser {
 
             @Override
             public void startAnnotation(String annotationName) {
-                System.out.println("  annotation " + annotationName);
+                LOG.log(INFO, "  annotation {0}", annotationName);
             }
 
             @Override
             public void startPackageDefinition(String pkgName) {
-                System.out.println("package " + pkgName);
+                LOG.log(INFO, "package {0}", pkgName);
             }
 
             @Override
             public void startAnnotationDefinition(String annotationName, String retention) {
-                System.out.println("  annotation " + annotationName + " " + retention);
+                LOG.log(INFO, "  annotation {0} {1}", new Object[] {annotationName, retention});
             }
 
             @Override
@@ -404,7 +411,7 @@ public class JAIFParser {
 
             @Override
             public void annotationFieldDefinition(String type, String fieldName) {
-                System.out.println("    " + type + " " + fieldName);
+                LOG.log(INFO, "    {0} {1}", new Object[] {type, fieldName});
             }
         };
 
