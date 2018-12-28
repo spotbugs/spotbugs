@@ -25,6 +25,11 @@ import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.SystemProperties;
 
+import java.lang.invoke.MethodHandles;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.*;
+
 /**
  * As a first scanning pass, make a note of unconditionally dereferenced
  * parameters for later use by FindNullDerefs.
@@ -33,6 +38,8 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class NoteNonnullReturnValues extends BuildNonnullReturnDatabase implements Detector, NonReportingDetector,
         InterproceduralFirstPassDetector {
+
+    private static final Logger LOG = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 
     public NoteNonnullReturnValues(BugReporter bugReporter) {
     }
@@ -45,7 +52,7 @@ public class NoteNonnullReturnValues extends BuildNonnullReturnDatabase implemen
     @Override
     public void report() {
         if (SystemProperties.getBoolean("findbugs.statistics")) {
-            System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
+            LOG.log(INFO, "{0}/{1} methods return nonnull values", new Object[] {returnsNonNull, returnsReference});
         }
     }
 
