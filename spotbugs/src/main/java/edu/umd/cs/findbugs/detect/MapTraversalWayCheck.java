@@ -27,7 +27,6 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -77,6 +76,8 @@ public class MapTraversalWayCheck implements Detector {
     private static final int NUM_ENTRYSET = 1;
 
     private static final int NUM_VALUES = -1;
+
+    private final List<Integer> mapEndList = new ArrayList<>();
 
     private final BugAccumulator bugAccumulator;
 
@@ -133,61 +134,13 @@ public class MapTraversalWayCheck implements Detector {
             return;
         }
 
-        MethodGen methodGen = classContext.getMethodGen(method);
-        String sourceFile = classContext.getJavaClass().getSourceFileName();
-        ValueNumberDataflow valueNumDataFlow = classContext.getValueNumberDataflow(method);
         ConstantPoolGen constPool = classContext.getConstantPoolGen();
 
         Collection<Location> locationCollection = cfg.orderedLocations();
         ArrayList<Location> locationList = new ArrayList<>();
         locationList.addAll(locationCollection);
 
-        // Iterator<BasicBlock> bbIter = cfg.blockIterator();
         loopAnalyse(locationList, 0, -1, constPool, classContext, method);
-        // while (bbIter.hasNext()) {
-        // BasicBlock basicBlockTmp = bbIter.next();
-        // InstructionHandle insHandle = basicBlockTmp.getExceptionThrower();
-        // if (null == insHandle) {
-        // continue;
-        // }
-        //
-        // Instruction ins = insHandle.getInstruction();
-        //
-        // if (ins instanceof INVOKEINTERFACE) {
-        // int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-        // int way = checkIsMapTravsal(constIndex, constPool);
-        //
-        // if (NUM_NOT_TRAVERSAL == way) {
-        // continue;
-        // }
-        // // findMapTraversal(bbIter, constPool);
-        // // int startTravalPc = insHandle.getPosition();
-        //
-        // boolean res = checkValid(way, bbIter, constPool);
-        // if (res) {
-        // continue;
-        // }
-        //
-        // Location location = new Location(insHandle, basicBlockTmp);
-        // ValueNumberFrame vnaFrame = valueNumDataFlow.getFactAtLocation(location);
-        // ValueNumberFrame vnaFrame1 = valueNumDataFlow.getStartFact(basicBlockTmp);
-        // ValueNumber valueNumber = vnaFrame1.getTopValue();
-        // FieldDescriptor field = getFieldInfoFromPre(insHandle, constPool);
-        //
-        // BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
-        // valueNumber, vnaFrame, "VALUE_OF");
-        //
-        // SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-        // methodGen, sourceFile, insHandle);
-        //
-        // bugAccumulator
-        // .accumulateBug(
-        // new BugInstance(this, "DM_TRAVERSAL_MAP_INEFFICIENT_CHECK", NORMAL_PRIORITY)
-        // .addClassAndMethod(methodGen, sourceFile)
-        // .addOptionalAnnotation(variableAnnotation).addField(field),
-        // sourceLineAnnotation);
-        // }
-        // }
     }
 
     /**
@@ -203,6 +156,7 @@ public class MapTraversalWayCheck implements Detector {
      *            class context
      * @param method
      *            method to be analyzed
+     * @return the end index in the instruction list
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
@@ -212,8 +166,6 @@ public class MapTraversalWayCheck implements Detector {
         int currentEndIndex = locationList.size();
         int currentWay = way;
 
-        int preStartIndex = locationList.size();
-        int preEndIndex = locationList.size();
         Location currentLocation = locationList.get(startIndex);
 
         for (int i = startIndex + 1; i < locationList.size(); i++) {
@@ -226,19 +178,22 @@ public class MapTraversalWayCheck implements Detector {
             Instruction ins = insHandle.getInstruction();
 
             if (ins instanceof INVOKEINTERFACE) {
-                String endName = getFieldName(1, location, classContext, method);
+                // check is the end of the map loop
                 boolean end = checkMapLoopEnd(ins, constPool);
-                if (i != preEndIndex && end) {
+                if (!mapEndList.contains(Integer.valueOf(i)) && end) {
                     currentEndIndex = i;
+                    mapEndList.add(Integer.valueOf(i));
                     break;
                 }
                 int constIndex = ((INVOKEINTERFACE) ins).getIndex();
+
                 int tmp = checkIsMapTravsal(constIndex, constPool);
 
                 if (NUM_VALUES != tmp) {
-                    preStartIndex = i;
-                    preEndIndex = loopAnalyse(locationList, preStartIndex, tmp, constPool, classContext, method);
-                    i = preEndIndex + 1;
+                    int nextStartIndex = i;
+                    // when encounter the instruction of traversing map, find the end index of the loop
+                    int endIndex = loopAnalyse(locationList, nextStartIndex, tmp, constPool, classContext, method);
+                    i = endIndex + 1;
                 }
             }
         }
@@ -255,164 +210,6 @@ public class MapTraversalWayCheck implements Detector {
         }
 
         return currentEndIndex;
-    }
-
-    private int analyseMap(ArrayList<Location> locationList, int startIndex, int way, ConstantPoolGen constPool,
-            ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
-        int currentStartIndex = startIndex;
-        int currentEndIndex = locationList.size();
-        int currentWay = way;
-
-        int preStartIndex = locationList.size();
-        int preEndIndex = locationList.size();
-        Location currentLocation = locationList.get(startIndex);
-
-        for (int i = startIndex + 1; i < locationList.size(); i++) {
-            Location location = locationList.get(i);
-            InstructionHandle insHandle = location.getHandle();
-            if (null == insHandle) {
-                continue;
-            }
-
-            Instruction ins = insHandle.getInstruction();
-
-            if (ins instanceof INVOKEINTERFACE) {
-                boolean end = checkMapLoopEnd(ins, constPool);
-                if (i != preEndIndex && end) {
-                    currentEndIndex = i;
-                    break;
-                }
-                int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-                int tmp = checkIsMapTravsal(constIndex, constPool);
-
-                if (NUM_VALUES != tmp) {
-                    preStartIndex = i;
-                    boolean res = checkBug(currentWay, locationList, currentStartIndex, classContext, method,
-                            constPool);
-
-                    if (!res) {
-                        fillReport(currentLocation, classContext, method, constPool);
-                    }
-                }
-            }
-        }
-
-        if (NUM_VALUES == currentWay) {
-            return currentEndIndex;
-        }
-
-        return currentEndIndex;
-    }
-
-    private boolean checkBug(int way, List<Location> locationList, int startIndex, ClassContext classContext,
-            Method method, ConstantPoolGen constPool) throws DataflowAnalysisException, CFGBuilderException {
-        boolean valid = true;
-        int keyCount = 0;
-        int valueCount = 0;
-        String entryName = null;
-
-        Location startLocation = locationList.get(startIndex);
-        String objName = getFieldName(1, startLocation, classContext, method);
-        if (null == objName) {
-            return true;
-        }
-        for (int j = startIndex + 1; j < locationList.size(); j++) {
-            Location location = locationList.get(j);
-            InstructionHandle insHandleLoop = location.getHandle();
-
-            if (null == insHandleLoop) {
-                continue;
-            }
-
-            Instruction ins = insHandleLoop.getInstruction();
-            if (!(ins instanceof INVOKEINTERFACE)) {
-                continue;
-            }
-            boolean end = checkMapLoopEnd(ins, constPool);
-            String nowObjName = getFieldName(1, location, classContext, method);
-            if (end && objName.equals(nowObjName)) {
-                break;
-            }
-
-            int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-            ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
-
-            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
-            String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
-
-            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
-            String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
-
-            if (!CLASS_MAP.equals(className) && !CLASS_MAP_ENTRY.equals(className)
-                    && !CLASS_ITERATOR.equals(className)) {
-                continue;
-            }
-
-            if (NUM_KEYSET == way) {
-                if (CLASS_MAP.equals(className) && "get".equals(methodName)) {
-                    String fieldName = getFieldName(0, location, classContext, method);
-                    if (objName.equals(fieldName)) {
-                        return false;
-                    }
-                }
-            } else if (NUM_ENTRYSET == way) {
-                if (CLASS_ITERATOR.equals(className)) {
-                    entryName = getAfterFieldName(1, locationList.get(j + 1), classContext, method);
-                    continue;
-                }
-
-                if (CLASS_MAP_ENTRY.equals(className)) {
-                    if ("getKey".equals(methodName)) {
-                        String fieldName = getFieldName(1, location, classContext, method);
-                        if (null != entryName && entryName.equals(fieldName)) {
-                            keyCount++;
-                        }
-                    } else if ("getValue".equals(methodName)) {
-                        String fieldName = getFieldName(1, location, classContext, method);
-                        if (null != entryName && entryName.equals(fieldName)) {
-                            valueCount++;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (NUM_ENTRYSET == way) {
-            if (0 == keyCount || 0 == valueCount) {
-                valid = false;
-            }
-        }
-
-        return valid;
-    }
-
-    private boolean checkLocalValidInRange(Location location, int startPc, int endPc, ClassContext classContext,
-            Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
-        ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-        ValueNumber valueNumber = vnaFrame.getTopValue();
-        System.out.println(valueNumber);
-
-        LocalVariableAnnotation localAnn = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
-                valueNumber, vnaFrame);
-        if (null == localAnn) {
-            return false;
-
-        }
-
-        int pc = localAnn.getPC();
-        int regiter = localAnn.getRegister();
-        LocalVariableTable localVariableTable = method.getLocalVariableTable();
-        LocalVariable local = localVariableTable.getLocalVariable(regiter, pc);
-        int start = local.getStartPC();
-        int end = start + local.getLength();
-
-        if (end <= endPc && start >= startPc) {
-            return true;
-        }
-
-        return false;
-
     }
 
 
@@ -443,7 +240,6 @@ public class MapTraversalWayCheck implements Detector {
 
         ValueNumberFrame vnaFrame = valueNumDataFlow.getFactAtLocation(location);
         ValueNumber valueNumber = vnaFrame.getTopValue();
-        // FieldDescriptor field = getFieldInfoFromPre(insHandle, constPool);
 
         BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
                 valueNumber, vnaFrame, "VALUE_OF");
@@ -463,7 +259,7 @@ public class MapTraversalWayCheck implements Detector {
      *            the index in constant pool
      * @param constPool
      *            constant pool
-     * @return way: -1: values; 0:keySet; 1: entrySet
+     * @return way: -1: values or not map traversal; 0:keySet; 1: entrySet
      */
     private int checkIsMapTravsal(int constIndex, ConstantPoolGen constPool) {
 
@@ -499,6 +295,10 @@ public class MapTraversalWayCheck implements Detector {
      *            start loop index
      * @param endIndex
      *            end loop index
+     * @param classContext
+     *            class context
+     * @param method
+     *            method
      * @param constPool
      *            constant pool
      * @return boolean true: valid; false: invalid
@@ -513,9 +313,6 @@ public class MapTraversalWayCheck implements Detector {
         int valueCount = 0;
 
         Location startLocation = locationList.get(startIndex);
-        Location endLocation = locationList.get(endIndex);
-        int startPc = startLocation.getHandle().getPosition();
-        int endPc = endLocation.getHandle().getPosition();
 
         String objName = getFieldName(1, startLocation, classContext, method);
         String entryName = null;
@@ -551,6 +348,7 @@ public class MapTraversalWayCheck implements Detector {
                 continue;
             }
 
+            /* If the way is keyset, the method-‘Map.get(key)’ is called, invalid */
             if (NUM_KEYSET == way) {
                 if (CLASS_MAP.equals(className) && "get".equals(methodName)) {
                     String fieldName = getFieldName(0, location, classContext, method);
@@ -560,10 +358,15 @@ public class MapTraversalWayCheck implements Detector {
                 }
             } else if (NUM_ENTRYSET == way) {
                 if (CLASS_ITERATOR.equals(className) && null == entryName) {
+                    /*
+                     * When the Iterator.next() is called, the following instruction must be 'checkcast' and 'astore' in
+                     * entryset loop
+                     */
                     Location loc = locationList.get(j + 2);
                     Instruction insTmp = loc.getHandle().getInstruction();
                     int index = -1;
                     if (insTmp instanceof ASTORE) {
+                        // get the index of the entry in local variable table
                         index = ((ASTORE) insTmp).getIndex();
                     }
                     LocalVariable localVa = method.getLocalVariableTable().getLocalVariable(index,
@@ -572,6 +375,7 @@ public class MapTraversalWayCheck implements Detector {
                     continue;
                 }
 
+                /* If the way is entryset, the method-‘Entry.getKey() or Entry.getValue()’ is never called, invalid */
                 if (CLASS_MAP_ENTRY.equals(className)) {
                     if ("getKey".equals(methodName)) {
                         String valueName = getFieldName(1, location, classContext, method);
@@ -589,7 +393,8 @@ public class MapTraversalWayCheck implements Detector {
         }
 
         if (NUM_ENTRYSET == way) {
-            if (0 == keyCount || 0 == valueCount) {
+            // if getKey or getValue is never called and the count of calling number is not equal, invalid
+            if ((0 == keyCount || 0 == valueCount) && (keyCount != valueCount)) {
                 valid = false;
             }
         }
@@ -597,14 +402,32 @@ public class MapTraversalWayCheck implements Detector {
         return valid;
     }
 
+    /**
+     * Get the object name of operator of the instruction
+     *
+     * @param way
+     *            whether has parameter,1: no parameter, 0: one parameter
+     * @param location
+     *            the location of instruction
+     * @param classContext
+     *            class context
+     * @param method
+     *            method
+     * @return String object name
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
     private String getFieldName(int way, Location location, ClassContext classContext, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+        // If there is no parameter，the object is the top in stack
         ValueNumber valueNumber = vnaFrame.getTopValue();
-        if (NUM_KEYSET == way) {
+        if (0 == way) {
+            // If there is one parameter，the object is the second to last in stack
             valueNumber = vnaFrame.getValue(vnaFrame.getNumSlots() - 2);
         }
 
+        // golable variable
         FieldAnnotation filedAnn = ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location,
                 valueNumber, vnaFrame);
 
@@ -613,45 +436,19 @@ public class MapTraversalWayCheck implements Detector {
         }
 
 
+        // local variable
         LocalVariableAnnotation localAnn = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
                 valueNumber, vnaFrame);
         if (null != localAnn) {
-            int pc = localAnn.getPC();
-            int regiter = localAnn.getRegister();
             return localAnn.getName();
         }
 
         return null;
     }
 
-    private String getAfterFieldName(int way, Location location, ClassContext classContext, Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
-        ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAfterLocation(location);
-        ValueNumber valueNumber = vnaFrame.getTopValue();
-        if (NUM_KEYSET == way) {
-            valueNumber = vnaFrame.getValue(vnaFrame.getNumSlots() - 2);
-        }
-
-        FieldAnnotation filedAnn = ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location,
-                valueNumber, vnaFrame);
-
-        if (null != filedAnn) {
-            return filedAnn.getFieldName();
-        }
-
-        LocalVariableAnnotation localAnn = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
-                valueNumber, vnaFrame);
-        if (null != localAnn) {
-            int pc = localAnn.getPC();
-            int regiter = localAnn.getRegister();
-            return localAnn.getName();
-        }
-
-        return null;
-    }
 
     /**
-     * check the loop of Map is end
+     * check whether the instruction is the end of the map loop
      *
      * @param ins
      *            instruction
