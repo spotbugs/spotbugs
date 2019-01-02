@@ -700,7 +700,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         signature = "";
                     }
                     if (primitiveType != null
-                            && (previousMethodCall.equals(rvo) || signature.equals(primitiveType))
+                            && (((rvo != null) && previousMethodCall.equals(rvo.getMethodDescriptor())) || signature.equals(primitiveType))
                             && (getThisClass().getMajor() >= Const.MAJOR_1_7 || getThisClass().getMajor() >= Const.MAJOR_1_4
                             && (primitiveType.equals("D") || primitiveType.equals("F")))) {
                         MethodDescriptor shouldCall = new MethodDescriptor(called.getClassDescriptor().getClassName(), "compare",
