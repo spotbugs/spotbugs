@@ -139,8 +139,8 @@ public class MapTraversalWayCheck implements Detector {
         Collection<Location> locationCollection = cfg.orderedLocations();
         ArrayList<Location> locationList = new ArrayList<>();
         locationList.addAll(locationCollection);
-
-        loopAnalyse(locationList, 0, -1, constPool, classContext, method);
+        mapAnalyse(locationList, constPool, classContext, method);
+        // loopAnalyse(locationList, 0, -1, constPool, classContext, method);
     }
 
     /**
@@ -210,6 +210,165 @@ public class MapTraversalWayCheck implements Detector {
         }
 
         return currentEndIndex;
+    }
+
+    private void mapAnalyse(ArrayList<Location> locationList, ConstantPoolGen constPool,
+            ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
+
+        for (int i = 0; i < locationList.size(); i++) {
+            Location location = locationList.get(i);
+            InstructionHandle insHandle = location.getHandle();
+            if (null == insHandle) {
+                continue;
+            }
+
+            Instruction ins = insHandle.getInstruction();
+
+            if (ins instanceof INVOKEINTERFACE) {
+                int constIndex = ((INVOKEINTERFACE) ins).getIndex();
+
+                int tmp = checkIsMapTravsal(constIndex, constPool);
+
+                if (NUM_VALUES != tmp) {
+                    LocalVariable cycleVa = findLoopVariable(locationList, i, constPool, method);
+                    if (null == cycleVa) {
+                        continue;
+                    }
+                    int startLoop = cycleVa.getStartPC();
+                    int endLoop = cycleVa.getLength() + startLoop;
+                    boolean res = checkLoopValid(tmp, cycleVa, locationList, startLoop, endLoop, i, classContext,
+                            method, constPool);
+
+                    if (!res) {
+                        fillReport(location, classContext, method, constPool);
+                    }
+                }
+            }
+        }
+    }
+
+    private LocalVariable findLoopVariable(ArrayList<Location> locationList, int startIndex, ConstantPoolGen constPool,
+            Method method) {
+        LocalVariable cycleVa = null;
+
+        if (startIndex + 1 < locationList.size()) {
+            Location location = locationList.get(startIndex + 1);
+            InstructionHandle insHandleLoop = location.getHandle();
+
+            Instruction ins = insHandleLoop.getInstruction();
+            if (!(ins instanceof INVOKEINTERFACE) && !(ins instanceof StoreInstruction)) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        for (int i = startIndex + 1; i < locationList.size(); i++) {
+            Location location = locationList.get(i);
+            InstructionHandle insHandleLoop = location.getHandle();
+
+            Instruction ins = insHandleLoop.getInstruction();
+            if (!(ins instanceof INVOKEINTERFACE)) {
+                continue;
+            }
+
+            int constIndex = ((INVOKEINTERFACE) ins).getIndex();
+            ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
+
+            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
+            String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
+
+            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
+            String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+
+            if (CLASS_MAP.equals(className) && (MAP_KEYSET.equals(methodName) || MAP_ENTRYSET.equals(methodName))) {
+                return null;
+            }
+
+            if (CLASS_ITERATOR.equals(className) && "next".equals(methodName)) {
+                /*
+                 * When the Iterator.next() is called, get the local variable in loop
+                 */
+                cycleVa = getLocalVariable(locationList, i + 1, locationList.size(), method);
+
+                break;
+            }
+        }
+
+        return cycleVa;
+    }
+
+    private boolean checkLoopValid(int way, LocalVariable cycleVa, List<Location> locationList, int startPc, int endPc,
+            int startIndex, ClassContext classContext, Method method, ConstantPoolGen constPool)
+            throws DataflowAnalysisException, CFGBuilderException {
+        int keyCount = 0;
+        int valueCount = 0;
+        boolean valid = true;
+
+        Location startLocation = locationList.get(startIndex);
+
+        String objName = getFieldName(1, startLocation, classContext, method);
+
+        for (int i = startIndex; i < locationList.size(); i++) {
+            Location loc = locationList.get(i);
+            InstructionHandle insHandleLoop = loc.getHandle();
+            int pos = insHandleLoop.getPosition();
+
+            if (pos < startPc) {
+                continue;
+            } else if (pos >= endPc) {
+                break;
+            }
+
+            Instruction ins = insHandleLoop.getInstruction();
+            if (!(ins instanceof INVOKEINTERFACE)) {
+                continue;
+            }
+
+            int constIndex = ((INVOKEINTERFACE) ins).getIndex();
+            ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
+
+            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
+            String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
+
+            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
+            String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+
+            /* If the way is keyset, the method-‘Map.get(key)’ is called, invalid */
+            if (NUM_KEYSET == way) {
+                if (CLASS_MAP.equals(className) && "get".equals(methodName)) {
+                    String fieldName = getFieldName(0, loc, classContext, method);
+                    if (objName.equals(fieldName)) {
+                        return false;
+                    }
+                }
+            } else if (NUM_ENTRYSET == way) {
+                /* If the way is entryset, the method-‘Entry.getKey() or Entry.getValue()’ is never called, invalid */
+                if (CLASS_MAP_ENTRY.equals(className)) {
+                    if ("getKey".equals(methodName)) {
+                        String valueName = getFieldName(1, loc, classContext, method);
+                        if (cycleVa.getName().equals(valueName)) {
+                            keyCount++;
+                        }
+                    } else if ("getValue".equals(methodName)) {
+                        String valueName = getFieldName(1, loc, classContext, method);
+                        if (cycleVa.getName().equals(valueName)) {
+                            valueCount++;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (NUM_ENTRYSET == way) {
+            // if getKey or getValue is never called and the count of calling number is not equal, invalid
+            if ((0 == keyCount || 0 == valueCount) && (keyCount != valueCount)) {
+                valid = false;
+            }
+        }
+
+        return valid;
     }
 
 
@@ -452,6 +611,17 @@ public class MapTraversalWayCheck implements Detector {
         if (0 == way) {
             // If there is one parameter，the object is the second to last in stack
             valueNumber = vnaFrame.getValue(vnaFrame.getNumSlots() - 2);
+        }
+
+        for (int i = 0; i < vnaFrame.getNumSlots(); i++) {
+            ValueNumber num = vnaFrame.getValue(i);
+            FieldAnnotation field = ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location,
+                    num, vnaFrame);
+            LocalVariableAnnotation local = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
+                    num, vnaFrame);
+            System.out.println(i);
+            System.out.println("field: " + field);
+            System.out.println("local: " + local);
         }
 
         // golable variable
