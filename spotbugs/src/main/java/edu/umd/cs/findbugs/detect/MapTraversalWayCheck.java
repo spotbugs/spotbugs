@@ -28,12 +28,12 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.StoreInstruction;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -315,7 +315,7 @@ public class MapTraversalWayCheck implements Detector {
         Location startLocation = locationList.get(startIndex);
 
         String objName = getFieldName(1, startLocation, classContext, method);
-        String entryName = null;
+        String loopVariableName = null;
         if (null == objName) {
             return true;
         }
@@ -348,43 +348,38 @@ public class MapTraversalWayCheck implements Detector {
                 continue;
             }
 
+            if (CLASS_ITERATOR.equals(className) && "next".equals(methodName) && null == loopVariableName) {
+                /*
+                 * When the Iterator.next() is called, get the local variable in loop
+                 */
+                LocalVariable cycleVa = getLocalVariable(locationList, j + 1, endIndex, method);
+                if (null != cycleVa) {
+                    loopVariableName = cycleVa.getName();
+                }
+                continue;
+            }
+
             /* If the way is keyset, the method-‘Map.get(key)’ is called, invalid */
             if (NUM_KEYSET == way) {
                 if (CLASS_MAP.equals(className) && "get".equals(methodName)) {
+                    String param = getFieldName(1, location, classContext, method);
                     String fieldName = getFieldName(0, location, classContext, method);
-                    if (objName.equals(fieldName)) {
+
+                    if (objName.equals(fieldName) && (null != loopVariableName && loopVariableName.equals(param))) {
                         return false;
                     }
                 }
             } else if (NUM_ENTRYSET == way) {
-                if (CLASS_ITERATOR.equals(className) && null == entryName) {
-                    /*
-                     * When the Iterator.next() is called, the following instruction must be 'checkcast' and 'astore' in
-                     * entryset loop
-                     */
-                    Location loc = locationList.get(j + 2);
-                    Instruction insTmp = loc.getHandle().getInstruction();
-                    int index = -1;
-                    if (insTmp instanceof ASTORE) {
-                        // get the index of the entry in local variable table
-                        index = ((ASTORE) insTmp).getIndex();
-                    }
-                    LocalVariable localVa = method.getLocalVariableTable().getLocalVariable(index,
-                            loc.getHandle().getPosition() + 1);
-                    entryName = localVa.getName();
-                    continue;
-                }
-
                 /* If the way is entryset, the method-‘Entry.getKey() or Entry.getValue()’ is never called, invalid */
                 if (CLASS_MAP_ENTRY.equals(className)) {
                     if ("getKey".equals(methodName)) {
                         String valueName = getFieldName(1, location, classContext, method);
-                        if (null != entryName && entryName.equals(valueName)) {
+                        if (null != loopVariableName && loopVariableName.equals(valueName)) {
                             keyCount++;
                         }
                     } else if ("getValue".equals(methodName)) {
                         String valueName = getFieldName(1, location, classContext, method);
-                        if (null != entryName && entryName.equals(valueName)) {
+                        if (null != loopVariableName && loopVariableName.equals(valueName)) {
                             valueCount++;
                         }
                     }
@@ -400,6 +395,38 @@ public class MapTraversalWayCheck implements Detector {
         }
 
         return valid;
+    }
+
+    /**
+     * Get the local variable used in loop
+     *
+     * @param locationList
+     *            location list
+     * @param startIndex
+     *            start index
+     * @param endIndex
+     *            end index
+     * @param method
+     *            method
+     * @return the local variable used in loop
+     */
+    private LocalVariable getLocalVariable(List<Location> locationList, int startIndex, int endIndex, Method method) {
+        int index = -1;
+        LocalVariable localVa = null;
+        for (int i = startIndex; i < endIndex; i++) {
+            Location loc = locationList.get(i);
+            Instruction insTmp = loc.getHandle().getInstruction();
+            if (insTmp instanceof StoreInstruction) {
+                // get the index of the entry in local variable table
+                index = ((StoreInstruction) insTmp).getIndex();
+                InstructionHandle nextHandle = loc.getHandle().getNext();
+                localVa = method.getLocalVariableTable().getLocalVariable(index, nextHandle.getPosition());
+                break;
+            }
+
+        }
+
+        return localVa;
     }
 
     /**
