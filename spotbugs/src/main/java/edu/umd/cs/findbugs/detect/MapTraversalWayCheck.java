@@ -198,19 +198,14 @@ public class MapTraversalWayCheck implements Detector {
                     continue;
                 }
 
-                int startLoop = cycleVa.getStartPC();
-                int endLoop = cycleVa.getLength() + startLoop;
-
                 if (WAY_MAP_KEYSET == tmp) {
-                    boolean res = checkMapKeysetValid(cycleVa, locationList, startLoop, endLoop, i, classContext,
-                            method, constPool);
+                    boolean res = checkMapKeysetValid(cycleVa, locationList, i, classContext, method, constPool);
 
                     if (!res) {
                         fillReport(tmp, location, classContext, method, constPool);
                     }
                 } else if (WAY_MAP_ENTRYSET == tmp) {
-                    boolean res = checkMapEntrysetValid(cycleVa, locationList, startLoop, endLoop, i, classContext,
-                            method, constPool);
+                    boolean res = checkMapEntrysetValid(cycleVa, locationList, i, classContext, method, constPool);
 
                     if (!res) {
                         fillReport(tmp, location, classContext, method, constPool);
@@ -251,6 +246,21 @@ public class MapTraversalWayCheck implements Detector {
             if (!(ins instanceof INVOKEINTERFACE) && !(ins instanceof StoreInstruction)) {
                 return null;
             }
+
+            if (ins instanceof INVOKEINTERFACE) {
+                int constIndex = ((INVOKEINTERFACE) ins).getIndex();
+                ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
+
+                ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
+                String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
+
+                ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
+                String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+
+                if (!CLASS_SET.equals(className) || !METHOD_ITERATOR.equals(methodName)) {
+                    return null;
+                }
+            }
         } else {
             return null;
         }
@@ -285,7 +295,7 @@ public class MapTraversalWayCheck implements Detector {
                         int index = ((StoreInstruction) insTmp).getIndex();
                         LocalVariable localVa = method.getLocalVariableTable().getLocalVariable(index,
                                 nextHandle.getNext().getPosition());
-                        iteratorName = localVa == null ? null : localVa.getName();
+                        iteratorName = localVa == null ? "?" : localVa.getName();
                     }
                 }
                 continue;
@@ -299,8 +309,7 @@ public class MapTraversalWayCheck implements Detector {
                  * Set.iterator() If the iteratorName is null, which means the Set.iterator() is not saved to a
                  * variable, for example: for(String s: nameMap.keySet()), Set.iterator() is called default
                  */
-                if ((null == iteratorName && "?".equals(objName))
-                        || (null != iteratorName && iteratorName.equals(objName))) {
+                if (null != iteratorName && iteratorName.equals(objName)) {
                     /*
                      * When the Iterator.next() is called, get the local variable in loop
                      */
@@ -336,12 +345,14 @@ public class MapTraversalWayCheck implements Detector {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private boolean checkMapKeysetValid(LocalVariable cycleVa, List<Location> locationList, int startPc, int endPc,
-            int startIndex, ClassContext classContext, Method method, ConstantPoolGen constPool)
+    private boolean checkMapKeysetValid(LocalVariable cycleVa, List<Location> locationList, int startIndex,
+            ClassContext classContext, Method method, ConstantPoolGen constPool)
             throws DataflowAnalysisException, CFGBuilderException {
         boolean valid = true;
         Location startLocation = locationList.get(startIndex);
         String objName = getFieldName(1, startLocation, classContext, method);
+        int startLoop = cycleVa.getStartPC();
+        int endLoop = cycleVa.getLength() + startLoop;
 
         for (int i = startIndex; i < locationList.size(); i++) {
             Location loc = locationList.get(i);
@@ -349,9 +360,9 @@ public class MapTraversalWayCheck implements Detector {
             int pos = insHandleLoop.getPosition();
 
             // check the instruction is in the map loop range
-            if (pos < startPc) {
+            if (pos < startLoop) {
                 continue;
-            } else if (pos >= endPc) {
+            } else if (pos >= endLoop) {
                 break;
             }
 
@@ -405,21 +416,23 @@ public class MapTraversalWayCheck implements Detector {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private boolean checkMapEntrysetValid(LocalVariable cycleVa, List<Location> locationList, int startPc, int endPc,
-            int startIndex, ClassContext classContext, Method method, ConstantPoolGen constPool)
+    private boolean checkMapEntrysetValid(LocalVariable cycleVa, List<Location> locationList, int startIndex,
+            ClassContext classContext, Method method, ConstantPoolGen constPool)
             throws DataflowAnalysisException, CFGBuilderException {
         boolean valid = true;
         int keyCount = 0;
         int valueCount = 0;
+        int startLoop = cycleVa.getStartPC();
+        int endLoop = cycleVa.getLength() + startLoop;
 
         for (int i = startIndex; i < locationList.size(); i++) {
             Location loc = locationList.get(i);
             InstructionHandle insHandleLoop = loc.getHandle();
             int pos = insHandleLoop.getPosition();
 
-            if (pos < startPc) {
+            if (pos < startLoop) {
                 continue;
-            } else if (pos >= endPc) {
+            } else if (pos >= endLoop) {
                 break;
             }
 
