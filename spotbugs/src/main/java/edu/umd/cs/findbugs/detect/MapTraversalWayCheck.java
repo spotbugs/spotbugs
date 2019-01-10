@@ -249,13 +249,8 @@ public class MapTraversalWayCheck implements Detector {
 
             if (ins instanceof INVOKEINTERFACE) {
                 int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-                ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
-
-                ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
-                String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
-
-                ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
-                String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+                String className = getClassOrMethod(true, constIndex, constPool);
+                String methodName = getClassOrMethod(false, constIndex, constPool);
 
                 if (!CLASS_SET.equals(className) || !METHOD_ITERATOR.equals(methodName)) {
                     return null;
@@ -275,13 +270,8 @@ public class MapTraversalWayCheck implements Detector {
             }
 
             int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-            ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
-
-            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
-            String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
-
-            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
-            String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+            String className = getClassOrMethod(true, constIndex, constPool);
+            String methodName = getClassOrMethod(false, constIndex, constPool);
 
             /*
              * if set.iterator() is called, get the return value's name, for example: Iterator<String> it =
@@ -372,19 +362,15 @@ public class MapTraversalWayCheck implements Detector {
             }
 
             int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-            ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
-
-            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
-            String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
-
-            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
-            String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+            String className = getClassOrMethod(true, constIndex, constPool);
+            String methodName = getClassOrMethod(false, constIndex, constPool);
 
             /* If the way is keyset, the method-‘Map.get(key)’ is called, invalid */
             if (CLASS_MAP.equals(className) && "get".equals(methodName)) {
                 String fieldName = getFieldName(0, loc, classContext, method);
                 if (objName.equals(fieldName)) {
-                    return false;
+                    valid = false;
+                    break;
                 }
             }
 
@@ -442,13 +428,8 @@ public class MapTraversalWayCheck implements Detector {
             }
 
             int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-            ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
-
-            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
-            String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
-
-            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
-            String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+            String className = getClassOrMethod(true, constIndex, constPool);
+            String methodName = getClassOrMethod(false, constIndex, constPool);
 
             /* If the way is entryset, the method-‘Entry.getKey() or Entry.getValue()’ is never called, invalid */
             if (CLASS_MAP_ENTRY.equals(className)) {
@@ -533,13 +514,9 @@ public class MapTraversalWayCheck implements Detector {
      */
     private int checkIsMapTravsal(int constIndex, ConstantPoolGen constPool) {
 
-        ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
+        String className = getClassOrMethod(true, constIndex, constPool);
+        String methodName = getClassOrMethod(false, constIndex, constPool);
 
-        ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
-        String className = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
-
-        ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
-        String methodName = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
         if (!CLASS_MAP.equals(className)) {
             return WAY_NOT_LOOP;
         }
@@ -552,6 +529,31 @@ public class MapTraversalWayCheck implements Detector {
             return WAY_NOT_LOOP;
         }
 
+    }
+
+    /**
+     * Get class name or method name
+     *
+     * @param flag
+     *            true: get class name; false: get method name
+     * @param constIndex
+     *            index in constant pool
+     * @param constPool
+     *            constant pool
+     * @return
+     */
+    private String getClassOrMethod(boolean flag, int constIndex, ConstantPoolGen constPool) {
+        String res = null;
+        ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
+
+        if (flag) {
+            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
+            res = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
+        } else {
+            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
+            res = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+        }
+        return res;
     }
 
     /**
