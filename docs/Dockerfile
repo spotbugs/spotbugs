@@ -5,8 +5,10 @@
 FROM ubuntu:xenial
 
 RUN mkdir documents
-RUN apt-get update
-RUN apt-get install -y python-sphinx texlive texlive-latex-extra pandoc build-essential curl
+RUN apt-get update && \
+    apt-get install -y python-sphinx texlive texlive-latex-extra pandoc build-essential curl && \
+    apt-get autoremove && \
+    apt-get clean
 RUN curl -kL https://bootstrap.pypa.io/get-pip.py | python
 
 RUN pip install sphinx-intl
