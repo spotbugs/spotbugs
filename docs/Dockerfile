@@ -3,7 +3,6 @@
 # and run `docker run -it -v $(pwd):/documents spotbugs-sphinx make html` to generate documents.
 
 FROM ubuntu:xenial
-ENV DEBIAN_FRONTEND noninteractive
 
 RUN mkdir documents
 RUN apt-get update
