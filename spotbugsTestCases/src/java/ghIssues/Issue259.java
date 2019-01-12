@@ -8,8 +8,12 @@ public class Issue259 {
     }
 
     private static class X implements AutoCloseable {
+
+        Object state = new Object();
+
         @Override
         public void close() {
+            state = null;
         }
     }
 }
