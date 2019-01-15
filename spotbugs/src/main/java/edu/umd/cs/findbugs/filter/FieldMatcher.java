@@ -62,9 +62,16 @@ public class FieldMatcher extends MemberMatcher implements Matcher {
                 }
             }
         }
-        return fieldAnnotation != null
-            && name.match(fieldAnnotation.getFieldName())
-            && (signature == null || signature.match(fieldAnnotation.getFieldSignature()));
+        if (fieldAnnotation == null) {
+            return false;
+        }
+        if (!name.match(fieldAnnotation.getFieldName())) {
+            return false;
+        }
+        if (signature != null && !signature.match(fieldAnnotation.getFieldSignature())) {
+            return false;
+        }
+        return true;
     }
 
     @Override

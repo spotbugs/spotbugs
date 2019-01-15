@@ -61,7 +61,6 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.SplitCamelCaseIdentifier;
-import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -625,7 +624,7 @@ public class XFactory {
             // use this method. So *at least* provide a valid class name, which is
             // (don't ask me why) is encoded in the first argument type of the lambda
             // className = invokeInstruction.getArgumentTypes(cpg)[0].toString();
-            className = Values.DOTTED_JAVA_LANG_OBJECT;
+            className = "java.lang.Object";
         }
         return createXMethod(className, methodName, methodSig, invokeInstruction.getOpcode() == Const.INVOKESTATIC);
     }

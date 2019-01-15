@@ -45,7 +45,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.EditDistance;
-import edu.umd.cs.findbugs.util.Values;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
@@ -67,7 +66,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         }
 
         String superclassName2 = getSuperclassName();
-        boolean weird = Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName2) && obj.getInterfaceIndices().length == 0;
+        boolean weird = "java.lang.Object".equals(superclassName2) && obj.getInterfaceIndices().length == 0;
         boolean hasAnonymousName = ClassName.isLocalOrAnonymous(obj.getClassName());
         boolean isAnonymousInnerClass = hasAnonymousName && !weird;
         if (isAnonymousInnerClass) {
@@ -193,7 +192,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 String role = ClassAnnotation.SUPERCLASS_ROLE;
 
                 @DottedClassName String superclassName =  ClassName.toDottedClassName(getSuperclassName());
-                if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName)) {
+                if ("java.lang.Object".equals(superclassName)) {
 
                     try {
                         JavaClass interfaces[] = getThisClass().getInterfaces();
@@ -263,7 +262,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 int priority = NORMAL_PRIORITY;
                 JavaClass superClass = clazz.getSuperClass();
                 String superClassName = superClass.getClassName();
-                if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName)) {
+                if ("java.lang.Object".equals(superClassName)) {
                     priority = NORMAL_PRIORITY;
 
                 } else if (definedInClass(superClass).containsAll(definedInClass(clazz))) {

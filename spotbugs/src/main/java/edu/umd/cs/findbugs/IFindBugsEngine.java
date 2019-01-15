@@ -192,12 +192,12 @@ public interface IFindBugsEngine {
      * Execute FindBugs on the Project. All bugs found are reported to the
      * BugReporter object which was set when this object was constructed.
      *
-     * @throws IOException
+     * @throws java.io.IOException
      *             if an I/O exception occurs analyzing one of the files
      * @throws InterruptedException
      *             if the thread is interrupted while conducting the analysis
      */
-    public void execute() throws IOException, InterruptedException;
+    public void execute() throws java.io.IOException, InterruptedException;
 
     /**
      * Get the name of the most recent class to be analyzed. This is useful for

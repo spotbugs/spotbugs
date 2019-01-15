@@ -450,14 +450,16 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         BasicBlock basicBlock = (handle.getInstruction() instanceof ATHROW) ? exceptionEdge.getSource()
                 : getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
 
-        if (basicBlock == null && removedEdgeList != null) {
-            // The fall-through edge might have been removed during
-            // CFG pruning. Look for it in the removed edge list.
-            for (Edge removedEdge : removedEdgeList) {
-                if (removedEdge.getType() == EdgeTypes.FALL_THROUGH_EDGE
-                        && removedEdge.getSource() == exceptionEdge.getSource()) {
-                    basicBlock = removedEdge.getTarget();
-                    break;
+        if (basicBlock == null) {
+            if (removedEdgeList != null) {
+                // The fall-through edge might have been removed during
+                // CFG pruning. Look for it in the removed edge list.
+                for (Edge removedEdge : removedEdgeList) {
+                    if (removedEdge.getType() == EdgeTypes.FALL_THROUGH_EDGE
+                            && removedEdge.getSource() == exceptionEdge.getSource()) {
+                        basicBlock = removedEdge.getTarget();
+                        break;
+                    }
                 }
             }
         }

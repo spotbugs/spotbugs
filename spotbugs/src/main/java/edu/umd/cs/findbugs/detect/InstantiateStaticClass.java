@@ -104,7 +104,11 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
             }
         }
 
-        return staticCount != 0;
+        if (staticCount == 0) {
+            return false;
+        }
+        return true;
+
     }
 
 }

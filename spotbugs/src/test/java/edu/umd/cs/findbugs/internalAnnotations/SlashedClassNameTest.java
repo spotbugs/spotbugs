@@ -42,7 +42,7 @@ public class SlashedClassNameTest {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo.Bar");
         assertFalse(m.matches());
         m = SlashedClassName.Checker.pattern.matcher("foo.Bar");
-        assertFalse(m.matches());
+        assertTrue(!m.matches());
     }
 
     @Test
@@ -50,6 +50,6 @@ public class SlashedClassNameTest {
         Matcher m = SlashedClassName.Checker.simplePattern.matcher("foo1.Bar2");
         assertFalse(m.matches());
         m = SlashedClassName.Checker.pattern.matcher("foo1.Bar2");
-        assertFalse(m.matches());
+        assertTrue(!m.matches());
     }
 }

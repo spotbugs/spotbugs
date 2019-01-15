@@ -93,7 +93,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         /**
          *
          */
-        private final MethodInfo.Builder mBuilder;
+        private final edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder;
 
         /**
          *
@@ -113,7 +113,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         /**
          *
          */
-        private final ClassNameAndSuperclassInfo.Builder cBuilder;
+        private final edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder;
 
         boolean sawReturn;
 
@@ -169,8 +169,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
          * @param cBuilder
          */
         private ClassParserMethodVisitor(TreeSet<ClassDescriptor> calledClassSet,
-                MethodInfo.Builder mBuilder, String methodName, int access,
-                String methodDesc, ClassNameAndSuperclassInfo.Builder cBuilder) {
+                edu.umd.cs.findbugs.classfile.analysis.MethodInfo.Builder mBuilder, String methodName, int access,
+                String methodDesc, edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo.Builder cBuilder) {
             this.calledClassSet = calledClassSet;
             this.mBuilder = mBuilder;
             this.methodName = methodName;

@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.EqualsKindSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -47,7 +48,6 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.util.Values;
 
 public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implements FirstPassDetector {
 
@@ -155,7 +155,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
             String superClassName = getSuperclassName().replace('/', '.');
-            if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName)) {
+            if (!"java.lang.Object".equals(superClassName)) {
                 parentMap.put(classAnnotation, new ClassAnnotation(superClassName));
             }
             equalsMethod.put(classAnnotation, getMethodDescriptor());
@@ -401,6 +401,92 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     @Override
     public void report() {
+
+        if (false) {
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithGetClassBasedEquals.entrySet()) {
+                ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+                XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
+                if (xParent == null) {
+                    continue;
+                }
+                EqualsKindSummary.KindOfEquals parentKind = equalsKindSummary.get(parentClass);
+                for (ClassDescriptor child : e.getValue()) {
+                    if (child.equals(e.getKey())) {
+                        continue;
+                    }
+                    XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
+                    if (xChild == null) {
+                        continue;
+                    }
+                    ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
+                    EqualsKindSummary.KindOfEquals childKind = equalsKindSummary.get(childClass);
+                    int fieldsOfInterest = 0;
+                    for (XField f : xChild.getXFields()) {
+                        if (!f.isStatic() && !f.isSynthetic()) {
+                            fieldsOfInterest++;
+                        }
+                    }
+                    int grandchildren = -1;
+                    try {
+
+                        grandchildren = subtypes2.getSubtypes(child).size();
+                    } catch (ClassNotFoundException e1) {
+                        assert true;
+                    }
+                    System.out.println(parentKind + " " + childKind + " " + parentClass + " " + childClass + " "
+                            + fieldsOfInterest + " " + grandchildren);
+                    try {
+                        if (grandchildren >= 2) {
+                            for (ClassDescriptor g : subtypes2.getSubtypes(child)) {
+                                if (!g.equals(child)) {
+                                    System.out.println("  " + g);
+                                }
+                            }
+                        }
+                    } catch (ClassNotFoundException e1) {
+                        assert true;
+                    }
+
+                }
+
+            }
+            int overridden = 0, total = 0;
+            for (Map.Entry<ClassDescriptor, Set<ClassDescriptor>> e : classesWithInstanceOfBasedEquals.entrySet()) {
+                ClassAnnotation parentClass = ClassAnnotation.fromClassDescriptor(e.getKey());
+                XClass xParent = AnalysisContext.currentXFactory().getXClass(e.getKey());
+                if (xParent == null) {
+                    continue;
+                }
+                EqualsKindSummary.KindOfEquals parentKind = equalsKindSummary.get(parentClass);
+                boolean isOverridden = false;
+                for (ClassDescriptor child : e.getValue()) {
+                    if (child.equals(e.getKey())) {
+                        continue;
+                    }
+                    XClass xChild = AnalysisContext.currentXFactory().getXClass(child);
+                    if (xChild == null) {
+                        continue;
+                    }
+                    ClassAnnotation childClass = ClassAnnotation.fromClassDescriptor(child);
+                    EqualsKindSummary.KindOfEquals childKind = equalsKindSummary.get(childClass);
+                    if (childKind != null) {
+                        isOverridden = true;
+                    }
+                }
+                total++;
+                if (isOverridden) {
+                    overridden++;
+                }
+                System.out.println("IS_OVERRIDDEN: " + e.getKey().getClassName());
+            }
+            System.out.println("Instance of equals: " + total + " subclassed, " + overridden + " overrridden");
+            for (Map.Entry<EqualsKindSummary.KindOfEquals, Integer> e : count.entrySet()) {
+                System.out.println(e);
+            }
+
+        }
+
         for (Map.Entry<ClassAnnotation, ClassAnnotation> e : parentMap.entrySet()) {
             ClassAnnotation childClass = e.getKey();
             EqualsKindSummary.KindOfEquals childKind = equalsKindSummary.get(childClass);
@@ -413,6 +499,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 .add(childClass).addMethod(equalsMethod.get(childClass)).addMethod(equalsMethod.get(parentClass))
                 .describe(MethodAnnotation.METHOD_OVERRIDDEN));
             }
+
         }
+
     }
 }

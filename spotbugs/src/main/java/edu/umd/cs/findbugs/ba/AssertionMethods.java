@@ -218,8 +218,11 @@ public class AssertionMethods {
             if ("java.util.logging.Level".equals(className) && "SEVERE".equals(fieldName)) {
                 return true;
             }
-            return "org.apache.log4j.Level".equals(className)
-                && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName));
+            if ("org.apache.log4j.Level".equals(className) && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName))) {
+                return true;
+            }
+            return false;
+
         }
         return false;
     }

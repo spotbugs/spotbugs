@@ -106,7 +106,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
 
     private static final boolean MARK_DOOMED = SystemProperties.getBoolean("fnd.markdoomed", true);
 
-    private static final String METHOD_NAME = SystemProperties.getProperty("fnd.method");
+    private static final String METHOD = SystemProperties.getProperty("fnd.method");
 
     private static final String CLASS = SystemProperties.getProperty("fnd.class");
 
@@ -151,7 +151,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
 
                 currentMethod = SignatureConverter.convertMethodSignature(jclass, method);
 
-                if (METHOD_NAME != null && !method.getName().equals(METHOD_NAME)) {
+                if (METHOD != null && !method.getName().equals(METHOD)) {
                     continue;
                 }
                 if (DEBUG || DEBUG_NULLARG) {
@@ -474,7 +474,10 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
         }
         catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
                 "java/lang/Throwable", pc);
-        return catchSize < 5;
+        if (catchSize < 5) {
+            return true;
+        }
+        return false;
 
     }
 }

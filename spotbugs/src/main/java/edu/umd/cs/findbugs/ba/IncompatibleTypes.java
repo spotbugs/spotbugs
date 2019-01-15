@@ -39,7 +39,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.util.Values;
 
 public class IncompatibleTypes {
     private static final ObjectType GWT_JAVASCRIPTOBJECT_TYPE = ObjectTypeFactory
@@ -283,7 +282,7 @@ public class IncompatibleTypes {
             if ("java.lang.Enum".equals(lhsClassName)) {
                 return INCOMPATIBLE_CLASSES;
             }
-            if (!pointerEquality && !Values.DOTTED_JAVA_LANG_OBJECT.equals(lhsClassName)) {
+            if (!pointerEquality && !"java.lang.Object".equals(lhsClassName)) {
                 return SEEMS_OK;
             }
         }

@@ -61,7 +61,9 @@ public class FilterFactory {
 
     private static Matcher makeMatcher(Collection<SortableValue> sortables, boolean andOr) {
         if (sortables.size() == 1) {
-            return makeMatcher(sortables.iterator().next());
+            for (SortableValue s : sortables) {
+                return makeMatcher(s);
+            }
         }
         edu.umd.cs.findbugs.filter.CompoundMatcher matcher;
         if (andOr == true) {
@@ -77,7 +79,9 @@ public class FilterFactory {
 
     public static Matcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
         if (sortables.size() == 1) {
-            return makeMatcher(sortables.iterator().next(), bug);
+            for (Sortables s : sortables) {
+                return makeMatcher(s, bug);
+            }
         }
         AndMatcher matcher = new AndMatcher();
         for (Sortables s : sortables) {

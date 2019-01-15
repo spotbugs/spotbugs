@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -93,8 +92,17 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
                 return false;
             }
             MethodParameter other = (MethodParameter) obj;
-            return Objects.equals(md, other.md)
-                && parameterNumber == other.parameterNumber;
+            if (md == null) {
+                if (other.md != null) {
+                    return false;
+                }
+            } else if (!md.equals(other.md)) {
+                return false;
+            }
+            if (parameterNumber != other.parameterNumber) {
+                return false;
+            }
+            return true;
         }
     }
 

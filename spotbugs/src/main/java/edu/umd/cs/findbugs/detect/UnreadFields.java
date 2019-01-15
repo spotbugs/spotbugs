@@ -87,7 +87,6 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
-import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class UnreadFields extends OpcodeStackDetector {
@@ -208,7 +207,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
         data.classesScanned.add(getDottedClassName());
-        boolean superClassIsObject = Values.DOTTED_JAVA_LANG_OBJECT.equals(obj.getSuperclassName());
+        boolean superClassIsObject = "java.lang.Object".equals(obj.getSuperclassName());
         if (getSuperclassName().indexOf('$') >= 0 || getSuperclassName().indexOf('+') >= 0
                 || withinAnonymousClass.matcher(getDottedClassName()).find()) {
             // System.out.println("hicfsc: " + betterClassName);
@@ -330,7 +329,10 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         int lastDot = annotationClass.lastIndexOf('.');
         String lastPart = annotationClass.substring(lastDot + 1);
-        return lastPart.startsWith("Inject");
+        if (lastPart.startsWith("Inject")) {
+            return true;
+        }
+        return false;
     }
 
     @Override

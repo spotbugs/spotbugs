@@ -519,7 +519,10 @@ public class Filter {
             if (now < bug.getFirstVersion()) {
                 return false;
             }
-            return !bug.isDead() || bug.getLastVersion() >= now;
+            if (bug.isDead() && bug.getLastVersion() < now) {
+                return false;
+            }
+            return true;
         }
 
         @Override

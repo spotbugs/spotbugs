@@ -404,7 +404,34 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
      */
     @Deprecated
     public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
-        throw new UnsupportedOperationException();
+        if (true) {
+            throw new UnsupportedOperationException();
+        }
+        /*
+        ValueCompacter compacter = new ValueCompacter(factory.getNumValuesAllocated());
+
+        // We can get all extant Frames by looking at the values in
+        // the location to value map, and also the block result values.
+        for (Iterator<ValueNumberFrame> i = factIterator(); i.hasNext();) {
+            ValueNumberFrame frame = i.next();
+            markFrameValues(frame, compacter);
+        }
+        for (Iterator<ValueNumberFrame> i = resultFactIterator(); i.hasNext();) {
+            ValueNumberFrame frame = i.next();
+            markFrameValues(frame, compacter);
+        }
+
+        int before = factory.getNumValuesAllocated();
+
+        // Now the factory can modify the ValueNumbers.
+        factory.compact(compacter.discovered, compacter.numValuesUsed);
+
+        int after = factory.getNumValuesAllocated();
+
+        if (DEBUG && after < before && before > 0) {
+            System.out.println("Value compaction: " + after + "/" + before + " (" + ((after * 100) / before) + "%)");
+        }
+         */
     }
 
     /**

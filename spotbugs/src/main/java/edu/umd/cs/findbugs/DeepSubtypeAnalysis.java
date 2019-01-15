@@ -15,7 +15,6 @@ import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.util.Values;
 
 public class DeepSubtypeAnalysis {
     static private JavaClass serializable;
@@ -121,7 +120,7 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -139,7 +138,7 @@ public class DeepSubtypeAnalysis {
         }
 
         String refName = getComponentClass(refSig);
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -188,7 +187,7 @@ public class DeepSubtypeAnalysis {
             throw storedException;
         }
 
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(x.getClassName())) {
+        if ("java.lang.Object".equals(x.getClassName())) {
             return 0.4;
         }
 

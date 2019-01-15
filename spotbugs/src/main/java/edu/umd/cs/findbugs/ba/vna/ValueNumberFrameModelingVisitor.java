@@ -163,8 +163,19 @@ Debug, ValueNumberAnalysisFeatures {
             return false;
         }
 
-        // TODO: support two-slot fields
-        return !(xfield.getSignature().equals("D") || xfield.getSignature().equals("J"));
+        if(xfield.getSignature().equals("D") || xfield.getSignature().equals("J")) {
+            // TODO: support two-slot fields
+            return false;
+        }
+
+        // Don't do redundant load elimination for fields that
+        // are loaded in only one place.
+        /*
+        if (false && loadedFieldSet.getLoadStoreCount(xfield).getLoadCount() <= 1){
+            return false;
+        }
+         */
+        return true;
     }
 
     /**
@@ -190,7 +201,11 @@ Debug, ValueNumberAnalysisFeatures {
 
         // Don't do forward substitution for fields that
         // are never read.
-        return loadedFieldSet.isLoaded(xfield);
+        if (!loadedFieldSet.isLoaded(xfield)) {
+            return false;
+        }
+
+        return true;
     }
 
     private void checkConsumedAndProducedValues(Instruction ins, ValueNumber[] consumedValueList, ValueNumber[] producedValueList) {

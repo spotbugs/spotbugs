@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
-import edu.umd.cs.findbugs.util.Values;
 
 /**
  * A TypeMerger which applies standard Java semantics when merging Types.
@@ -248,3 +247,4 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     }
 
 }
+

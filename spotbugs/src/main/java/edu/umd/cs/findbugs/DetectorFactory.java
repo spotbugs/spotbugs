@@ -217,7 +217,9 @@ public class DetectorFactory {
      *         interface
      */
     public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
-        checkForNoAnalysis();
+        if (FindBugs.isNoAnalysis()) {
+            throw new IllegalStateException("No analysis specified");
+        }
         return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
     }
 
@@ -375,7 +377,9 @@ public class DetectorFactory {
      */
     @Deprecated
     public Detector create(BugReporter bugReporter) {
-        checkForNoAnalysis();
+        if (FindBugs.isNoAnalysis()) {
+            throw new IllegalStateException("No analysis specified");
+        }
         return detectorCreator.createDetector(bugReporter);
     }
 
@@ -387,7 +391,9 @@ public class DetectorFactory {
      * @return the Detector2
      */
     public Detector2 createDetector2(BugReporter bugReporter) {
-        checkForNoAnalysis();
+        if (FindBugs.isNoAnalysis()) {
+            throw new IllegalStateException("No analysis specified");
+        }
         return detectorCreator.createDetector2(bugReporter);
     }
 
@@ -401,12 +407,6 @@ public class DetectorFactory {
             return className.substring(endOfPkg + 1);
         }
         return className;
-    }
-
-    private void checkForNoAnalysis() {
-        if (FindBugs.isNoAnalysis()) {
-            throw new IllegalStateException("No analysis specified");
-        }
     }
 
     /**
@@ -438,6 +438,9 @@ public class DetectorFactory {
         if (!className.equals(other.className)) {
             return false;
         }
-        return plugin.equals(other.plugin);
+        if (!plugin.equals(other.plugin)) {
+            return false;
+        }
+        return true;
     }
 }

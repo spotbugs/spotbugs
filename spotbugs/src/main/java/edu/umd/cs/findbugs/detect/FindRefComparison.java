@@ -108,7 +108,6 @@ import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Values;
 
 /**
  * Find suspicious reference comparisons. This includes:
@@ -140,7 +139,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Character");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Double");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Float");
-        DEFAULT_SUSPICIOUS_SET.add(Values.DOTTED_JAVA_LANG_INTEGER);
+        DEFAULT_SUSPICIOUS_SET.add("java.lang.Integer");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Long");
         DEFAULT_SUSPICIOUS_SET.add("java.lang.Short");
     }
@@ -215,7 +214,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         private static final long serialVersionUID = 1L;
 
         public DynamicStringType() {
-            super(Values.DOTTED_JAVA_LANG_STRING);
+            super("java.lang.String");
         }
 
         @Override
@@ -290,7 +289,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         private static final long serialVersionUID = 1L;
 
         public StaticStringType() {
-            super(Values.DOTTED_JAVA_LANG_STRING);
+            super("java.lang.String");
         }
 
         @Override
@@ -354,7 +353,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         private static final long serialVersionUID = 1L;
 
         public ParameterStringType() {
-            super(Values.DOTTED_JAVA_LANG_STRING);
+            super("java.lang.String");
         }
 
         @Override
@@ -405,7 +404,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 consumeStack(obj);
 
                 String className = obj.getClassName(getCPG());
-                if (Values.DOTTED_JAVA_LANG_STRING.equals(className)) {
+                if ("java.lang.String".equals(className)) {
                     pushValue(dynamicStringTypeInstance);
                 } else {
                     pushReturnType(obj);
@@ -456,10 +455,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             String methodName = obj.getName(getCPG());
             // System.out.println(className + "." + methodName);
 
-            if ("intern".equals(methodName) && Values.DOTTED_JAVA_LANG_STRING.equals(className)) {
+            if ("intern".equals(methodName) && "java.lang.String".equals(className)) {
                 sawStringIntern = true;
                 pushValue(staticStringTypeInstance);
-            } else if ("toString".equals(methodName) || Values.DOTTED_JAVA_LANG_STRING.equals(className)) {
+            } else if ("toString".equals(methodName) || "java.lang.String".equals(className)) {
                 pushValue(dynamicStringTypeInstance);
                 // System.out.println("  dynamic");
             } else {
@@ -965,7 +964,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             String lhs = SignatureConverter.convert(lhsType.getSignature());
             String rhs = SignatureConverter.convert(rhsType.getSignature());
 
-            if (Values.DOTTED_JAVA_LANG_STRING.equals(lhs) || Values.DOTTED_JAVA_LANG_STRING.equals(rhs)) {
+            if ("java.lang.String".equals(lhs) || "java.lang.String".equals(rhs)) {
                 handleStringComparison(jclass, method, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
             } else if (suspiciousSet.contains(lhs)) {
                 handleSuspiciousRefComparison(jclass, method, methodGen, refComparisonList, location, lhs,
@@ -1207,20 +1206,22 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 looksLikeTestCase = false;
                 priorityModifier = 0;
             }
-            Set<XMethod> targets = new HashSet<>();
-            boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
-            if (allOk) {
-                priorityModifier += 2;
-            }
+            if (true) {
+                Set<XMethod> targets = new HashSet<>();
+                boolean allOk = checkForWeirdEquals(lhsSig, rhsSig, targets);
+                if (allOk) {
+                    priorityModifier += 2;
+                }
 
-            int priority = result.getPriority() + priorityModifier;
-            bugAccumulator.accumulateBug(
-                    new BugInstance(this, "EC_UNRELATED_TYPES", priority)
-                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
-                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
-                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
-                            location.getHandle()));
+                int priority = result.getPriority() + priorityModifier;
+                bugAccumulator.accumulateBug(
+                        new BugInstance(this, "EC_UNRELATED_TYPES", priority)
+                        .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                        .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
+                        .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                        SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
+                                location.getHandle()));
+            }
         } else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE
                 || result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
             bugAccumulator.accumulateBug(

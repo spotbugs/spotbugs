@@ -322,10 +322,10 @@ public class MainFrame extends FBFrame implements LogSync {
         int countFilteredBugs = BugSet.countFilteredBugs();
         String msg = "";
         if (countFilteredBugs == 1) {
-            msg = "  1 " + L10N.getLocalString("statusbar.bug_hidden", "bug hidden (see view menu)");
+            msg = "  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden (see view menu)");
         } else if (countFilteredBugs > 1) {
             msg = "  " + countFilteredBugs + " "
-                    + L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
+                    + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden (see view menu)");
         }
         if (errorMsg != null && errorMsg.length() > 0) {
             msg = join(msg, errorMsg);
@@ -350,7 +350,7 @@ public class MainFrame extends FBFrame implements LogSync {
                     L10N.getLocalString("dlg.cancel_btn", "Cancel"),
             };
             int value = JOptionPane.showOptionDialog(this, getActionWithoutSavingMsg("closing"),
-                    L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
+                    edu.umd.cs.findbugs.L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
             if (value == 2 || value == JOptionPane.CLOSED_OPTION) {
@@ -620,12 +620,12 @@ public class MainFrame extends FBFrame implements LogSync {
     }
 
     private String getActionWithoutSavingMsg(String action) {
-        String msg = L10N.getLocalString("msg.you_are_" + action + "_without_saving_txt", null);
+        String msg = edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_" + action + "_without_saving_txt", null);
         if (msg != null) {
             return msg;
         }
-        return L10N.getLocalString("msg.you_are_" + action + "_txt", "You are " + action) + " "
-        + L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
+        return edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_" + action + "_txt", "You are " + action) + " "
+        + edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
     }
 
     public void updateBugTree() {
