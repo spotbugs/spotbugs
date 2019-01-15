@@ -59,7 +59,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.props.AbstractWarningProperty;
 import edu.umd.cs.findbugs.props.PriorityAdjustment;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
-import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Naming extends PreorderVisitor implements Detector {
@@ -92,19 +91,40 @@ public class Naming extends PreorderVisitor implements Detector {
     }
 
     public static boolean confusingMethodNamesWrongCapitalization(XMethod m1, XMethod m2) {
-        return m1.isStatic() == m2.isStatic()
-            && !m1.getClassName().equals(m2.getClassName())
-            && !m1.getName().equals(m2.getName())
-            && m1.getName().equalsIgnoreCase(m2.getName())
-            && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
+        if (m1.isStatic() != m2.isStatic()) {
+            return false;
+        }
+        if (m1.getClassName().equals(m2.getClassName())) {
+            return false;
+        }
+        if (m1.getName().equals(m2.getName())) {
+            return false;
+        }
+        if (m1.getName().equalsIgnoreCase(m2.getName())
+                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean confusingMethodNamesWrongPackage(XMethod m1, XMethod m2) {
-        return m1.isStatic() == m2.isStatic()
-            && !m1.getClassName().equals(m2.getClassName())
-            && m1.getName().equals(m2.getName())
-            && !m1.getSignature().equals(m2.getSignature())
-            && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
+        if (m1.isStatic() != m2.isStatic()) {
+            return false;
+        }
+        if (m1.getClassName().equals(m2.getClassName())) {
+            return false;
+        }
+
+        if (!m1.getName().equals(m2.getName())) {
+            return false;
+        }
+        if (m1.getSignature().equals(m2.getSignature())) {
+            return false;
+        }
+        if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) {
+            return true;
+        }
+        return false;
     }
 
     // map of canonicalName -> Set<XMethod>
@@ -304,7 +324,7 @@ public class Naming extends PreorderVisitor implements Detector {
         }
 
         String superClassName = obj.getSuperclassName();
-        if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(name)) {
+        if (!"java.lang.Object".equals(name)) {
             if (sameSimpleName(superClassName, name)) {
                 bugReporter.reportBug(new BugInstance(this, "NM_SAME_SIMPLE_NAME_AS_SUPERCLASS", HIGH_PRIORITY).addClass(name)
                         .addClass(superClassName));
@@ -320,7 +340,7 @@ public class Naming extends PreorderVisitor implements Detector {
             return;
         }
 
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName) && !visited.contains(superClassName)) {
+        if ("java.lang.Object".equals(superClassName) && !visited.contains(superClassName)) {
             try {
                 visitJavaClass(obj.getSuperClass());
             } catch (ClassNotFoundException e) {

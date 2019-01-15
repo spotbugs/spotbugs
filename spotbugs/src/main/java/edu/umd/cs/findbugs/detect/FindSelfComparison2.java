@@ -205,7 +205,14 @@ public class FindSelfComparison2 implements Detector {
         BugAnnotation annotation;
         String prefix;
         if (field != null) {
-            return; // don't report non-volatiles; too many false positives
+            if (field.isVolatile()) {
+                return;
+            }
+            if (true) {
+                return; // don't report these; too many false positives
+            }
+            //            annotation = FieldAnnotation.fromXField(field);
+            //            prefix = "SA_FIELD_SELF_";
         } else {
             annotation = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, v0, frame);
             prefix = "SA_LOCAL_SELF_";

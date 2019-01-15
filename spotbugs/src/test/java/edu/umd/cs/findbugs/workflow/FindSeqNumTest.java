@@ -1,7 +1,7 @@
 package edu.umd.cs.findbugs.workflow;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -84,10 +84,14 @@ public class FindSeqNumTest {
         assertEquals(2, Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.0", true, 3));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testV2_1() {
-        Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.1", true, 0);
-        fail("Should have rejected version number 2.1");
+        try {
+            Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.1", true, 0);
+            assertTrue("Didn't throw IllegalArgumentException", false);
+        } catch (IllegalArgumentException e) {
+            // we expected this;
+        }
     }
 
     @Test

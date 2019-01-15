@@ -6,4 +6,4 @@ if (new File(rootDir, eclipseFile).exists()) {
   include ':spotbugsTestCases', ':spotbugs', ':spotbugs-tests', ':test-harness', ':spotbugs-annotations', ':spotbugs-ant'
 }
 
-include ':test-harness-core', ':test-harness-jupiter'
+include ':docs', ':test-harness-core', ':test-harness-jupiter'

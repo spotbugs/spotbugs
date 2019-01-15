@@ -570,8 +570,6 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         return getPathToBug(b);
     }
 
-    // we do clean up properly, just debug afterward
-    @SuppressWarnings("PMD.FinalizeDoesNotCallSuperFinalize")
     @Override
     protected void finalize() throws Throwable {
         super.finalize();

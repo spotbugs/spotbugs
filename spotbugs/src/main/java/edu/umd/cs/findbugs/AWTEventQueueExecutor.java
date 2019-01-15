@@ -11,7 +11,6 @@ import javax.swing.SwingUtilities;
 public class AWTEventQueueExecutor extends AbstractExecutorService {
     @Override
     public void shutdown() {
-        // nothing to do here
     }
 
     @Override

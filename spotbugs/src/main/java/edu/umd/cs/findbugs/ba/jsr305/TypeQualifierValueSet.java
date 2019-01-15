@@ -65,16 +65,27 @@ public class TypeQualifierValueSet {
         FlowValue flowValue = FlowValue.flowValueFromWhen(sourceSinkInfo.getWhen());
 
         setValue(vn, flowValue);
-        switch (flowValue) {
-        case ALWAYS:
-            addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
-            break;
-        case NEVER:
-            addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
-            break;
-        default:
-            break;
-        }
+        if (true) {
+            switch (flowValue) {
+            case ALWAYS:
+                addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
+                break;
+            case NEVER:
+                addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+                break;
+            default:
+                break;
+            }
+        }/* else {
+
+            if (flowValue.isYes()) {
+                addSourceSinkInfo(whereAlways, vn, sourceSinkInfo);
+            }
+
+            if (flowValue.isNo()) {
+                addSourceSinkInfo(whereNever, vn, sourceSinkInfo);
+            }
+        }*/
     }
 
     private void setValue(ValueNumber vn, FlowValue flowValue) {

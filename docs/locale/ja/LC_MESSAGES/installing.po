@@ -4,7 +4,8 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 msgid ""
-msgstr "Project-Id-Version: spotbugs 3.1\n"
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-10-18 13:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -33,15 +34,17 @@ msgid ""
 " Binary distributions are available in :dist:`gzipped tar format <tgz>` "
 "and :dist:`zip format <zip>`. Once you have downloaded a binary "
 "distribution, extract it into a directory of your choice."
-msgstr "SpotBugs をインストールする最も簡単な方法は，バイナリ配布物をダウンロードすることです。バイナリ配布物は，:dist:`gzipped tar 形式 <tgz>` と :dist:`zip 形式 <zip>` がそれぞれ入手可能です。バイナリ配布物をダウンロードしたら，任意のディレクトリに展開します。"
+msgstr ""
 
 #: ../../installing.rst:13
+#, fuzzy
 msgid "Extracting a gzipped tar format distribution:"
-msgstr "gzipped tar 形式の展開方法例:"
+msgstr "gzipped tar 形式の展開方法例::"
 
 #: ../../installing.rst:17
+#, fuzzy
 msgid "Extracting a zip format distribution:"
-msgstr "zip 形式の展開方法例:"
+msgstr "zip 形式の展開方法例::"
 
 #: ../../installing.rst:21
 msgid ""
@@ -52,5 +55,5 @@ msgid ""
 "C:\\\\Software\\\\spotbugs-|release|. This directory is the SpotBugs home"
 " directory. We'll refer to it as ``$SPOTBUGS_HOME`` (or "
 "``%SPOTBUGS_HOME%`` for Windows) throughout this manual."
-msgstr "バイナリ配布物を展開すると，通常は spotbugs-|release| で終わるディレクトリが作成されます。たとえば，C:\\\\Software ディレクトリでバイナリ配布物を展開すると，SpotBugs ソフトウェアは C:\\\\Software\\\\spotbugs-|release| ディレクトリに展開されます。このディレクトリが SpotBugs のホームディレクトリになります。このマニュアルでは，``$SPOTBUGS_HOME`` (Windows では ``%SPOTBUGS_HOME%``) と呼びます。"
+msgstr ""
 

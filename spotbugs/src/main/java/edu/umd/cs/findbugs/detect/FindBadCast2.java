@@ -60,7 +60,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindBadCast2 implements Detector {
@@ -393,7 +392,7 @@ public class FindBadCast2 implements Detector {
                     boolean castMayThrow = !Repository.instanceOf(refJavaClass, castJavaClass);
                     boolean downCast = Repository.instanceOf(castJavaClass, refJavaClass);
 
-                    if (!operandTypeIsExact && Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
+                    if (!operandTypeIsExact && "java.lang.Object".equals(refName)) {
                         continue;
                     }
                     double rank = 0.0;

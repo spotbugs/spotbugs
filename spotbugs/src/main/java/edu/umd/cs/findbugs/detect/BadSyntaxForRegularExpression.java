@@ -47,7 +47,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         }
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
-        if (!(value instanceof String)) {
+        if (value == null || !(value instanceof String)) {
             return;
         }
         String regex = (String) value;
@@ -91,7 +91,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             return;
         }
         Object value = it.getConstant();
-        if (!(value instanceof String)) {
+        if (value == null || !(value instanceof String)) {
             return;
         }
         String regex = (String) value;
@@ -122,7 +122,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         }
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
-        if (!(value instanceof Integer)) {
+        if (value == null || !(value instanceof Integer)) {
             return defaultValue;
         }
         return ((Number) value).intValue();

@@ -25,7 +25,6 @@ import java.io.Serializable;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
-import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
@@ -131,27 +130,25 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(30)
-            .append(filterBy).append(' ')
-            .append(L10N.getLocalString("dlg.is", "is")).append(' ');
         switch (mode) {
         case FILTER_EXACTLY:
-            result.append(L10N.getLocalString("mode.equal_to", "equal to"));
-            break;
+            return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to") + " " + filterBy.formatValue(value);
         case FILTER_AT_OR_AFTER:
-            result.append(L10N.getLocalString("mode.at_or_after", "at or after"));
-            break;
+            return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after") + " "
+            + filterBy.formatValue(value);
         case FILTER_AT_OR_BEFORE:
-            result.append(L10N.getLocalString("mode.at_or_before", "at or before"));
-            break;
+            return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") + " "
+            + filterBy.formatValue(value);
         case FILTER_ALL_BUT:
-            result.append(L10N.getLocalString("mode.not_equal_to", "not equal to"));
-            break;
+            return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "
+            + edu.umd.cs.findbugs.L10N.getLocalString("mode.not_equal_to", "not equal to") + " "
+            + filterBy.formatValue(value);
         default:
-            throw new IllegalStateException("Invalid filter mode: " + mode);
+            throw new RuntimeException();
         }
-        result.append(' ').append(filterBy.formatValue(value));
-        return result.toString();
     }
 
     @Override
@@ -163,8 +160,10 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
             return false;
         }
 
-        FilterMatcher other = (FilterMatcher) o;
-        return filterBy.equals(other.filterBy) && value.equals(other.value);
+        if (filterBy.equals(((FilterMatcher) o).filterBy) && value.equals(((FilterMatcher) o).value)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

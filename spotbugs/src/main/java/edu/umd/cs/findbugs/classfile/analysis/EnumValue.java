@@ -50,7 +50,7 @@ public class EnumValue {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof EnumValue)) {
+        if (obj == null || !(obj instanceof EnumValue)) {
             return false;
         }
         EnumValue other = (EnumValue) obj;

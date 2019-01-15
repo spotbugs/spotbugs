@@ -165,7 +165,15 @@ public class ClassFeatureSet implements XMLWriteable {
 
         String name = member.getName();
 
-        return name.startsWith("class$") || name.startsWith("access$");
+        if (name.startsWith("class$")) {
+            return true;
+        }
+
+        if (name.startsWith("access$")) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

@@ -39,7 +39,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.util.Values;
 
 public class MultithreadedInstanceAccess extends OpcodeStackDetector {
     private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
@@ -87,7 +86,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         try {
             JavaClass cls = classContext.getJavaClass();
             String superClsName = cls.getSuperclassName();
-            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClsName)) {
+            if ("java.lang.Object".equals(superClsName)) {
                 return;
             }
 

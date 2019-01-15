@@ -633,7 +633,7 @@ about the validity or predictive ability of warnings, not as a way to find probl
   <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
     <Details>
 <![CDATA[
-<p> Looks for code that should be executed inside doPrivileged blocks.</p>
+<p> Look for code that should be executed inside doPrivileged blocks.</p>
 ]]>
     </Details>
   </Detector>
@@ -6202,7 +6202,7 @@ you are setting it to is fully populated/initialized.
     <LongDescription>Synchronization performed on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method performs synchronization on an object that implements
+<p> This method performs synchronization an object that implements
 java.util.concurrent.locks.Lock. Such an object is locked/unlocked
 using
 <code>acquire()</code>/<code>release()</code> rather
@@ -6235,7 +6235,7 @@ your design, as other developers will find it exceptionally confusing.
     <LongDescription>Synchronization performed on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method performs synchronization on an object that is an instance of
+<p> This method performs synchronization an object that is an instance of
 a class from the java.util.concurrent package (or its subclasses). Instances
 of these classes have their own concurrency control mechanisms that are orthogonal to
 the synchronization provided by the Java keyword <code>synchronized</code>. For example,
@@ -6265,11 +6265,11 @@ removed.
     <LongDescription>Uncallable method {1} defined in anonymous class</LongDescription>
     <Details>
 <![CDATA[
-<p> This anonymous class defines a method that is not directly invoked and does not override
+<p> This anonymous class defined a method that is not directly invoked and does not override
 a method in a superclass. Since methods in other classes cannot directly invoke methods
 declared in an anonymous class, it seems that this method is uncallable. The method
 might simply be dead code, but it is also possible that the method is intended to
-override a method declared in a superclass, and due to a typo or other error the method does not,
+override a method declared in a superclass, and due to an typo or other error the method does not,
 in fact, override the method it is intended to.
 </p>
 ]]>

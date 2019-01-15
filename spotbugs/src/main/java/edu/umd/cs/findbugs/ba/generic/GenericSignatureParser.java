@@ -78,22 +78,25 @@ public class GenericSignatureParser {
                 case 'T':
                     int startsemi = index;
                     int leftCount = 0;
-                    int i = startsemi;
-                    char c;
-                    do {
-                        i++;
-                        c = signature.charAt(i);
+                    int i = startsemi + 1;
+                    loop: while (true) {
+                        char c = signature.charAt(i);
                         switch (c) {
+                        case ';':
+                            if (leftCount == 0) {
+                                break loop;
+                            }
+                            break;
                         case '<':
                             leftCount++;
                             break;
                         case '>':
                             leftCount--;
                             break;
-                        default:
-                            break;
                         }
-                    } while (c != ';' || leftCount != 0);
+                        i++;
+
+                    }
                     String foo = signature.substring(startsemi, i + 1);
                     result.append(foo);
                     index = i + 1;
@@ -219,8 +222,13 @@ public class GenericSignatureParser {
                     Signature sig = (Signature) a;
                     if (genericSignature != null) {
                         if (!genericSignature.equals(sig.getSignature())) {
-                            // we've seen two inconsistent signatures
-                            return null;
+                            if (false) {
+                                System.out.println("Inconsistent signatures: ");
+                                System.out.println(genericSignature);
+                                System.out.println(sig.getSignature());
+                            }
+                            return null; // we've seen two inconsistent
+                            // signatures
                         }
                         continue;
                     }
@@ -246,7 +254,11 @@ public class GenericSignatureParser {
         GenericSignatureParser plainParser = new GenericSignatureParser(plainSignature);
         GenericSignatureParser genericParser = new GenericSignatureParser(genericSignature);
 
-        return plainParser.getNumParameters() == genericParser.getNumParameters();
+        if (plainParser.getNumParameters() != genericParser.getNumParameters()) {
+            return false;
+        }
+
+        return true;
     }
 
     public static void main(String[] args) {

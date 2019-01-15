@@ -325,9 +325,16 @@ public class PreorderVisitor extends BetterVisitor {
         if (!visitingMethod) {
             throw new IllegalStateException("Not visiting a method");
         }
-        return method.isStatic()
-            && "main".equals(getMethodName())
-            && "([Ljava/lang/String;)V".equals(getMethodSig());
+        if (!method.isStatic()) {
+            return false;
+        }
+        if (!"main".equals(getMethodName())) {
+            return false;
+        }
+        if (!"([Ljava/lang/String;)V".equals(getMethodSig())) {
+            return false;
+        }
+        return true;
 
     }
 

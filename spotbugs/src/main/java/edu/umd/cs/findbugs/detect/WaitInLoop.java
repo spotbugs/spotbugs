@@ -97,16 +97,30 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
     private boolean isConditionAwait() {
         String className = getClassConstantOperand();
         String name = getNameConstantOperand();
+        String sig = getSigConstantOperand();
 
-        if (!"java/util/concurrent/locks/Condition".equals(className) || !name.startsWith("await")) {
+        if (!"java/util/concurrent/locks/Condition".equals(className)) {
             return false;
         }
 
-        String sig = getSigConstantOperand();
-        return ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig)))
-            || ("awaitNanos".equals(name) && "(J)V".equals(sig))
-            || ("awaitUninterruptibly".equals(name) && "()V".equals(sig))
-            || ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig));
+        if (!name.startsWith("await")) {
+            return false;
+        }
+
+        if ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig))) {
+            return true;
+        }
+        if ("awaitNanos".equals(name) && "(J)V".equals(sig)) {
+            return true;
+        }
+        if ("awaitUninterruptibly".equals(name) && "()V".equals(sig)) {
+            return true;
+        }
+        if ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig)) {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isMonitorWait() {

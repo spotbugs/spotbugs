@@ -91,9 +91,16 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
         }
 
         public boolean same(LoadedVariable other) {
-            return other.lvState == lvState
-                && !(lvState == LoadedVariableState.LOCAL && num != other.num)
-                && !(lvState == LoadedVariableState.FIELD && !fd.equals(other.fd));
+            if(other.lvState != lvState) {
+                return false;
+            }
+            if(lvState == LoadedVariableState.LOCAL && num != other.num) {
+                return false;
+            }
+            if ((lvState == LoadedVariableState.FIELD) && !fd.equals(other.fd)) {
+                return false;
+            }
+            return true;
         }
 
         public BugInstance annotate(BugInstance bug) {

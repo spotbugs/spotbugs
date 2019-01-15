@@ -30,7 +30,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class RedundantInterfaces extends PreorderVisitor implements Detector, StatelessDetector {
@@ -45,7 +44,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
         JavaClass obj = classContext.getJavaClass();
 
         String superClassName = obj.getSuperclassName();
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superClassName)) {
+        if ("java.lang.Object".equals(superClassName)) {
             return;
         }
 

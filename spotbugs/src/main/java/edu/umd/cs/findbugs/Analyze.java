@@ -14,7 +14,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.util.Values;
 
 public class Analyze {
     static private JavaClass serializable;
@@ -67,7 +66,7 @@ public class Analyze {
         }
 
         String refName = getComponentClass(refSig);
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -81,7 +80,7 @@ public class Analyze {
         }
 
         String refName = getComponentClass(refSig);
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(refName)) {
+        if ("java.lang.Object".equals(refName)) {
             return 0.99;
         }
 
@@ -178,7 +177,7 @@ public class Analyze {
         if (x.equals(y)) {
             return 1.0;
         }
-        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(y.getClassName())) {
+        if ("java.lang.Object".equals(y.getClassName())) {
             return 1.0;
         }
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();

@@ -117,7 +117,12 @@ public class ObligationSet {
 
         ObligationSet other = (ObligationSet) o;
 
-        return Arrays.equals(this.countList, other.countList);
+        if (!Arrays.equals(this.countList, other.countList)
+                /* || !Arrays.equals(this.whereCreated, other.whereCreated) */) {
+            return false;
+        }
+
+        return true;
     }
 
     /*

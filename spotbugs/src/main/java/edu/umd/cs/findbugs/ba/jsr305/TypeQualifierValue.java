@@ -255,7 +255,10 @@ public class TypeQualifierValue<A extends Annotation> {
     }
 
     public boolean canValidate(@CheckForNull Object constantValue) {
-        return validator != null;
+        if (validator == null) {
+            return false;
+        }
+        return true;
     }
 
     public When validate(@CheckForNull Object constantValue) {

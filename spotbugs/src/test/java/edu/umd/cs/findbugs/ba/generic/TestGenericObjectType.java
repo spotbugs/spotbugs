@@ -35,7 +35,6 @@ import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
-import edu.umd.cs.findbugs.util.Values;
 
 /**
  * @author Nat Ayewah
@@ -75,7 +74,7 @@ public class TestGenericObjectType {
 
         if (typeCategory == TypeCategory.PARAMETERIZED) {
             assertTrue(obj.hasParameters());
-            assertEquals(parameters.size(), obj.getNumParameters());
+            assertTrue(obj.getNumParameters() == parameters.size());
             for (int i = 0; i < obj.getNumParameters(); i++) {
                 compareTypes(obj.getParameterAt(i), parameters.get(i));
             }
@@ -125,21 +124,21 @@ public class TestGenericObjectType {
     }
 
     public void notestTypeVariables() {
-        initTest("TE;", "E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null);
+        initTest("TE;", "E", "java.lang.Object", GenericUtilities.TypeCategory.TYPE_VARIABLE, "E", null, null);
         processTest();
 
-        initTest("*", "?", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD, "*", null, null);
+        initTest("*", "?", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD, "*", null, null);
         processTest();
 
-        initTest("+TE;", "? extends E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_EXTENDS, "+",
+        initTest("+TE;", "? extends E", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_EXTENDS, "+",
                 GenericUtilities.getType("TE;"), null);
         processTest();
 
-        initTest("-TE;", "? super E", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
+        initTest("-TE;", "? super E", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
                 GenericUtilities.getType("TE;"), null);
         processTest();
 
-        initTest("-[TE;", "? super E[]", Values.DOTTED_JAVA_LANG_OBJECT, GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
+        initTest("-[TE;", "? super E[]", "java.lang.Object", GenericUtilities.TypeCategory.WILDCARD_SUPER, "-",
                 GenericUtilities.getType("[TE;"), null);
         processTest();
     }

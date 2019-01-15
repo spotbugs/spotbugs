@@ -188,8 +188,11 @@ public class FindReturnRef extends OpcodeStackDetector {
         if ((getMethod().getAccessFlags() & Const.ACC_VARARGS) == 0) {
             return true;
         }
-        // var-arg parameter
-        return top.getRegisterNumber() != parameterCount - 1;
+        if (top.getRegisterNumber() == parameterCount - 1)
+        {
+            return false; // var-arg parameter
+        }
+        return true;
 
     }
 }

@@ -249,7 +249,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             break;
         }
 
-        if (!(type instanceof ObjectType)) {
+        if (type == null || !(type instanceof ObjectType)) {
             return null;
         }
 

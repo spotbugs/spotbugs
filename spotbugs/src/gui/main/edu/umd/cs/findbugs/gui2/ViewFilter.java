@@ -142,7 +142,13 @@ public class ViewFilter {
     }
 
     public boolean showIgnoringPackagePrefixes(BugInstance b) {
-        return rank.show(mf, b) && priority.show(mf, b);
+        if (!rank.show(mf, b)) {
+            return false;
+        }
+        if (!priority.show(mf, b)) {
+            return false;
+        }
+        return true;
     }
 
     /**

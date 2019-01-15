@@ -477,12 +477,24 @@ public class ProjectFilterSettings implements Cloneable {
         }
         ProjectFilterSettings other = (ProjectFilterSettings) obj;
 
-        return this.getMinPriority().equals(other.getMinPriority())
-            && this.getMinRank() == other.getMinRank()
-            // don't compare the activeBugCategorySet. compare the
-            // hiddenBugCategorySet only
-            && this.hiddenBugCategorySet.equals(other.hiddenBugCategorySet)
-            && this.displayFalseWarnings == other.displayFalseWarnings;
+        if (!this.getMinPriority().equals(other.getMinPriority())) {
+            return false;
+        }
+        if (this.getMinRank() != other.getMinRank()) {
+            return false;
+        }
+
+        // don't compare the activeBugCategorySet. compare the
+        // hiddenBugCategorySet only
+        if (!this.hiddenBugCategorySet.equals(other.hiddenBugCategorySet)) {
+            return false;
+        }
+
+        if (this.displayFalseWarnings != other.displayFalseWarnings) {
+            return false;
+        }
+
+        return true;
     }
 
     /*
