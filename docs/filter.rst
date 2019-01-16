@@ -31,9 +31,9 @@ Types of Match clauses
 This element specifies a particular bug ``pattern or patterns to match. The ``pattern`` attribute is a comma-separated list of bug pattern types.
 You can find the bug pattern types for particular warnings by looking at the output produced by the **-xml** output option (the type attribute of BugInstance elements), or from the :doc:`bugDescriptions`.
 
-For more coarse-grained matching, use ``code`` attribute. It takes a comma-separated list of bug abbreviations. For most-coarse grained matching use ``category`` attriute, that takes a comma separated list of bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICICE``, ``PERFORMANCE``, ``STYLE``.
+For more coarse-grained matching, use ``code`` attribute. It takes a comma-separated list of bug abbreviations. For most-coarse grained matching use ``category`` attribute, that takes a comma separated list of bug category names: ``CORRECTNESS``, ``MT_CORRECTNESS``, ``BAD_PRACTICICE``, ``PERFORMANCE``, ``STYLE``.
 
-If more than one of the attributes mentioned above are specified on the same <Bug> element, all bug patterns that match either one of specified pattern names, or abreviations, or categories will be matched.
+If more than one of the attributes mentioned above are specified on the same <Bug> element, all bug patterns that match either one of specified pattern names, or abbreviations, or categories will be matched.
 
 As a backwards compatibility measure, <BugPattern> and <BugCode> elements may be used instead of <Bug> element. Each of these uses a name attribute for specifying accepted values list. Support for these elements may be removed in a future release.
 
@@ -137,7 +137,7 @@ So, for example, if you want to suppress IC (initialization circularity) reports
      <Bug code="IC" />
   </Match>
 
-By explicitly matching both classes, you ensure that the IC bug instance will be matched regardless of which class involved in the circularity happens to be listed first in the bug instance. (Of course, this approach might accidentally supress circularities involving "com.foobar.A" or "com.foobar.B" and a third class.)
+By explicitly matching both classes, you ensure that the IC bug instance will be matched regardless of which class involved in the circularity happens to be listed first in the bug instance. (Of course, this approach might accidentally suppress circularities involving "com.foobar.A" or "com.foobar.B" and a third class.)
 
 Many kinds of bugs report what method they occur in. For those bug instances, you can put Method clauses in the Match element and they should work as expected.
 
@@ -250,7 +250,7 @@ Match bugs in specific parts of the code base
     <Package name="~.*\.internal" />
     <Bug code="MS" />
   </Match>
-  <!-- match anonymoous inner classes warnings in ui package hierarchy -->
+  <!-- match anonymous inner classes warnings in ui package hierarchy -->
   <Match>
     <Package name="~com\.foobar\.fooproject\.ui.*" />
     <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
