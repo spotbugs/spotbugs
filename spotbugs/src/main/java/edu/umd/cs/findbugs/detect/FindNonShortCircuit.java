@@ -195,8 +195,7 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
         if (sawDangerOld) {
             if (sawNullTestVeryOld) {
                 priority = HIGH_PRIORITY;
-            }
-            if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld) {
+            } else if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld) {
                 priority = HIGH_PRIORITY;
                 pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
             } else {

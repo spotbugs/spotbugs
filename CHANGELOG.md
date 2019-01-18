@@ -6,7 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2018-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
-
+* Fixed bug priority calculation logic in FindNonShortCircuit#reportBug
 ## 3.1.9 - 2018-11-20
 
 ### Fixed
