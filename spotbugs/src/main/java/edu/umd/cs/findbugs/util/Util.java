@@ -385,14 +385,11 @@ public class Util {
         }
 
         in.mark(5000);
-        BufferedReader r = null;
         try {
-            r = new BufferedReader(Util.getReader(in), 2000);
+            BufferedReader r = new BufferedReader(Util.getReader(in), 2000);
 
-            String s;
-            int count = 0;
-            while (count < 4) {
-                s = r.readLine();
+            while (true) {
+                String s = r.readLine();
                 if (s == null) {
                     break;
                 }
