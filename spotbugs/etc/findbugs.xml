@@ -660,6 +660,8 @@
                     reports="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION"/>
           <Detector class="edu.umd.cs.findbugs.detect.MapTraversalWayCheck" speed="fast" disabled="false"
                     reports="SPEC_MAP_KEYSET_INEFFICIENT_CHECK,SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK"/>
+            <Detector class="edu.umd.cs.findbugs.detect.FinallyReturnCheck" speed="fast" disabled="false"
+                    reports="SPEC_FINALLY_RETURN_CHECK"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1264,4 +1266,5 @@
           <BugPattern abbrev="SPEC" type="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_MAP_KEYSET_INEFFICIENT_CHECK" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_FINALLY_RETURN_CHECK" category="BAD_PRACTICE"/>
 </FindbugsPlugin>
