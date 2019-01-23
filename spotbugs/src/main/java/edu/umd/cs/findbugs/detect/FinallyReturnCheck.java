@@ -33,7 +33,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.BugAccumulator;
-import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -43,10 +42,6 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 
 /**
  * @since ?
@@ -126,10 +121,6 @@ public class FinallyReturnCheck implements Detector {
             return;
         }
 
-        // get the last finally
-        // CodeExceptionGen lastFinally = finallyList.get(finallyList.size() - 1);
-        // InstructionHandle targetHandle = lastFinally.getHandlerPC();
-        // int targetPc = targetHandle.getPosition();
 
         // the instruction list
         Collection<Location> locationCollection = cfg.orderedLocations();
@@ -144,11 +135,13 @@ public class FinallyReturnCheck implements Detector {
         // check the finally block has return
         for (Location location : locationList) {
             InstructionHandle insHandle = location.getHandle();
-            System.out.println(insHandle);
+
             if (null == insHandle) {
                 continue;
             }
+
             int pc = insHandle.getPosition();
+                // analyze from the finally start pc
             if (pc < targetPc) {
                 continue;
             }
@@ -161,10 +154,12 @@ public class FinallyReturnCheck implements Detector {
                 continue;
             }
 
+                // when encounter ReturnInstruction in finally block, fill the report ang break.
             if (ins instanceof ReturnInstruction) {
                 fillReport(location, classContext, method, constPool);
                 break;
             }
+                // when encounter athrow instruction, it means the finally block is in end.
             if (ins instanceof ATHROW) {
                 break;
             }
@@ -197,20 +192,13 @@ public class FinallyReturnCheck implements Detector {
         InstructionHandle insHandle = location.getHandle();
         MethodGen methodGen = classContext.getMethodGen(method);
         String sourceFile = classContext.getJavaClass().getSourceFileName();
-        ValueNumberDataflow valueNumDataFlow = classContext.getValueNumberDataflow(method);
-
-        ValueNumberFrame vnaFrame = valueNumDataFlow.getFactAtLocation(location);
-        ValueNumber valueNumber = vnaFrame.getTopValue();
-
-        BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
-                valueNumber, vnaFrame, "VALUE_OF");
 
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, insHandle);
 
         bugAccumulator.accumulateBug(
                 new BugInstance(this, "SPEC_FINALLY_RETURN_CHECK", NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
+                        .addClassAndMethod(methodGen, sourceFile),
                 sourceLineAnnotation);
     }
 
