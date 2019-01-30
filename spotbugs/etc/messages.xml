@@ -1715,6 +1715,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ObjectNotImplEquals">
+    <Details>
+      <![CDATA[
+        <p>It is risky to return value in finally block.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8551,6 +8558,32 @@ after the call to initLogging, the logger configuration is lost
          if the return operation is excuted here may overwrite the value
          returned in try or catch. Therefore, it is risky to return value in finally
          block.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_LIST_OBJECT_NO_EQUALS">
+    <ShortDescription>Object which is stored in java/util/List doesn't rewritten equals method. </ShortDescription>
+    <LongDescription>Method {1} called List.remove(object), but the object stored in list doesn't rewritten "equals" method.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>When List.remove(object) is called, it first find the target object in list which is euqal to the incoming object,
+         and then remove it. If the object doesn't rewrite the equals method, the object may not be found and can not be removed,
+         even the object is existed in list.       
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_MAP_SET_OBJECT_NO_EQUALS_HASHCODE">
+    <ShortDescription>Object which is as key to java/util/Map or stored in java/util/Set doesn't rewritten "equals" and "hashCode" methods. </ShortDescription>
+    <LongDescription>Field {2} uses an object as key to Map or stored in Set, but the object doesn't rewritten "equals" and "hashCode" method.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>The key object of java/util/Map must rewrite euqals and hashCode. 
+         The object stored in java/util/Set must rewrite equals and hashCode as well.
+         As Map distinguishes and stores value object by calling key object's equals method, and euqals method is based on hashCode method.
+         Set doesn't allow storing duplicate objects, it distinguishes and stores object by calling object's equals method, 
+         and euqals method is based on hashCode method.
       </p>
       ]]>
     </Details>
