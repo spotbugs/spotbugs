@@ -156,7 +156,7 @@ public class FinallyReturnCheck implements Detector {
 
                 // when encounter ReturnInstruction in finally block, fill the report ang break.
             if (ins instanceof ReturnInstruction) {
-                fillReport(location, classContext, method, constPool);
+                    fillReport(location, classContext, method);
                 break;
             }
                 // when encounter athrow instruction, it means the finally block is in end.
@@ -178,12 +178,10 @@ public class FinallyReturnCheck implements Detector {
      *            class context
      * @param method
      *            method
-     * @param constPool
-     *            constant pool
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void fillReport(Location location, ClassContext classContext, Method method, ConstantPoolGen constPool)
+    private void fillReport(Location location, ClassContext classContext, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
         if (null == location) {
             return;

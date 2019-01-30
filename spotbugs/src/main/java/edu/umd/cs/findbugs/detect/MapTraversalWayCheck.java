@@ -202,13 +202,13 @@ public class MapTraversalWayCheck implements Detector {
                     boolean res = checkMapKeysetValid(cycleVa, locationList, i, classContext, method, constPool);
 
                     if (!res) {
-                        fillReport(tmp, location, classContext, method, constPool);
+                        fillReport(tmp, location, classContext, method);
                     }
                 } else if (WAY_MAP_ENTRYSET == tmp) {
                     boolean res = checkMapEntrysetValid(cycleVa, locationList, i, classContext, method, constPool);
 
                     if (!res) {
-                        fillReport(tmp, location, classContext, method, constPool);
+                        fillReport(tmp, location, classContext, method);
                     }
                 }
             }
@@ -465,13 +465,11 @@ public class MapTraversalWayCheck implements Detector {
      *            class context
      * @param method
      *            method
-     * @param constPool
-     *            constant pool
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void fillReport(int way, Location location, ClassContext classContext, Method method,
-            ConstantPoolGen constPool) throws DataflowAnalysisException, CFGBuilderException {
+    private void fillReport(int way, Location location, ClassContext classContext, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         if (null == location) {
             return;
         }
