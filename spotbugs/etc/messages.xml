@@ -1715,7 +1715,7 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.ObjectNotImplEquals">
+  <Detector class="edu.umd.cs.findbugs.detect.ObjectNoEqualsAndHashCode">
     <Details>
       <![CDATA[
         <p>It is risky to return value in finally block.</p>
@@ -8576,7 +8576,7 @@ after the call to initLogging, the logger configuration is lost
   </BugPattern>
   <BugPattern type="SPEC_MAP_SET_OBJECT_NO_EQUALS_HASHCODE">
     <ShortDescription>Object which is as key to java/util/Map or stored in java/util/Set doesn't rewritten "equals" and "hashCode" methods. </ShortDescription>
-    <LongDescription>Field {2} uses an object as key to Map or stored in Set, but the object doesn't rewritten "equals" and "hashCode" method.</LongDescription>
+    <LongDescription>{1} uses an object which doesn't rewritten "equals" and "hashCode" methods as key of java/util/Map or stored in java/util/Set.</LongDescription>
     <Details>
       <![CDATA[
       <p>The key object of java/util/Map must rewrite euqals and hashCode. 

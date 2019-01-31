@@ -62,11 +62,11 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  * @since ?
  *
  */
-public class ObjectNotImplEquals implements Detector {
+public class ObjectNoEqualsAndHashCode implements Detector {
     private final BugAccumulator bugAccumulator;
     private final BugReporter bugReporter;
 
-    public ObjectNotImplEquals(BugReporter bugReporter) {
+    public ObjectNoEqualsAndHashCode(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
@@ -217,10 +217,18 @@ public class ObjectNotImplEquals implements Detector {
             return true;
         }
 
+        if ("java/lang/Class".equals(keyClassName)) {
+            return true;
+        }
+
         JavaClass objClass = null;
         try {
             objClass = Repository.lookupClass(keyClassName);
         } catch (ClassNotFoundException e) {
+            return true;
+        }
+
+        if (objClass.isInterface() || objClass.isAbstract() || objClass.isEnum()) {
             return true;
         }
 
@@ -410,15 +418,21 @@ public class ObjectNotImplEquals implements Detector {
         if (null == className) {
             return;
         }
+
+        if ("java/lang/Class".equals(className)) {
+            return;
+        }
+
         JavaClass objClass = null;
+
         try {
             objClass = Repository.lookupClass(className);
         } catch (ClassNotFoundException e) {
             return;
         }
 
-        // if the object is interface, ignore it
-        if (objClass.isInterface()) {
+        // if the object is Interface, Abstract class or Enum, ignore it
+        if (objClass.isInterface() || objClass.isAbstract() || objClass.isEnum()) {
             return;
         }
         Method[] methods = objClass.getMethods();

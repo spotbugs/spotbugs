@@ -662,7 +662,7 @@
                     reports="SPEC_MAP_KEYSET_INEFFICIENT_CHECK,SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.FinallyReturnCheck" speed="fast" disabled="false"
                     reports="SPEC_FINALLY_RETURN_CHECK"/>
-          <Detector class="edu.umd.cs.findbugs.detect.ObjectNotImplEquals" speed="fast" disabled="false"
+          <Detector class="edu.umd.cs.findbugs.detect.ObjectNoEqualsAndHashCode" speed="fast" disabled="false"
                     reports="SPEC_LIST_OBJECT_NO_EQUALS,SPEC_MAP_SET_OBJECT_NO_EQUALS_HASHCODE"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
