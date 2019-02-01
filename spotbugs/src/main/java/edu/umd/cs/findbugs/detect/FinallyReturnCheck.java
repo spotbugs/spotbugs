@@ -25,12 +25,13 @@ import java.util.List;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.CodeExceptionGen;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GotoInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -102,8 +103,11 @@ public class FinallyReturnCheck implements Detector {
             return;
         }
 
-        // constant pool of this method
-        ConstantPoolGen constPool = classContext.getConstantPoolGen();
+        Type returnType = method.getReturnType();
+        // if the return type is void, return
+        if ("V".equals(returnType.getSignature())) {
+            return;
+        }
 
         // get the exception table
         CodeExceptionGen[] exceptions = cfg.getMethodGen().getExceptionHandlers();
@@ -111,8 +115,15 @@ public class FinallyReturnCheck implements Detector {
         List<CodeExceptionGen> finallyList = new ArrayList<>();
         // get the finally block
         for (CodeExceptionGen exception : exceptions) {
-            // when catchType is null, it means finally start
-            if (null == exception.getCatchType()) {
+            InstructionHandle handleTmp = exception.getEndPC();
+            Instruction ins = null;
+
+            if (null != handleTmp) {
+                ins = handleTmp.getInstruction();
+            }
+
+            // when catchType is null, and not syncronized, it means finally start
+            if (null == exception.getCatchType() && !(ins instanceof MONITOREXIT)) {
                 finallyList.add(exception);
             }
         }
