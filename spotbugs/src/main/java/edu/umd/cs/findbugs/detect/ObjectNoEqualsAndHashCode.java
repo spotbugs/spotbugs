@@ -20,6 +20,8 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ConstantCP;
@@ -45,6 +47,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -63,8 +66,31 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  *
  */
 public class ObjectNoEqualsAndHashCode implements Detector {
+
+    private final static List<String> mapFilterMethods;
+
+    private final static List<String> setFilterMethods;
+
     private final BugAccumulator bugAccumulator;
     private final BugReporter bugReporter;
+
+    static {
+        mapFilterMethods = new ArrayList<>();
+        mapFilterMethods.add("size");
+        mapFilterMethods.add("isEmpty");
+        mapFilterMethods.add("clear");
+        mapFilterMethods.add("keySet");
+        mapFilterMethods.add("values");
+        mapFilterMethods.add("entrySet");
+
+        setFilterMethods = new ArrayList<>();
+        setFilterMethods.add("size");
+        setFilterMethods.add("isEmpty");
+        setFilterMethods.add("iterator");
+        setFilterMethods.add("clear");
+        setFilterMethods.add("spliterator");
+        setFilterMethods.add("toArray");
+    }
 
     public ObjectNoEqualsAndHashCode(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,7 +101,6 @@ public class ObjectNoEqualsAndHashCode implements Detector {
     public void visitClassContext(ClassContext classContext) {
         Field[] fields = classContext.getJavaClass().getFields();
         // ConstantPoolGen constPool = classContext.getConstantPoolGen();
-
         for (Field field : fields) {
             analyzeField(field, classContext);
         }
@@ -113,30 +138,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
      *            field to be check
      */
     private void analyzeField(Field field, ClassContext classContext) {
-        // get the key object class name of Map, or object class name of Set
-        String keyClassName = getObjInMapOrSet(field);
-
-        // check the object has rewritten equals and hashCode methods
-        boolean res = checkObjEuqalAndHashCode(keyClassName);
-
-        if (!res) {
-            fillFieldWarningReport(field, classContext.getJavaClass().getClassName());
-        }
-    }
-
-    /**
-     * Get key object in Map or object in Set
-     *
-     * @param field
-     *            field
-     * @return key object in Map or object in Set
-     */
-    private String getObjInMapOrSet(Field field) {
-        String keyClassName = null;
         Type type = field.getType();
 
         if (!(type instanceof ObjectType)) {
-            return keyClassName;
+            return;
         }
 
         ObjectType objType = (ObjectType) type;
@@ -144,15 +149,27 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         // get the field class name
         String className = objType.getClassName();
 
-        // if the field is Set or Map, continue
+        // if the field is not Set or Map, return
         if (!"java.util.Set".equals(className) && !"java.util.Map".equals(className)) {
-            return keyClassName;
+            return;
         }
 
         // generic signature of field, for example: Ljava/util/Set<Lcom/h3c/spotbugs/test/TestObject;>;
         String sig = field.getGenericSignature();
 
-        return getObjClassOrInerClassFromStr(false, sig);
+        // get the key object class name of Map, or object class name of Set
+        String keyClassName = getObjClassOrInerClassFromStr(false, sig);
+
+        // check the object has rewritten equals and hashCode methods
+        boolean res = checkObjEuqalAndHashCode(keyClassName);
+
+        if (!res) {
+            if ("java.util.Map".equals(className)) {
+                fillFieldWarningReport(true, field, classContext.getJavaClass().getClassName());
+            } else if ("java.util.Set".equals(className)) {
+                fillFieldWarningReport(false, field, classContext.getJavaClass().getClassName());
+            }
+        }
     }
 
     /**
@@ -270,20 +287,21 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             return;
         }
 
-        // constant pool of this method
-        ConstantPoolGen constPool = classContext.getConstantPoolGen();
+        // checkLocalVariableInMethod(method, classContext);
+        List<LocalVariable> mapVariables = new ArrayList<>();
+        List<LocalVariable> setVariables = new ArrayList<>();
+        getMapSetLocalVariale(method, classContext, mapVariables, setVariables);
 
+        ConstantPoolGen constPool = classContext.getConstantPoolGen();
         // location list (instruction list)
         Collection<Location> locationCollection = cfg.orderedLocations();
-
         ArrayList<Location> locationList = new ArrayList<>();
         locationList.addAll(locationCollection);
-
-        checkLocalVariableInMethod(method, classContext);
 
         for (int i = 0; i < locationList.size(); i++) {
             Location location = locationList.get(i);
             InstructionHandle insHandle = location.getHandle();
+
             if (null == insHandle) {
                 continue;
             }
@@ -293,31 +311,131 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             // bytecode: invokeinterface #{position} //InterfaceMethod java/util/List.remove(Object)
             if (ins instanceof INVOKEINTERFACE) {
                 String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(), constPool);
-                String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(), constPool);
+                String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
+                        constPool);
 
                 if ("java/util/List".equals(className) && "remove".equals(methodName)) {
                     String removeObj = getObjectInList(location, classContext, method);
+                    boolean res = checkObjEuqalAndHashCode(removeObj);
 
-                    checkObjImplEqual(removeObj, location, classContext, method);
+                    if (!res) {
+                        fillListRemoveReport(location, classContext, method);
+                    }
+                    continue;
+                }
 
+                String localName = getObjectNameFromInstruction(location, classContext, method);
+                if (null == localName) {
+                    continue;
+                }
+
+                if ("java/util/Map".equals(className)) {
+                    if (mapVariables.isEmpty()) {
+                        continue;
+                    }
+
+                    if (mapFilterMethods.contains(methodName)) {
+                        continue;
+                    }
+
+                    Iterator<LocalVariable> iterator = mapVariables.iterator();
+                    while (iterator.hasNext()) {
+                        LocalVariable value = iterator.next();
+
+                        if (localName.equals(value.getName())) {
+                            int range = value.getStartPC() + value.getLength();
+                            /*
+                             * There may be multiple variables with the same name in one method, therefore apply the
+                             * start pc value to distinguish them.
+                             */
+                            if (insHandle.getPosition() > value.getStartPC() && insHandle.getPosition() < range) {
+                                fillLocalWarnReport(true, value, classContext, method);
+                                iterator.remove();
+                                break;
+                            }
+
+                        }
+                    }
+
+                    continue;
+                }
+
+                if ("java/util/Set".equals(className)) {
+                    if (setVariables.isEmpty()) {
+                        continue;
+                    }
+
+                    if (setFilterMethods.contains(methodName)) {
+                        continue;
+                    }
+
+                    Iterator<LocalVariable> iterator = setVariables.iterator();
+                    while (iterator.hasNext()) {
+                        LocalVariable value = iterator.next();
+
+                        if (localName.equals(value.getName())) {
+                            int range = value.getStartPC() + value.getLength();
+                            if (insHandle.getPosition() > value.getStartPC() && insHandle.getPosition() < range) {
+                                fillLocalWarnReport(false, value, classContext, method);
+                                iterator.remove();
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
     /**
-     * Check the local variable in method. If there are variables defined as Map or Set, check whether the key object
-     * has rewritten equals and hashCode methods.
+     * Get the name of the object which called method. For example, instruction: testMap.get(map); testMap is the
+     * object's name
      *
+     * @param location
+     *            instruction location
+     * @param classContext
+     *            class context
+     * @param method
+     *            method
+     * @return name of the object
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    private String getObjectNameFromInstruction(Location location, ClassContext classContext, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
+        ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+
+        if (vnaFrame.getNumSlots() < 2) {
+            return null;
+        }
+        // If there is parameter，the object is the second last in stack
+        ValueNumber valueNumber = vnaFrame.getValue(vnaFrame.getNumSlots() - 2);
+        // local variable
+        LocalVariableAnnotation localAnn = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
+                valueNumber, vnaFrame);
+        if (null != localAnn) {
+            return localAnn.getName();
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Get local variables of Map and Set in the method, and add these variables to list The key of Map doesn't
+     * rewritten equals and hashCode methods. The object stored in Set doesn't rewritten equals and hashCode methods.
+     * 
      * @param method
      *            method
      * @param classContext
      *            class context
-     * @throws DataflowAnalysisException
-     * @throws CFGBuilderException
+     * @param mapVariables
+     *            Map variables
+     * @param setVariables
+     *            Set variables
      */
-    private void checkLocalVariableInMethod(Method method, ClassContext classContext)
-            throws DataflowAnalysisException, CFGBuilderException {
+    private void getMapSetLocalVariale(Method method, ClassContext classContext, List<LocalVariable> mapVariables,
+            List<LocalVariable> setVariables) {
         LocalVariableTypeTable localTypeTable = classContext.getMethodGen(method).getLocalVariableTypeTable();
 
         if (null == localTypeTable) {
@@ -328,16 +446,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         LocalVariable[] typeArray = localTypeTable.getLocalVariableTypeTable();
 
         for (LocalVariable local : typeArray) {
-
-            // start pc ==0 means it is this or incoming parameter, ignore it
-            if (0 == local.getStartPC()) {
-                continue;
-            }
-
             String sig = local.getSignature();
-            String localValuClass = getObjClassOrInerClassFromStr(true, sig);
+            String localValueClass = getObjClassOrInerClassFromStr(true, sig);
 
-            if (!"java/util/Set".equals(localValuClass) && !"java/util/Map".equals(localValuClass)) {
+            if (!"java/util/Set".equals(localValueClass) && !"java/util/Map".equals(localValueClass)) {
                 continue;
             }
 
@@ -346,10 +458,13 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             boolean res = checkObjEuqalAndHashCode(KeyClassName);
 
             if (!res) {
-                fillLocalWarnReport(local, classContext, method);
+                if ("java/util/Map".equals(localValueClass)) {
+                    mapVariables.add(local);
+                } else if ("java/util/Set".equals(localValueClass)) {
+                    setVariables.add(local);
+                }
             }
         }
-
     }
 
     /**
@@ -406,47 +521,6 @@ public class ObjectNoEqualsAndHashCode implements Detector {
     }
 
     /**
-     * check whether the object has rewritten the equals method
-     *
-     * @param className
-     *            class name
-     * @throws CFGBuilderException
-     * @throws DataflowAnalysisException
-     */
-    private void checkObjImplEqual(String className, Location location, ClassContext classContext, Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
-        if (null == className) {
-            return;
-        }
-
-        if ("java/lang/Class".equals(className)) {
-            return;
-        }
-
-        JavaClass objClass = null;
-
-        try {
-            objClass = Repository.lookupClass(className);
-        } catch (ClassNotFoundException e) {
-            return;
-        }
-
-        // if the object is Interface, Abstract class or Enum, ignore it
-        if (objClass.isInterface() || objClass.isAbstract() || objClass.isEnum()) {
-            return;
-        }
-        Method[] methods = objClass.getMethods();
-
-        for (Method methodTmp : methods) {
-            if ("equals".equals(methodTmp.getName())) {
-                return;
-            }
-        }
-
-        fillListRemoveReport(location, classContext, method);
-    }
-
-    /**
      * Fill the bug report
      *
      * @param location
@@ -479,7 +553,7 @@ public class ObjectNoEqualsAndHashCode implements Detector {
                 sourceFile, insHandle);
 
         bugAccumulator.accumulateBug(
-                new BugInstance(this, "SPEC_LIST_OBJECT_NO_EQUALS", NORMAL_PRIORITY)
+                new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST", NORMAL_PRIORITY)
                         .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
                 sourceLineAnnotation);
     }
@@ -487,6 +561,8 @@ public class ObjectNoEqualsAndHashCode implements Detector {
     /**
      * Fill the bug report
      *
+     * @param isMap
+     *            true: map warning, false: set warning
      * @param localValue
      *            local variable
      * @param classContext
@@ -496,15 +572,25 @@ public class ObjectNoEqualsAndHashCode implements Detector {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void fillLocalWarnReport(LocalVariable localValue, ClassContext classContext, Method method)
+    private void fillLocalWarnReport(boolean isMap, LocalVariable localValue, ClassContext classContext, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
         if (null == localValue) {
             return;
         }
+        BugInstance bugInstance;
 
-        BugInstance bugInstance = new BugInstance(this, "SPEC_MAP_SET_OBJECT_NO_EQUALS_HASHCODE", NORMAL_PRIORITY);
+        if (isMap) {
+            bugInstance = new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP", NORMAL_PRIORITY);
+        } else {
+            bugInstance = new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_SET", NORMAL_PRIORITY);
+        }
+
         bugInstance.addClassAndMethod(classContext.getJavaClass(), method);
         bugInstance.addString(localValue.getName());
+        int pc = localValue.getStartPC();
+        if (pc > 1) {
+            pc = pc - 1;
+        }
         bugInstance.addSourceLine(
                 SourceLineAnnotation.fromVisitedInstruction(classContext, method, localValue.getStartPC() - 1));
 
@@ -514,17 +600,24 @@ public class ObjectNoEqualsAndHashCode implements Detector {
     /**
      * Fill the field warning report
      *
+     * @param isMap
+     *            true: map warning, false: set warning
      * @param field
      *            field
      * @param classInfo
      *            class information
      */
-    private void fillFieldWarningReport(Field filed, String className) {
+    private void fillFieldWarningReport(boolean isMap, Field filed, String className) {
         FieldAnnotation fieldAnnotation = new FieldAnnotation(className, filed.getName(), filed.getSignature(),
                 filed.isStatic());
 
-        bugReporter.reportBug(new BugInstance(this, "SPEC_MAP_SET_OBJECT_NO_EQUALS_HASHCODE", NORMAL_PRIORITY)
-                .addClass(className).addField(fieldAnnotation));
+        if (isMap) {
+            bugReporter.reportBug(new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP", NORMAL_PRIORITY)
+                    .addClass(className).addField(fieldAnnotation));
+        } else {
+            bugReporter.reportBug(new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_SET", NORMAL_PRIORITY)
+                    .addClass(className).addField(fieldAnnotation));
+        }
     }
 
     @Override
