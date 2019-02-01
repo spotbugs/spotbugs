@@ -7,6 +7,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2019-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
 
+### Security
+* Update dom4j to 2.1.1 to fix security vulnerability. ([#864](https://github.com/spotbugs/spotbugs/issues/864))
+
 ## 3.1.11 - 2019-01-18
 
 ### Fixed
