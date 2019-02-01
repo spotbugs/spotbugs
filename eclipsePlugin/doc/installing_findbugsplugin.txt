@@ -25,7 +25,7 @@ Install the plug-in
             |     asm-tree-3.3.jar
             |     bcel.jar
             |     commons-lang-2.6.jar
-            |     dom4j-2.1.0.jar
+            |     dom4j-2.1.1.jar
             |     jaxen-1.1.6.jar
             |     jsr305.jar
             |
