@@ -15,7 +15,7 @@
   <resources>
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
-    <jar href="dom4j-2.1.0.jar"/>
+    <jar href="dom4j-2.1.1.jar"/>
     <jar href="asm-3.3.jar"/>
     <jar href="asm-tree-3.3.jar"/>
     <jar href="asm-commons-3.3.jar"/>
@@ -25,6 +25,3 @@
   </resources>
   <component-desc />
 </jnlp>
-
-
-

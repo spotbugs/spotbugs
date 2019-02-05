@@ -20,7 +20,7 @@
     <jar href="findbugs.jar"/>
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
-    <jar href="dom4j-2.1.0.jar"/>
+    <jar href="dom4j-2.1.1.jar"/>
     <jar href="asm-6.2.1.jar"/>
     <jar href="asm-analysis-6.2.1.jar"/>
     <jar href="asm-commons-6.2.1.jar"/>
