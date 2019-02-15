@@ -20,7 +20,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.bcel.Repository;
@@ -67,30 +66,14 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  */
 public class ObjectNoEqualsAndHashCode implements Detector {
 
-    private final static List<String> mapFilterMethods;
+    private static List<String> mapKeyobjectList = new ArrayList<>();
 
-    private final static List<String> setFilterMethods;
+    private static List<String> listKeyobjectList = new ArrayList<>();
+
+    private static List<String> setKeyobjectList = new ArrayList<>();
 
     private final BugAccumulator bugAccumulator;
     private final BugReporter bugReporter;
-
-    static {
-        mapFilterMethods = new ArrayList<>();
-        mapFilterMethods.add("size");
-        mapFilterMethods.add("isEmpty");
-        mapFilterMethods.add("clear");
-        mapFilterMethods.add("keySet");
-        mapFilterMethods.add("values");
-        mapFilterMethods.add("entrySet");
-
-        setFilterMethods = new ArrayList<>();
-        setFilterMethods.add("size");
-        setFilterMethods.add("isEmpty");
-        setFilterMethods.add("iterator");
-        setFilterMethods.add("clear");
-        setFilterMethods.add("spliterator");
-        setFilterMethods.add("toArray");
-    }
 
     public ObjectNoEqualsAndHashCode(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -100,7 +83,7 @@ public class ObjectNoEqualsAndHashCode implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         Field[] fields = classContext.getJavaClass().getFields();
-        // ConstantPoolGen constPool = classContext.getConstantPoolGen();
+
         for (Field field : fields) {
             analyzeField(field, classContext);
         }
@@ -165,8 +148,17 @@ public class ObjectNoEqualsAndHashCode implements Detector {
 
         if (!res) {
             if ("java.util.Map".equals(className)) {
+                if (mapKeyobjectList.contains(keyClassName)) {
+                    return;
+                }
+                mapKeyobjectList.add(keyClassName);
                 fillFieldWarningReport(true, field, classContext.getJavaClass().getClassName());
+
             } else if ("java.util.Set".equals(className)) {
+                if (setKeyobjectList.contains(keyClassName)) {
+                    return;
+                }
+                setKeyobjectList.add(keyClassName);
                 fillFieldWarningReport(false, field, classContext.getJavaClass().getClassName());
             }
         }
@@ -287,13 +279,9 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             return;
         }
 
-        // checkLocalVariableInMethod(method, classContext);
-        List<LocalVariable> mapVariables = new ArrayList<>();
-        List<LocalVariable> setVariables = new ArrayList<>();
-        getMapSetLocalVariale(method, classContext, mapVariables, setVariables);
+        checkLocalVariale(method, classContext);
 
         ConstantPoolGen constPool = classContext.getConstantPoolGen();
-        // location list (instruction list)
         Collection<Location> locationCollection = cfg.orderedLocations();
         ArrayList<Location> locationList = new ArrayList<>();
         locationList.addAll(locationCollection);
@@ -319,69 +307,12 @@ public class ObjectNoEqualsAndHashCode implements Detector {
                     boolean res = checkObjEuqalAndHashCode(removeObj);
 
                     if (!res) {
-                        fillListRemoveReport(location, classContext, method);
-                    }
-                    continue;
-                }
-
-                String localName = getObjectNameFromInstruction(location, classContext, method);
-                if (null == localName) {
-                    continue;
-                }
-
-                if ("java/util/Map".equals(className)) {
-                    if (mapVariables.isEmpty()) {
-                        continue;
-                    }
-
-                    if (mapFilterMethods.contains(methodName)) {
-                        continue;
-                    }
-
-                    Iterator<LocalVariable> iterator = mapVariables.iterator();
-                    while (iterator.hasNext()) {
-                        LocalVariable value = iterator.next();
-
-                        if (localName.equals(value.getName())) {
-                            int range = value.getStartPC() + value.getLength();
-                            /*
-                             * There may be multiple variables with the same name in one method, therefore apply the
-                             * start pc value to distinguish them.
-                             */
-                            if (insHandle.getPosition() > value.getStartPC() && insHandle.getPosition() < range) {
-                                fillLocalWarnReport(true, value, classContext, method);
-                                iterator.remove();
-                                break;
-                            }
-
+                        if (!listKeyobjectList.contains(removeObj)) {
+                            listKeyobjectList.add(removeObj);
+                            fillListRemoveReport(location, classContext, method);
                         }
                     }
-
                     continue;
-                }
-
-                if ("java/util/Set".equals(className)) {
-                    if (setVariables.isEmpty()) {
-                        continue;
-                    }
-
-                    if (setFilterMethods.contains(methodName)) {
-                        continue;
-                    }
-
-                    Iterator<LocalVariable> iterator = setVariables.iterator();
-                    while (iterator.hasNext()) {
-                        LocalVariable value = iterator.next();
-
-                        if (localName.equals(value.getName())) {
-                            int range = value.getStartPC() + value.getLength();
-                            if (insHandle.getPosition() > value.getStartPC() && insHandle.getPosition() < range) {
-                                fillLocalWarnReport(false, value, classContext, method);
-                                iterator.remove();
-                                break;
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -420,11 +351,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         return null;
     }
 
-
     /**
-     * Get local variables of Map and Set in the method, and add these variables to list The key of Map doesn't
-     * rewritten equals and hashCode methods. The object stored in Set doesn't rewritten equals and hashCode methods.
-     * 
+     * Check local variables of Map and Set in the method. The key of Map doesn't rewritten equals and hashCode methods.
+     * The object stored in Set doesn't rewritten equals and hashCode methods.
+     *
      * @param method
      *            method
      * @param classContext
@@ -433,9 +363,11 @@ public class ObjectNoEqualsAndHashCode implements Detector {
      *            Map variables
      * @param setVariables
      *            Set variables
+     * @throws CFGBuilderException
+     * @throws DataflowAnalysisException
      */
-    private void getMapSetLocalVariale(Method method, ClassContext classContext, List<LocalVariable> mapVariables,
-            List<LocalVariable> setVariables) {
+    private void checkLocalVariale(Method method, ClassContext classContext)
+            throws DataflowAnalysisException, CFGBuilderException {
         LocalVariableTypeTable localTypeTable = classContext.getMethodGen(method).getLocalVariableTypeTable();
 
         if (null == localTypeTable) {
@@ -459,9 +391,17 @@ public class ObjectNoEqualsAndHashCode implements Detector {
 
             if (!res) {
                 if ("java/util/Map".equals(localValueClass)) {
-                    mapVariables.add(local);
+                    if (!mapKeyobjectList.contains(KeyClassName)) {
+                        mapKeyobjectList.add(KeyClassName);
+                        fillLocalWarnReport(true, local, classContext, method);
+                    }
+
                 } else if ("java/util/Set".equals(localValueClass)) {
-                    setVariables.add(local);
+                    if (!setKeyobjectList.contains(KeyClassName)) {
+                        setKeyobjectList.add(KeyClassName);
+                        fillLocalWarnReport(false, local, classContext, method);
+                    }
+
                 }
             }
         }
