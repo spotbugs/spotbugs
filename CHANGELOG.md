@@ -7,6 +7,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2019-??-??
 * Start migrating STDOUT/STDERR usage to a logging framework
 
+### Added
+
+* Make TypeQualifierResolver recognize androidx.annotation.NonNull and Nullable ([#880](https://github.com/spotbugs/spotbugs/pull/880))
+
 ### Changed
 * Bump up Apache Commons BCEL to [the version 6.3](http://mail-archives.apache.org/mod_mbox/commons-user/201901.mbox/%3CCACZkXPy3VgLmD2jppzEPwOqVDJYMM2QG%2BtWQCyzfKmZrDwem6A%40mail.gmail.com%3E)
 
