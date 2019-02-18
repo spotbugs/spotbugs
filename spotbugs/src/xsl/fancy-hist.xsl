@@ -2,6 +2,7 @@
 <!--
   Copyright (C) 2005, 2006 Etienne Giraudy, InStranet Inc
   Copyright (C) 2005, 2007 Etienne Giraudy
+  Copyright (C) 2019 Björn Kautler
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -20,29 +21,39 @@
 
 <xsl:transform version="2.0"
                xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
-   <xsl:output
-         method="xml" indent="yes"
-         doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-         doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-         encoding="UTF-8"/>
+<xsl:output
+      method="xml" indent="yes"
+      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+      doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+      encoding="UTF-8"/>
 
-   <xsl:variable name="apos" select="&quot;'&quot;"/>
-   <xsl:key name="lbc-code-key"        match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
-   <xsl:key name="lbc-bug-key"         match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
-   <xsl:key name="lbp-class-b-t"  match="/BugCollection/BugInstance" use="concat(Class/@classname,@type)" />
+<xsl:variable name="apos" select="&quot;'&quot;"/>
 
-<xsl:template match="/" >
+<xsl:template match="/">
+
+<xsl:variable name="titlePart">
+   <xsl:text> (</xsl:text>
+   <xsl:value-of select="/BugCollection/@version"/>
+   <xsl:text>)</xsl:text>
+   <xsl:variable name="project" select="(/BugCollection/Project/@projectName, /BugCollection/Project/@filename)[1]"/>
+   <xsl:text> analysis</xsl:text>
+   <xsl:if test="$project">
+      <xsl:text> for </xsl:text>
+      <xsl:value-of select="$project"/>
+   </xsl:if>
+   <xsl:variable name="release" select="/BugCollection/@release"/>
+   <xsl:if test="$release">
+      <xsl:text> of release </xsl:text>
+      <xsl:value-of select="$release"/>
+   </xsl:if>
+</xsl:variable>
 
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <title>
-         SpotBugs (<xsl:value-of select="/BugCollection/@version" />) 
-         Analysis for 
-         <xsl:choose>
-            <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
-            <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
-         </xsl:choose>
+         <xsl:text>SpotBugs</xsl:text>
+         <xsl:value-of select="$titlePart"/>
       </title>
       <style type="text/css">
          html, body, div, form {
@@ -56,34 +67,34 @@
             text-decoration: none; color: black;
          }
          #navlist {
-                 padding: 3px 0;
-                 margin-left: 0;
-                 border-bottom: 1px solid #778;
-                 font: bold 12px Verdana, sans-serif;
+            padding: 3px 0;
+            margin-left: 0;
+            border-bottom: 1px solid #778;
+            font: bold 12px Verdana, sans-serif;
          }
          #navlist li {
-                 list-style: none;
-                 margin: 0;
-                 display: inline;
+            list-style: none;
+            margin: 0;
+            display: inline;
          }
          #navlist li a {
-                 padding: 3px 0.5em;
-                 margin-left: 3px;
-                 border: 1px solid #778;
-                 border-bottom: none;
-                 background: #DDE;
-                 text-decoration: none;
+            padding: 3px 0.5em;
+            margin-left: 3px;
+            border: 1px solid #778;
+            border-bottom: none;
+            background: #DDE;
+            text-decoration: none;
          }
          #navlist li a:link { color: #448; }
          #navlist li a:visited { color: #667; }
          #navlist li a:hover {
-                 color: #000;
-                 background: #AAE;
-                 border-color: #227;
+            color: #000;
+            background: #AAE;
+            border-color: #227;
          }
          #navlist li a.current {
-                 background: white;
-                 border-bottom: 1px solid white;
+            background: white;
+            border-bottom: 1px solid white;
          }
          #filterWrapper {
             margin-bottom:5px;
@@ -93,7 +104,7 @@
          }
          .message {
             background:#BBBBBB;
-           border: 1px solid #778;
+            border: 1px solid #778;
          }
          .displayContainer {
             border:1px solid #555555;
@@ -127,19 +138,19 @@
             text-align:center;
          }
          .summary-priority-1 {
-            background: red;
+            background: #ef2929;
             text-align:center;
          }
          .summary-priority-2 {
-            background: orange;
+            background: #fcaf3e;
             text-align:center;
          }
          .summary-priority-3 {
-            background: green;
+            background: #8ae234;
             text-align:center;
          }
          .summary-priority-4 {
-            background: blue;
+            background: #729fcf;
             text-align:center;
          }
 
@@ -154,7 +165,7 @@
          .bugList-level1-label, .bugList-level2-label, .bugList-level3-label, .bugList-level4-label {
             background-color: #bbbbbb;
             border: 1px solid black;
-            padding: 1px 3px 1px 3px;;
+            padding: 1px 3px 1px 3px;
          }
          .bugList-level2-label, .bugList-level3-label, .bugList-level4-label {
             border-width: 0px 1px 1px 1px;
@@ -180,32 +191,37 @@
             padding: 0 5px 0 5px; margin: 0px;
          }
          .b-1 {
-            background: red; height: 0.5em; width: 1em;
+            background: #ef2929; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
          .b-2 {
-            background: orange; height: 0.5em; width: 1em;
+            background: #fcaf3e; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
          .b-3 {
-            background: green; height: 0.5em; width: 1em;
+            background: #8ae234; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
          .b-4 {
-            background: blue; height: 0.5em; width: 1em;
+            background: #729fcf; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
-
       </style>
-      <script type='text/javascript'><xsl:text disable-output-escaping='yes'><![CDATA[
-         var menus            = new Array('summary','info','history','listByCategories','listByPackages');
-         var selectedMenuId   = "summary";
-         var selectedVersion  = -1;
-         var selectedPriority = 4;
-         var lastVersion      = 0;
-         var includeFixedIntroducedBugs;
+      <script type='text/javascript'>
+         <xsl:text disable-output-escaping='yes'><![CDATA[
+         var menus = new Array('summary', 'info', 'history', 'listByCategories', 'listByPackages');
 
-         var bPackageNamesPopulated = false;
+         var state = new Proxy({
+            tab: "summary",
+            includeFixed: true,
+            release: -1,
+            priority: 4
+         }, {
+            set: function (target, name, value) {
+               target[name] = value;
+               history.replaceState(null, null, "#" + JSON.stringify(target));
+            }
+         });
 
          var filterContainerId              = "filterWrapper";
          var historyControlContainerId      = "historyControlWrapper";
@@ -216,26 +232,46 @@
          var listByCategoriesContainerId    = "listByCategoriesContainer";
          var listByPackagesContainerId      = "listByPackagesContainer";
 
-         var idxCatKey = 0; var idxCatDescr = 1; var idxBugCat = 1;
-         var idxCodeKey = 0; var idxCodeDescr = 1; var idxBugCode = 2;
-         var idxPatternKey = 2; var idxPatternDescr = 3; var idxBugPattern = 3;
-         var idxBugKey = 0; var idxBugDescr = 6;
-         var idxBugClass = 6, idxBugPackage = 7;
-
          // main init function
          function init() {
+            if (versions.size <= 1) {
+               hide("historyMenu")
+            }
             loadFilter();
-            selectMenu(selectedMenuId);
-            lastVersion = versions.length - 1;
+            onHashChange()
+            includeFixedIntroducedBugsInHistory();
+            window.addEventListener('hashchange', onHashChange);
+         }
+
+         function onHashChange() {
+            try {
+               var hash = location.hash.substring(1);
+               if (hash.charAt(1) != "\"") {
+                  hash = decodeURIComponent(hash);
+               }
+               var parsedState = JSON.parse(hash);
+               selectMenu(parsedState.tab);
+               var element = document.findbugsHistoryControlForm.includeFixedIntroducedBugs;
+               element.checked = parsedState.includeFixed;
+               element.onchange();
+               element = document.findbugsForm.versions;
+               element.value = (element.namedItem(parsedState.release) == null) ? state.release : parsedState.release;
+               element.onchange();
+               element = document.findbugsForm.priorities;
+               element.value = (element.namedItem(parsedState.priority) == null) ? state.priority : parsedState.priority;
+               element.onchange();
+            } catch (e) {
+               history.replaceState(null, null, "#" + JSON.stringify(state));
+            }
          }
 
          // menu callback function
          function selectMenu(menuId) {
-            document.getElementById(selectedMenuId).className="none";
+            document.getElementById(state.tab).className="none";
             document.getElementById(menuId).className="current";
-            if (menuId!=selectedMenuId) {
-               hideMenu(selectedMenuId);
-               selectedMenuId = menuId;
+            if (menuId!=state.tab) {
+               hideMenu(state.tab);
+               state.tab = menuId;
             }
             if (menuId=="summary")           displaySummary();
             if (menuId=="info")              displayInfo();
@@ -246,20 +282,18 @@
 
          // display filter
          function loadFilter() {
-            var versionsBox = document.findbugsForm.versions.options;
-            versionsBox[0] = new Option(" -- All Versions -- ","-1");
-            versionsBox.selectedIndex = 0;
-            if (versions.length>=1) {
-               for (x=0; versions.length>1 && x<versions.length; x++) {
-                  versionsBox[x+1] = new Option(" Bugs at release: "+versions[versions.length-x-1][1], versions[versions.length-x-1][0]);
-               }
+            var versionsBox = document.findbugsForm.versions;
+            versionsBox.options[0] = new Option(" -- All Releases -- ", "-1");
+            versionsBox.options[0].id = "-1";
+            versionsBox.options.selectedIndex = 0;
+            for (version of versions) {
+               var option = new Option(version[1], version[0]);
+               option.id = version[0];
+               versionsBox.options.add(option);
             }
-
-            var prioritiesBox = document.findbugsForm.priorities.options;
-            prioritiesBox[0] = new Option(" -- All priorities -- ", "4");
-            prioritiesBox[1] = new Option(" P1 bugs ", "1");
-            prioritiesBox[2] = new Option(" P1 and P2 bugs ", "2");
-            prioritiesBox[3] = new Option(" P1, P2 and P3 bugs ", "3");
+            if (versions.size <= 1) {
+               versionsBox.style.display = "none";
+            }
          }
 
          // display a message
@@ -275,27 +309,20 @@
          }
 
          function hideMenu(menuId) {
-            var container = menuId+"Container";
-            document.getElementById(container).style.display="none";
+            hide(menuId + "Container");
          }
 
          // filter callback function
          function filter() {
-            var versionsBox = document.findbugsForm.versions.options;
-            selectedVersion = versionsBox[versionsBox.selectedIndex].value;
-
-            var prioritiesBox = document.findbugsForm.priorities.options;
-            selectedPriority = prioritiesBox[prioritiesBox.selectedIndex].value;
-
-            selectMenu(selectedMenuId);
+            state.release = document.findbugsForm.versions.value;
+            state.priority = document.findbugsForm.priorities.value;
+            selectMenu(state.tab);
          }
 
          // includeFixedBugs callback function
          function includeFixedIntroducedBugsInHistory() {
-            includeFixedIntroducedBugs =
-              document.findbugsHistoryControlForm.includeFixedIntroducedBugs.checked;
-
-            selectMenu(selectedMenuId);
+            state.includeFixed = document.findbugsHistoryControlForm.includeFixedIntroducedBugs.checked;
+            selectMenu(state.tab);
          }
 
          // display summary tab
@@ -327,7 +354,7 @@
             var p = [0,0,0,0,0];
             var f = [0,0,0,0,0];
 
-            content += "<table><tr><th>Release</th><th>Bugs</th><th>Bugs p1</th><th>Bugs p2</th><th>Bugs p3</th><th>Bugs Exp.</th></tr>";
+            content += "<table><tr><th>Release</th><th>Total Bugs</th><th>Bugs P1</th><th>Bugs P2</th><th>Bugs P3</th><th>Bugs Experimental</th></tr>";
 
             var aSpan   = "<span title='Bugs introduced in this release that have not been fixed.'>";
             var fSpan   = "<span title='Bugs fixed in this release.'>";
@@ -335,48 +362,51 @@
             var afiSpan = "<span title='Total number of bugs introduced in this release.'>";
             var eSpan   = "</span>";
 
-            if(includeFixedIntroducedBugs) {
-                for (i=(versions.length-1); i>0; i--) {
-                    v = countBugsVersion(i, 4);
-                    t = countTotalBugsVersion(i);
-                    o = countFixedButActiveBugsVersion(i);
-                    f = countFixedBugsInVersion(i);
-                    fi = countFixedBugsIntroducedInVersion(i);
-                    content += "<tr>";
-                    content += "<td class='summary-name'>" + versions[i][1] + "</td>";
-                    content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + afiSpan + (v[0] + fi[0]) + eSpan +
-                      " [" + aSpan + v[0] + eSpan + " / " + fiSpan + fi[0] + eSpan + "] " + eSpan + " / -" + fSpan + f[0] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-1'> " + (t[1] + o[1]) + " (+" + afiSpan + (v[1] + fi[1]) + eSpan +
-                      " [" + aSpan + v[1] + eSpan + " / " + fiSpan + fi[1] + eSpan + "] " + eSpan + " / -" + fSpan + f[1] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-2'> " + (t[2] + o[2]) + " (+" + afiSpan + (v[2] + fi[2]) + eSpan +
-                      " [" + aSpan + v[2] + eSpan + " / " + fiSpan + fi[2] + eSpan + "] " + eSpan + " / -" + fSpan + f[2] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-3'> " + (t[3] + o[3]) + " (+" + afiSpan + (v[3] + fi[3]) + eSpan +
-                      " [" + aSpan + v[3] + eSpan + " / " + fiSpan + fi[3] + eSpan + "] " + eSpan + " / -" + fSpan + f[3] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-4'> " + (t[4] + o[4]) + " (+" + afiSpan + (v[4] + fi[4]) + eSpan +
-                      " [" + aSpan + v[4] + eSpan + " / " + fiSpan + fi[4] + eSpan + "] " + eSpan + " / -" + fSpan + f[4] + eSpan + ") </td>";
-                    content += "</tr>";
-                }
+            var versionIds = Array.from(versions.keys())
+            if(state.includeFixed) {
+               for (i=(versionIds.length-1); i>0; i--) {
+                  var versionId = versionIds[i];
+                  v = countBugsVersion(versionId, 4);
+                  t = countTotalBugsVersion(versionId);
+                  o = countFixedButActiveBugsVersion(versionId);
+                  f = countFixedBugsInVersion(versionId);
+                  fi = countFixedBugsIntroducedInVersion(versionId);
+                  content += "<tr>";
+                  content += "<td class='summary-name'>" + versions.get(versionId) + "</td>";
+                  content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + afiSpan + (v[0] + fi[0]) + eSpan +
+                        " [" + aSpan + v[0] + eSpan + " / " + fiSpan + fi[0] + eSpan + "] " + eSpan + " / -" + fSpan + f[0] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-1'> " + (t[1] + o[1]) + " (+" + afiSpan + (v[1] + fi[1]) + eSpan +
+                        " [" + aSpan + v[1] + eSpan + " / " + fiSpan + fi[1] + eSpan + "] " + eSpan + " / -" + fSpan + f[1] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-2'> " + (t[2] + o[2]) + " (+" + afiSpan + (v[2] + fi[2]) + eSpan +
+                        " [" + aSpan + v[2] + eSpan + " / " + fiSpan + fi[2] + eSpan + "] " + eSpan + " / -" + fSpan + f[2] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-3'> " + (t[3] + o[3]) + " (+" + afiSpan + (v[3] + fi[3]) + eSpan +
+                        " [" + aSpan + v[3] + eSpan + " / " + fiSpan + fi[3] + eSpan + "] " + eSpan + " / -" + fSpan + f[3] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-4'> " + (t[4] + o[4]) + " (+" + afiSpan + (v[4] + fi[4]) + eSpan +
+                        " [" + aSpan + v[4] + eSpan + " / " + fiSpan + fi[4] + eSpan + "] " + eSpan + " / -" + fSpan + f[4] + eSpan + ") </td>";
+                  content += "</tr>";
+               }
             } else {
-                for (i=(versions.length-1); i>0; i--) {
-                    v = countBugsVersion(i, 4);
-                    t = countTotalBugsVersion(i);
-                    o = countFixedButActiveBugsVersion(i);
-                    f = countFixedBugsInVersion(i);
-                    content += "<tr>";
-                    content += "<td class='summary-name'>" + versions[i][1] + "</td>";
-                    content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + aSpan + v[0] + eSpan + " / -" + fSpan + f[0] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " (+" + aSpan + v[1] + eSpan + " / -" + fSpan + f[1] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " (+" + aSpan + v[2] + eSpan + " / -" + fSpan + f[2] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-3'  > " + (t[3] + o[3]) + " (+" + aSpan + v[3] + eSpan + " / -" + fSpan + f[3] + eSpan + ") </td>";
-                    content += "<td class='summary-priority-4'  > " + (t[4] + o[4]) + " (+" + aSpan + v[4] + eSpan + " / -" + fSpan + f[4] + eSpan + ") </td>";
-                    content += "</tr>";
-                }
+               for (i=(versionIds.length-1); i>0; i--) {
+                  var versionId = versionIds[i];
+                  v = countBugsVersion(versionId, 4);
+                  t = countTotalBugsVersion(versionId);
+                  o = countFixedButActiveBugsVersion(versionId);
+                  f = countFixedBugsInVersion(versionId);
+                  content += "<tr>";
+                  content += "<td class='summary-name'>" + versions.get(versionId) + "</td>";
+                  content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + aSpan + v[0] + eSpan + " / -" + fSpan + f[0] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " (+" + aSpan + v[1] + eSpan + " / -" + fSpan + f[1] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " (+" + aSpan + v[2] + eSpan + " / -" + fSpan + f[2] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-3'  > " + (t[3] + o[3]) + " (+" + aSpan + v[3] + eSpan + " / -" + fSpan + f[3] + eSpan + ") </td>";
+                  content += "<td class='summary-priority-4'  > " + (t[4] + o[4]) + " (+" + aSpan + v[4] + eSpan + " / -" + fSpan + f[4] + eSpan + ") </td>";
+                  content += "</tr>";
+               }
             }
 
-            t = countTotalBugsVersion(0);
-            o = countFixedButActiveBugsVersion(0);
+            t = countTotalBugsVersion(versionIds[0]);
+            o = countFixedButActiveBugsVersion(versionIds[0]);
             content += "<tr>";
-            content += "<td class='summary-name'>" + versions[0][1] + "</td>";
+            content += "<td class='summary-name'>" + versions.get(versionIds[0]) + "</td>";
             content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " </td>";
             content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " </td>";
             content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " </td>";
@@ -408,10 +438,6 @@
             show(filterContainerId);
             var container = document.getElementById(listByPackagesContainerId);
             container.style.display="block";
-            if (!bPackageNamesPopulated) {
-               displayMessage("Initializing...");
-               populatePackageNames();
-            }
             displayMessage("Loading stats (packages)...");
             container.innerHTML = displayLevel1("lbp", "Stats by Bug Package");
             resetMessage();
@@ -450,64 +476,68 @@
          }
 
          // list by categories, display bug cat>codes
-         function displayCategoriesCodes(containerId, catId) {
+         function displayCategoriesCodes(containerId, category) {
             displayMessage("Loading stats (codes)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="") {
-               container.innerHTML = displayLevel2("lbc", catId);
+               container.innerHTML = displayLevel2("lbc", category);
             }
             resetMessage();
          }
 
          // list by categories, display bug package>codes
-         function displayPackageCodes(containerId, packageId) {
+         function displayPackageCodes(containerId, packageName) {
             displayMessage("Loading stats (codes)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="") {
-               container.innerHTML = displayLevel2("lbp", packageId);
+               container.innerHTML = displayLevel2("lbp", packageName);
             }
             resetMessage();
          }
 
          // list by categories, display bug cat>codes>patterns
-         function displayCategoriesCodesPatterns(containerId, catId, codeId) {
+         function displayCategoriesCodesPatterns(containerId, category, code) {
             displayMessage("Loading stats (patterns)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
-            if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel3("lbc", catId, codeId);
+            if (container.innerHTML=="Loading..." || container.innerHTML=="") {
+               container.innerHTML = displayLevel3("lbc", category, code);
+            }
             resetMessage();
          }
 
          // list by package, display bug package>class>patterns
-         function displayPackageClassPatterns(containerId, packageId, classId) {
+         function displayPackageClassPatterns(containerId, packageName, className) {
             displayMessage("Loading stats (patterns)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
-            if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel3("lbp", packageId, classId);
+            if (container.innerHTML=="Loading..." || container.innerHTML=="") {
+               container.innerHTML = displayLevel3("lbp", packageName, className);
+            }
             resetMessage();
          }
 
          // list by categories, display bug cat>codes>patterns>bugs
-         function displayCategoriesCodesPatternsBugs(containerId, catId, codeId, patternId) {
+         function displayCategoriesCodesPatternsBugs(containerId, category, code, pattern) {
             displayMessage("Loading stats (bugs)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
-            if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel4("lbc", catId, codeId, patternId);
+            if (container.innerHTML=="Loading..." || container.innerHTML=="") {
+               container.innerHTML = displayLevel4("lbc", category, code, pattern);
+            }
             resetMessage();
          }
 
          // list by package, display bug package>class>patterns>bugs
-         function displayPackageClassPatternsBugs(containerId, packageId, classId, patternId) {
+         function displayPackageClassPatternsBugs(containerId, packageName, className, pattern) {
             displayMessage("Loading stats (bugs)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
-            if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel4("lbp",  packageId, classId, patternId);
+            if (container.innerHTML=="Loading..." || container.innerHTML=="") {
+               container.innerHTML = displayLevel4("lbp", packageName, className, pattern);
+            }
             resetMessage();
          }
 
@@ -535,22 +565,22 @@
                max = packageStats.length;
             }
 
-            for (var x=0; x<max -1; x++) {
-               if (list=="lbp" && packageStats[x][1]=="0") continue;
+            for (var x=0; x<max; x++) {
+               if (list=="lbp" && packageStats[x].totalBugs=="0") continue;
 
                if (list=="lbc") {
-                  id = categories[x][idxCatKey];
-                  label = categories[x][idxCatDescr];
+                  id = categories[x].id;
+                  label = categories[x].label;
                   containerId = "categories-" + id;
                   subContainerId = "cat-"+id;
-                  p = countBugsCat(selectedVersion, selectedPriority, id, idxBugCat);
+                  p = countBugsCat(state.release, state.priority, id);
                }
                if (list=="lbp") {
-                  id = packageStats[x][0];
-                  label = packageStats[x][0];
+                  id = packageStats[x].packageName;
+                  label = packageStats[x].packageName;
                   containerId = "packages-" + id;
                   subContainerId = "package-"+id;
-                  p = countBugsPackage(selectedVersion, selectedPriority, id, idxBugPackage);
+                  p = countBugsPackage(state.release, state.priority, id);
                }
 
                subContainerId = prefixSub+id;
@@ -565,15 +595,15 @@
             }
             content2 += "</div>";
             content += "<h4>Total number of bugs";
-            if (selectedVersion!=-1) {
-               content += " (introduced in release " + versions[selectedVersion][1] +")";
+            if (state.release!=-1) {
+               content += " (introduced in release " + versions.get(state.release) +")";
             }
             content += ": "+numberOfBugs+"</h4>";
             return content+content2;
          }
 
          // generate level 2 list
-        function displayLevel2(list, id1) {
+         function displayLevel2(list, id1) {
             var content = "";
             var code = "";
             var containerId = "";
@@ -587,22 +617,22 @@
                max = classStats.length;
             }
 
-            for (var x=0; x<max -1; x++) {
-               if (list=="lbp" && classStats[x][3]=="0") continue;
+            for (var x=0; x<max; x++) {
+               if (list=="lbp" && classStats[x].totalBugs=="0") continue;
 
                if (list=="lbc") {
-                  id2 = codes[x][idxCodeKey];
-                  label = codes[x][idxCodeDescr];
+                  id2 = codes[x].id;
+                  label = codes[x].label;
                   containerId = "codes-"+id1;
                   subContainerId = "cat-" + id1 + "-code-" + id2;
-                  p = countBugsCode(selectedVersion, selectedPriority, id1, idxBugCat, id2, idxBugCode);
+                  p = countBugsCode(state.release, state.priority, id1, id2);
                }
                if (list=="lbp") {
-                  id2 = classStats[x][0];
-                  label = classStats[x][0];
+                  id2 = classStats[x].className;
+                  label = classStats[x].className;
                   containerId = "packages-"+id1;
                   subContainerId = "package-" + id1 + "-class-" + id2;
-                  p = countBugsClass(selectedVersion, selectedPriority, id1, idxBugPackage, id2, idxBugClass);
+                  p = countBugsClass(state.release, state.priority, id1, id2);
                }
 
                var total = p[1]+p[2]+p[3]+p[4];
@@ -616,7 +646,7 @@
          }
 
          // generate level 3 list
-        function displayLevel3(list, id1, id2) {
+         function displayLevel3(list, id1, id2) {
             var content = "";
             var containerId = "";
             var subContainerId = "";
@@ -625,29 +655,27 @@
             var label = "";
             var id3 = "";
 
-            if (list=="lbc") {
-               max = patterns.length;
-            } else if (list=="lbp") {
+            if ((list=="lbc") || (list=="lbp")) {
                max = patterns.length;
             }
 
-            for (var x=0; x<max -1; x++) {
-               //if (list=="lbp" && (patterns[x][0]!=id1 || patterns[x][1]!=id2)) continue;
-               //if (list=="lbp" && classStats[x][3]=="0") continue;
+            for (var x=0; x<max; x++) {
+               //if (list=="lbp" && (patterns[x].category!=id1 || patterns[x].code!=id2)) continue;
+               //if (list=="lbp" && classStats[x].totalBugs=="0") continue;
 
                if (list=="lbc") {
-                  id3 = patterns[x][idxPatternKey];;
-                  label = patterns[x][idxPatternDescr];
+                  id3 = patterns[x].id;
+                  label = patterns[x].label;
                   containerId = "patterns-"+id1;
                   subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3;
-                  p = countBugsPattern(selectedVersion, selectedPriority, id1, idxBugCat, id2, idxBugCode, id3, idxBugPattern);
+                  p = countBugsPattern(state.release, state.priority, id1, id2, id3);
                }
                if (list=="lbp") {
-                  id3 = patterns[x][idxPatternKey];;
-                  label = patterns[x][idxPatternDescr];
+                  id3 = patterns[x].id;
+                  label = patterns[x].label;
                   containerId = "classpatterns-"+id1;
                   subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3;
-                  p = countBugsClassPattern(selectedVersion, selectedPriority, id2, idxBugClass, id3, idxBugPattern);
+                  p = countBugsClassPattern(state.release, state.priority, id2, id3);
                }
 
                var total = p[1]+p[2]+p[3]+p[4];
@@ -661,7 +689,7 @@
          }
 
          // generate level 4 list
-        function displayLevel4(list, id1, id2, id3) {
+         function displayLevel4(list, id1, id2, id3) {
             var content = "";
             var bug = "";
             var bugP = 0;
@@ -670,35 +698,34 @@
             var bugId = "";
             var label = "";
             var p = [0,0,0,0,0];
-            for (var x=0; x<bugs.length -1; x++) {
-               bug = bugs[x];
+            for (bug of bugs) {
                if (list=="lbc") {
-                  if ( bug[1]!=id1 || bug[2]!=id2 || bug[3]!=id3 ) continue;
-                  if ( selectedVersion!=-1
-                     && selectedVersion!=bug[5]) continue;
-                  if ( selectedPriority!=4
-                     && selectedPriority<bug[4]) continue;
+                  if ( bug.category!=id1 || bug.code!=id2 || bug.pattern!=id3 ) continue;
+                  if ( state.release!=-1
+                     && state.release!=bug.firstVersion) continue;
+                  if ( state.priority!=4
+                     && state.priority<bug.priority) continue;
 
-                  subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3 + "-bug-" + bug[0];
+                  subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3 + "-bug-" + bug.id;
                }
                if (list=="lbp") {
-                  if ( bug[7]!=id1 || bug[6]!=id2 || bug[3]!=id3 ) continue;
-                  if ( selectedVersion!=-1
-                     && selectedVersion!=bug[5]) continue;
-                  if ( selectedPriority!=4
-                     && selectedPriority<bug[4]) continue;
+                  if ( bug.packageName!=id1 || bug.className!=id2 || bug.pattern!=id3 ) continue;
+                  if ( state.release!=-1
+                     && state.release!=bug.firstVersion) continue;
+                  if ( state.priority!=4
+                     && state.priority<bug.priority) continue;
 
-                  subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3 + "-bug-" + bug[0];
+                  subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3 + "-bug-" + bug.id;
                }
 
-               bugId = "b-uid-" + bug[0];
-               label = bug[idxBugDescr];
+               bugId = "b-uid-" + bug.id;
+               label = bug.className;
                containerId = "bugs-"+bugId;
-               bugP = bug[4];
+               bugP = bug.priority;
                p[bugP]++;
                var total = p[1]+p[2]+p[3]+p[4];
                if (total > 0) {
-                  content += addBug(   4, containerId, label, bugP, bug[5], subContainerId,
+                  content += addBug(   4, containerId, label, bugP, bug.firstVersion, subContainerId,
                                        "showbug('" + bugId + "', '" + subContainerId + "', '"+id3+"')");
                }
             }
@@ -715,15 +742,15 @@
             content += ">";
             content += "<strong>"+label+"</strong>";
             content += " "+total+" bugs";
-            if (selectedPriority>1)
+            if (state.priority>1)
                content += " <em>("+p[1];
-            if (selectedPriority>=2)
+            if (state.priority>=2)
                content += "/"+p[2];
-            if (selectedPriority>=3)
+            if (state.priority>=3)
                content += "/"+p[3];
-            if (selectedPriority>=4)
+            if (state.priority>=4)
                content += "/"+p[4];
-            if (selectedPriority>1)
+            if (state.priority>1)
                content += ")</em>";
             content += "</a>";
             content += "</div>";
@@ -739,14 +766,14 @@
             content += "<div class='bugList-level" + level + "-label' id='" + id + "'>";
             content += "<span class='b-" + p + "'>&nbsp;&nbsp;&nbsp;</span>";
             content += "<a href='' onclick=\"" + onclick + ";return false;\">";
-            if (version==lastVersion) {
-               content += "<span style='color:red;font-weight:bold;'>NEW!</span> ";
+            if ((versions.size>1) && (version==lastVersion)) {
+               content += "<span style='color:#ef2929;font-weight:bold;'>NEW!</span> ";
             }
             content += "<strong>" + label + "</strong>";
             if (version==0) {
-               content += " <em>since release first historized release</em>";
+               content += " <em>since first historized release " + versions.get(version.toString()) + "</em>";
             } else {
-               content += " <em>since release " + versions[version][1] + "</em>";
+               content += " <em>since release " + versions.get(version.toString()) + "</em>";
             }
             content += "</a>";
             content += "</div>";
@@ -756,53 +783,45 @@
          }
 
          function countBugsVersion(version, priority) {
-            return countBugs(version, priority, "", -1, "", -1, "", -1, "", -1, "", -1);
+            return countBugs(version, priority, null, null, null, null, null);
          }
 
-         function countBugsCat(version, priority, cat, idxCat) {
-            return countBugs(version, priority, cat, idxCat, "", -1, "", -1, "", -1, "", -1);
+         function countBugsCat(version, priority, category) {
+            return countBugs(version, priority, category, null, null, null, null);
          }
 
-         function countBugsPackage(version, priority, packageId, idxPackage) {
-            return countBugs(version, priority, "", -1, "", -1, "", -1, packageId, idxPackage, "", -1);
+         function countBugsPackage(version, priority, packageName) {
+            return countBugs(version, priority, null, null, null, packageName, null);
          }
 
-         function countBugsCode(version, priority, cat, idxCat, code, idxCode) {
-            return countBugs(version, priority, cat, idxCat, code, idxCode, "", -1, "", -1, "", -1);
+         function countBugsCode(version, priority, category, code) {
+            return countBugs(version, priority, category, code, null, null, null);
          }
 
-         function countBugsPattern(version, priority, cat, idxCat, code, idxCode, packageId, idxPattern) {
-            return countBugs(version, priority, cat, idxCat, code, idxCode, packageId, idxPattern, "", -1, "", -1);
+         function countBugsPattern(version, priority, category, code, pattern) {
+            return countBugs(version, priority, category, code, pattern, null, null);
          }
 
-         function countBugsClass(version, priority, id1, idxBugPackage, id2, idxBugClass) {
-            return countBugs(version, priority, "", -1, "", -1, "", -1, id1, idxBugPackage, id2, idxBugClass);
+         function countBugsClass(version, priority, packageName, className) {
+            return countBugs(version, priority, null, null, null, packageName, className);
          }
 
-         function countBugsClassPattern(version, priority, id2, idxBugClass, id3, idxBugPattern) {
-            return countBugs(version, priority, "", -1, "", -1, id3, idxBugPattern, "", -1, id2, idxBugClass);
+         function countBugsClassPattern(version, priority, className, pattern) {
+            return countBugs(version, priority, null, null, pattern, null, className);
          }
 
-         function countBugs(version, priority, cat, idxCat, code, idxCode, pattern, idxPattern, packageId, idxPackage, classId, idxClass) {
+         function countBugs(version, priority, category, code, pattern, packageName, className) {
             var count = [0,0,0,0,0];
-            var last=1000000;
-            for (var x=0; x<bugs.length-1; x++) {
-               var bug = bugs[x];
-
-               var bugCat = bug[idxCat];
-               var bugP = bug[4];
-               var bugCode = bug[idxCode];
-               var bugPattern = bug[idxPattern];
-
-               if (     (version==-1    || version==bug[5])
-                     && (priority==4    || priority>=bug[4])
-                     && (idxCat==-1     || bug[idxCat]==cat)
-                     && (idxCode==-1    || bug[idxCode]==code)
-                     && (idxPattern==-1 || bug[idxPattern]==pattern)
-                     && (idxPackage==-1 || bug[idxPackage]==packageId)
-                     && (idxClass==-1   || bug[idxClass]==classId)
+            for (bug of bugs) {
+               if (     (version==-1  || version==bug.firstVersion)
+                     && (priority==4  || priority>=bug.priority)
+                     && (!category    || bug.category==category)
+                     && (!code        || bug.code==code)
+                     && (!pattern     || bug.pattern==pattern)
+                     && (!packageName || bug.packageName==packageName)
+                     && (!className   || bug.className==className)
                      ) {
-                  count[bug[4]]++;
+                  count[bug.priority]++;
                }
             }
             count[0] = count[1] + count[2] + count[3] + count[4];
@@ -812,13 +831,9 @@
          function countFixedBugsInVersion(version) {
             var count = [0,0,0,0,0];
             var last=1000000;
-            for (var x=0; x<fixedBugs.length-1; x++) {
-               var bug = fixedBugs[x];
-
-               var bugP = bug[4];
-
-               if ( version==-1 || version==(bug[6]+1)) {
-                  count[bug[4]]++;
+            for (bug of fixedBugs) {
+               if (version==-1 || version==(bug.lastVersion+1)) {
+                  count[bug.priority]++;
                }
             }
             count[0] = count[1] + count[2] + count[3] + count[4];
@@ -828,13 +843,9 @@
          function countFixedBugsIntroducedInVersion(version) {
             var count = [0,0,0,0,0];
             var last=1000000;
-            for (var x=0; x<fixedBugs.length-1; x++) {
-               var bug = fixedBugs[x];
-
-               var bugP = bug[4];
-
-               if ( version==-1 || version==(bug[5])) {
-                  count[bug[4]]++;
+            for (bug of fixedBugs) {
+               if (version==-1 || version==(bug.firstVersion)) {
+                  count[bug.priority]++;
                }
             }
             count[0] = count[1] + count[2] + count[3] + count[4];
@@ -844,13 +855,9 @@
          function countFixedButActiveBugsVersion(version) {
             var count = [0,0,0,0,0];
             var last=1000000;
-            for (var x=0; x<fixedBugs.length-1; x++) {
-               var bug = fixedBugs[x];
-
-               var bugP = bug[4];
-
-               if ( version==-1 || (version >=bug[5] && version<=bug[6]) ) {
-                  count[bug[4]]++;
+            for (bug of fixedBugs) {
+               if ( version==-1 || (version >=bug.firstVersion && version<=bug.lastVersion) ) {
+                  count[bug.priority]++;
                }
             }
             count[0] = count[1] + count[2] + count[3] + count[4];
@@ -860,13 +867,9 @@
          function countTotalBugsVersion(version) {
             var count = [0,0,0,0,0];
             var last=1000000;
-            for (var x=0; x<bugs.length-1; x++) {
-               var bug = bugs[x];
-
-               var bugP = bug[4];
-
-               if (version==-1 || version>=bug[5]) {
-                  count[bug[4]]++;
+            for (bug of bugs) {
+               if (version==-1 || version>=bug.firstVersion) {
+                  count[bug.priority]++;
                }
             }
             count[0] = count[1] + count[2] + count[3] + count[4];
@@ -875,29 +878,15 @@
 
          function getPriorityLegend() {
             var content = "";
-            content += "<h5><span class='b-1'>&nbsp;&nbsp;&nbsp;</span> P1 ";
-            content += "<span class='b-2'>&nbsp;&nbsp;&nbsp;</span> P2 ";
-            content += "<span class='b-3'>&nbsp;&nbsp;&nbsp;</span> P3 ";
-            content += "<span class='b-4'>&nbsp;&nbsp;&nbsp;</span> Exp ";
+            content += "<h5><span class='b-1'>&nbsp;&nbsp;&nbsp;</span>P1&nbsp;&nbsp;&nbsp;";
+            content += "<span class='b-2'>&nbsp;&nbsp;&nbsp;</span>P2&nbsp;&nbsp;&nbsp;";
+            content += "<span class='b-3'>&nbsp;&nbsp;&nbsp;</span>P3&nbsp;&nbsp;&nbsp;";
+            content += "<span class='b-4'>&nbsp;&nbsp;&nbsp;</span>Experimental";
             content += "</h5>";
             return content;
          }
 
-         function populatePackageNames() {
-            for (var i=0; i<bugs.length; i++) {
-               var classId = bugs[i][6];
-               var idx = classId.lastIndexOf('.');
-               var packageId = "";
-
-               if (idx>0) {
-                  packageId = classId.substring(0, idx);
-               }
-
-               bugs[i][7] = packageId;
-            }
-         }
-
-         function showbug(bugId, containerId, patternId) {
+         function showbug(bugId, containerId, pattern) {
             var bugplaceholder   = document.getElementById(containerId);
             var bug              = document.getElementById(bugId);
 
@@ -911,140 +900,206 @@
             }
 
             var newBug = bug.innerHTML;
-            var pattern = document.getElementById('tip-'+patternId).innerHTML;
+            var pattern = document.getElementById('tip-'+pattern).innerHTML;
             toggle(containerId);
             bugplaceholder.innerHTML = newBug + pattern;
          }
-         function toggle(foo) {
-            if( document.getElementById(foo).style.display == "none") {
-               show(foo);
+         function toggle(containerId) {
+            if( document.getElementById(containerId).style.display == "none") {
+               show(containerId);
             } else {
-               if( document.getElementById(foo).style.display == "block") {
-                  hide(foo);
+               if( document.getElementById(containerId).style.display == "block") {
+                  hide(containerId);
                } else {
-                  show(foo);
+                  show(containerId);
                }
             }
          }
-         function show(foo) {
-            document.getElementById(foo).style.display="block";
+         function show(containerId) {
+            document.getElementById(containerId).style.display="block";
          }
-         function hide(foo) {
-            document.getElementById(foo).style.display="none";
+         function hide(containerId) {
+            document.getElementById(containerId).style.display="none";
          }
 
          window.onload = function(){
             init();
          };
-      ]]></xsl:text></script>
-      <script type='text/javascript'>
+
+         var lastVersion = "]]></xsl:text>
+         <xsl:value-of select="/BugCollection/@sequence"/>
+         <xsl:text>";
+
          // versions fields: release id, release label
-         var versions = new Array(
+         var versions = new Map([</xsl:text>
             <xsl:for-each select="/BugCollection/History/AppVersion">
-               [ "<xsl:value-of select="@sequence" />", "<xsl:value-of select="@release" />" ],
+               <xsl:sort select="@sequence" data-type="number"/>
+               <xsl:text>&#x0A;               ["</xsl:text>
+               <xsl:value-of select="@sequence"/>
+               <xsl:text>", "</xsl:text>
+               <xsl:value-of select="@release"/>
+               <xsl:text>"],</xsl:text>
             </xsl:for-each>
-               [ "<xsl:value-of select="/BugCollection/@sequence" />", "<xsl:value-of select="/BugCollection/@release" />" ]
-            );
+            <xsl:text>&#x0A;               ["</xsl:text>
+            <xsl:value-of select="/BugCollection/@sequence"/>
+            <xsl:text>", "</xsl:text>
+            <xsl:value-of select="/BugCollection/@release"/>
+            <xsl:text>"]
+         ]);
 
-         // categories fields: category id, category label
-         var categories = new Array(
+         var categories = new Array(</xsl:text>
             <xsl:for-each select="/BugCollection/BugCategory">
-               <xsl:sort select="@category" order="ascending" />
-               [ "<xsl:value-of select="@category" />", "<xsl:value-of select="Description" />" ],
+               <xsl:sort select="Description"/>
+               <xsl:text>&#x0A;               {id: "</xsl:text>
+               <xsl:value-of select="@category"/>
+               <xsl:text>", label: "</xsl:text>
+               <xsl:value-of select="Description"/>
+               <xsl:text>"}</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "" ]
-            );
+         <xsl:text>
+         );
 
-         // codes fields: code id, code label
-         var codes = new Array(
+         var codes = new Array(</xsl:text>
             <xsl:for-each select="/BugCollection/BugCode">
-               <xsl:sort select="@abbrev" order="ascending" />
-               [ "<xsl:value-of select="@abbrev" />", "<xsl:value-of select="Description" />" ],
+               <xsl:sort select="Description"/>
+               <xsl:text>&#x0A;               {id: "</xsl:text>
+               <xsl:value-of select="@abbrev"/>
+               <xsl:text>", label: "</xsl:text>
+               <xsl:value-of select="Description"/>
+               <xsl:text>"}</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "" ]
-            );
+         <xsl:text>
+         );
 
-         // patterns fields: category id, code id, pattern id, pattern label
-         var patterns = new Array(
+         var patterns = new Array(</xsl:text>
             <xsl:for-each select="/BugCollection/BugPattern">
-               <xsl:sort select="@type" order="ascending" />
-               [ "<xsl:value-of select="@category" />", "<xsl:value-of select="@abbrev" />", "<xsl:value-of select="@type" />", "<xsl:value-of select="translate(ShortDescription, '&quot;', $apos)" />" ],
-
+               <xsl:sort select="ShortDescription"/>
+               <xsl:text>&#x0A;               {category: "</xsl:text>
+               <xsl:value-of select="@category"/>
+               <xsl:text>", code: "</xsl:text>
+               <xsl:value-of select="@abbrev"/>
+               <xsl:text>", id: "</xsl:text>
+               <xsl:value-of select="@type"/>
+               <xsl:text>", label: "</xsl:text>
+               <xsl:value-of select="translate(ShortDescription, '&quot;', $apos)"/>
+               <xsl:text>"}</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "", "", "" ]
-            );
+         <xsl:text>
+         );
 
-         // class stats fields: class name, package name, isInterface, total bugs, bugs p1, bugs p2, bugs p3, bugs p4
-         var classStats = new Array(
+         var classStats = new Array(</xsl:text>
             <xsl:for-each select="/BugCollection/FindBugsSummary/PackageStats/ClassStats">
-               <xsl:sort select="@class" order="ascending" />
-               [ "<xsl:value-of select="@class" />", "<xsl:value-of select="../@package" />", "<xsl:value-of select="@interface" />", "<xsl:value-of select="@bugs" />", "<xsl:value-of select="@priority_1" />", "<xsl:value-of select="@priority_2" />", "<xsl:value-of select="@priority_3" />", "<xsl:value-of select="@priority_4" />" ],
+               <xsl:sort select="@class"/>
+               <xsl:text>&#x0A;               {className: "</xsl:text>
+               <xsl:value-of select="@class"/>
+               <xsl:text>", packageName: "</xsl:text>
+               <xsl:value-of select="../@package"/>
+               <xsl:text>", isInterface: "</xsl:text>
+               <xsl:value-of select="@interface"/>
+               <xsl:text>", totalBugs: "</xsl:text>
+               <xsl:value-of select="@bugs"/>
+               <xsl:text>", bugsP1: "</xsl:text>
+               <xsl:value-of select="(@priority_1, 0)[1]"/>
+               <xsl:text>", bugsP2: "</xsl:text>
+               <xsl:value-of select="(@priority_2, 0)[1]"/>
+               <xsl:text>", bugsP3: "</xsl:text>
+               <xsl:value-of select="(@priority_3, 0)[1]"/>
+               <xsl:text>", bugsP4: "</xsl:text>
+               <xsl:value-of select="(@priority_4, 0)[1]"/>
+               <xsl:text>"}</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "", "", "", "", "", "", "" ]
-            );
+         <xsl:text>
+         );
 
-         // package stats fields: package name, total bugs, bugs p1, bugs p2, bugs p3, bugs p4
-         var packageStats = new Array(
+         var packageStats = new Array(</xsl:text>
             <xsl:for-each select="/BugCollection/FindBugsSummary/PackageStats">
-               <xsl:sort select="@package" order="ascending" />
-               [ "<xsl:value-of select="@package" />", "<xsl:value-of select="@total_bugs" />", "<xsl:value-of select="@priority_1" />", "<xsl:value-of select="@priority_2" />", "<xsl:value-of select="@priority_3" />", "<xsl:value-of select="@priority_4" />" ],
+               <xsl:sort select="@package"/>
+               <xsl:text>&#x0A;               {packageName: "</xsl:text>
+               <xsl:value-of select="@package"/>
+               <xsl:text>", totalBugs: "</xsl:text>
+               <xsl:value-of select="@total_bugs"/>
+               <xsl:text>", bugsP1: "</xsl:text>
+               <xsl:value-of select="(@priority_1, 0)[1]"/>
+               <xsl:text>", bugsP2: "</xsl:text>
+               <xsl:value-of select="(@priority_2, 0)[1]"/>
+               <xsl:text>", bugsP3: "</xsl:text>
+               <xsl:value-of select="(@priority_3, 0)[1]"/>
+               <xsl:text>", bugsP4: "</xsl:text>
+               <xsl:value-of select="(@priority_4, 0)[1]"/>
+               <xsl:text>"}</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "", "", "", "", "" ]
-            );
+         <xsl:text>
+         );
 
-
-         // bugs fields: bug id, category id, code id, pattern id, priority, release id, class name, packagename (populated by javascript)
-         var bugs = new Array(
-            <xsl:for-each select="/BugCollection/BugInstance[string-length(@last)=0]">
-
-               [ "<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />",
-                 "<xsl:value-of select="@category" />",
-                 "<xsl:value-of select="@abbrev" />",
-                 "<xsl:value-of select="@type" />",
-                 <xsl:value-of select="@priority" />,
-                 <xsl:choose><xsl:when test='string-length(@first)=0'>0</xsl:when><xsl:otherwise><xsl:value-of select="@first" /></xsl:otherwise></xsl:choose>,
-                 "<xsl:value-of select="Class/@classname" />",
-                 ""],
+         var bugs = new Array(</xsl:text>
+            <xsl:for-each select="/BugCollection/BugInstance[string-length(@last) = 0]">
+               {
+                  id: "<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />",
+                  category: "<xsl:value-of select="@category" />",
+                  code: "<xsl:value-of select="@abbrev" />",
+                  pattern: "<xsl:value-of select="@type" />",
+                  priority: <xsl:value-of select="@priority" />,
+                  firstVersion: <xsl:value-of select="(@first, 0)[1]"/>,
+                  className: "<xsl:value-of select="(Class[@primary='true'], Class)[1]/@classname"/>",
+                  packageName: "<xsl:value-of select="replace((Class[@primary='true'], Class)[1]/@classname, '\.[^.]+$', '')"/>
+                  <xsl:text>"
+               }</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "", "", "", 0, 0, "", "" ]
-            );
+         <xsl:text>
+         );
 
-         // bugs fields: bug id, category id, code id, pattern id, priority, first release id, fixed release id, class name
-         var fixedBugs = new Array(
-            <xsl:for-each select="/BugCollection/BugInstance[string-length(@last)>0]">
-
-               [ "<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />",
-                 "<xsl:value-of select="@category" />",
-                 "<xsl:value-of select="@abbrev" />",
-                 "<xsl:value-of select="@type" />",
-                 <xsl:value-of select="@priority" />,
-                 <xsl:choose><xsl:when test='string-length(@first)=0'>0</xsl:when><xsl:otherwise><xsl:value-of select="@first" /></xsl:otherwise></xsl:choose>,
-                 <xsl:choose><xsl:when test='string-length(@last)>0'><xsl:value-of select="@last" /></xsl:when><xsl:otherwise>-42</xsl:otherwise></xsl:choose>,
-                 "<xsl:value-of select="Class/@classname" />" ],
+         var fixedBugs = new Array(</xsl:text>
+            <xsl:for-each select="/BugCollection/BugInstance[string-length(@last) > 0]">
+               {
+                  id: "<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />",
+                  category: "<xsl:value-of select="@category" />",
+                  code: "<xsl:value-of select="@abbrev" />",
+                  pattern: "<xsl:value-of select="@type" />",
+                  priority: <xsl:value-of select="@priority" />,
+                  firstVersion: <xsl:value-of select="@first"/>,
+                  lastVersion: <xsl:value-of select="@last"/>,
+                  className: "<xsl:value-of select="(Class[@primary='true'], Class)[1]/@classname"/>
+                  <xsl:text>"
+               }</xsl:text>
+               <xsl:if test="position() != last()">
+                  <xsl:text>,</xsl:text>
+               </xsl:if>
             </xsl:for-each>
-               [ "", "", "", "", 0, 0, 0, "" ]
-            );
-
+         );
       </script>
    </head>
    <body>
       <h3>
-         <a href="https://spotbugs.github.io">SpotBugs</a> (<xsl:value-of select="/BugCollection/@version" />) 
-         Analysis for 
-         <xsl:choose>
-            <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
-            <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
-         </xsl:choose>
+         <a href="https://spotbugs.github.io">SpotBugs</a>
+         <xsl:value-of select="$titlePart"/>
       </h3>
 
-      <div id='menuWrapper' style=''>
+      <div id='menuWrapper'>
          <div id="navcontainer">
             <ul id="navlist">
-               <li><a id='summary'           class="current" href="#" onclick="selectMenu('summary'); return false;"         >Summary</a></li>
-               <li><a id='history'           class="none"    href="#" onclick="selectMenu('history'); return false;"         >History</a></li>
-               <li><a id='listByCategories'  class="none"    href="#" onclick="selectMenu('listByCategories'); return false;">Browse By Categories</a></li>
-               <li><a id='listByPackages'    class="none"    href="#" onclick="selectMenu('listByPackages'); return false;"  >Browse by Packages</a></li>
-               <li><a id='info'              class="none"    href="#" onclick="selectMenu('info'); return false;"            >Info</a></li>
+               <li                 ><a id='summary'           class="current" href="#summaryTab"          onclick="selectMenu('summary'); return false;"         >Summary</a></li>
+               <li id="historyMenu"><a id='history'           class="none"    href="#historyTab"          onclick="selectMenu('history'); return false;"         >History</a></li>
+               <li                 ><a id='listByCategories'  class="none"    href="#listByCategoriesTab" onclick="selectMenu('listByCategories'); return false;">Browse By Categories</a></li>
+               <li                 ><a id='listByPackages'    class="none"    href="#listByPackagesTab"   onclick="selectMenu('listByPackages'); return false;"  >Browse by Packages</a></li>
+               <li                 ><a id='info'              class="none"    href="#infoTab"             onclick="selectMenu('info'); return false;"            >Info</a></li>
             </ul>
          </div>
       </div>
@@ -1062,137 +1117,174 @@
                      <option value="loading">Loading filter...</option>
                   </select>
                   <select name='priorities' onchange='filter()'>
-                     <option value="loading">Loading filter...</option>
+                     <option id="4" value="4"> -- All priorities -- </option>
+                     <option id="1" value="1"> P1 bugs </option>
+                     <option id="2" value="2"> P1 and P2 bugs </option>
+                     <option id="3" value="3"> P1, P2 and P3 bugs </option>
                   </select>
                </div>
             </form>
          </div>
          <div id='historyControlWrapper' style='display:none;'>
-           <form name="findbugsHistoryControlForm">
-             <div id='historyControlContainer'>
-               <input type='checkbox' name='includeFixedIntroducedBugs'
-                      value='checked' alt='Include fixed introduced bugs.'
-                      onclick='includeFixedIntroducedBugsInHistory()' />
-               Include counts of introduced bugs that were fixed in later releases.
-             </div>
-           </form>
+            <form name="findbugsHistoryControlForm">
+               <div id='historyControlContainer'>
+                  <input type='checkbox' name='includeFixedIntroducedBugs'
+                         value='checked' alt='Include fixed introduced bugs.'
+                         onchange='includeFixedIntroducedBugsInHistory()' />
+                  Include counts of introduced bugs that were fixed in later releases.
+               </div>
+            </form>
          </div>
       </div>
-         <div id='summaryContainer'          class='displayContainer'>
+         <div id='summaryContainer' class='displayContainer'>
             <h3>Package Summary</h3>
             <table>
                <tr>
                   <th>Package</th>
                   <th>Code Size</th>
-                  <th>Bugs</th>
-                  <th>Bugs p1</th>
-                  <th>Bugs p2</th>
-                  <th>Bugs p3</th>
-                  <th>Bugs Exp.</th>
+                  <th>Total Bugs</th>
+                  <th>Bugs P1</th>
+                  <th>Bugs P2</th>
+                  <th>Bugs P3</th>
+                  <th>Bugs Experimental</th>
                </tr>
                <tr>
                   <td class='summary-name'>
-                     Overall
-                     (<xsl:value-of select="/BugCollection/FindBugsSummary/@num_packages" /> packages),
-                     (<xsl:value-of select="/BugCollection/FindBugsSummary/@total_classes" /> classes)
+                     <xsl:text>Overall (</xsl:text>
+                     <xsl:value-of select="/BugCollection/FindBugsSummary/@num_packages"/>
+                     <xsl:text> packages, </xsl:text>
+                     <xsl:value-of select="/BugCollection/FindBugsSummary/@total_classes"/>
+                     <xsl:text> classes)</xsl:text>
                   </td>
-                  <td class='summary-size'><xsl:value-of select="/BugCollection/FindBugsSummary/@total_size" /></td>
-                  <td class='summary-priority-all'><xsl:value-of select="/BugCollection/FindBugsSummary/@total_bugs" /></td>
-                  <td class='summary-priority-1'><xsl:value-of select="/BugCollection/FindBugsSummary/@priority_1" /></td>
-                  <td class='summary-priority-2'><xsl:value-of select="/BugCollection/FindBugsSummary/@priority_2" /></td>
-                  <td class='summary-priority-3'><xsl:value-of select="/BugCollection/FindBugsSummary/@priority_3" /></td>
-                  <td class='summary-priority-4'><xsl:value-of select="/BugCollection/FindBugsSummary/@priority_4" /></td>
+                  <td class='summary-size'><xsl:value-of select="/BugCollection/FindBugsSummary/@total_size"/></td>
+                  <td class='summary-priority-all'><xsl:value-of select="/BugCollection/FindBugsSummary/@total_bugs"/></td>
+                  <td class='summary-priority-1'><xsl:value-of select="(/BugCollection/FindBugsSummary/@priority_1, 0)[1]"/></td>
+                  <td class='summary-priority-2'><xsl:value-of select="(/BugCollection/FindBugsSummary/@priority_2, 0)[1]"/></td>
+                  <td class='summary-priority-3'><xsl:value-of select="(/BugCollection/FindBugsSummary/@priority_3, 0)[1]"/></td>
+                  <td class='summary-priority-4'><xsl:value-of select="(/BugCollection/FindBugsSummary/@priority_4, 0)[1]"/></td>
                </tr>
                <xsl:for-each select="/BugCollection/FindBugsSummary/PackageStats">
-                  <xsl:sort select="@package" order="ascending" />
-                  <xsl:if test="@total_bugs!='0'" >
+                  <xsl:sort select="@package"/>
+                  <xsl:if test="@total_bugs != '0'">
                      <tr>
                         <td class='summary-name'><xsl:value-of select="@package" /></td>
                         <td class='summary-size'><xsl:value-of select="@total_size" /></td>
                         <td class='summary-priority-all'><xsl:value-of select="@total_bugs" /></td>
-                        <td class='summary-priority-1'><xsl:value-of select="@priority_1" /></td>
-                        <td class='summary-priority-2'><xsl:value-of select="@priority_2" /></td>
-                        <td class='summary-priority-3'><xsl:value-of select="@priority_3" /></td>
-                        <td class='summary-priority-4'><xsl:value-of select="@priority_4" /></td>
+                        <td class='summary-priority-1'><xsl:value-of select="(@priority_1, 0)[1]" /></td>
+                        <td class='summary-priority-2'><xsl:value-of select="(@priority_2, 0)[1]" /></td>
+                        <td class='summary-priority-3'><xsl:value-of select="(@priority_3, 0)[1]" /></td>
+                        <td class='summary-priority-4'><xsl:value-of select="(@priority_4, 0)[1]" /></td>
                      </tr>
                   </xsl:if>
                </xsl:for-each>
             </table>
          </div>
 
-         <div id='infoContainer'             class='displayContainer'>
+         <div id='infoContainer' class='displayContainer'>
             <div id='analyzed-files'>
                <h3>Analyzed Files:</h3>
                <ul>
                   <xsl:for-each select="/BugCollection/Project/Jar">
-                     <li><xsl:apply-templates /></li>
+                     <xsl:sort select="."/>
+                     <li><xsl:value-of select="."/></li>
                   </xsl:for-each>
                </ul>
             </div>
             <div id='used-libraries'>
                <h3>Used Libraries:</h3>
                <ul>
-                  <xsl:for-each select="/BugCollection/Project/AuxClasspathEntry">
-                     <li><xsl:apply-templates /></li>
-                  </xsl:for-each>
-                  <xsl:if test="count(/BugCollection/Project/AuxClasspathEntry)=0" >
-                     <li>None</li>
-                  </xsl:if>
+                  <xsl:choose>
+                     <xsl:when test="/BugCollection/Project/AuxClasspathEntry">
+                        <xsl:for-each select="/BugCollection/Project/AuxClasspathEntry">
+                           <xsl:sort select="."/>
+                           <li><xsl:value-of select="."/></li>
+                        </xsl:for-each>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <li>None</li>
+                     </xsl:otherwise>
+                  </xsl:choose>
+               </ul>
+            </div>
+            <div id='source-files'>
+               <h3>Source Files:</h3>
+               <ul>
+                  <xsl:choose>
+                     <xsl:when test="/BugCollection/Project/SrcDir">
+                        <xsl:for-each select="/BugCollection/Project/SrcDir">
+                           <xsl:sort select="."/>
+                           <li><xsl:value-of select="."/></li>
+                        </xsl:for-each>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <li>None</li>
+                     </xsl:otherwise>
+                  </xsl:choose>
+               </ul>
+            </div>
+            <div id='plugins'>
+               <h3>Plugins:</h3>
+               <ul>
+                  <xsl:choose>
+                     <xsl:when test="/BugCollection/Project/Plugin">
+                        <xsl:for-each select="/BugCollection/Project/Plugin">
+                           <xsl:sort select="@id"/>
+                           <li><xsl:value-of select="@id"/> (enabled: <xsl:value-of select="@enabled"/>)</li>
+                        </xsl:for-each>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <li>None</li>
+                     </xsl:otherwise>
+                  </xsl:choose>
                </ul>
             </div>
             <div id='analysis-error'>
                <h3>Analysis Errors:</h3>
                <ul>
-                  <xsl:variable name="error-count"
-                                select="count(/BugCollection/Errors/MissingClass)" />
-                  <xsl:if test="$error-count=0" >
-                     <li>None</li>
-                  </xsl:if>
-                  <xsl:if test="$error-count>0" >
-                     <li>Missing ref classes for analysis:
-                        <ul>
-                           <xsl:for-each select="/BugCollection/Errors/MissingClass">
-                              <li><xsl:apply-templates /></li>
-                           </xsl:for-each>
-                        </ul>
-                     </li>
-                  </xsl:if>
+                  <xsl:choose>
+                     <xsl:when test="/BugCollection/Errors/MissingClass">
+                        <li>
+                           <xsl:text>Missing ref classes for analysis:&#x0A;                     </xsl:text>
+                           <ul>
+                              <xsl:for-each select="/BugCollection/Errors/MissingClass">
+                                 <xsl:sort select="."/>
+                                 <li><xsl:value-of select="."/></li>
+                              </xsl:for-each>
+                           </ul>
+                        </li>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <li>None</li>
+                     </xsl:otherwise>
+                  </xsl:choose>
                </ul>
             </div>
          </div>
-         <div id='historyContainer'          class='displayContainer'>Loading...</div>
+         <div id='historyContainer' class='displayContainer'>Loading...</div>
          <div id='listByCategoriesContainer' class='displayContainer'>Loading...</div>
-         <div id='listByPackagesContainer'   class='displayContainer'>Loading...</div>
+         <div id='listByPackagesContainer' class='displayContainer'>Loading...</div>
       </div>
 
       <div id='bug-collection' style='display:none;'>
-      <!-- advanced tooltips -->
-      <xsl:for-each select="/BugCollection/BugPattern">
-         <xsl:variable name="b-t"><xsl:value-of select="@type" /></xsl:variable>
-         <div>
-            <xsl:attribute name="id">tip-<xsl:value-of select="$b-t" /></xsl:attribute>
-            <xsl:attribute name="class">tip</xsl:attribute>
-            <xsl:value-of select="/BugCollection/BugPattern[@type=$b-t]/Details" disable-output-escaping="yes" />
-         </div>
-      </xsl:for-each>
-
-      <!-- bug descriptions - hidden -->
-      <xsl:for-each select="/BugCollection/BugInstance[not(@last)]">
-            <div style="display:none;" class='bug'>
-               <xsl:attribute name="id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:attribute>
+         <!-- bug descriptions -->
+         <xsl:for-each select="/BugCollection/BugInstance[not(@last)]">
+            <div id="{concat('b-uid-', @instanceHash, '-', @instanceOccurrenceNum)}" class='bug'>
                <xsl:for-each select="*/Message">
-                  <div class="b-r"><xsl:apply-templates /></div>
+                  <div class="b-r"><xsl:value-of select="."/></div>
                </xsl:for-each>
-               <div class="b-d">
-                  <xsl:value-of select="LongMessage" disable-output-escaping="no" />
-               </div>
+               <div class="b-d"><xsl:value-of select="LongMessage"/></div>
             </div>
-      </xsl:for-each>
+         </xsl:for-each>
+
+         <!-- advanced tips -->
+         <xsl:for-each select="/BugCollection/BugPattern">
+            <xsl:sort select="@type"/>
+            <div id="{concat('tip-', @type)}" class="tip">
+               <xsl:value-of select="concat('&#x0A;            ', replace(replace(replace(Details, '^\s+', ''), '(\r?\n|\r)\s*', '$1            '), '\s+$', '&#x0A;         '))" disable-output-escaping="yes"/>
+            </div>
+         </xsl:for-each>
       </div>
    </body>
 </html>
 </xsl:template>
-
-
 </xsl:transform>
-
