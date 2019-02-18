@@ -17,6 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 
 * Start migrating STDOUT/STDERR usage to a logging framework
+* Improvements and bug-fixes for fancy-hist.xsl
 
 ## 3.1.12 - 2019-02-28
 
