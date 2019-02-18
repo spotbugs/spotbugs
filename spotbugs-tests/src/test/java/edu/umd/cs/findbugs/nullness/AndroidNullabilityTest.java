@@ -31,9 +31,24 @@ public class AndroidNullabilityTest {
     }
 
     @Test
+    public void objectForNonNullParam2_isOk() {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/ObjectForNonNullParam2.class"));
+        assertThat(bugCollection, emptyIterable());
+    }
+
+    @Test
     public void nullForNonNullParam_isDetected() {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/NullForNonNullParam.class"));
+
+        assertThat(bugCollection, containsExactly(1, bug("NP_NONNULL_PARAM_VIOLATION")));
+    }
+
+    @Test
+    public void nullForNonNullParam2_isDetected() {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/NullForNonNullParam2.class"));
 
         assertThat(bugCollection, containsExactly(1, bug("NP_NONNULL_PARAM_VIOLATION")));
     }
@@ -46,9 +61,24 @@ public class AndroidNullabilityTest {
     }
 
     @Test
+    public void checkedNullableReturn2_isOk() {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/CheckedNullableReturn2.class"));
+        assertThat(bugCollection, emptyIterable());
+    }
+
+    @Test
     public void uncheckedNullableReturn_isDetected() {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/UncheckedNullableReturn.class"));
+
+        assertThat(bugCollection, containsExactly(1, bug("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")));
+    }
+
+    @Test
+    public void uncheckedNullableReturn2_isDetected() {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Paths.get("../spotbugsTestCases/build/classes/java/main/androidAnnotations/UncheckedNullableReturn2.class"));
 
         assertThat(bugCollection, containsExactly(1, bug("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")));
     }
