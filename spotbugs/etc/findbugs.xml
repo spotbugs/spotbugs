@@ -664,6 +664,8 @@
                     reports="SPEC_FINALLY_RETURN_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.ObjectNoEqualsAndHashCode" speed="fast" disabled="false"
                     reports="SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST,SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP,SPEC_OBJECT_NO_EQUALS_HASHCODE_SET"/>
+          <Detector class="edu.umd.cs.findbugs.detect.ArrayIndexOutCheck" speed="fast" disabled="false"
+                    reports="SPEC_ARRAY_INDEX_OUT_OF_BOUNDS"/>
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1272,4 +1274,5 @@
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_SET" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_ARRAY_INDEX_OUT_OF_BOUNDS" category="BAD_PRACTICE"/>
 </FindbugsPlugin>
