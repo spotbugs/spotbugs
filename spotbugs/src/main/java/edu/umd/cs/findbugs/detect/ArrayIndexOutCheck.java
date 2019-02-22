@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARRAYLENGTH;
+import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.ICONST;
@@ -35,6 +37,8 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.StoreInstruction;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -65,6 +69,8 @@ public class ArrayIndexOutCheck implements Detector {
     private final BugReporter bugReporter;
 
     private final Map<String, Integer> globalIntFieldMap = new HashMap<>();
+
+    private final int warningLevel = HIGH_PRIORITY;
 
     /**
      * @param bugReporter
@@ -198,7 +204,7 @@ public class ArrayIndexOutCheck implements Detector {
                 }
 
                 // Get the index of accessing array
-                Integer accessIndex = getAccessIndex(locationList, i, classContext);
+                Integer accessIndex = getAccessIndex(locationList, i, dataflow, classContext);
 
                 if (null == accessIndex) {
                     continue;
@@ -234,7 +240,7 @@ public class ArrayIndexOutCheck implements Detector {
      * @param index
      *            compared instruction index in location list
      * @param dataflow
-     *            data flow
+     *            data flow of method
      * @param method
      *            method
      * @param compareMap
@@ -256,12 +262,27 @@ public class ArrayIndexOutCheck implements Detector {
         String arrayName = null;
         boolean isLengthLeft = false;
 
+        // if ifInstruction is not in IF_ICMPLT, IF_ICMPGE,IF_ICMPGT,IF_ICMPLE, return
+        int opCode = locationList.get(index).getHandle().getInstruction().getOpcode();
+        switch (opCode) {
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPNE:
+        case Const.IF_ICMPLT:
+        case Const.IF_ICMPGE:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPLE:
+            break;
+        default:
+            return;
+        }
+
         // top value
         ValueNumber topValueNumber = vnaFrame.getTopValue();
 
         // bottom value
         ValueNumber bottomValueNumber = vnaFrame.getValue(vnaFrame.getNumLocals());
 
+        String lenName = null;
         ValueNumber otherValueNumber = null;
 
         for (int i = 1; i <= index; i++) {
@@ -270,6 +291,26 @@ public class ArrayIndexOutCheck implements Detector {
             Instruction preIns = preHandle.getInstruction();
 
             if (preIns instanceof ARRAYLENGTH) {
+                arrayName = getVariableName(true, dataflow, preLoc, method);
+
+                if (null == arrayName) {
+                    return;
+                }
+
+                Location nextLoc = locationList.get(index - i + 1);
+                Instruction nextIns = nextLoc.getHandle().getInstruction();
+
+                // when array.length is stored in a local variable, for example: int len = array.length
+                if (nextIns instanceof StoreInstruction) {
+                    int locIndex = ((StoreInstruction) nextIns).getIndex();
+                    LocalVariable len = method.getLocalVariableTable().getLocalVariable(locIndex,
+                            nextLoc.getHandle().getNext().getPosition());
+                    if (null != len) {
+                        lenName = len.getName();
+                    }
+                }
+
+                // get the stack after ARRAYLENGTH instruction
                 ValueNumberFrame arrayLengthFrame = dataflow.getFactAfterLocation(preLoc);
                 ValueNumber nowValueNumber = arrayLengthFrame.getTopValue();
 
@@ -277,25 +318,39 @@ public class ArrayIndexOutCheck implements Detector {
                 // compare expression
                 // For example: if(5 > array.length)
                 if (nowValueNumber.equals(topValueNumber)) {
-                    arrayName = getVariableName(true, dataflow, preLoc, method);
-
-                    if (null == arrayName) {
-                        return;
-                    }
 
                     otherValueNumber = bottomValueNumber;
                     isLengthLeft = false;
+                    break;
 
                     // For example: if(array.length > 5)
                 } else if (nowValueNumber.equals(bottomValueNumber)) {
-                    arrayName = getVariableName(true, dataflow, preLoc, method);
-
-                    if (null == arrayName) {
-                        return;
-                    }
 
                     otherValueNumber = topValueNumber;
                     isLengthLeft = true;
+                    break;
+                } else {
+                    if (null == lenName) {
+                        continue;
+                    }
+                    // when array.length stored in local variable-len, and len is changed in the process, the value
+                    // number in stack will be changed, so check the name is same with the local variable
+                    LocalVariableAnnotation topLocal = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
+                            locationList.get(index), topValueNumber, vnaFrame);
+                    if (null != topLocal && lenName.equals(topLocal.getName())) {
+                        otherValueNumber = bottomValueNumber;
+                        isLengthLeft = false;
+                        break;
+                    }
+
+                    LocalVariableAnnotation bottomLenName = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(
+                            method, locationList.get(index), bottomValueNumber, vnaFrame);
+
+                    if (null != bottomLenName && lenName.equals(bottomLenName.getName())) {
+                        otherValueNumber = topValueNumber;
+                        isLengthLeft = true;
+                        break;
+                    }
                 }
             }
 
@@ -338,16 +393,28 @@ public class ArrayIndexOutCheck implements Detector {
             switch (opcode) {
             case Const.IF_ICMPGE:
                 if (arrayModel.isLeftInCompare()) {
-                    // accessing instruction is in if branch
+                    // if branch
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                         if (accessIndex >= arrayModel.getCompareNum() - 1) {
                             return true;
                         }
+                    } else if (accessPc > falseHandle.getPosition()) {
+                        // else branch
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
+                            return true;
+                        }
                     }
                 } else {
-                    // accessing instruction is in else branch
+                    // else branch
                     if (accessPc > falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum()) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
+                            return true;
+                        }
+                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                        // if branch
+                        if (accessIndex > arrayModel.getCompareNum()) {
                             return true;
                         }
                     }
@@ -355,16 +422,24 @@ public class ArrayIndexOutCheck implements Detector {
                 break;
             case Const.IF_ICMPGT:
                 if (arrayModel.isLeftInCompare()) {
-
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                         if (accessIndex >= arrayModel.getCompareNum()) {
                             return true;
                         }
+                    } else if (accessPc > falseHandle.getPosition()) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+                        if (!hasReturn && accessIndex > arrayModel.getCompareNum()) {
+                            return true;
+                        }
                     }
                 } else {
-
                     if (accessPc > falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum() - 1) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum() - 1) {
+                            return true;
+                        }
+                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                        if (accessIndex >= arrayModel.getCompareNum()) {
                             return true;
                         }
                     }
@@ -373,13 +448,25 @@ public class ArrayIndexOutCheck implements Detector {
             case Const.IF_ICMPLT:
                 if (arrayModel.isLeftInCompare()) {
                     if (accessPc > falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum() - 1) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+
+                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum() - 1) {
+                            return true;
+                        }
+                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                        if (accessIndex >= arrayModel.getCompareNum()) {
                             return true;
                         }
                     }
                 } else {
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                         if (accessIndex >= arrayModel.getCompareNum()) {
+                            return true;
+                        }
+                    } else if (accessPc > falseHandle.getPosition()) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+
+                        if (!hasReturn && accessIndex > arrayModel.getCompareNum()) {
                             return true;
                         }
                     }
@@ -388,7 +475,13 @@ public class ArrayIndexOutCheck implements Detector {
             case Const.IF_ICMPLE:
                 if (arrayModel.isLeftInCompare()) {
                     if (accessPc > falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum()) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+
+                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
+                            return true;
+                        }
+                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                        if (accessIndex > arrayModel.getCompareNum()) {
                             return true;
                         }
                     }
@@ -397,6 +490,28 @@ public class ArrayIndexOutCheck implements Detector {
                         if (accessIndex >= arrayModel.getCompareNum() - 1) {
                             return true;
                         }
+                    } else if (accessPc > falseHandle.getPosition()) {
+                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+
+                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case Const.IF_ICMPNE:
+                if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                    if (accessIndex >= arrayModel.getCompareNum()) {
+                        return true;
+                    }
+                }
+                break;
+            case Const.IF_ICMPEQ:
+                if (accessPc > falseHandle.getPosition()) {
+                    boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+
+                    if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
+                        return true;
                     }
                 }
                 break;
@@ -409,12 +524,48 @@ public class ArrayIndexOutCheck implements Detector {
     }
 
     /**
+     * Is there return or athrow instruction between start Handle and end position
+     *
+     * @param startHandle
+     *            start instruction handle
+     * @param endPc
+     *            end position
+     * @return true: has return or throw; false: no
+     */
+    private boolean checkHasReturn(InstructionHandle startHandle, int endPc) {
+        boolean flag = false;
+        InstructionHandle nowHandle = startHandle;
+        int nowPc = nowHandle.getPosition();
+
+        while (nowPc < endPc) {
+            Instruction ins = nowHandle.getInstruction();
+            if (ins instanceof ReturnInstruction || ins instanceof ATHROW) {
+                flag = true;
+                break;
+            }
+
+            nowHandle = nowHandle.getNext();
+            if (null == nowHandle) {
+                break;
+            }
+            nowPc = nowHandle.getPosition();
+        }
+
+        return flag;
+
+    }
+
+    /**
      * Get the number compared with array's length
      *
+     * @param dataflow
+     *            value number data flow
      * @param locationList
      *            location list
      * @param index
      *            index
+     * @param compareValueNumber
+     *            compared value number in stack
      * @param classContext
      *            class context
      * @return the number compared with array's length
@@ -467,7 +618,7 @@ public class ArrayIndexOutCheck implements Detector {
      * @param isTop
      *            whether array is in top of statk
      * @param dataflow
-     *            data flow
+     *            data flow of method
      * @param location
      *            location
      * @param method
@@ -516,30 +667,132 @@ public class ArrayIndexOutCheck implements Detector {
      *            location list
      * @param index
      *            index
+     * @param dataflow
+     *            data flow of method
      * @param classContext
      *            class context
      * @return index of accessing array
+     * @throws DataflowAnalysisException
      */
-    private Integer getAccessIndex(List<Location> locationList, int index, ClassContext classContext) {
+    private Integer getAccessIndex(List<Location> locationList, int index, ValueNumberDataflow dataflow,
+            ClassContext classContext) throws DataflowAnalysisException {
         Integer accessIndex = null;
 
-        for (int i = 1; i <= 2; i++) {
-            if (index - i < 0) {
-                return accessIndex;
-            }
+        if (index - 1 < 0) {
+            return accessIndex;
+        }
+        int opCode = locationList.get(index).getHandle().getInstruction().getOpcode();
+        switch (opCode) {
+        case Const.IASTORE:
+        case Const.LASTORE:
+        case Const.FASTORE:
+        case Const.DASTORE:
+        case Const.AASTORE:
+        case Const.BASTORE:
+        case Const.CASTORE:
+        case Const.SASTORE:
+            accessIndex = processArrayStore(locationList, index, dataflow, classContext);
+            break;
 
-            Location preLocation = locationList.get(index - i);
-            InstructionHandle preHandle = preLocation.getHandle();
+        case Const.IALOAD:
+        case Const.LALOAD:
+        case Const.FALOAD:
+        case Const.DALOAD:
+        case Const.AALOAD:
+        case Const.BALOAD:
+        case Const.CALOAD:
+        case Const.SALOAD:
+            accessIndex = processArrayLoad(locationList, index, dataflow, classContext);
+            break;
+
+        default:
+            break;
+        }
+
+        return accessIndex;
+    }
+
+    /**
+     * Process of array store instruction, for example: array[1] = "test"
+     *
+     * @param locationList
+     *            location list
+     * @param index
+     *            index of array instruction in location list
+     * @param dataflow
+     *            data flow of method
+     * @param classContext
+     *            class context
+     * @return access index
+     * @throws DataflowAnalysisException
+     */
+    private Integer processArrayStore(List<Location> locationList, int index, ValueNumberDataflow dataflow,
+            ClassContext classContext) throws DataflowAnalysisException {
+        ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(locationList.get(index));
+        ValueNumber accessNum = null;
+        Integer accessIndex = null;
+
+        if (vnaFrame.getStackDepth() > 1) {
+            // array[1] = "test", access index is always in the second of stack
+            accessNum = vnaFrame.getStackValue(1);
+        } else {
+            return accessIndex;
+        }
+
+        for (int i = 1; i <= index; i++) {
+            Location loc = locationList.get(index - i);
+            InstructionHandle preHandle = loc.getHandle();
             Instruction preIns = preHandle.getInstruction();
 
             if (preIns instanceof ICONST) {
-                accessIndex = new Integer(((ICONST) preIns).getValue().intValue());
-
+                ValueNumberFrame tmpFrame = dataflow.getFactAfterLocation(loc);
+                ValueNumber tmpValueNum = tmpFrame.getTopValue();
+                if (accessNum.equals(tmpValueNum)) {
+                    accessIndex = new Integer(((ICONST) preIns).getValue().intValue());
+                    break;
+                }
             } else if (preIns instanceof GETFIELD) {
-                String filedName = ((GETFIELD) preIns).getFieldName(classContext.getConstantPoolGen());
-                accessIndex = globalIntFieldMap.get(filedName);
+                ValueNumberFrame tmpFrame = dataflow.getFactAfterLocation(loc);
+                ValueNumber tmpValueNum = tmpFrame.getTopValue();
+                if (accessNum.equals(tmpValueNum)) {
+                    String filedName = ((GETFIELD) preIns).getFieldName(classContext.getConstantPoolGen());
+                    accessIndex = globalIntFieldMap.get(filedName);
+                    break;
+                }
+
             }
 
+        }
+
+        return accessIndex;
+    }
+
+    /**
+     * Process of array load instruction, for example: String str = array[1]
+     *
+     * @param locationList
+     *            location list
+     * @param index
+     *            index of array instruction in location list
+     * @param dataflow
+     *            data flow of method
+     * @param classContext
+     *            class context
+     * @return access index
+     */
+    private Integer processArrayLoad(List<Location> locationList, int index, ValueNumberDataflow dataflow,
+            ClassContext classContext) {
+        Integer accessIndex = null;
+        Location preLocation = locationList.get(index - 1);
+        InstructionHandle preHandle = preLocation.getHandle();
+        Instruction preIns = preHandle.getInstruction();
+
+        if (preIns instanceof ICONST) {
+            accessIndex = new Integer(((ICONST) preIns).getValue().intValue());
+
+        } else if (preIns instanceof GETFIELD) {
+            String filedName = ((GETFIELD) preIns).getFieldName(classContext.getConstantPoolGen());
+            accessIndex = globalIntFieldMap.get(filedName);
         }
 
         return accessIndex;
@@ -569,7 +822,8 @@ public class ArrayIndexOutCheck implements Detector {
         ValueNumberDataflow valueNumDataFlow = classContext.getValueNumberDataflow(method);
 
         ValueNumberFrame vnaFrame = valueNumDataFlow.getFactAtLocation(location);
-        ValueNumber valueNumber = vnaFrame.getTopValue();
+
+        ValueNumber valueNumber = vnaFrame.getValue(vnaFrame.getNumLocals());
 
         BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
                 valueNumber, vnaFrame, "VALUE_OF");
@@ -578,8 +832,9 @@ public class ArrayIndexOutCheck implements Detector {
                 sourceFile, insHandle);
 
         bugAccumulator.accumulateBug(
-                new BugInstance(this, "SPEC_ARRAY_INDEX_OUT_OF_BOUNDS", HIGH_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
+                new BugInstance(this, "SPEC_ARRAY_INDEX_OUT_OF_BOUNDS", warningLevel)
+                        .addClassAndMethod(classContext.getJavaClass(), method)
+                        .addOptionalAnnotation(variableAnnotation),
                 sourceLineAnnotation);
     }
 
@@ -588,13 +843,32 @@ public class ArrayIndexOutCheck implements Detector {
 
     }
 
+    /**
+     * Model which compared with array.length
+     * 
+     * @since ?
+     *
+     */
     private static class ComparedArrayModel {
+
+        /**
+         * array name
+         */
         private String name;
 
+        /**
+         * compared name
+         */
         private int compareNum;
 
+        /**
+         * arrayLength is at left or right of compared expression
+         */
         private boolean isLeftInCompare;
 
+        /**
+         * compared instruction handle
+         */
         private InstructionHandle compareHandle;
 
         /**
@@ -634,7 +908,5 @@ public class ArrayIndexOutCheck implements Detector {
         public void setCompareHandle(InstructionHandle compareHandle) {
             this.compareHandle = compareHandle;
         }
-
     }
-
 }

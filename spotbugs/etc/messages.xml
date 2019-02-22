@@ -8605,12 +8605,24 @@ after the call to initLogging, the logger configuration is lost
     </Details>
   </BugPattern>
   <BugPattern type="SPEC_ARRAY_INDEX_OUT_OF_BOUNDS">
-    <ShortDescription>Accessing an array out of bounds. </ShortDescription>
-    <LongDescription>Method {1} accesses an array out of bounds.</LongDescription>
+    <ShortDescription>Accessing an array may be out of bounds. </ShortDescription>
+    <LongDescription>Method {1} accesses an array may be out of bounds.</LongDescription>
     <Details>
       <![CDATA[
       <p> Accessing an array may be out of bounds. 
-          It is better to check the array's length before access it.
+          Although, It already checked the array's length before access array, 
+          but the access index if lager than the checked number which may cause out of bound exception.
+          For example, consider:
+      </p>
+      <pre><code>public void arrayTest(String[] array) {
+           if(array.length <2){
+               return;
+           }
+           String str = array[2];
+      }
+      </code></pre>
+      <p> when array.length == 2, it can pass the condition, and do array[2], 
+          which will cause ArrayIndexOutBoundsExcepyion.
       </p>
       ]]>
     </Details>
