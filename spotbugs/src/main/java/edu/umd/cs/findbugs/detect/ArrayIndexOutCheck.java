@@ -25,13 +25,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARRAYLENGTH;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ArrayInstruction;
+import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.ICONST;
+import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -195,16 +201,31 @@ public class ArrayIndexOutCheck implements Detector {
                  * store the array and constant into map
                  */
                 getCompareArrayAndNum(locationList, i, dataflow, method, compareMap, classContext);
+                continue;
             }
 
-            if (ins instanceof ArrayInstruction) {
+            if (ins instanceof ArrayInstruction || ins instanceof INVOKEINTERFACE) {
                 // if there is no compare instruction, continue
                 if (compareMap.isEmpty()) {
                     continue;
                 }
 
-                // Get the index of accessing array
-                Integer accessIndex = getAccessIndex(locationList, i, dataflow, classContext);
+                Integer accessIndex = null;
+
+                if (ins instanceof INVOKEINTERFACE) {
+                    String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
+                            classContext.getConstantPoolGen());
+                    String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
+                            classContext.getConstantPoolGen());
+
+                    if ("java/util/List".equals(className) && "get".equals(methodName)) {
+                        // Get the index of accessing list
+                        accessIndex = processArrayLoad(locationList, i, dataflow, classContext);
+                    }
+                } else {
+                    // Get the index of accessing array
+                    accessIndex = getAccessIndex(locationList, i, dataflow, classContext);
+                }
 
                 if (null == accessIndex) {
                     continue;
@@ -290,7 +311,19 @@ public class ArrayIndexOutCheck implements Detector {
             InstructionHandle preHandle = preLoc.getHandle();
             Instruction preIns = preHandle.getInstruction();
 
-            if (preIns instanceof ARRAYLENGTH) {
+            if (preIns instanceof ARRAYLENGTH || preIns instanceof INVOKEINTERFACE) {
+
+                if (preIns instanceof INVOKEINTERFACE) {
+                    String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) preIns).getIndex(),
+                            classContext.getConstantPoolGen());
+                    String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) preIns).getIndex(),
+                            classContext.getConstantPoolGen());
+
+                    if (!"java/util/List".equals(className) || !"size".equals(methodName)) {
+                        continue;
+                    }
+                }
+
                 arrayName = getVariableName(true, dataflow, preLoc, method);
 
                 if (null == arrayName) {
@@ -367,6 +400,7 @@ public class ArrayIndexOutCheck implements Detector {
             compareMap.put(arrayName, arrayModel);
         }
     }
+
 
     /**
      * Check accessing array is out of bounds
@@ -678,9 +712,6 @@ public class ArrayIndexOutCheck implements Detector {
             ClassContext classContext) throws DataflowAnalysisException {
         Integer accessIndex = null;
 
-        if (index - 1 < 0) {
-            return accessIndex;
-        }
         int opCode = locationList.get(index).getHandle().getInstruction().getOpcode();
         switch (opCode) {
         case Const.IASTORE:
@@ -708,6 +739,27 @@ public class ArrayIndexOutCheck implements Detector {
         default:
             break;
         }
+
+        return accessIndex;
+    }
+
+    /**
+     * Get index of accessing array
+     *
+     * @param locationList
+     *            location list
+     * @param index
+     *            index
+     * @param dataflow
+     *            data flow of method
+     * @param classContext
+     *            class context
+     * @return index of accessing array
+     * @throws DataflowAnalysisException
+     */
+    private Integer getAccessListIndex(List<Location> locationList, int index, ValueNumberDataflow dataflow,
+            ClassContext classContext) throws DataflowAnalysisException {
+        Integer accessIndex = processArrayLoad(locationList, index, dataflow, classContext);
 
         return accessIndex;
     }
@@ -783,6 +835,10 @@ public class ArrayIndexOutCheck implements Detector {
     private Integer processArrayLoad(List<Location> locationList, int index, ValueNumberDataflow dataflow,
             ClassContext classContext) {
         Integer accessIndex = null;
+        if (index - 1 < 0) {
+            return accessIndex;
+        }
+
         Location preLocation = locationList.get(index - 1);
         InstructionHandle preHandle = preLocation.getHandle();
         Instruction preIns = preHandle.getInstruction();
@@ -796,6 +852,31 @@ public class ArrayIndexOutCheck implements Detector {
         }
 
         return accessIndex;
+    }
+
+    /**
+     * Get class name or method name
+     *
+     * @param isClass
+     *            true: get class name; false: get method name
+     * @param constIndex
+     *            index in constant pool
+     * @param constPool
+     *            constant pool
+     * @return
+     */
+    private String getClassOrMethodFromInstruction(boolean isClass, int constIndex, ConstantPoolGen constPool) {
+        String res = null;
+        ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
+
+        if (isClass) {
+            ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
+            res = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
+        } else {
+            ConstantNameAndType cnat = (ConstantNameAndType) constPool.getConstant(constTmp.getNameAndTypeIndex());
+            res = ((ConstantUtf8) constPool.getConstant(cnat.getNameIndex())).getBytes();
+        }
+        return res;
     }
 
     /**
@@ -845,7 +926,7 @@ public class ArrayIndexOutCheck implements Detector {
 
     /**
      * Model which compared with array.length
-     * 
+     *
      * @since ?
      *
      */
