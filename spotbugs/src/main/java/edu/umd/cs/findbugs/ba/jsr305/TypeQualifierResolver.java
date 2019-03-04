@@ -55,6 +55,10 @@ public class TypeQualifierResolver {
 
     static final ClassDescriptor androidNonNull = DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull");
 
+    static final ClassDescriptor androidxNullable = DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable");
+
+    static final ClassDescriptor androidxNonNull = DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull");
+
     static final ClassDescriptor googleNullable = DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable");
 
     static final ClassDescriptor intellijNullable = DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable");
@@ -133,6 +137,7 @@ public class TypeQualifierResolver {
 
             try {
                 if (annotationClass.equals(androidNullable)
+                        || annotationClass.equals(androidxNullable)
                         || annotationClass.equals(googleNullable)
                         || annotationClass.equals(eclipseNullable)
                         || annotationClass.equals(intellijNullable)
@@ -142,6 +147,7 @@ public class TypeQualifierResolver {
                     return;
                 }
                 if (annotationClass.equals(androidNonNull)
+                        || annotationClass.equals(androidxNonNull)
                         || annotationClass.equals(eclipseNonNull)
                         || annotationClass.equals(eclipseNonNullByDefault)
                         || annotationClass.equals(intellijNotNull)) {

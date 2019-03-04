@@ -25,18 +25,26 @@ sonarqube {
         property 'sonar.projectName', 'SpotBugs'
         property 'sonar.projectVersion', rootProject.version
         property 'sonar.organization', 'spotbugs'
-        // https://docs.sonarqube.org/display/PLUG/Branch+Plugin
-        property 'sonar.branch.name', System.env.TRAVIS_BRANCH
     }
 }
 
 if (isPullRequest) {
     sonarqube {
         properties {
-            property 'sonar.analysis.mode', 'preview'
-            property 'sonar.github.oauth', System.env.GITHUB_TOKEN
-            property 'sonar.github.pullRequest', System.env.TRAVIS_PULL_REQUEST
-            property 'sonar.github.repository', System.env.TRAVIS_REPO_SLUG
+            // https://docs.sonarqube.org/7.6/analysis/pull-request/
+            // https://github.com/travis-ci/travis-build/blob/6af6dd723bd6b364dc29ad74af7f22438a16494d/lib/travis/build/addons/sonarcloud.rb#L123-L127
+            property 'sonar.pullrequest.key', System.env.TRAVIS_PULL_REQUEST
+            property 'sonar.pullrequest.branch', System.env.TRAVIS_PULL_REQUEST_SLUG
+            property 'sonar.pullrequest.base', System.env.TRAVIS_BRANCH
+            property 'sonar.pullrequest.provider', 'GitHub'
+            property 'sonar.pullrequest.github.repository', System.env.TRAVIS_REPO_SLUG
+        }
+    }
+} else {
+    sonarqube {
+        properties {
+            // https://docs.sonarqube.org/display/PLUG/Branch+Plugin
+            property 'sonar.branch.name', System.env.TRAVIS_BRANCH
         }
     }
 }
