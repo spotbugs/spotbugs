@@ -46,7 +46,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -318,38 +317,6 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         }
     }
 
-    /**
-     * Get the name of the object which called method. For example, instruction: testMap.get(map); testMap is the
-     * object's name
-     *
-     * @param location
-     *            instruction location
-     * @param classContext
-     *            class context
-     * @param method
-     *            method
-     * @return name of the object
-     * @throws DataflowAnalysisException
-     * @throws CFGBuilderException
-     */
-    private String getObjectNameFromInstruction(Location location, ClassContext classContext, Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
-        ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-
-        if (vnaFrame.getNumSlots() < 2) {
-            return null;
-        }
-        // If there is parameter，the object is the second last in stack
-        ValueNumber valueNumber = vnaFrame.getValue(vnaFrame.getNumSlots() - 2);
-        // local variable
-        LocalVariableAnnotation localAnn = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
-                valueNumber, vnaFrame);
-        if (null != localAnn) {
-            return localAnn.getName();
-        }
-
-        return null;
-    }
 
     /**
      * Check local variables of Map and Set in the method. The key of Map doesn't rewritten equals and hashCode methods.
