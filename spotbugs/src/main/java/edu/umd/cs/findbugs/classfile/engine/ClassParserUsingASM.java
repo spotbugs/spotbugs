@@ -34,6 +34,8 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.TypePath;
+import org.objectweb.asm.TypeReference;
 
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -155,6 +157,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
         boolean accessIsStatic;
 
         HashSet<Label> labelsSeen = new HashSet<>();
+
+        private int parameterCount = -1;
 
         /**
          * @param calledClassSet
@@ -286,6 +290,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 String desc) {
             if (opcode == Opcodes.PUTFIELD && parameterLoadState == ParameterLoadState.LOADED_THIS_AND_PARAMETER
                     && owner.equals(slashedClassName) && name.startsWith("this$")) {
+                // the field that has name starts with "this$" is generated for non-static inner class
+                // https://sourceforge.net/p/findbugs/bugs/1015/
                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
             }
             fieldInstructionCount++;
@@ -484,11 +490,34 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
+        public void visitAnnotableParameterCount(final int parameterCount, final boolean visible) {
+            this.parameterCount = parameterCount;
+        }
+
+        @Override
         public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                 boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
-            mBuilder.addParameterAnnotation(parameter, desc, value);
+            int shift = 0;
+            if (parameterCount >= 0) {
+                // if we have synthetic parameter, shift `parameter` value
+                shift = new SignatureParser(methodDesc).getNumParameters() - parameterCount;
+            }
+            mBuilder.addParameterAnnotation(parameter + shift, desc, value);
             return value.getAnnotationVisitor();
+        }
+
+        @Override
+        public org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
+                String desc, boolean visible) {
+            TypeReference typeRefObject = new TypeReference(typeRef);
+            if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER) {
+                // treat as parameter annotation
+                AnnotationValue value = new AnnotationValue(desc);
+                mBuilder.addParameterAnnotation(typeRefObject.getFormalParameterIndex(), desc, value);
+                return value.getAnnotationVisitor();
+            }
+            return null;
         }
     }
 

@@ -165,7 +165,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        // System.out.println("saw\t" + OPCODE_NAMES[seen] + "\t" + zeroOnTOS);
+        // System.out.println("saw\t" + Const.getOpcodeName(seen) + "\t" + zeroOnTOS);
         switch (seen) {
         case Const.GETSTATIC:
         case Const.PUTSTATIC:

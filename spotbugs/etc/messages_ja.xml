@@ -1423,6 +1423,16 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientReplaceAll">
+    <Details>
+<![CDATA[
+<p>
+このディテクタは， <code>replaceAll(String regex, String replacement)</code> メソッドに
+正規表現固有の文字を含まない文字列を渡しているコードを探します。
+</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
@@ -7114,6 +7124,17 @@ String s = buf.toString();
 ]]>
     </Details>
   </BugPattern>
+    <BugPattern type="IRA_INEFFICIENT_REPLACEALL">
+      <ShortDescription>replaceAll(String regex, String replacement) の引数に正規表現を使用していないメソッド</ShortDescription>
+      <LongDescription>{1} は， replaceAll(String regex, String replacement) の引数に正規表現を使用していません。</LongDescription>
+      <Details>
+  <![CDATA[
+<p>このメソッドは， <code>replaceAll(String regex, String replacement)</code> の引数に正規表現を使用していません。
+正規表現が不要な場合は、 <code>myString.replace(CharSequence target, CharSequence replacement)</code> を使用するほうがより効率的です。
+</p>
+  ]]>
+      </Details>
+    </BugPattern>
 
   <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
     <ShortDescription>run メソッドでの JUnit アサーションは JUnit によって通知されない</ShortDescription>

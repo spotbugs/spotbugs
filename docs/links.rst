@@ -3,6 +3,12 @@ SpotBugs Links
 
 This page contains links to related projects, including tools that are similar to SpotBugs.
 
+IDE Integration
+---------------
+
+`m2e-code-quality <https://github.com/m2e-code-quality/m2e-code-quality/>`_
+  An Eclipse plugin which configures the FindBugs/SpotBugs Eclipse plugin to match the FindBugs/SpotBugs Maven plugin.
+
 SpotBugs Plugins
 ----------------
 

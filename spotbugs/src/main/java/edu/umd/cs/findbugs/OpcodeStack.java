@@ -1293,7 +1293,7 @@ public class OpcodeStack {
         Item it, it2;
         Constant cons;
 
-        // System.out.printf("%3d %12s%s%n", dbc.getPC(), OPCODE_NAMES[seen],
+        // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
         // this);
         if (dbc.isRegisterStore()) {
             setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
@@ -1494,7 +1494,7 @@ public class OpcodeStack {
                     Item topItem = pop();
 
                     // System.out.printf("%4d %10s %s%n",
-                    // dbc.getPC(),OPCODE_NAMES[seen], topItem);
+                    // dbc.getPC(),Const.getOpcodeName(seen), topItem);
                     if (seen == Const.IFLT || seen == Const.IFLE) {
                         registerTestedFoundToBeNonnegative = topItem.registerNumber;
                     }
