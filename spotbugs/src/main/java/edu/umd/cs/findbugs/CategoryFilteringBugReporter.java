@@ -46,7 +46,7 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
         if (categorySet.contains(category)) {
             getDelegate().reportBug(bugInstance);
         } else {
-            LOG.debug("CategoryFilteringBugReporter: filtered due to category " + category);
+            LOG.debug("CategoryFilteringBugReporter: filtered due to category {}", category);
         }
     }
 }
