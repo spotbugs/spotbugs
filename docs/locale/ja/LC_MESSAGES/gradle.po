@@ -37,9 +37,9 @@ msgstr "`Gradle プラグインの公式ページ <https://plugins.gradle.org/pl
 
 #: ../../gradle.rst:11
 msgid ""
-"Note that SpotBugs Gradle Plugin does not support Gradle v3, you need to "
-"use v4 or later."
-msgstr "SpotBugs PluginはGradleバージョン3をサポートしません。バージョン4以降を使用してください。"
+"Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to "
+"use v5 or later."
+msgstr "SpotBugs PluginはGradleバージョン4をサポートしません。バージョン5以降を使用してください。"
 
 #: ../../gradle.rst:14
 msgid "Tasks introduced by this Gradle Plugin"
