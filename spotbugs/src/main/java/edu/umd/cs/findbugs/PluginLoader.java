@@ -63,6 +63,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -107,7 +109,7 @@ public class PluginLoader {
     private static final String XPATH_PLUGIN_PROVIDER = "/FindbugsPlugin/@provider";
     private static final String XPATH_PLUGIN_PLUGINID = "/FindbugsPlugin/@pluginid";
 
-    private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
+    private static final Logger LOG = LoggerFactory.getLogger(PluginLoader.class);
     static boolean lazyInitialization = false;
     static LinkedList<PluginLoader> partiallyInitialized = new LinkedList<>();
 
@@ -143,10 +145,7 @@ public class PluginLoader {
 
     static HashSet<String> loadedPluginIds = new HashSet<>();
     static {
-        if (DEBUG) {
-            System.out.println("Debugging plugin loading. SpotBugs version "
-                    + Version.VERSION_STRING);
-        }
+        LOG.debug("Debugging plugin loading. SpotBugs version {}", Version.VERSION_STRING);
         loadInitialPlugins();
     }
 
@@ -424,9 +423,7 @@ public class PluginLoader {
         URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
         URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
-        if (DEBUG) {
-            System.out.println("FindBugs.class loaded from " + me);
-        }
+        LOG.debug("FindBugs.class loaded from {}", me);
         if(me == null) {
             throw new IllegalStateException("Failed to load " + findBugsClassFile);
         }
@@ -447,9 +444,7 @@ public class PluginLoader {
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Failed to parse url: " + me);
         }
-        if (DEBUG) {
-            System.out.println("Core class files loaded from " + from);
-        }
+        LOG.debug("Core class files loaded from {}", from);
         return from;
     }
 
@@ -535,9 +530,7 @@ public class PluginLoader {
         if (loadedFrom != null) {
             try {
                 URL url = resourceFromPlugin(loadedFrom, name);
-                if (DEBUG) {
-                    System.out.println("Trying to load " + name + " from " + url);
-                }
+                LOG.debug("Trying to load {} from {}", name, url);
                 if (IO.verifyURL(url)) {
                     return url;
                 }
@@ -550,10 +543,8 @@ public class PluginLoader {
         if (classLoaderForResources instanceof URLClassLoader) {
 
             URLClassLoader urlClassLoader = (URLClassLoader) classLoaderForResources;
-            if (DEBUG) {
-                System.out.println("Trying to load " + name + " using URLClassLoader.findResource");
-                System.out.println("  from urls: " + Arrays.asList(urlClassLoader.getURLs()));
-            }
+            LOG.debug("Trying to load {} using URLClassLoader.findResource", name);
+            LOG.debug("  from urls: {}", Arrays.asList(urlClassLoader.getURLs()));
             URL url = urlClassLoader.findResource(name);
             if (url == null) {
                 url = urlClassLoader.findResource("/" + name);
@@ -563,9 +554,7 @@ public class PluginLoader {
             }
         }
 
-        if (DEBUG) {
-            System.out.println("Trying to load " + name + " using ClassLoader.getResource");
-        }
+        LOG.debug("Trying to load {} using ClassLoader.getResource", name);
         URL url = classLoaderForResources.getResource(name);
         if (url == null) {
             url = classLoaderForResources.getResource("/" + name);
@@ -619,20 +608,13 @@ public class PluginLoader {
                     return resourceFromPlugin(findbugsJar, slashedResourceName);
                 }
             } catch (ZipException e) {
-                if (DEBUG) {
-                    System.out.printf("Failed to load resourceFromFindbugsJar: %s is not valid zip file.%n", findbugsJar);
-                }
+                LOG.warn("Failed to load resourceFromFindbugsJar: {} is not valid zip file.", findbugsJar, e);
             } catch (IOException e) {
-            if (DEBUG) {
-                    System.out.printf("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file (%s) loading.%n", findbugsJar);
-                }
+                LOG.warn("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file {} loading.",
+                        findbugsJar, e);
             }
         } catch (MalformedURLException | URISyntaxException e) {
-            if (DEBUG) {
-                System.out.printf("Failed to load resourceFromFindbugsJar: "
-                        + "Resource name is %s, exception message is %s.%n",
-                        slashedResourceName, e.getMessage());
-            }
+            LOG.warn("Failed to load resourceFromFindbugsJar: Resource name is {}", slashedResourceName, e);
         }
         return null;
     }
@@ -704,9 +686,7 @@ public class PluginLoader {
     }
 
     private Plugin init() throws PluginException {
-        if (DEBUG) {
-            System.out.println("Loading plugin from " + loadedFrom);
-        }
+        LOG.debug("Loading plugin from {}", loadedFrom);
         // Plugin descriptor (a.k.a, "findbugs.xml"). Defines
         // the bug detectors and bug patterns that the plugin provides.
         Document pluginDescriptor = getPluginDescriptor();
@@ -715,9 +695,7 @@ public class PluginLoader {
         Plugin constructedPlugin = constructMinimalPlugin(pluginDescriptor, messageCollectionList);
 
         // Success!
-        if (DEBUG) {
-            System.out.println("Loaded " + constructedPlugin.getPluginId() + " from " + loadedFrom);
-        }
+        LOG.debug("Loaded {} from {}", constructedPlugin.getPluginId(), loadedFrom);
         return constructedPlugin;
     }
 
@@ -911,9 +889,7 @@ public class PluginLoader {
 
         for (Document messageCollection : messageCollectionList) {
             List<Node> categoryNodeList = XMLUtil.selectNodes(messageCollection, "/MessageCollection/BugCategory");
-            if (DEBUG) {
-                System.out.println("found " + categoryNodeList.size() + " categories in " + plugin.getPluginId());
-            }
+            LOG.debug("found {} categories in {}", categoryNodeList.size(), plugin.getPluginId());
             for (Node categoryNode : categoryNodeList) {
                 String key = categoryNode.valueOf("@category");
                 if ("".equals(key)) {
@@ -926,30 +902,22 @@ public class PluginLoader {
                     String abbrev = getChildText(categoryNode, "Abbreviation");
                     if (bc.getAbbrev() == null) {
                         bc.setAbbrev(abbrev);
-                        if (DEBUG) {
-                            System.out.println("category " + key + " abbrev -> " + abbrev);
-                        }
-                    } else if (DEBUG) {
-                        System.out.println("rejected abbrev '" + abbrev + "' for category " + key + ": " + bc.getAbbrev());
+                        LOG.debug("category {} abbrev -> {}", key, abbrev);
+                    } else {
+                        LOG.debug("rejected abbrev '{}' for category {}: {}", abbrev, key, bc.getAbbrev());
                     }
                 } catch (PluginException pe) {
-                    if (DEBUG)
-                    {
-                        System.out.println("missing Abbreviation for category " + key + "/" + shortDesc);
-                        // do nothing else -- Abbreviation is required, but handle
-                        // its omission gracefully
-                    }
+                    System.out.println("missing Abbreviation for category " + key + "/" + shortDesc);
+                    // do nothing else -- Abbreviation is required, but handle
+                    // its omission gracefully
                 }
                 try {
                     String details = getChildText(categoryNode, "Details");
                     if (bc.getDetailText() == null) {
                         bc.setDetailText(details);
-                        if (DEBUG) {
-                            System.out.println("category " + key + " details -> " + details);
-                        }
-                    } else if (DEBUG) {
-                        System.out.println("rejected details [" + details + "] for category " + key + ": [" + bc.getDetailText()
-                                + ']');
+                        LOG.debug("category {} details -> {}", key, details);
+                    } else {
+                        LOG.debug("rejected details [{}] for category {}: [{}]", details, key, bc.getDetailText());
                     }
                 } catch (PluginException pe) {
                     // do nothing -- LongDescription is optional
@@ -1063,9 +1031,7 @@ public class PluginLoader {
                 // https://sourceforge.net/tracker/?func=detail&aid=2816102&group_id=96405&atid=614693
                 // plugin can not have bugrank.txt. In this case, an empty
                 // bugranker will be created
-                if (DEBUG) {
-                    System.out.println("No " + BugRanker.FILENAME + " for plugin " + plugin.getPluginId());
-                }
+                LOG.debug("No {} for plugin {}", BugRanker.FILENAME, plugin.getPluginId());
             }
             BugRanker ranker = new BugRanker(bugRankURL);
             plugin.setBugRanker(ranker);
@@ -1174,9 +1140,7 @@ public class PluginLoader {
         if (findbugsXML_URL == null) {
             throw new PluginException("Couldn't find \"" + name + "\" in plugin " + this);
         }
-        if (DEBUG) {
-            System.out.println("PluginLoader found " + name + " at: " + findbugsXML_URL);
-        }
+        LOG.debug("PluginLoader found {} at: {}", name, findbugsXML_URL);
 
         if (jarName != null && !findbugsXML_URL.toString().contains(jarName)
                 && !(corePlugin && findbugsXML_URL.toString().endsWith("etc/findbugs.xml"))) {
@@ -1491,9 +1455,7 @@ public class PluginLoader {
             assert true;
         }catch (PluginException e) {
             AnalysisContext.logError("Unable to load plugin from " + u, e);
-            if (DEBUG) {
-                e.printStackTrace();
-            }
+            LOG.debug("Unable to load plugin from {}", u, e);
         }
     }
 
