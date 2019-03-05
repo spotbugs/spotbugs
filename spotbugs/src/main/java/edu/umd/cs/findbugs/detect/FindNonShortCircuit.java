@@ -32,9 +32,9 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 public class FindNonShortCircuit extends OpcodeStackDetector implements StatelessDetector {
 
-    public static final String NS_NON_SHORT_CIRCUIT = "NS_NON_SHORT_CIRCUIT";
+    static final String NS_NON_SHORT_CIRCUIT = "NS_NON_SHORT_CIRCUIT";
 
-    public static final String NS_DANGEROUS_NON_SHORT_CIRCUIT = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
+    static final String NS_DANGEROUS_NON_SHORT_CIRCUIT = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
 
     int stage1 = 0;
 
@@ -193,10 +193,10 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
     }
 
     private void reportBug() {
-        bugAccumulator.accumulateBug(getBugInstance().addClassAndMethod(this), this);
+        bugAccumulator.accumulateBug(createBugInstance().addClassAndMethod(this), this);
     }
 
-    BugInstance getBugInstance() {
+    BugInstance createBugInstance() {
         int priority = LOW_PRIORITY;
         String pattern = NS_NON_SHORT_CIRCUIT;
 

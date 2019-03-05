@@ -20,23 +20,23 @@ public class FindNonShortCircuitTest {
                 AnalysisContext.setCurrentAnalysisContext(new AnalysisContext(new Project()));
             }
             FindNonShortCircuit check = new FindNonShortCircuit(bugReporter);
-            BugInstance bug = check.getBugInstance();
+            BugInstance bug = check.createBugInstance();
             assertEquals(FindNonShortCircuit.NS_NON_SHORT_CIRCUIT, bug.getType());
             assertEquals(Priorities.LOW_PRIORITY, bug.getPriority());
 
             check.sawDangerOld = true;
-            bug = check.getBugInstance();
+            bug = check.createBugInstance();
             assertEquals(FindNonShortCircuit.NS_NON_SHORT_CIRCUIT, bug.getType());
             assertEquals(Priorities.NORMAL_PRIORITY, bug.getPriority());
 
             check.sawNullTestVeryOld = true;
-            bug = check.getBugInstance();
+            bug = check.createBugInstance();
             assertEquals(FindNonShortCircuit.NS_NON_SHORT_CIRCUIT, bug.getType());
             assertEquals(Priorities.HIGH_PRIORITY, bug.getPriority());
 
             check.sawNullTestVeryOld = false;
             check.sawMethodCallOld = true;
-            bug = check.getBugInstance();
+            bug = check.createBugInstance();
             assertEquals(FindNonShortCircuit.NS_DANGEROUS_NON_SHORT_CIRCUIT, bug.getType());
             assertEquals(Priorities.HIGH_PRIORITY, bug.getPriority());
         } finally {
