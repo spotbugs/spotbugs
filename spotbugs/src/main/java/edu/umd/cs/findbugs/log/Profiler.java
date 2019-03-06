@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 import org.jspecify.annotations.NonNull;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -55,8 +56,8 @@ import org.jspecify.annotations.NonNull;
  */
 @NotThreadSafe
 public class Profiler implements IProfiler, XMLWriteable {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Profiler.class);
 
-    static final boolean REPORT = SystemProperties.getBoolean("profiler.report");
     static final boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     private final Stack<Clock> startTimes = new Stack<>();
@@ -75,9 +76,7 @@ public class Profiler implements IProfiler, XMLWriteable {
      * The default constructor for {@link Profiler}.
      */
     public Profiler() {
-        if (REPORT) {
-            System.err.println("Profiling activated");
-        }
+        LOG.trace("Profiling activated");
     }
 
     public static interface Filter {
@@ -383,9 +382,6 @@ public class Profiler implements IProfiler, XMLWriteable {
      */
     @Deprecated
     public void report() {
-        if (!REPORT) {
-            return;
-        }
         report(new TotalTimeComparator(this), new FilterByTime(10000000), System.err);
     }
 
@@ -418,17 +414,16 @@ public class Profiler implements IProfiler, XMLWriteable {
             }
             stream.flush();
         } catch (RuntimeException e) {
-            System.err.println(e);
+            LOG.error("Failed to pritn report", e);
         }
     }
 
     /**
-     * Clears the previously accumulated data. This method is public because it
-     * can be accessed explicitly from clients (like Eclipse).
+     * Clears the previously accumulated data. This method is public because it can be accessed explicitly from clients
+     * (like Eclipse).
      * <p>
-     * There is no need to clear profiler data after each run, because a new
-     * profiler instance is used for each analysis run (see
-     * {@link FindBugs2#execute()}).
+     * There is no need to clear profiler data after each run, because a new profiler instance is used for each analysis
+     * run (see {@link FindBugs2#execute()}).
      */
     public void clear() {
         profile.clear();
