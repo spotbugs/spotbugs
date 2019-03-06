@@ -32,16 +32,11 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -56,8 +51,6 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 @NotThreadSafe
 public class Profiler implements IProfiler, XMLWriteable {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Profiler.class);
-
-    static final boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     private final Stack<Clock> startTimes = new Stack<>();
 
@@ -91,7 +84,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
         @Override
         public boolean accepts(Profile p) {
-            long time = p.totalTime.get();
+            long time = p.getTotalTime();
             return time >= minNanoSeconds;
         }
     }
@@ -105,8 +98,8 @@ public class Profiler implements IProfiler, XMLWriteable {
 
         @Override
         public boolean accepts(Profile p) {
-            int totalCalls = p.totalCalls.get();
-            long time = p.totalTime.get();
+            int totalCalls = p.getTotalCalls();
+            long time = p.getTotalTime();
             return time / totalCalls >= minNanoSeconds;
         }
     }
@@ -120,84 +113,8 @@ public class Profiler implements IProfiler, XMLWriteable {
 
         @Override
         public boolean accepts(Profile p) {
-            int totalCalls = p.totalCalls.get();
+            int totalCalls = p.getTotalCalls();
             return totalCalls >= minCalls;
-        }
-    }
-
-    public static class Profile implements XMLWriteable {
-        /** time in nanoseconds */
-        final AtomicLong totalTime = new AtomicLong();
-
-        final AtomicInteger totalCalls = new AtomicInteger();
-
-        /** time in nanoseconds */
-        final AtomicLong maxTime = new AtomicLong();
-
-        final AtomicLong totalSquareMicroseconds = new AtomicLong();
-
-        private final String className;
-
-        Object maxContext;
-
-        /**
-         * @param className
-         *            non null full qualified class name
-         */
-        public Profile(String className) {
-            this.className = className;
-        }
-
-        public void handleCall(long nanoTime, Object context) {
-            totalCalls.incrementAndGet();
-            totalTime.addAndGet(nanoTime);
-            long oldMax = maxTime.get();
-            if (nanoTime > oldMax) {
-                maxTime.compareAndSet(oldMax, nanoTime);
-                if (MAX_CONTEXT) {
-                    maxContext = context;
-                }
-            }
-            long microseconds = TimeUnit.MICROSECONDS.convert(nanoTime, TimeUnit.NANOSECONDS);
-            totalSquareMicroseconds.addAndGet(microseconds * microseconds);
-        }
-
-        public long getTotalTime() {
-            return totalTime.get();
-        }
-
-        /**
-         * @param xmlOutput
-         * @throws IOException
-         */
-
-        @Override
-        public void writeXML(XMLOutput xmlOutput) throws IOException {
-            long time = totalTime.get();
-            int callCount = totalCalls.get();
-            long maxTimeMicros = TimeUnit.MICROSECONDS.convert(maxTime.get(), TimeUnit.NANOSECONDS);
-            long timeMillis = TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS);
-            long timeMicros = TimeUnit.MICROSECONDS.convert(time, TimeUnit.NANOSECONDS);
-
-            long averageTimeMicros = timeMicros / callCount;
-            long totalSquareMicros = totalSquareMicroseconds.get();
-            long averageSquareMicros = totalSquareMicros / callCount;
-            long timeVariance = averageSquareMicros - averageTimeMicros * averageTimeMicros;
-            long timeStandardDeviation = (long) Math.sqrt(timeVariance);
-            if (timeMillis > 10) {
-                xmlOutput.startTag("ClassProfile");
-
-                xmlOutput.addAttribute("name", className);
-                xmlOutput.addAttribute("totalMilliseconds", String.valueOf(timeMillis));
-                xmlOutput.addAttribute("invocations", String.valueOf(callCount));
-                xmlOutput.addAttribute("avgMicrosecondsPerInvocation", String.valueOf(averageTimeMicros));
-                xmlOutput.addAttribute("maxMicrosecondsPerInvocation", String.valueOf(maxTimeMicros));
-                if (maxContext != null) {
-                    xmlOutput.addAttribute("maxContext", String.valueOf(maxContext));
-                }
-                xmlOutput.addAttribute("standardDeviationMicrosecondsPerInvocation", String.valueOf(timeStandardDeviation));
-                xmlOutput.stopTag(true);
-            }
         }
     }
 
@@ -328,8 +245,8 @@ public class Profiler implements IProfiler, XMLWriteable {
 
         @Override
         public int compare(Class<?> c1, Class<?> c2) {
-            long v1 = profiler.getProfile(c1).totalTime.get();
-            long v2 = profiler.getProfile(c2).totalTime.get();
+            long v1 = profiler.getProfile(c1).getTotalTime();
+            long v2 = profiler.getProfile(c2).getTotalTime();
             if (v1 < v2) {
                 return 1;
             }
@@ -349,8 +266,8 @@ public class Profiler implements IProfiler, XMLWriteable {
         public int compare(Class<?> c1, Class<?> c2) {
             Profile profile1 = profiler.getProfile(c1);
             Profile profile2 = profiler.getProfile(c2);
-            long time1 = profile1.totalTime.get() / profile1.totalCalls.get();
-            long time2 = profile2.totalTime.get() / profile2.totalCalls.get();
+            long time1 = profile1.getTotalTime() / profile1.getTotalCalls();
+            long time2 = profile2.getTotalTime() / profile2.getTotalCalls();
             if (time1 < time2) {
                 return 1;
             }
@@ -370,8 +287,8 @@ public class Profiler implements IProfiler, XMLWriteable {
         public int compare(Class<?> c1, Class<?> c2) {
             Profile profile1 = profiler.getProfile(c1);
             Profile profile2 = profiler.getProfile(c2);
-            int calls1 = profile1.totalCalls.get();
-            int calls2 = profile2.totalCalls.get();
+            int calls1 = profile1.getTotalCalls();
+            int calls2 = profile2.getTotalCalls();
             if (calls1 < calls2) {
                 return 1;
             }
@@ -409,8 +326,8 @@ public class Profiler implements IProfiler, XMLWriteable {
 
             for (Class<?> c : treeSet) {
                 Profile p = getProfile(c);
-                long time = p.totalTime.get();
-                int callCount = p.totalCalls.get();
+                long time = p.getTotalTime();
+                int callCount = p.getTotalCalls();
                 if (filter.accepts(p)) {
                     stream.printf("%8d  %8d  %8d %s%n", Long.valueOf(TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)),
                             Integer.valueOf(callCount),
@@ -437,8 +354,7 @@ public class Profiler implements IProfiler, XMLWriteable {
         startTimes.clear();
     }
 
-    @Override
-    public Profile getProfile(Class<?> c) {
+    Profile getProfile(Class<?> c) {
         Profile result = profile.get(c);
         if (result == null) {
             AnalysisContext.logError("Unexpected null profile for " + c.getName(), new NullPointerException());
@@ -463,7 +379,7 @@ public class Profiler implements IProfiler, XMLWriteable {
         treeSet.addAll(profile.keySet());
         long totalTime = 0;
         for (Profile p : profile.values()) {
-            totalTime += p.totalTime.get();
+            totalTime += p.getTotalTime();
         }
 
         long accumulatedTime = 0;
@@ -474,7 +390,7 @@ public class Profiler implements IProfiler, XMLWriteable {
                 continue;
             }
             p.writeXML(xmlOutput);
-            accumulatedTime += p.totalTime.get();
+            accumulatedTime += p.getTotalTime();
             if (accumulatedTime > 3 * totalTime / 4) {
                 break;
             }
