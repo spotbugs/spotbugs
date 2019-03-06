@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 
+* Add management for source filter using full source path, if available ([#694](https://github.com/spotbugs/spotbugs/issues/694))
 * Start migrating STDOUT/STDERR usage to a logging framework
 * Improvements and bug-fixes for fancy-hist.xsl
 
