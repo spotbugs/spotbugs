@@ -123,7 +123,7 @@ public class SourceMatcherTest {
     }
 
     @Test
-    public void testRealPathMatchRegexp() throws Exception {
+    public void testRealPathMatchWithRegexpAndProject() throws Exception {
         // add this test class as the bug target
         bug.addClass("SourceMatcherTest", null);
         ClassAnnotation primaryClass = bug.getPrimaryClass();
@@ -140,25 +140,34 @@ public class SourceMatcherTest {
         SourceLineAnnotation.generateRelativeSource(new File(sourceDir), testProject);
 
         // regexp match source folder with project
-        SourceMatcher sm = sm = new SourceMatcher("~.*findbugs.*.java");
-        assertTrue(sm.match(bug));
-        sm = sm = new SourceMatcher("~.*notfound.*.java");
-        assertFalse(sm.match(bug));
+        SourceMatcher sm = new SourceMatcher("~.*findbugs.*.java");
+        assertTrue("The regex matches the source directory of the given java file", sm.match(bug));
+        sm = new SourceMatcher("~.*notfound.*.java");
+        assertFalse("The regex does not match the source directory of the given java file", sm.match(bug));
+    }
 
-        // clear test project from SourceLineAnnotation
-        SourceLineAnnotation.clearGenerateRelativeSource();
+    @Test
+    public void testRealPathMatchWithRegexpAndAnalysisContext() throws Exception {
+        // add this test class as the bug target
+        bug.addClass("SourceMatcherTest", null);
+        ClassAnnotation primaryClass = bug.getPrimaryClass();
+
+        // set source file
+        primaryClass.setSourceLines(SourceLineAnnotation.createUnknown("SourceMatcherTest", "SourceMatcherTest.java"));
+
+        // setup a testing project with source directory, as of right now the source directory should really exist!!
+        Project testProject = new Project();
+        String sourceDir = "src/test/java/edu/umd/cs/findbugs/filter";
+        testProject.addSourceDirs(Collections.singletonList(sourceDir));
 
         // setup test analysis context
         AnalysisContext.setCurrentAnalysisContext(new AnalysisContext(testProject));
 
         // regexp match source folder with analysis context
-        sm = new SourceMatcher("~.*findbugs.*.java");
-        assertTrue(sm.match(bug));
-        sm = sm = new SourceMatcher("~.*notfound.*.java");
-        assertFalse(sm.match(bug));
-
-        // clear test analysis context
-        AnalysisContext.removeCurrentAnalysisContext();
+        SourceMatcher sm = new SourceMatcher("~.*findbugs.*.java");
+        assertTrue("The regex matches the source directory of the given java file", sm.match(bug));
+        sm = new SourceMatcher("~.*notfound.*.java");
+        assertFalse("The regex does not match the source directory of the given java file", sm.match(bug));
     }
 
     private String writeXMLAndGetStringOutput(SourceMatcher matcher, boolean disabled) throws IOException {
@@ -170,6 +179,5 @@ public class SourceMatcherTest {
 
         return outputStream.toString(StandardCharsets.UTF_8.name()).trim();
     }
-
 
 }

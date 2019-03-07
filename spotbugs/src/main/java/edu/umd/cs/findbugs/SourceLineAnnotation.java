@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -979,14 +980,14 @@ public class SourceLineAnnotation implements BugAnnotation {
      */
     private @CheckReturnValue SourceFinder getSourceFinder() {
         Project project = myProject.get();
+        // First try to identify the correct SourceFinder by the set project
         if (project != null) {
             return project.getSourceFinder();
         }
-        AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-        if (currentAnalysisContext != null) {
-            return currentAnalysisContext.getSourceFinder();
-        }
-        return null;
+        // if this is not successful try to find the SourceFinder using the Analysis Context
+        return Optional.ofNullable(AnalysisContext.currentAnalysisContext())
+            .map(AnalysisContext::getSourceFinder)
+            .orElse(null);
     }
     
     public void setSynthetic(boolean synthetic) {
