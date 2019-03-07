@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -970,16 +971,23 @@ public class SourceLineAnnotation implements BugAnnotation {
         return getSourcePath();
     }
 
+    /**
+     * This method hands back a SourceFinder for this SourceLineAnnotation.
+     * It can be used to identify the full path of a source file rather than
+     * just the class name. The method either tries to find it in the currently
+     * set project or in the Analysis Context.
+     * @return the currently available SourceFinder, or null if it could not be found
+     */
     private @CheckReturnValue SourceFinder getSourceFinder() {
         Project project = myProject.get();
+        // First try to identify the correct SourceFinder by the set project
         if (project != null) {
             return project.getSourceFinder();
         }
-        AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
-        if (currentAnalysisContext != null) {
-            return currentAnalysisContext.getSourceFinder();
-        }
-        return null;
+        // if this is not successful try to find the SourceFinder using the Analysis Context
+        return Optional.ofNullable(AnalysisContext.currentAnalysisContext())
+            .map(AnalysisContext::getSourceFinder)
+            .orElse(null);
     }
 
     public void setSynthetic(boolean synthetic) {

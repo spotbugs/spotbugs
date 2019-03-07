@@ -45,6 +45,7 @@ public class SourceMatcher implements Matcher {
 
     @Override
     public boolean match(BugInstance bugInstance) {
+        // Match on the pure filename first
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
         if(primaryClassAnnotation == null){
             return false;
@@ -54,20 +55,18 @@ public class SourceMatcher implements Matcher {
             return false;
         }
         boolean result = fileName.match(bugFileName);
-        if (DEBUG) {
-            System.out.println("Matching " + bugFileName + " with " + fileName + ", result = " + result);
-        }
-        if (!result
-                && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
-          String bugSourcePath = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
-
-          if(bugSourcePath == null || bugSourcePath.isEmpty()){
+        
+        // if no result try to match with the full path as well
+        if (!result && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
+          bugFileName = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
+          if(bugFileName == null || bugFileName.isEmpty()){
             return false;
           }
-          result = fileName.match(bugSourcePath);
-          if (DEBUG) {
-              System.out.println("Matching Known source path " + bugSourcePath + " with " + fileName + ", result = " + result);
-          }
+          result = fileName.match(bugFileName);
+        }
+        
+        if (DEBUG) {
+            System.out.println("Matching " + bugFileName + " with " + fileName + ", result = " + result);
         }
         return result;
     }

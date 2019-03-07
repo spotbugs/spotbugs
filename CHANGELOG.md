@@ -114,8 +114,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * False positive: 'return value ignored' on Guavas Preconditions.checkNotNull() ([#578](https://github.com/spotbugs/spotbugs/issues/578))
 * spotbugs-ant Ant dependency in wrong scope ([#655](https://github.com/spotbugs/spotbugs/issues/655))
 
-* Add management for source filter using full source path, if available ([#694](https://github.com/spotbugs/spotbugs/issues/694))
-
 ## 3.1.3 - 2018-04-18
 
 ### Added
