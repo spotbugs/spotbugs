@@ -1,0 +1,42 @@
+@startuml
+left to right direction
+rectangle engine-scope {
+  (FindBugs2) -> (ClassFactory)
+}
+(Eclipse Plugin) -> FindBugs2
+(Maven Plugin) -> FindBugs2
+(Gradle Plugin) -> FindBugs2
+rectangle execution-scope {
+  FindBugs2 -> (Project)
+  FindBugs2 -> (BugReporter)
+  FindBugs2 -> (FindBugsProgress)
+  FindBugs2 -> (ExecutionPlan)
+  FindBugs2 -> (ClassScreener)
+  FindBugs2 -> (DetectorFactoryCollection)
+  Project -> (UserPreferences)
+  Project -> (SourceFinder)
+  (DetectorFactory) -> (IAnalysisEngine)
+  IAnalysisEngine -> BugReporter
+  (Plugin) -> DetectorFactory
+  DetectorFactoryCollection -> DetectorFactory
+  DetectorFactoryCollection -> Plugin
+  IAnalysisEngine -> (Repository)
+}
+rectangle thread-scope {
+  (AnalysisCache) -> (Profiler)
+  Profiler -> (Profile)
+  FindBugs2 -> (AnalysisContext)
+  AnalysisContext -> (Repository)
+  AnalysisContext -> Project
+  IAnalysisEngine -> AnalysisContext
+  AnalysisContext -> SourceFinder
+  FindBugs2 -> (AnalysisCache)
+  (Global) -> AnalysisCache
+  IAnalysisEngine -> AnalysisCache
+  AnalysisCache -> (BugReporter)
+  AnalysisCache -> (SourceInfoMap)
+  AnalysisCache -> (Database)
+  (DescriptorFactory)
+  (TypeQualifierAnnotation)
+}
+@enduml
