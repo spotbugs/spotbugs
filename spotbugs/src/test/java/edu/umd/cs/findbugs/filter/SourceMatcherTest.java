@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.tools.ant.filters.StringInputStream;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +53,13 @@ public class SourceMatcherTest {
     public void setUp() {
         bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         fileName = "bla.groovy";
+    }
+    
+    @After
+    public void tearDown() {
+        // Some other test cases fail in case the context is not correctly
+        // cleaned up here.
+        AnalysisContext.removeCurrentAnalysisContext();
     }
 
     @Test
