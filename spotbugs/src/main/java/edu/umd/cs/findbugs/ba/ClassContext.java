@@ -27,8 +27,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
@@ -94,7 +97,7 @@ public class ClassContext {
 
     private final AnalysisContext analysisContext;
 
-    private final Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisObjectMap;
+    private final ConcurrentMap<Class<?>, ConcurrentMap<MethodDescriptor, Object>> methodAnalysisObjectMap;
 
     /*
      * ----------------------------------------------------------------------
@@ -116,7 +119,7 @@ public class ClassContext {
     public ClassContext(JavaClass jclass, AnalysisContext analysisContext) {
         this.jclass = jclass;
         this.analysisContext = analysisContext;
-        this.methodAnalysisObjectMap = new HashMap<>();
+        this.methodAnalysisObjectMap = new ConcurrentHashMap<>();
 
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(jclass);
 
@@ -129,14 +132,14 @@ public class ClassContext {
     }
 
     public Map<MethodDescriptor, Object> getObjectMap(Class<?> analysisClass) {
-        Map<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
+        ConcurrentMap<MethodDescriptor, Object> objectMap = methodAnalysisObjectMap.get(analysisClass);
         if (objectMap == null) {
             if (analysisClass == ValueNumberDataflow.class) {
-                objectMap = new MapCache<>(300);
+                objectMap = new ConcurrentHashMap<>(300);
             } else if (Dataflow.class.isAssignableFrom(analysisClass)) {
-                objectMap = new MapCache<>(500);
+                objectMap = new ConcurrentHashMap<>(500);
             } else {
-                objectMap = new HashMap<>();
+                objectMap = new ConcurrentHashMap<>();
             }
             methodAnalysisObjectMap.put(analysisClass, objectMap);
         }
@@ -187,8 +190,9 @@ public class ClassContext {
      *            method descriptor identifying method to purge
      */
     public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
-        Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet = methodAnalysisObjectMap.entrySet();
-        for (Map.Entry<Class<?>, Map<MethodDescriptor, Object>> entry : entrySet) {
+        Set<Map.Entry<Class<?>, ConcurrentMap<MethodDescriptor, Object>>> entrySet = methodAnalysisObjectMap
+                .entrySet();
+        for (Map.Entry<Class<?>, ConcurrentMap<MethodDescriptor, Object>> entry : entrySet) {
             Class<?> cls = entry.getKey();
 
             // FIXME: hack
