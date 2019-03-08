@@ -38,6 +38,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
@@ -140,7 +141,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
     private final AnalysisOptions analysisOptions = new AnalysisOptions(true);
 
-    private final ExecutorService service;
+    private final ExecutorService service = Executors.newFixedThreadPool(4);
 
     /**
      * Constructor that uses {@link CurrentThreadExecutorService} to keep backward compatibility with SpotBugs 3.1.
@@ -358,6 +359,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
      * </p>
      */
     public void dispose() {
+        service.shutdown();
         if (executionPlan != null) {
             executionPlan.dispose();
         }
@@ -382,6 +384,13 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         IO.close(project);
         project = null;
         analysisOptions.userPreferences = null;
+
+        try {
+            service.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -1121,7 +1130,6 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                             throw new InterruptedException();
                         }
                     } finally {
-
                         progressReporter.finishClass();
                         profiler.endContext(currentClassName);
                         currentAnalysisContext.clearClassBeingAnalyzed();
@@ -1147,11 +1155,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 }
 
                 progressReporter.finishPerClassAnalysis();
-
                 passCount++;
             }
-
-
         } finally {
 
             bugReporter.finish();
@@ -1163,7 +1168,6 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         }
 
     }
-
     /**
      * Notify all IClassObservers that we are visiting given class.
      *
