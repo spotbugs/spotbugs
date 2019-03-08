@@ -25,8 +25,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.bcel.ConcurrentRepository;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -59,11 +59,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine<JavaClass> 
 
             // Make sure that the JavaClass object knows the repository
             // it was loaded from.
-            javaClass.setRepository(Repository.getRepository());
-
-            if (DEBUG_MISSING_CLASSES && !(javaClass.getRepository() instanceof AnalysisCacheToRepositoryAdapter)) {
-                throw new IllegalStateException("this should not happen");
-            }
+            javaClass.setRepository(new ConcurrentRepository(Repository.getRepository()));
 
             return javaClass;
         } catch (RuntimeException e) {
