@@ -50,19 +50,17 @@ public class SourceMatcher implements Matcher {
         if(primaryClassAnnotation == null){
             return false;
         }
-        String bugFileName = primaryClassAnnotation.getSourceFileName();
-        if(bugFileName == null || bugFileName.isEmpty()){
-            return false;
-        }
-        boolean result = fileName.match(bugFileName);
         
-        // if no result try to match with the full path as well
-        if (!result && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
-          bugFileName = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
-          if(bugFileName == null || bugFileName.isEmpty()){
-            return false;
-          }
-          result = fileName.match(bugFileName);
+        boolean result = false;
+        String bugFileName = primaryClassAnnotation.getSourceFileName();
+        if(bugFileName != null && !bugFileName.isEmpty()){
+            result = fileName.match(bugFileName);
+            
+            // if no result try to match with the full path as well
+            if (!result && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
+                bugFileName = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
+                result = fileName.match(bugFileName);
+            }
         }
         
         if (DEBUG) {
