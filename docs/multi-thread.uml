@@ -12,31 +12,29 @@ rectangle execution-scope {
   FindBugs2 -> (FindBugsProgress)
   FindBugs2 -> (ExecutionPlan)
   FindBugs2 -> (ClassScreener)
+  FindBugs2 -> (AnalysisCache)
+  FindBugs2 -> (AnalysisContext)
   FindBugs2 -> (DetectorFactoryCollection)
+  (Global) -> AnalysisCache
+  AnalysisContext -> (Repository)
+  AnalysisContext -> Project
   Project -> (UserPreferences)
   Project -> (SourceFinder)
+  AnalysisCache -> (BugReporter)
   (DetectorFactory) -> (IAnalysisEngine)
+  IAnalysisEngine -> AnalysisContext
+  IAnalysisEngine -> AnalysisCache
   IAnalysisEngine -> BugReporter
+  AnalysisCache -> (SourceInfoMap)
+  AnalysisContext -> SourceFinder
   (Plugin) -> DetectorFactory
   DetectorFactoryCollection -> DetectorFactory
   DetectorFactoryCollection -> Plugin
-  IAnalysisEngine -> (Repository)
+  AnalysisCache -> (Database)
+  IAnalysisEngine -> Repository
 }
 rectangle thread-scope {
-  (AnalysisCache) -> (Profiler)
+  AnalysisCache -> (Profiler)
   Profiler -> (Profile)
-  FindBugs2 -> (AnalysisContext)
-  AnalysisContext -> (Repository)
-  AnalysisContext -> Project
-  IAnalysisEngine -> AnalysisContext
-  AnalysisContext -> SourceFinder
-  FindBugs2 -> (AnalysisCache)
-  (Global) -> AnalysisCache
-  IAnalysisEngine -> AnalysisCache
-  AnalysisCache -> (BugReporter)
-  AnalysisCache -> (SourceInfoMap)
-  AnalysisCache -> (Database)
-  (DescriptorFactory)
-  (TypeQualifierAnnotation)
 }
 @enduml

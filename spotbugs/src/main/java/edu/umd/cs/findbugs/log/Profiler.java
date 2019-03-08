@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
+import net.jcip.annotations.NotThreadSafe;
 
 /**
  * <p>
@@ -126,6 +127,7 @@ public class Profiler implements IProfiler, XMLWriteable {
         }
     }
 
+    @NotThreadSafe
     public static class Profile implements XMLWriteable {
         /** time in nanoseconds */
         final AtomicLong totalTime = new AtomicLong();
@@ -202,6 +204,7 @@ public class Profiler implements IProfiler, XMLWriteable {
         }
     }
 
+    @NotThreadSafe
     static class Clock {
         final Class<?> clazz;
 
@@ -271,8 +274,9 @@ public class Profiler implements IProfiler, XMLWriteable {
         Stack<Clock> stack = startTimes;
         Clock ending = stack.pop();
         if (ending.clazz != c) {
-            throw new AssertionError("Asked to end timing for " + c + " but top of stack is " + ending.clazz
-                    + ", remaining stack is " + stack);
+            // throw new AssertionError("Asked to end timing for " + c + " but top of stack is " + ending.clazz
+            // + ", remaining stack is " + stack);
+            return;
         }
         ending.accumulateTime(currentNanoTime);
         if (!stack.isEmpty()) {
