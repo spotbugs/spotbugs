@@ -25,6 +25,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * JNLP files
 * `speed` attribute of `Detector` element in `findbugs.xml`
 
+### Fixed
+
+* Fixed bug priority calculation logic in FindNonShortCircuit#reportBug
+
 ## 3.1.12 - 2019-02-28
 
 ### Added

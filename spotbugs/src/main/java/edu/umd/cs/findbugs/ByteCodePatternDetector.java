@@ -20,11 +20,19 @@
 package edu.umd.cs.findbugs;
 
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -41,8 +49,7 @@ import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
  * @see ByteCodePattern
  */
 public abstract class ByteCodePatternDetector implements Detector {
-    private static final boolean DEBUG = SystemProperties.getBoolean("bcpd.debug");
-
+    private static final Logger LOG = LoggerFactory.getLogger(ByteCodePatternDetector.class);
     private static final String METHOD = SystemProperties.getProperty("bcpd.method");
 
     protected abstract BugReporter getBugReporter();
@@ -63,10 +70,8 @@ public abstract class ByteCodePatternDetector implements Detector {
                     continue;
                 }
 
-                if (DEBUG) {
-                    System.out.print("=====================================================================\n" + "Method "
-                            + jclass.getClassName() + "." + method.getName() + "\n"
-                            + "=====================================================================\n");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Method {}.{}", jclass.getClassName(), method.getName());
                 }
 
                 if (!prescreen(method, classContext)) {
@@ -85,13 +90,10 @@ public abstract class ByteCodePatternDetector implements Detector {
                 while (j.hasNext()) {
                     ByteCodePatternMatch match = j.next();
 
-                    if (DEBUG) {
-                        System.out.println("Pattern match:");
+                    if (LOG.isDebugEnabled()) {
                         Iterator<PatternElementMatch> pemIter = match.patternElementMatchIterator();
-                        while (pemIter.hasNext()) {
-                            PatternElementMatch pem = pemIter.next();
-                            System.out.println("\t" + pem.toString());
-                        }
+                        String pem = createStream(pemIter).map(Object::toString).collect(Collectors.joining("\t"));
+                        LOG.debug("Pattern match: {}", pem);
                     }
 
                     reportMatch(classContext, method, match);
@@ -102,6 +104,12 @@ public abstract class ByteCodePatternDetector implements Detector {
         } catch (CFGBuilderException e) {
             getBugReporter().logError(getDetectorName() + " caught exception", e);
         }
+    }
+
+    @NonNull
+    private static <T> Stream<T> createStream(@NonNull Iterator<T> iter) {
+        Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false);
     }
 
     private String getDetectorName() {
