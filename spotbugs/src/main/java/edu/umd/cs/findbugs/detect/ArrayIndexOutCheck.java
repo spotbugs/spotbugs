@@ -425,7 +425,9 @@ public class ArrayIndexOutCheck implements Detector {
             int opcode = ins.getOpcode();
 
             switch (opcode) {
+            // "<" in java
             case Const.IF_ICMPGE:
+                // array.length<10
                 if (arrayModel.isLeftInCompare()) {
                     // if branch
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
@@ -439,6 +441,7 @@ public class ArrayIndexOutCheck implements Detector {
                             return true;
                         }
                     }
+                    // 10<array.length
                 } else {
                     // else branch
                     if (accessPc > falseHandle.getPosition()) {
@@ -454,7 +457,9 @@ public class ArrayIndexOutCheck implements Detector {
                     }
                 }
                 break;
+            // "<=" in java
             case Const.IF_ICMPGT:
+                // array.length<=10
                 if (arrayModel.isLeftInCompare()) {
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                         if (accessIndex >= arrayModel.getCompareNum()) {
@@ -466,6 +471,7 @@ public class ArrayIndexOutCheck implements Detector {
                             return true;
                         }
                     }
+                    // 10<=array.length
                 } else {
                     if (accessPc > falseHandle.getPosition()) {
                         boolean hasReturn = checkHasReturn(falseHandle, accessPc);
@@ -479,7 +485,9 @@ public class ArrayIndexOutCheck implements Detector {
                     }
                 }
                 break;
+            // ">=" in java
             case Const.IF_ICMPLT:
+                // array.length>=10
                 if (arrayModel.isLeftInCompare()) {
                     if (accessPc > falseHandle.getPosition()) {
                         boolean hasReturn = checkHasReturn(falseHandle, accessPc);
@@ -492,6 +500,7 @@ public class ArrayIndexOutCheck implements Detector {
                             return true;
                         }
                     }
+                    // 10>=array.length
                 } else {
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                         if (accessIndex >= arrayModel.getCompareNum()) {
@@ -506,7 +515,9 @@ public class ArrayIndexOutCheck implements Detector {
                     }
                 }
                 break;
+            // ">" in java
             case Const.IF_ICMPLE:
+                // array.length > 10
                 if (arrayModel.isLeftInCompare()) {
                     if (accessPc > falseHandle.getPosition()) {
                         boolean hasReturn = checkHasReturn(falseHandle, accessPc);
@@ -519,6 +530,7 @@ public class ArrayIndexOutCheck implements Detector {
                             return true;
                         }
                     }
+                    // 10 > array.length
                 } else {
                     if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                         if (accessIndex >= arrayModel.getCompareNum() - 1) {
@@ -533,6 +545,7 @@ public class ArrayIndexOutCheck implements Detector {
                     }
                 }
                 break;
+            // "==" in java
             case Const.IF_ICMPNE:
                 if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                     if (accessIndex >= arrayModel.getCompareNum()) {
@@ -540,6 +553,7 @@ public class ArrayIndexOutCheck implements Detector {
                     }
                 }
                 break;
+            // "!=" in java
             case Const.IF_ICMPEQ:
                 if (accessPc > falseHandle.getPosition()) {
                     boolean hasReturn = checkHasReturn(falseHandle, accessPc);
