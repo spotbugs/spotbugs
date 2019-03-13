@@ -55,10 +55,10 @@ install:
 
 script:
   - jdk_switcher use oraclejdk8
-  - ./gradlew classes testClasses -S
+  - ./gradlew classes testClasses -S --scan
   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk11" ]]; then export JAVA_HOME=$HOME/oraclejdk11; fi
   - ./gradlew -v --no-daemon
-  - ./gradlew build smoketest -x signArchives -S --no-daemon
+  - ./gradlew build smoketest -x signArchives -S --no-daemon --scan
   - jdk_switcher use oraclejdk8
   - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
 

@@ -1,5 +1,11 @@
 plugins {
+  id 'com.gradle.build-scan' version '2.2.1'
   id 'org.sonarqube' version '2.6.2'
+}
+
+buildScan {
+  termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+  apply from: 'gradle/build-scans.gradle'
 }
 
 version = '4.0.0-SNAPSHOT'
