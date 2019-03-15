@@ -37,7 +37,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SAXBugCollectionHandler;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -50,7 +49,6 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 
 public class Filter extends OrMatcher {
-    private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
     private static final int PRIME = 31;
 
     private final IdentityHashMap<Matcher, Boolean> disabled = new IdentityHashMap<>();

@@ -30,6 +30,9 @@ import java.util.List;
 
 import javax.annotation.CheckForNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -90,7 +93,7 @@ public class BugRanker {
     /** Minimum value for user visible ranks (most relevant) */
     public static final int VISIBLE_RANK_MIN = 1;
 
-    static final boolean PLUGIN_DEBUG = Boolean.getBoolean("bugranker.plugin.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(BugRanker.class);
 
     static class Scorer {
         private final HashMap<String, Integer> adjustment = new HashMap<>();
@@ -304,16 +307,12 @@ public class BugRanker {
             for (DetectorFactory df : plugin.getDetectorFactories()) {
 
                 if (df.getReportedBugPatterns().contains(pattern)) {
-                    if (PLUGIN_DEBUG) {
-                        System.out.println("Bug rank match " + plugin + " " + df + " for " + pattern);
-                    }
+                    LOG.debug("Bug rank match {} {} for {}", plugin, df, pattern);
                     rankers.add(plugin.getBugRanker());
                     continue pluginLoop;
                 }
             }
-            if (PLUGIN_DEBUG) {
-                System.out.println("plugin " + plugin + " doesn't match " + pattern);
-            }
+            LOG.debug("plugin {} doesn't match {}", plugin, pattern);
 
         }
         rankers.add(getCoreRanker());
