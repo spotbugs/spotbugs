@@ -21,15 +21,17 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class ClassMatcher implements Matcher {
-    private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(ClassMatcher.class);
 
     private final NameMatch className;
 
@@ -62,9 +64,7 @@ public class ClassMatcher implements Matcher {
         }
         String bugClassName = classAnnotation.getClassName();
         boolean result = className.match(bugClassName);
-        if (DEBUG) {
-            System.out.println("Matching " + bugClassName + " with " + className + ", result = " + result);
-        }
+        LOG.debug("Matching {} with {}, result = {}", bugClassName, className, result);
         return result;
     }
 

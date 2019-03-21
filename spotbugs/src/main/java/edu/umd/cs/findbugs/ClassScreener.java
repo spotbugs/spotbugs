@@ -23,6 +23,9 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Class to pre-screen class files, so that only a subset are analyzed. This
  * supports the -onlyAnalyze command line option.
@@ -38,7 +41,7 @@ import java.util.regex.Pattern;
  * @author David Hovemeyer
  */
 public class ClassScreener implements IClassScreener {
-    private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.classscreener.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(ClassScreener.class);
 
     /**
      * regular expression fragment to match a directory separator. note: could
@@ -102,9 +105,7 @@ public class ClassScreener implements IClassScreener {
      */
     public void addAllowedClass(String className) {
         String classRegex = START + dotsToRegex(className) + ".class$";
-        if (DEBUG) {
-            System.out.println("Class regex: " + classRegex);
-        }
+        LOG.debug("Class regex: {}", classRegex);
         patternList.add(Pattern.compile(classRegex).matcher(""));
     }
 
@@ -121,9 +122,7 @@ public class ClassScreener implements IClassScreener {
         }
 
         String packageRegex = START + dotsToRegex(packageName) + SEP + JAVA_IDENTIFIER_PART + "+.class$";
-        if (DEBUG) {
-            System.out.println("Package regex: " + packageRegex);
-        }
+        LOG.debug("Package regex: {}", packageRegex);
         patternList.add(Pattern.compile(packageRegex).matcher(""));
     }
 
@@ -139,13 +138,9 @@ public class ClassScreener implements IClassScreener {
         if (prefix.endsWith(".")) {
             prefix = prefix.substring(0, prefix.length() - 1);
         }
-        if (DEBUG) {
-            System.out.println("Allowed prefix: " + prefix);
-        }
+        LOG.debug("Allowed prefix: {}", prefix);
         String packageRegex = START + dotsToRegex(prefix) + SEP;
-        if (DEBUG) {
-            System.out.println("Prefix regex: " + packageRegex);
-        }
+        LOG.debug("Prefix regex: {}", packageRegex);
         patternList.add(Pattern.compile(packageRegex).matcher(""));
     }
 
@@ -162,25 +157,16 @@ public class ClassScreener implements IClassScreener {
             return true;
         }
 
-        if (DEBUG) {
-            System.out.println("Matching: " + fileName);
-        }
+        LOG.debug("Matching: {}", fileName);
 
         // Scan through list of regexes
         for (Matcher matcher : patternList) {
-            if (DEBUG) {
-                System.out.print("\tTrying [" + matcher.pattern());
-            }
             matcher.reset(fileName);
             if (matcher.find()) {
-                if (DEBUG) {
-                    System.out.println("]: yes!");
-                }
+                LOG.debug("\\tTrying [{}]: yes!", matcher.pattern());
                 return true;
             }
-            if (DEBUG) {
-                System.out.println("]: no");
-            }
+            LOG.debug("\\tTrying [{}]: no", matcher.pattern());
         }
         return false;
     }

@@ -54,6 +54,8 @@ import java.util.jar.Manifest;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -85,7 +87,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public class Project implements XMLWriteable, AutoCloseable {
-    private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(Project.class);
 
     private final List<File> currentWorkingDirectoryList;
 
@@ -455,6 +457,7 @@ public class Project implements XMLWriteable, AutoCloseable {
      * Worklist for finding implicit classpath entries.
      */
     private static class WorkList {
+        private static final Logger LOG = LoggerFactory.getLogger(WorkList.class);
         private final LinkedList<WorkListItem> itemList;
 
         private final HashSet<String> addedSet;
@@ -495,13 +498,9 @@ public class Project implements XMLWriteable, AutoCloseable {
          *         examined already)
          */
         public boolean add(WorkListItem item) {
-            if (DEBUG) {
-                System.out.println("Adding " + item.getURL().toString());
-            }
+            LOG.debug("Adding {}", item.getURL());
             if (!addedSet.add(item.getURL().toString())) {
-                if (DEBUG) {
-                    System.out.println("\t==> Already processed");
-                }
+                LOG.debug("\t==> Already processed");
                 return false;
             }
 
@@ -573,10 +572,7 @@ public class Project implements XMLWriteable, AutoCloseable {
      *            list of implicit classpath entries found
      */
     private void processComponentJar(URL jarFileURL, WorkList workList, List<String> implicitClasspath) {
-
-        if (DEBUG) {
-            System.out.println("Processing " + jarFileURL.toString());
-        }
+        LOG.debug("Processing {}", jarFileURL);
 
         if (!jarFileURL.toString().endsWith(".zip") && !jarFileURL.toString().endsWith(".jar")) {
             return;
@@ -599,9 +595,7 @@ public class Project implements XMLWriteable, AutoCloseable {
                         URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
                         if (workList.add(new WorkListItem(referencedURL))) {
                             implicitClasspath.add(referencedURL.toString());
-                            if (DEBUG) {
-                                System.out.println("Implicit jar: " + referencedURL.toString());
-                            }
+                            LOG.debug("Implicit jar: {}", referencedURL);
                         }
                     }
                 }

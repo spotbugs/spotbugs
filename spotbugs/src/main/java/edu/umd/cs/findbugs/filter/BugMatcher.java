@@ -21,8 +21,10 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
@@ -31,7 +33,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author rafal@caltha.pl
  */
 public class BugMatcher implements Matcher {
-    private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(BugMatcher.class);
 
     private final StringSetMatch codes;
 
@@ -60,11 +62,8 @@ public class BugMatcher implements Matcher {
         boolean result1 = codes.match(bugInstance.getAbbrev());
         boolean result2 = patterns.match(bugInstance.getType());
         boolean result3 = categories.match(bugInstance.getBugPattern().getCategory());
-        if (DEBUG) {
-            System.out.println("Matching " + bugInstance.getAbbrev() + "/" + bugInstance.getType() + "/"
-                    + bugInstance.getBugPattern().getCategory() + " with " + this + ", result = " + result1 + "/" + result2 + "/"
-                    + result3);
-        }
+        LOG.debug("Matching {}/{}/{} with {}, result = {}/{}/{}", bugInstance.getAbbrev(), bugInstance.getType(),
+                bugInstance.getBugPattern().getCategory(), this, result1, result2, result3);
 
         return result1 || result2 || result3;
     }
