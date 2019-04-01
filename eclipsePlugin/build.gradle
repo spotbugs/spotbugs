@@ -17,6 +17,9 @@ if (version.endsWith('-SNAPSHOT')) {
 } else if (version.contains('-RC')) {
   // eclipse doesn't like the `-RC`, so we timestamp uniquely
   version = version.substring(0, version.lastIndexOf('-RC')) + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
+} else if (version.contains('-beta')) {
+  // eclipse doesn't like the `-beta`, so we timestamp uniquely
+  version = version.substring(0, version.lastIndexOf('-beta')) + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
 } else {
   // A release build version like 3.0.0 without qualifier will always be smaller
   // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
