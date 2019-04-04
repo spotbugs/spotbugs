@@ -46,7 +46,6 @@ import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.StoreInstruction;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -70,31 +69,31 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  */
 public class ArrayIndexOutCheck implements Detector {
 
-    private final BugAccumulator bugAccumulator;
-
     private final BugReporter bugReporter;
 
     private final Map<String, Integer> globalIntFieldMap = new HashMap<>();
 
     private final int warningLevel = HIGH_PRIORITY;
 
+    private ClassContext classCtx;
+
     /**
      * @param bugReporter
      */
     public ArrayIndexOutCheck(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
+        this.classCtx = classContext;
         Method[] methods = classContext.getJavaClass().getMethods();
         for (Method method : methods) {
 
             // Init method,skip
             if ("<init>".equals(method.getName()) || "<clinit>".equals(method.getName())) {
                 try {
-                    getGlobalIntFieldMap(classContext, method);
+                    getGlobalIntFieldMap(method);
                     continue;
                 } catch (CFGBuilderException e) {
                     // TODO Auto-generated catch block
@@ -103,28 +102,24 @@ public class ArrayIndexOutCheck implements Detector {
             }
 
             try {
-                analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+                analyzeMethod(method);
+            } catch (Exception e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
         }
-
-        bugAccumulator.reportAccumulatedBugs();
     }
 
     /**
      * Get global int field into map
      *
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param initMethod
      *            init method
      * @throws CFGBuilderException
      */
-    private void getGlobalIntFieldMap(ClassContext classContext, Method initMethod) throws CFGBuilderException {
-        CFG cfg = classContext.getCFG(initMethod);
+    private void getGlobalIntFieldMap(Method initMethod) throws CFGBuilderException {
+        CFG cfg = classCtx.getCFG(initMethod);
 
         if (null == cfg) {
             return;
@@ -148,7 +143,7 @@ public class ArrayIndexOutCheck implements Detector {
                 InstructionHandle nextHandle = handle.getNext();
                 Instruction nextIns = nextHandle.getInstruction();
                 if (nextIns instanceof PUTFIELD) {
-                    String fieldName = ((PUTFIELD) nextIns).getFieldName(classContext.getConstantPoolGen());
+                    String fieldName = ((PUTFIELD) nextIns).getFieldName(classCtx.getConstantPoolGen());
                     Integer intNum = new Integer(((ICONST) ins).getValue().intValue());
 
                     globalIntFieldMap.put(fieldName, intNum);
@@ -162,23 +157,22 @@ public class ArrayIndexOutCheck implements Detector {
     /**
      * Analyze method
      *
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    private void analyzeMethod(ClassContext classContext, Method method)
+    private void analyzeMethod(Method method)
             throws CFGBuilderException, DataflowAnalysisException {
-        CFG cfg = classContext.getCFG(method);
+        CFG cfg = classCtx.getCFG(method);
 
         if (null == cfg) {
             return;
         }
 
-        ValueNumberDataflow dataflow = classContext.getValueNumberDataflow(method);
-        Map<String, ComparedArrayModel> compareMap = new HashMap<>();
+        ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
 
         Collection<Location> locations = cfg.orderedLocations();
         List<Location> locationList = new ArrayList<>();
@@ -194,37 +188,278 @@ public class ArrayIndexOutCheck implements Detector {
             }
 
             Instruction ins = handle.getInstruction();
+            // when encounter array.length or List.size()
+            if (ins instanceof ARRAYLENGTH || ins instanceof INVOKEINTERFACE) {
+                // get array length model, including arrayName, local lengthName, length's valueNumber
+                ArrayLengthModel arrarLenModel = getArrayLengthExp(location, method);
 
-            if (ins instanceof IfInstruction) {
-                /*
-                 * Find the if_icmpge instruction, and check it whether compare an array's length with an constant. Then
-                 * store the array and constant into map
-                 */
-                getCompareArrayAndNum(locationList, i, dataflow, method, compareMap, classContext);
+                if (null != arrarLenModel) {
+                    // get compare model, including arrayName, comapared number, compare expression, and so on
+                    CheckCompareArrayAndNum(locationList, i, dataflow, arrarLenModel,
+                            method);
+
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Get array length model, For example, instruction is "int len = array.length", ArrayLengthModel.arrayName = array,
+     * ArrayLengthModel.localLenName = len, ArrayLengthModel.valueNum is the top value number in stack
+     *
+     * @param location
+     *            location
+     * @param method
+     *            method
+     * @return ArrayLengthModel
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    private ArrayLengthModel getArrayLengthExp(Location location, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
+        ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
+        InstructionHandle handle = location.getHandle();
+        Instruction ins = handle.getInstruction();
+        String lenName = null;
+        ArrayLengthModel arrayLengthModel = new ArrayLengthModel();
+
+        if (ins instanceof INVOKEINTERFACE) {
+            String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+            String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+
+            if (!"java/util/List".equals(className) || !"size".equals(methodName)) {
+                return null;
+            }
+        }
+
+        String arrayName = getObjectName(true, dataflow, location, method);
+
+        if (null == arrayName) {
+            return null;
+        }
+
+        // get the stack after ARRAYLENGTH instruction
+        ValueNumberFrame arrayLengthFrame = dataflow.getFactAfterLocation(location);
+        ValueNumber nowValueNumber = arrayLengthFrame.getTopValue();
+        arrayLengthModel.setArrayName(arrayName);
+        arrayLengthModel.setValueNumber(nowValueNumber);
+
+        // when array.length is stored in a local variable, for example: int len = array.length
+        InstructionHandle nextHandle = handle.getNext();
+        if (null == nextHandle) {
+            return arrayLengthModel;
+        }
+        Instruction nextIns = nextHandle.getInstruction();
+
+        if (nextIns instanceof StoreInstruction) {
+            int locIndex = ((StoreInstruction) nextIns).getIndex();
+            LocalVariable len = method.getLocalVariableTable().getLocalVariable(locIndex,
+                    nextHandle.getNext().getPosition());
+            if (null != len) {
+                lenName = len.getName();
+                arrayLengthModel.setLocalLenName(lenName);
+            }
+        }
+
+        return arrayLengthModel;
+    }
+
+    /**
+     * Find the if_icmpge instruction, and check it whether compare an array's length with an constant and access out of
+     * bounds.
+     *
+     * @param locationList
+     *            location list
+     * @param startIndex
+     *            compared instruction index in location list
+     * @param dataflow
+     *            data flow of method
+     * @param arrayLengthModel
+     *            length model
+     * @param method
+     *            method
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    private void CheckCompareArrayAndNum(List<Location> locationList, int startIndex,
+            ValueNumberDataflow dataflow, ArrayLengthModel arrayLengthModel, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
+        ComparedArrayModel arrayModel = null;
+
+        for (int i = startIndex; i < locationList.size(); i++) {
+            Location location = locationList.get(i);
+            InstructionHandle handle = location.getHandle();
+
+            if (null == handle) {
                 continue;
             }
 
-            if (ins instanceof ArrayInstruction || ins instanceof INVOKEINTERFACE) {
-                // if there is no compare instruction, continue
-                if (compareMap.isEmpty()) {
-                    continue;
+            Instruction ins = handle.getInstruction();
+            // find the compare instruction
+            if (!(ins instanceof IfInstruction)) {
+                continue;
+            }
+
+            int opCode = ins.getOpcode();
+            switch (opCode) {
+            // <
+            case Const.IF_ICMPGE:
+                // <=
+            case Const.IF_ICMPGT:
+                // >
+            case Const.IF_ICMPLE:
+                // >=
+            case Const.IF_ICMPLT:
+                // !=
+            case Const.IF_ICMPEQ:
+                // ==
+            case Const.IF_ICMPNE:
+                arrayModel = getCompareModelFromExp(location, arrayLengthModel, method);
+                break;
+            default:
+                break;
+            }
+
+            if (null == arrayModel) {
+                continue;
+            }
+            arrayModel.setCompareHandle(handle);
+            Integer compareNum = getCompareNum(dataflow, locationList, i, arrayModel.getComapreNumValueNum());
+
+            if (null != compareNum) {
+                arrayModel.setCompareNum(compareNum.intValue());
+                arrayModel.setCompareHandle(handle);
+                checkAccessValid(i, arrayModel, locationList, method);
+            }
+
+        }
+
+    }
+
+    /**
+     * Get compared information from compare expression, For example, compare expression is "if(array.length > 10)",
+     * then ComparedArrayModel.name = array, ComparedArrayModel.compareNum=10, ComparedArrayModel.isLeftInCompare =
+     * true, ComparedArrayModel.compareHandle = >,
+     *
+     * @param compareLocation
+     *            compare location
+     * @param arrayLengthModel
+     *            array length model
+     * @param method
+     *            method
+     * @return ComparedArrayModel
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    private ComparedArrayModel getCompareModelFromExp(Location compareLocation, ArrayLengthModel arrayLengthModel,
+            Method method) throws DataflowAnalysisException, CFGBuilderException {
+
+        ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
+        ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(compareLocation);
+        // top value
+        ValueNumber comparedRightValueNum = vnaFrame.getTopValue();
+        // bottom value
+        ValueNumber comparedLeftValueNum = vnaFrame.getValue(vnaFrame.getNumLocals());
+
+        ComparedArrayModel compareModel = new ComparedArrayModel();
+        String lenName = arrayLengthModel.getLocalLenName();
+        ValueNumber arrayLenValueNum = arrayLengthModel.getValueNumber();
+
+        compareModel.setName(arrayLengthModel.getArrayName());
+        if (vnaFrame.getStackDepth() <= 0) {
+            return null;
+        }
+
+        /*
+         * if the array.length is in the top of compared stack, it means array.length is in the right of the compare
+         * expression /* For example: if(5 > array.length)
+         */
+        if (arrayLenValueNum.equals(comparedRightValueNum)) {
+
+            compareModel.setComapreNumValueNum(comparedLeftValueNum);
+            compareModel.setLeftInCompare(false);
+            // For example: if(array.length > 5)
+        } else if (arrayLenValueNum.equals(comparedLeftValueNum)) {
+            compareModel.setComapreNumValueNum(comparedRightValueNum);
+            compareModel.setLeftInCompare(true);
+        } else {
+            if (null == lenName) {
+                return null;
+            }
+            /*
+             * when array.length stored in local variable-len, and len is changed in the process, /* the value number in
+             * stack will be changed, so check the name is same with the local variable
+             */
+            LocalVariableAnnotation topLocal = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
+                    compareLocation, comparedRightValueNum, vnaFrame);
+            if (null != topLocal && lenName.equals(topLocal.getName())) {
+                compareModel.setComapreNumValueNum(comparedLeftValueNum);
+                compareModel.setLeftInCompare(false);
+            } else {
+                LocalVariableAnnotation bottomLenName = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
+                        compareLocation, comparedLeftValueNum, vnaFrame);
+
+                if (null != bottomLenName && lenName.equals(bottomLenName.getName())) {
+                    compareModel.setComapreNumValueNum(comparedRightValueNum);
+                    compareModel.setLeftInCompare(true);
+                } else {
+                    return null;
                 }
+            }
+        }
+
+        return compareModel;
+    }
+
+    /**
+     * Check accessing the array or list is out of bounds
+     *
+     * @param startIndex
+     *            stary index
+     * @param compareModel
+     *            compare model
+     * @param locationList
+     *            location list
+     * @param method
+     *            method
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    private void checkAccessValid(int startIndex, ComparedArrayModel compareModel, List<Location> locationList,
+            Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
+        ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
+
+        for (int i = startIndex; i < locationList.size(); i++) {
+            Location location = locationList.get(i);
+            InstructionHandle handle = location.getHandle();
+
+            if (null == handle) {
+                continue;
+            }
+
+            Instruction ins = handle.getInstruction();
+
+            if (ins instanceof ArrayInstruction || ins instanceof INVOKEINTERFACE) {
 
                 Integer accessIndex = null;
 
                 if (ins instanceof INVOKEINTERFACE) {
                     String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
-                            classContext.getConstantPoolGen());
+                            classCtx.getConstantPoolGen());
                     String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
-                            classContext.getConstantPoolGen());
+                            classCtx.getConstantPoolGen());
 
                     if ("java/util/List".equals(className) && "get".equals(methodName)) {
                         // Get the index of accessing list
-                        accessIndex = processArrayLoad(locationList, i, dataflow, classContext);
+                        accessIndex = getAccessIndexArrayLoad(locationList, i, dataflow);
                     }
                 } else {
                     // Get the index of accessing array
-                    accessIndex = getAccessIndex(locationList, i, dataflow, classContext);
+                    accessIndex = getAccessIndex(locationList, i, dataflow);
                 }
 
                 if (null == accessIndex) {
@@ -232,175 +467,19 @@ public class ArrayIndexOutCheck implements Detector {
                 }
 
                 // get the accessed array's name
-                String arrayName = getVariableName(false, dataflow, location, method);
-                if (null != arrayName) {
-                    ComparedArrayModel arrayModel = compareMap.get(arrayName);
+                String arrayName = getObjectName(false, dataflow, location, method);
+                if (null != arrayName && arrayName.equals(compareModel.getName())) {
 
                     /*
                      * if the accessed array's length has been compared, and the accessing index is lager or equal than
                      * compared number
                      */
-                    if (null != arrayModel) {
-                        boolean res = checkArrayOutBounds(arrayModel, handle.getPosition(), accessIndex.intValue());
-                        if (res) {
-                            fillWarningReport(location, classContext, method);
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Find the if_icmpge instruction, and check it whether compare an array's length with an constant. Then store the
-     * array and constant into map
-     *
-     * @param locationList
-     *            location list
-     * @param index
-     *            compared instruction index in location list
-     * @param dataflow
-     *            data flow of method
-     * @param method
-     *            method
-     * @param compareMap
-     *            compared information map
-     * @param classContext
-     *            class context
-     * @throws DataflowAnalysisException
-     */
-    private void getCompareArrayAndNum(List<Location> locationList, int index, ValueNumberDataflow dataflow,
-            Method method, Map<String, ComparedArrayModel> compareMap, ClassContext classContext)
-            throws DataflowAnalysisException {
-
-        ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(locationList.get(index));
-
-        if (vnaFrame.getStackDepth() <= 0) {
-            return;
-        }
-
-        String arrayName = null;
-        boolean isLengthLeft = false;
-
-        // if ifInstruction is not in IF_ICMPLT, IF_ICMPGE,IF_ICMPGT,IF_ICMPLE, return
-        int opCode = locationList.get(index).getHandle().getInstruction().getOpcode();
-        switch (opCode) {
-        case Const.IF_ICMPEQ:
-        case Const.IF_ICMPNE:
-        case Const.IF_ICMPLT:
-        case Const.IF_ICMPGE:
-        case Const.IF_ICMPGT:
-        case Const.IF_ICMPLE:
-            break;
-        default:
-            return;
-        }
-
-        // top value
-        ValueNumber topValueNumber = vnaFrame.getTopValue();
-
-        // bottom value
-        ValueNumber bottomValueNumber = vnaFrame.getValue(vnaFrame.getNumLocals());
-
-        String lenName = null;
-        ValueNumber otherValueNumber = null;
-
-        for (int i = 1; i <= index; i++) {
-            Location preLoc = locationList.get(index - i);
-            InstructionHandle preHandle = preLoc.getHandle();
-            Instruction preIns = preHandle.getInstruction();
-
-            if (preIns instanceof ARRAYLENGTH || preIns instanceof INVOKEINTERFACE) {
-
-                if (preIns instanceof INVOKEINTERFACE) {
-                    String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) preIns).getIndex(),
-                            classContext.getConstantPoolGen());
-                    String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) preIns).getIndex(),
-                            classContext.getConstantPoolGen());
-
-                    if (!"java/util/List".equals(className) || !"size".equals(methodName)) {
-                        continue;
-                    }
-                }
-
-                arrayName = getVariableName(true, dataflow, preLoc, method);
-
-                if (null == arrayName) {
-                    return;
-                }
-
-                Location nextLoc = locationList.get(index - i + 1);
-                Instruction nextIns = nextLoc.getHandle().getInstruction();
-
-                // when array.length is stored in a local variable, for example: int len = array.length
-                if (nextIns instanceof StoreInstruction) {
-                    int locIndex = ((StoreInstruction) nextIns).getIndex();
-                    LocalVariable len = method.getLocalVariableTable().getLocalVariable(locIndex,
-                            nextLoc.getHandle().getNext().getPosition());
-                    if (null != len) {
-                        lenName = len.getName();
-                    }
-                }
-
-                // get the stack after ARRAYLENGTH instruction
-                ValueNumberFrame arrayLengthFrame = dataflow.getFactAfterLocation(preLoc);
-                ValueNumber nowValueNumber = arrayLengthFrame.getTopValue();
-
-                // if the array.length is in the top of compared stack, it means array.length is in the right of the
-                // compare expression
-                // For example: if(5 > array.length)
-                if (nowValueNumber.equals(topValueNumber)) {
-
-                    otherValueNumber = bottomValueNumber;
-                    isLengthLeft = false;
-                    break;
-
-                    // For example: if(array.length > 5)
-                } else if (nowValueNumber.equals(bottomValueNumber)) {
-
-                    otherValueNumber = topValueNumber;
-                    isLengthLeft = true;
-                    break;
-                } else {
-                    if (null == lenName) {
-                        continue;
-                    }
-                    // when array.length stored in local variable-len, and len is changed in the process, the value
-                    // number in stack will be changed, so check the name is same with the local variable
-                    LocalVariableAnnotation topLocal = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method,
-                            locationList.get(index), topValueNumber, vnaFrame);
-                    if (null != topLocal && lenName.equals(topLocal.getName())) {
-                        otherValueNumber = bottomValueNumber;
-                        isLengthLeft = false;
-                        break;
-                    }
-
-                    LocalVariableAnnotation bottomLenName = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(
-                            method, locationList.get(index), bottomValueNumber, vnaFrame);
-
-                    if (null != bottomLenName && lenName.equals(bottomLenName.getName())) {
-                        otherValueNumber = topValueNumber;
-                        isLengthLeft = true;
-                        break;
-                    }
+                    checkArrayOutBounds(location, compareModel, handle.getPosition(), accessIndex.intValue(), method);
                 }
             }
 
         }
-
-        Integer compareNum = getCompareNum(dataflow, locationList, index, otherValueNumber, classContext);
-
-        if (null != compareNum) {
-            ComparedArrayModel arrayModel = new ComparedArrayModel();
-            arrayModel.setCompareNum(compareNum.intValue());
-            arrayModel.setName(arrayName);
-            arrayModel.setLeftInCompare(isLengthLeft);
-            arrayModel.setCompareHandle(locationList.get(index).getHandle());
-            compareMap.put(arrayName, arrayModel);
-        }
     }
-
 
     /**
      * Check accessing array is out of bounds
@@ -411,164 +490,119 @@ public class ArrayIndexOutCheck implements Detector {
      *            access instruction position
      * @param accessIndex
      *            access index
-     * @return true: out of bounds
+     * @throws CFGBuilderException
+     * @throws DataflowAnalysisException
      */
-    private boolean checkArrayOutBounds(ComparedArrayModel arrayModel, int accessPc, int accessIndex) {
+    private void checkArrayOutBounds(Location accessLocation, ComparedArrayModel arrayModel, int accessPc,
+            int accessIndex, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
         InstructionHandle handle = arrayModel.getCompareHandle();
         Instruction ins = handle.getInstruction();
 
-        if (ins instanceof IfInstruction) {
-            // if branch handle
-            InstructionHandle falseHandle = ((IfInstruction) ins).getTarget();
-            // else branch handle
-            InstructionHandle trueHandle = handle.getNext();
-            int opcode = ins.getOpcode();
+        // if branch handle
+        InstructionHandle falseHandle = ((IfInstruction) ins).getTarget();
+        // else branch handle
+        InstructionHandle trueHandle = handle.getNext();
+        int opcode = ins.getOpcode();
 
-            switch (opcode) {
-            // "<" in java
-            case Const.IF_ICMPGE:
-                // array.length<10
-                if (arrayModel.isLeftInCompare()) {
-                    // if branch
-                    if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum() - 1) {
-                            return true;
-                        }
-                    } else if (accessPc > falseHandle.getPosition()) {
-                        // else branch
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
-                    // 10<array.length
-                } else {
-                    // else branch
-                    if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        // if branch
-                        if (accessIndex > arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
+        // array.length>=10 || 10<=array.length
+        if (arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPLT
+                || !arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPGT) {
+            // if branch
+            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                if (accessIndex >= arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
                 }
-                break;
-            // "<=" in java
-            case Const.IF_ICMPGT:
-                // array.length<=10
-                if (arrayModel.isLeftInCompare()) {
-                    if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    } else if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-                        if (!hasReturn && accessIndex > arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
-                    // 10<=array.length
-                } else {
-                    if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum() - 1) {
-                            return true;
-                        }
-                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
+            } else {
+                // else branch
+                boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+                if (!hasReturn) {
+                    fillWarningReport(accessLocation, method);
+                } else if (accessIndex >= arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
                 }
-                break;
-            // ">=" in java
-            case Const.IF_ICMPLT:
-                // array.length>=10
-                if (arrayModel.isLeftInCompare()) {
-                    if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-
-                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum() - 1) {
-                            return true;
-                        }
-                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
-                    // 10>=array.length
-                } else {
-                    if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    } else if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-
-                        if (!hasReturn && accessIndex > arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
-                }
-                break;
-            // ">" in java
-            case Const.IF_ICMPLE:
-                // array.length > 10
-                if (arrayModel.isLeftInCompare()) {
-                    if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-
-                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    } else if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex > arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
-                    // 10 > array.length
-                } else {
-                    if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                        if (accessIndex >= arrayModel.getCompareNum() - 1) {
-                            return true;
-                        }
-                    } else if (accessPc > falseHandle.getPosition()) {
-                        boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-
-                        if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
-                            return true;
-                        }
-                    }
-                }
-                break;
-            // "==" in java
-            case Const.IF_ICMPNE:
-                if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
-                    if (accessIndex >= arrayModel.getCompareNum()) {
-                        return true;
-                    }
-                }
-                break;
-            // "!=" in java
-            case Const.IF_ICMPEQ:
-                if (accessPc > falseHandle.getPosition()) {
-                    boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-
-                    if (!hasReturn && accessIndex >= arrayModel.getCompareNum()) {
-                        return true;
-                    }
-                }
-                break;
-            default:
-                break;
             }
         }
 
-        return false;
+        // array.length>10 || 10<array.length
+        if (arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPLE
+                || !arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPGE) {
+            // if branch
+            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                if (accessIndex > arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
+                }
+            } else {
+                // else branch
+                boolean hasReturn = checkHasReturn(falseHandle, accessPc);
+                if (!hasReturn) {
+                    fillWarningReport(accessLocation, method);
+                } else if (accessIndex > arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
+                }
+            }
+        }
+
+        // array.length <= 10 || 10 >= array.length
+        if (arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPGT
+                || !arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPLT) {
+            // if branch
+            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                fillWarningReport(accessLocation, method);
+            } else {
+                // else branch
+                if (accessIndex > arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
+                }
+            }
+
+        }
+
+        // array.length < 10 || 10 > array.length
+        if (arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPGE
+                || !arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPLE) {
+            // if branch
+            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                fillWarningReport(accessLocation, method);
+            } else {
+                // else branch
+                if (accessIndex >= arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
+                }
+            }
+
+        }
+
+        // array.length == 10 || 10 == array.length
+        if (opcode == Const.IF_ICMPNE) {
+            // if branch
+            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
+                if (accessIndex >= arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
+                }
+            } else {
+                if (!checkHasReturn(falseHandle, accessPc)) {
+                    fillWarningReport(accessLocation, method);
+                } else {
+                    if (accessIndex >= arrayModel.getCompareNum()) {
+                        fillWarningReport(accessLocation, method);
+                    }
+                }
+            }
+
+        }
+        // array.length != 10 || 10 != array.length
+        if (opcode == Const.IF_ICMPEQ) {
+            if (accessPc > falseHandle.getPosition()) {
+                if (accessIndex >= arrayModel.getCompareNum()) {
+                    fillWarningReport(accessLocation, method);
+                }
+            } else {
+                fillWarningReport(accessLocation, method);
+            }
+
+        }
+
     }
 
     /**
@@ -614,13 +648,13 @@ public class ArrayIndexOutCheck implements Detector {
      *            index
      * @param compareValueNumber
      *            compared value number in stack
-     * @param classContext
+     * @param classCtx
      *            class context
      * @return the number compared with array's length
      * @throws DataflowAnalysisException
      */
     private Integer getCompareNum(ValueNumberDataflow dataflow, List<Location> locationList, int index,
-            ValueNumber compareValueNumber, ClassContext classContext) throws DataflowAnalysisException {
+            ValueNumber compareValueNumber) throws DataflowAnalysisException {
         Integer compareNum = null;
 
         for (int i = 1; i <= index; i++) {
@@ -641,13 +675,13 @@ public class ArrayIndexOutCheck implements Detector {
 
             // compared with an global constant field, for example: if(array.length > MAX_LENGTH)
             if (preIns instanceof GETFIELD) {
-                String sig = ((GETFIELD) preIns).getSignature(classContext.getConstantPoolGen());
+                String sig = ((GETFIELD) preIns).getSignature(classCtx.getConstantPoolGen());
                 if ("I".equals(sig)) {
                     ValueNumberFrame arrayLengthFrame = dataflow.getFactAfterLocation(preLoc);
                     ValueNumber nowValueNumber = arrayLengthFrame.getTopValue();
 
                     if (nowValueNumber.equals(compareValueNumber)) {
-                        String filedName = ((GETFIELD) preIns).getFieldName(classContext.getConstantPoolGen());
+                        String filedName = ((GETFIELD) preIns).getFieldName(classCtx.getConstantPoolGen());
                         compareNum = globalIntFieldMap.get(filedName);
                         break;
                     }
@@ -674,7 +708,7 @@ public class ArrayIndexOutCheck implements Detector {
      * @return array name
      * @throws DataflowAnalysisException
      */
-    private String getVariableName(boolean isTop, ValueNumberDataflow dataflow, Location location, Method method)
+    private String getObjectName(boolean isTop, ValueNumberDataflow dataflow, Location location, Method method)
             throws DataflowAnalysisException {
         ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(location);
         if (vnaFrame.getStackDepth() < 0) {
@@ -717,13 +751,13 @@ public class ArrayIndexOutCheck implements Detector {
      *            index
      * @param dataflow
      *            data flow of method
-     * @param classContext
+     * @param classCtx
      *            class context
      * @return index of accessing array
      * @throws DataflowAnalysisException
      */
-    private Integer getAccessIndex(List<Location> locationList, int index, ValueNumberDataflow dataflow,
-            ClassContext classContext) throws DataflowAnalysisException {
+    private Integer getAccessIndex(List<Location> locationList, int index, ValueNumberDataflow dataflow)
+            throws DataflowAnalysisException {
         Integer accessIndex = null;
 
         int opCode = locationList.get(index).getHandle().getInstruction().getOpcode();
@@ -736,7 +770,7 @@ public class ArrayIndexOutCheck implements Detector {
         case Const.BASTORE:
         case Const.CASTORE:
         case Const.SASTORE:
-            accessIndex = processArrayStore(locationList, index, dataflow, classContext);
+            accessIndex = getAccessIndexArrayStore(locationList, index, dataflow);
             break;
 
         case Const.IALOAD:
@@ -747,7 +781,7 @@ public class ArrayIndexOutCheck implements Detector {
         case Const.BALOAD:
         case Const.CALOAD:
         case Const.SALOAD:
-            accessIndex = processArrayLoad(locationList, index, dataflow, classContext);
+            accessIndex = getAccessIndexArrayLoad(locationList, index, dataflow);
             break;
 
         default:
@@ -757,29 +791,9 @@ public class ArrayIndexOutCheck implements Detector {
         return accessIndex;
     }
 
-    /**
-     * Get index of accessing array
-     *
-     * @param locationList
-     *            location list
-     * @param index
-     *            index
-     * @param dataflow
-     *            data flow of method
-     * @param classContext
-     *            class context
-     * @return index of accessing array
-     * @throws DataflowAnalysisException
-     */
-    private Integer getAccessListIndex(List<Location> locationList, int index, ValueNumberDataflow dataflow,
-            ClassContext classContext) throws DataflowAnalysisException {
-        Integer accessIndex = processArrayLoad(locationList, index, dataflow, classContext);
-
-        return accessIndex;
-    }
 
     /**
-     * Process of array store instruction, for example: array[1] = "test"
+     * Get the access index of array store instruction, for example: array[1] = "test", 1 is the access index
      *
      * @param locationList
      *            location list
@@ -787,13 +801,13 @@ public class ArrayIndexOutCheck implements Detector {
      *            index of array instruction in location list
      * @param dataflow
      *            data flow of method
-     * @param classContext
+     * @param classCtx
      *            class context
      * @return access index
      * @throws DataflowAnalysisException
      */
-    private Integer processArrayStore(List<Location> locationList, int index, ValueNumberDataflow dataflow,
-            ClassContext classContext) throws DataflowAnalysisException {
+    private Integer getAccessIndexArrayStore(List<Location> locationList, int index, ValueNumberDataflow dataflow)
+            throws DataflowAnalysisException {
         ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(locationList.get(index));
         ValueNumber accessNum = null;
         Integer accessIndex = null;
@@ -821,7 +835,7 @@ public class ArrayIndexOutCheck implements Detector {
                 ValueNumberFrame tmpFrame = dataflow.getFactAfterLocation(loc);
                 ValueNumber tmpValueNum = tmpFrame.getTopValue();
                 if (accessNum.equals(tmpValueNum)) {
-                    String filedName = ((GETFIELD) preIns).getFieldName(classContext.getConstantPoolGen());
+                    String filedName = ((GETFIELD) preIns).getFieldName(classCtx.getConstantPoolGen());
                     accessIndex = globalIntFieldMap.get(filedName);
                     break;
                 }
@@ -834,7 +848,7 @@ public class ArrayIndexOutCheck implements Detector {
     }
 
     /**
-     * Process of array load instruction, for example: String str = array[1]
+     * Get access index of array load instruction, for example: String str = array[1], 1 is the access index
      *
      * @param locationList
      *            location list
@@ -842,12 +856,11 @@ public class ArrayIndexOutCheck implements Detector {
      *            index of array instruction in location list
      * @param dataflow
      *            data flow of method
-     * @param classContext
+     * @param classCtx
      *            class context
      * @return access index
      */
-    private Integer processArrayLoad(List<Location> locationList, int index, ValueNumberDataflow dataflow,
-            ClassContext classContext) {
+    private Integer getAccessIndexArrayLoad(List<Location> locationList, int index, ValueNumberDataflow dataflow) {
         Integer accessIndex = null;
         if (index - 1 < 0) {
             return accessIndex;
@@ -861,7 +874,7 @@ public class ArrayIndexOutCheck implements Detector {
             accessIndex = new Integer(((ICONST) preIns).getValue().intValue());
 
         } else if (preIns instanceof GETFIELD) {
-            String filedName = ((GETFIELD) preIns).getFieldName(classContext.getConstantPoolGen());
+            String filedName = ((GETFIELD) preIns).getFieldName(classCtx.getConstantPoolGen());
             accessIndex = globalIntFieldMap.get(filedName);
         }
 
@@ -898,23 +911,22 @@ public class ArrayIndexOutCheck implements Detector {
      *
      * @param location
      *            code location
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void fillWarningReport(Location location, ClassContext classContext, Method method)
+    private void fillWarningReport(Location location, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
         if (null == location) {
             return;
         }
-
         InstructionHandle insHandle = location.getHandle();
-        MethodGen methodGen = classContext.getMethodGen(method);
-        String sourceFile = classContext.getJavaClass().getSourceFileName();
-        ValueNumberDataflow valueNumDataFlow = classContext.getValueNumberDataflow(method);
+        MethodGen methodGen = classCtx.getMethodGen(method);
+        String sourceFile = classCtx.getJavaClass().getSourceFileName();
+        ValueNumberDataflow valueNumDataFlow = classCtx.getValueNumberDataflow(method);
 
         ValueNumberFrame vnaFrame = valueNumDataFlow.getFactAtLocation(location);
 
@@ -923,14 +935,15 @@ public class ArrayIndexOutCheck implements Detector {
         BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
                 valueNumber, vnaFrame, "VALUE_OF");
 
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classCtx, methodGen,
                 sourceFile, insHandle);
 
-        bugAccumulator.accumulateBug(
-                new BugInstance(this, "SPEC_ARRAY_INDEX_OUT_OF_BOUNDS", warningLevel)
-                        .addClassAndMethod(classContext.getJavaClass(), method)
-                        .addOptionalAnnotation(variableAnnotation),
-                sourceLineAnnotation);
+        BugInstance bug = new BugInstance(this, "SPEC_ARRAY_INDEX_OUT_OF_BOUNDS", warningLevel);
+        bug.addClassAndMethod(classCtx.getJavaClass(), method);
+        bug.addOptionalAnnotation(variableAnnotation);
+        bug.addSourceLine(sourceLineAnnotation);
+        bugReporter.reportBug(bug);
+
     }
 
     @Override
@@ -965,6 +978,8 @@ public class ArrayIndexOutCheck implements Detector {
          * compared instruction handle
          */
         private InstructionHandle compareHandle;
+
+        private ValueNumber comapreNumValueNum;
 
         /**
          *
@@ -1002,6 +1017,48 @@ public class ArrayIndexOutCheck implements Detector {
 
         public void setCompareHandle(InstructionHandle compareHandle) {
             this.compareHandle = compareHandle;
+        }
+
+        public ValueNumber getComapreNumValueNum() {
+            return comapreNumValueNum;
+        }
+
+        public void setComapreNumValueNum(ValueNumber comapreNumValueNum) {
+            this.comapreNumValueNum = comapreNumValueNum;
+        }
+
+    }
+
+    private static class ArrayLengthModel {
+        private String arrayName;
+        private ValueNumber valueNumber;
+        private String localLenName;
+
+        public ArrayLengthModel() {
+        }
+
+        public String getArrayName() {
+            return arrayName;
+        }
+
+        public void setArrayName(String arrayName) {
+            this.arrayName = arrayName;
+        }
+
+        public ValueNumber getValueNumber() {
+            return valueNumber;
+        }
+
+        public void setValueNumber(ValueNumber valueNumber) {
+            this.valueNumber = valueNumber;
+        }
+
+        public String getLocalLenName() {
+            return localLenName;
+        }
+
+        public void setLocalLenName(String localLenName) {
+            this.localLenName = localLenName;
         }
     }
 }
