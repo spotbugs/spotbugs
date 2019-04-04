@@ -1701,10 +1701,10 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-  <Detector class="edu.umd.cs.findbugs.detect.MapTraversalWayCheck">
+  <Detector class="edu.umd.cs.findbugs.detect.MapIteratorWayCheck">
     <Details>
       <![CDATA[
-        <p>The way of traversing map is inefficient.</p>
+        <p>The way to iterator map is inefficient.</p>
       ]]>
     </Details>
   </Detector>
@@ -8531,27 +8531,16 @@ after the call to initLogging, the logger configuration is lost
       ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SPEC_MAP_KEYSET_INEFFICIENT_CHECK">
-    <ShortDescription>Applying keySet() to traversal Map is inefficient. </ShortDescription>
-    <LongDescription>Method {1} is inefficient, and using "entrySet()" instead of "keySet()" is more efficient.</LongDescription>
+
+  <BugPattern type="SPEC_MAP_ITERATOR_INEFFICIENT">
+    <ShortDescription>The way to iterator Map is inefficient. </ShortDescription>
+    <LongDescription>Method {1} iterators Map {2} inefficiently, and using {4} instead of {5} is more efficient.</LongDescription>
     <Details>
       <![CDATA[
-      <p>If only the key is used in the process, then just traversal the keyset. 
-         If key and value are both used in the process, then traversal the entryset.
-         Using key to get value is less efficient.
-      </p>
-      ]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK">
-    <ShortDescription>Applying entrySet() to traversal Map is inefficient. </ShortDescription>
-    <LongDescription>Method {1} is inefficient, and using "keySet()" or "values()" instead of "entrySet()" is more efficient.</LongDescription>
-    <Details>
-      <![CDATA[
-      <p>If only the key is used in the travsersing process, then just call the Map.keySet();
-         If only the value is used in the travsersing process, then just call the Map.values();
-         If key and value are both used in the travsersing process, then call the Map.entrySet();
-         Using key to get value (Map.get(key)) in the travsersing process is less efficient.
+      <p>If only the key is used in the iterator process, then just call the Map.keySet();
+         If only the value is used in the iterator process, then just call the Map.values();
+         If key and value are both used in the iterator process, then call the Map.entrySet();
+         Using key to get value (Map.get(key)) in the iterator process is less efficient.
       </p>
       ]]>
     </Details>
@@ -8562,9 +8551,8 @@ after the call to initLogging, the logger configuration is lost
     <Details>
       <![CDATA[
       <p>The instructions in finally block will definitelly be excuted, 
-         if the return operation is excuted here may overwrite the value
-         returned in try or catch. Therefore, it is risky to return value in finally
-         block.
+         if the return operation is excuted here may overwrite the value returned in try or catch.
+         Therefore, it is risky to return value in finally block.
       </p>
       ]]>
     </Details>

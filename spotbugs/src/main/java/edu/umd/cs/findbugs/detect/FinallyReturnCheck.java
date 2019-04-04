@@ -31,9 +31,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
-import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -50,8 +48,6 @@ import edu.umd.cs.findbugs.ba.Location;
  */
 public class FinallyReturnCheck implements Detector {
 
-    private final BugAccumulator bugAccumulator;
-
     private final BugReporter bugReporter;
 
     /**
@@ -59,7 +55,6 @@ public class FinallyReturnCheck implements Detector {
      */
     public FinallyReturnCheck(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
@@ -78,14 +73,11 @@ public class FinallyReturnCheck implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (Exception e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
         }
 
-        bugAccumulator.reportAccumulatedBugs();
     }
 
     /**
@@ -103,12 +95,6 @@ public class FinallyReturnCheck implements Detector {
             return;
         }
 
-        Type returnType = method.getReturnType();
-        // if the return type is void, return
-        if ("V".equals(returnType.getSignature())) {
-            return;
-        }
-
         // get the exception table
         CodeExceptionGen[] exceptions = cfg.getMethodGen().getExceptionHandlers();
 
@@ -120,6 +106,8 @@ public class FinallyReturnCheck implements Detector {
 
             if (null != handleTmp) {
                 ins = handleTmp.getInstruction();
+            } else {
+                continue;
             }
 
             // when catchType is null, and not syncronized, it means finally start
@@ -128,10 +116,10 @@ public class FinallyReturnCheck implements Detector {
             }
         }
 
+        // if there is no finally, return directory
         if (finallyList.size() <= 0) {
             return;
         }
-
 
         // the instruction list
         Collection<Location> locationCollection = cfg.orderedLocations();
@@ -143,39 +131,42 @@ public class FinallyReturnCheck implements Detector {
             InstructionHandle targetHandle = exception.getHandlerPC();
             int targetPc = targetHandle.getPosition();
 
-        // check the finally block has return
-        for (Location location : locationList) {
-            InstructionHandle insHandle = location.getHandle();
+            // check the finally block has return
+            for (Location location : locationList) {
+                InstructionHandle insHandle = location.getHandle();
 
-            if (null == insHandle) {
-                continue;
-            }
+                if (null == insHandle) {
+                    continue;
+                }
 
-            int pc = insHandle.getPosition();
+                int pc = insHandle.getPosition();
                 // analyze from the finally start pc
-            if (pc < targetPc) {
-                continue;
-            }
+                if (pc < targetPc) {
+                    continue;
+                }
 
-            Instruction ins = insHandle.getInstruction();
-            // if encounter GotoInstruction, check the instruction from the target instruction
-            if (ins instanceof GotoInstruction) {
-                InstructionHandle gotoTargetHandle = ((GotoInstruction) ins).getTarget();
-                targetPc = gotoTargetHandle.getPosition();
-                continue;
-            }
+                Instruction ins = insHandle.getInstruction();
+                // if encounter GotoInstruction, check the instruction from the target instruction
+                if (ins instanceof GotoInstruction) {
+                    InstructionHandle gotoTargetHandle = ((GotoInstruction) ins).getTarget();
+                    int gotoTarget = gotoTargetHandle.getPosition();
+                    if (gotoTarget > targetPc) {
+                        targetPc = gotoTargetHandle.getPosition();
+                    }
+                    continue;
+                }
 
                 // when encounter ReturnInstruction in finally block, fill the report ang break.
-            if (ins instanceof ReturnInstruction) {
+                if (ins instanceof ReturnInstruction) {
                     fillReport(location, classContext, method);
-                break;
-            }
-                // when encounter athrow instruction, it means the finally block is in end.
-            if (ins instanceof ATHROW) {
-                break;
-            }
+                    break;
+                }
+                // when encounter athrow instruction, it means the finally block is end.
+                if (ins instanceof ATHROW) {
+                    break;
+                }
 
-        }
+            }
         }
 
     }
@@ -204,11 +195,10 @@ public class FinallyReturnCheck implements Detector {
 
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, insHandle);
-
-        bugAccumulator.accumulateBug(
-                new BugInstance(this, "SPEC_FINALLY_RETURN_CHECK", NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile),
-                sourceLineAnnotation);
+        BugInstance bug = new BugInstance(this, "SPEC_FINALLY_RETURN_CHECK", HIGH_PRIORITY);
+        bug.addClassAndMethod(methodGen, sourceFile);
+        bug.addSourceLine(sourceLineAnnotation);
+        bugReporter.reportBug(new BugInstance(this, "SPEC_FINALLY_RETURN_CHECK", NORMAL_PRIORITY));
     }
 
     @Override

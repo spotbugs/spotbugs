@@ -20,7 +20,9 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
@@ -28,6 +30,7 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
@@ -35,7 +38,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.StoreInstruction;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -57,7 +59,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  * @since ?
  *
  */
-public class MapTraversalWayCheck implements Detector {
+public class MapIteratorWayCheck implements Detector {
 
     private static final String CLASS_MAP = "java/util/Map";
 
@@ -81,21 +83,38 @@ public class MapTraversalWayCheck implements Detector {
 
     private static final int WAY_NOT_LOOP = -1;
 
-    private final BugAccumulator bugAccumulator;
+    private static final String KEY_ITERATOR = "iterator";
+
+    private static final String KEY_SET = "set";
+
+    private static final String WAY_KETSET_STR = "keySet()";
+
+    private static final String WAY_VALUES_STR = "values()";
+
+    private static final String WAY_ENTRYSET_STR = "entrySet()";
+
+    private static final String METHOD_GET = "get";
+
+    private static final String METHOD_GETKEY = "getKey";
+
+    private static final String METHOD_GETVALUE = "getValue";
 
     private final BugReporter bugReporter;
+
+    private ClassContext classCtx;
 
     /**
      * @param bugReporter
      */
-    public MapTraversalWayCheck(BugReporter bugReporter) {
+    public MapIteratorWayCheck(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        Method[] methodList = classContext.getJavaClass().getMethods();
+        this.classCtx = classContext;
+
+        Method[] methodList = this.classCtx.getJavaClass().getMethods();
         for (Method method : methodList) {
             if (method.getCode() == null) {
                 continue;
@@ -108,16 +127,11 @@ public class MapTraversalWayCheck implements Detector {
             }
 
             try {
-                analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+                analyzeMethod(method);
+            } catch (Exception e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
         }
-
-        bugAccumulator.reportAccumulatedBugs();
-
     }
 
     /**
@@ -131,20 +145,16 @@ public class MapTraversalWayCheck implements Detector {
      * @throws DataflowAnalysisException
      */
     /**
-     * @param classContext
+     * @param classCtx
      * @param method
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    private void analyzeMethod(ClassContext classContext, Method method)
-            throws CFGBuilderException, DataflowAnalysisException {
-        CFG cfg = classContext.getCFG(method);
+    private void analyzeMethod(Method method) throws CFGBuilderException, DataflowAnalysisException {
+        CFG cfg = classCtx.getCFG(method);
         if (null == cfg) {
             return;
         }
-
-        // constant pool of this method
-        ConstantPoolGen constPool = classContext.getConstantPoolGen();
 
         // location list (instruction list)
         Collection<Location> locationCollection = cfg.orderedLocations();
@@ -152,7 +162,7 @@ public class MapTraversalWayCheck implements Detector {
         ArrayList<Location> locationList = new ArrayList<>();
         locationList.addAll(locationCollection);
 
-        analyseMapTraversal(locationList, constPool, classContext, method);
+        analyseMapTraversal(locationList, method);
     }
 
     /**
@@ -162,15 +172,17 @@ public class MapTraversalWayCheck implements Detector {
      *            location list
      * @param constPool
      *            constant pool
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void analyseMapTraversal(ArrayList<Location> locationList, ConstantPoolGen constPool,
-            ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
+    private void analyseMapTraversal(ArrayList<Location> locationList, Method method)
+            throws DataflowAnalysisException, CFGBuilderException {
+        // constant pool of this method
+        ConstantPoolGen constPool = classCtx.getConstantPoolGen();
 
         for (int i = 0; i < locationList.size(); i++) {
             Location location = locationList.get(i);
@@ -193,23 +205,16 @@ public class MapTraversalWayCheck implements Detector {
                 }
 
                 // Find the cycle variable
-                LocalVariable cycleVa = findCycleVariable(locationList, i, constPool, method, classContext);
+                LocalVariable cycleVa = findCycleVariable(locationList, i, constPool, method);
                 if (null == cycleVa) {
                     continue;
                 }
 
                 if (WAY_MAP_KEYSET == tmp) {
-                    boolean res = checkMapKeysetValid(cycleVa, locationList, i, classContext, method, constPool);
+                    checkMapKeysetValid(cycleVa, locationList, i, method, constPool);
 
-                    if (!res) {
-                        fillReport(tmp, location, classContext, method);
-                    }
                 } else if (WAY_MAP_ENTRYSET == tmp) {
-                    boolean res = checkMapEntrysetValid(cycleVa, locationList, i, classContext, method, constPool);
-
-                    if (!res) {
-                        fillReport(tmp, location, classContext, method);
-                    }
+                    checkMapEntrysetValid(cycleVa, locationList, i, method, constPool);
                 }
             }
         }
@@ -226,41 +231,27 @@ public class MapTraversalWayCheck implements Detector {
      *            constant Pool
      * @param method
      *            method
-     * @param classContext
+     * @param classCtx
      *            class context
      * @return the cycle variable
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
     private LocalVariable findCycleVariable(ArrayList<Location> locationList, int startIndex, ConstantPoolGen constPool,
-            Method method, ClassContext classContext) throws DataflowAnalysisException, CFGBuilderException {
+            Method method) throws DataflowAnalysisException, CFGBuilderException {
         LocalVariable cycleVa = null;
         String iteratorName = null;
+        String setName = null;
 
-        // when keySet() or entrySet() is called, next instruction must be INVOKEINTERFACE or StoreInstruction
-        if (startIndex + 1 < locationList.size()) {
-            Location location = locationList.get(startIndex + 1);
-            InstructionHandle insHandleLoop = location.getHandle();
-
-            Instruction ins = insHandleLoop.getInstruction();
-            if (!(ins instanceof INVOKEINTERFACE) && !(ins instanceof StoreInstruction)) {
-                return null;
-            }
-
-            if (ins instanceof INVOKEINTERFACE) {
-                int constIndex = ((INVOKEINTERFACE) ins).getIndex();
-                String className = getClassOrMethod(true, constIndex, constPool);
-                String methodName = getClassOrMethod(false, constIndex, constPool);
-
-                if (!CLASS_SET.equals(className) || !METHOD_ITERATOR.equals(methodName)) {
-                    return null;
-                }
-            }
-        } else {
+        Map<String, String> nextOptValue = findKeySetOrEntrySetNextValue(startIndex, locationList, constPool, method);
+        if (null == nextOptValue) {
             return null;
         }
 
-        for (int i = startIndex + 1; i < locationList.size(); i++) {
+        iteratorName = nextOptValue.get(KEY_ITERATOR);
+        setName = nextOptValue.get(KEY_SET);
+
+        for (int i = startIndex + 2; i < locationList.size(); i++) {
             Location location = locationList.get(i);
             InstructionHandle insHandleLoop = location.getHandle();
 
@@ -277,14 +268,18 @@ public class MapTraversalWayCheck implements Detector {
              * if set.iterator() is called, get the return value's name, for example: Iterator<String> it =
              * nameSet.iterator();, "it"is the return value's name
              */
-            if (CLASS_SET.equals(className) && METHOD_ITERATOR.equals(methodName)) {
+            if (null == iteratorName && CLASS_SET.equals(className) && METHOD_ITERATOR.equals(methodName)) {
+                String objName = getFieldName(1, location, method);
+
                 InstructionHandle nextHandle = location.getHandle().getNext();
                 if (null != nextHandle) {
                     Instruction insTmp = nextHandle.getInstruction();
-                    if (insTmp instanceof StoreInstruction) {
+
+                    if (insTmp instanceof StoreInstruction && objName.equals(setName)) {
                         int index = ((StoreInstruction) insTmp).getIndex();
                         LocalVariable localVa = method.getLocalVariableTable().getLocalVariable(index,
-                                nextHandle.getNext().getPosition());
+                                nextHandle.getNext().getPosition()); // method.getLocalVariableTable()要判空
+
                         iteratorName = localVa == null ? "?" : localVa.getName();
                     }
                 }
@@ -293,7 +288,7 @@ public class MapTraversalWayCheck implements Detector {
 
             if (CLASS_ITERATOR.equals(className) && METHOD_NEXT.equals(methodName)) {
 
-                String objName = getFieldName(1, location, classContext, method);
+                String objName = getFieldName(1, location, method);
                 /*
                  * Check the value name which calls Iterator.next() is equal with the value's name returned by
                  * Set.iterator() If the iteratorName is null, which means the Set.iterator() is not saved to a
@@ -313,6 +308,73 @@ public class MapTraversalWayCheck implements Detector {
     }
 
     /**
+     * Analyze the next operation of keySet() or entrySet()
+     *
+     * @param startIndex
+     *            the position of keySet() or entrySet()
+     * @param locationList
+     *            location list
+     * @param constPool
+     *            constant pool
+     * @param method
+     *            method
+     * @return next operation value
+     */
+    private Map<String, String> findKeySetOrEntrySetNextValue(int startIndex, List<Location> locationList,
+            ConstantPoolGen constPool, Method method) {
+        String iteratorName = null;
+        String setName = null;
+        Map<String, String> result = new HashMap<>();
+
+        if (startIndex + 1 >= locationList.size()) {
+            return null;
+        }
+        /*
+         * when keySet() or entrySet() is called, next instruction must be INVOKEINTERFACE or StoreInstruction
+         * map.keySet().iterator() or Set<String> set = map.keySet()
+         */
+        Location secdlocation = locationList.get(startIndex + 1);
+        InstructionHandle secdInsHandle = secdlocation.getHandle();
+
+        Instruction secIns = secdInsHandle.getInstruction();
+
+        // call map.keySet().iterator() directory
+        if (secIns instanceof INVOKEINTERFACE) {
+            int constIndex = ((INVOKEINTERFACE) secIns).getIndex();
+            String className = getClassOrMethod(true, constIndex, constPool);
+            String methodName = getClassOrMethod(false, constIndex, constPool);
+
+            if (CLASS_SET.equals(className) && METHOD_ITERATOR.equals(methodName)) {
+                InstructionHandle nextHandle = secdlocation.getHandle().getNext();
+                if (null != nextHandle) {
+                    Instruction insTmp = nextHandle.getInstruction();
+                    if (insTmp instanceof StoreInstruction) {
+                        int index = ((StoreInstruction) insTmp).getIndex();
+                        LocalVariable localVa = method.getLocalVariableTable().getLocalVariable(index,
+                                nextHandle.getNext().getPosition()); // method.getLocalVariableTable()要判空
+
+                        iteratorName = localVa == null ? "?" : localVa.getName();
+                        result.put(KEY_ITERATOR, iteratorName);
+                    }
+                }
+            } else {
+                return null;
+            }
+        } else if (secIns instanceof StoreInstruction) { // call Set<String> set = map.keySet();
+            int index = ((StoreInstruction) secIns).getIndex();
+            InstructionHandle nextHandle = secdlocation.getHandle().getNext();
+            LocalVariable localVa = method.getLocalVariableTable().getLocalVariable(index,
+                    nextHandle.getNext().getPosition()); // method.getLocalVariableTable()要判空
+            setName = localVa == null ? "?" : localVa.getName();
+            result.put(KEY_SET, setName);
+        } else {
+            return null;
+        }
+
+        return result;
+    }
+
+    /**
      * When the traversing way of map is keyset, it is invalid to call "Map.get(key)"
      *
      * @param cycleVa
@@ -325,22 +387,20 @@ public class MapTraversalWayCheck implements Detector {
      *            end position of loop map
      * @param startIndex
      *            start index of location list
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
      * @param constPool
      *            constant pool
-     * @return result, true: valid, false: invalid
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private boolean checkMapKeysetValid(LocalVariable cycleVa, List<Location> locationList, int startIndex,
-            ClassContext classContext, Method method, ConstantPoolGen constPool)
-            throws DataflowAnalysisException, CFGBuilderException {
-        boolean valid = true;
+    private void checkMapKeysetValid(LocalVariable cycleVa, List<Location> locationList, int startIndex, Method method,
+            ConstantPoolGen constPool) throws DataflowAnalysisException, CFGBuilderException {
+        int usedCount = 0;
         Location startLocation = locationList.get(startIndex);
-        String objName = getFieldName(1, startLocation, classContext, method);
+        String mapName = getFieldName(1, startLocation, method);
         int startLoop = cycleVa.getStartPC();
         int endLoop = cycleVa.getLength() + startLoop;
 
@@ -357,6 +417,13 @@ public class MapTraversalWayCheck implements Detector {
             }
 
             Instruction ins = insHandleLoop.getInstruction();
+
+            if (ins instanceof ALOAD) {
+                if (cycleVa.getIndex() == ((ALOAD) ins).getIndex()) {
+                    usedCount++;
+                }
+            }
+
             if (!(ins instanceof INVOKEINTERFACE)) {
                 continue;
             }
@@ -366,17 +433,21 @@ public class MapTraversalWayCheck implements Detector {
             String methodName = getClassOrMethod(false, constIndex, constPool);
 
             /* If the way is keyset, the method-‘Map.get(key)’ is called, invalid */
-            if (CLASS_MAP.equals(className) && "get".equals(methodName)) {
-                String fieldName = getFieldName(0, loc, classContext, method);
-                if (objName.equals(fieldName)) {
-                    valid = false;
-                    break;
+            if (CLASS_MAP.equals(className) && METHOD_GET.equals(methodName)) {
+                String fieldName = getFieldName(0, loc, method);
+                String getKeyName = getFieldName(1, loc, method);
+                if (mapName.equals(fieldName) && cycleVa.getName().equals(getKeyName)) {
+                    usedCount--;
                 }
             }
 
         }
 
-        return valid;
+        if (usedCount <= 0) {
+            fillBugReport(WAY_KETSET_STR, WAY_VALUES_STR, startLocation, method);
+        } else {
+            fillBugReport(WAY_KETSET_STR, WAY_ENTRYSET_STR, startLocation, method);
+        }
     }
 
     /**
@@ -392,20 +463,17 @@ public class MapTraversalWayCheck implements Detector {
      *            end position of loop map
      * @param startIndex
      *            start index of location list
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
      * @param constPool
      *            constant pool
-     * @return result, true: valid, false: invalid
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private boolean checkMapEntrysetValid(LocalVariable cycleVa, List<Location> locationList, int startIndex,
-            ClassContext classContext, Method method, ConstantPoolGen constPool)
-            throws DataflowAnalysisException, CFGBuilderException {
-        boolean valid = true;
+    private void checkMapEntrysetValid(LocalVariable cycleVa, List<Location> locationList, int startIndex,
+            Method method, ConstantPoolGen constPool) throws DataflowAnalysisException, CFGBuilderException {
         int keyCount = 0;
         int valueCount = 0;
         int startLoop = cycleVa.getStartPC();
@@ -433,13 +501,13 @@ public class MapTraversalWayCheck implements Detector {
 
             /* If the way is entryset, the method-‘Entry.getKey() or Entry.getValue()’ is never called, invalid */
             if (CLASS_MAP_ENTRY.equals(className)) {
-                if ("getKey".equals(methodName)) {
-                    String valueName = getFieldName(1, loc, classContext, method);
+                if (METHOD_GETKEY.equals(methodName)) {
+                    String valueName = getFieldName(1, loc, method);
                     if (cycleVa.getName().equals(valueName)) {
                         keyCount++;
                     }
-                } else if ("getValue".equals(methodName)) {
-                    String valueName = getFieldName(1, loc, classContext, method);
+                } else if (METHOD_GETVALUE.equals(methodName)) {
+                    String valueName = getFieldName(1, loc, method);
                     if (cycleVa.getName().equals(valueName)) {
                         valueCount++;
                     }
@@ -448,12 +516,12 @@ public class MapTraversalWayCheck implements Detector {
 
         }
 
-        // if getKey or getValue is never called and the count of calling number is not equal, invalid
-        if ((0 == keyCount || 0 == valueCount) && (keyCount != valueCount)) {
-            valid = false;
+        // if getKey or getValue is never called, invalid
+        if (0 == keyCount) {
+            fillBugReport(WAY_ENTRYSET_STR, WAY_VALUES_STR, locationList.get(startIndex), method);
+        } else if (0 == valueCount) {
+            fillBugReport(WAY_ENTRYSET_STR, WAY_KETSET_STR, locationList.get(startIndex), method);
         }
-
-        return valid;
     }
 
     /**
@@ -461,23 +529,23 @@ public class MapTraversalWayCheck implements Detector {
      *
      * @param location
      *            code location
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void fillReport(int way, Location location, ClassContext classContext, Method method)
+    private void fillBugReport(String oldWay, String newWay, Location location, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
         if (null == location) {
             return;
         }
 
         InstructionHandle insHandle = location.getHandle();
-        MethodGen methodGen = classContext.getMethodGen(method);
-        String sourceFile = classContext.getJavaClass().getSourceFileName();
-        ValueNumberDataflow valueNumDataFlow = classContext.getValueNumberDataflow(method);
+        MethodGen methodGen = classCtx.getMethodGen(method);
+        String sourceFile = classCtx.getJavaClass().getSourceFileName();
+        ValueNumberDataflow valueNumDataFlow = classCtx.getValueNumberDataflow(method);
 
         ValueNumberFrame vnaFrame = valueNumDataFlow.getFactAtLocation(location);
         ValueNumber valueNumber = vnaFrame.getTopValue();
@@ -485,20 +553,17 @@ public class MapTraversalWayCheck implements Detector {
         BugAnnotation variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, location,
                 valueNumber, vnaFrame, "VALUE_OF");
 
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classCtx, methodGen,
                 sourceFile, insHandle);
 
-        if (WAY_MAP_KEYSET == way) {
-            bugAccumulator.accumulateBug(
-                    new BugInstance(this, "SPEC_MAP_KEYSET_INEFFICIENT_CHECK", NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
-                    sourceLineAnnotation);
-        } else if (WAY_MAP_ENTRYSET == way) {
-            bugAccumulator.accumulateBug(
-                    new BugInstance(this, "SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK", NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
-                    sourceLineAnnotation);
-        }
+        BugInstance bug = new BugInstance(this, "SPEC_MAP_ITERATOR_INEFFICIENT", NORMAL_PRIORITY);
+        bug.addClassAndMethod(methodGen, sourceFile);
+        bug.addOptionalAnnotation(variableAnnotation);
+        bug.addSourceLine(sourceLineAnnotation);
+
+        bug.addString(newWay);
+        bug.addString(oldWay);
+        bugReporter.reportBug(bug);
     }
 
     /**
@@ -532,7 +597,7 @@ public class MapTraversalWayCheck implements Detector {
     /**
      * Get class name or method name
      *
-     * @param flag
+     * @param isClass
      *            true: get class name; false: get method name
      * @param constIndex
      *            index in constant pool
@@ -540,11 +605,11 @@ public class MapTraversalWayCheck implements Detector {
      *            constant pool
      * @return
      */
-    private String getClassOrMethod(boolean flag, int constIndex, ConstantPoolGen constPool) {
+    private String getClassOrMethod(boolean isClass, int constIndex, ConstantPoolGen constPool) {
         String res = null;
         ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
 
-        if (flag) {
+        if (isClass) {
             ConstantClass classInfo = (ConstantClass) constPool.getConstant(constTmp.getClassIndex());
             res = ((ConstantUtf8) constPool.getConstant(classInfo.getNameIndex())).getBytes();
         } else {
@@ -594,7 +659,7 @@ public class MapTraversalWayCheck implements Detector {
      *            whether has parameter,1: no parameter, 0: one parameter
      * @param location
      *            the location of instruction
-     * @param classContext
+     * @param classCtx
      *            class context
      * @param method
      *            method
@@ -602,9 +667,9 @@ public class MapTraversalWayCheck implements Detector {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private String getFieldName(int way, Location location, ClassContext classContext, Method method)
+    private String getFieldName(int way, Location location, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
-        ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+        ValueNumberFrame vnaFrame = classCtx.getValueNumberDataflow(method).getFactAtLocation(location);
         // If there is no parameter，the object is the top in stack
         ValueNumber valueNumber = vnaFrame.getTopValue();
         if (0 == way) {

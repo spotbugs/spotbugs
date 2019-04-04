@@ -658,8 +658,8 @@
                     reports="SPEC_METHOD_PARAM_NULL_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.ChildListNeedsOrderBy" speed="fast" disabled="false"
                     reports="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION"/>
-          <Detector class="edu.umd.cs.findbugs.detect.MapTraversalWayCheck" speed="fast" disabled="false"
-                    reports="SPEC_MAP_KEYSET_INEFFICIENT_CHECK,SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK"/>
+          <Detector class="edu.umd.cs.findbugs.detect.MapIteratorWayCheck" speed="fast" disabled="false"
+                    reports="SPEC_MAP_ITERATOR_INEFFICIENT"/>
           <Detector class="edu.umd.cs.findbugs.detect.FinallyReturnCheck" speed="fast" disabled="false"
                     reports="SPEC_FINALLY_RETURN_CHECK"/>
           <Detector class="edu.umd.cs.findbugs.detect.ObjectNoEqualsAndHashCode" speed="fast" disabled="false"
@@ -1268,8 +1268,7 @@
           <BugPattern abbrev="SPEC" type="SPEC_LOCALVARIABLE_ASSIGNMENT_CHECK" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_METHOD_PARAM_NULL_CHECK" category="CORRECTNESS"/>
           <BugPattern abbrev="SPEC" type="SPEC_CHILDLIST_MAY_NEEDS_ORDERBY_ANNOTATION" category="CORRECTNESS"/>
-          <BugPattern abbrev="SPEC" type="SPEC_MAP_KEYSET_INEFFICIENT_CHECK" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="SPEC" type="SPEC_MAP_ENTRYSET_INEFFICIENT_CHECK" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_MAP_ITERATOR_INEFFICIENT" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_FINALLY_RETURN_CHECK" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP" category="BAD_PRACTICE"/>

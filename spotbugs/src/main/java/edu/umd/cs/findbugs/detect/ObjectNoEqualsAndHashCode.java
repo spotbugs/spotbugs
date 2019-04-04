@@ -40,7 +40,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -71,12 +70,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
 
     private static List<String> setKeyobjectList = new ArrayList<>();
 
-    private final BugAccumulator bugAccumulator;
     private final BugReporter bugReporter;
 
     public ObjectNoEqualsAndHashCode(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
     @Override
@@ -102,14 +99,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (Exception e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
         }
-
-        bugAccumulator.reportAccumulatedBugs();
 
     }
 
@@ -459,10 +452,12 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                 sourceFile, insHandle);
 
-        bugAccumulator.accumulateBug(
-                new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST", NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variableAnnotation),
-                sourceLineAnnotation);
+        BugInstance bug = new BugInstance(this, "SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST", NORMAL_PRIORITY);
+        bug.addClassAndMethod(methodGen, sourceFile);
+        bug.addOptionalAnnotation(variableAnnotation);
+        bug.addSourceLine(sourceLineAnnotation);
+
+        bugReporter.reportBug(bug);
     }
 
     /**
