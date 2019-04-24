@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -64,14 +65,13 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  */
 public class ObjectNoEqualsAndHashCode implements Detector {
 
-    private static List<String> mapKeyobjectList = new ArrayList<>();
-
-    private static List<String> listKeyobjectList = new ArrayList<>();
-
-    private static List<String> setKeyobjectList = new ArrayList<>();
+    private static List<String> warningObjs = new ArrayList<>();
 
     private final BugReporter bugReporter;
 
+    /**
+     * @param bugReporter
+     */
     public ObjectNoEqualsAndHashCode(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -125,7 +125,7 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         String className = objType.getClassName();
 
         // if the field is not Set or Map, return
-        if (!"java.util.Set".equals(className) && !"java.util.Map".equals(className)) {
+        if (!className.endsWith("Set") && !className.endsWith("Map")) {
             return;
         }
 
@@ -139,18 +139,12 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         boolean res = checkObjEuqalAndHashCode(keyClassName);
 
         if (!res) {
-            if ("java.util.Map".equals(className)) {
-                if (mapKeyobjectList.contains(keyClassName)) {
-                    return;
-                }
-                mapKeyobjectList.add(keyClassName);
+            if (className.endsWith("Map")) {
+                warningObjs.add(keyClassName);
                 fillFieldWarningReport(true, field, classContext.getJavaClass().getClassName());
 
-            } else if ("java.util.Set".equals(className)) {
-                if (setKeyobjectList.contains(keyClassName)) {
-                    return;
-                }
-                setKeyobjectList.add(keyClassName);
+            } else if (className.endsWith("Set")) {
+                warningObjs.add(keyClassName);
                 fillFieldWarningReport(false, field, classContext.getJavaClass().getClassName());
             }
         }
@@ -218,6 +212,7 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             return true;
         }
 
+        // Map<Class<?>, String> or Set<Class<?>>
         if ("java/lang/Class".equals(keyClassName)) {
             return true;
         }
@@ -230,6 +225,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         }
 
         if (objClass.isInterface() || objClass.isAbstract() || objClass.isEnum()) {
+            return true;
+        }
+
+        if (warningObjs.contains(keyClassName)) {
             return true;
         }
 
@@ -281,7 +280,6 @@ public class ObjectNoEqualsAndHashCode implements Detector {
         for (int i = 0; i < locationList.size(); i++) {
             Location location = locationList.get(i);
             InstructionHandle insHandle = location.getHandle();
-
             if (null == insHandle) {
                 continue;
             }
@@ -289,27 +287,29 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             Instruction ins = insHandle.getInstruction();
 
             // bytecode: invokeinterface #{position} //InterfaceMethod java/util/List.remove(Object)
-            if (ins instanceof INVOKEINTERFACE) {
-                String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(), constPool);
-                String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
-                        constPool);
+            if (ins instanceof INVOKEINTERFACE || ins instanceof INVOKEVIRTUAL) {
+                int constIndex = -1;
+                if (ins instanceof INVOKEINTERFACE) {
+                    constIndex = ((INVOKEINTERFACE) ins).getIndex();
+                } else {
+                    constIndex = ((INVOKEVIRTUAL) ins).getIndex();
+                }
+                String className = getClassOrMethodFromInstruction(true, constIndex, constPool);
+                String methodName = getClassOrMethodFromInstruction(false, constIndex, constPool);
 
-                if ("java/util/List".equals(className) && "remove".equals(methodName)) {
+                if (className.endsWith("List") && "remove".equals(methodName)) {
                     String removeObj = getObjectInList(location, classContext, method);
                     boolean res = checkObjEuqalAndHashCode(removeObj);
 
                     if (!res) {
-                        if (!listKeyobjectList.contains(removeObj)) {
-                            listKeyobjectList.add(removeObj);
-                            fillListRemoveReport(location, classContext, method);
-                        }
+                        warningObjs.add(removeObj);
+                        fillListRemoveReport(location, classContext, method);
                     }
                     continue;
                 }
             }
         }
     }
-
 
     /**
      * Check local variables of Map and Set in the method. The key of Map doesn't rewritten equals and hashCode methods.
@@ -336,13 +336,16 @@ public class ObjectNoEqualsAndHashCode implements Detector {
 
         // get local variable type array
         LocalVariable[] typeArray = localTypeTable.getLocalVariableTypeTable();
+        if (null == typeArray) {
+            return;
+        }
 
         for (LocalVariable local : typeArray) {
             String sig = local.getSignature();
             String localValueClass = getObjClassOrInerClassFromStr(true, sig);
 
-            if (!"java/util/Set".equals(localValueClass) && !"java/util/Map".equals(localValueClass)) {
-                continue;
+            if (!localValueClass.endsWith("Set") && !localValueClass.endsWith("Map")) {
+                return;
             }
 
             String KeyClassName = getObjClassOrInerClassFromStr(false, sig);
@@ -350,18 +353,13 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             boolean res = checkObjEuqalAndHashCode(KeyClassName);
 
             if (!res) {
-                if ("java/util/Map".equals(localValueClass)) {
-                    if (!mapKeyobjectList.contains(KeyClassName)) {
-                        mapKeyobjectList.add(KeyClassName);
-                        fillLocalWarnReport(true, local, classContext, method);
-                    }
+                if (localValueClass.endsWith("Map")) {
+                    warningObjs.add(KeyClassName);
+                    fillLocalWarnReport(true, local, classContext, method);
 
-                } else if ("java/util/Set".equals(localValueClass)) {
-                    if (!setKeyobjectList.contains(KeyClassName)) {
-                        setKeyobjectList.add(KeyClassName);
-                        fillLocalWarnReport(false, local, classContext, method);
-                    }
-
+                } else if (localValueClass.endsWith("Set")) {
+                    warningObjs.add(KeyClassName);
+                    fillLocalWarnReport(false, local, classContext, method);
                 }
             }
         }

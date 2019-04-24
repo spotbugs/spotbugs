@@ -198,7 +198,7 @@ public class FinallyReturnCheck implements Detector {
         BugInstance bug = new BugInstance(this, "SPEC_FINALLY_RETURN_CHECK", HIGH_PRIORITY);
         bug.addClassAndMethod(methodGen, sourceFile);
         bug.addSourceLine(sourceLineAnnotation);
-        bugReporter.reportBug(new BugInstance(this, "SPEC_FINALLY_RETURN_CHECK", NORMAL_PRIORITY));
+        bugReporter.reportBug(bug);
     }
 
     @Override

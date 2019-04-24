@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -60,8 +61,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
  *
  */
 public class MapIteratorWayCheck implements Detector {
-
-    private static final String CLASS_MAP = "java/util/Map";
 
     private static final String CLASS_ITERATOR = "java/util/Iterator";
 
@@ -195,8 +194,15 @@ public class MapIteratorWayCheck implements Detector {
 
             // bytecode: invokeinterface #{position} //InterfaceMethod java/util/Map.keySet()
             // or InterfaceMethod java/util/Map.entrySet()
-            if (ins instanceof INVOKEINTERFACE) {
-                int constIndex = ((INVOKEINTERFACE) ins).getIndex();
+            if (ins instanceof INVOKEINTERFACE || ins instanceof INVOKEVIRTUAL) {
+                int constIndex = 0;
+                if (ins instanceof INVOKEINTERFACE) {
+                    constIndex = ((INVOKEINTERFACE) ins).getIndex();
+                }
+
+                if (ins instanceof INVOKEVIRTUAL) {
+                    constIndex = ((INVOKEVIRTUAL) ins).getIndex();
+                }
 
                 // check is map traversal instruction
                 int tmp = checkIsMapTravsal(constIndex, constPool);
@@ -424,16 +430,20 @@ public class MapIteratorWayCheck implements Detector {
                 }
             }
 
-            if (!(ins instanceof INVOKEINTERFACE)) {
+            int constIndex = -1;
+            if (ins instanceof INVOKEINTERFACE) {
+                constIndex = ((INVOKEINTERFACE) ins).getIndex();
+            } else if (ins instanceof INVOKEVIRTUAL) {
+                constIndex = ((INVOKEVIRTUAL) ins).getIndex();
+            } else {
                 continue;
             }
 
-            int constIndex = ((INVOKEINTERFACE) ins).getIndex();
             String className = getClassOrMethod(true, constIndex, constPool);
             String methodName = getClassOrMethod(false, constIndex, constPool);
 
             /* If the way is keyset, the method-‘Map.get(key)’ is called, invalid */
-            if (CLASS_MAP.equals(className) && METHOD_GET.equals(methodName)) {
+            if (className.endsWith("Map") && METHOD_GET.equals(methodName)) {
                 String fieldName = getFieldName(0, loc, method);
                 String getKeyName = getFieldName(1, loc, method);
                 if (mapName.equals(fieldName) && cycleVa.getName().equals(getKeyName)) {
@@ -580,7 +590,8 @@ public class MapIteratorWayCheck implements Detector {
         String className = getClassOrMethod(true, constIndex, constPool);
         String methodName = getClassOrMethod(false, constIndex, constPool);
 
-        if (!CLASS_MAP.equals(className)) {
+
+        if (!className.endsWith("Map")) {
             return WAY_NOT_LOOP;
         }
 
