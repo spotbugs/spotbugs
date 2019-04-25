@@ -174,6 +174,10 @@ public class ObjectNoEqualsAndHashCode implements Detector {
     private String getObjClassOrInerClassFromStr(boolean flag, String signature) {
         String className = null;
 
+        if (null == signature) {
+            return null;
+        }
+
         String[] tmp = signature.split("<");
         if (tmp.length >= 2) {
             if (flag) {
@@ -344,7 +348,7 @@ public class ObjectNoEqualsAndHashCode implements Detector {
             String sig = local.getSignature();
             String localValueClass = getObjClassOrInerClassFromStr(true, sig);
 
-            if (!localValueClass.endsWith("Set") && !localValueClass.endsWith("Map")) {
+            if (null == localValueClass || (!localValueClass.endsWith("Set") && !localValueClass.endsWith("Map"))) {
                 return;
             }
 

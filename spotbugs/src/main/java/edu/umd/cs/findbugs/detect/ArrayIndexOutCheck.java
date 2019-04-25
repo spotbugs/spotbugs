@@ -562,14 +562,6 @@ public class ArrayIndexOutCheck implements Detector {
                 if (accessIndex >= arrayModel.getCompareNum()) {
                     fillWarningReport(accessLocation, method);
                 }
-            } else {
-                // else branch
-                boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-                if (!hasReturn) {
-                    fillWarningReport(accessLocation, method);
-                } else if (accessIndex >= arrayModel.getCompareNum()) {
-                    fillWarningReport(accessLocation, method);
-                }
             }
         }
 
@@ -579,14 +571,6 @@ public class ArrayIndexOutCheck implements Detector {
             // if branch
             if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                 if (accessIndex > arrayModel.getCompareNum()) {
-                    fillWarningReport(accessLocation, method);
-                }
-            } else {
-                // else branch
-                boolean hasReturn = checkHasReturn(falseHandle, accessPc);
-                if (!hasReturn) {
-                    fillWarningReport(accessLocation, method);
-                } else if (accessIndex > arrayModel.getCompareNum()) {
                     fillWarningReport(accessLocation, method);
                 }
             }
@@ -629,8 +613,6 @@ public class ArrayIndexOutCheck implements Detector {
                 if (accessIndex >= arrayModel.getCompareNum()) {
                     fillWarningReport(accessLocation, method);
                 }
-            } else {
-                fillWarningReport(accessLocation, method);
             }
 
         }
@@ -640,10 +622,7 @@ public class ArrayIndexOutCheck implements Detector {
                 if (accessIndex >= arrayModel.getCompareNum()) {
                     fillWarningReport(accessLocation, method);
                 }
-            } else {
-                fillWarningReport(accessLocation, method);
             }
-
         }
 
     }

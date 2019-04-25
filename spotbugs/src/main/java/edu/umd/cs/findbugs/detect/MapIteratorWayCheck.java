@@ -276,7 +276,9 @@ public class MapIteratorWayCheck implements Detector {
              */
             if (null == iteratorName && CLASS_SET.equals(className) && METHOD_ITERATOR.equals(methodName)) {
                 String objName = getFieldName(1, location, method);
-
+                if (null == objName) {
+                    continue;
+                }
                 InstructionHandle nextHandle = location.getHandle().getNext();
                 if (null != nextHandle) {
                     Instruction insTmp = nextHandle.getInstruction();
@@ -407,6 +409,11 @@ public class MapIteratorWayCheck implements Detector {
         int usedCount = 0;
         Location startLocation = locationList.get(startIndex);
         String mapName = getFieldName(1, startLocation, method);
+
+        if (null == mapName) {
+            return;
+        }
+
         int startLoop = cycleVa.getStartPC();
         int endLoop = cycleVa.getLength() + startLoop;
 
@@ -446,6 +453,7 @@ public class MapIteratorWayCheck implements Detector {
             if (className.endsWith("Map") && METHOD_GET.equals(methodName)) {
                 String fieldName = getFieldName(0, loc, method);
                 String getKeyName = getFieldName(1, loc, method);
+                String cycleName = cycleVa.getName();
                 if (mapName.equals(fieldName) && cycleVa.getName().equals(getKeyName)) {
                     usedCount--;
                 }
