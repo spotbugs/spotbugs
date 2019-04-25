@@ -132,8 +132,11 @@ public class FinallyReturnCheck implements Detector {
             int targetPc = targetHandle.getPosition();
 
             // check the finally block has return
-            for (Location location : locationList) {
-                InstructionHandle insHandle = location.getHandle();
+            Location location = locationList.get(1);
+            InstructionHandle insHandle = location.getHandle();
+
+            while (null != insHandle && null != insHandle.getNext()) {
+                insHandle = insHandle.getNext();
 
                 if (null == insHandle) {
                     continue;
@@ -158,7 +161,7 @@ public class FinallyReturnCheck implements Detector {
 
                 // when encounter ReturnInstruction in finally block, fill the report ang break.
                 if (ins instanceof ReturnInstruction) {
-                    fillReport(location, classContext, method);
+                    fillReport(insHandle, classContext, method);
                     break;
                 }
                 // when encounter athrow instruction, it means the finally block is end.
@@ -183,13 +186,9 @@ public class FinallyReturnCheck implements Detector {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    private void fillReport(Location location, ClassContext classContext, Method method)
+    private void fillReport(InstructionHandle insHandle, ClassContext classContext, Method method)
             throws DataflowAnalysisException, CFGBuilderException {
-        if (null == location) {
-            return;
-        }
 
-        InstructionHandle insHandle = location.getHandle();
         MethodGen methodGen = classContext.getMethodGen(method);
         String sourceFile = classContext.getJavaClass().getSourceFileName();
 

@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARRAYLENGTH;
 import org.apache.bcel.generic.ATHROW;
@@ -38,6 +39,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.ICONST;
 import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -94,15 +96,14 @@ public class ArrayIndexOutCheck implements Detector {
             if ("<init>".equals(method.getName()) || "<clinit>".equals(method.getName())) {
                 try {
                     getGlobalIntFieldMap(method);
-                    continue;
-                } catch (CFGBuilderException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
                 }
+                continue;
             }
 
             try {
-                analyzeMethod(method);
+                analyzeMethodNew(method);
             } catch (Exception e) {
                 bugReporter.logError("Detector " + this.getClass().getName() + " caught exception", e);
             }
@@ -154,6 +155,7 @@ public class ArrayIndexOutCheck implements Detector {
         }
     }
 
+
     /**
      * Analyze method
      *
@@ -164,14 +166,17 @@ public class ArrayIndexOutCheck implements Detector {
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    private void analyzeMethod(Method method)
-            throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethodNew(Method method) throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classCtx.getCFG(method);
 
         if (null == cfg) {
             return;
         }
+        // store array length model
+        Map<String, ArrayLengthModel> arrayLengthModels = new HashMap<>();
 
+        // store compare model
+        Map<String, ComparedArrayModel> compareModels = new HashMap<>();
         ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
 
         Collection<Location> locations = cfg.orderedLocations();
@@ -188,19 +193,162 @@ public class ArrayIndexOutCheck implements Detector {
             }
 
             Instruction ins = handle.getInstruction();
-            // when encounter array.length or List.size()
-            if (ins instanceof ARRAYLENGTH || ins instanceof INVOKEINTERFACE) {
-                // get array length model, including arrayName, local lengthName, length's valueNumber
+
+            // find the instruction of array.Length or list.size(), put in map
+            if (isGetLengthInstruction(ins)) {
                 ArrayLengthModel arrarLenModel = getArrayLengthExp(location, method);
-
                 if (null != arrarLenModel) {
-                    // get compare model, including arrayName, comapared number, compare expression, and so on
-                    CheckCompareArrayAndNum(locationList, i, dataflow, arrarLenModel,
-                            method);
-
+                    arrayLengthModels.put(arrarLenModel.getEndPc() + arrarLenModel.getArrayName(), arrarLenModel);
                 }
-
+                continue;
             }
+
+            // find the compare instruction
+            if (isCompareLength(ins)) {
+                // check the compare instruction is to compare the array.Length
+                ComparedArrayModel arrayModel = getCompareLengthModel(arrayLengthModels, i, locationList, method);
+                if (null != arrayModel) {
+                    compareModels.put(arrayModel.getArrayEndPc() + arrayModel.getName(), arrayModel);
+                }
+                continue;
+            }
+
+            // find the access instruction, as array[2], and the access index, as 2
+            Integer accessIndex = getAccessIndex(ins, i, locationList, dataflow);
+
+            if (null != accessIndex) {
+                Map<String, Object> accessArrayMap = getObjectName(false, dataflow, location, method);
+                if (null == accessArrayMap) {
+                    continue;
+                }
+                String arrayName = (String) accessArrayMap.get("name");
+                for (ComparedArrayModel arrayModel : compareModels.values()) {
+                    int arrayEndPc = arrayModel.getArrayEndPc().intValue();
+
+                    if ((arrayEndPc == -1 || handle.getPosition() < arrayEndPc)
+                            && arrayName.equals(arrayModel.getName())) {
+                        checkArrayOutBounds(location, arrayModel, handle.getPosition(), accessIndex.intValue(), method);
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        arrayLengthModels.clear();
+        compareModels.clear();
+    }
+
+    /**
+     * Check the compare instruction meet the condition. For example, "if(array.Length>10)" meet, "if(str.equals(str1))"
+     * doesn't meet.
+     *
+     * @param arrayLengthModels
+     *            array length models map
+     * @param index
+     *            instruction index
+     * @param locationList
+     *            location list
+     * @param method
+     *            method
+     * @return compare model
+     * @throws DataflowAnalysisException
+     * @throws CFGBuilderException
+     */
+    private ComparedArrayModel getCompareLengthModel(Map<String, ArrayLengthModel> arrayLengthModels, int index,
+            List<Location> locationList, Method method) throws DataflowAnalysisException, CFGBuilderException {
+        Location location = locationList.get(index);
+        InstructionHandle handle = location.getHandle();
+        int pc = handle.getPosition();
+        ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
+
+        for (ArrayLengthModel arrayLengthModel : arrayLengthModels.values()) {
+            int arrayEndPc = arrayLengthModel.getEndPc().intValue();
+            if (arrayEndPc != -1 && pc > arrayEndPc) {
+                continue;
+            }
+
+            ComparedArrayModel arrayModel = getCompareModelFromExp(location, arrayLengthModel, method);
+
+            if (null != arrayModel) {
+                Integer compareNum = getCompareNum(dataflow, locationList, index, arrayModel.getComapreNumValueNum());
+
+                if (null != compareNum) {
+                    arrayModel.setCompareNum(compareNum.intValue());
+                    arrayModel.setCompareHandle(handle);
+                    arrayModel.setArrayEndPc(arrayLengthModel.getEndPc());
+                    return arrayModel;
+                }
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check the instruction is array.length or list.size()
+     *
+     * @param ins
+     *            instruction
+     * @return boolean
+     */
+    private boolean isGetLengthInstruction(Instruction ins) {
+        // when encounter array.length or List.size()
+        if (ins instanceof ARRAYLENGTH) {
+            return true;
+        } else if (ins instanceof INVOKEINTERFACE) {
+            String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+            String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+
+            if (className.endsWith("List") && "size".equals(methodName)) {
+                return true;
+            }
+        } else if (ins instanceof INVOKEVIRTUAL) {
+            String className = getClassOrMethodFromInstruction(true, ((INVOKEVIRTUAL) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+            String methodName = getClassOrMethodFromInstruction(false, ((INVOKEVIRTUAL) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+
+            if (className.endsWith("List") && "size".equals(methodName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check the instruction is the compare instruction
+     *
+     * @param ins
+     *            instruction
+     * @return boolean
+     */
+    private boolean isCompareLength(Instruction ins) {
+        if (!(ins instanceof IfInstruction)) {
+            return false;
+        }
+
+        int opCode = ins.getOpcode();
+        switch (opCode) {
+        // <
+        case Const.IF_ICMPGE:
+            // <=
+        case Const.IF_ICMPGT:
+            // >
+        case Const.IF_ICMPLE:
+            // >=
+        case Const.IF_ICMPLT:
+            // !=
+        case Const.IF_ICMPEQ:
+            // ==
+        case Const.IF_ICMPNE:
+            return true;
+        default:
+            return false;
         }
     }
 
@@ -220,22 +368,10 @@ public class ArrayIndexOutCheck implements Detector {
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
         InstructionHandle handle = location.getHandle();
-        Instruction ins = handle.getInstruction();
         String lenName = null;
         ArrayLengthModel arrayLengthModel = new ArrayLengthModel();
 
-        if (ins instanceof INVOKEINTERFACE) {
-            String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
-                    classCtx.getConstantPoolGen());
-            String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
-                    classCtx.getConstantPoolGen());
-
-            if (!"java/util/List".equals(className) || !"size".equals(methodName)) {
-                return null;
-            }
-        }
-
-        String arrayName = getObjectName(true, dataflow, location, method);
+        Map<String, Object> arrayName = getObjectName(true, dataflow, location, method);
 
         if (null == arrayName) {
             return null;
@@ -244,8 +380,9 @@ public class ArrayIndexOutCheck implements Detector {
         // get the stack after ARRAYLENGTH instruction
         ValueNumberFrame arrayLengthFrame = dataflow.getFactAfterLocation(location);
         ValueNumber nowValueNumber = arrayLengthFrame.getTopValue();
-        arrayLengthModel.setArrayName(arrayName);
+        arrayLengthModel.setArrayName((String) arrayName.get("name"));
         arrayLengthModel.setValueNumber(nowValueNumber);
+        arrayLengthModel.setEndPc((Integer) arrayName.get("endPc"));
 
         // when array.length is stored in a local variable, for example: int len = array.length
         InstructionHandle nextHandle = handle.getNext();
@@ -267,77 +404,7 @@ public class ArrayIndexOutCheck implements Detector {
         return arrayLengthModel;
     }
 
-    /**
-     * Find the if_icmpge instruction, and check it whether compare an array's length with an constant and access out of
-     * bounds.
-     *
-     * @param locationList
-     *            location list
-     * @param startIndex
-     *            compared instruction index in location list
-     * @param dataflow
-     *            data flow of method
-     * @param arrayLengthModel
-     *            length model
-     * @param method
-     *            method
-     * @throws DataflowAnalysisException
-     * @throws CFGBuilderException
-     */
-    private void CheckCompareArrayAndNum(List<Location> locationList, int startIndex,
-            ValueNumberDataflow dataflow, ArrayLengthModel arrayLengthModel, Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
-        ComparedArrayModel arrayModel = null;
 
-        for (int i = startIndex; i < locationList.size(); i++) {
-            Location location = locationList.get(i);
-            InstructionHandle handle = location.getHandle();
-
-            if (null == handle) {
-                continue;
-            }
-
-            Instruction ins = handle.getInstruction();
-            // find the compare instruction
-            if (!(ins instanceof IfInstruction)) {
-                continue;
-            }
-
-            int opCode = ins.getOpcode();
-            switch (opCode) {
-            // <
-            case Const.IF_ICMPGE:
-                // <=
-            case Const.IF_ICMPGT:
-                // >
-            case Const.IF_ICMPLE:
-                // >=
-            case Const.IF_ICMPLT:
-                // !=
-            case Const.IF_ICMPEQ:
-                // ==
-            case Const.IF_ICMPNE:
-                arrayModel = getCompareModelFromExp(location, arrayLengthModel, method);
-                break;
-            default:
-                break;
-            }
-
-            if (null == arrayModel) {
-                continue;
-            }
-            arrayModel.setCompareHandle(handle);
-            Integer compareNum = getCompareNum(dataflow, locationList, i, arrayModel.getComapreNumValueNum());
-
-            if (null != compareNum) {
-                arrayModel.setCompareNum(compareNum.intValue());
-                arrayModel.setCompareHandle(handle);
-                checkAccessValid(i, arrayModel, locationList, method);
-            }
-
-        }
-
-    }
 
     /**
      * Get compared information from compare expression, For example, compare expression is "if(array.length > 10)",
@@ -414,71 +481,54 @@ public class ArrayIndexOutCheck implements Detector {
         return compareModel;
     }
 
+
     /**
-     * Check accessing the array or list is out of bounds
+     * Get the access index of array or list
      *
-     * @param startIndex
-     *            stary index
-     * @param compareModel
-     *            compare model
+     * @param ins
+     *            instruction
+     * @param index
+     *            the index of the instruction
      * @param locationList
      *            location list
-     * @param method
-     *            method
+     * @param dataflow
+     *            data flow
+     * @return access index
      * @throws DataflowAnalysisException
-     * @throws CFGBuilderException
      */
-    private void checkAccessValid(int startIndex, ComparedArrayModel compareModel, List<Location> locationList,
-            Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
-        ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
+    private Integer getAccessIndex(Instruction ins, int index, List<Location> locationList,
+            ValueNumberDataflow dataflow) throws DataflowAnalysisException {
+        Integer accessIndex = null;
+        if (ins instanceof ArrayInstruction) {
 
-        for (int i = startIndex; i < locationList.size(); i++) {
-            Location location = locationList.get(i);
-            InstructionHandle handle = location.getHandle();
+            // Get the index of accessing array
+            accessIndex = getAccessIndex(locationList, index, dataflow);
 
-            if (null == handle) {
-                continue;
+        } else if (ins instanceof INVOKEINTERFACE) {
+            String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+            String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+
+            if (className.endsWith("List") && "get".equals(methodName)) {
+                // Get the index of accessing list
+                accessIndex = getAccessIndexArrayLoad(locationList, index, dataflow);
             }
+        } else if (ins instanceof INVOKEVIRTUAL) {
+            String className = getClassOrMethodFromInstruction(true, ((INVOKEVIRTUAL) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
+            String methodName = getClassOrMethodFromInstruction(false, ((INVOKEVIRTUAL) ins).getIndex(),
+                    classCtx.getConstantPoolGen());
 
-            Instruction ins = handle.getInstruction();
-
-            if (ins instanceof ArrayInstruction || ins instanceof INVOKEINTERFACE) {
-
-                Integer accessIndex = null;
-
-                if (ins instanceof INVOKEINTERFACE) {
-                    String className = getClassOrMethodFromInstruction(true, ((INVOKEINTERFACE) ins).getIndex(),
-                            classCtx.getConstantPoolGen());
-                    String methodName = getClassOrMethodFromInstruction(false, ((INVOKEINTERFACE) ins).getIndex(),
-                            classCtx.getConstantPoolGen());
-
-                    if ("java/util/List".equals(className) && "get".equals(methodName)) {
-                        // Get the index of accessing list
-                        accessIndex = getAccessIndexArrayLoad(locationList, i, dataflow);
-                    }
-                } else {
-                    // Get the index of accessing array
-                    accessIndex = getAccessIndex(locationList, i, dataflow);
-                }
-
-                if (null == accessIndex) {
-                    continue;
-                }
-
-                // get the accessed array's name
-                String arrayName = getObjectName(false, dataflow, location, method);
-                if (null != arrayName && arrayName.equals(compareModel.getName())) {
-
-                    /*
-                     * if the accessed array's length has been compared, and the accessing index is lager or equal than
-                     * compared number
-                     */
-                    checkArrayOutBounds(location, compareModel, handle.getPosition(), accessIndex.intValue(), method);
-                }
+            if (className.endsWith("Map") && "get".equals(methodName)) {
+                // Get the index of accessing list
+                accessIndex = getAccessIndexArrayLoad(locationList, index, dataflow);
             }
-
+        } else {
+            return null;
         }
+
+        return accessIndex;
     }
 
     /**
@@ -494,8 +544,7 @@ public class ArrayIndexOutCheck implements Detector {
      * @throws DataflowAnalysisException
      */
     private void checkArrayOutBounds(Location accessLocation, ComparedArrayModel arrayModel, int accessPc,
-            int accessIndex, Method method)
-            throws DataflowAnalysisException, CFGBuilderException {
+            int accessIndex, Method method) throws DataflowAnalysisException, CFGBuilderException {
         InstructionHandle handle = arrayModel.getCompareHandle();
         Instruction ins = handle.getInstruction();
 
@@ -581,13 +630,7 @@ public class ArrayIndexOutCheck implements Detector {
                     fillWarningReport(accessLocation, method);
                 }
             } else {
-                if (!checkHasReturn(falseHandle, accessPc)) {
-                    fillWarningReport(accessLocation, method);
-                } else {
-                    if (accessIndex >= arrayModel.getCompareNum()) {
-                        fillWarningReport(accessLocation, method);
-                    }
-                }
+                fillWarningReport(accessLocation, method);
             }
 
         }
@@ -695,7 +738,7 @@ public class ArrayIndexOutCheck implements Detector {
     }
 
     /**
-     * Get variable name
+     * Get variable name and end pc
      *
      * @param isTop
      *            whether array is in top of statk
@@ -705,11 +748,12 @@ public class ArrayIndexOutCheck implements Detector {
      *            location
      * @param method
      *            method
-     * @return array name
+     * @return array map
      * @throws DataflowAnalysisException
      */
-    private String getObjectName(boolean isTop, ValueNumberDataflow dataflow, Location location, Method method)
-            throws DataflowAnalysisException {
+    private Map<String, Object> getObjectName(boolean isTop, ValueNumberDataflow dataflow, Location location,
+            Method method) throws DataflowAnalysisException {
+        Map<String, Object> objMap = new HashMap<>(3);
         ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(location);
         if (vnaFrame.getStackDepth() < 0) {
             return null;
@@ -729,14 +773,41 @@ public class ArrayIndexOutCheck implements Detector {
                 valueNumber, vnaFrame);
 
         if (null != filedAnn) {
-            return filedAnn.getFieldName();
+            objMap.put("name", filedAnn.getFieldName());
+            objMap.put("endPc", new Integer(-1));
+            return objMap;
         }
 
         // local variable
-        LocalVariableAnnotation localAnn = ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location,
-                valueNumber, vnaFrame);
-        if (null != localAnn) {
-            return localAnn.getName();
+        LocalVariableTable localVariableTable = method.getLocalVariableTable();
+        if (null == localVariableTable) {
+            return null;
+        }
+
+        LocalVariable lv1 = null;
+        for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
+            if (valueNumber.equals(vnaFrame.getValue(i))) {
+                InstructionHandle handle = location.getHandle();
+                InstructionHandle prev = handle.getPrev();
+                if (prev == null) {
+                    continue;
+                }
+                int position1 = prev.getPosition();
+                int position2 = handle.getPosition();
+                lv1 = localVariableTable.getLocalVariable(i, position1);
+                if (lv1 == null) {
+                    lv1 = localVariableTable.getLocalVariable(i, position2);
+                }
+                break;
+            }
+
+        }
+
+        if (null != lv1) {
+            int endPc = lv1.getStartPC() + lv1.getLength();
+            objMap.put("name", lv1.getName());
+            objMap.put("endPc", new Integer(endPc));
+            return objMap;
         }
 
         return null;
@@ -790,7 +861,6 @@ public class ArrayIndexOutCheck implements Detector {
 
         return accessIndex;
     }
-
 
     /**
      * Get the access index of array store instruction, for example: array[1] = "test", 1 is the access index
@@ -981,6 +1051,8 @@ public class ArrayIndexOutCheck implements Detector {
 
         private ValueNumber comapreNumValueNum;
 
+        private Integer arrayEndPc;
+
         /**
          *
          */
@@ -1027,12 +1099,21 @@ public class ArrayIndexOutCheck implements Detector {
             this.comapreNumValueNum = comapreNumValueNum;
         }
 
+        public Integer getArrayEndPc() {
+            return arrayEndPc;
+        }
+
+        public void setArrayEndPc(Integer arrayEndPc) {
+            this.arrayEndPc = arrayEndPc;
+        }
+
     }
 
     private static class ArrayLengthModel {
         private String arrayName;
         private ValueNumber valueNumber;
         private String localLenName;
+        private Integer endPc;
 
         public ArrayLengthModel() {
         }
@@ -1060,5 +1141,14 @@ public class ArrayIndexOutCheck implements Detector {
         public void setLocalLenName(String localLenName) {
             this.localLenName = localLenName;
         }
+
+        public Integer getEndPc() {
+            return endPc;
+        }
+
+        public void setEndPc(Integer endPc) {
+            this.endPc = endPc;
+        }
+
     }
 }
