@@ -520,7 +520,7 @@ public class ArrayIndexOutCheck implements Detector {
             String methodName = getClassOrMethodFromInstruction(false, ((INVOKEVIRTUAL) ins).getIndex(),
                     classCtx.getConstantPoolGen());
 
-            if (className.endsWith("Map") && "get".equals(methodName)) {
+            if (className.endsWith("List") && "get".equals(methodName)) {
                 // Get the index of accessing list
                 accessIndex = getAccessIndexArrayLoad(locationList, index, dataflow);
             }
