@@ -33,7 +33,6 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARRAYLENGTH;
-import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
@@ -45,7 +44,6 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.StoreInstruction;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -327,7 +325,7 @@ public class ArrayIndexOutCheck implements Detector {
      *            instruction
      * @return boolean
      */
-    private boolean isCompareLength(Instruction ins) {
+    private static boolean isCompareLength(Instruction ins) {
         if (!(ins instanceof IfInstruction)) {
             return false;
         }
@@ -426,9 +424,11 @@ public class ArrayIndexOutCheck implements Detector {
 
         ValueNumberDataflow dataflow = classCtx.getValueNumberDataflow(method);
         ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(compareLocation);
-        // top value
+
+        // value number of right value in compared instruction
         ValueNumber comparedRightValueNum = vnaFrame.getTopValue();
-        // bottom value
+
+        // value number of left value in compared instruction
         ValueNumber comparedLeftValueNum = vnaFrame.getValue(vnaFrame.getNumLocals());
 
         ComparedArrayModel compareModel = new ComparedArrayModel();
@@ -557,23 +557,17 @@ public class ArrayIndexOutCheck implements Detector {
         // array.length>=10 || 10<=array.length
         if (arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPLT
                 || !arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPGT) {
-            // if branch
-            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                 if (accessIndex >= arrayModel.getCompareNum()) {
                     fillWarningReport(accessLocation, method);
                 }
-            }
         }
 
         // array.length>10 || 10<array.length
         if (arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPLE
                 || !arrayModel.isLeftInCompare() && opcode == Const.IF_ICMPGE) {
-            // if branch
-            if (accessPc > trueHandle.getPosition() && accessPc < falseHandle.getPosition()) {
                 if (accessIndex > arrayModel.getCompareNum()) {
                     fillWarningReport(accessLocation, method);
                 }
-            }
         }
 
         // array.length <= 10 || 10 >= array.length
@@ -627,37 +621,6 @@ public class ArrayIndexOutCheck implements Detector {
 
     }
 
-    /**
-     * Is there return or athrow instruction between start Handle and end position
-     *
-     * @param startHandle
-     *            start instruction handle
-     * @param endPc
-     *            end position
-     * @return true: has return or throw; false: no
-     */
-    private boolean checkHasReturn(InstructionHandle startHandle, int endPc) {
-        boolean flag = false;
-        InstructionHandle nowHandle = startHandle;
-        int nowPc = nowHandle.getPosition();
-
-        while (nowPc < endPc) {
-            Instruction ins = nowHandle.getInstruction();
-            if (ins instanceof ReturnInstruction || ins instanceof ATHROW) {
-                flag = true;
-                break;
-            }
-
-            nowHandle = nowHandle.getNext();
-            if (null == nowHandle) {
-                break;
-            }
-            nowPc = nowHandle.getPosition();
-        }
-
-        return flag;
-
-    }
 
     /**
      * Get the number compared with array's length
@@ -730,7 +693,7 @@ public class ArrayIndexOutCheck implements Detector {
      * @return array map
      * @throws DataflowAnalysisException
      */
-    private Map<String, Object> getObjectName(boolean isTop, ValueNumberDataflow dataflow, Location location,
+    private static Map<String, Object> getObjectName(boolean isTop, ValueNumberDataflow dataflow, Location location,
             Method method) throws DataflowAnalysisException {
         Map<String, Object> objMap = new HashMap<>(3);
         ValueNumberFrame vnaFrame = dataflow.getFactAtLocation(location);
@@ -941,7 +904,7 @@ public class ArrayIndexOutCheck implements Detector {
      *            constant pool
      * @return
      */
-    private String getClassOrMethodFromInstruction(boolean isClass, int constIndex, ConstantPoolGen constPool) {
+    private static String getClassOrMethodFromInstruction(boolean isClass, int constIndex, ConstantPoolGen constPool) {
         String res = null;
         ConstantCP constTmp = (ConstantCP) constPool.getConstant(constIndex);
 
