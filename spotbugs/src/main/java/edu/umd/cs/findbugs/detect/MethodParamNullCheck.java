@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
@@ -93,7 +94,7 @@ public class MethodParamNullCheck implements Detector {
                 continue;
             }
 
-            // No param,skip
+            // No param,skip 入参和返回值
             String signature = method.getSignature();
 
             if (null == signature) {
@@ -140,10 +141,12 @@ public class MethodParamNullCheck implements Detector {
         LocalVariableTable localVariableTable = method.getLocalVariableTable();
         LineNumberTable lineNumberTable = method.getLineNumberTable();
         IsNullValueDataflow nullValueDataflow = classContext.getIsNullValueDataflow(method);
+
         MethodGen methodGen = classContext.getMethodGen(method);
         String sourceFile = classContext.getJavaClass().getSourceFileName();
 
-        Map<Integer, LocalVariable> variablePcMap = getvariablePcMap(classContext, method);
+        Map<Integer, LocalVariable> variablePcMap = getvariablePcMap(classContext, method, nullValueDataflow,
+                localVariableTable);
         if (variablePcMap.isEmpty()) {
             return;
         }
@@ -273,18 +276,26 @@ public class MethodParamNullCheck implements Detector {
      * @throws CFGBuilderException
      * @throws DataflowAnalysisException
      */
-    private Map<Integer, LocalVariable> getvariablePcMap(ClassContext classContext, Method method)
+    private Map<Integer, LocalVariable> getvariablePcMap(ClassContext classContext, Method method,
+            IsNullValueDataflow invDataflow, LocalVariableTable localVariableTable)
             throws DataflowAnalysisException, CFGBuilderException {
-        IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
-        LocalVariableTable localVariableTable = method.getLocalVariableTable();
+
         Map<Integer, LocalVariable> variablePcMap = new HashMap<>();
+
         if (null == localVariableTable) {
             return variablePcMap;
         }
+
+        // Get the value number frame of local variables in slot
+        ValueNumberDataflow valueNumDataFlow = classContext.getValueNumberDataflow(method);
+
+        // the instruction list
         Iterator<BasicBlock> bbIter = invDataflow.getCFG().blockIterator();
+
         // Find the receiver of InvokeInstruction or GetField
         while (bbIter.hasNext()) {
             BasicBlock basicBlock = bbIter.next();
+            // Check whether the instruction needs to null check
             if (basicBlock.isNullCheck()) {
                 InstructionHandle exceptionThrowerHandle = basicBlock.getExceptionThrower();
                 Instruction exceptionThrower = exceptionThrowerHandle.getInstruction();
@@ -295,10 +306,11 @@ public class MethodParamNullCheck implements Detector {
                     continue;
                 }
 
-                ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getStartFact(basicBlock);
+                ValueNumberFrame vnaFrame = valueNumDataFlow.getStartFact(basicBlock);
                 if (!vnaFrame.isValid()) {
                     continue;
                 }
+
 
                 ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
                 Location location = new Location(exceptionThrowerHandle, basicBlock);
@@ -308,8 +320,14 @@ public class MethodParamNullCheck implements Detector {
                 for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
                     if (valueNumber.equals(vnaFrame.getValue(i))) {
                         index = i;
+                        break;
                     }
                 }
+
+                if (-1 == index) {
+                    continue;
+                }
+
                 LocalVariable local = localVariableTable.getLocalVariable(index, pcprev);
                 if (null == local) {
                     local = localVariableTable.getLocalVariable(index, pc);

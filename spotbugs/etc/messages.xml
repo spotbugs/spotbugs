@@ -1701,6 +1701,34 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MapIteratorWayCheck">
+    <Details>
+      <![CDATA[
+        <p>The way to iterator map is inefficient.</p>
+      ]]>
+    </Details>
+  </Detector>
+   <Detector class="edu.umd.cs.findbugs.detect.FinallyReturnCheck">
+    <Details>
+      <![CDATA[
+        <p>It is risky to return value in finally block.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ObjectNoEqualsAndHashCode">
+    <Details>
+      <![CDATA[
+        <p>The object doesn't rewrriten equals and hashCode methods.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ArrayIndexOutCheck">
+    <Details>
+      <![CDATA[
+        <p>Accessing an array may be out of bounds.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8500,6 +8528,90 @@ after the call to initLogging, the logger configuration is lost
       is the same as that it writes to the database, but this is not the case. 
       If you want to read data from a database into a List in a certain order,
       you should consider using the OrderBy annotation.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SPEC_MAP_ITERATOR_INEFFICIENT">
+    <ShortDescription>The way to iterator Map is inefficient. </ShortDescription>
+    <LongDescription>Method {1} iterators Map {2} inefficiently, and using {4} instead of {5} is more efficient.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>If only the key is used in the iterator process, then just call the Map.keySet();
+         If only the value is used in the iterator process, then just call the Map.values();
+         If key and value are both used in the iterator process, then call the Map.entrySet();
+         Using key to get value (Map.get(key)) in the iterator process is less efficient.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_FINALLY_RETURN_CHECK">
+    <ShortDescription>Returning value in finally block may overwrite the correct result. </ShortDescription>
+    <LongDescription>Method {1} returns value in finally block, which may overwrite the correct result.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>The instructions in finally block will definitelly be excuted, 
+         if the return operation is excuted here may overwrite the value returned in try or catch.
+         Therefore, it is risky to return value in finally block.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST">
+    <ShortDescription>Object stored in List doesn't override equals and hashCode method. </ShortDescription>
+    <LongDescription>Method {1} called List.remove(Object), but the Object class doesn't override equals and hashCode method.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>When List.remove(object) is called, it first find the target object in list which is euqal to the incoming object,
+         and then remove it. If the object doesn't override the equals and hashCode method, the object may not be found and can not be removed,
+         even the object is existed in list.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP">
+    <ShortDescription>Object used as key of Map doesn't override equals and hashCode methods. </ShortDescription>
+    <LongDescription>{1} uses an object which doesn't override equals and hashCode methods as key of Map .</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>The key object of Map must override euqals and hashCode. 
+         As Map distinguishes and stores value object by calling key object's equals method, and euqals method is based on hashCode method.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_OBJECT_NO_EQUALS_HASHCODE_SET">
+    <ShortDescription>Object stored in Set doesn't override equals and hashCode method. </ShortDescription>
+    <LongDescription>{1} stores an object which doesn't override equals and hashCode methods in Set .</LongDescription>
+    <Details>
+      <![CDATA[
+      <p> The object stored Set must override equals and hashCode.
+         Set doesn't allow storing duplicate objects, it distinguishes and stores object by calling object's equals method, 
+         and euqals method is based on hashCode method.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SPEC_ARRAY_INDEX_OUT_OF_BOUNDS">
+    <ShortDescription>Accessing an array may be out of bounds. </ShortDescription>
+    <LongDescription>Method {1} accesses an array may be out of bounds.</LongDescription>
+    <Details>
+      <![CDATA[
+      <p> Accessing an array may be out of bounds. 
+          Although, It already checked the array's length before access array, 
+          but the access index if lager than the checked number which may cause out of bound exception.
+          For example, consider:
+      </p>
+      <pre><code>public void arrayTest(String[] array) {
+           if(array.length <2){
+               return;
+           }
+           String str = array[2];
+      }
+      </code></pre>
+      <p> when array.length == 2, it can pass the condition, and do array[2], 
+          which will cause ArrayIndexOutBoundsException.
+      </p>
       ]]>
     </Details>
   </BugPattern>
