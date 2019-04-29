@@ -3,10 +3,10 @@ dist: trusty
 
 jdk:
   - openjdk8
-  - oraclejdk11
+  - openjdk11
 matrix:
   allow_failures:
-  - jdk: oraclejdk11
+  - jdk: openjdk11
 env:
   global:
     - SONAR_HOST_URL="https://sonarcloud.io"
@@ -55,7 +55,7 @@ install:
 script:
   - jdk_switcher use openjdk8
   - ./gradlew classes testClasses -S
-  - if [[ $TRAVIS_JDK_VERSION == "oraclejdk11" ]]; then export JAVA_HOME=$HOME/oraclejdk11; fi
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk11" ]]; then export JAVA_HOME=$HOME/openjdk11; fi
   - ./gradlew -v --no-daemon
   - ./gradlew build smoketest -x signArchives -S --no-daemon
   - jdk_switcher use openjdk8
