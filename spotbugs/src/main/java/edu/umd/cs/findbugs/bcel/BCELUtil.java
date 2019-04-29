@@ -19,22 +19,17 @@
 
 package edu.umd.cs.findbugs.bcel;
 
-import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGenOrMethodGen;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -60,44 +55,6 @@ public abstract class BCELUtil {
     }
 
     /**
-     * Get a MethodDescriptor describing the method called by given
-     * InvokeInstruction.
-     *
-     * @param inv
-     *            the InvokeInstruction
-     * @param cpg
-     *            ConstantPoolGen of class containing instruction
-     * @return MethodDescriptor describing the called method
-     */
-    public static MethodDescriptor getCalledMethodDescriptor(InvokeInstruction inv, ConstantPoolGen cpg) {
-        String calledClassName = inv.getClassName(cpg).replace('.', '/');
-        String calledMethodName = inv.getMethodName(cpg);
-        String calledMethodSig = inv.getSignature(cpg);
-        boolean isStatic = inv.getOpcode() == Const.INVOKESTATIC;
-
-        return DescriptorFactory.instance().getMethodDescriptor(calledClassName, calledMethodName, calledMethodSig, isStatic);
-    }
-
-    /**
-     * Get FieldDescriptor describing the field accessed by given
-     * FieldInstruction.
-     *
-     * @param fins
-     *            a FieldInstruction
-     * @param cpg
-     *            ConstantPoolGen for the method containing the FieldInstruction
-     * @return FieldDescriptor describing the field accessed by given
-     *         FieldInstruction
-     */
-    public static FieldDescriptor getAccessedFieldDescriptor(FieldInstruction fins, ConstantPoolGen cpg) {
-        String className = fins.getClassName(cpg);
-        String fieldName = fins.getName(cpg);
-        String fieldSig = fins.getSignature(cpg);
-        boolean isStatic = (fins.getOpcode() == Const.GETSTATIC || fins.getOpcode() == Const.PUTSTATIC);
-        return DescriptorFactory.instance().getFieldDescriptor(className, fieldName, fieldSig, isStatic);
-    }
-
-    /**
      * Construct a ClassDescriptor from a JavaClass.
      *
      * @param jclass
@@ -120,44 +77,8 @@ public abstract class BCELUtil {
 
     }
 
-    /**
-     * Get a ClassDescriptor for the class described by given ObjectType object.
-     *
-     * @param type
-     *            an ObjectType
-     * @return a ClassDescriptor for the class described by the ObjectType
-     * @deprecated Use {@link DescriptorFactory#getClassDescriptor(ObjectType)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor getClassDescriptor(ObjectType type) {
-        return DescriptorFactory.getClassDescriptor(type);
-    }
-
-    /**
-     * Throw a ClassNotFoundException to indicate that class named by given
-     * ClassDescriptor cannot be found. The exception message is formatted in a
-     * way that can be decoded by ClassNotFoundExceptionParser.
-     *
-     * @param classDescriptor
-     *            ClassDescriptor naming a class that cannot be found
-     * @throws ClassNotFoundException
-     * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
-     * @deprecated Use
-     *             {@link ClassDescriptor#throwClassNotFoundException(ClassDescriptor)}
-     *             instead
-     */
-    @Deprecated
-    public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        ClassDescriptor.throwClassNotFoundException(classDescriptor);
-    }
-
     public static ObjectType getObjectTypeInstance(@DottedClassName String className) {
         return ObjectType.getInstance(className);
-    }
-
-    public static ObjectType getObjectTypeInstance(Class<?> clazz) {
-        return  getObjectTypeInstance(clazz.getName());
     }
 
     /**
