@@ -1729,6 +1729,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CollectionIteratorCheck">
+    <Details>
+      <![CDATA[
+        <p>The method of collection is wrong.</p>
+      ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
@@ -8615,6 +8622,21 @@ after the call to initLogging, the logger configuration is lost
       ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SPEC_LIST_REMOVEORADD_CHECK">
+    <ShortDescription>Remove() or add() called during for loop iteration of list. </ShortDescription>
+    <LongDescription>Method {1} is inefficient,because the remove() or add() is not allowed to be called during the for loop iteration of the list.</LongDescription>
+    <Details></Details>
+  </BugPattern>
+  <BugPattern type="SPEC_SET_REMOVEORADD_CHECK">
+    <ShortDescription>Remove() or add() called during for loop iteration of set. </ShortDescription>
+    <LongDescription>Method {1} is inefficient,because the remove() or add() is not allowed to be called during the for loop iteration of the set.</LongDescription>
+    <Details></Details>
+  </BugPattern>
+    <BugPattern type="SPEC_MAP_REMOVEORPUT_CHECK">
+    <ShortDescription>Remove() or put() called during for loop iteration of map. </ShortDescription>
+    <LongDescription>Method {1} is inefficient,because the remove() or put() is not allowed to be called during the for loop iteration of the map.</LongDescription>
+    <Details></Details>
+  </BugPattern> 
   <!--
   **********************************************************************
    BugCodes

@@ -666,6 +666,9 @@
                     reports="SPEC_OBJECT_NO_EQUALS_HASHCODE_LIST,SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP,SPEC_OBJECT_NO_EQUALS_HASHCODE_SET"/>
           <Detector class="edu.umd.cs.findbugs.detect.ArrayIndexOutCheck" speed="fast" disabled="false"
                     reports="SPEC_ARRAY_INDEX_OUT_OF_BOUNDS"/>
+		  <Detector class="edu.umd.cs.findbugs.detect.CollectionIteratorCheck" speed="fast" disabled="false"
+                    reports="SPEC_LIST_REMOVEORADD_CHECK,SPEC_SET_REMOVEORADD_CHECK,SPEC_MAP_REMOVEORPUT_CHECK"/>           
+        
             <!-- Bug Categories -->
            <BugCategory category="NOISE" hidden="true"/>
 
@@ -1274,4 +1277,7 @@
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_MAP" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_OBJECT_NO_EQUALS_HASHCODE_SET" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SPEC" type="SPEC_ARRAY_INDEX_OUT_OF_BOUNDS" category="BAD_PRACTICE"/>
+		  <BugPattern abbrev="SPEC" type="SPEC_LIST_REMOVEORADD_CHECK" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_SET_REMOVEORADD_CHECK" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="SPEC" type="SPEC_MAP_REMOVEORPUT_CHECK" category="BAD_PRACTICE"/>
 </FindbugsPlugin>
