@@ -2,11 +2,11 @@ language: java
 dist: trusty
 
 jdk:
-  - oraclejdk8
-  - oraclejdk11
+  - openjdk8
+  - openjdk11
 matrix:
   allow_failures:
-  - jdk: oraclejdk11
+  - jdk: openjdk11
 env:
   global:
     - SONAR_HOST_URL="https://sonarcloud.io"
@@ -32,8 +32,7 @@ env:
 addons:
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - openjdk-8-jdk-headless
 
 before_install:
   - mkdir -p deps
@@ -54,13 +53,13 @@ install:
   - echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
 
 script:
-  - jdk_switcher use oraclejdk8
+  - jdk_switcher use openjdk8
   - ./gradlew classes testClasses -S
-  - if [[ $TRAVIS_JDK_VERSION == "oraclejdk11" ]]; then export JAVA_HOME=$HOME/oraclejdk11; fi
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk11" ]]; then export JAVA_HOME=$HOME/openjdk11; fi
   - ./gradlew -v --no-daemon
   - ./gradlew build smoketest -x signArchives -S --no-daemon
-  - jdk_switcher use oraclejdk8
-  - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then ./gradlew sonarqube -S; fi
+  - jdk_switcher use openjdk8
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew sonarqube -S; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -81,7 +80,7 @@ deploy:
     email: skypencil+spotbugs-bot@gmail.com
     on:
       branch: master
-      jdk: oraclejdk8
+      jdk: openjdk8
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
@@ -90,7 +89,7 @@ deploy:
     email: skypencil+spotbugs-bot@gmail.com
     on:
       tags: true
-      jdk: oraclejdk8
+      jdk: openjdk8
   - provider: pages
     skip_cleanup: true
     github_token: $GITHUB_TOKEN
@@ -99,7 +98,7 @@ deploy:
     email: skypencil+spotbugs-bot@gmail.com
     on:
       tags: true
-      jdk: oraclejdk8
+      jdk: openjdk8
       condition: "$TRAVIS_TAG != *'_RC'* && $TRAVIS_TAG != *'_beta'*"
   - provider: releases
     api_key: $GITHUB_TOKEN
@@ -107,14 +106,14 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      jdk: oraclejdk8
+      jdk: openjdk8
   - provider: script
     skip_cleanup: true
     # wait until uploading task finishes, because it may cost more than 10 minutes without any output
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
     script: .travis/travis_wait "./gradlew uploadArchives"
     on:
-      jdk: oraclejdk8
+      jdk: openjdk8
       branch: master
   - provider: script
     skip_cleanup: true
@@ -123,4 +122,4 @@ deploy:
     script: .travis/travis_wait "./gradlew uploadArchives"
     on:
       tags: true
-      jdk: oraclejdk8
+      jdk: openjdk8
