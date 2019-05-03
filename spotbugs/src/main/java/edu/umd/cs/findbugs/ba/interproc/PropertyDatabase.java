@@ -155,7 +155,6 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
                 setProperty(key, property);
             }
         }
-        // Ignore
     }
 
     /**
@@ -211,8 +210,6 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
             }
         } finally {
             AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
-        
-            // Ignore
         }
     }
 
