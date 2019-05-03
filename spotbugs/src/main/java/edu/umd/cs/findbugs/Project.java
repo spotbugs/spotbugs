@@ -580,17 +580,15 @@ public class Project implements XMLWriteable, AutoCloseable {
 
         try {
             URL manifestURL = new URL("jar:" + jarFileURL.toString() + "!/META-INF/MANIFEST.MF");
-
-            InputStream in = null;
-            try {
-                in = manifestURL.openStream();
+    
+            try (InputStream in = manifestURL.openStream()) {
                 Manifest manifest = new Manifest(in);
-
+        
                 Attributes mainAttrs = manifest.getMainAttributes();
                 String classPath = mainAttrs.getValue("Class-Path");
                 if (classPath != null) {
                     String[] fileList = classPath.split("\\s+");
-
+            
                     for (String jarFile : fileList) {
                         URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
                         if (workList.add(new WorkListItem(referencedURL))) {
@@ -598,10 +596,6 @@ public class Project implements XMLWriteable, AutoCloseable {
                             LOG.debug("Implicit jar: {}", referencedURL);
                         }
                     }
-                }
-            } finally {
-                if (in != null) {
-                    in.close();
                 }
             }
         } catch (IOException ignore) {
@@ -636,8 +630,7 @@ public class Project implements XMLWriteable, AutoCloseable {
      */
     @Deprecated
     public void write(String outputFile, boolean useRelativePaths, String relativeBase) throws IOException {
-        PrintWriter writer = UTF8.printWriter(outputFile);
-        try {
+        try (PrintWriter writer = UTF8.printWriter(outputFile)) {
             writer.println(JAR_FILES_KEY);
             for (String jarFile : analysisTargets) {
                 if (useRelativePaths) {
@@ -645,7 +638,7 @@ public class Project implements XMLWriteable, AutoCloseable {
                 }
                 writer.println(jarFile);
             }
-
+        
             writer.println(SRC_DIRS_KEY);
             for (String srcDir : srcDirList) {
                 if (useRelativePaths) {
@@ -653,7 +646,7 @@ public class Project implements XMLWriteable, AutoCloseable {
                 }
                 writer.println(srcDir);
             }
-
+        
             writer.println(AUX_CLASSPATH_ENTRIES_KEY);
             for (String auxClasspathEntry : auxClasspathEntryList) {
                 if (useRelativePaths) {
@@ -661,13 +654,11 @@ public class Project implements XMLWriteable, AutoCloseable {
                 }
                 writer.println(auxClasspathEntry);
             }
-
+        
             if (useRelativePaths) {
                 writer.println(OPTIONS_KEY);
                 writer.println(RELATIVE_PATHS + "=true");
             }
-        } finally {
-            writer.close();
         }
 
         // Project successfully saved
