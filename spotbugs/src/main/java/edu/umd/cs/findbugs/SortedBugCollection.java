@@ -785,17 +785,14 @@ public class SortedBugCollection implements BugCollection {
         }
 
         in.reset();
-
-        BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)));
-        try {
+    
+        try (BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("<BugCollection")) {
                     return;
                 }
             }
-        } finally {
-            reader.close();
         }
 
         throw new IOException("XML does not contain saved bug data");

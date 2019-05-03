@@ -22,6 +22,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Start migrating STDOUT/STDERR usage to a logging framework
 * Improvements and bug-fixes for fancy-hist.xsl
 * Bump up Apache Commons BCEL to the version 6.3.1
+* Replace to try-with-resources
 
 ### Deprecated
 

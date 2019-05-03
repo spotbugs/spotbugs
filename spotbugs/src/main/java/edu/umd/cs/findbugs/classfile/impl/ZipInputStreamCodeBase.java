@@ -62,28 +62,26 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
         this.file = file;
         setLastModifiedTime(file.lastModified());
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
-        try {
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(file))) {
             ZipEntry ze;
-
+        
             if (DEBUG) {
                 System.out.println("Reading zip input stream " + file);
             }
-
+        
             while ((ze = zis.getNextEntry()) != null) {
                 String name = ze.getName();
                 if (!ze.isDirectory()
-                        && ("META-INF/MANIFEST.MF".equals(name) || name.endsWith(".class") || Archive.isArchiveFileName(name))) {
+                    && ("META-INF/MANIFEST.MF".equals(name) || name.endsWith(".class") || Archive.isArchiveFileName(
+                    name))) {
                     entries.add(name);
                     if ("META-INF/MANIFEST.MF".equals(name)) {
                         map.put(name, build(zis, ze));
                     }
                 }
                 zis.closeEntry();
-
+            
             }
-        } finally {
-            zis.close();
         }
         if (DEBUG) {
             System.out.println("Done with zip input stream " + file);
@@ -113,10 +111,9 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
             if (z != null) {
                 return z;
             }
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(file));
-            try {
+            try (ZipInputStream zis = new ZipInputStream(new FileInputStream(file))) {
                 ZipEntry ze;
-
+        
                 boolean found = false;
                 int countDown = 20;
                 while ((ze = zis.getNextEntry()) != null && countDown >= 0) {
@@ -133,8 +130,6 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
                     }
                     zis.closeEntry();
                 }
-            } finally {
-                zis.close();
             }
             z = map.get(resourceName);
             if (z == null) {

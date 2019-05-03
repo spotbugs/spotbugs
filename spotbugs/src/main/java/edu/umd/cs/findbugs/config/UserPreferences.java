@@ -175,21 +175,12 @@ public class UserPreferences implements Cloneable {
      * @throws IOException
      */
     public void read(@WillClose InputStream in) throws IOException {
-        BufferedInputStream prefStream = null;
         Properties props = new Properties();
-        try {
-            prefStream = new BufferedInputStream(in);
+        try (BufferedInputStream prefStream = new BufferedInputStream(in)) {
             props.load(prefStream);
-        } finally {
-            try {
-                if (prefStream != null) {
-                    prefStream.close();
-                }
-            } catch (IOException ioe) {
-                // Ignore
-            }
         }
-
+        // Ignore
+    
         if (props.size() == 0) {
             return;
         }
@@ -315,19 +306,10 @@ public class UserPreferences implements Cloneable {
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
         writeProperties(props, KEY_PLUGIN, customPlugins);
-
-        OutputStream prefStream = null;
-        try {
-            prefStream = new BufferedOutputStream(out);
+    
+        try (OutputStream prefStream = new BufferedOutputStream(out)) {
             props.store(prefStream, "SpotBugs User Preferences");
             prefStream.flush();
-        } finally {
-            try {
-                if (prefStream != null) {
-                    prefStream.close();
-                }
-            } catch (IOException ioe) {
-            }
         }
     }
 
