@@ -179,7 +179,6 @@ public class UserPreferences implements Cloneable {
         try (BufferedInputStream prefStream = new BufferedInputStream(in)) {
             props.load(prefStream);
         }
-        // Ignore
     
         if (props.size() == 0) {
             return;
