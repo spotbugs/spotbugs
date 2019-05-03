@@ -86,52 +86,6 @@ public class Util {
 
     }
 
-    /**
-     * @deprecated use {@link Integer#signum(int)} instead.
-     */
-    @Deprecated
-    public static int sign(int x) {
-        if (x < 0) {
-            return -1;
-        }
-        if (x > 0) {
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
-     * return sign of x - y
-     *
-     * @deprecated use {@link Integer#compare(int, int)} instead.
-     */
-    @Deprecated
-    public static int compare(int x, int y) {
-        if (x > y) {
-            return 1;
-        }
-        if (x < y) {
-            return -1;
-        }
-        return 0;
-    }
-
-    /**
-     * return sign of x - y
-     *
-     * @deprecated use {@link Long#compare(long, long)} instead.
-     */
-    @Deprecated
-    public static int compare(long x, long y) {
-        if (x > y) {
-            return 1;
-        }
-        if (x < y) {
-            return -1;
-        }
-        return 0;
-    }
-
     public static Iterable<Integer> setBitIteratable(final BitSet b) {
         return () -> setBitIterator(b);
     }
@@ -168,17 +122,6 @@ public class Util {
     }
 
     static Collection<Runnable> runAtShutdown;
-
-    public static String getNetworkErrorMessage(Throwable e) {
-        if ("InvalidProtocolBufferException".equals(e.getClass().getSimpleName())) {
-            return "Your Internet provider may require you to log in via your web browser.";
-        }
-        if (e instanceof UnknownHostException) {
-            return "You may not be connected to the Internet.";
-        } else {
-            return e.getClass().getSimpleName() + ": " + e.getMessage();
-        }
-    }
 
     static class ShutdownLogging {
         public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
@@ -220,44 +163,6 @@ public class Util {
         return Collections.<K, V> unmodifiableMap(map);
     }
 
-    /**
-     * @deprecated use {@link Objects#hashCode(Object)} instead.
-     */
-    @Deprecated
-    public static int nullSafeHashcode(@CheckForNull Object o) {
-        if (o == null) {
-            return 0;
-        }
-        return o.hashCode();
-    }
-
-    /**
-     * @deprecated use {@link Objects#equals(Object, Object)} instead.
-     */
-    @Deprecated
-    public static <T> boolean nullSafeEquals(@CheckForNull T o1, @CheckForNull T o2) {
-        if (o1 == o2) {
-            return true;
-        }
-        if (o1 == null || o2 == null) {
-            return false;
-        }
-        return o1.equals(o2);
-    }
-
-    public static <T extends Comparable<? super T>> int nullSafeCompareTo(@CheckForNull T o1, @CheckForNull T o2) {
-        if (o1 == o2) {
-            return 0;
-        }
-        if (o1 == null) {
-            return -1;
-        }
-        if (o2 == null) {
-            return 1;
-        }
-        return o1.compareTo(o2);
-    }
-
     public static Reader getReader(@WillCloseWhenClosed InputStream in)  {
         return UTF8.reader(in);
     }
@@ -277,37 +182,6 @@ public class Util {
     public static Writer getFileWriter(String filename) throws FileNotFoundException {
         return getWriter(new FileOutputStream(filename));
     }
-
-    public static void closeSilently(@WillClose Connection c) {
-        try {
-            if (c != null) {
-                c.close();
-            }
-        } catch (SQLException e) {
-            assert true;
-        }
-    }
-
-    public static void closeSilently(@WillClose PreparedStatement c) {
-        try {
-            if (c != null) {
-                c.close();
-            }
-        } catch (SQLException e) {
-            assert true;
-        }
-    }
-
-    public static void closeSilently(@WillClose ResultSet c) {
-        try {
-            if (c != null) {
-                c.close();
-            }
-        } catch (SQLException e) {
-            assert true;
-        }
-    }
-
     public static void closeSilently(@WillClose InputStream in) {
         try {
             if (in != null) {
@@ -404,12 +278,7 @@ public class Util {
         }
 
     }
-
-    public static IOException makeIOException(String msg, Throwable cause) {
-        IOException e = new IOException(msg);
-        e.initCause(cause);
-        return e;
-    }
+    
     private static String getFileExtension(String name) {
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1) {
@@ -429,13 +298,7 @@ public class Util {
         }
         return getFileExtension(name);
     }
-
-    public static void throwIOException(String msg, Throwable cause) throws IOException {
-        IOException e = new IOException(msg);
-        e.initCause(cause);
-        throw e;
-    }
-
+    
     /**
      * @param i
      *            the Iterable whose first element is to be retrieved
@@ -447,119 +310,6 @@ public class Util {
             throw new IllegalArgumentException("iterator has no elements");
         }
         return iterator.next();
-    }
-
-    public static String commonPrefix(String s1, String s2) {
-        if (s1 == null) {
-            return s2;
-        }
-        if (s2 == null) {
-            return s1;
-        }
-        int minLength = Math.min(s1.length(), s2.length());
-        for (int i = 0; i < minLength; i++) {
-            if (s1.charAt(i) != s2.charAt(i)) {
-                return s1.substring(0, i);
-            }
-        }
-        if (s1.length() == minLength) {
-            return s1;
-        }
-        assert s2.length() == minLength;
-        return s2;
-
-    }
-
-    /** Duplication 1.6 functionality of Collections.newSetFromMap */
-    public static <E> Set<E> newSetFromMap(Map<E, Boolean> m) {
-        return new SetFromMap<>(m);
-    }
-
-    private static class SetFromMap<E> extends AbstractSet<E> {
-        final Map<E, Boolean> m;
-
-        final Set<E> s;
-
-        SetFromMap(Map<E, Boolean> map) {
-            this.m = map;
-            this.s = map.keySet();
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return s.iterator();
-        }
-
-        @Override
-        public void clear() {
-            m.clear();
-        }
-
-        @Override
-        public int size() {
-            return m.size();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return m.isEmpty();
-        }
-
-        @Override
-        public boolean contains(Object o) {
-            return m.containsKey(o);
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            return m.remove(o) != null;
-        }
-
-        @Override
-        public boolean add(E e) {
-            return m.put(e, Boolean.TRUE) == null;
-        }
-
-        @Override
-        public Object[] toArray() {
-            return s.toArray();
-        }
-
-        @Override
-        public <T> T[] toArray(T[] a) {
-            return s.toArray(a);
-        }
-
-        @Override
-        public String toString() {
-            return s.toString();
-        }
-
-        @Override
-        public int hashCode() {
-            return s.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return s.equals(o);
-        }
-
-        @Override
-        public boolean containsAll(Collection<?> c) {
-            return s.containsAll(c);
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            return s.removeAll(c);
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            return s.retainAll(c);
-        }
-
     }
 
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
@@ -626,9 +376,5 @@ public class Util {
         return i > 0
             && (i | (i - 1)) + 1 == 2 * i;
     }
-
-    public static boolean isPowerOfTwo(long i) {
-        return i > 0
-            && (i | (i - 1)) + 1 == 2 * i;
-    }
+    
 }
