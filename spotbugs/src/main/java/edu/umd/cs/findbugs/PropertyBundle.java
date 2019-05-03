@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,14 +92,11 @@ public class PropertyBundle {
         if (contents == null) {
             return;
         }
-        InputStream in = null;
-        try {
-            in = new ByteArrayInputStream(contents.getBytes("ISO-8859-1"));
+        
+        try (InputStream in = new ByteArrayInputStream(contents.getBytes(StandardCharsets.ISO_8859_1))) {
             properties.load(in);
         } catch (IOException e) {
             AnalysisContext.logError("Unable to load properties from " + contents, e);
-        } finally {
-            IO.close(in);
         }
     }
 

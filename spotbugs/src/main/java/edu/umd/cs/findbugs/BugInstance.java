@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static java.util.Objects.requireNonNull;
@@ -2436,11 +2437,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         MessageDigest digest = Util.getMD5Digest();
         String key = getInstanceKey();
         byte[] data;
-        try {
-            data = digest.digest(key.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        data = digest.digest(key.getBytes(StandardCharsets.UTF_8));
         hash = new BigInteger(1, data).toString(16);
         instanceHash = hash;
         return hash;
