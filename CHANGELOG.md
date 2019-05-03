@@ -15,7 +15,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Removed
 
 * non thread-safe implementation in `OpcodeStack.Item` ([#28](https://github.com/spotbugs/spotbugs/issues/28))
-* Remove unused methods in `BCELUtil` 
+* Remove unused methods in `BCELUtil`
+* Remove unused methods and deperecated methods in `edu.umd.cs.findbugs.util.Util`
 
 ### Changed
 
