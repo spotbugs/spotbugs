@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Iterator;
 
@@ -37,7 +38,7 @@ public class Obfuscate {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-1");
-            byte[] hash = md.digest((HASH_SEED + in).getBytes("UTF-8"));
+            byte[] hash = md.digest((HASH_SEED + in).getBytes(StandardCharsets.UTF_8));
             return String.format("%040x", new BigInteger(1, hash));
         } catch (RuntimeException e) {
             throw e;
