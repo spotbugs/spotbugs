@@ -187,11 +187,7 @@ public class UnconditionalValueDerefSet {
                 if (factDerefLocationSet != null && !factDerefLocationSet.isEmpty()) {
                     // Compute the union of the dereference locations for
                     // this value number.
-                    Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
-                    if (derefLocationSet == null) {
-                        derefLocationSet = new HashSet<>();
-                        derefLocationSetMap.put(vn, derefLocationSet);
-                    }
+                    Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
                     derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
                 }
             } else {
@@ -221,11 +217,7 @@ public class UnconditionalValueDerefSet {
             if (fact.valueNumbersUnconditionallyDereferenced.get(i)) {
                 // Compute the union of the dereference locations for
                 // this value number.
-                Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
-                if (derefLocationSet == null) {
-                    derefLocationSet = new HashSet<>();
-                    derefLocationSetMap.put(vn, derefLocationSet);
-                }
+                Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
                 derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
             } else {
                 derefLocationSetMap.put(vn, new HashSet<>(fact.getDerefLocationSet(vn)));
@@ -293,11 +285,7 @@ public class UnconditionalValueDerefSet {
      * @return the set of dereference Locations
      */
     public Set<Location> getDerefLocationSet(ValueNumber vn) {
-        Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
-        if (derefLocationSet == null) {
-            derefLocationSet = new HashSet<>();
-            derefLocationSetMap.put(vn, derefLocationSet);
-        }
+        Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
         return derefLocationSet;
     }
 

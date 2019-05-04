@@ -23,6 +23,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Improvements and bug-fixes for fancy-hist.xsl
 * Bump up Apache Commons BCEL to the version 6.3.1
 * Replace to try-with-resources
+* Use Map.computeIfAbsent instead of Map.get and Map.put
 
 ### Deprecated
 

@@ -212,11 +212,7 @@ public class SetBugDatabaseInfo {
             for (BugInstance bug : origCollection.getCollection()) {
                 SourceLineAnnotation src = bug.getPrimarySourceLineAnnotation();
                 if (!sourceSearcher.sourceNotFound.contains(src.getClassName()) && !sourceSearcher.findSource(src)) {
-                    Set<String> paths = missingFiles.get(src.getSourceFile());
-                    if (paths == null) {
-                        paths = new HashSet<>();
-                        missingFiles.put(src.getSourceFile(), paths);
-                    }
+                    Set<String> paths = missingFiles.computeIfAbsent(src.getSourceFile(), k -> new HashSet<>());
                     String fullPath = fullPath(src);
                     // System.out.println("Missing " + fullPath);
                     paths.add(fullPath);

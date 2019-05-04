@@ -131,11 +131,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
          * @param out caller
          */
         void addEdge(MethodParameter in, MethodParameter out) {
-            Set<MethodParameter> outs = graph.get(in);
-            if (outs == null) {
-                outs = new HashSet<>();
-                graph.put(in, outs);
-            }
+            Set<MethodParameter> outs = graph.computeIfAbsent(in, k -> new HashSet<>());
             outs.add(out);
         }
 

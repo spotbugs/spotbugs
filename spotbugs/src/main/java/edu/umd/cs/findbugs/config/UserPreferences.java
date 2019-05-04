@@ -377,15 +377,10 @@ public class UserPreferences implements Cloneable {
      */
     public boolean isDetectorEnabled(DetectorFactory factory) {
         String detectorName = factory.getShortName();
-        Boolean enabled = detectorEnablementMap.get(detectorName);
-        if (enabled == null) {
-            // No explicit preference has been specified for this detector,
-            // so use the default enablement specified by the
-            // DetectorFactory.
-            enabled = factory.isDefaultEnabled();
-            detectorEnablementMap.put(detectorName, enabled);
-        }
-        return enabled;
+        // No explicit preference has been specified for this detector,
+        // so use the default enablement specified by the
+        // DetectorFactory.
+        return detectorEnablementMap.computeIfAbsent(detectorName, k -> factory.isDefaultEnabled());
     }
 
     /**

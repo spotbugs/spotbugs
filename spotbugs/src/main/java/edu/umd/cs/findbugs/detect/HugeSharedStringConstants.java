@@ -66,11 +66,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
             return;
         }
         String key = getStringKey(value);
-        SortedSet<String> set = map.get(key);
-        if (set == null) {
-            set = new TreeSet<>();
-            map.put(key, set);
-        }
+        SortedSet<String> set = map.computeIfAbsent(key, k -> new TreeSet<>());
         set.add(getDottedClassName());
     }
 

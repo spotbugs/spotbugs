@@ -603,11 +603,7 @@ public class Update {
             if (!matchedOldBugs.containsKey(bug)) {
                 if (matchOld.match(bug)) {
                     //                    oldBugs++;
-                    LinkedList<BugInstance> q = set.get(bug);
-                    if (q == null) {
-                        q = new LinkedList<>();
-                        set.put(bug, q);
-                    }
+                    LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
                     q.add(bug);
                 }
 

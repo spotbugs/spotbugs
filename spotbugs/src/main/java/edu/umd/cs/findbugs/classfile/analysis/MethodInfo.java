@@ -177,11 +177,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
         public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
             ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
-            Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(parameter);
-            if (map == null) {
-                map = new HashMap<>();
-                methodParameterAnnotations.put(parameter, map);
-            }
+            Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.computeIfAbsent(parameter,
+                k -> new HashMap<>());
             map.put(annotationClass, value);
         }
 
@@ -593,11 +590,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public void addParameterAnnotation(int param, AnnotationValue annotationValue) {
         HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<>(
                 methodParameterAnnotations);
-        Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.get(param);
-        if (paramMap == null) {
-            paramMap = new HashMap<>();
-            updatedAnnotations.put(param, paramMap);
-        }
+        Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.computeIfAbsent(param,
+            k -> new HashMap<>());
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
 
         methodParameterAnnotations = updatedAnnotations;

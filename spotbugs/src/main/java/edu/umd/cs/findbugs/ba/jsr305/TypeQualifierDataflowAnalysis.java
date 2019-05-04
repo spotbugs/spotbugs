@@ -282,11 +282,7 @@ public abstract class TypeQualifierDataflowAnalysis extends AbstractDataflowAnal
     public abstract void registerSourceSinkLocations() throws DataflowAnalysisException;
 
     protected void registerSourceSink(SourceSinkInfo sourceSinkInfo) {
-        Set<SourceSinkInfo> set = sourceSinkMap.get(sourceSinkInfo.getLocation());
-        if (set == null) {
-            set = new HashSet<>();
-            sourceSinkMap.put(sourceSinkInfo.getLocation(), set);
-        }
+        Set<SourceSinkInfo> set = sourceSinkMap.computeIfAbsent(sourceSinkInfo.getLocation(), k -> new HashSet<>());
         set.add(sourceSinkInfo);
     }
 

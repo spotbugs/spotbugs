@@ -595,13 +595,10 @@ public class TypeQualifierApplications {
 
     private static TypeQualifierAnnotation computeEffectiveTypeQualifierAnnotation(TypeQualifierValue<?> typeQualifierValue,
             AnnotatedObject o) {
-
-        Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().get(typeQualifierValue);
-        if (map == null) {
-            map = new HashMap<>();
-            getEffectiveObjectAnnotations().put(typeQualifierValue, map);
-        }
-
+    
+        Map<AnnotatedObject, TypeQualifierAnnotation> map = getEffectiveObjectAnnotations().computeIfAbsent(
+            typeQualifierValue, k -> new HashMap<>());
+    
         // Check cached answer
         TypeQualifierAnnotation result;
 

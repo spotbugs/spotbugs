@@ -272,11 +272,8 @@ public class NullDerefAndRedundantComparisonFinder {
             if (DEBUG_DEREFS) {
                 System.out.println("OOO " + lwvbn);
             }
-            Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
-            if (locationSet == null) {
-                locationSet = new HashSet<>(4);
-                nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
-            }
+            Set<Location> locationSet = nullValueAssignmentMap.computeIfAbsent(lwvbn.getValueNumber(),
+                k -> new HashSet<>(4));
             locationSet.add(lwvbn.getLocation());
             if (DEBUG_DEREFS) {
                 System.out.println(lwvbn.getValueNumber() + " becomes null at " + lwvbn.getLocation());
@@ -625,12 +622,8 @@ public class NullDerefAndRedundantComparisonFinder {
         thisNullValueDeref.add(isNullValue, unconditionalDerefLocationSet);
 
         if (thisLocation != null) {
-            SortedSet<Location> locationsForThisBug = bugLocations.get(valueNumber);
-
-            if (locationsForThisBug == null) {
-                locationsForThisBug = new TreeSet<>();
-                bugLocations.put(valueNumber, locationsForThisBug);
-            }
+            SortedSet<Location> locationsForThisBug = bugLocations.computeIfAbsent(valueNumber, k -> new TreeSet<>());
+    
             locationsForThisBug.add(thisLocation);
         }
     }

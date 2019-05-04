@@ -580,11 +580,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
         XMethod xm = getXMethod();
         {
-            TreeSet<XMethod> s = canonicalToXMethod.get(allSmall);
-            if (s == null) {
-                s = new TreeSet<>();
-                canonicalToXMethod.put(allSmall, s);
-            }
+            TreeSet<XMethod> s = canonicalToXMethod.computeIfAbsent(allSmall, k -> new TreeSet<>());
             s.add(xm);
         }
 
