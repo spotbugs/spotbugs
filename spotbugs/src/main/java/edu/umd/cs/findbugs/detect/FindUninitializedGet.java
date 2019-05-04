@@ -117,13 +117,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 
     @Override
     public void sawBranchTo(int target) {
-        Iterator<BugInstance> i = pendingBugs.iterator();
-        while (i.hasNext()) {
-            BugInstance bug = i.next();
-            if (bug.getPrimarySourceLineAnnotation().getStartBytecode() >= target) {
-                i.remove();
-            }
-        }
+        pendingBugs.removeIf(bug -> bug.getPrimarySourceLineAnnotation().getStartBytecode() >= target);
     }
 
     @Override
