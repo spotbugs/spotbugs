@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
+### Changed
+
+* Rejuvenated log levels.
+
 ## 4.0.0-beta1 - 2019-03-27
 
 ### Added
