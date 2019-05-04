@@ -65,7 +65,7 @@ public class Ideas_2009_05_06 {
     public static void main(String[] args) throws Exception {
         initLogging(); // adds a file handler to the logger
         System.gc(); // logger configuration lost
-        Logger.getLogger("com.google.gse").info("Some message"); // this isn't
+        Logger.getLogger("com.google.gse").finest("Some message"); // this isn't
                                                                  // logged to
                                                                  // the file as
                                                                  // expected
