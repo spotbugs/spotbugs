@@ -86,33 +86,6 @@ public class Util {
 
     }
 
-    public static Iterable<Integer> setBitIteratable(final BitSet b) {
-        return () -> setBitIterator(b);
-    }
-
-    public static Iterator<Integer> setBitIterator(final BitSet b) {
-        return new Iterator<Integer>() {
-            int nextBit = b.nextSetBit(0);
-
-            @Override
-            public boolean hasNext() {
-                return nextBit >= 0;
-            }
-
-            @Override
-            public Integer next() {
-                int result = nextBit;
-                nextBit = b.nextSetBit(nextBit + 1);
-                return result;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
     public static String repeat(String s, int number) {
         StringBuilder b = new StringBuilder(s.length() * number);
         for (int i = 0; i < number; i++) {
