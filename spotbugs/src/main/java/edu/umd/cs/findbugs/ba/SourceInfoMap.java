@@ -337,17 +337,15 @@ public class SourceInfoMap {
      *             if an I/O error occurs, or if the format is invalid
      */
     public void read(@WillClose InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(Util.getReader(inputStream));
-
         int lineNumber = 0;
-        try {
+        try (BufferedReader reader = new BufferedReader(Util.getReader(inputStream))) {
             String line;
             int lparen;
             String version;
-
+        
             while ((line = reader.readLine()) != null) {
                 ++lineNumber;
-
+            
                 if (lineNumber == 1) {
                     if (DEBUG) {
                         System.out.println("First line: " + line);
@@ -363,14 +361,14 @@ public class SourceInfoMap {
                         if (!"1.0".equals(version)) {
                             throw new IOException("Unsupported sourceInfo version " + version);
                         }
-
+                    
                         // Version looks good. Skip to next line of file.
                         continue;
                     }
                 }
-
+            
                 StringTokenizer tokenizer = new StringTokenizer(line, ",");
-
+            
                 String className = tokenizer.nextToken();
                 String next = tokenizer.nextToken();
                 if (DIGITS.matcher(next).matches()) {
@@ -384,13 +382,13 @@ public class SourceInfoMap {
                     // Line number for method
                     String methodName = next.substring(0, lparen);
                     String methodSignature = next.substring(lparen);
-
+                
                     if ("init^".equals(methodName)) {
                         methodName = "<init>";
                     } else if ("clinit^".equals(methodName)) {
                         methodName = "<clinit>";
                     }
-
+                
                     SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
                     methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
                     if (DEBUG) {
@@ -405,7 +403,7 @@ public class SourceInfoMap {
                         System.out.println("field:" + className + "," + fieldName + "," + range);
                     }
                 }
-
+            
                 // Note: we could complain if there are more tokens,
                 // but instead we'll just ignore them.
             }
@@ -413,12 +411,6 @@ public class SourceInfoMap {
             IOException ioe = new IOException("Invalid syntax in source info file at line " + lineNumber);
             ioe.initCause(e);
             throw ioe;
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                // ignore
-            }
         }
     }
 
