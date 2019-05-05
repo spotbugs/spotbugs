@@ -6,6 +6,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
+### Changed
+
+* Replace to try-with-resources
+* Reset DataAnalysis.DEBUG back when analysis reaches MAX_ITER
+* Use Map.computeIfAbsent instead of Map.get and Map.put
+
 ## 4.0.0-beta1 - 2019-03-27
 
 ### Added
@@ -22,8 +28,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Start migrating STDOUT/STDERR usage to a logging framework
 * Improvements and bug-fixes for fancy-hist.xsl
 * Bump up Apache Commons BCEL to the version 6.3.1
-* Replace to try-with-resources
-* Use Map.computeIfAbsent instead of Map.get and Map.put
 
 ### Deprecated
 
