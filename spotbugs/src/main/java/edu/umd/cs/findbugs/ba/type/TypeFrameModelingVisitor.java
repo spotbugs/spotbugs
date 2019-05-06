@@ -83,7 +83,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
     private ValueNumber instanceOfValueNumber;
 
-    private final Set<ReferenceType> typesComputedFromGenerics = Util.newSetFromMap(new IdentityHashMap<ReferenceType, Boolean>());
+    private final Set<ReferenceType> typesComputedFromGenerics = Collections.newSetFromMap(new IdentityHashMap<>());
 
     protected final TypeMerger typeMerger;
 
