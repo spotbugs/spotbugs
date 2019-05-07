@@ -321,13 +321,7 @@ public class BugRanker {
     }
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
-        for (Iterator<BugInstance> i = origCollection.getCollection().iterator(); i.hasNext();) {
-            BugInstance b = i.next();
-            if (BugRanker.findRank(b) > maxRank) {
-                i.remove();
-            }
-
-        }
+        origCollection.getCollection().removeIf(b -> BugRanker.findRank(b) > maxRank);
     }
 }
 

@@ -347,12 +347,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
      * @param classPattern
      */
     public void purgeClassesThatDontMatch(Pattern classPattern) {
-        for (Iterator<Map.Entry<String, ClassStats>> i = packageMembers.entrySet().iterator(); i.hasNext();) {
-            Map.Entry<String, ClassStats> e = i.next();
-            if (!classPattern.matcher(e.getKey()).find()) {
-                i.remove();
-            }
-        }
+        packageMembers.entrySet().removeIf(e -> !classPattern.matcher(e.getKey()).find());
     }
 }
 
