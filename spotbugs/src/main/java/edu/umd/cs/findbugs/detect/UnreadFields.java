@@ -61,6 +61,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ProgramPoint;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AccessibleEntity;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -870,12 +871,8 @@ public class UnreadFields extends OpcodeStackDetector {
         declaredFields.removeAll(unknownAnotationAndUnwritten);
         declaredFields.removeAll(data.containerFields);
         declaredFields.removeAll(data.reflectiveFields);
-        for (Iterator<XField> i = declaredFields.iterator(); i.hasNext();) {
-            XField f = i.next();
-            if (f.isSynthetic() && !f.getName().startsWith("this$") || f.getName().startsWith("_")) {
-                i.remove();
-            }
-        }
+        declaredFields.removeIf(f -> f.isSynthetic() && !f.getName().startsWith("this$") || f.getName()
+            .startsWith("_"));
 
         TreeSet<XField> notInitializedInConstructors = new TreeSet<>(declaredFields);
         notInitializedInConstructors.retainAll(data.readFields);
@@ -883,12 +880,8 @@ public class UnreadFields extends OpcodeStackDetector {
         notInitializedInConstructors.retainAll(data.assumedNonNull.keySet());
         notInitializedInConstructors.removeAll(data.writtenInConstructorFields);
         notInitializedInConstructors.removeAll(data.writtenInInitializationFields);
-
-        for (Iterator<XField> i = notInitializedInConstructors.iterator(); i.hasNext();) {
-            if (i.next().isStatic()) {
-                i.remove();
-            }
-        }
+    
+        notInitializedInConstructors.removeIf(AccessibleEntity::isStatic);
 
         TreeSet<XField> readOnlyFields = new TreeSet<>(declaredFields);
         readOnlyFields.removeAll(data.writtenFields);

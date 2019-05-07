@@ -10,6 +10,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 * Replace to try-with-resources
 * Reset DataAnalysis.DEBUG back when analysis reaches MAX_ITER
+* Remove unused methods in `BCELUtil`
+* Remove unused methods and deperecated methods in `edu.umd.cs.findbugs.util.Util`
+* Change to removeIf from Iterator and Iterator.remove
 * Use Map.computeIfAbsent instead of Map.get and Map.put
 
 ## 4.0.0-beta1 - 2019-03-27
@@ -21,7 +24,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Removed
 
 * non thread-safe implementation in `OpcodeStack.Item` ([#28](https://github.com/spotbugs/spotbugs/issues/28))
-* Remove unused methods in `BCELUtil` 
 
 ### Changed
 

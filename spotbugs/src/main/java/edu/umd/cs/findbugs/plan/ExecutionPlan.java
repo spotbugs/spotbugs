@@ -179,13 +179,8 @@ public class ExecutionPlan {
 
             }
         } while (change);
-
-        for (Iterator<Map.Entry<String, DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry<String, DetectorFactory> e = i.next();
-            if (!factoryChooser.choose(e.getValue())) {
-                i.remove();
-            }
-        }
+    
+        factoryMap.entrySet().removeIf(e -> !factoryChooser.choose(e.getValue()));
 
         // Build inter-pass constraint graph
         Map<String, DetectorNode> nodeMap = new HashMap<>();
