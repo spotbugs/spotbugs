@@ -403,11 +403,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         public void addEdgeAndExplore(BasicBlock sourceBlock, InstructionHandle target, @Edge.Type int edgeType) {
             if (usedInstructionSet.get(target.getPosition()) && !containsInstruction(target)) {
                 // Control escapes this subroutine
-                List<EscapeTarget> escapeTargetList = escapeTargetListMap.get(sourceBlock);
-                if (escapeTargetList == null) {
-                    escapeTargetList = new LinkedList<>();
-                    escapeTargetListMap.put(sourceBlock, escapeTargetList);
-                }
+                List<EscapeTarget> escapeTargetList = escapeTargetListMap.computeIfAbsent(sourceBlock,
+                    k -> new LinkedList<>());
                 escapeTargetList.add(new EscapeTarget(target, edgeType));
             } else {
                 // Edge within the current subroutine

@@ -99,11 +99,8 @@ public class FieldSummary {
     }
 
     public void setCalledFromSuperConstructor(ProgramPoint from, XMethod calledFromConstructor) {
-        Set<ProgramPoint> set = selfMethodsCalledFromConstructor.get(calledFromConstructor);
-        if (set == null) {
-            set = new HashSet<>();
-            selfMethodsCalledFromConstructor.put(calledFromConstructor, set);
-        }
+        Set<ProgramPoint> set = selfMethodsCalledFromConstructor.computeIfAbsent(calledFromConstructor,
+            k -> new HashSet<>());
         set.add(from);
         callsOverriddenMethodsFromConstructor.add(from.method.getClassDescriptor());
 

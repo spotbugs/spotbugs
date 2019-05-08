@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Remove unused methods in `BCELUtil`
 * Remove unused methods and deperecated methods in `edu.umd.cs.findbugs.util.Util`
 * Change to removeIf from Iterator and Iterator.remove
+* Use Map.computeIfAbsent instead of Map.get and Map.put
 
 ## 4.0.0-beta1 - 2019-03-27
 

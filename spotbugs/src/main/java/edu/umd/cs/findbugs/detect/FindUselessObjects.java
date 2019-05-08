@@ -164,11 +164,7 @@ public class FindUselessObjects implements Detector {
                 outputSet.set(entry.getKey());
                 entry.getValue().origValues = outputSet;
                 for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
-                    Set<ValueInfo> list = values.get(i);
-                    if(list == null) {
-                        list = new HashSet<>();
-                        values.put(i, list);
-                    }
+                    Set<ValueInfo> list = values.computeIfAbsent(i, k -> new HashSet<>());
                     list.add(entry.getValue());
                 }
             }
@@ -233,19 +229,11 @@ public class FindUselessObjects implements Detector {
                     }
                 }
             }
-            Set<ValueInfo> list = values.get(number);
-            if(list == null) {
-                list = new HashSet<>();
-                values.put(number, list);
-            }
+            Set<ValueInfo> list = values.computeIfAbsent(number, k -> new HashSet<>());
             result |= list.addAll(vals);
             BitSet outputSet = vna.getMergeTree().getTransitiveOutputSet(number);
             for (int i = outputSet.nextSetBit(0); i >= 0; i = outputSet.nextSetBit(i+1)) {
-                list = values.get(i);
-                if(list == null) {
-                    list = new HashSet<>();
-                    values.put(i, list);
-                }
+                list = values.computeIfAbsent(i, k -> new HashSet<>());
                 result |= list.addAll(vals);
             }
             return result;

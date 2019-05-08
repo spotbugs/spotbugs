@@ -160,11 +160,7 @@ public class ExceptionHandlerMap {
     }
 
     private void addHandler(InstructionHandle handle, CodeExceptionGen exceptionHandler) {
-        List<CodeExceptionGen> handlerList = codeToHandlerMap.get(handle);
-        if (handlerList == null) {
-            handlerList = new LinkedList<>();
-            codeToHandlerMap.put(handle, handlerList);
-        }
+        List<CodeExceptionGen> handlerList = codeToHandlerMap.computeIfAbsent(handle, k -> new LinkedList<>());
         handlerList.add(exceptionHandler);
     }
 }

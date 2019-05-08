@@ -74,11 +74,7 @@ public class JCIPAnnotationDatabase {
 
     public void addEntryForClassMember(ClassMember member,
             String annotationClass, ElementValue value) {
-        Map<String, ElementValue> map = memberAnnotations.get(member);
-        if (map == null) {
-            map = new HashMap<>();
-            memberAnnotations.put(member, map);
-        }
+        Map<String, ElementValue> map = memberAnnotations.computeIfAbsent(member, k -> new HashMap<>());
         map.put(annotationClass, value);
     }
 

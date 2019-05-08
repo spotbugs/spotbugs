@@ -103,11 +103,7 @@ public class TypeQualifierValueSet {
 
     private static void addSourceSinkInfo(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap, ValueNumber vn,
             SourceSinkInfo sourceSinkInfo) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-        if (sourceSinkInfoSet == null) {
-            sourceSinkInfoSet = new HashSet<>(3);
-            sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
-        }
+        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
         sourceSinkInfoSet.add(sourceSinkInfo);
     }
 
@@ -146,11 +142,7 @@ public class TypeQualifierValueSet {
     }
     private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.get(vn);
-        if (sourceSinkInfoSet == null) {
-            sourceSinkInfoSet = new HashSet<>(3);
-            sourceSinkInfoSetMap.put(vn, sourceSinkInfoSet);
-        }
+        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
         return sourceSinkInfoSet;
     }
 

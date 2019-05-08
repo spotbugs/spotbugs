@@ -288,12 +288,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
     }
 
     private void updateMap(HashMap<BigInteger, Collection<Integer>> map, int i, BigInteger clauseAsInt) {
-        Collection<Integer> values = map.get(clauseAsInt);
-
-        if (values == null) {
-            values = new LinkedList<>();
-            map.put(clauseAsInt, values);
-        }
+        Collection<Integer> values = map.computeIfAbsent(clauseAsInt, k -> new LinkedList<>());
+    
         values.add(i); // index into the sorted array
     }
 
