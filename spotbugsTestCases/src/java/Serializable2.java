@@ -24,8 +24,7 @@ class Serializable2 {
     public void exampleOfSerializableAnonymousClass() {
         JMenuItem mi = new JMenuItem(new AbstractAction() {
             @Override
-            public void actionPerformed(ActionEvent ae) {
-            }
+            public void actionPerformed(ActionEvent ae) {}
         });
     }
 

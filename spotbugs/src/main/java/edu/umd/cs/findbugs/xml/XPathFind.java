@@ -49,7 +49,7 @@ public abstract class XPathFind {
     }
 
     public void find(String xpath) {
-        List<Node> nodes =  XMLUtil.selectNodes(document, xpath);
+        List<Node> nodes = XMLUtil.selectNodes(document, xpath);
         for (Node node : nodes) {
             match(node);
         }
@@ -92,4 +92,3 @@ public abstract class XPathFind {
         finder.find(xpath);
     }
 }
-

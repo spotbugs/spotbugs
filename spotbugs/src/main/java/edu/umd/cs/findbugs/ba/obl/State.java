@@ -37,8 +37,7 @@ public class State {
 
     private Path path;
 
-    private State() {
-    }
+    private State() {}
 
     public State(/* int maxObligationTypes, */ObligationFactory factory) {
         this.obligationSet = new ObligationSet(/* maxObligationTypes, */factory);
@@ -92,4 +91,3 @@ public class State {
         return buf.toString();
     }
 }
-

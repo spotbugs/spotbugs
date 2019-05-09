@@ -40,6 +40,6 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(CLASS)
-@Target({METHOD, PARAMETER, FIELD, ANNOTATION_TYPE, PACKAGE})
+@Target({ METHOD, PARAMETER, FIELD, ANNOTATION_TYPE, PACKAGE })
 public @interface Nullable {
 }

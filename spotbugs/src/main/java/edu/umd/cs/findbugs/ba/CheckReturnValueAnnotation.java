@@ -63,7 +63,7 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 
     private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN, CHECK_RETURN_VALUE_HIGH,
         CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE, CHECK_RETURN_VALUE_VERY_HIGH,
-        CHECK_RETURN_VALUE_LOW_BAD_PRACTICE, CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE, CHECK_RETURN_VALUE_INFERRED};
+        CHECK_RETURN_VALUE_LOW_BAD_PRACTICE, CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE, CHECK_RETURN_VALUE_INFERRED };
 
     @CheckForNull
     public static CheckReturnValueAnnotation parse(String priority) {

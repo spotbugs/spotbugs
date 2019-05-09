@@ -40,8 +40,8 @@ import edu.umd.cs.findbugs.charsets.UserTextFile;
 public class CommandLineUiCallback implements IGuiCallback {
     private final CurrentThreadExecutorService bugUpdateExecutor = new CurrentThreadExecutorService();
 
-    public CommandLineUiCallback() {
-    }
+    public CommandLineUiCallback() {}
+
     BufferedReader br = UserTextFile.bufferedReader(System.in);
 
     @Override
@@ -92,7 +92,7 @@ public class CommandLineUiCallback implements IGuiCallback {
         case 'c':
             return JOptionPane.CANCEL_OPTION;
         default:
-            System.out.println("You entered '" + option +"'");
+            System.out.println("You entered '" + option + "'");
             return -1;
         }
     }
@@ -146,8 +146,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     private static class CurrentThreadExecutorService extends AbstractExecutorService {
         @Override
-        public void shutdown() {
-        }
+        public void shutdown() {}
 
         @Override
         public List<Runnable> shutdownNow() {

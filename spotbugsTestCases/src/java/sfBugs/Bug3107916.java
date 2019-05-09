@@ -27,6 +27,7 @@ public class Bug3107916 {
         }
         return result;
     }
+
     @NoWarning("NP")
     public static int doCompare2(String s1, String s2) {
         int result;

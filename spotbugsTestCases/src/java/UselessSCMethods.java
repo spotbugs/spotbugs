@@ -1,6 +1,5 @@
 class Super {
-    public void test1() {
-    }
+    public void test1() {}
 
     public int test2(String s) {
         return 1;
@@ -10,11 +9,9 @@ class Super {
         return 0.0;
     }
 
-    protected void test4(String s) {
-    }
+    protected void test4(String s) {}
 
-    public void test5(String[] s) {
-    }
+    public void test5(String[] s) {}
 }
 
 public class UselessSCMethods extends Super {
@@ -36,7 +33,7 @@ public class UselessSCMethods extends Super {
     @Override
     public void test4(String s) { // don't report this, although suspect, access
                                   // has been widened
-        // perhaps this should be reported as another bug type, dunno
+                                  // perhaps this should be reported as another bug type, dunno
         super.test4(s);
     }
 

@@ -93,7 +93,7 @@ public class UnresolvedXField extends AbstractField {
      */
     @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors() {
-        return Collections.<ClassDescriptor> emptyList();
+        return Collections.<ClassDescriptor>emptyList();
     }
 
     /*
@@ -104,7 +104,7 @@ public class UnresolvedXField extends AbstractField {
      */
     @Override
     public Collection<AnnotationValue> getAnnotations() {
-        return Collections.<AnnotationValue> emptyList();
+        return Collections.<AnnotationValue>emptyList();
     }
 
     /*
@@ -144,8 +144,7 @@ public class UnresolvedXField extends AbstractField {
     }
 
     @Override
-    public @CheckForNull
-    String getSourceSignature() {
+    public @CheckForNull String getSourceSignature() {
         return null;
     }
 

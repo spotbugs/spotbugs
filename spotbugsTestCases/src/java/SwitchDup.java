@@ -75,7 +75,7 @@ public class SwitchDup {
         switch (which) {
         case 0:
             return n * n;
-            // case 9: return n*n;
+        // case 9: return n*n;
         case 1:
             return n * n;
         case 2:

@@ -19,8 +19,8 @@ public class StaticCalender {
     public static final Calendar calStatic = Calendar.getInstance();
 
     /** static test field for subclass */
- // TODO understand why is this important to use internal classes here
-//    private static Calendar calStatic2 = new BuddhistCalendar();
+    // TODO understand why is this important to use internal classes here
+    //    private static Calendar calStatic2 = new BuddhistCalendar();
     private static Calendar calStatic2 = new GregorianCalendar() {};
 
     /** instance test field */

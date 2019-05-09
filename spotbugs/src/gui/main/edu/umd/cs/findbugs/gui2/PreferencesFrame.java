@@ -125,6 +125,7 @@ public class PreferencesFrame extends FBDialog {
         mainTabPane.setSelectedComponent(filterPane);
 
     }
+
     private PreferencesFrame() {
         setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Preferences"));
         setModal(true);
@@ -237,7 +238,7 @@ public class PreferencesFrame extends FBDialog {
 
         pluginPanel.add(pluginPanelCenter, BorderLayout.CENTER);
 
-        pluginPanelCenter.setBorder(new EmptyBorder(10,10,10,10));
+        pluginPanelCenter.setBorder(new EmptyBorder(10, 10, 10, 10));
         pluginPanelCenter.setLayout(new GridBagLayout());
 
         JButton addButton = new JButton("Install new plugin...");
@@ -290,9 +291,9 @@ public class PreferencesFrame extends FBDialog {
                 } catch (PluginException | MalformedURLException e1) {
                     LOGGER.log(Level.WARNING, "Could not load " + f.getPath(), e1);
                     JOptionPane.showMessageDialog(PreferencesFrame.this, "Could not load " + f.getPath()
-                    + "\n\n"
-                    + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
-                    "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
+                            + "\n\n"
+                            + e1.getClass().getSimpleName() + ": " + e1.getMessage(),
+                            "Error Loading Plugin", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -312,7 +313,7 @@ public class PreferencesFrame extends FBDialog {
         if (currentProject != null) {
             GridBagConstraints g = new GridBagConstraints();
             g.fill = GridBagConstraints.NONE;
-            g.insets = new Insets(5,5,5,5);
+            g.insets = new Insets(5, 5, 5, 5);
             g.gridy = 0;
             //        g.anchor = GridBagConstraints.WEST;
             //        g.gridx = 1;
@@ -380,13 +381,13 @@ public class PreferencesFrame extends FBDialog {
             gbc.fill = GridBagConstraints.BOTH;
             gbc.weightx = 1;
             gbc.gridx = 1;
-            gbc.insets = new Insets(0,5,0,5);
-            gbc.gridy = added+1;
+            gbc.insets = new Insets(0, 5, 0, 5);
+            gbc.gridy = added + 1;
             gbc.anchor = GridBagConstraints.NORTHWEST;
             pluginPanelCenter.add(checkGlobal, gbc);
 
             if (currentProject != null && !cannotDisable) {
-                final JComboBox<String> combo = new WideComboBox<>(new String[]{"DEFAULT", "DISABLED", "ENABLED"});
+                final JComboBox<String> combo = new WideComboBox<>(new String[] { "DEFAULT", "DISABLED", "ENABLED" });
                 if (enabled.project == null) {
                     combo.setSelectedIndex(0);
                 } else {
@@ -422,8 +423,7 @@ public class PreferencesFrame extends FBDialog {
                 combo.addActionListener(e -> {
                     Boolean[] array = { null, false, true };
                     int i = combo.getSelectedIndex();
-                    if (i < 0 || i > 2)
-                    {
+                    if (i < 0 || i > 2) {
                         return; // ??
                     }
                     pluginEnabledStatus.get(plugin).project = array[i];
@@ -450,7 +450,7 @@ public class PreferencesFrame extends FBDialog {
                     }
                 }
             });
-            label.setBorder(new EmptyBorder(10,10,10,10));
+            label.setBorder(new EmptyBorder(10, 10, 10, 10));
             pluginPanelCenter.add(label);
         }
         PreferencesFrame.this.pack();
@@ -467,6 +467,7 @@ public class PreferencesFrame extends FBDialog {
         c.gridx = 1;
         p.add(field, c);
     }
+
     private JPanel createPropertiesPane() {
         JPanel contentPanel = new JPanel(new BorderLayout());
         JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -732,8 +733,8 @@ public class PreferencesFrame extends FBDialog {
             int result = JOptionPane.showOptionDialog(PreferencesFrame.this,
                     "Are you sure you want to uninstall " + plugin.getShortDescription() + "?" +
                             "\n\nNo files will be deleted from your computer.", "",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                            new Object[]{"Uninstall", "Cancel"}, "Cancel");
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                    new Object[] { "Uninstall", "Cancel" }, "Cancel");
             if (result == 0) {
                 if (!GUISaveState.getInstance().removeCustomPlugin(url)) {
                     if ("file".equals(url.getProtocol())) {
@@ -751,7 +752,7 @@ public class PreferencesFrame extends FBDialog {
                                 "The plugin could not be uninstalled automatically.\n\n" +
                                         "You can try to delete this plugin manually: \n"
                                         + path + "\n\n(This path has been copied to your clipboard)",
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
                         JOptionPane.showMessageDialog(PreferencesFrame.this,
                                 "This plugin is not actually in the list of plugins...\n" +
@@ -759,7 +760,7 @@ public class PreferencesFrame extends FBDialog {
                                         + url.toExternalForm()
                                         + "\n\nPlugin URL's:\n" +
                                         GUISaveState.getInstance().getCustomPlugins(),
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(PreferencesFrame.this,

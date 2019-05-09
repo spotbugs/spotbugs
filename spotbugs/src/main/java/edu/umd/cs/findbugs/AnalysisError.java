@@ -46,10 +46,10 @@ public class AnalysisError {
         }
         AnalysisError other = (AnalysisError) obj;
         return Objects.equals(exceptionMessage, other.exceptionMessage)
-            && Objects.equals(message, other.message)
-            && Objects.equals(nestedExceptionMessage, other.nestedExceptionMessage)
-            && Arrays.equals(nestedStackTrace, other.nestedStackTrace)
-            && Arrays.equals(stackTrace, other.stackTrace);
+                && Objects.equals(message, other.message)
+                && Objects.equals(nestedExceptionMessage, other.nestedExceptionMessage)
+                && Arrays.equals(nestedStackTrace, other.nestedStackTrace)
+                && Arrays.equals(stackTrace, other.stackTrace);
     }
 
     /**

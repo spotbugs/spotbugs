@@ -42,8 +42,7 @@ public final class Bug1307 {
         return "bug".equals(s.isEmpty() ? Constants2.A : s);
     }
 
-    private Bug1307() {
-    }
+    private Bug1307() {}
 }
 
 class Constants1 {
@@ -67,4 +66,3 @@ class Constants2 {
     public static String C2;
 
 }
-

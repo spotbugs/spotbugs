@@ -48,11 +48,11 @@ public class SourceMatcher implements Matcher {
     @Override
     public boolean match(BugInstance bugInstance) {
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-        if(primaryClassAnnotation == null){
+        if (primaryClassAnnotation == null) {
             return false;
         }
         String bugFileName = primaryClassAnnotation.getSourceFileName();
-        if(bugFileName == null || bugFileName.isEmpty()){
+        if (bugFileName == null || bugFileName.isEmpty()) {
             return false;
         }
         boolean result = fileName.match(bugFileName);
@@ -69,4 +69,3 @@ public class SourceMatcher implements Matcher {
         xmlOutput.openCloseTag("Source", attributes);
     }
 }
-

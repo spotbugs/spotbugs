@@ -13,7 +13,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_08_26 {
 
-    @ExpectWarning(value="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE,OS_OPEN_STREAM_EXCEPTION_PATH")
+    @ExpectWarning(value = "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE,OS_OPEN_STREAM_EXCEPTION_PATH")
     public static boolean copyfile(final File srcFile, final File dtFile, final boolean overwrite) {
         if (dtFile.exists() && !overwrite) {
             return false;

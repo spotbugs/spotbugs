@@ -34,9 +34,11 @@ public class DuplicatePluginIdError extends Error {
     public String getPluginId() {
         return pluginId;
     }
+
     public URL getLoadedFrom() {
         return loadedFrom;
     }
+
     public URL getPreviouslyLoadedFrom() {
         return previouslyLoadedFrom;
     }

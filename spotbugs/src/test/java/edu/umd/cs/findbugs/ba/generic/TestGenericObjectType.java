@@ -50,9 +50,11 @@ public class TestGenericObjectType {
 
     GenericUtilities.TypeCategory typeCategory;
 
-    @Nullable String variable;
+    @Nullable
+    String variable;
 
-    @Nullable Type extension;
+    @Nullable
+    Type extension;
 
     List<ReferenceType> parameters;
 

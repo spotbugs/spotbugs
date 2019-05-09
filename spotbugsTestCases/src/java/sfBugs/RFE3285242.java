@@ -18,12 +18,12 @@ public class RFE3285242 {
         protected String theDing;
 
         @Override
-		public String getTheDing() {
+        public String getTheDing() {
             return theDing;
         }
 
         @Override
-		public void setTheDing(String theDing) {
+        public void setTheDing(String theDing) {
             this.theDing = theDing;
         }
     }

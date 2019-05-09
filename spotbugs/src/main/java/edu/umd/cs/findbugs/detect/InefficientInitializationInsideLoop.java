@@ -46,14 +46,20 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
     private static final MethodDescriptor NODELIST_GET_LENGTH = new MethodDescriptor("org/w3c/dom/NodeList", "getLength", "()I");
-    private static final MethodDescriptor PATTERN_COMPILE = new MethodDescriptor("java/util/regex/Pattern", "compile", "(Ljava/lang/String;)Ljava/util/regex/Pattern;", true);
-    private static final MethodDescriptor PATTERN_COMPILE_2 = new MethodDescriptor("java/util/regex/Pattern", "compile", "(Ljava/lang/String;I)Ljava/util/regex/Pattern;", true);
-    private static final MethodDescriptor PATTERN_MATCHES = new MethodDescriptor("java/util/regex/Pattern", "matches", "(Ljava/lang/String;Ljava/lang/CharSequence;)Z", true);
-    private static final MethodDescriptor STRING_REPLACEALL = new MethodDescriptor("java/lang/String", "replaceAll", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-    private static final MethodDescriptor STRING_REPLACEFIRST = new MethodDescriptor("java/lang/String", "replaceFirst", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+    private static final MethodDescriptor PATTERN_COMPILE = new MethodDescriptor("java/util/regex/Pattern", "compile",
+            "(Ljava/lang/String;)Ljava/util/regex/Pattern;", true);
+    private static final MethodDescriptor PATTERN_COMPILE_2 = new MethodDescriptor("java/util/regex/Pattern", "compile",
+            "(Ljava/lang/String;I)Ljava/util/regex/Pattern;", true);
+    private static final MethodDescriptor PATTERN_MATCHES = new MethodDescriptor("java/util/regex/Pattern", "matches",
+            "(Ljava/lang/String;Ljava/lang/CharSequence;)Z", true);
+    private static final MethodDescriptor STRING_REPLACEALL = new MethodDescriptor("java/lang/String", "replaceAll",
+            "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+    private static final MethodDescriptor STRING_REPLACEFIRST = new MethodDescriptor("java/lang/String", "replaceFirst",
+            "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
     private static final MethodDescriptor STRING_MATCHES = new MethodDescriptor("java/lang/String", "matches", "(Ljava/lang/String;)Z");
     private static final MethodDescriptor STRING_SPLIT = new MethodDescriptor("java/lang/String", "split", "(Ljava/lang/String;)[Ljava/lang/String;");
-    private static final MethodDescriptor STRING_SPLIT_2 = new MethodDescriptor("java/lang/String", "split", "(Ljava/lang/String;I)[Ljava/lang/String;");
+    private static final MethodDescriptor STRING_SPLIT_2 = new MethodDescriptor("java/lang/String", "split",
+            "(Ljava/lang/String;I)[Ljava/lang/String;");
 
     private static final Set<MethodDescriptor> implicitPatternMethods = new HashSet<>(Arrays.asList(PATTERN_MATCHES,
             STRING_MATCHES, STRING_REPLACEALL, STRING_REPLACEFIRST, STRING_SPLIT, STRING_SPLIT_2));
@@ -106,7 +112,8 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
     private boolean isFastPath(String regex) {
         char ch;
         return (((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) || (regex.length() == 2
-                && regex.charAt(0) == '\\' && (((ch = regex.charAt(1)) - '0') | ('9' - ch)) < 0 && ((ch - 'a') | ('z' - ch)) < 0 && ((ch - 'A') | ('Z' - ch)) < 0)) && (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE));
+                && regex.charAt(0) == '\\' && (((ch = regex.charAt(1)) - '0') | ('9' - ch)) < 0 && ((ch - 'a') | ('z' - ch)) < 0 && ((ch - 'A') | ('Z'
+                        - ch)) < 0)) && (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE));
     }
 
     @Override
@@ -118,10 +125,11 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
         } else if (seen == Const.INVOKEINTERFACE && getMethodDescriptorOperand().equals(NODELIST_GET_LENGTH)) {
             Item item = getStack().getStackItem(0);
             XMethod returnValueOf = item.getReturnValueOf();
-            if(returnValueOf != null && returnValueOf.getClassName().startsWith("org.w3c.dom.") && returnValueOf.getName().startsWith("getElementsByTagName")) {
+            if (returnValueOf != null && returnValueOf.getClassName().startsWith("org.w3c.dom.") && returnValueOf.getName().startsWith(
+                    "getElementsByTagName")) {
                 matched.put(getPC(),
                         new BugInstance(this, "IIL_ELEMENTS_GET_LENGTH_IN_LOOP", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this, getPC()).addCalledMethod(this));
+                                .addSourceLine(this, getPC()).addCalledMethod(this));
                 sources.put(getPC(), item.getPC());
             }
         } else if (seen == Const.INVOKESTATIC
@@ -134,8 +142,8 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
             String regex = getFirstArgument();
             if (regex != null && !(getNameConstantOperand().equals("split") && isFastPath(regex))) {
                 BugInstance bug = new BugInstance(this, "IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT", LOW_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this, getPC()).addCalledMethod(this).addString(regex)
-                .describe(StringAnnotation.REGEX_ROLE);
+                        .addClassAndMethod(this).addSourceLine(this, getPC()).addCalledMethod(this).addString(regex)
+                        .describe(StringAnnotation.REGEX_ROLE);
                 matched.put(getPC(), bug);
             }
         } else if (isBranch(seen) && getBranchOffset() > 0) {
@@ -143,7 +151,7 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
         } else if (!matched.isEmpty() && isBranch(seen) && getBranchOffset() < 0) {
             for (Entry<Integer, BugInstance> entry : matched.tailMap(getBranchTarget()).entrySet()) {
                 Integer source = sources.get(entry.getKey());
-                if(source != null && (source > getBranchTarget() && source < getPC())) {
+                if (source != null && (source > getBranchTarget() && source < getPC())) {
                     // Object was created in the same loop: ignore
                     return;
                 }

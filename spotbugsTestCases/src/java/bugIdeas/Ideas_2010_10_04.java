@@ -8,13 +8,13 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2010_10_04 {
 
-    int [] data;
+    int[] data;
 
     /**
      * @param data
      */
     public Ideas_2010_10_04(int[] data) {
-       this.data = data;
+        this.data = data;
     }
 
     @Override
@@ -45,8 +45,8 @@ public class Ideas_2010_10_04 {
 
     @NoWarning(value = "EC_ARRAY_AND_NONARRAY", confidence = Confidence.MEDIUM)
     public static void main(String args[]) {
-        int [] x = {1};
-        int [] y = {1};
+        int[] x = { 1 };
+        int[] y = { 1 };
         Ideas_2010_10_04 z = new Ideas_2010_10_04(x);
         Ideas_2010_10_04 w = new Ideas_2010_10_04(y);
 

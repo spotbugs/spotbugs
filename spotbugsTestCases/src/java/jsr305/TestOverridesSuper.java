@@ -5,12 +5,10 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 public class TestOverridesSuper {
 
     @OverridingMethodsMustInvokeSuper
-    void f() {
-    }
+    void f() {}
 
     @OverridingMethodsMustInvokeSuper
-    void g() {
-    }
+    void g() {}
 
     static class SubClass extends TestOverridesSuper {
         @Override

@@ -34,9 +34,9 @@ public class Bug3432911 {
     protected void doGet3(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         InputStream msgInputStream = null;
         try {
-           msgInputStream = request.getInputStream();
-           int b = msgInputStream.read();
-           System.out.println(b);
+            msgInputStream = request.getInputStream();
+            int b = msgInputStream.read();
+            System.out.println(b);
         } catch (Exception ex) {
 
         }

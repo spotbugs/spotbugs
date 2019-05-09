@@ -18,8 +18,7 @@ public class Ideas_2011_08_31 {
     }
 
     @NoWarning("TQ")
-    static @PK
-    Integer asPK(Integer i) {
+    static @PK Integer asPK(Integer i) {
         return i;
     }
 

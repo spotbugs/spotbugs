@@ -10,7 +10,7 @@ public class Bug1168 {
     private Integer foo;
 
     @DesireNoWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    public Bug1168() {  // Nonnull field foo not initialized
+    public Bug1168() { // Nonnull field foo not initialized
         assignFoo();
         if (foo == null) {
             throw new IllegalStateException();

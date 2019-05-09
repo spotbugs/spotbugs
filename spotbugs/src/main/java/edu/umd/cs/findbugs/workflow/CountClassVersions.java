@@ -124,7 +124,7 @@ public class CountClassVersions {
             }
             System.err.println("Opening " + f);
 
-            try (ZipFile zipInputFile = new ZipFile(f)){
+            try (ZipFile zipInputFile = new ZipFile(f)) {
                 for (Enumeration<? extends ZipEntry> e = zipInputFile.entries(); e.hasMoreElements();) {
                     ZipEntry ze = e.nextElement();
 

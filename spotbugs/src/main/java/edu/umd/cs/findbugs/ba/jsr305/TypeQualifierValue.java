@@ -81,8 +81,7 @@ public class TypeQualifierValue<A extends Annotation> {
 
     private final boolean isExhaustive;
 
-    private final @CheckForNull
-    TypeQualifierValidator<A> validator;
+    private final @CheckForNull TypeQualifierValidator<A> validator;
 
 
 
@@ -97,7 +96,7 @@ public class TypeQualifierValue<A extends Annotation> {
         boolean isExhaustive1 = false;
         TypeQualifierValidator<A> validator1 = null;
         Class<A> qualifierClass = null;
-        XClass xclass  = null;
+        XClass xclass = null;
         A proxy1 = null;
         try {
             xclass = Global.getAnalysisCache().getClassAnalysis(XClass.class, typeQualifier);
@@ -160,7 +159,7 @@ public class TypeQualifierValue<A extends Annotation> {
 
                         @SuppressWarnings("unchecked")
                         Class<? extends TypeQualifierValidator<A>> validatorClass = (Class<? extends TypeQualifierValidator<A>>) c
-                        .asSubclass(TypeQualifierValidator.class);
+                                .asSubclass(TypeQualifierValidator.class);
                         validator1 = getValidator(validatorClass);
                         qualifierClass = getQualifierClass(typeQualifier);
 
@@ -185,8 +184,7 @@ public class TypeQualifierValue<A extends Annotation> {
                     AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to "
                             + e.getClass().getSimpleName() + ":" + e.getMessage());
                 }
-            }
-            else if (DEBUG_CLASSLOADING) {
+            } else if (DEBUG_CLASSLOADING) {
                 SecurityManager m = System.getSecurityManager();
                 if (m == null) {
                     if (DEBUG_CLASSLOADING) {
@@ -203,13 +201,14 @@ public class TypeQualifierValue<A extends Annotation> {
 
     private static <A extends Annotation> TypeQualifierValidator<A> getValidator(
             Class<? extends TypeQualifierValidator<A>> checkerClass)
-                    throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException {
         return checkerClass.newInstance();
     }
 
     @SuppressWarnings("unchecked")
     private static <A> Class<A> getQualifierClass(ClassDescriptor typeQualifier) throws ClassNotFoundException {
-        @DottedClassName String className = typeQualifier.getDottedClassName();
+        @DottedClassName
+        String className = typeQualifier.getDottedClassName();
         if (DEBUG_CLASSLOADING) {
             System.out.println("Getting qualifier class for " + className);
         }
@@ -231,6 +230,7 @@ public class TypeQualifierValue<A extends Annotation> {
         ClassData data = Global.getAnalysisCache().getClassAnalysis(ClassData.class, d);
         return data.getData();
     }
+
     static class Data {
         /**
          * Cache in which constructed TypeQualifierValues are interned.
@@ -286,8 +286,7 @@ public class TypeQualifierValue<A extends Annotation> {
      * @return an interned TypeQualifierValue object
      */
     @SuppressWarnings("rawtypes")
-    public static @Nonnull
-    TypeQualifierValue<?> getValue(ClassDescriptor desc, @CheckForNull  Object value) {
+    public static @Nonnull TypeQualifierValue<?> getValue(ClassDescriptor desc, @CheckForNull Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
         TypeQualifierValue<?> result = map.get(desc, value);
         if (result != null) {
@@ -298,9 +297,9 @@ public class TypeQualifierValue<A extends Annotation> {
         instance.get().allKnownTypeQualifiers.add(result);
         return result;
     }
+
     @SuppressWarnings("unchecked")
-    public static @Nonnull <A extends Annotation>
-    TypeQualifierValue<A> getValue(Class <A> clazz, @CheckForNull Object value) {
+    public static @Nonnull <A extends Annotation> TypeQualifierValue<A> getValue(Class<A> clazz, @CheckForNull Object value) {
         return (TypeQualifierValue<A>) getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 

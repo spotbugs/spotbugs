@@ -35,8 +35,7 @@ public class SloppyBugComparator implements WarningComparator {
 
     private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 
-    public SloppyBugComparator() {
-    }
+    public SloppyBugComparator() {}
 
     @Override
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
@@ -133,7 +132,7 @@ public class SloppyBugComparator implements WarningComparator {
             return cmp;
         }
 
-        boolean havePrimaryMethods = lhs.getPrimaryMethod() != null &&  rhs.getPrimaryMethod() != null;
+        boolean havePrimaryMethods = lhs.getPrimaryMethod() != null && rhs.getPrimaryMethod() != null;
         // Primary method must match (if any)
         cmp = compareMethodsAllowingNull(lhs.getPrimaryMethod(), rhs.getPrimaryMethod());
         if (cmp != 0) {

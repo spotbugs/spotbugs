@@ -35,6 +35,5 @@ public class LoadAnalysis extends FieldSetAnalysis {
     }
 
     @Override
-    protected void sawStore(FieldSet fact, XField field) {
-    }
+    protected void sawStore(FieldSet fact, XField field) {}
 }

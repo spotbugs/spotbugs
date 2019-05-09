@@ -51,8 +51,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 /**
  * @author pugh
  */
-public  class StackMapAnalyzer {
-
+public class StackMapAnalyzer {
 
 
 
@@ -64,7 +63,7 @@ public  class StackMapAnalyzer {
         @Override
         public JumpInfoFromStackMap analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
 
-            return getFromStackMap( analysisCache,  descriptor);
+            return getFromStackMap(analysisCache, descriptor);
 
 
         }
@@ -78,6 +77,7 @@ public  class StackMapAnalyzer {
         }
 
     }
+
     static final boolean DEBUG = false;
 
     enum StackFrameType {
@@ -107,7 +107,7 @@ public  class StackMapAnalyzer {
     }
 
     static @CheckForNull StackMap getStackMapTable(Code code) {
-        for(Attribute a : code.getAttributes()) {
+        for (Attribute a : code.getAttributes()) {
             if (a instanceof StackMap) {
                 return (StackMap) a;
             }
@@ -115,7 +115,7 @@ public  class StackMapAnalyzer {
         return null;
     }
 
-    static  List<Item>  getInitialLocals(MethodDescriptor descriptor) {
+    static List<Item> getInitialLocals(MethodDescriptor descriptor) {
         List<Item> locals = new ArrayList<>();
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
         int reg = 0;
@@ -154,7 +154,7 @@ public  class StackMapAnalyzer {
 
             });
         } catch (Exception e) {
-            AnalysisContext.logError("Unable to create frame_type accessor",e );
+            AnalysisContext.logError("Unable to create frame_type accessor", e);
             f = null;
         }
         if (DEBUG) {
@@ -175,7 +175,8 @@ public  class StackMapAnalyzer {
             return -1;
         }
     }
-    static  private  @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor)  {
+
+    static private @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
         if (frame_type_field == null) {
             return null;
         }
@@ -208,7 +209,7 @@ public  class StackMapAnalyzer {
             System.out.println(locals);
         }
         int pc = 0;
-        for(StackMapEntry e : stackMapTable.getStackMap()) {
+        for (StackMapEntry e : stackMapTable.getStackMap()) {
             pc += e.getByteCodeOffset();
             int rawFrameType = getFrameType(e);
             StackFrameType stackFrameType = StackFrameType.get(rawFrameType);
@@ -220,13 +221,13 @@ public  class StackMapAnalyzer {
                 stack.clear();
                 addStack(stack, e.getTypesOfStackItems());
                 break;
-            case CHOP_FRAME :
+            case CHOP_FRAME:
                 stack.clear();
-                int n = Const.CHOP_FRAME_MAX+1-rawFrameType;
-                for(int i = 0; i < n; i++) {
-                    Item it = locals.remove(locals.size()-1);
+                int n = Const.CHOP_FRAME_MAX + 1 - rawFrameType;
+                for (int i = 0; i < n; i++) {
+                    Item it = locals.remove(locals.size() - 1);
                     if (it == null) {
-                        it = locals.remove(locals.size()-1);
+                        it = locals.remove(locals.size() - 1);
                         assert it.usesTwoSlots();
                     }
                 }
@@ -249,7 +250,7 @@ public  class StackMapAnalyzer {
             if (DEBUG) {
                 System.out.printf("%4d %2d %2d  %12s %s%n",
 
-                        pc,   e.getNumberOfLocals(), e.getNumberOfStackItems(), stackFrameType, e);
+                        pc, e.getNumberOfLocals(), e.getNumberOfStackItems(), stackFrameType, e);
                 System.out.printf("     %s :: %s%n", stack, locals);
             }
             if (pc > 0) {
@@ -268,18 +269,18 @@ public  class StackMapAnalyzer {
 
     }
 
-    static  private Item getItem(StackMapType t) {
+    static private Item getItem(StackMapType t) {
 
         switch (t.getType()) {
 
         case Const.ITEM_Double:
             return Item.typeOnly("D");
         case Const.ITEM_Float:
-            return  Item.typeOnly("F");
+            return Item.typeOnly("F");
         case Const.ITEM_Integer:
-            return  Item.typeOnly("I");
+            return Item.typeOnly("I");
         case Const.ITEM_Long:
-            return  Item.typeOnly("J");
+            return Item.typeOnly("J");
         case Const.ITEM_Bogus:
         case Const.ITEM_NewObject:
             return Item.typeOnly("Ljava/lang/Object;");
@@ -302,8 +303,9 @@ public  class StackMapAnalyzer {
 
         }
     }
+
     static private void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
-        for(StackMapType t : typesOfStackItems) {
+        for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
             if (item.usesTwoSlots()) {
@@ -312,8 +314,9 @@ public  class StackMapAnalyzer {
         }
 
     }
+
     static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
-        for(StackMapType t : typesOfStackItems) {
+        for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
         }

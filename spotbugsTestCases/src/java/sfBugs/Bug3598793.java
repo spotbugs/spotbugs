@@ -28,7 +28,7 @@ public class Bug3598793 implements ServletResponse {
         response.sendError(404);
     }
 
-    @ExpectWarning(value="BC_UNCONFIRMED_CAST", confidence=Confidence.LOW)
+    @ExpectWarning(value = "BC_UNCONFIRMED_CAST", confidence = Confidence.LOW)
     public void service2(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         HttpServletResponse response;
 
@@ -37,15 +37,15 @@ public class Bug3598793 implements ServletResponse {
         response.sendError(404);
     }
 
-  @ExpectWarning("BC_UNCONFIRMED_CAST")
-  public  Integer foo(Number x) {
-      return (Integer) x;
-  }
+    @ExpectWarning("BC_UNCONFIRMED_CAST")
+    public Integer foo(Number x) {
+        return (Integer) x;
+    }
 
-  @NoWarning("BC_UNCONFIRMED_CAST")
-  public  Integer foo(Object x) {
-      return (Integer) x;
-  }
+    @NoWarning("BC_UNCONFIRMED_CAST")
+    public Integer foo(Object x) {
+        return (Integer) x;
+    }
 
     @Override
     public void flushBuffer() throws IOException {

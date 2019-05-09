@@ -48,13 +48,14 @@ public class ExceptionHandlerMap {
     private final IdentityHashMap<InstructionHandle, CodeExceptionGen> startInstructionToHandlerMap;
 
     private final TypeMerger merger;
+
     /**
      * Constructor.
      *
      * @param methodGen
      *            the method to build the map for
      */
-    public ExceptionHandlerMap( MethodGen methodGen, TypeMerger merger) {
+    public ExceptionHandlerMap(MethodGen methodGen, TypeMerger merger) {
         codeToHandlerMap = new IdentityHashMap<>();
         startInstructionToHandlerMap = new IdentityHashMap<>();
         this.merger = merger;
@@ -135,7 +136,7 @@ public class ExceptionHandlerMap {
         if (m == null) {
             return e1;
         }
-        if ( ! e1.getHandlerPC().equals( e2.getHandlerPC() ) ){
+        if (!e1.getHandlerPC().equals(e2.getHandlerPC())) {
             // log error
             return e1;
         }
@@ -154,7 +155,7 @@ public class ExceptionHandlerMap {
         InstructionHandle handlerPC = exceptionHandler.getHandlerPC();
         CodeExceptionGen existing = startInstructionToHandlerMap.get(handlerPC);
         if (existing != null) {
-            exceptionHandler = merge (this.merger, existing, exceptionHandler);
+            exceptionHandler = merge(this.merger, existing, exceptionHandler);
         }
         startInstructionToHandlerMap.put(handlerPC, exceptionHandler);
     }
@@ -164,4 +165,3 @@ public class ExceptionHandlerMap {
         handlerList.add(exceptionHandler);
     }
 }
-

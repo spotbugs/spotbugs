@@ -14,11 +14,12 @@ public class Feature316 {
     @ExpectWarning("IIL_PREPARE_STATEMENT_IN_LOOP")
     public int calcSumBug(Connection c, List<String> rows) throws SQLException {
         int sum = 0;
-        for(String row : rows) {
-            try(PreparedStatement ps = c.prepareStatement("SELECT count FROM myTable WHERE name=?")) {
+        for (String row : rows) {
+            try (PreparedStatement ps = c.prepareStatement("SELECT count FROM myTable WHERE name=?")) {
                 ps.setString(1, row);
-                try(ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()) sum+=rs.getInt(1);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next())
+                        sum += rs.getInt(1);
                 }
             }
         }
@@ -28,11 +29,12 @@ public class Feature316 {
     @NoWarning("IIL_PREPARE_STATEMENT_IN_LOOP")
     public int calcSumOk(Connection c, List<String> rows) throws SQLException {
         int sum = 0;
-        try(PreparedStatement ps = c.prepareStatement("SELECT count FROM myTable WHERE name=?")) {
-            for(String row : rows) {
+        try (PreparedStatement ps = c.prepareStatement("SELECT count FROM myTable WHERE name=?")) {
+            for (String row : rows) {
                 ps.setString(1, row);
-                try(ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()) sum+=rs.getInt(1);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next())
+                        sum += rs.getInt(1);
                 }
             }
         }
@@ -44,18 +46,19 @@ public class Feature316 {
         int sum = 0;
         PreparedStatement ps = null;
         try {
-            for(String row : rows) {
-                if(ps == null) {
+            for (String row : rows) {
+                if (ps == null) {
                     ps = c.prepareStatement("SELECT count FROM myTable WHERE name=?");
                 }
                 ps.setString(1, row);
-                try(ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()) sum+=rs.getInt(1);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next())
+                        sum += rs.getInt(1);
                 }
             }
-        }
-        finally {
-            if(ps != null) ps.close();
+        } finally {
+            if (ps != null)
+                ps.close();
         }
         return sum;
     }
@@ -63,9 +66,10 @@ public class Feature316 {
     @ExpectWarning("IIL_PATTERN_COMPILE_IN_LOOP")
     public int countByPattern(List<String> list) {
         int count = 0;
-        for(String element : list) {
+        for (String element : list) {
             Pattern pattern = Pattern.compile("^test");
-            if(pattern.matcher(element).matches()) count++;
+            if (pattern.matcher(element).matches())
+                count++;
         }
         return count;
     }
@@ -73,8 +77,9 @@ public class Feature316 {
     @ExpectWarning("IIL_PATTERN_COMPILE_IN_LOOP_INDIRECT")
     public int countByPatternIndirect(List<String> list) {
         int count = 0;
-        for(String element : list) {
-            if(element.matches("^test")) count++;
+        for (String element : list) {
+            if (element.matches("^test"))
+                count++;
         }
         return count;
     }
@@ -83,8 +88,9 @@ public class Feature316 {
     public int countByPatternOk(List<String> list) {
         int count = 0;
         Pattern pattern = Pattern.compile("^test");
-        for(String element : list) {
-            if(pattern.matcher(element).matches()) count++;
+        for (String element : list) {
+            if (pattern.matcher(element).matches())
+                count++;
         }
         return count;
     }

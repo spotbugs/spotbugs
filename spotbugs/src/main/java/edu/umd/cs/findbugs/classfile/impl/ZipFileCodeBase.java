@@ -78,7 +78,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 throw ioException;
             }
             int magicBytes;
-            try (DataInputStream in = new DataInputStream(new FileInputStream(file))){
+            try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
                 magicBytes = in.readInt();
             } catch (IOException e3) {
                 throw new IOException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));

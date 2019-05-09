@@ -50,103 +50,107 @@ public class TestNullnessRelaxation {
 
     static interface SI2 extends I<Integer> {
         @Override
-		@CheckForNull
+        @CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         String get();
 
         @Override
-		@Nullable
+        @Nullable
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         String get2();
 
         @Override
-		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
         public Integer set(@Nonnull Number o);
 
         @Override
-		@CheckForNull
+        @CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set2(@Nonnull Integer o);
 
         @Override
-		@Nullable
+        @Nullable
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o);
     }
 
     static class SimpleClazz implements I<Integer> {
         @Override
-		@CheckForNull
+        @CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public String get(){
+        public String get() {
             return null;
         }
 
         @Override
-		@Nullable
+        @Nullable
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public String get2(){
+        public String get2() {
             return null;
         }
 
         @Override
-		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
-        public Integer set(@Nonnull Number o){
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        public Integer set(@Nonnull Number o) {
             return null;
         }
 
         @Override
-		@CheckForNull
+        @CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public Integer set2(@Nonnull Integer o){
+        public Integer set2(@Nonnull Integer o) {
             return null;
         }
 
         @Override
-		@Nullable
+        @Nullable
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public Integer set3(@Nullable Integer o){
+        public Integer set3(@Nullable Integer o) {
             return null;
         }
     }
 
-    static interface SI3 extends I<Integer> {}
-    static interface SI4 extends SI3, SI2 {}
-    abstract static class Clazz1 implements SI4 {}
-    abstract static class Clazz2 extends Clazz1 {}
+    static interface SI3 extends I<Integer> {
+    }
+    static interface SI4 extends SI3, SI2 {
+    }
+    abstract static class Clazz1 implements SI4 {
+    }
+    abstract static class Clazz2 extends Clazz1 {
+    }
 
     static class Clazz extends Clazz2 {
         @Override
-		@CheckForNull
+        @CheckForNull
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public String get(){
+        public String get() {
             return null;
         }
 
         @Override
-		@Nullable
+        @Nullable
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public String get2(){
+        public String get2() {
             return null;
         }
 
         @Override
-		@ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
-        public Integer set(@Nonnull Number o){
+        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
+        public Integer set(@Nonnull Number o) {
             return null;
         }
 
         @Override
-		@CheckForNull
+        @CheckForNull
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public Integer set2(@Nonnull Integer o){
+        public Integer set2(@Nonnull Integer o) {
             return null;
         }
 
         @Override
-		@Nullable
+        @Nullable
         @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
-        public Integer set3(@Nullable Integer o){
+        public Integer set3(@Nullable Integer o) {
             return null;
         }
     }

@@ -28,7 +28,7 @@ class SqlInjection {
         return statement.executeQuery("FOOBAR where x = '" + tableName + "'");
     }
 
-    @ExpectWarning(value="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", confidence=Confidence.HIGH)
+    @ExpectWarning(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", confidence = Confidence.HIGH)
     ResultSet h(Connection conn, String name) throws Exception {
         Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         return statement.executeQuery("FOO '" + name + "'");

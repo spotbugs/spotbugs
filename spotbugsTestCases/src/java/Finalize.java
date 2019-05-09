@@ -1,5 +1,4 @@
 class Finalize {
     @Override
-    protected void finalize() {
-    }
+    protected void finalize() {}
 }

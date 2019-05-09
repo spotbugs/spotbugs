@@ -52,13 +52,16 @@ public class GroupByActionTest extends AbstractFindBugsTest {
         tearDownTestProject();
     }
 
-    private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.Package.Class.PatternType.Pattern.Marker";
+    private static final String PRIORITY_CATEGORY_PROJECT_PACKAGE_CLASS_PATTERN_TYPE_PATTERN_MARKER_ID =
+            "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.Package.Class.PatternType.Pattern.Marker";
 
-    private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.PatternType.Pattern.Marker";
+    private static final String PRIORITY_CATEGORY_PROJECT_PATTERN_TYPE_PATTERN_MARKER_ID =
+            "findBugsEclipsePlugin.toggleGrouping.Confidence.Category.Project.PatternType.Pattern.Marker";
 
     private static final String PRIORITY_PROJECT_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Confidence.Project.Pattern.Marker";
 
-    private static final String PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Category.PatternType.Pattern.Marker";
+    private static final String PROJECT_PRIORITY_CATEGORY_PATTERN_TYPE_PATTERN_MARKER_ID =
+            "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Category.PatternType.Pattern.Marker";
 
     private static final String PROJECT_PRIORITY_PATTERN_MARKER_ID = "findBugsEclipsePlugin.toggleGrouping.Project.Confidence.Pattern.Marker";
 

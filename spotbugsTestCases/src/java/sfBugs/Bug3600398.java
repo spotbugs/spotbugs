@@ -31,6 +31,7 @@ public abstract class Bug3600398 {
             close(stmt, connection);
         }
     }
+
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     public void subscribe2(HttpServletRequest req) throws Exception {
         Connection connection = null;
@@ -44,6 +45,7 @@ public abstract class Bug3600398 {
             close("a", stmt, 0.0, connection, 0);
         }
     }
+
     @DesireNoWarning("OBL_UNSATISFIED_OBLIGATION")
     public void subscribe3(HttpServletRequest req) throws Exception {
         Connection connection = null;
@@ -59,26 +61,45 @@ public abstract class Bug3600398 {
     }
 
     void close(@WillClose Object object1, @WillClose Object object2) {
-        close(object1); close(object2);
+        close(object1);
+        close(object2);
     }
+
     void close(String x, @WillClose Object object1, double y, @WillClose Object object2, int z) {
-        close(object1); close(object2);
+        close(object1);
+        close(object2);
     }
+
     void close(@WillClose Object object1, @WillClose Object object2, @WillClose Object object3) {
-        close(object1); close(object2); close(object3);
+        close(object1);
+        close(object2);
+        close(object3);
     }
+
     void close(@WillClose Object object) {
         if (object != null) {
             if (object instanceof Closeable) {
-                try { ((Closeable)object).close(); } catch (IOException ignore) { }
+                try {
+                    ((Closeable) object).close();
+                } catch (IOException ignore) {
+                }
             } else if (object instanceof Statement) {
-                try { ((Statement)object).close(); } catch (SQLException ignore) { }
+                try {
+                    ((Statement) object).close();
+                } catch (SQLException ignore) {
+                }
             } else if (object instanceof Connection) {
-                try { ((Connection)object).close(); } catch (SQLException ignore) { }
+                try {
+                    ((Connection) object).close();
+                } catch (SQLException ignore) {
+                }
             } else if (object instanceof ResultSet) {
-                try { ((ResultSet)object).close(); } catch (SQLException ignore) { }
-//                    } else if (object instanceof JSONWriter) {
-//                        try { ((JSONWriter)object).close(); } catch (Exception ignore) { }
+                try {
+                    ((ResultSet) object).close();
+                } catch (SQLException ignore) {
+                }
+                //                    } else if (object instanceof JSONWriter) {
+                //                        try { ((JSONWriter)object).close(); } catch (Exception ignore) { }
             } else {
                 throw new IllegalArgumentException("Cannot handle class:" + object.getClass().getName());
             }

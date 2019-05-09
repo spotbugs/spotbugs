@@ -35,13 +35,13 @@ public class Ideas_2009_03_13 {
 
     Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
-    @ExpectWarning(value="GC_UNRELATED_TYPES", confidence=Confidence.MEDIUM)
+    @ExpectWarning(value = "GC_UNRELATED_TYPES", confidence = Confidence.MEDIUM)
     /** This bug would manifest itself as a NPE, so we have some confidence it isn't occurring in practice */
     int noisyBug(String x) {
         return map.get(x);
     }
 
-    @ExpectWarning(value="GC_UNRELATED_TYPES", confidence=Confidence.HIGH)
+    @ExpectWarning(value = "GC_UNRELATED_TYPES", confidence = Confidence.HIGH)
     /** This bug would manifest itself by indicating that so matching key was found, so this might be occurring
      * in production without being noticed */
     Integer silentBug(String x) {

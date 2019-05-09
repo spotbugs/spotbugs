@@ -74,4 +74,3 @@ public class ByteCodePatternMatch {
         return lastElementMatch != null ? lastElementMatch.getLastLabeledMatch(label) : null;
     }
 }
-

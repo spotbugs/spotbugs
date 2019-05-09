@@ -46,7 +46,8 @@ public class Feature314 {
     }
 
     private FileOutputStream openFileSafe(String name) throws FileNotFoundException {
-        if(name == null) return null;
+        if (name == null)
+            return null;
         return openFile(name);
     }
 
@@ -72,17 +73,17 @@ public class Feature314 {
 
     @ExpectWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public boolean test(Connection c, String code) throws SQLException {
-        return Sql.hasResult(c, "SELECT 1 FROM myTable WHERE code='"+code+"'");
+        return Sql.hasResult(c, "SELECT 1 FROM myTable WHERE code='" + code + "'");
     }
 
     @ExpectWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public boolean testSqlLong(Connection c, String code) throws SQLException {
-        return Sql.hasResult(c, 1L, "SELECT 1 FROM myTable WHERE code='"+code+"'", 2L, "blahblah");
+        return Sql.hasResult(c, 1L, "SELECT 1 FROM myTable WHERE code='" + code + "'", 2L, "blahblah");
     }
 
     @NoWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public boolean testSqlLongOk(Connection c, String code) throws SQLException {
-        return Sql.hasResult(c, 1L, "SELECT COUNT(*) FROM myTable", 2L, "Code: "+code);
+        return Sql.hasResult(c, 1L, "SELECT COUNT(*) FROM myTable", 2L, "Code: " + code);
     }
 
     public static class Sql {
@@ -97,7 +98,7 @@ public class Feature314 {
         // passthru method: warning is generated on call site
         @NoWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
         public static boolean hasResult(Connection c, long l1, String query, long l2, String somethingElse) throws SQLException {
-            System.out.println(somethingElse+": "+l1+":"+l2);
+            System.out.println(somethingElse + ": " + l1 + ":" + l2);
             try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(query)) {
                 return rs.next();
             }

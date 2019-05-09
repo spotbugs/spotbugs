@@ -15,6 +15,7 @@ public class Bug3110239 implements Serializable {
         this.name = name;
         this.parent = parent;
     }
+
     private static final long serialVersionUID = 9L;
     public static final String ROOT_NAME = "root";
     public final String id;
@@ -30,12 +31,15 @@ public class Bug3110239 implements Serializable {
     public List<Bug3110239> getSubSectors() {
         return subSectors;
     }
+
     public void setSubSectors(List<Bug3110239> subSectors) {
         this.subSectors = subSectors;
     }
+
     public Set<String> getCompanies() {
         return companies;
     }
+
     public void setCompanies(Set<String> companies) {
         this.companies = companies;
     }

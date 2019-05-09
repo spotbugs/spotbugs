@@ -139,7 +139,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
                     Method superMethod = findSuperclassMethod(superclassName, getMethod());
                     if ((superMethod == null) || differentAttributes(getMethod(), superMethod)
                             || getMethod().isProtected()
-                            && !samePackage(getDottedClassName(), superclassName)) {
+                                    && !samePackage(getDottedClassName(), superclassName)) {
                         return;
                     }
 
@@ -157,12 +157,14 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         if (i < 0) {
             return "";
         }
-        return classname.substring(0,i);
+        return classname.substring(0, i);
     }
+
     public boolean samePackage(@DottedClassName String classname1, @DottedClassName String classname2) {
         return getPackage(classname1).equals(getPackage(classname2));
 
     }
+
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
@@ -287,7 +289,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         }
 
         if (!"Object".equals(superclassName)) {
-            @DottedClassName String superSuperClassName = superClass.getSuperclassName();
+            @DottedClassName
+            String superSuperClassName = superClass.getSuperclassName();
             if (superSuperClassName.equals(superclassName)) {
                 throw new ClassNotFoundException("superclass of " + superclassName + " is itself");
             }

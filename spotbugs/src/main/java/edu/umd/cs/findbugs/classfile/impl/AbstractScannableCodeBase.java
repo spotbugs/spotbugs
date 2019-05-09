@@ -125,6 +125,7 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
             this.lastModifiedTime = lastModifiedTime;
         }
     }
+
     public void addLastModifiedTime(long lastModifiedTime) {
         if (lastModifiedTime > 0 && FindBugs.validTimestamp(lastModifiedTime) && this.lastModifiedTime < lastModifiedTime) {
             this.lastModifiedTime = lastModifiedTime;

@@ -71,7 +71,6 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * @author Andrei Loskutov
@@ -250,7 +249,7 @@ public class DetectorConfigurationTab extends Composite {
                 return factory.getSpeed();
             case PLUGIN:
                 String provider = factory.getPlugin().getProvider();
-                if(provider == null) {
+                if (provider == null) {
                     provider = "<unknown>";
                 }
                 if (provider.endsWith(" project")) {

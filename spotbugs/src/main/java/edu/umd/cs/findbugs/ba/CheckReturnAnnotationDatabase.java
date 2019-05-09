@@ -42,7 +42,6 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Values;
 
 /**
  * @author pugh
@@ -293,7 +292,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
         } else if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
             CheckReturnValueAnnotation a = getResolvedAnnotationOnConstructor(m);
             if (a != null) {
-              return a;
+                return a;
             }
         } else if ("equals".equals(m.getName()) && LJAVA_LANG_OBJECT_Z.equals(m.getSignature()) && !m.isStatic()) {
             return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM;

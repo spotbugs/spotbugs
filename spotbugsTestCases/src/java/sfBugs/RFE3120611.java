@@ -14,7 +14,6 @@ public class RFE3120611 {
         return data[i];
     }
 
-    private RFE3120611() {
-    }
+    private RFE3120611() {}
 
 }

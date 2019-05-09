@@ -9,8 +9,7 @@ public class Test {
     }
 
     private class X {
-        X(Object o) {
-        }
+        X(Object o) {}
 
         public int foo(Object x) {
             return 17;
@@ -19,11 +18,9 @@ public class Test {
     }
 
     private static class Y {
-        Y(Object o) {
-        }
+        Y(Object o) {}
 
-        static void test(Object x) {
-        }
+        static void test(Object x) {}
 
         public int foo(Object x) {
             return 17;

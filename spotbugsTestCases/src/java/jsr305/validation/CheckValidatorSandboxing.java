@@ -15,11 +15,9 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class CheckValidatorSandboxing {
 
-    void needsEven(@Even int x) {
-    }
+    void needsEven(@Even int x) {}
 
-    void needsEven(@Even long x) {
-    }
+    void needsEven(@Even long x) {}
 
     @NoWarning("TQ")
     void testOK(@Even int x) {
@@ -30,7 +28,7 @@ public class CheckValidatorSandboxing {
         needsEven(x);
     }
 
-    @ExpectWarning(value = "TQ", num=5)
+    @ExpectWarning(value = "TQ", num = 5)
     void testBad(int x) {
         needsEven(-1);
         needsEven(1);

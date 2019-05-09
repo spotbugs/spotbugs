@@ -48,8 +48,7 @@ public class Dom4JXMLOutput implements XMLOutput {
     }
 
     @Override
-    public void beginDocument() {
-    }
+    public void beginDocument() {}
 
     @Override
     public void openTag(String tagName) {
@@ -163,7 +162,5 @@ public class Dom4JXMLOutput implements XMLOutput {
     }
 
     @Override
-    public void finish() {
-    }
+    public void finish() {}
 }
-

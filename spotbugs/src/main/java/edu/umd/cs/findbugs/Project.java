@@ -24,6 +24,7 @@
  */
 
 package edu.umd.cs.findbugs;
+
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeElementList;
 import static edu.umd.cs.findbugs.xml.XMLOutputUtil.writeFileList;
 import static java.util.Objects.requireNonNull;
@@ -116,7 +117,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     private UserPreferences configuration;
 
     /** key is plugin id */
-    private final Map<String,Boolean> enabledPlugins;
+    private final Map<String, Boolean> enabledPlugins;
 
     @CheckForNull
     public Boolean getPluginStatus(Plugin plugin) {
@@ -580,15 +581,15 @@ public class Project implements XMLWriteable, AutoCloseable {
 
         try {
             URL manifestURL = new URL("jar:" + jarFileURL.toString() + "!/META-INF/MANIFEST.MF");
-    
+
             try (InputStream in = manifestURL.openStream()) {
                 Manifest manifest = new Manifest(in);
-        
+
                 Attributes mainAttrs = manifest.getMainAttributes();
                 String classPath = mainAttrs.getValue("Class-Path");
                 if (classPath != null) {
                     String[] fileList = classPath.split("\\s+");
-            
+
                     for (String jarFile : fileList) {
                         URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
                         if (workList.add(new WorkListItem(referencedURL))) {
@@ -638,7 +639,7 @@ public class Project implements XMLWriteable, AutoCloseable {
                 }
                 writer.println(jarFile);
             }
-        
+
             writer.println(SRC_DIRS_KEY);
             for (String srcDir : srcDirList) {
                 if (useRelativePaths) {
@@ -646,7 +647,7 @@ public class Project implements XMLWriteable, AutoCloseable {
                 }
                 writer.println(srcDir);
             }
-        
+
             writer.println(AUX_CLASSPATH_ENTRIES_KEY);
             for (String auxClasspathEntry : auxClasspathEntryList) {
                 if (useRelativePaths) {
@@ -654,7 +655,7 @@ public class Project implements XMLWriteable, AutoCloseable {
                 }
                 writer.println(auxClasspathEntry);
             }
-        
+
             if (useRelativePaths) {
                 writer.println(OPTIONS_KEY);
                 writer.println(RELATIVE_PATHS + "=true");
@@ -830,7 +831,7 @@ public class Project implements XMLWriteable, AutoCloseable {
             xmlOutput.closeTag("SuppressionFilter");
         }
 
-        for(Map.Entry<String, Boolean> e : enabledPlugins.entrySet()) {
+        for (Map.Entry<String, Boolean> e : enabledPlugins.entrySet()) {
             String pluginId = e.getKey();
             Boolean enabled = e.getValue();
             Plugin plugin = Plugin.getByPluginId(pluginId);
@@ -940,9 +941,9 @@ public class Project implements XMLWriteable, AutoCloseable {
         // below the project file. This need not be the case, and we could use
         // ..
         // syntax to move up the tree. (To Be Added)
-
+    
         File file = new File(fileName);
-
+    
         if (!file.isAbsolute()) {
             for (File cwd : currentWorkingDirectoryList) {
                 File test = new File(cwd, fileName);
@@ -1035,7 +1036,7 @@ public class Project implements XMLWriteable, AutoCloseable {
             fileName = convertToAbsolute(fileName);
             replace.add(fileName);
         }
-
+    
         list.clear();
         list.addAll(replace);
     }*/

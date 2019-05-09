@@ -65,7 +65,7 @@ class BadCast {
         return ((Hashtable) foo()).size();
     }
 
-    @ExpectWarning(value="BC_IMPOSSIBLE_CAST", num = 1)
+    @ExpectWarning(value = "BC_IMPOSSIBLE_CAST", num = 1)
     int f2() {
         Object o = faz();
         return ((Hashtable[]) o).length;
@@ -109,7 +109,7 @@ class BadCast {
         return b ? (Integer) i : (String) s;
     }
 
-    @ExpectWarning(value="BC_IMPOSSIBLE_CAST", num = 1)
+    @ExpectWarning(value = "BC_IMPOSSIBLE_CAST", num = 1)
     public static int first(Object o) {
         if (o instanceof Byte[]) {
             byte b[] = (byte[]) o;

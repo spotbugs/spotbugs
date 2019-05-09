@@ -108,7 +108,7 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
                 }
                 bugAccumulator.accumulateBug(new BugInstance(this,
                         priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-                .addClassAndMethod(this), this);
+                                .addClassAndMethod(this), this);
             }
         }
     }
@@ -126,4 +126,3 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 
     }
 }
-

@@ -104,8 +104,7 @@ public class XFactory {
     /**
      * Constructor.
      */
-    public XFactory() {
-    }
+    public XFactory() {}
 
     public void intern(XClass c) {
         for (XMethod m : c.getXMethods()) {
@@ -153,6 +152,7 @@ public class XFactory {
     public boolean isFunctionshatMightBeMistakenForProcedures(MethodDescriptor m) {
         return functionsThatMightBeMistakenForProcedures.contains(m);
     }
+
     public Set<ClassDescriptor> getReflectiveClasses() {
         return reflectiveClasses;
     }
@@ -537,14 +537,12 @@ public class XFactory {
         return getExactXField(fieldDesc);
     }
 
-    public static @Nonnull
-    XField getExactXField(@SlashedClassName String className, Field f) {
+    public static @Nonnull XField getExactXField(@SlashedClassName String className, Field f) {
         FieldDescriptor fd = DescriptorFactory.instance().getFieldDescriptor(className, f);
         return getExactXField(fd);
     }
 
-    public static @Nonnull
-    XField getExactXField(FieldDescriptor desc) {
+    public static @Nonnull XField getExactXField(FieldDescriptor desc) {
         XFactory xFactory = AnalysisContext.currentXFactory();
 
         XField f = xFactory.fields.get(desc);
@@ -681,8 +679,7 @@ public class XFactory {
      * @return an XClass object providing information about the class, or null
      *         if the class cannot be found
      */
-    public @CheckForNull
-    XClass getXClass(ClassDescriptor classDescriptor) {
+    public @CheckForNull XClass getXClass(ClassDescriptor classDescriptor) {
         try {
             IAnalysisCache analysisCache = Global.getAnalysisCache();
             return analysisCache.getClassAnalysis(XClass.class, classDescriptor);

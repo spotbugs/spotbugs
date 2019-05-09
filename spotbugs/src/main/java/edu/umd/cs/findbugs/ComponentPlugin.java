@@ -44,6 +44,7 @@ public class ComponentPlugin<T> {
         this.details = details;
 
     }
+
     protected final Plugin plugin;
 
     public String getId() {

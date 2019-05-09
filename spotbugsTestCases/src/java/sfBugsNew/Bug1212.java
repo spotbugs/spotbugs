@@ -9,5 +9,5 @@ public class Bug1212 {
     @ExpectWarning("DM_BOXED_PRIMITIVE_TOSTRING")
     public String doSomething() {
         return Integer.valueOf(0).toString();
-        }
+    }
 }

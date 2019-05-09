@@ -144,8 +144,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
     private static class EscapeTarget {
         private final InstructionHandle target;
 
-        private final @Edge.Type
-        int edgeType;
+        private final @Edge.Type int edgeType;
 
         /**
          * Constructor.
@@ -171,8 +170,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         /**
          * Get the edge type.
          */
-        public @Edge.Type
-        int getEdgeType() {
+        public @Edge.Type int getEdgeType() {
             return edgeType;
         }
     }
@@ -404,7 +402,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
             if (usedInstructionSet.get(target.getPosition()) && !containsInstruction(target)) {
                 // Control escapes this subroutine
                 List<EscapeTarget> escapeTargetList = escapeTargetListMap.computeIfAbsent(sourceBlock,
-                    k -> new LinkedList<>());
+                        k -> new LinkedList<>());
                 escapeTargetList.add(new EscapeTarget(target, edgeType));
             } else {
                 // Edge within the current subroutine
@@ -613,7 +611,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         ExceptionSetFactory exceptionSetFactory;
         try {
             exceptionSetFactory = analysisCache.getMethodAnalysis(ExceptionSetFactory.class, descriptor);
-            merger = new StandardTypeMerger( AnalysisContext.currentAnalysisContext()
+            merger = new StandardTypeMerger(AnalysisContext.currentAnalysisContext()
                     .getLookupFailureCallback(), exceptionSetFactory);
         } catch (CheckedAnalysisException e) {
             AnalysisContext.logError("Unable to generate exceptionSetFactory for " + descriptor, e);
@@ -636,6 +634,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         return index;
 
     }
+
     public void optimize(InstructionList instructionList) {
         InstructionHandle head = instructionList.getStart();
 
@@ -705,14 +704,14 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                         break;
                     }
                     InstructionHandle next3 = next2.getNext(); // ICONST
-                    if (next3== null) {
+                    if (next3 == null) {
                         break;
                     }
                     InstructionHandle next4 = next3.getNext();
                     if (next4 == null) {
                         break;
                     }
-                    if (target.equals(next3)  && next2.getInstruction() instanceof GOTO
+                    if (target.equals(next3) && next2.getInstruction() instanceof GOTO
                             && next3.getInstruction() instanceof ICONST && next1.getTargeters().length == 0
                             && next2.getTargeters().length == 0 && next3.getTargeters().length == 1
                             && next4.getTargeters().length == 1) {
@@ -1011,13 +1010,13 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         if (ins instanceof PUTFIELD && !methodGen.isStatic()) {
             // Assume that PUTFIELD on this object is not PEI
             int depth = ins.consumeStack(cpg);
-            for(InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
+            for (InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
                 Instruction prevInst = prev.getInstruction();
-                if(prevInst instanceof BranchInstruction) {
-                    if(prevInst instanceof GotoInstruction) {
+                if (prevInst instanceof BranchInstruction) {
+                    if (prevInst instanceof GotoInstruction) {
                         // Currently we support only jumps to the PUTFIELD itself
                         // This will cover simple cases like this.a = flag ? foo : bar
-                        if(((BranchInstruction) prevInst).getTarget() == handle) {
+                        if (((BranchInstruction) prevInst).getTarget() == handle) {
                             depth = ins.consumeStack(cpg);
                         } else {
                             return true;
@@ -1029,12 +1028,12 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                     }
                 }
                 depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
-                if(depth < 1) {
-                    throw new CFGBuilderException("Invalid stack at "+prev+" when checking "+handle);
+                if (depth < 1) {
+                    throw new CFGBuilderException("Invalid stack at " + prev + " when checking " + handle);
                 }
-                if(depth == 1) {
+                if (depth == 1) {
                     InstructionHandle prevPrev = prev.getPrev();
-                    if(prevPrev != null && prevPrev.getInstruction() instanceof BranchInstruction) {
+                    if (prevPrev != null && prevPrev.getInstruction() instanceof BranchInstruction) {
                         continue;
                     }
                     return !isSafeFieldSource(prevPrev);
@@ -1049,16 +1048,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
      * @return true if this object is known to be non-null
      */
     private boolean isSafeFieldSource(InstructionHandle handle) {
-        while(handle != null && handle.getInstruction().getOpcode() == Const.DUP) {
+        while (handle != null && handle.getInstruction().getOpcode() == Const.DUP) {
             // Some compilers generate DUP for field increment code like
             // ALOAD_0 / DUP / GETFIELD x / ICONST_1 / IADD / PUTFIELD x
             handle = handle.getPrev();
         }
-        if(handle == null) {
+        if (handle == null) {
             return false;
         }
         Instruction inst = handle.getInstruction();
-        if(inst.getOpcode() == Const.ALOAD_0) {
+        if (inst.getOpcode() == Const.ALOAD_0) {
             return true;
         }
         return inst instanceof GETFIELD && ((GETFIELD) inst).getFieldName(cpg).startsWith("this$");

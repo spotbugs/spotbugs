@@ -52,7 +52,7 @@ public class Bug1249 {
             System.out.println("0");
             break;
         case 1:
-            System.out.println("1");             // fallthrough
+            System.out.println("1"); // fallthrough
         case 2:
             System.out.println("2");
             break;

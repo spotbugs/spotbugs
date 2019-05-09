@@ -72,11 +72,8 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
         return valueNumberToParamMap;
     }
 
-    public @CheckForNull
-    @DottedClassName
-    String getClassName(ValueNumber v) {
+    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
         return getAnalysis().getClassName(v);
 
     }
 }
-

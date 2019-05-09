@@ -20,8 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 public class ResourceValue {
-    private ResourceValue() {
-    }
+    private ResourceValue() {}
 
     private static final ResourceValue instance = new ResourceValue();
 
@@ -52,4 +51,3 @@ public class ResourceValue {
         return (this == instance) ? "I" : "-";
     }
 }
-

@@ -110,8 +110,7 @@ public class MainFrameMenu {
                         } else {
                             mainFrame.getMainFrameLoadSaveHelper().saveAs();
                         }
-                    } else if (response == JOptionPane.CANCEL_OPTION)
-                    {
+                    } else if (response == JOptionPane.CANCEL_OPTION) {
                         return;
                         // IF no, do nothing.
                     }
@@ -343,7 +342,7 @@ public class MainFrameMenu {
         ButtonGroup rankButtonGroup = new ButtonGroup();
         for (final ViewFilter.RankFilter r : ViewFilter.RankFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
-            AnnotatedString.localiseButton(rbMenuItem, "menu.rankFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
+            AnnotatedString.localiseButton(rbMenuItem, "menu.rankFilter_" + r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
             rankButtonGroup.add(rbMenuItem);
             if (r == ViewFilter.RankFilter.ALL) {
                 rbMenuItem.setSelected(true);
@@ -360,7 +359,7 @@ public class MainFrameMenu {
         ButtonGroup priorityButtonGroup = new ButtonGroup();
         for (final ViewFilter.PriorityFilter r : ViewFilter.PriorityFilter.values()) {
             JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem(r.toString());
-            AnnotatedString.localiseButton(rbMenuItem, "menu.priorityFilter_"+r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
+            AnnotatedString.localiseButton(rbMenuItem, "menu.priorityFilter_" + r.name().toLowerCase(Locale.ENGLISH), r.toString(), true);
             priorityButtonGroup.add(rbMenuItem);
             if (r == ViewFilter.PriorityFilter.ALL_BUGS) {
                 rbMenuItem.setSelected(true);
@@ -386,7 +385,7 @@ public class MainFrameMenu {
 
         });
         viewMenu.add(filterMenu);
-        for(final Matcher m : filters) {
+        for (final Matcher m : filters) {
             JCheckBoxMenuItem f = new JCheckBoxMenuItem(m.toString(), suppressionFilter.isEnabled(m));
             viewMenu.add(f);
             f.addItemListener(e -> {

@@ -88,6 +88,5 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

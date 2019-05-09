@@ -41,7 +41,7 @@ public class Bug1844671 {
         }
     }
 
-   public void complicated() {
+    public void complicated() {
         FileWriter tmp = null;
         FileWriter fw = null;
         try {

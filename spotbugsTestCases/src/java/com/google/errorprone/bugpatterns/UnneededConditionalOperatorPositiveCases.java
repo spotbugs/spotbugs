@@ -22,63 +22,63 @@ package com.google.errorprone.bugpatterns;
  */
 public class UnneededConditionalOperatorPositiveCases {
 
-  public static void positiveCaseTrueFalseSimple() {
-    //BUG: Suggestion includes "isFoo()"
-    boolean t = isFoo() ? true : false;
-  }
+    public static void positiveCaseTrueFalseSimple() {
+        //BUG: Suggestion includes "isFoo()"
+        boolean t = isFoo() ? true : false;
+    }
 
-  public static void positiveCaseTrueFalseBinary() {
-    //BUG: Suggestion includes "(4 > 5)"
-    boolean t = (4 > 5) ? true : false;
-  }
+    public static void positiveCaseTrueFalseBinary() {
+        //BUG: Suggestion includes "(4 > 5)"
+        boolean t = (4 > 5) ? true : false;
+    }
 
-  public static void positiveCaseFalseTrueSimple() {
-    //BUG: Suggestion includes "!isFoo()"
-    boolean t = isFoo() ? false : true;
-  }
+    public static void positiveCaseFalseTrueSimple() {
+        //BUG: Suggestion includes "!isFoo()"
+        boolean t = isFoo() ? false : true;
+    }
 
-  public static void positiveCaseFalseTrueUnary() {
-    //BUG: Suggestion includes "isFoo()"
-    boolean t = !isFoo() ? false : true;
-  }
+    public static void positiveCaseFalseTrueUnary() {
+        //BUG: Suggestion includes "isFoo()"
+        boolean t = !isFoo() ? false : true;
+    }
 
-  public static void positiveCaseFalseTrueBinary() {
-    //BUG: Suggestion includes "(4 <= 5)"
-    boolean t = (4 > 5) ? false : true;
-  }
+    public static void positiveCaseFalseTrueBinary() {
+        //BUG: Suggestion includes "(4 <= 5)"
+        boolean t = (4 > 5) ? false : true;
+    }
 
-  public static void positiveCaseFalseTrueBinary2() {
-    //BUG: Suggestion includes "(4 != 5)"
-    boolean t = (4 == 5) ? false : true;
-  }
+    public static void positiveCaseFalseTrueBinary2() {
+        //BUG: Suggestion includes "(4 != 5)"
+        boolean t = (4 == 5) ? false : true;
+    }
 
-  public static void positiveCaseFalseTrueBinaryUnparenthesised() {
-    //BUG: Suggestion includes "4 > 5"
-    boolean t = 4 <= 5 ? false : true;
-  }
+    public static void positiveCaseFalseTrueBinaryUnparenthesised() {
+        //BUG: Suggestion includes "4 > 5"
+        boolean t = 4 <= 5 ? false : true;
+    }
 
-  public static void positiveCaseFalseTrueBinaryUnparenthesised2() {
-    //BUG: Suggestion includes "4 == 5"
-    boolean t = 4 != 5 ? false : true;
-  }
+    public static void positiveCaseFalseTrueBinaryUnparenthesised2() {
+        //BUG: Suggestion includes "4 == 5"
+        boolean t = 4 != 5 ? false : true;
+    }
 
-  public static void positiveCaseFalseTrueDeMorgan() {
-    //BUG: Suggestion includes "(4 == 5 && 2 != 3)"
-    boolean t = (4 != 5 || 2 == 3) ? false : true;
-  }
+    public static void positiveCaseFalseTrueDeMorgan() {
+        //BUG: Suggestion includes "(4 == 5 && 2 != 3)"
+        boolean t = (4 != 5 || 2 == 3) ? false : true;
+    }
 
-  public static void positiveCaseTrueTrue() {
-    //BUG: Suggestion includes "true"
-    boolean t = isFoo() ? true : true;
-  }
+    public static void positiveCaseTrueTrue() {
+        //BUG: Suggestion includes "true"
+        boolean t = isFoo() ? true : true;
+    }
 
-  public static void positiveCaseFalseFalse() {
-    //BUG: Suggestion includes "false"
-    boolean t = isFoo() ? false : false;
-  }
+    public static void positiveCaseFalseFalse() {
+        //BUG: Suggestion includes "false"
+        boolean t = isFoo() ? false : false;
+    }
 
-  /** Helper method */
-  private static boolean isFoo() {
-    return true;
-  }
+    /** Helper method */
+    private static boolean isFoo() {
+        return true;
+    }
 }

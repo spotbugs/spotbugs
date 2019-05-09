@@ -21,13 +21,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Preconditions;
 
 public class PreconditionsCheckNotNullPrimitiveNegativeCases {
-  public void test() {
-    Object obj1 = new Object();
+    public void test() {
+        Object obj1 = new Object();
 
-    Preconditions.checkNotNull(obj1);
-    checkNotNull(obj1);
-    Preconditions.checkNotNull(obj1, "obj1 should not be null");
-    Preconditions.checkNotNull(obj1, "%s should not be null", "obj1");
-    Preconditions.checkNotNull(obj1.toString());
-  }
+        Preconditions.checkNotNull(obj1);
+        checkNotNull(obj1);
+        Preconditions.checkNotNull(obj1, "obj1 should not be null");
+        Preconditions.checkNotNull(obj1, "%s should not be null", "obj1");
+        Preconditions.checkNotNull(obj1.toString());
+    }
 }

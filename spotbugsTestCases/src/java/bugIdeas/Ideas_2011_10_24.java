@@ -14,23 +14,29 @@ public class Ideas_2011_10_24 {
     @Documented
     @TypeQualifier()
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface PK {}
+    public @interface PK {
+    }
 
 
     @NoWarning("TQ")
-    @PK int asPK(int v) {
+    @PK
+    int asPK(int v) {
         return v;
     }
+
     @ExpectWarning("TQ")
-    @PK int asPK(boolean b, int v) {
+    @PK
+    int asPK(boolean b, int v) {
         if (b)
             System.out.println("true");
         return v;
     }
+
     @NoWarning("TQ")
     boolean isFive(@PK int v) {
         return v == 5;
     }
+
     @ExpectWarning("TQ")
     boolean isFive(@PK int v, int x) {
         return v == x;

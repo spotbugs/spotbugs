@@ -38,10 +38,10 @@ public class PluginElement implements IPathElement {
     @Override
     public String toString() {
         String string = "";
-        if(eclipsePlugin) {
+        if (eclipsePlugin) {
             string = "(Eclipse) ";
         }
-        string += plugin.getShortDescription() +  " [" + plugin.getPluginId() + "]"+  (isEnabled() ? "" : " (disabled)");
+        string += plugin.getShortDescription() + " [" + plugin.getPluginId() + "]" + (isEnabled() ? "" : " (disabled)");
         return string;
     }
 
@@ -79,7 +79,7 @@ public class PluginElement implements IPathElement {
      */
     @Override
     public void setEnabled(boolean enabled) {
-        if(plugin.isCorePlugin() || (!enabled && plugin.cannotDisable())) {
+        if (plugin.isCorePlugin() || (!enabled && plugin.cannotDisable())) {
             return;
         }
         plugin.setGloballyEnabled(enabled);

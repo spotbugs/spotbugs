@@ -71,6 +71,7 @@ public class Util {
         return startDameonThread(t);
 
     }
+
     public static Thread runInDameonThread(Runnable r) {
         Thread t = new Thread(r);
         return startDameonThread(t);
@@ -115,27 +116,27 @@ public class Util {
 
     public static <T> Set<T> emptyOrNonnullSingleton(T t) {
         if (t == null) {
-            return Collections.<T> emptySet();
+            return Collections.<T>emptySet();
         }
-        return Collections.<T> singleton(t);
+        return Collections.<T>singleton(t);
     }
 
     public static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
         if (map.size() == 0) {
-            return Collections.<K, V> emptyMap();
+            return Collections.<K, V>emptyMap();
         }
-        return Collections.<K, V> unmodifiableMap(map);
+        return Collections.<K, V>unmodifiableMap(map);
     }
 
-    public static Reader getReader(@WillCloseWhenClosed InputStream in)  {
+    public static Reader getReader(@WillCloseWhenClosed InputStream in) {
         return UTF8.reader(in);
     }
 
-    public static Reader getFileReader(String filename) throws  FileNotFoundException {
+    public static Reader getFileReader(String filename) throws FileNotFoundException {
         return getReader(new FileInputStream(filename));
     }
 
-    public static Reader getFileReader(File filename) throws  FileNotFoundException {
+    public static Reader getFileReader(File filename) throws FileNotFoundException {
         return getReader(new FileInputStream(filename));
     }
 
@@ -146,6 +147,7 @@ public class Util {
     public static Writer getFileWriter(String filename) throws FileNotFoundException {
         return getWriter(new FileOutputStream(filename));
     }
+
     public static void closeSilently(@WillClose InputStream in) {
         try {
             if (in != null) {
@@ -242,7 +244,7 @@ public class Util {
         }
 
     }
-    
+
     private static String getFileExtension(String name) {
         int lastDot = name.lastIndexOf('.');
         if (lastDot == -1) {
@@ -254,15 +256,16 @@ public class Util {
     public static String getFileExtension(File f) {
         return getFileExtension(f.getName().toLowerCase());
     }
+
     public static String getFileExtensionIgnoringGz(File f) {
 
         String name = f.getName().toLowerCase();
         if (name.endsWith(".gz")) {
-            name = name.substring(0,name.length()-3);
+            name = name.substring(0, name.length() - 3);
         }
         return getFileExtension(name);
     }
-    
+
     /**
      * @param i
      *            the Iterable whose first element is to be retrieved
@@ -338,7 +341,7 @@ public class Util {
 
     public static boolean isPowerOfTwo(int i) {
         return i > 0
-            && (i | (i - 1)) + 1 == 2 * i;
+                && (i | (i - 1)) + 1 == 2 * i;
     }
-    
+
 }

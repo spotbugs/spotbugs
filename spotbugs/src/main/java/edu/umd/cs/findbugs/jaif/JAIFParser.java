@@ -379,12 +379,10 @@ public class JAIFParser {
             }
 
             @Override
-            public void endAnnotation(String annotationName) {
-            }
+            public void endAnnotation(String annotationName) {}
 
             @Override
-            public void endPackageDefinition(String pkgName) {
-            }
+            public void endPackageDefinition(String pkgName) {}
 
             @Override
             public void startAnnotation(String annotationName) {
@@ -402,8 +400,7 @@ public class JAIFParser {
             }
 
             @Override
-            public void endAnnotationDefinition(String annotationName) {
-            }
+            public void endAnnotationDefinition(String annotationName) {}
 
             @Override
             public void annotationFieldDefinition(String type, String fieldName) {

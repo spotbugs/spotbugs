@@ -3,7 +3,6 @@ package sfBugs;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1874856 {
 

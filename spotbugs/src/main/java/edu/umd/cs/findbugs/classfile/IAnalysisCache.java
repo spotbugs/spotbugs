@@ -172,7 +172,7 @@ public interface IAnalysisCache {
      */
     public <E> E getDatabase(Class<E> databaseClass);
 
-    public @CheckForNull <E>  E getOptionalDatabase(Class<E> databaseClass);
+    public @CheckForNull <E> E getOptionalDatabase(Class<E> databaseClass);
 
     /**
      * Eagerly install a database. This avoids the need to register a database

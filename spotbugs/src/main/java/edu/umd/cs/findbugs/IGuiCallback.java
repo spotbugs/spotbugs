@@ -146,7 +146,6 @@ public interface IGuiCallback {
             return currentValue;
         }
 
-        public void updated() {
-        }
+        public void updated() {}
     }
 }

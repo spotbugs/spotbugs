@@ -59,16 +59,20 @@ public class MutableStatic {
     }
 
     @ExpectWarning("MS_MUTABLE_COLLECTION_PKGPROTECT")
-    static public final Map MAP_ANONYMOUS = new HashMap() {{
-        put("a", "b");
-        put("c", "d");
-    }};
+    static public final Map MAP_ANONYMOUS = new HashMap() {
+        {
+            put("a", "b");
+            put("c", "d");
+        }
+    };
 
     @NoWarning("MS_MUTABLE_COLLECTION_PKGPROTECT")
-    static public final Map PROPER_MAP_ANONYMOUS = Collections.unmodifiableMap(new HashMap() {{
-        put("a", "b");
-        put("c", "d");
-    }});
+    static public final Map PROPER_MAP_ANONYMOUS = Collections.unmodifiableMap(new HashMap() {
+        {
+            put("a", "b");
+            put("c", "d");
+        }
+    });
 
     public static void main(String... args) {
         System.out.println(namedPackage.MutableStaticInPackage.EMPTY_LIST);

@@ -17,12 +17,12 @@ public class Ideas_2013_05_06 {
     public @interface PK {
     }
 
-    public static @PK
-    long asPK(long pk) {
+    public static @PK long asPK(long pk) {
         return pk;
     }
 
-    @PK long x,y;
+    @PK
+    long x, y;
 
     public @PK long getX() {
         return x;
@@ -45,25 +45,28 @@ public class Ideas_2013_05_06 {
     }
 
     public void callme(boolean b, @PK long x, boolean c,
-            @PK long y, boolean d) { }
+            @PK long y, boolean d) {}
 
 
     @NoWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
     public void test(@PK long x, @PK long y, boolean b) {
-        new Ideas_2013_05_06(x,y,b);
-        new Ideas_2013_05_06(b,x,y);
+        new Ideas_2013_05_06(x, y, b);
+        new Ideas_2013_05_06(b, x, y);
     }
+
     @NoWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
     public void test(boolean b, @PK long x, @PK long y) {
-        new Ideas_2013_05_06(x,y,b);
-        new Ideas_2013_05_06(b,x,y);
+        new Ideas_2013_05_06(x, y, b);
+        new Ideas_2013_05_06(b, x, y);
     }
+
     @NoWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
-    public void test(boolean b, @PK long x, boolean c,  @PK long y) {
-        new Ideas_2013_05_06(x,y,b);
-        new Ideas_2013_05_06(b,x,y);
+    public void test(boolean b, @PK long x, boolean c, @PK long y) {
+        new Ideas_2013_05_06(x, y, b);
+        new Ideas_2013_05_06(b, x, y);
     }
-    public void test2( @PK long x, boolean c,  @PK long y, boolean b) {
-        callme(b, x,b, y,b);
+
+    public void test2(@PK long x, boolean c, @PK long y, boolean b) {
+        callme(b, x, b, y, b);
     }
 }

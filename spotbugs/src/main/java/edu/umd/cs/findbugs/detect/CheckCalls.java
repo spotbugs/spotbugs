@@ -90,7 +90,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, ClassNotFoundException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
@@ -129,7 +129,6 @@ public class CheckCalls implements Detector, NonReportingDetector {
      * @see edu.umd.cs.findbugs.Detector#report()
      */
     @Override
-    public void report() {
-    }
+    public void report() {}
 
 }

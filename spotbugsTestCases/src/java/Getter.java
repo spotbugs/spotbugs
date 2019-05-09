@@ -27,12 +27,12 @@ public class Getter {
     @javax.annotation.concurrent.GuardedBy("this")
     int y;
 
-    public synchronized int getY(){
+    public synchronized int getY() {
         return y;
     }
 
 
-    public void setY(int y){
+    public void setY(int y) {
         this.y = y;
     }
 
@@ -41,11 +41,11 @@ public class Getter {
     @net.jcip.annotations.GuardedBy("this")
     int z;
 
-    public synchronized int getZ(){
+    public synchronized int getZ() {
         return z;
     }
 
-    public void setZ(int z){
+    public void setZ(int z) {
         this.z = z;
     }
 }

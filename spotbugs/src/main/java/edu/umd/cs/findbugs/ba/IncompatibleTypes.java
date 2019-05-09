@@ -104,7 +104,8 @@ public class IncompatibleTypes {
 
     public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes("Unrelated interfaces",
             Priorities.NORMAL_PRIORITY);
-    public static final IncompatibleTypes UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS = new IncompatibleTypes("Unrelated interfaces without implementations",
+    public static final IncompatibleTypes UNRELATED_INTERFACES_WITHOUT_IMPLEMENTATIONS = new IncompatibleTypes(
+            "Unrelated interfaces without implementations",
             Priorities.LOW_PRIORITY);
 
     public static final IncompatibleTypes UNRELATED_UTIL_INTERFACE = new IncompatibleTypes("Unrelated java.util interface",
@@ -113,8 +114,7 @@ public class IncompatibleTypes {
     public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes(
             "Unrelated types but one type matches type parameter of the other", Priorities.HIGH_PRIORITY);
 
-    static public @Nonnull
-    IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
+    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
         List<? extends ReferenceType> parameters = genericType.getParameters();
         if (result.getPriority() == Priorities.NORMAL_PRIORITY && parameters != null && parameters.contains(plainType)) {
@@ -124,13 +124,11 @@ public class IncompatibleTypes {
 
     }
 
-    static public @Nonnull
-    IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
+    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
         return getPriorityForAssumingCompatible(lhsType, rhsType, false);
     }
 
-    static public @Nonnull
-    IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;
         }
@@ -187,8 +185,7 @@ public class IncompatibleTypes {
         return ARRAY_AND_NON_ARRAY;
     }
 
-    static @Nonnull
-    XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
+    static @Nonnull XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
         IAnalysisCache cache = Global.getAnalysisCache();
         while (true) {
             XMethod result = xClass.findMethod(name, sig, isStatic);
@@ -207,8 +204,8 @@ public class IncompatibleTypes {
 
     }
 
-    static public @Nonnull
-    IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType, boolean pointerEquality) {
+    static public @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType,
+            boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;
         }
@@ -290,7 +287,7 @@ public class IncompatibleTypes {
 
         if ((subtypes2.isSubtype(lhsDescriptor, SET_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, SET_DESCRIPTOR)
                 || subtypes2.isSubtype(lhsDescriptor, MAP_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, MAP_DESCRIPTOR) || subtypes2
-                .isSubtype(lhsDescriptor, LIST_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, LIST_DESCRIPTOR))) {
+                        .isSubtype(lhsDescriptor, LIST_DESCRIPTOR) && subtypes2.isSubtype(rhsDescriptor, LIST_DESCRIPTOR))) {
             return SEEMS_OK;
         }
 

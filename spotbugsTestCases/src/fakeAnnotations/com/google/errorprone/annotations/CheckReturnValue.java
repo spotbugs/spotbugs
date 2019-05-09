@@ -36,6 +36,7 @@ import java.lang.annotation.Target;
  * behavior.
  */
 @Documented
-@Target({METHOD, CONSTRUCTOR, TYPE, PACKAGE})
+@Target({ METHOD, CONSTRUCTOR, TYPE, PACKAGE })
 @Retention(RUNTIME)
-public @interface CheckReturnValue {}
+public @interface CheckReturnValue {
+}

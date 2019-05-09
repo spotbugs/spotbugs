@@ -40,8 +40,7 @@ public class OSXAdapter extends ApplicationAdapter {
     // reference to the app where the existing quit, about, prefs code is
     private static MainFrame mainApp;
 
-    private OSXAdapter() {
-    }
+    private OSXAdapter() {}
 
     // implemented handler methods. These are basically hooks into
     // existing functionality from the main app, as if it came

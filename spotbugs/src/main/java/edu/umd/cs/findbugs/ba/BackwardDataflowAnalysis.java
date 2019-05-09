@@ -54,4 +54,3 @@ public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAna
         return new ReverseDFSOrder(cfg, rdfs, dfs);
     }
 }
-

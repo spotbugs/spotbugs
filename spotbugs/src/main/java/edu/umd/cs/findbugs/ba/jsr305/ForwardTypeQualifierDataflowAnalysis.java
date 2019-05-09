@@ -124,7 +124,8 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
             } else if (instruction instanceof ACONST_NULL) {
                 // Model constant values
                 registerPushNullSource(location);
-            } else  if ((produces == 1 || produces == 2) && !(instruction instanceof LocalVariableInstruction) && !(instruction instanceof CHECKCAST)){
+            } else if ((produces == 1 || produces == 2) && !(instruction instanceof LocalVariableInstruction)
+                    && !(instruction instanceof CHECKCAST)) {
                 // Model other sources
                 registerOtherSource(location);
             }
@@ -137,16 +138,19 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         Object constantValue = instruction.getValue(cpg);
         registerConstantSource(location, constantValue);
     }
+
     private void registerLDC2ValueSource(Location location) throws DataflowAnalysisException {
 
         LDC2_W instruction = (LDC2_W) location.getHandle().getInstruction();
         Object constantValue = instruction.getValue(cpg);
         registerConstantSource(location, constantValue);
     }
+
     private void registerPushNullSource(Location location) throws DataflowAnalysisException {
         registerConstantSource(location, null);
     }
-    private void registerConstantSource(Location location,  @CheckForNull Object constantValue) throws DataflowAnalysisException {
+
+    private void registerConstantSource(Location location, @CheckForNull Object constantValue) throws DataflowAnalysisException {
 
         When w;
         if (typeQualifierValue.canValidate(constantValue)) {
@@ -159,6 +163,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
 
         registerTopOfStackSource(SourceSinkType.CONSTANT_VALUE, location, w, false, constantValue);
     }
+
     private void registerOtherSource(Location location) throws DataflowAnalysisException {
 
         registerTopOfStackSource(SourceSinkType.OTHER, location, When.UNKNOWN, false, null);
@@ -170,6 +175,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         Number constantValue = instruction.getValue();
         registerConstantSource(location, constantValue);
     }
+
     private void registerReturnValueSource(Location location) throws DataflowAnalysisException {
         // Nothing to do if called method does not return a value
         InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
@@ -241,7 +247,7 @@ public class ForwardTypeQualifierDataflowAnalysis extends TypeQualifierDataflowA
         int param = 0;
         int slotOffset = 0;
 
-        for ( String paramSig : sigParser.parameterSignatures()) {
+        for (String paramSig : sigParser.parameterSignatures()) {
 
             // Get the TypeQualifierAnnotation for this parameter
             SourceSinkInfo info;

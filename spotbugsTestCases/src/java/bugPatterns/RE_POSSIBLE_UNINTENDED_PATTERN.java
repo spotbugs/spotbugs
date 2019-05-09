@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class RE_POSSIBLE_UNINTENDED_PATTERN {
 
     @ExpectWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
-    String [] bug1(String any) {
+    String[] bug1(String any) {
         return any.split(".");
     }
 
@@ -19,8 +19,9 @@ public class RE_POSSIBLE_UNINTENDED_PATTERN {
     String bug3(String any, String any2) {
         return any.replaceFirst(".", any2);
     }
+
     @ExpectWarning("RE_POSSIBLE_UNINTENDED_PATTERN")
-    String [] bug11(String any) {
+    String[] bug11(String any) {
         return any.split("|");
     }
 

@@ -14,11 +14,9 @@ public class Ideas_2010_05_22 {
     @interface RuntimeVisible {
     }
 
-    public @RuntimeVisible
-    int x;
+    public @RuntimeVisible int x;
 
-    public @NotRuntimeVisible
-    int y;
+    public @NotRuntimeVisible int y;
 
     public static void main(String args[]) throws Exception {
         Class c = Ideas_2010_05_22.class;

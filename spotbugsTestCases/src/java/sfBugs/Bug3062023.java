@@ -27,6 +27,5 @@ public class Bug3062023 {
         }
     }
 
-    private void something(int i) {
-    }
+    private void something(int i) {}
 }

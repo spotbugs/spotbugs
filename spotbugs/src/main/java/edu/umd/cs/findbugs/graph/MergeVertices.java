@@ -34,8 +34,7 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
     /**
      * Constructor.
      */
-    public MergeVertices() {
-    }
+    public MergeVertices() {}
 
     /**
      * Merge the specified set of vertices into a single vertex.
@@ -109,4 +108,3 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
     }
 
 }
-

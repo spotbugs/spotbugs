@@ -91,4 +91,3 @@ public class CallSite {
         return method == other.method && getBasicBlock() == other.getBasicBlock() && getHandle() == other.getHandle();
     }
 }
-

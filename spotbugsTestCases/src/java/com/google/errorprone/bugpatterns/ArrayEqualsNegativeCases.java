@@ -21,36 +21,36 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class ArrayEqualsNegativeCases {
-  public void neitherArray() {
-    Object a = new Object();
-    Object b = new Object();
+    public void neitherArray() {
+        Object a = new Object();
+        Object b = new Object();
 
-    if (a.equals(b)) {
-      System.out.println("Objects are equal!");
-    } else {
-      System.out.println("Objects are not equal!");
+        if (a.equals(b)) {
+            System.out.println("Objects are equal!");
+        } else {
+            System.out.println("Objects are not equal!");
+        }
     }
-  }
 
-  public void firstArray() {
-    Object[] a = new Object[3];
-    Object b = new Object();
+    public void firstArray() {
+        Object[] a = new Object[3];
+        Object b = new Object();
 
-    if (a.equals(b)) {
-      System.out.println("arrays are equal!");
-    } else {
-      System.out.println("arrays are not equal!");
+        if (a.equals(b)) {
+            System.out.println("arrays are equal!");
+        } else {
+            System.out.println("arrays are not equal!");
+        }
     }
-  }
 
-  public void secondArray() {
-    Object a = new Object();
-    Object[] b = new Object[3];
+    public void secondArray() {
+        Object a = new Object();
+        Object[] b = new Object[3];
 
-    if (a.equals(b)) {
-      System.out.println("arrays are equal!");
-    } else {
-      System.out.println("arrays are not equal!");
+        if (a.equals(b)) {
+            System.out.println("arrays are equal!");
+        } else {
+            System.out.println("arrays are not equal!");
+        }
     }
-  }
 }

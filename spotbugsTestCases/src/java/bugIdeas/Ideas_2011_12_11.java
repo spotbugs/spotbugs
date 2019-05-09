@@ -11,6 +11,7 @@ public class Ideas_2011_12_11 {
     public void waitForIt() throws TimeoutException, InterruptedException {
         latch.await(5, TimeUnit.SECONDS);
     }
+
     public void countDown() {
         latch.countDown();
     }

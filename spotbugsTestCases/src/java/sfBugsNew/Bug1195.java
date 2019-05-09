@@ -31,6 +31,7 @@ public class Bug1195 {
         return new Integer(myString);
 
     }
+
     public Integer test3Good(String myString) {
         return Integer.valueOf(myString);
 

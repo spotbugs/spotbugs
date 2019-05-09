@@ -277,4 +277,3 @@ public class SignatureConverter {
         return typeName;
     }
 }
-

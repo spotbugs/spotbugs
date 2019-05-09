@@ -29,8 +29,7 @@ public class TestFieldAnnotations {
         }
     }
 
-    void noop() {
-    }
+    void noop() {}
 
     int fp3() {
         if (y == null)

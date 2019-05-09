@@ -25,7 +25,6 @@ public class Bug3061338 {
         }
     }
 
-    public void getTwo(@NonNull Object x) {
-    }
+    public void getTwo(@NonNull Object x) {}
 
 }

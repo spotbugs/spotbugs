@@ -79,22 +79,17 @@ public abstract class BetterVisitor implements Visitor {
 
     // //////////////// In short form //////////////////////
     // General classes
-    public void visit(JavaClass obj) {
-    }
+    public void visit(JavaClass obj) {}
 
-    public void visit(ConstantPool obj) {
-    }
+    public void visit(ConstantPool obj) {}
 
-    public void visit(Field obj) {
-    }
+    public void visit(Field obj) {}
 
-    public void visit(Method obj) {
-    }
+    public void visit(Method obj) {}
 
     // Constants
 
-    public void visit(Constant obj) {
-    }
+    public void visit(Constant obj) {}
 
     public void visit(ConstantCP obj) {
         visit((Constant) obj);
@@ -145,8 +140,7 @@ public abstract class BetterVisitor implements Visitor {
     }
 
     // Attributes
-    public void visit(Attribute obj) {
-    }
+    public void visit(Attribute obj) {}
 
     public void visit(Code obj) {
         visit((Attribute) obj);
@@ -197,20 +191,15 @@ public abstract class BetterVisitor implements Visitor {
     }
 
     // Extra classes (i.e. leaves in this context)
-    public void visit(InnerClass obj) {
-    }
+    public void visit(InnerClass obj) {}
 
-    public void visit(LocalVariable obj) {
-    }
+    public void visit(LocalVariable obj) {}
 
-    public void visit(LineNumber obj) {
-    }
+    public void visit(LineNumber obj) {}
 
-    public void visit(CodeException obj) {
-    }
+    public void visit(CodeException obj) {}
 
-    public void visit(StackMapEntry obj) {
-    }
+    public void visit(StackMapEntry obj) {}
 
     // Attributes
     @Override
@@ -381,7 +370,6 @@ public abstract class BetterVisitor implements Visitor {
         visit(obj);
     }
 
-    public void report(PrintStream out) {
-    }
+    public void report(PrintStream out) {}
 
 }

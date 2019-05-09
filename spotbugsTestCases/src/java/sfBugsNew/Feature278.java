@@ -26,7 +26,7 @@ public class Feature278 {
 
         @NoWarning("ME_ENUM_FIELD_SETTER")
         public int getLazy(int q) {
-            if(lazy == 0) {
+            if (lazy == 0) {
                 lazy = hashCode();
             }
             return lazy;

@@ -7,27 +7,21 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class TestFooNoControlFlow {
 
-    public @Foo(when = When.NEVER)
-    Object notFoo;
+    public @Foo(when = When.NEVER) Object notFoo;
 
-    public @Foo(when = When.ALWAYS)
-    Object foo;
+    public @Foo(when = When.ALWAYS) Object foo;
 
-    public @Foo(when = When.NEVER)
-    Object returnsNotFoo() {
+    public @Foo(when = When.NEVER) Object returnsNotFoo() {
         return null;
     };
 
-    public @Foo(when = When.ALWAYS)
-    Object returnsFoo() {
+    public @Foo(when = When.ALWAYS) Object returnsFoo() {
         return null;
     };
 
-    public void requiresNotFoo(@Foo(when = When.NEVER) Object x) {
-    };
+    public void requiresNotFoo(@Foo(when = When.NEVER) Object x) {};
 
-    public void requiresFoo(@Foo(when = When.ALWAYS) Object x) {
-    };
+    public void requiresFoo(@Foo(when = When.ALWAYS) Object x) {};
 
     @ExpectWarning("TQ")
     public void test12() {

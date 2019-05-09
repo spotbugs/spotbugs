@@ -69,7 +69,7 @@ public class Bug3438355 extends JFrame {
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
-			public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 try {
                     statusText.setText("Work in progress ...");
                     int records = deleteDeclaration1(deklarationNr.getText(), spediteurNr.getText());
@@ -115,7 +115,8 @@ public class Bug3438355 extends JFrame {
             con = ds.getConnection();
             // count affected rows
             statement = con
-                    .prepareStatement("select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
+                    .prepareStatement(
+                            "select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
             statement.setString(1, spediDeklNr);
             statement.setString(2, spediNr);
             rs = statement.executeQuery();
@@ -138,16 +139,17 @@ public class Bug3438355 extends JFrame {
             statement.setString(1, spediDeklNr);
             statement.executeQuery();
 
-             // count again
-             statement = null;
-             statement =
-             con.prepareStatement("select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
-             statement.setString(1, spediDeklNr);
-             statement.setString(2, spediNr);
-             rs = statement.executeQuery();
+            // count again
+            statement = null;
+            statement =
+                    con.prepareStatement(
+                            "select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
+            statement.setString(1, spediDeklNr);
+            statement.setString(2, spediNr);
+            rs = statement.executeQuery();
 
-             rs.next();
-             countAfter = rs.getInt("rowcount");
+            rs.next();
+            countAfter = rs.getInt("rowcount");
         } finally {
             if (rs != null) {
                 try {
@@ -190,7 +192,8 @@ public class Bug3438355 extends JFrame {
             con = ds.getConnection();
             // count affected rows
             statement = con
-                    .prepareStatement("select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
+                    .prepareStatement(
+                            "select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
             statement.setString(1, spediDeklNr);
             statement.setString(2, spediNr);
             rs = statement.executeQuery();
@@ -216,7 +219,8 @@ public class Bug3438355 extends JFrame {
             // count again
             statement.close();
             statement = con
-                    .prepareStatement("select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
+                    .prepareStatement(
+                            "select count(*) as rowcount from edec_deklarationen_mgt where dko_spediteur_dekl_nr like ? and dko_spediteur_nr = ? ");
             statement.setString(1, spediDeklNr);
             statement.setString(2, spediNr);
             rs = statement.executeQuery();

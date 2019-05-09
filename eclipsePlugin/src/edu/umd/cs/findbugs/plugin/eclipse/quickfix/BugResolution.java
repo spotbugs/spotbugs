@@ -100,7 +100,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * Called on initialization
      * @param options optional arguments
      */
-    public void setOptions(@Nonnull Map<String, String> options){
+    public void setOptions(@Nonnull Map<String, String> options) {
         // noop
     }
 
@@ -138,7 +138,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             if (node != null) {
                 node.accept(labelFixingVisitor);
                 String retVal = ((CustomLabelVisitor) labelFixingVisitor).getLabelReplacement();
-                return retVal == null ? DEFAULT_REPLACEMENT: retVal;
+                return retVal == null ? DEFAULT_REPLACEMENT : retVal;
             }
             // Catch all exceptions (explicit) so that the label creation won't fail
             // FindBugs prefers this being explicit instead of just catching Exception
@@ -197,11 +197,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     public IMarker[] findOtherMarkers(IMarker[] markers) {
         Set<IMarker> set = new HashSet<>(markers.length);
         for (IMarker other : markers) {
-            if(currentMarker == other || !MarkerUtil.isFindBugsMarker(other)) {
+            if (currentMarker == other || !MarkerUtil.isFindBugsMarker(other)) {
                 continue;
             }
             String pattern = MarkerUtil.getBugPatternString(other);
-            if(pattern == null){
+            if (pattern == null) {
                 continue;
             }
             if (pattern.equals(bugPattern)) {
@@ -351,14 +351,14 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     private void runInternal(IMarker marker) throws CoreException {
         Assert.isNotNull(marker);
 
-       PendingRewrite pending = resolveWithoutWriting(marker);
-       if(pending == null){
-           return;
-       }
+        PendingRewrite pending = resolveWithoutWriting(marker);
+        if (pending == null) {
+            return;
+        }
 
         try {
             IRegion region = completeRewrite(pending);
-            if(region == null){
+            if (region == null) {
                 return;
             }
             IEditorPart part = EditorUtility.isOpenInEditor(pending.originalUnit);
@@ -492,7 +492,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      */
     public boolean isApplicable(IMarker marker) {
         ASTVisitor prescanVisitor = getApplicabilityVisitor();
-        if (prescanVisitor instanceof ApplicabilityVisitor) {       //this has an implicit null check
+        if (prescanVisitor instanceof ApplicabilityVisitor) { //this has an implicit null check
             return findApplicability(prescanVisitor, marker);
         }
         return true;
@@ -504,7 +504,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
             if (node != null) {
                 node.accept(prescanVisitor);
                 //this cast is safe because isApplicable checks the type before calling
-                return ((ApplicabilityVisitor)prescanVisitor).isApplicable();
+                return ((ApplicabilityVisitor) prescanVisitor).isApplicable();
             }
             // Catch all exceptions (explicit) so that applicability check won't fail
             // FindBugs prefers this being explicit instead of just catching Exception

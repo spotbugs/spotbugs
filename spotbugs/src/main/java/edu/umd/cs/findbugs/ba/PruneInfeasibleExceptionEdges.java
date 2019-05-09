@@ -184,4 +184,3 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
         return cfgModified;
     }
 }
-

@@ -28,7 +28,7 @@ public abstract class Ideas_2011_11_16 {
         }
     }
 
-    ResultSet doQuery3( String query) throws SQLException {
+    ResultSet doQuery3(String query) throws SQLException {
         Connection conn = getConnection();
         Statement statement = conn.createStatement();
         try {
@@ -40,11 +40,11 @@ public abstract class Ideas_2011_11_16 {
     }
 
     @ExpectWarning("OBL")
-    int doQuery4( String query) throws SQLException {
+    int doQuery4(String query) throws SQLException {
         Connection conn = getConnection();
         Statement statement = conn.createStatement();
         try {
-            ResultSet rs =  statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery(query);
             if (rs.next())
                 return rs.getInt(1);
             return 0;
@@ -53,5 +53,6 @@ public abstract class Ideas_2011_11_16 {
             throw e;
         }
     }
+
     abstract Connection getConnection();
 }

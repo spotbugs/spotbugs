@@ -21,13 +21,11 @@ public class Ideas_2008_10_15<E> {
     }
 
     static class A<E> {
-        void handle(E e) {
-        }
+        void handle(E e) {}
     }
 
     static class B<E> extends A<E> {
         @Override
-        void handle(Object o) {
-        }
+        void handle(Object o) {}
     }
 }

@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @see ReverseDepthFirstSearch
  */
 public abstract class AbstractDepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
-implements DFSEdgeTypes {
+        implements DFSEdgeTypes {
 
     public final static boolean DEBUG = false;
 
@@ -342,7 +342,7 @@ implements DFSEdgeTypes {
         case BLACK:
             dfsEdgeType = UNKNOWN_EDGE;
             break;// We can't distinguish between CROSS and FORWARD edges at
-            // this point
+        // this point
         default:
             assert false;
         }
@@ -425,4 +425,3 @@ implements DFSEdgeTypes {
         dfsEdgeTypeList[edge.getLabel()] = dfsEdgeType;
     }
 }
-

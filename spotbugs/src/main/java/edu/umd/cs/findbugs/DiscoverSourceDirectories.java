@@ -78,62 +78,48 @@ public class DiscoverSourceDirectories {
     private static class NoOpErrorLogger implements IErrorLogger {
 
         @Override
-        public void reportMissingClass(ClassNotFoundException ex) {
-        }
+        public void reportMissingClass(ClassNotFoundException ex) {}
 
         @Override
-        public void reportMissingClass(ClassDescriptor classDescriptor) {
-        }
+        public void reportMissingClass(ClassDescriptor classDescriptor) {}
 
         @Override
-        public void logError(String message) {
-        }
+        public void logError(String message) {}
 
         @Override
-        public void logError(String message, Throwable e) {
-        }
+        public void logError(String message, Throwable e) {}
 
         @Override
-        public void reportSkippedAnalysis(MethodDescriptor method) {
-        }
+        public void reportSkippedAnalysis(MethodDescriptor method) {}
     }
 
     private static class NoOpProgress implements Progress {
         @Override
-        public void startScanningArchives(int numArchivesToScan) {
-        }
+        public void startScanningArchives(int numArchivesToScan) {}
 
         @Override
-        public void doneScanningArchives() {
-        }
+        public void doneScanningArchives() {}
 
         @Override
-        public void startScanningClasses(int numClassesToScan) {
-        }
+        public void startScanningClasses(int numClassesToScan) {}
 
         @Override
-        public void finishClass() {
-        }
+        public void finishClass() {}
 
         @Override
-        public void doneScanningClasses() {
-        }
+        public void doneScanningClasses() {}
 
         @Override
-        public void finishArchive() {
-        }
+        public void finishArchive() {}
 
         @Override
-        public void startRecursiveDirectorySearch() {
-        }
+        public void startRecursiveDirectorySearch() {}
 
         @Override
-        public void doneRecursiveDirectorySearch() {
-        }
+        public void doneRecursiveDirectorySearch() {}
 
         @Override
-        public void startArchive(String name) {
-        }
+        public void startArchive(String name) {}
 
     }
 
@@ -263,7 +249,7 @@ public class DiscoverSourceDirectories {
     }
 
     private IClassPath buildClassPath(IClassPathBuilder builder, IClassFactory factory) throws InterruptedException, IOException,
-    CheckedAnalysisException {
+            CheckedAnalysisException {
 
         progress.startScanningArchives(project.getFileCount());
 
@@ -285,7 +271,7 @@ public class DiscoverSourceDirectories {
     }
 
     private String findFullyQualifiedSourceFileName(IClassPath classPath, ClassDescriptor classDesc) throws IOException,
-    CheckedAnalysisException {
+            CheckedAnalysisException {
         try {
             // Open and parse the class file to attempt
             // to discover the source file name.

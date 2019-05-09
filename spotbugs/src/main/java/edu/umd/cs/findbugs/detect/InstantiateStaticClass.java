@@ -70,7 +70,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 
     }
 
-    private boolean isStaticOnlyClass(XClass xClass)  {
+    private boolean isStaticOnlyClass(XClass xClass) {
 
         if (xClass.getInterfaceDescriptorList().length > 0) {
             return false;

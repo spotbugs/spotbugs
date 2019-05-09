@@ -18,7 +18,11 @@ public class Ideas_2012_09_27 {
 
     }
 
-    @PK static int asPK(int x) { return x; };
+    @PK
+    static int asPK(int x) {
+        return x;
+    };
+
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @TypeQualifier
@@ -30,29 +34,34 @@ public class Ideas_2012_09_27 {
         System.out.println("Initializing class");
 
     }
-    @PK static final  int z = asPK(42)+1;
+    @PK
+    static final int z = asPK(42) + 1;
     long x;
 
 
-    @PK int getZ() {
+    @PK
+    int getZ() {
         return z;
     }
-  @PK
-  long getX() {
-      return x;
-  }
+
+    @PK
+    long getX() {
+        return x;
+    }
+
     @PK
     long getLongKey() {
         return 42;
     }
 
-    @PK Object getO() {
+    @PK
+    Object getO() {
         return "42";
     }
 
     @PK
     int getLongKey(int x) {
-        return 42+x;
+        return 42 + x;
     }
 
     @ExpectWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
@@ -90,11 +99,13 @@ public class Ideas_2012_09_27 {
     double getDoubleKey() {
         return 42;
     }
+
     @NoWarning("TQ_UNKNOWN_VALUE_USED_WHERE_ALWAYS_STRICTLY_REQUIRED")
     @PK
     double getDoubleKey2() {
         return 42.0;
     }
+
     void setDoubleKey(@PK double key) {
 
     }

@@ -42,8 +42,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 public class ClassFactory implements IClassFactory {
     private static IClassFactory theInstance = new ClassFactory();
 
-    private ClassFactory() {
-    }
+    private ClassFactory() {}
 
     public static IClassFactory instance() {
         return theInstance;

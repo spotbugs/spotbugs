@@ -26,12 +26,14 @@ public class Ideas_2012_12_03 {
     }
 
     @NoWarning("TQ")
-    @PK int foo(@PK int x, int y) {
+    @PK
+    int foo(@PK int x, int y) {
         return x;
     }
 
     @NoWarning("TQ")
-    @SlashedClassName String foo() {
+    @SlashedClassName
+    String foo() {
         return null;
     }
 }

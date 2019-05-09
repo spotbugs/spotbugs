@@ -15,8 +15,8 @@ public class Ideas_2013_10_30 {
         } else if (y == 2) {
             x = 3;
         } else {
-            x = x*x-x;
-    }
+            x = x * x - x;
+        }
         return x == oldX;
     }
 
@@ -30,8 +30,8 @@ public class Ideas_2013_10_30 {
         } else if (y == 2) {
             a = 3;
         } else {
-            a = a*a-a;
-    }
+            a = a * a - a;
+        }
         return a == oldA;
     }
 }

@@ -8,7 +8,7 @@ package dynamicany;
 public class DynAnyImpl {
     protected DynAnyImpl(Object orb, Object any, boolean copyValue) {
 
-//        ORBUtilSystemException.get((ORB) orb, CORBALogDomains.RPC_PRESENTATION);
+        //        ORBUtilSystemException.get((ORB) orb, CORBALogDomains.RPC_PRESENTATION);
         orb.hashCode();
 
     }

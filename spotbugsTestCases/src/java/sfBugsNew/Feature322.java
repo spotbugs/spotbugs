@@ -9,8 +9,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Feature322 {
     @NoWarning("UC_USELESS_VOID_METHOD")
-    public void empty() {
-    }
+    public void empty() {}
 
     @NoWarning("UC_USELESS_VOID_METHOD")
     public void emptyCaller() {
@@ -32,8 +31,8 @@ public class Feature322 {
     @ExpectWarning("UC_USELESS_VOID_METHOD")
     public void uselessCollection(Collection<String> a) {
         List<String> b = new ArrayList<>();
-        for(String str : a) {
-            if(str.startsWith("b")) {
+        for (String str : a) {
+            if (str.startsWith("b")) {
                 b.add(str);
             }
         }
@@ -55,8 +54,8 @@ public class Feature322 {
 
     @ExpectWarning("UC_USELESS_VOID_METHOD")
     public void recursive(int a) {
-        if(a > 0) {
-            recursive(a-1);
+        if (a > 0) {
+            recursive(a - 1);
         }
     }
 
@@ -65,8 +64,7 @@ public class Feature322 {
         List<Integer> x = new ArrayList<>();
         try {
             x.add(a);
-        }
-        finally {
+        } finally {
             x.add(2);
         }
     }

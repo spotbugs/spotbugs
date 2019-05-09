@@ -1,4 +1,5 @@
 package sfBugsNew;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
@@ -26,7 +27,7 @@ public class Feature294 {
         a = 3.1417;
         a = 3.1414;
         float b;
-        b = (float)Math.PI; // Exact value converted to float
+        b = (float) Math.PI; // Exact value converted to float
         b = 3.141512345f; // Explicitly specified something different from PI
         b = 3.1417f;
         b = 3.1414f;
@@ -64,17 +65,17 @@ public class Feature294 {
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi1() {
-        System.out.println(2*3.141592);
+        System.out.println(2 * 3.141592);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi2() {
-        System.out.println(2*3.1416);
+        System.out.println(2 * 3.1416);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void test2Pi3() {
-        System.out.println(2*3.1415);
+        System.out.println(2 * 3.1415);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
@@ -106,19 +107,19 @@ public class Feature294 {
 
     @NoWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testDoubleArray() {
-        double[] arr = new double[] {2.7183, 2.7184, 2.7185};
+        double[] arr = new double[] { 2.7183, 2.7184, 2.7185 };
         System.out.println(arr[0]);
     }
 
     @NoWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testDoubleArray2() {
-        Double[] arr = new Double[] {2.7183, 2.7184, 2.7185};
+        Double[] arr = new Double[] { 2.7183, 2.7184, 2.7185 };
         System.out.println(arr[0]);
     }
 
     @ExpectWarning("CNT_ROUGH_CONSTANT_VALUE")
     public void testDoubleArrayHighPrecision() {
-        Double[] arr = new Double[] {2.718281828, 2.719, 2.72};
+        Double[] arr = new Double[] { 2.718281828, 2.719, 2.72 };
         System.out.println(arr[0]);
     }
 }

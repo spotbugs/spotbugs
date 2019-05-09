@@ -16,8 +16,7 @@ public class Bug1566396 {
         reset();
     }
 
-    private Bug1566396() {
-    }
+    private Bug1566396() {}
 
     int foo() {
         return array.length;

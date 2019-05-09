@@ -21,6 +21,5 @@ public class Bug1678225 {
         }
     }
 
-    public void useStream(InputStream is) throws IOException {
-    }
+    public void useStream(InputStream is) throws IOException {}
 }

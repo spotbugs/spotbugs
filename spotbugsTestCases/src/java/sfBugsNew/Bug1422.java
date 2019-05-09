@@ -14,7 +14,7 @@ public class Bug1422 {
 
     public Bug1422(boolean b) {
         map1 = new EnumMap<>(TimeUnit.class);
-        if(b) {
+        if (b) {
             map2 = new HashMap<>();
         } else {
             map2 = new EnumMap<>(TimeUnit.class);
@@ -23,30 +23,30 @@ public class Bug1422 {
 
     @NoWarning("WMI_WRONG_MAP_ITERATOR")
     public void iterateEnumMap(EnumMap<TimeUnit, String> map) {
-        for(TimeUnit u : map.keySet()) {
-            System.out.println(u+": "+map.get(u));
+        for (TimeUnit u : map.keySet()) {
+            System.out.println(u + ": " + map.get(u));
         }
     }
 
     @ExpectWarning("WMI_WRONG_MAP_ITERATOR")
     public void iterateMap(Map<TimeUnit, String> map) {
-        for(TimeUnit u : map.keySet()) {
-            System.out.println(u+": "+map.get(u));
+        for (TimeUnit u : map.keySet()) {
+            System.out.println(u + ": " + map.get(u));
         }
     }
 
     @NoWarning("WMI_WRONG_MAP_ITERATOR")
     public void iterateEnumMapField() {
-        for(TimeUnit u : map1.keySet()) {
-            System.out.println(u+": "+map1.get(u));
+        for (TimeUnit u : map1.keySet()) {
+            System.out.println(u + ": " + map1.get(u));
         }
     }
 
     // We are not sure about map2 type: it can be HashMap as well
     @ExpectWarning("WMI_WRONG_MAP_ITERATOR")
     public void iterateMapField() {
-        for(TimeUnit u : map2.keySet()) {
-            System.out.println(u+": "+map2.get(u));
+        for (TimeUnit u : map2.keySet()) {
+            System.out.println(u + ": " + map2.get(u));
         }
     }
 }

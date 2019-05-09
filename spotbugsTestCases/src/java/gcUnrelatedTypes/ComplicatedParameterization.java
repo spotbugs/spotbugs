@@ -34,6 +34,7 @@ public class ComplicatedParameterization {
     boolean bug(ArrayList<Long> a) {
         return myFoo.contains(a);
     }
+
     @DesireWarning("GC")
     boolean bug(LinkedList<Integer> a) {
         return myFoo.contains(a);

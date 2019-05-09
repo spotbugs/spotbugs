@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  * default.
  */
 @Documented
-@Target({METHOD, TYPE})
+@Target({ METHOD, TYPE })
 @Retention(CLASS)
-public @interface CanIgnoreReturnValue {}
+public @interface CanIgnoreReturnValue {
+}

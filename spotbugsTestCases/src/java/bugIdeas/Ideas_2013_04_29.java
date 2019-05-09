@@ -9,7 +9,8 @@ public class Ideas_2013_04_29 {
         return y;
     }
 
-    int a,b;
+    int a, b;
+
     public int testSelfOperationField(int x) {
 
         a = x;

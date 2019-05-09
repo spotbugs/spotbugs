@@ -11,13 +11,13 @@ public class Bug3097362 {
     }
 
     @Override
-	public int hashCode() {
+    public int hashCode() {
         return x;
 
     }
 
-   @Override
-@NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
+    @Override
+    @NoWarning("BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS")
     public boolean equals(Object obj) {
         if (!this.getClass().isInstance(obj)) {
             return false;

@@ -12,7 +12,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Bug1416 {
     @ExpectWarning(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", confidence = Confidence.HIGH)
     public static boolean hasUser(Connection c, String name) throws SQLException {
-        return hasResult(c, "SELECT * FROM users WHERE name='"+name+"'");
+        return hasResult(c, "SELECT * FROM users WHERE name='" + name + "'");
     }
 
     // passthru method: warning is generated on call site
@@ -26,14 +26,14 @@ public class Bug1416 {
     // passthru method: warning is generated on call site
     @NoWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public static ResultSet logAndExecute(String query, Statement st) throws SQLException {
-        System.out.println("Executing "+query+"...");
+        System.out.println("Executing " + query + "...");
         return st.executeQuery(query);
     }
 
     // passthru method, but additional execute is dangerous
     @ExpectWarning("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     public static ResultSet logAndExecute2(String query, Statement st) throws SQLException {
-        st.execute("INSERT INTO logs(type,message) VALUES('query', '"+query+"')");
+        st.execute("INSERT INTO logs(type,message) VALUES('query', '" + query + "')");
         return st.executeQuery(query);
     }
 }

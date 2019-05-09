@@ -23,6 +23,5 @@ class Circ2 {
 }
 
 class NoCirc {
-    public NoCirc() {
-    }
+    public NoCirc() {}
 }

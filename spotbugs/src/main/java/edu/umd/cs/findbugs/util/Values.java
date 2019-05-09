@@ -105,6 +105,5 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
 
-    private Values() {
-    }
+    private Values() {}
 }

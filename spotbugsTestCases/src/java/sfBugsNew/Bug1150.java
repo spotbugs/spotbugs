@@ -28,7 +28,7 @@ public class Bug1150 {
         return getI(1.2) + getI2(1.3);
     }
 
-    @ExpectWarning(value="BC_UNCONFIRMED_CAST", confidence=Confidence.LOW)
+    @ExpectWarning(value = "BC_UNCONFIRMED_CAST", confidence = Confidence.LOW)
     public Integer getI(Number o) {
         return (Integer) o;
     }

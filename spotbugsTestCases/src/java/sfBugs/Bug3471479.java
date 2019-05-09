@@ -21,11 +21,9 @@ public class Bug3471479 {
             if (rs.next()) {
                 status = rs.getString(1);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if (ps != null) {
                 try {
                     ps.close();

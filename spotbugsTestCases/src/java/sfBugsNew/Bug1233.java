@@ -10,7 +10,7 @@ public class Bug1233 {
 
     public String getJSON(Gson gson) {
         Container container = new Container();
-        container.containdField = "Some String";  //<--here you get false positive
+        container.containdField = "Some String"; //<--here you get false positive
         return gson.toJson(container);
 
     }

@@ -73,8 +73,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
     }
 
     @Override
-    public void observeClass(ClassDescriptor classDescriptor) {
-    }
+    public void observeClass(ClassDescriptor classDescriptor) {}
 
     @Override
     public void logError(String message) {
@@ -218,10 +217,8 @@ public class XDocsBugReporter extends TextUIBugReporter {
      */
 
     @Override
-    public @Nonnull
-    BugCollection getBugCollection() {
+    public @Nonnull BugCollection getBugCollection() {
         return bugCollection;
     }
 
 }
-

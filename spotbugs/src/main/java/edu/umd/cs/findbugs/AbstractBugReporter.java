@@ -171,6 +171,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
         return relaxed;
     }
+
     // Subclasses must override doReportBug(), not this method.
     @Override
     public final void reportBug(@Nonnull BugInstance bugInstance) {
@@ -209,8 +210,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
     }
 
-    public static @CheckForNull @DottedClassName
-    String getMissingClassName(ClassNotFoundException ex) {
+    public static @CheckForNull @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
 
         // Try to decode the error message by extracting the class name.
         String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
@@ -422,4 +422,3 @@ public abstract class AbstractBugReporter implements BugReporter {
      */
     public abstract void reportMissingClass(String string);
 }
-

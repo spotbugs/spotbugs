@@ -32,8 +32,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 public class ObfuscateBugs {
     BugCollection bugCollection;
 
-    public ObfuscateBugs() {
-    }
+    public ObfuscateBugs() {}
 
     public ObfuscateBugs(BugCollection bugCollection) {
         this.bugCollection = bugCollection;

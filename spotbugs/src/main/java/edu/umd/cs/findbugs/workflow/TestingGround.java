@@ -32,8 +32,7 @@ import edu.umd.cs.findbugs.util.Bag;
 public class TestingGround {
     BugCollection bugCollection;
 
-    public TestingGround() {
-    }
+    public TestingGround() {}
 
     public TestingGround(BugCollection bugCollection) {
         this.bugCollection = bugCollection;

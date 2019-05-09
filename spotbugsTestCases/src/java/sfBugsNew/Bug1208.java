@@ -7,6 +7,7 @@ import javax.annotation.CheckForNull;
 public class Bug1208 {
 
     Random r = new Random();
+
     // Some shoot-your-leg code
     public @CheckForNull Bug1208 m1() {
         return r.nextBoolean() ? this : null;

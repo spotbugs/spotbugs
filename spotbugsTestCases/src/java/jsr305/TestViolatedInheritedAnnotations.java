@@ -44,8 +44,7 @@ public class TestViolatedInheritedAnnotations implements I1, I2 {
     // It is easy to spot that f() returns a @Tainted value,
     // and thus checking should take place.
     static class X {
-        public @Tainted
-        Object f() {
+        public @Tainted Object f() {
             return new Object();
         }
     }

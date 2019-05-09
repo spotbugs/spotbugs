@@ -32,4 +32,3 @@ public class LiveLocalStoreDataflow extends Dataflow<BitSet, LiveLocalStoreAnaly
         super(cfg, analysis);
     }
 }
-

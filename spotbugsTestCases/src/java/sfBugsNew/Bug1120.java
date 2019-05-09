@@ -9,26 +9,27 @@ public class Bug1120 {
     Object getGlobalError() {
         return globalError;
     }
+
     void myMethod() {
-      // some code
+        // some code
 
-      if (Math.random() > 0.5)
-          globalError = "x";
+        if (Math.random() > 0.5)
+            globalError = "x";
 
 
-      // some code
+        // some code
     }
 
     @NoWarning("RCN")
     void myProg() {
-      globalError = null;
-      myMethod();
+        globalError = null;
+        myMethod();
 
-      // FindBugs considers this check resundant
-      if (globalError != null) {
-        // do something
+        // FindBugs considers this check resundant
+        if (globalError != null) {
+            // do something
 
-      }
+        }
     }
 
 }

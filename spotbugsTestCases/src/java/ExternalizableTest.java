@@ -19,8 +19,7 @@ public class ExternalizableTest implements Externalizable {
     }
 
     @Override
-    public void writeExternal(ObjectOutput out) {
-    }
+    public void writeExternal(ObjectOutput out) {}
 
     static public void main(String args[]) throws Exception {
         ByteArrayOutputStream pout = new ByteArrayOutputStream();

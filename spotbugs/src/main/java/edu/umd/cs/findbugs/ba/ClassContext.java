@@ -185,7 +185,7 @@ public class ClassContext {
         Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet = methodAnalysisObjectMap.entrySet();
         for (Map.Entry<Class<?>, Map<MethodDescriptor, Object>> entry : entrySet) {
             Class<?> cls = entry.getKey();
-        
+
             // FIXME: hack
             if (!DataflowAnalysis.class.isAssignableFrom(cls) && !Dataflow.class.isAssignableFrom(cls)) {
                 // There is really no need to purge analysis results
@@ -194,7 +194,7 @@ public class ClassContext {
                 // to be purged.
                 continue;
             }
-        
+
             entry.getValue().remove(methodDescriptor);
         }
     }
@@ -236,8 +236,7 @@ public class ClassContext {
         return getClassDescriptor().getDottedClassName() + "." + method.getName() + method.getSignature();
     }
 
-    public @Nonnull
-    List<Method> getMethodsInCallOrder() {
+    public @Nonnull List<Method> getMethodsInCallOrder() {
         Map<XMethod, Method> map = new HashMap<>();
         for (Method m : getJavaClass().getMethods()) {
             XMethod xMethod = classInfo.findMethod(m.getName(), m.getSignature(), m.isStatic());
@@ -305,8 +304,7 @@ public class ClassContext {
      *
      * @return the ConstantPoolGen
      */
-    public @Nonnull
-    ConstantPoolGen getConstantPoolGen() {
+    public @Nonnull ConstantPoolGen getConstantPoolGen() {
         return getClassAnalysisNoException(ConstantPoolGen.class);
     }
 
@@ -318,7 +316,7 @@ public class ClassContext {
      * @return the UsagesRequiringNonNullValues
      */
     public UsagesRequiringNonNullValues getUsagesRequiringNonNullValues(Method method) throws DataflowAnalysisException,
-    CFGBuilderException {
+            CFGBuilderException {
         return getMethodAnalysis(UsagesRequiringNonNullValues.class, method);
     }
 
@@ -379,19 +377,19 @@ public class ClassContext {
 
     static final AnalysisLocal<MapCache<XMethod, BitSet>> cachedBitsets_AL =
             new AnalysisLocal<MapCache<XMethod, BitSet>>() {
-        @Override
-        protected MapCache<XMethod, BitSet> initialValue() {
-            return  new MapCache<>(64);
-        }
-    };
+                @Override
+                protected MapCache<XMethod, BitSet> initialValue() {
+                    return new MapCache<>(64);
+                }
+            };
 
     static final AnalysisLocal<MapCache<XMethod, Set<Integer>>> cachedLoopExits_AL =
             new AnalysisLocal<MapCache<XMethod, Set<Integer>>>() {
-        @Override
-        protected MapCache<XMethod, Set<Integer>> initialValue() {
-            return  new MapCache<>(13);
-        }
-    };
+                @Override
+                protected MapCache<XMethod, Set<Integer>> initialValue() {
+                    return new MapCache<>(13);
+                }
+            };
 
 
     /**
@@ -466,14 +464,14 @@ public class ClassContext {
             if (result == null) {
                 AnalysisContext.logError("Null cachedLoopExits for " + xmethod, new NullPointerException());
                 assert false;
-                return Collections.<Integer> emptySet();
+                return Collections.<Integer>emptySet();
             }
             return result;
         }
         Code code = method.getCode();
         if (code == null) {
             assert false;
-            return Collections.<Integer> emptySet();
+            return Collections.<Integer>emptySet();
         }
 
         byte[] instructionList = code.getCode();
@@ -485,7 +483,7 @@ public class ClassContext {
             }
         }
         if (result.size() == 0) {
-            result = Collections.<Integer> emptySet();
+            result = Collections.<Integer>emptySet();
         }
 
         cachedLoopExits().put(xmethod, result);
@@ -523,8 +521,8 @@ public class ClassContext {
         }
         int branchTarget = pos + getBranchOffset(codeBytes, pos + 1);
         if (branchTarget - 3 < pos
-            || branchTarget >= codeBytes.length
-            || (codeBytes[branchTarget - 3] & 0xff) != Const.GOTO) {
+                || branchTarget >= codeBytes.length
+                || (codeBytes[branchTarget - 3] & 0xff) != Const.GOTO) {
             return false;
         }
         int backBranchTarget = branchTarget + getBranchOffset(codeBytes, branchTarget - 2);
@@ -594,7 +592,7 @@ public class ClassContext {
      * @return the DominatorsAnalysis
      */
     public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         return getMethodAnalysis(DominatorsAnalysis.class, method);
     }
 
@@ -607,7 +605,7 @@ public class ClassContext {
      * @return the DominatorsAnalysis
      */
     public PostDominatorsAnalysis getNonImplicitExceptionDominatorsAnalysis(Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         return getMethodAnalysis(NonImplicitExceptionPostDominatorsAnalysis.class, method);
     }
 
@@ -620,7 +618,7 @@ public class ClassContext {
      * @return the PostDominatorsAnalysis
      */
     public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         return getMethodAnalysis(NonExceptionPostdominatorsAnalysis.class, method);
     }
 
@@ -802,7 +800,7 @@ public class ClassContext {
 
                 if (prevStartPc >= 0) {
                     int nextPcInFinallyBlock = pcInFinallyBlock.nextSetBit(prevStartPc);
-                    if ( prevStartPc < nextPcInFinallyBlock && nextPcInFinallyBlock < line.getStartPC()) {
+                    if (prevStartPc < nextPcInFinallyBlock && nextPcInFinallyBlock < line.getStartPC()) {
                         lineMentionedMultipleTimes.set(lineNum);
                     }
                 }
@@ -835,7 +833,7 @@ public class ClassContext {
      * @throws DataflowAnalysisException
      */
     public UnconditionalValueDerefDataflow getUnconditionalValueDerefDataflow(Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         return getMethodAnalysis(UnconditionalValueDerefDataflow.class, method);
     }
 
@@ -895,7 +893,7 @@ public class ClassContext {
 
     public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv,
             @CheckForNull UnconditionalValueDerefDataflow dataflow, @CheckForNull TypeDataflow typeDataflow)
-                    throws DataflowAnalysisException {
+            throws DataflowAnalysisException {
         System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
         TreeSet<Location> tree = new TreeSet<>();
 
@@ -991,7 +989,7 @@ public class ClassContext {
     }
 
     private <Analysis> Analysis getMethodAnalysis(Class<Analysis> analysisClass, Method method) throws DataflowAnalysisException,
-    CFGBuilderException {
+            CFGBuilderException {
         try {
             MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(jclass, method);
             return Global.getAnalysisCache().getMethodAnalysis(analysisClass, methodDescriptor);

@@ -47,6 +47,7 @@ public class SillyBoxedUsage {
     public int testParsingBad1(String value) {
         return new Integer(value).intValue();
     }
+
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
     public int testParsingBad1a(String value) {
         return Integer.valueOf(value).intValue();
@@ -61,6 +62,7 @@ public class SillyBoxedUsage {
     public long testParsingBad2(String value) {
         return new Long(value).longValue();
     }
+
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_PARSING")
     public long testParsingBad2a(String value) {
         return Long.valueOf(value).longValue();

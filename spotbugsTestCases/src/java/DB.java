@@ -14,6 +14,5 @@ public class DB {
         return tempSet;
     }
 
-    public DB() {
-    }
+    public DB() {}
 }

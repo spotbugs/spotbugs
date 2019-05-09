@@ -82,6 +82,5 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

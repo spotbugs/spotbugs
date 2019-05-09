@@ -11,7 +11,8 @@ public class Ideas_2011_09_20 {
 
     void bar(boolean b) {
         Object x = null;
-        if (b) x = "abc";
+        if (b)
+            x = "abc";
         setFoo(x);
 
     }

@@ -22,21 +22,21 @@ package com.google.errorprone.bugpatterns;
 @SuppressWarnings("fallthrough")
 public class FallthroughSuppressionPositiveCases {
 
-  @SuppressWarnings("fallthrough")
-  public void suppressedMethod1a() {}
+    @SuppressWarnings("fallthrough")
+    public void suppressedMethod1a() {}
 
-  @SuppressWarnings(value = "fallthrough")
-  public void suppressedMethod1b() {}
+    @SuppressWarnings(value = "fallthrough")
+    public void suppressedMethod1b() {}
 
-  @SuppressWarnings({"fallthrough"})
-  public void suppressedMethod1c() {}
+    @SuppressWarnings({ "fallthrough" })
+    public void suppressedMethod1c() {}
 
-  @java.lang.SuppressWarnings("fallthrough")
-  public void suppressedMethod1d() {}
+    @java.lang.SuppressWarnings("fallthrough")
+    public void suppressedMethod1d() {}
 
-  @SuppressWarnings({"fallthrough", "unchecked"})
-  public void suppressedMethod2() {}
+    @SuppressWarnings({ "fallthrough", "unchecked" })
+    public void suppressedMethod2() {}
 
-  @SuppressWarnings({"varargs", "fallthrough", "unchecked"})
-  public void suppressedMethod3() {}
+    @SuppressWarnings({ "varargs", "fallthrough", "unchecked" })
+    public void suppressedMethod3() {}
 }

@@ -242,8 +242,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     public static class FinalConstant extends ObjectType {
         private static final long serialVersionUID = 1L;
 
-        final @Nonnull
-        XField field;
+        final @Nonnull XField field;
 
         public FinalConstant(@DottedClassName String type, @Nonnull XField field) {
             super(type);
@@ -473,10 +472,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             Type type = obj.getType(getCPG());
             if (isString(type)) {
                 Object value = obj.getValue(getCPG());
-                if (value instanceof String && ((String)value).length() == 0) {
-                    pushValue( emptyStringTypeInstance);
+                if (value instanceof String && ((String) value).length() == 0) {
+                    pushValue(emptyStringTypeInstance);
                 } else {
-                    pushValue( staticStringTypeInstance);
+                    pushValue(staticStringTypeInstance);
                 }
             } else {
                 pushValue(type);
@@ -732,7 +731,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     }
 
     private void analyzeMethod(ClassContext classContext, final Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
 
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null) {
@@ -833,7 +832,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     private void inspectLocation(JavaClass jclass, ConstantPoolGen cpg, Method method, MethodGen methodGen,
             LinkedList<WarningWithProperties> refComparisonList, LinkedList<WarningWithProperties> stringComparisonList,
             RefComparisonTypeFrameModelingVisitor visitor, TypeDataflow typeDataflow, Location location)
-                    throws DataflowAnalysisException {
+            throws DataflowAnalysisException {
         Instruction ins = location.getHandle().getInstruction();
         short opcode = ins.getOpcode();
         if (opcode == Const.IF_ACMPEQ || opcode == Const.IF_ACMPNE) {
@@ -842,30 +841,31 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         } else if (ins instanceof InvokeInstruction) {
             InvokeInstruction inv = (InvokeInstruction) ins;
             boolean isStatic = inv instanceof INVOKESTATIC;
-            @DottedClassName String className = inv.getClassName(cpg);
+            @DottedClassName
+            String className = inv.getClassName(cpg);
             String methodName = inv.getMethodName(cpg);
             String methodSig = inv.getSignature(cpg);
-            if ( "assertSame".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)V".equals(methodSig)) {
+            if ("assertSame".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)V".equals(methodSig)) {
                 checkRefComparison(location, jclass, method, methodGen, visitor, typeDataflow, stringComparisonList,
                         refComparisonList);
-            } else if ( "assertFalse".equals(methodName) && "(Z)V".equals(methodSig)) {
+            } else if ("assertFalse".equals(methodName) && "(Z)V".equals(methodSig)) {
                 SourceLineAnnotation lastLocation = bugAccumulator.getLastBugLocation();
                 InstructionHandle prevHandle = location.getHandle().getPrev();
-                if (lastLocation != null && prevHandle != null && lastLocation.getEndBytecode() == prevHandle.getPosition()){
+                if (lastLocation != null && prevHandle != null && lastLocation.getEndBytecode() == prevHandle.getPosition()) {
                     bugAccumulator.forgetLastBug();
                     if (DEBUG) {
-                        System.out.println("Forgetting last bug due to call to " + className +"." + methodName);
+                        System.out.println("Forgetting last bug due to call to " + className + "." + methodName);
                     }
                 }
 
             } else {
                 boolean equalsMethod = !isStatic && "equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)
-                        || isStatic &&  "assertEquals".equals(methodName)
-                        && "(Ljava/lang/Object;Ljava/lang/Object;)V".equals(methodSig)
+                        || isStatic && "assertEquals".equals(methodName)
+                                && "(Ljava/lang/Object;Ljava/lang/Object;)V".equals(methodSig)
                         || isStatic && "equal".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Z".equals(methodSig)
-                        && "com.google.common.base.Objects".equals(className)
+                                && "com.google.common.base.Objects".equals(className)
                         || isStatic && "equals".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Z".equals(methodSig)
-                        && "java.util.Objects".equals(className);
+                                && "java.util.Objects".equals(className);
 
                 if (equalsMethod) {
                     checkEqualsComparison(location, jclass, method, methodGen, cpg, typeDataflow);
@@ -918,7 +918,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     private void checkRefComparison(Location location, JavaClass jclass, Method method, MethodGen methodGen,
             RefComparisonTypeFrameModelingVisitor visitor, TypeDataflow typeDataflow,
             List<WarningWithProperties> stringComparisonList, List<WarningWithProperties> refComparisonList)
-                    throws DataflowAnalysisException {
+            throws DataflowAnalysisException {
 
         InstructionHandle handle = location.getHandle();
 
@@ -941,20 +941,20 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
                 boolean isAssertSame = handle.getInstruction() instanceof INVOKESTATIC;
                 if (isAssertSame) {
-                    if(testingEnabled) {
+                    if (testingEnabled) {
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, "TESTING", result.getPriority())
-                                .addClassAndMethod(methodGen, sourceFile)
-                                .addString("Calling assertSame with two distinct objects")
-                                .addFoundAndExpectedType(rhsType, lhsType)
-                                .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                                        .addClassAndMethod(methodGen, sourceFile)
+                                        .addString("Calling assertSame with two distinct objects")
+                                        .addFoundAndExpectedType(rhsType, lhsType)
+                                        .addSomeSourceForTopTwoStackValues(classContext, method, location),
                                 SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
                     }
                 } else {
                     bugAccumulator.accumulateBug(
                             new BugInstance(this, "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", result.getPriority())
-                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType, lhsType)
-                            .addSomeSourceForTopTwoStackValues(classContext, method, location),
+                                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType, lhsType)
+                                    .addSomeSourceForTopTwoStackValues(classContext, method, location),
                             SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
                 }
                 return;
@@ -1125,7 +1125,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                     }
                     if (isNullFrame.isValid() && isNullFrame.getTopValue().isDefinitelyNull()) {
                         String type = "EC_NULL_ARG";
-                        if (calledMethodAnnotation != null && calledMethodAnnotation.isStatic()){
+                        if (calledMethodAnnotation != null && calledMethodAnnotation.isStatic()) {
                             type = "DMI_DOH";
                             priority = LOW_PRIORITY;
                         }
@@ -1195,10 +1195,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
                 priorityModifier += 2;
             }
             bugAccumulator.accumulateBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority() + priorityModifier)
-            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-            .addSomeSourceForTopTwoStackValues(classContext, method, location)
-            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
-            SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
             String lhsSig = lhsType_.getSignature();
             String rhsSig = rhsType_.getSignature();
@@ -1216,34 +1216,34 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             int priority = result.getPriority() + priorityModifier;
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "EC_UNRELATED_TYPES", priority)
-                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
-                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                            .addSomeSourceForTopTwoStackValues(classContext, method, location).addEqualsMethodUsed(targets)
+                            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile,
                             location.getHandle()));
         } else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE
                 || result == IncompatibleTypes.UNRELATED_FINAL_CLASS_AND_INTERFACE) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority() + priorityModifier)
-                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
-                    .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature()))
-                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                            .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature()))
+                            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result == IncompatibleTypes.UNRELATED_INTERFACES) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority() + priorityModifier)
-                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
-                    .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature()))
-                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                            .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                            .addEqualsMethodUsed(DescriptorFactory.createClassDescriptorFromSignature(lhsType_.getSignature()))
+                            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
                     SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         } else if (result != IncompatibleTypes.UNCHECKED && result.getPriority() <= Priorities.LOW_PRIORITY) {
             bugAccumulator.accumulateBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
-            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
-            .addSomeSourceForTopTwoStackValues(classContext, method, location)
-            .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
-            SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
+                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(rhsType_, lhsType_)
+                    .addSomeSourceForTopTwoStackValues(classContext, method, location)
+                    .addOptionalAnnotation(calledMethodAnnotation, MethodAnnotation.METHOD_CALLED),
+                    SourceLineAnnotation.fromVisitedInstruction(this.classContext, methodGen, sourceFile, location.getHandle()));
         }
 
     }
@@ -1260,7 +1260,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         String methodName = inv.getMethodName(cpg);
         String methodSig = inv.getSignature(cpg);
         MethodDescriptor invokedMethod =
-                DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig, inv instanceof INVOKESTATIC);
+                DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(invoked), methodName, methodSig,
+                        inv instanceof INVOKESTATIC);
         return invokedMethod;
     }
 
@@ -1292,4 +1293,3 @@ public class FindRefComparison implements Detector, ExtendedTypes {
         // do nothing
     }
 }
-

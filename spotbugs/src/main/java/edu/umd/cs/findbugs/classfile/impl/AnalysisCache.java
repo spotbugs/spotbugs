@@ -187,9 +187,8 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @SuppressWarnings("unchecked")
-    private <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass)  {
-        Map<ClassDescriptor, Object> descriptorMap
-        = findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap,
+    private <E> Map<ClassDescriptor, E> getAllClassAnalysis(Class<E> analysisClass) {
+        Map<ClassDescriptor, Object> descriptorMap = findOrCreateDescriptorMap(classAnalysisMap, classAnalysisEngineMap,
                 analysisClass);
         return (Map<ClassDescriptor, E>) descriptorMap;
     }
@@ -202,7 +201,7 @@ public class AnalysisCache implements IAnalysisCache {
     /**
      * Cleans up all cached data
      */
-    public void dispose(){
+    public void dispose() {
         classAnalysisMap.clear();
         classAnalysisEngineMap.clear();
         analysisLocals.clear();
@@ -416,7 +415,7 @@ public class AnalysisCache implements IAnalysisCache {
     private static <DescriptorType> Map<DescriptorType, Object> findOrCreateDescriptorMap(
             final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap,
             final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, ?>> engineMap,
-                    final Class<?> analysisClass) {
+            final Class<?> analysisClass) {
         Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
         if (descriptorMap == null) {
             descriptorMap = createMap(engineMap, analysisClass);
@@ -427,7 +426,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     private static <DescriptorType> Map<DescriptorType, Object> createMap(
             final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType, ?>> engineMap,
-                    final Class<?> analysisClass) {
+            final Class<?> analysisClass) {
         Map<DescriptorType, Object> descriptorMap;
         // Create a MapCache that allows the analysis engine to
         // decide that analysis results should be retained indefinitely.
@@ -467,10 +466,12 @@ public class AnalysisCache implements IAnalysisCache {
     public <E> E getDatabase(Class<E> databaseClass) {
         return getDatabase(databaseClass, false);
     }
+
     @Override
     public @CheckForNull <E> E getOptionalDatabase(Class<E> databaseClass) {
         return getDatabase(databaseClass, true);
     }
+
     public <E> E getDatabase(Class<E> databaseClass, boolean optional) {
         Object database = databaseMap.get(databaseClass);
 

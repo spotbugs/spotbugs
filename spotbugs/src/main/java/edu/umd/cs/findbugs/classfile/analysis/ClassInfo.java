@@ -108,7 +108,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             if (i == -1) {
                 return signature;
             }
-            return signature.substring(0,i+1);
+            return signature.substring(0, i + 1);
         }
 
         @Override
@@ -123,17 +123,17 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             }
 
 
-            for(MethodInfo m : methodInfoList) {
-                if (m.isBridge() && !bridgedSignatures.containsKey(m))  {
+            for (MethodInfo m : methodInfoList) {
+                if (m.isBridge() && !bridgedSignatures.containsKey(m)) {
 
                     if (DEBUG) {
                         System.out.println("Have bridge method:" + m);
                     }
-                    for(MethodInfo to : methodInfoList) {
+                    for (MethodInfo to : methodInfoList) {
                         if (m != to) {
                             if (!to.isBridge()
                                     && m.getName().equals(to.getName())
-                                    && arguments( m.getSignature()).equals(arguments(to.getSignature()))) {
+                                    && arguments(m.getSignature()).equals(arguments(to.getSignature()))) {
                                 if (DEBUG) {
                                     System.out.println("  to method:" + to);
                                 }
@@ -455,14 +455,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     }
 
     @Override
-    public @CheckForNull
-    String getSource() {
+    public @CheckForNull String getSource() {
         return source;
     }
 
     @Override
-    public @CheckForNull
-    AnnotatedObject getContainingScope() {
+    public @CheckForNull AnnotatedObject getContainingScope() {
         if (!containingScopeCached) {
             containingScope = getContainingScope0();
             containingScopeCached = true;
@@ -470,8 +468,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         return containingScope;
     }
 
-    public @CheckForNull
-    AnnotatedObject getContainingScope0() {
+    public @CheckForNull AnnotatedObject getContainingScope0() {
         try {
             if (immediateEnclosingClass != null) {
                 return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());

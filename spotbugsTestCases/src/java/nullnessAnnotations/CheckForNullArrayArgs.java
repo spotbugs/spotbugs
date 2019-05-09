@@ -23,7 +23,7 @@ public class CheckForNullArrayArgs {
 
     @ExpectWarning("IL_INFINITE_RECURSIVE_LOOP")
     public void infiniteRecursiveLoop() {
-            infiniteRecursiveLoop();
+        infiniteRecursiveLoop();
     }
 
 }

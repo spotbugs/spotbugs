@@ -43,10 +43,10 @@ public class Bug3415313 {
         try {
             ps = sesscon.prepareStatement("query");
             try {
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                // get the data
-            }
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    // get the data
+                }
             } finally {
                 WorkflowUtils.closeResultSet(rs);
             }
@@ -91,7 +91,7 @@ public class Bug3415313 {
 
     }
 
-    @DesireWarning(value="OBL_UNSATISFIED_OBLIGATION", confidence=Confidence.LOW)
+    @DesireWarning(value = "OBL_UNSATISFIED_OBLIGATION", confidence = Confidence.LOW)
     public void maybe(Connection sesscon) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -132,19 +132,14 @@ public class Bug3415313 {
 
 
 
-
     static class WorkflowUtils {
-        private static void baz(PreparedStatement ps) {
-        }
+        private static void baz(PreparedStatement ps) {}
 
-        public static void bar(ResultSet rs) {
-        }
+        public static void bar(ResultSet rs) {}
 
-        private static void baz() {
-        }
+        private static void baz() {}
 
-        public static void bar() {
-        }
+        public static void bar() {}
 
         public static void closeStatement(@WillClose PreparedStatement ps) {
             try {

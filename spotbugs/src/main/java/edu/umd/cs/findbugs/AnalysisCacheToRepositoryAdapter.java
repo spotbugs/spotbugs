@@ -40,8 +40,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
     /**
      * Constructor.
      */
-    public AnalysisCacheToRepositoryAdapter() {
-    }
+    public AnalysisCacheToRepositoryAdapter() {}
 
     /*
      * (non-Javadoc)

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
-public class Test  implements Serializable {
+public class Test implements Serializable {
 
 
     /** This class is for testing the sourceInfo capabilities of FindBugs
@@ -17,6 +17,7 @@ public class Test  implements Serializable {
     public Test(File f) throws FileNotFoundException {
         is = new FileInputStream(f);
     }
+
     private InputStream is;
 
 
@@ -37,7 +38,7 @@ public class Test  implements Serializable {
     }
 
     @Override
-	public boolean equals(Object o) {
+    public boolean equals(Object o) {
         return this == o;
     }
 

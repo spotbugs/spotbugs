@@ -48,12 +48,14 @@ public class Bug3053867 {
     public void storeFooSet(Set<Foo> fooSet) {
         session.setAttribute("fooSet", fooSet);
     }
+
     @ExpectWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
-    public void storeFooMap1(Map<Foo,String> fooMap) {
+    public void storeFooMap1(Map<Foo, String> fooMap) {
         session.setAttribute("fooMap", fooMap);
     }
+
     @ExpectWarning("J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION")
-    public void storeFooMap2(Map<String,Foo> fooMap) {
+    public void storeFooMap2(Map<String, Foo> fooMap) {
         session.setAttribute("fooMap", fooMap);
     }
 

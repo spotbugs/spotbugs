@@ -88,8 +88,7 @@ public class FindBugsViewerTask extends Task {
     private Java findbugsEngine = null;
 
     /** Creates a new instance of FindBugsViewerTask */
-    public FindBugsViewerTask() {
-    }
+    public FindBugsViewerTask() {}
 
     /**
      * Sets the file that contains the XML output of a findbugs report.

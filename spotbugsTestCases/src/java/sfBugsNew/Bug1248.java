@@ -18,44 +18,44 @@ public class Bug1248 {
         }
     }
 
-//    @ExpectWarning(value = "RCN", num = 1)
-//    @NoWarning(value = "RCN", num = 2)
-//    public void test() {
-//        if (foo != null) { // warning, good
-//            throw new IllegalStateException();
-//        }
-//        if (foo == null) { // no warning, bad
-//            throw new IllegalStateException();
-//        }
-//    }
-//
-//    @ExpectWarning("RCN")
-//    public void test2() {
-//        if (foo != null) { // warning, good
-//            throw new IllegalStateException();
-//        }
-//
-//    }
-//
-//    @NoWarning("RCN")
-//    public void test3() {
-//        if (foo == null) { // no warning, bad
-//            throw new IllegalStateException();
-//        }
-//    }
-//
-//    @ExpectWarning("RCN")
-//    public void test4() {
-//        if (foo != null) { // warning, good
-//            System.out.println("non null");
-//        }
-//
-//    }
-//
-//    @ExpectWarning("RCN")
-//    public void test5() {
-//        if (foo == null) { // no warning, bad
-//            System.out.println("null");
-//        }
-//    }
+    //    @ExpectWarning(value = "RCN", num = 1)
+    //    @NoWarning(value = "RCN", num = 2)
+    //    public void test() {
+    //        if (foo != null) { // warning, good
+    //            throw new IllegalStateException();
+    //        }
+    //        if (foo == null) { // no warning, bad
+    //            throw new IllegalStateException();
+    //        }
+    //    }
+    //
+    //    @ExpectWarning("RCN")
+    //    public void test2() {
+    //        if (foo != null) { // warning, good
+    //            throw new IllegalStateException();
+    //        }
+    //
+    //    }
+    //
+    //    @NoWarning("RCN")
+    //    public void test3() {
+    //        if (foo == null) { // no warning, bad
+    //            throw new IllegalStateException();
+    //        }
+    //    }
+    //
+    //    @ExpectWarning("RCN")
+    //    public void test4() {
+    //        if (foo != null) { // warning, good
+    //            System.out.println("non null");
+    //        }
+    //
+    //    }
+    //
+    //    @ExpectWarning("RCN")
+    //    public void test5() {
+    //        if (foo == null) { // no warning, bad
+    //            System.out.println("null");
+    //        }
+    //    }
 }

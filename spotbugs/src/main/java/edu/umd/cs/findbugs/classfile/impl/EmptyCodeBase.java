@@ -56,6 +56,5 @@ public class EmptyCodeBase extends AbstractScannableCodeBase {
     }
 
     @Override
-    public void close() {
-    }
+    public void close() {}
 }

@@ -7,7 +7,7 @@ public class Bug3258757 {
     public static void main(String[] args) {
         final String str = getString();
 
-        if(System.currentTimeMillis() > 0) {
+        if (System.currentTimeMillis() > 0) {
             // this does not complain
             useString(str);
         }
@@ -18,7 +18,7 @@ public class Bug3258757 {
     }
 
     public static void other1(@CheckForNull String str) {
-        if(System.currentTimeMillis() > 0) {
+        if (System.currentTimeMillis() > 0) {
             // this does not complain
             useString(str);
         }
@@ -35,7 +35,5 @@ public class Bug3258757 {
         return null;
     }
 
-    private static void useString(@NonNull String str) {
-    }
+    private static void useString(@NonNull String str) {}
 }
-

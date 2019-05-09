@@ -5,11 +5,9 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class TestSlashedClassNameValidator {
 
-    public void needsSlashedClassname(@SlashedClassName String name) {
-    }
+    public void needsSlashedClassname(@SlashedClassName String name) {}
 
-    public void needsDottedClassname(@DottedClassName String name) {
-    }
+    public void needsDottedClassname(@DottedClassName String name) {}
 
     @ExpectWarning("TQ")
     public void testFooDotBarAsSlashedClassName() {

@@ -138,7 +138,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         for (Constant constant : pool.getConstantPool()) {
             if (constant instanceof ConstantClass) {
                 ConstantClass cc = (ConstantClass) constant;
-                @SlashedClassName String className = cc.getBytes(pool);
+                @SlashedClassName
+                String className = cc.getBytes(pool);
                 if ("java/util/Calendar".equals(className) || "java/text/DateFormat".equals(className)) {
                     sawDateClass = true;
                     break;
@@ -269,7 +270,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         }
 
         try {
-            @SlashedClassName String className = getClassConstantOperand();
+            @SlashedClassName
+            String className = getClassConstantOperand();
 
             if (className.startsWith("[")) {
                 // Ignore array classes

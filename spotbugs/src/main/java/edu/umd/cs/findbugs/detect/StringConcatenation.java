@@ -166,8 +166,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
         case SEEN_NEW:
             if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
-            && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
-            && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
+                    && "(Ljava/lang/String;)V".equals(getSigConstantOperand())
+                    && getClassConstantOperand().startsWith("java/lang/StringBu") && registerOnStack >= 0) {
                 state = SEEN_APPEND1;
                 stringSource = registerOnStack;
             } else if (seen == Const.INVOKEVIRTUAL && "append".equals(getNameConstantOperand())
@@ -239,7 +239,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
                 }
 
                 bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this, createPC));
+                        .addClassAndMethod(this).addSourceLine(this, createPC));
                 // System.out.println("SBSC spread: " + (getPC() -
                 // getBranchTarget()));
                 reset();
@@ -292,4 +292,3 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
         }
     }
 }
-

@@ -1,6 +1,5 @@
 public class DoubleVsEllipsisInt {
-    public DoubleVsEllipsisInt() {
-    }
+    public DoubleVsEllipsisInt() {}
 
     public void method(int... intargs) {
         System.out.println("ellipsis int");

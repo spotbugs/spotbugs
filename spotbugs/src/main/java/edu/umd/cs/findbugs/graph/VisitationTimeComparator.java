@@ -79,4 +79,3 @@ public class VisitationTimeComparator<VertexType extends GraphVertex<VertexType>
     }
 
 }
-

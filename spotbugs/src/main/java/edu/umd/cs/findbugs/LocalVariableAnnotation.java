@@ -315,8 +315,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return !UNKNOWN_NAME.equals(name);
     }
 
-    public static @CheckForNull
-    LocalVariableAnnotation getLocalVariableAnnotation(Method method, Item item, int pc) {
+    public static @CheckForNull LocalVariableAnnotation getLocalVariableAnnotation(Method method, Item item, int pc) {
         int reg = item.getRegisterNumber();
         if (reg < 0) {
             return null;
@@ -325,8 +324,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     }
 
-    public static @CheckForNull
-    LocalVariableAnnotation getLocalVariableAnnotation(DismantleBytecode visitor, Item item) {
+    public static @CheckForNull LocalVariableAnnotation getLocalVariableAnnotation(DismantleBytecode visitor, Item item) {
         int reg = item.getRegisterNumber();
         if (reg < 0) {
             return null;
@@ -335,8 +333,8 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
     }
 
-    public static @CheckForNull
-    LocalVariableAnnotation findMatchingIgnoredParameter(ClassContext classContext, Method method, String name, String signature) {
+    public static @CheckForNull LocalVariableAnnotation findMatchingIgnoredParameter(ClassContext classContext, Method method, String name,
+            String signature) {
         try {
             Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow = classContext.getLiveLocalStoreDataflow(method);
             CFG cfg;
@@ -382,8 +380,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return null;
     }
 
-    public static @CheckForNull
-    LocalVariableAnnotation findUniqueBestMatchingParameter(ClassContext classContext, Method method, String name,
+    public static @CheckForNull LocalVariableAnnotation findUniqueBestMatchingParameter(ClassContext classContext, Method method, String name,
             String signature) {
         LocalVariableAnnotation match = null;
         int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
@@ -424,4 +421,3 @@ public class LocalVariableAnnotation implements BugAnnotation {
         return toString();
     }
 }
-

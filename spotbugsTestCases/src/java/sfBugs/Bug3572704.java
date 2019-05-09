@@ -11,8 +11,7 @@ public class Bug3572704 {
     @ExpectWarning("DLS_DEAD_LOCAL_STORE")
     public static String test(String name) {
         int pos = 0;
-        while (pos >= 0 && !name.isEmpty())
-            ;
+        while (pos >= 0 && !name.isEmpty());
         {
             if (map.containsKey(name)) {
                 return name;
@@ -27,8 +26,7 @@ public class Bug3572704 {
     @NoWarning("DLS_DEAD_LOCAL_STORE")
     public static String test2(String name) {
         int pos = 0;
-        while (pos >= 0 && !name.isEmpty())
-        {
+        while (pos >= 0 && !name.isEmpty()) {
             if (map.containsKey(name)) {
                 return name;
             }

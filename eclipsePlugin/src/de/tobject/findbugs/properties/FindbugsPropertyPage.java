@@ -472,7 +472,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
                     FindbugsPlugin.getDefault().logException(e, "Could not store SpotBugs preferences for project");
                 }
             }
-            if(pluginsChanged) {
+            if (pluginsChanged) {
                 FindbugsPlugin.applyCustomDetectors(true);
             }
         }

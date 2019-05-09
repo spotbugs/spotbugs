@@ -122,8 +122,7 @@ public abstract class ByteCodePatternDetector implements Detector {
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 
     /**
      * Get the ByteCodePattern for this detector.
@@ -168,4 +167,3 @@ public abstract class ByteCodePatternDetector implements Detector {
     public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
             throws CFGBuilderException, DataflowAnalysisException;
 }
-

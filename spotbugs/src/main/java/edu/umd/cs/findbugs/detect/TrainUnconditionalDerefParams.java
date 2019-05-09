@@ -34,8 +34,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  */
 public class TrainUnconditionalDerefParams extends BuildUnconditionalParamDerefDatabase implements TrainingDetector {
 
-    public TrainUnconditionalDerefParams(BugReporter bugReporter) {
-    }
+    public TrainUnconditionalDerefParams(BugReporter bugReporter) {}
 
     @Override
     public void report() {

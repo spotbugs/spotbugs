@@ -22,53 +22,53 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class SelfAssignmentPositiveCases2 {
-  // TODO(eaftan): what happens with a static field that has the same name
-  // as a local field?
+    // TODO(eaftan): what happens with a static field that has the same name
+    // as a local field?
 
-  private int a;
-  private Foo foo;
+    private int a;
+    private Foo foo;
 
-  public void test6() {
-    Foo foo = new Foo();
-    foo.a = 2;
-    //BUG: Suggestion includes "remove this line"
-    foo.a = foo.a;
-  }
+    public void test6() {
+        Foo foo = new Foo();
+        foo.a = 2;
+        //BUG: Suggestion includes "remove this line"
+        foo.a = foo.a;
+    }
 
-  public void test7() {
-    Foobar f = new Foobar();
-    f.foo = new Foo();
-    f.foo.a = 10;
-    //BUG: Suggestion includes "remove this line"
-    f.foo.a = f.foo.a;
-  }
+    public void test7() {
+        Foobar f = new Foobar();
+        f.foo = new Foo();
+        f.foo.a = 10;
+        //BUG: Suggestion includes "remove this line"
+        f.foo.a = f.foo.a;
+    }
 
-  public void test8() {
-    foo = new Foo();
-    //BUG: Suggestion includes "remove this line"
-    this.foo.a = foo.a;
-  }
+    public void test8() {
+        foo = new Foo();
+        //BUG: Suggestion includes "remove this line"
+        this.foo.a = foo.a;
+    }
 
-  public void test9(Foo fao, Foo bar) {
-    //BUG: Suggestion includes "this.foo = fao"
-    this.foo = foo;
-  }
+    public void test9(Foo fao, Foo bar) {
+        //BUG: Suggestion includes "this.foo = fao"
+        this.foo = foo;
+    }
 
-  public void test10(Foo foo) {
-    //BUG: Suggestion includes "this.foo = foo"
-    foo = foo;
-  }
+    public void test10(Foo foo) {
+        //BUG: Suggestion includes "this.foo = foo"
+        foo = foo;
+    }
 
-  private static class Foo {
-    int a;
-  }
+    private static class Foo {
+        int a;
+    }
 
-  private static class Bar {
-    int a;
-  }
+    private static class Bar {
+        int a;
+    }
 
-  private static class Foobar {
-    Foo foo;
-    Bar bar;
-  }
+    private static class Foobar {
+        Foo foo;
+        Bar bar;
+    }
 }

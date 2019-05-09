@@ -42,10 +42,11 @@ public class Bug1387 {
         }
 
     }
+
     public static void test3() {
         Set<String>[] sets = new Set[10];
         for (int i = 0; i < 10; ++i) {
-            sets[i] = Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
+            sets[i] = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
             sets[i].add("Foo");
         }
         PoJo p = new PoJo("Foo");
@@ -53,15 +54,16 @@ public class Bug1387 {
     }
 
     public static void test() {
-        Set<String> s = Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
+        Set<String> s = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
         s.add("Foo");
         PoJo p = new PoJo("Foo");
         s.remove(p); // <- bug
     }
+
     public static void test2() {
         List<Set<String>> sets = new ArrayList<Set<String>>();
         for (int i = 0; i < 10; ++i) {
-            sets.add( Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>()));
+            sets.add(Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>()));
             sets.get(i).add("Foo");
         }
         PoJo p = new PoJo("Foo");

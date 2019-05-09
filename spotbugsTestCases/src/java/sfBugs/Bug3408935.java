@@ -13,7 +13,7 @@ public class Bug3408935<M extends Map<?, ?> & Serializable> implements Serializa
     private static final long serialVersionUID = -8603570283435014163L;
 
     /** Ambiguous case; no warning */
-     public Map<?, ?> obj1;
+    public Map<?, ?> obj1;
 
     @ExpectWarning("SE_BAD_FIELD")
     InputStream is;

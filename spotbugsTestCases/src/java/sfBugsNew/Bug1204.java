@@ -22,6 +22,7 @@ public class Bug1204 {
     }
 
     static Object ob2;
+
     @ExpectWarning("DC_DOUBLECHECK")
     static Object lm2() {
         Object result = ob2;

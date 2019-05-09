@@ -14,9 +14,9 @@ public class Feature330 {
     @NoWarning("DC_DOUBLECHECK")
     @ExpectWarning("DC_PARTIALLY_CONSTRUCTED")
     public List<String> getList() {
-        if(list == null) {
-            synchronized(Feature330.class) {
-                if(list == null) {
+        if (list == null) {
+            synchronized (Feature330.class) {
+                if (list == null) {
                     list = new ArrayList<>();
                     list.add("test string");
                 }
@@ -28,9 +28,9 @@ public class Feature330 {
     @NoWarning("DC_DOUBLECHECK")
     @ExpectWarning("DC_PARTIALLY_CONSTRUCTED")
     public Point getPoint() {
-        if(pt == null) {
-            synchronized(Feature330.class) {
-                if(pt == null) {
+        if (pt == null) {
+            synchronized (Feature330.class) {
+                if (pt == null) {
                     pt = new Point();
                     pt.x = 1;
                     pt.y = 2;
@@ -42,9 +42,9 @@ public class Feature330 {
 
     @NoWarning("DC_PARTIALLY_CONSTRUCTED")
     public List<String> getListCorrect() {
-        if(list == null) {
-            synchronized(Feature330.class) {
-                if(list == null) {
+        if (list == null) {
+            synchronized (Feature330.class) {
+                if (list == null) {
                     List<String> list = new ArrayList<>();
                     list.add("test string");
                     this.list = list;

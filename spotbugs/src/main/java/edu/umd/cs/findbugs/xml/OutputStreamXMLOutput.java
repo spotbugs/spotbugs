@@ -64,6 +64,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os) {
         this(os, null);
     }
+
     /**
      * Constructor.
      *
@@ -74,6 +75,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public OutputStreamXMLOutput(@WillCloseWhenClosed Writer writer) {
         this(writer, null);
     }
+
     /**
      * Constructor.
      *
@@ -101,6 +103,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
         this.newLine = true;
         this.stylesheet = stylesheet;
     }
+
     @Override
     public void beginDocument() throws IOException {
         out.write(OPENING);
@@ -202,6 +205,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
     public void flush() throws IOException {
         out.flush();
     }
+
     @Override
     @DischargesObligation
     public void finish() throws IOException {
@@ -217,4 +221,3 @@ public class OutputStreamXMLOutput implements XMLOutput {
         }
     }
 }
-

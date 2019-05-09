@@ -9,8 +9,7 @@ public abstract class StrictTest {
 
     protected abstract Object get();
 
-    protected abstract @Strict
-    Object getStrict();
+    protected abstract @Strict Object getStrict();
 
     @Strict
     Object f;
@@ -21,9 +20,7 @@ public abstract class StrictTest {
     Object g;
 
     @NoWarning("TQ")
-    public
-    @Strict
-    Object coercionFunction(Object unknown) {
+    public @Strict Object coercionFunction(Object unknown) {
         return unknown;
     }
 
@@ -38,8 +35,7 @@ public abstract class StrictTest {
     }
 
     @ExpectWarning("TQ")
-    public  @Strict
-    Object violation4() {
+    public @Strict Object violation4() {
         return g;
     }
 
@@ -54,8 +50,7 @@ public abstract class StrictTest {
     }
 
     @ExpectWarning("TQ")
-    public @Strict
-    Object violation7() {
+    public @Strict Object violation7() {
         return get();
     }
 
@@ -70,8 +65,7 @@ public abstract class StrictTest {
     }
 
     @NoWarning("TQ")
-    public @Strict
-    Object ok1DoNotReport(@Strict Object s) {
+    public @Strict Object ok1DoNotReport(@Strict Object s) {
         return s;
     }
 
@@ -86,8 +80,7 @@ public abstract class StrictTest {
     }
 
     @NoWarning("TQ")
-    public @Strict
-    Object ok4DoNotReport() {
+    public @Strict Object ok4DoNotReport() {
         return f;
     }
 
@@ -102,11 +95,10 @@ public abstract class StrictTest {
     }
 
     @NoWarning("TQ")
-    public
-    @Strict
-    Object ok7DoNotReport() {
+    public @Strict Object ok7DoNotReport() {
         return getStrict();
     }
+
     @NoWarning("TQ")
     public void ok8DoNotReport() {
         f = getStrict();

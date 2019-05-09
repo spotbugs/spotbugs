@@ -16,5 +16,5 @@ import edu.umd.cs.findbugs.Priorities;
 @Retention(RetentionPolicy.SOURCE)
 @Documented
 public @interface DetectorUnderTest {
-    Class<? extends Priorities> [] value();
+    Class<? extends Priorities>[] value();
 }

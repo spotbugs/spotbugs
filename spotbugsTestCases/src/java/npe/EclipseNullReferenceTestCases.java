@@ -15,7 +15,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * 1.39
  */
 @edu.umd.cs.findbugs.annotations.SuppressWarnings({ "DLS", "UuF", "SIC", "UrF", "UwF", "IP", "DB", "RV", "Dm", "DE", "SP", "UCF",
-        "IL", "SF", "Se", "RC", "NS", "ST", "OS", "NP_UNWRITTEN_FIELD" })
+    "IL", "SF", "Se", "RC", "NS", "ST", "OS", "NP_UNWRITTEN_FIELD" })
 public class EclipseNullReferenceTestCases {
 
     // test0001_simple_local
@@ -136,8 +136,7 @@ public class EclipseNullReferenceTestCases {
                 o.toString();
             }
 
-            void bar() {
-            }
+            void bar() {}
         }
 
     }
@@ -153,8 +152,7 @@ public class EclipseNullReferenceTestCases {
                 o.toString();
             }
 
-            static void bar() {
-            }
+            static void bar() {}
         }
 
     }
@@ -170,8 +168,7 @@ public class EclipseNullReferenceTestCases {
                 o.toString();
             }
 
-            static void bar() {
-            }
+            static void bar() {}
         }
 
     }
@@ -187,8 +184,7 @@ public class EclipseNullReferenceTestCases {
                 o.toString();
             }
 
-            void bar() {
-            }
+            void bar() {}
         }
 
     }
@@ -335,8 +331,7 @@ public class EclipseNullReferenceTestCases {
             void foo(X x) {
                 Object o = x.m;
                 if (o == null) { /* */
-                }
-                ;
+                } ;
             }
         }
 
@@ -350,8 +345,7 @@ public class EclipseNullReferenceTestCases {
             void foo(Object x) {
                 Object o = ((X) x).m;
                 if (o == null) { /* */
-                }
-                ;
+                } ;
             }
         }
 
@@ -521,8 +515,7 @@ public class EclipseNullReferenceTestCases {
             void foo() {
                 Integer i = 0;
                 if (i == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -557,8 +550,7 @@ public class EclipseNullReferenceTestCases {
                 args = new String[] { "zero" };
                 args[0] = null;
                 if (args[0] == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -581,8 +573,7 @@ public class EclipseNullReferenceTestCases {
             public void foo(String args[]) {
                 String s = args[0];
                 if (s == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -605,8 +596,7 @@ public class EclipseNullReferenceTestCases {
             void foo(Object o) {
                 o.toString();
                 if (o == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -719,8 +709,7 @@ public class EclipseNullReferenceTestCases {
             public static void main(String args[]) {
                 Class c = java.lang.Object.class;
                 if (c == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -878,8 +867,7 @@ public class EclipseNullReferenceTestCases {
         static class X {
             String foo(String s1, String s2) {
                 if (s1 == null) { /* */
-                }
-                ;
+                } ;
                 return s1 + s2;
             }
         }
@@ -891,8 +879,7 @@ public class EclipseNullReferenceTestCases {
         static class X {
             String foo(String s1, String s2) {
                 if (s1 == null) { /* */
-                }
-                ;
+                } ;
                 s1 += s2;
                 return s1;
             }
@@ -905,8 +892,7 @@ public class EclipseNullReferenceTestCases {
         static class X {
             String foo(String s1) {
                 if (s1 == null) { /* */
-                }
-                ;
+                } ;
                 return s1.toString();
             }
         }
@@ -918,8 +904,7 @@ public class EclipseNullReferenceTestCases {
         static class X {
             String foo(String s, Object o, Integer i) {
                 if (s == null || o == null || i == null) { /* */
-                }
-                ;
+                } ;
                 if (bar()) {
                     return s + i;
                 }
@@ -938,8 +923,7 @@ public class EclipseNullReferenceTestCases {
         static class X {
             String foo(String s, Object o, Integer i) {
                 if (s == null || o == null || i == null) { /* */
-                }
-                ;
+                } ;
                 s += o;
                 s += i;
                 return s;
@@ -965,8 +949,7 @@ public class EclipseNullReferenceTestCases {
             void foo(Object o) {
                 System.out.println(o + "");
                 if (o != null) { /* */
-                }
-                ;
+                } ;
             }
         }
 
@@ -1748,12 +1731,10 @@ public class EclipseNullReferenceTestCases {
                 while (o == null) {
                     if (v == null) {
                         o = new Object();
-                    }
-                    ;
+                    } ;
                     if (u == null) {
                         v = null;
-                    }
-                    ;
+                    } ;
                     u = null;
                 }
             }
@@ -1804,14 +1785,12 @@ public class EclipseNullReferenceTestCases {
                 while (o == null) {
                     if (v == null) {
                         o = new Object();
-                    }
-                    ;
+                    } ;
                     while (o == null) { // we never exit this loop; o is always
                                         // null
                         if (u == null) {
                             v = null;
-                        }
-                        ;
+                        } ;
                         u = null;
                     }
                 }
@@ -2995,8 +2974,7 @@ public class EclipseNullReferenceTestCases {
         }
 
         static class Y {
-            Y() throws E {
-            }
+            Y() throws E {}
         }
 
         static class E extends Exception {
@@ -3024,8 +3002,7 @@ public class EclipseNullReferenceTestCases {
         }
 
         abstract static class Y {
-            Y() throws E {
-            }
+            Y() throws E {}
 
             abstract void bar();
         }
@@ -3425,12 +3402,10 @@ public class EclipseNullReferenceTestCases {
                 do {
                     if (v == null) {
                         o = new Object();
-                    }
-                    ;
+                    } ;
                     if (u == null) {
                         v = null;
-                    }
-                    ;
+                    } ;
                     u = null;
                 } while (o == null);
             }
@@ -4287,7 +4262,7 @@ public class EclipseNullReferenceTestCases {
                     o = null;
                 }
                 o // NN
-                .toString();
+                        .toString();
             }
         }
 
@@ -4315,7 +4290,7 @@ public class EclipseNullReferenceTestCases {
                     o = null;
                 }
                 o // NON-NULL
-                .toString();
+                        .toString();
             }
         }
 
@@ -4416,11 +4391,9 @@ public class EclipseNullReferenceTestCases {
             void foo(Object o1, Object o2) {
                 assert (o1 != null && o2 == null);
                 if (o1 == null) {
-                }
-                ;
+                } ;
                 if (o2 == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -4432,8 +4405,7 @@ public class EclipseNullReferenceTestCases {
             void foo(Object o) {
                 assert (false && o != null);
                 if (o == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -4445,8 +4417,7 @@ public class EclipseNullReferenceTestCases {
             void foo(Object o) {
                 assert (false || o != null);
                 if (o == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -4459,8 +4430,7 @@ public class EclipseNullReferenceTestCases {
                 Object o = null;
                 assert (o != null);
                 if (o == null) {
-                }
-                ;
+                } ;
             }
         }
 
@@ -4926,8 +4896,7 @@ public class EclipseNullReferenceTestCases {
                 return true;
             }
 
-            void doSomething() {
-            }
+            void doSomething() {}
 
             void foo() {
                 Object progressJob = null;
@@ -4978,8 +4947,7 @@ public class EclipseNullReferenceTestCases {
                 return true;
             }
 
-            void doSomething() {
-            }
+            void doSomething() {}
 
             void foo() {
                 Object progressJob = null;
@@ -5316,7 +5284,12 @@ public class EclipseNullReferenceTestCases {
         static class X {
 
             void foo() {
-                Object o0 = new Object(), o1 = o0, o2 = o0, o3 = o0, o4 = o0, o5 = o0, o6 = o0, o7 = o0, o8 = o0, o9 = o0, o10 = o0, o11 = o0, o12 = o0, o13 = o0, o14 = o0, o15 = o0, o16 = o0, o17 = o0, o18 = o0, o19 = o0, o20 = o0, o21 = o0, o22 = o0, o23 = o0, o24 = o0, o25 = o0, o26 = o0, o27 = o0, o28 = o0, o29 = o0, o30 = o0, o31 = o0, o32 = o0, o33 = o0, o34 = o0, o35 = o0, o36 = o0, o37 = o0, o38 = o0, o39 = o0, o40 = o0, o41 = o0, o42 = o0, o43 = o0, o44 = o0, o45 = o0, o46 = o0, o47 = o0, o48 = o0, o49 = o0, o50 = o0, o51 = o0, o52 = o0, o53 = o0, o54 = o0, o55 = o0, o56 = o0, o57 = o0, o58 = o0, o59 = o0, o60 = o0, o61 = o0, o62 = o0, o63 = o0, o64 = o0, o65 = o0, o66 = o0, o67 = o0, o68 = o0, o69 = o0;
+                Object o0 = new Object(), o1 = o0, o2 = o0, o3 = o0, o4 = o0, o5 = o0, o6 = o0, o7 = o0, o8 = o0, o9 = o0, o10 = o0, o11 = o0, o12 =
+                        o0, o13 = o0, o14 = o0, o15 = o0, o16 = o0, o17 = o0, o18 = o0, o19 = o0, o20 = o0, o21 = o0, o22 = o0, o23 = o0, o24 = o0,
+                        o25 = o0, o26 = o0, o27 = o0, o28 = o0, o29 = o0, o30 = o0, o31 = o0, o32 = o0, o33 = o0, o34 = o0, o35 = o0, o36 = o0, o37 =
+                                o0, o38 = o0, o39 = o0, o40 = o0, o41 = o0, o42 = o0, o43 = o0, o44 = o0, o45 = o0, o46 = o0, o47 = o0, o48 = o0,
+                        o49 = o0, o50 = o0, o51 = o0, o52 = o0, o53 = o0, o54 = o0, o55 = o0, o56 = o0, o57 = o0, o58 = o0, o59 = o0, o60 = o0, o61 =
+                                o0, o62 = o0, o63 = o0, o64 = o0, o65 = o0, o66 = o0, o67 = o0, o68 = o0, o69 = o0;
                 if (o65 == null) { /* */
                 }
                 if (o65 != null) { /* */
@@ -5514,7 +5487,10 @@ public class EclipseNullReferenceTestCases {
                     m054, m055, m056, m057, m058, m059, m060, m061, m062, m063;
 
             void foo() {
-                Object o000, o001, o002, o003, o004, o005, o006, o007, o008, o009, o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, o020, o021, o022, o023, o024, o025, o026, o027, o028, o029, o030, o031, o032, o033, o034, o035, o036, o037, o038, o039, o040, o041, o042, o043, o044, o045, o046, o047, o048, o049, o050, o051, o052, o053, o054, o055, o056, o057, o058, o059, o060, o061, o062, o063;
+                Object o000, o001, o002, o003, o004, o005, o006, o007, o008, o009, o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, o020,
+                        o021, o022, o023, o024, o025, o026, o027, o028, o029, o030, o031, o032, o033, o034, o035, o036, o037, o038, o039, o040, o041,
+                        o042, o043, o044, o045, o046, o047, o048, o049, o050, o051, o052, o053, o054, o055, o056, o057, o058, o059, o060, o061, o062,
+                        o063;
                 Object o;
                 try {
                     o000 = new Object();
@@ -5537,7 +5513,10 @@ public class EclipseNullReferenceTestCases {
                     m054, m055, m056, m057, m058, m059, m060, m061, m062, m063;
 
             void foo() {
-                Object o000, o001, o002, o003, o004, o005, o006, o007, o008, o009, o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, o020, o021, o022, o023, o024, o025, o026, o027, o028, o029, o030, o031, o032, o033, o034, o035, o036, o037, o038, o039, o040, o041, o042, o043, o044, o045, o046, o047, o048, o049, o050, o051, o052, o053, o054, o055, o056, o057, o058, o059, o060, o061, o062, o063;
+                Object o000, o001, o002, o003, o004, o005, o006, o007, o008, o009, o010, o011, o012, o013, o014, o015, o016, o017, o018, o019, o020,
+                        o021, o022, o023, o024, o025, o026, o027, o028, o029, o030, o031, o032, o033, o034, o035, o036, o037, o038, o039, o040, o041,
+                        o042, o043, o044, o045, o046, o047, o048, o049, o050, o051, o052, o053, o054, o055, o056, o057, o058, o059, o060, o061, o062,
+                        o063;
                 Object o;
                 try {
                     o = new Object();
@@ -5684,8 +5663,14 @@ public class EclipseNullReferenceTestCases {
 
             final int m062;
             {
-                int l063, m201 = 0, m202, m203, m204, m205, m206, m207, m208, m209, m210, m211, m212, m213, m214, m215, m216, m217, m218, m219, m220, m221, m222, m223, m224, m225, m226, m227, m228, m229, m230, m231, m232, m233, m234, m235, m236, m237, m238, m239, m240, m241, m242, m243, m244, m245, m246, m247, m248, m249, m250, m251, m252, m253, m254, m255, m256, m257, m258, m259, m260, m261, m262, m263;
-                int m301, m302, m303, m304, m305, m306, m307, m308, m309, m310, m311, m312, m313, m314, m315, m316, m317, m318, m319, m320, m321, m322, m323, m324, m325, m326, m327, m328, m329, m330, m331, m332, m333, m334, m335, m336, m337, m338, m339, m340, m341, m342, m343, m344, m345, m346, m347, m348, m349, m350, m351, m352, m353, m354, m355, m356, m357, m358, m359, m360 = 0, m361 = 0, m362 = 0, m363 = 0;
+                int l063, m201 = 0, m202, m203, m204, m205, m206, m207, m208, m209, m210, m211, m212, m213, m214, m215, m216, m217, m218, m219, m220,
+                        m221, m222, m223, m224, m225, m226, m227, m228, m229, m230, m231, m232, m233, m234, m235, m236, m237, m238, m239, m240, m241,
+                        m242, m243, m244, m245, m246, m247, m248, m249, m250, m251, m252, m253, m254, m255, m256, m257, m258, m259, m260, m261, m262,
+                        m263;
+                int m301, m302, m303, m304, m305, m306, m307, m308, m309, m310, m311, m312, m313, m314, m315, m316, m317, m318, m319, m320, m321,
+                        m322, m323, m324, m325, m326, m327, m328, m329, m330, m331, m332, m333, m334, m335, m336, m337, m338, m339, m340, m341, m342,
+                        m343, m344, m345, m346, m347, m348, m349, m350, m351, m352, m353, m354, m355, m356, m357, m358, m359, m360 = 0, m361 = 0,
+                        m362 = 0, m363 = 0;
                 m062 = m360;
             }
 
@@ -5696,8 +5681,7 @@ public class EclipseNullReferenceTestCases {
                     int bar() {
                         return 0;
                     }
-                }
-                ;
+                };
                 System.out.println((new Inner()).bar());
             }
         }

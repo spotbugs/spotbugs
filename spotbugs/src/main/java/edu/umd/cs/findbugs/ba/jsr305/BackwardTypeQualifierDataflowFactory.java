@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class BackwardTypeQualifierDataflowFactory extends
-TypeQualifierDataflowFactory<BackwardTypeQualifierDataflowAnalysis, BackwardTypeQualifierDataflow> {
+        TypeQualifierDataflowFactory<BackwardTypeQualifierDataflowAnalysis, BackwardTypeQualifierDataflow> {
 
     /**
      * Constructor.

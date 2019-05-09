@@ -118,7 +118,7 @@ public class DisplayNonmodelMessage {
             SwingUtilities.invokeLater(moveToFront);
         }
     };
-
+    
     static Runnable moveToFront = new Runnable() {
         @Override
         public void run() {

@@ -19,9 +19,9 @@ public class Ideas_2010_05_27 {
     }
 
     @ExpectWarning("EC_UNRELATED_TYPES")
-     public static boolean test(A a, B b) {
-     return a.foo().equals(b);
-     }
+    public static boolean test(A a, B b) {
+        return a.foo().equals(b);
+    }
 
     @ExpectWarning("EC_UNRELATED_TYPES")
     public static boolean test2(A a, B b) {

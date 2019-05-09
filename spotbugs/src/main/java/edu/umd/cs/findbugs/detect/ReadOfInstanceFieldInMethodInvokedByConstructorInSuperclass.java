@@ -155,17 +155,16 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
             BugInstance bug = new BugInstance(this, "UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR", priority).addClassAndMethod(
                     this).addField(f);
             bug.addMethod(p.method).describe(MethodAnnotation.METHOD_SUPERCLASS_CONSTRUCTOR)
-            .addSourceLine(p.getSourceLineAnnotation()).describe(SourceLineAnnotation.ROLE_CALLED_FROM_SUPERCLASS_AT)
-            .addMethod(upcall).describe(MethodAnnotation.METHOD_CONSTRUCTOR).add(fieldSetAt)
-            .describe(SourceLineAnnotation.ROLE_FIELD_SET_TOO_LATE_AT);
+                    .addSourceLine(p.getSourceLineAnnotation()).describe(SourceLineAnnotation.ROLE_CALLED_FROM_SUPERCLASS_AT)
+                    .addMethod(upcall).describe(MethodAnnotation.METHOD_CONSTRUCTOR).add(fieldSetAt)
+                    .describe(SourceLineAnnotation.ROLE_FIELD_SET_TOO_LATE_AT);
 
             accumulator.accumulateBug(bug, this);
         }
 
     }
 
-    private @CheckForNull
-    XMethod getConstructorThatCallsSuperConstructor(XMethod superConstructor) {
+    private @CheckForNull XMethod getConstructorThatCallsSuperConstructor(XMethod superConstructor) {
         FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
         XMethod lookfor = "()V".equals(superConstructor.getSignature()) ? null : superConstructor;

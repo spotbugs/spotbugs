@@ -28,7 +28,7 @@ class TestNonNull2 extends TestNonNull1 implements Interface1 {
         h(null); // should be OK
     }
 
-    @ExpectWarning(value="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", num=1)
+    @ExpectWarning(value = "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE", num = 1)
     public Object k(@Nullable Object o) {
         s = o;
         return o;

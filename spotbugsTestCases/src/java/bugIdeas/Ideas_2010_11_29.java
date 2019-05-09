@@ -15,7 +15,7 @@ public class Ideas_2010_11_29 {
         namesList.add("Rose");
 
 
-        for (Iterator<String> i = namesList.iterator(); i.hasNext(); ) {
+        for (Iterator<String> i = namesList.iterator(); i.hasNext();) {
             String name = i.next();
             if (name.equals("Peter")) {
                 namesList.remove(name);
@@ -25,4 +25,3 @@ public class Ideas_2010_11_29 {
         }
     }
 }
-

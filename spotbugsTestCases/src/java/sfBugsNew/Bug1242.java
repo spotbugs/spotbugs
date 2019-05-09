@@ -9,7 +9,7 @@ public class Bug1242 {
     public static class Child extends Parent<Something> {
         @Override
         @DesireNoWarning("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
-        @NoWarning(value="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE", confidence=Confidence.MEDIUM)
+        @NoWarning(value = "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE", confidence = Confidence.MEDIUM)
         public Something getDuplicateValue() {
             Something value = super.getDuplicateValue();
 

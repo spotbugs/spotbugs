@@ -16,15 +16,15 @@ public class Bug1392 {
     public void allCovered(TrafficLight light) {
         // default case is missing, but all cases are covered
         switch (light) {
-            case RED:
-                System.out.println("red");
-                break;
-            case YELLOW:
-                System.out.println("yellow");
-                break;
-            case GREEN:
-                System.out.println("green");
-                break;
+        case RED:
+            System.out.println("red");
+            break;
+        case YELLOW:
+            System.out.println("yellow");
+            break;
+        case GREEN:
+            System.out.println("green");
+            break;
         }
     }
 

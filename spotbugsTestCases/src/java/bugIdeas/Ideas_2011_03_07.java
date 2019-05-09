@@ -15,6 +15,7 @@ public class Ideas_2011_03_07 {
 
 
     }
+
     static <T extends Comparable<T>> void check2(T x, T y) {
         int compareTo = x.compareTo(y);
         boolean b = compareTo == 1;
@@ -27,7 +28,7 @@ public class Ideas_2011_03_07 {
     }
 
     static <T> void check(T x, T y, Comparator<T> c) {
-        int comparison = c.compare(x,y);
+        int comparison = c.compare(x, y);
         if (comparison == 1)
             System.out.println("x > y");
         else if (comparison == -1)
@@ -39,6 +40,7 @@ public class Ideas_2011_03_07 {
     boolean oops(Map<String, Integer> m, StringBuffer sb) {
         return m.containsKey(sb);
     }
+
     boolean oops0(Map<String, Integer> m, StringBuffer sb) {
         return m.get(sb) != null;
     }

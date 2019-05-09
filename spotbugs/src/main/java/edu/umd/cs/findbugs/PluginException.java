@@ -53,4 +53,3 @@ public class PluginException extends Exception {
         super(msg, cause);
     }
 }
-

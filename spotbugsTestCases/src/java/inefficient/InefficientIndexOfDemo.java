@@ -9,7 +9,7 @@ class InefficientIndexOfDemo {
 
     @NoWarning("IIO")
     int indexOf_1_ok(String s1, String s2) {
-       return s1.indexOf(s2);
+        return s1.indexOf(s2);
     }
 
     @NoWarning("IIO")

@@ -13,8 +13,7 @@ public abstract class TestInterprocedural {
         fooField = o;
     }
 
-    public @Foo
-    Object getFoo() {
+    public @Foo Object getFoo() {
         return fooField;
     }
 

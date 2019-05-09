@@ -276,8 +276,7 @@ public final class LockSet {
             }
             int mine = array[i + 1];
             int his = other.getLockCount(valueNumber);
-            if (mine != his)
-            {
+            if (mine != his) {
                 return false;
                 // System.out.println("For value " + valueNumber + ", " + mine +
                 // "==" + his);
@@ -305,8 +304,7 @@ public final class LockSet {
             int value = array[i];
             if (value < 0) {
                 return -(i + 1); // didn't find requested valueNumber - return
-            } else if (value == valueNumber)
-            {
+            } else if (value == valueNumber) {
                 return i; // found requested valueNumber
             }
         }
@@ -409,4 +407,3 @@ public final class LockSet {
      * + l + " ==> " + ll.sameAs(l)); }
      */
 }
-

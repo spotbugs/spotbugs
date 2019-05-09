@@ -38,8 +38,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
     private boolean comparePriorities;
 
-    public VersionInsensitiveBugComparator() {
-    }
+    public VersionInsensitiveBugComparator() {}
 
     @Override
     public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
@@ -114,7 +113,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         else
             return 0;
     }
-
+    
     private static String getCode(String pattern) {
         int sep = pattern.indexOf('_');
         if (sep < 0) {
@@ -122,7 +121,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
         }
         return pattern.substring(0, sep);
     }
-
+    
     private void dump(BugInstance bug) {
         System.out.println(bug.getMessage());
         Iterator<BugAnnotation> i = bug.annotationIterator();

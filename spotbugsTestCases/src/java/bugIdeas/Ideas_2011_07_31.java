@@ -29,6 +29,7 @@ public class Ideas_2011_07_31 {
         return getIntegerSetPrivate().contains("x");
 
     }
+
     @ExpectWarning(value = "GC,EC")
     public void test1(Set<String> s) {
         if (getIntegerSetPublic().contains("x"))

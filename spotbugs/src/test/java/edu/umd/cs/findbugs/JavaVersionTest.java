@@ -46,8 +46,8 @@ public class JavaVersionTest {
         testJavaVersionString("1.8.0_66", 1, 8, "0_66");
         // New scheme for Java 9 and later (JEP 223)
         // See http://openjdk.java.net/jeps/223
-        testJavaVersionString("9-ea",  9, 0, "-ea");
-        testJavaVersionString("9",     9, 0, "");
+        testJavaVersionString("9-ea", 9, 0, "-ea");
+        testJavaVersionString("9", 9, 0, "");
         testJavaVersionString("9.1.2", 9, 1, "2");
         testJavaVersionString("9.0.1", 9, 0, "1");
         // Long versions

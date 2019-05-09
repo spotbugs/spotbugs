@@ -29,8 +29,8 @@ public class Ideas_2009_12_11 {
         return Arrays.deepHashCode(data);
     }
 
-    @NoWarning(value="EC_ARRAY_AND_NONARRAY", confidence=Confidence.MEDIUM)
-    @ExpectWarning(value="EC_UNRELATED_TYPES", num=2)
+    @NoWarning(value = "EC_ARRAY_AND_NONARRAY", confidence = Confidence.MEDIUM)
+    @ExpectWarning(value = "EC_UNRELATED_TYPES", num = 2)
     public static void main(String args[]) {
         Ideas_2009_12_11 a = new Ideas_2009_12_11();
         Ideas_2009_12_11 b = new Ideas_2009_12_11();

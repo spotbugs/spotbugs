@@ -25,7 +25,7 @@ public class Ideas_2011_07_19 {
         }
 
         @Override
-		public boolean equals(Object o) {
+        public boolean equals(Object o) {
             if (!(o instanceof Unhashable1))
                 return false;
             Unhashable1 that = (Unhashable1) o;
@@ -52,7 +52,7 @@ public class Ideas_2011_07_19 {
         }
 
         @Override
-		public boolean equals(Object o) {
+        public boolean equals(Object o) {
             if (!(o instanceof Unhashable2))
                 return false;
             Unhashable2 that = (Unhashable2) o;
@@ -79,7 +79,7 @@ public class Ideas_2011_07_19 {
         }
 
         @Override
-		public boolean equals(Object o) {
+        public boolean equals(Object o) {
             if (!(o instanceof Unhashable3))
                 return false;
             Unhashable3 that = (Unhashable3) o;
@@ -87,6 +87,7 @@ public class Ideas_2011_07_19 {
         }
 
     }
+
     Map<Unhashable1, Integer> map1 = Maps.newTreeMap();
 
     Map<Unhashable2, Integer> map2 = new TreeMap<Unhashable2, Integer>();
@@ -99,18 +100,18 @@ public class Ideas_2011_07_19 {
 
     HashMap<Unhashable3, Integer> map6 = new HashMap<Unhashable3, Integer>();
 
-//    public void test1(Unhashable1 h) {
-//        map1.put(h, 1);
-//    }
-//
-//    public void test2(Unhashable2 h) {
-//        map2.put(h, 1);
-//    }
-//
-//    public void test3(Unhashable3 h) {
-//        map3.put(h, 1);
-//    }
-//
+    //    public void test1(Unhashable1 h) {
+    //        map1.put(h, 1);
+    //    }
+    //
+    //    public void test2(Unhashable2 h) {
+    //        map2.put(h, 1);
+    //    }
+    //
+    //    public void test3(Unhashable3 h) {
+    //        map3.put(h, 1);
+    //    }
+    //
     public void test4(Unhashable1 h) {
         map4.put(h, 1);
     }
@@ -123,24 +124,24 @@ public class Ideas_2011_07_19 {
         map6.put(h, 1);
     }
 
-//    public Integer test1(Unhashable1 h1, Unhashable1 h2) {
-//        Map<Unhashable1, Integer> map = Maps.newTreeMap();
-//        map.put(h1, 1);
-//        return map.get(h2);
-//    }
-//
-//    public Integer test2(Unhashable2 h1, Unhashable2 h2) {
-//        Map<Unhashable2, Integer> map = new TreeMap<Unhashable2, Integer>();
-//        map.put(h1, 1);
-//        return map.get(h2);
-//    }
-//
-//    public Integer test3(Unhashable3 h1, Unhashable3 h2) {
-//        TreeMap<Unhashable3, Integer> map = new TreeMap<Unhashable3, Integer>();
-//        map.put(h1, 1);
-//        return map.get(h2);
-//    }
-//
+    //    public Integer test1(Unhashable1 h1, Unhashable1 h2) {
+    //        Map<Unhashable1, Integer> map = Maps.newTreeMap();
+    //        map.put(h1, 1);
+    //        return map.get(h2);
+    //    }
+    //
+    //    public Integer test2(Unhashable2 h1, Unhashable2 h2) {
+    //        Map<Unhashable2, Integer> map = new TreeMap<Unhashable2, Integer>();
+    //        map.put(h1, 1);
+    //        return map.get(h2);
+    //    }
+    //
+    //    public Integer test3(Unhashable3 h1, Unhashable3 h2) {
+    //        TreeMap<Unhashable3, Integer> map = new TreeMap<Unhashable3, Integer>();
+    //        map.put(h1, 1);
+    //        return map.get(h2);
+    //    }
+    //
     public Integer test4(Unhashable1 h1, Unhashable1 h2) {
         Map<Unhashable1, Integer> map = Maps.newHashMap();
         map.put(h1, 1);

@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 
 @javax.annotation.ParametersAreNonnullByDefault
 public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame> implements
-EdgeTypes {
+        EdgeTypes {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
@@ -233,4 +233,3 @@ EdgeTypes {
     }
 
 }
-

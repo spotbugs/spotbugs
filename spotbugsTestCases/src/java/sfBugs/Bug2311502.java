@@ -42,8 +42,7 @@ public class Bug2311502 {
 
     }
 
-    static public @ReturnValuesAreNonnullByDefault
-    class NPNonNullReturnViolationBug {
+    static public @ReturnValuesAreNonnullByDefault class NPNonNullReturnViolationBug {
 
         @CheckForNull
         private Object junkField;

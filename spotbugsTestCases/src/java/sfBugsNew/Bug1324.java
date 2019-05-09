@@ -24,7 +24,7 @@ public class Bug1324 implements Iterable<String> {
         public void testOk() {
             String a;
             Iterator<String> it = iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 a = it.next();
                 System.out.println(a);
             }
@@ -35,7 +35,7 @@ public class Bug1324 implements Iterable<String> {
          */
         @NoWarning("IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD")
         public void testFalsePositive() {
-            for(String a : this) {
+            for (String a : this) {
                 System.out.println(a);
             }
         }

@@ -53,14 +53,14 @@ public class WMITest {
     public void testIteratorLoadBug(Map<String, String> m1, List<String> list) {
         Set<String> keys = m1.keySet();
         //int a = 0;
-        for(String str : list) {
+        for (String str : list) {
             System.out.println(m1.get(str));
         }
     }
 
     @NoWarning("WMI_WRONG_MAP_ITERATOR")
     public void testRegisterReuseBug(Map<String, String> m) {
-        for(String key : m.keySet()) {
+        for (String key : m.keySet()) {
             System.out.println(key);
         }
         String k = "special";
@@ -70,23 +70,23 @@ public class WMITest {
     @NoWarning("WMI_WRONG_MAP_ITERATOR")
     public void testRegisterReuseBug2(Map<Integer, String> m) {
         int maxKey = 0;
-        for(Integer key : m.keySet()) {
-            if(key > maxKey)
+        for (Integer key : m.keySet()) {
+            if (key > maxKey)
                 maxKey = key;
         }
-        for(Integer i=0; i<maxKey; i++) {
+        for (Integer i = 0; i < maxKey; i++) {
             String val = m.get(i);
-            System.out.println(i+": "+(val == null ? "none" : val));
+            System.out.println(i + ": " + (val == null ? "none" : val));
         }
     }
 
     @ExpectWarning("WMI_WRONG_MAP_ITERATOR")
     public void testTwice(Map<String, String> m1, Map<String, String> m2) {
-        for(String m1key : m1.keySet()) {
+        for (String m1key : m1.keySet()) {
             System.out.println(m1key);
         }
-        for(String m2key : m2.keySet()) {
-            System.out.println(m2key+"="+m2.get(m2key));
+        for (String m2key : m2.keySet()) {
+            System.out.println(m2key + "=" + m2.get(m2key));
         }
     }
 
@@ -94,13 +94,13 @@ public class WMITest {
     public void testSingleElement(Map<String, String> m) {
         String key = m.keySet().iterator().next();
         String value = m.get(key);
-        System.out.println(key+"="+value);
+        System.out.println(key + "=" + value);
     }
 
     @ExpectWarning("WMI_WRONG_MAP_ITERATOR")
     public void testBoxing(Map<Integer, String> m) {
-        for(int key : m.keySet()) {
-            System.out.println(key+": "+m.get(key));
+        for (int key : m.keySet()) {
+            System.out.println(key + ": " + m.get(key));
         }
     }
 
@@ -120,13 +120,14 @@ public class WMITest {
 
     @ExpectWarning("WMI_WRONG_MAP_ITERATOR")
     public void testStatic() {
-        for(Object name : staticMap.keySet()) {
+        for (Object name : staticMap.keySet()) {
             String value = (String) staticMap.get(name);
             System.out.println(name.toString() + " = " + value);
         }
     }
 
     private Map fieldMap2 = new HashMap();
+
     @NoWarning("WMI_WRONG_MAP_ITERATOR")
     public void testWrongMap() {
         Iterator it = fieldMap.keySet().iterator();

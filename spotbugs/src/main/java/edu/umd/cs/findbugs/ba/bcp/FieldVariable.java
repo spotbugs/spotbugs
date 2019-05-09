@@ -115,4 +115,3 @@ public class FieldVariable implements Variable {
         return buf.toString();
     }
 }
-

@@ -30,4 +30,3 @@ public interface Variable {
      */
     public boolean sameAs(Variable other);
 }
-

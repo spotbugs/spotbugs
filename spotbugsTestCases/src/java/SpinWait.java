@@ -4,13 +4,11 @@ class SpinWait {
     volatile boolean vflag;
 
     void waitForTrue() {
-        while (flag)
-            ;
+        while (flag);
     }
 
     void waitForVolatileTrue() {
-        while (vflag)
-            ;
+        while (vflag);
     }
 
     SpinWait foo;
@@ -18,21 +16,17 @@ class SpinWait {
     SpinWait bar;
 
     void waitForNonNull() {
-        while (foo == null)
-            ;
+        while (foo == null);
     }
 
     static void waitForNonNullIndirect(int x, SpinWait baz) {
-        while (baz.foo == null)
-            ;
-        while (baz.foo.bar == null)
-            ;
+        while (baz.foo == null);
+        while (baz.foo.bar == null);
     }
 
     static boolean sflag;
 
     static void waitForStatic() {
-        while (!sflag)
-            ;
+        while (!sflag);
     }
 }

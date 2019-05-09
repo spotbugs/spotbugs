@@ -10,6 +10,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Ideas_2012_11_15 {
 
     Random r = new Random();
+
     public @CheckForNull Object get() {
         if (r.nextBoolean())
             return "x";
@@ -25,7 +26,7 @@ public class Ideas_2012_11_15 {
         if (i > 0)
             return x.hashCode();
         else
-            return  -x.hashCode();
+            return -x.hashCode();
     }
 
 }

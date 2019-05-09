@@ -85,8 +85,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     final int accessFlags;
 
-    final @CheckForNull
-    String fieldSourceSignature;
+    final @CheckForNull String fieldSourceSignature;
 
     Map<ClassDescriptor, AnnotationValue> fieldAnnotations;
 
@@ -125,14 +124,12 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     @Override
-    public @DottedClassName
-    String getClassName() {
+    public @DottedClassName String getClassName() {
         return getClassDescriptor().toDottedClassName();
     }
 
     @Override
-    public @DottedClassName
-    String getPackageName() {
+    public @DottedClassName String getPackageName() {
         return getClassDescriptor().getPackageName();
     }
 
@@ -321,8 +318,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     @Override
-    public @CheckForNull
-    AnnotatedObject getContainingScope() {
+    public @CheckForNull AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {

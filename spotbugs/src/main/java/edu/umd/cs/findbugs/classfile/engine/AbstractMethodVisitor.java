@@ -36,8 +36,7 @@ public abstract class AbstractMethodVisitor extends MethodVisitor {
         super(FindBugsASM.ASM_VERSION);
     }
 
-    public void visitSomeInsn() {
-    }
+    public void visitSomeInsn() {}
 
     /*
      * (non-Javadoc)

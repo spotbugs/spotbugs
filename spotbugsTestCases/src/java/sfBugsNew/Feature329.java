@@ -39,8 +39,9 @@ public class Feature329 {
     @ExpectWarning("DM_INVALID_MIN_MAX")
     public int getScore(int totalCount, int failCount, double scaleFactor) {
         // Based on https://github.com/marksinclair/junit-plugin/commit/c0dc11e08923edd23cee90962da638e4a7eb47d5
-        int score = (totalCount == 0) ? 100 : (int) (100.0 * Math.max(1.0,
-                Math.min(0.0, 1.0 - (scaleFactor * failCount) / totalCount)));
+        int score = (totalCount == 0) ? 100
+                : (int) (100.0 * Math.max(1.0,
+                        Math.min(0.0, 1.0 - (scaleFactor * failCount) / totalCount)));
         return score;
     }
 

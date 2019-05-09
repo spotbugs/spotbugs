@@ -60,8 +60,8 @@ public class HTML {
                 super.incrIndent();
                 write("* ");
             } /*else if (name.equals("p")) {
-
-            }*/
+              
+              }*/
         }
 
         @Override
@@ -89,12 +89,10 @@ public class HTML {
         }
 
         @Override
-        protected void incrIndent() {
-        }
+        protected void incrIndent() {}
 
         @Override
-        protected void decrIndent() {
-        }
+        protected void decrIndent() {}
 
         @Override
         protected void emptyTag(Element elem) throws IOException, BadLocationException {
@@ -125,8 +123,7 @@ public class HTML {
         }
     }
 
-    private HTML() {
-    }
+    private HTML() {}
 
     public static void convertHtmlToText(Reader reader, Writer writer) throws IOException, BadLocationException {
 

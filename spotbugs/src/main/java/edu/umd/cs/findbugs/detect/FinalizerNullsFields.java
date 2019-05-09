@@ -89,7 +89,7 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
         } else if (state == 2 && seen == Const.PUTFIELD) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY).addClassAndMethod(this)
-                    .addReferencedField(this), this);
+                            .addReferencedField(this), this);
             sawFieldNulling = true;
             state = 0;
         } else if (seen == Const.RETURN) {

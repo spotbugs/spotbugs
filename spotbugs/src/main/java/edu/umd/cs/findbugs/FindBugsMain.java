@@ -40,18 +40,15 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
         this.analysis = analysis;
     }
 
-    final @Nonnull
-    Class<?> mainClass;
+    final @Nonnull Class<?> mainClass;
 
     final Method mainMethod;
 
-    public final @Nonnull
-    String cmd;
+    public final @Nonnull String cmd;
 
     public final String description;
 
-    public final @Nonnull
-    String kind;
+    public final @Nonnull String kind;
 
     final boolean analysis;
 

@@ -95,7 +95,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
             if (seen == Const.PUTFIELD && incrementField.equals(getXFieldOperand())) {
                 bugReporter.reportBug(new BugInstance(this, "VO_VOLATILE_INCREMENT",
                         "J".equals(incrementField.getSignature()) ? Priorities.HIGH_PRIORITY : Priorities.NORMAL_PRIORITY)
-                .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
+                                .addClassAndMethod(this).addField(incrementField).addSourceLine(this));
             }
             resetIncrementState();
             break;

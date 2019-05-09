@@ -89,9 +89,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     public ValueNumberFrame(int numLocals) {
         super(numLocals);
         if (REDUNDANT_LOAD_ELIMINATION) {
-            setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]> emptyMap());
-            setMergedLoads(Collections.<AvailableLoad, ValueNumber> emptyMap());
-            setPreviouslyKnownAs(Collections.<ValueNumber, AvailableLoad> emptyMap());
+            setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]>emptyMap());
+            setMergedLoads(Collections.<AvailableLoad, ValueNumber>emptyMap());
+            setPreviouslyKnownAs(Collections.<ValueNumber, AvailableLoad>emptyMap());
         }
     }
 
@@ -110,8 +110,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         return buf.toString();
     }
 
-    public @CheckForNull
-    AvailableLoad getLoad(ValueNumber v) {
+    public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return null;
         }
@@ -316,7 +315,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
             boolean changed = false;
             if (other.isBottom()) {
                 changed = !this.getAvailableLoadMap().isEmpty();
-                setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]> emptyMap());
+                setAvailableLoadMap(Collections.<AvailableLoad, ValueNumber[]>emptyMap());
             } else if (!other.isTop()) {
                 for (Map.Entry<AvailableLoad, ValueNumber[]> e : getUpdateableAvailableLoadMap().entrySet()) {
                     AvailableLoad load = e.getKey();
@@ -434,7 +433,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     private void assignAvailableLoadMap(ValueNumberFrame other) {
         Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = other.getAvailableLoadMap();
         if (availableLoadMapOther instanceof HashMap) {
-            availableLoadMapOther = Collections.<AvailableLoad, ValueNumber[]> unmodifiableMap(availableLoadMapOther);
+            availableLoadMapOther = Collections.<AvailableLoad, ValueNumber[]>unmodifiableMap(availableLoadMapOther);
             other.setAvailableLoadMap(availableLoadMapOther);
             setAvailableLoadMap(availableLoadMapOther);
             constructedUnmodifiableMap++;
@@ -447,7 +446,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
     private void assignPreviouslyKnownAs(ValueNumberFrame other) {
         Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
         if (previouslyKnownAsOther instanceof HashMap) {
-            previouslyKnownAsOther = Collections.<ValueNumber, AvailableLoad> unmodifiableMap(previouslyKnownAsOther);
+            previouslyKnownAsOther = Collections.<ValueNumber, AvailableLoad>unmodifiableMap(previouslyKnownAsOther);
             other.setPreviouslyKnownAs(previouslyKnownAsOther);
             setPreviouslyKnownAs(previouslyKnownAsOther);
             constructedUnmodifiableMap++;
@@ -652,19 +651,19 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     @Override
     public boolean sameAs(Frame<ValueNumber> other) {
-        if(!super.sameAs(other)) {
+        if (!super.sameAs(other)) {
             return false;
         }
         if (isTop() && other.isTop() || isBottom() && other.isBottom()) {
             return true;
         }
-        ValueNumberFrame o = (ValueNumberFrame)other;
-        if(availableLoadMap.size() != o.availableLoadMap.size()) {
+        ValueNumberFrame o = (ValueNumberFrame) other;
+        if (availableLoadMap.size() != o.availableLoadMap.size()) {
             return false;
         }
-        for(Entry<AvailableLoad, ValueNumber[]> entry : availableLoadMap.entrySet()) {
+        for (Entry<AvailableLoad, ValueNumber[]> entry : availableLoadMap.entrySet()) {
             ValueNumber[] oValue = o.availableLoadMap.get(entry.getKey());
-            if(!Arrays.equals(entry.getValue(), oValue)) {
+            if (!Arrays.equals(entry.getValue(), oValue)) {
                 return false;
             }
         }

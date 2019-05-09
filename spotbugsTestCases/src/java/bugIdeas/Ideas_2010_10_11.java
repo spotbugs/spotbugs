@@ -18,25 +18,23 @@ public class Ideas_2010_10_11 {
     public void setFoo() {
         state = FOO;
     }
+
     public void setBar() {
         state = BAR;
     }
 
     @DesireNoWarning("RC_REF_COMPARISON_BAD_PRACTICE")
     public boolean isFoo() {
-       return state == FOO;
+        return state == FOO;
     }
 
     @ExpectWarning("BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY")
-    public void cascadeDelete(Collection value) throws RemoveException
-    {
-       if(!value.isEmpty())
-       {
-          EJBLocalObject[] locals = (EJBLocalObject[])value.toArray();
-          for(int i = 0; i < locals.length; ++i)
-          {
-             locals[i].remove();
-          }
-       }
+    public void cascadeDelete(Collection value) throws RemoveException {
+        if (!value.isEmpty()) {
+            EJBLocalObject[] locals = (EJBLocalObject[]) value.toArray();
+            for (int i = 0; i < locals.length; ++i) {
+                locals[i].remove();
+            }
+        }
     }
 }

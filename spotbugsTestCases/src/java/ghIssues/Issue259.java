@@ -9,7 +9,6 @@ public class Issue259 {
 
     private static class X implements AutoCloseable {
         @Override
-        public void close() {
-        }
+        public void close() {}
     }
 }

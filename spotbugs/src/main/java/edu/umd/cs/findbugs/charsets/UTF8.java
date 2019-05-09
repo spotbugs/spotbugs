@@ -51,19 +51,23 @@ public class UTF8 {
     public static PrintStream printStream(OutputStream out) {
         return printStream(out, false);
     }
+
     public static PrintStream printStream(OutputStream out, boolean autoflush) {
         try {
-            return new PrintStream(out,autoflush, UTF_8);
+            return new PrintStream(out, autoflush, UTF_8);
         } catch (UnsupportedEncodingException e) {
             throw new AssertionError("UTF-8 not supported");
         }
     }
+
     public static Writer writer(OutputStream out) {
         return new OutputStreamWriter(out, StandardCharsets.UTF_8);
     }
+
     public static Writer fileWriter(File fileName) throws IOException {
         return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
     }
+
     public static BufferedWriter bufferedWriter(File fileName) throws IOException {
         return new BufferedWriter(fileWriter(fileName));
     }
@@ -73,27 +77,30 @@ public class UTF8 {
     }
 
 
-    public static PrintWriter printWriter(PrintStream printStream)  {
+    public static PrintWriter printWriter(PrintStream printStream) {
         return new PrintWriter(new OutputStreamWriter(printStream, StandardCharsets.UTF_8));
     }
-    public static PrintWriter printWriter(PrintStream printStream, boolean autoflush)  {
+
+    public static PrintWriter printWriter(PrintStream printStream, boolean autoflush) {
         return new PrintWriter(new OutputStreamWriter(printStream, StandardCharsets.UTF_8), autoflush);
     }
 
     public static Writer fileWriter(String fileName) throws IOException {
         return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
     }
+
     public static BufferedWriter bufferedWriter(String fileName) throws IOException {
         return new BufferedWriter(fileWriter(fileName));
     }
 
     public static Reader fileReader(String fileName) throws IOException {
-        return  reader(new FileInputStream(fileName));
+        return reader(new FileInputStream(fileName));
     }
 
     public static Reader fileReader(File fileName) throws IOException {
-        return  reader(new FileInputStream(fileName));
+        return reader(new FileInputStream(fileName));
     }
+
     public static PrintWriter printWriter(String fileName) throws IOException {
         return new PrintWriter(bufferedWriter(fileName));
     }

@@ -3,8 +3,7 @@ package npe;
 import java.io.IOException;
 
 public class GuaranteedDereference2 {
-    static void f() throws IOException {
-    }
+    static void f() throws IOException {}
 
     static int g() {
         Object x = null;

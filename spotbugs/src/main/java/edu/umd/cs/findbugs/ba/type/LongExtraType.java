@@ -57,4 +57,3 @@ public class LongExtraType extends Type implements ExtendedTypes {
         return theInstance;
     }
 }
-

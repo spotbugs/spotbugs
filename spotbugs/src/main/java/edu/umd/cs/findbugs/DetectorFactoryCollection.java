@@ -87,13 +87,13 @@ public class DetectorFactoryCollection {
     private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
             @Nonnull Collection<Plugin> pluginsToLoad,
             @Nonnull Collection<Plugin> enabledPlugins) {
-        if(loadCore) {
+        if (loadCore) {
             loadCorePlugin();
         }
-        for(Plugin plugin : pluginsToLoad) {
+        for (Plugin plugin : pluginsToLoad) {
             if (forceLoad || plugin.isGloballyEnabled() && !plugin.isCorePlugin()) {
                 loadPlugin(plugin);
-                if(!enabledPlugins.contains(plugin)) {
+                if (!enabledPlugins.contains(plugin)) {
                     enabledPlugins.add(plugin);
                 }
             }
@@ -139,9 +139,9 @@ public class DetectorFactoryCollection {
         globalOptions.clear();
         globalOptionsSetter.clear();
 
-        for(Plugin p : plugins()) {
+        for (Plugin p : plugins()) {
             if (p.isGloballyEnabled()) {
-                for(Map.Entry<String, String> e : p.getMyGlobalOptions().entrySet()) {
+                for (Map.Entry<String, String> e : p.getMyGlobalOptions().entrySet()) {
                     String key = e.getKey();
                     String value = e.getValue();
                     String oldValue = globalOptions.get(key);
@@ -212,20 +212,22 @@ public class DetectorFactoryCollection {
     }
 
     public boolean isDisabledByDefault(String bugPatternOrCode) {
-        @CheckForNull BugPattern pattern = lookupBugPattern(bugPatternOrCode);
+        @CheckForNull
+        BugPattern pattern = lookupBugPattern(bugPatternOrCode);
         if (pattern != null) {
-            for(DetectorFactory fac : factoryList) {
-                if (fac.isDefaultEnabled()  && fac.getReportedBugPatterns().contains(pattern)) {
+            for (DetectorFactory fac : factoryList) {
+                if (fac.isDefaultEnabled() && fac.getReportedBugPatterns().contains(pattern)) {
                     return false;
                 }
             }
             return true;
         }
-        @CheckForNull BugCode code = lookupBugCode(bugPatternOrCode);
+        @CheckForNull
+        BugCode code = lookupBugCode(bugPatternOrCode);
         if (code != null) {
-            for(DetectorFactory fac : factoryList) {
+            for (DetectorFactory fac : factoryList) {
                 if (fac.isDefaultEnabled()) {
-                    for(BugPattern p : fac.getReportedBugPatterns()) {
+                    for (BugPattern p : fac.getReportedBugPatterns()) {
                         if (p.getBugCode().equals(code)) {
                             return false;
                         }
@@ -270,7 +272,7 @@ public class DetectorFactoryCollection {
             System.out.println("Registering detector: " + factory.getFullName());
         }
         String detectorName = factory.getShortName();
-        if(!factoryList.contains(factory)) {
+        if (!factoryList.contains(factory)) {
             factoryList.add(factory);
         } else {
             LOGGER.log(Level.WARNING, "Trying to add already registered factory: " + factory +
@@ -365,7 +367,7 @@ public class DetectorFactoryCollection {
         }
     }
 
-    void loadPlugin(Plugin plugin)  {
+    void loadPlugin(Plugin plugin) {
 
         if (FindBugs.DEBUG) {
             System.out.println("Loading " + plugin.getPluginId());
@@ -394,7 +396,7 @@ public class DetectorFactoryCollection {
         }
     }
 
-    void unLoadPlugin(Plugin plugin)  {
+    void unLoadPlugin(Plugin plugin) {
         pluginByIdMap.remove(plugin.getPluginId());
 
         setGlobalOptions();
@@ -482,6 +484,7 @@ public class DetectorFactoryCollection {
     public void registerBugCode(BugCode bugCode) {
         bugCodeMap.put(bugCode.getAbbrev(), bugCode);
     }
+
     protected void unRegisterBugCode(BugCode bugCode) {
         bugCodeMap.remove(bugCode.getAbbrev());
     }
@@ -538,7 +541,7 @@ public class DetectorFactoryCollection {
      */
     public Collection<String> getBugCategories() {
         ArrayList<String> result = new ArrayList<>(categoryDescriptionMap.size());
-        for(BugCategory c : categoryDescriptionMap.values()) {
+        for (BugCategory c : categoryDescriptionMap.values()) {
             if (!c.isHidden()) {
                 result.add(c.getCategory());
             }

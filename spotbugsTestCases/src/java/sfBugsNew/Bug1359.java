@@ -158,7 +158,7 @@ public class Bug1359 {
             sum += i;
         // Just any bug involving OpcodeStack and new variables here
         int nonNegative = sum & 0xFF;
-        if(nonNegative == -1)
+        if (nonNegative == -1)
             return 0;
         return sum;
     }

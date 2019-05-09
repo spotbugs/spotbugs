@@ -39,8 +39,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
     /**
      * Constructor.
      */
-    public EngineRegistrar() {
-    }
+    public EngineRegistrar() {}
 
     /*
      * (non-Javadoc)

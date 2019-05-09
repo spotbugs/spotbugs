@@ -20,7 +20,6 @@ public class Bug1372 {
         }
     }
 
-    private void method(final String method) {
-    }
+    private void method(final String method) {}
 
 }

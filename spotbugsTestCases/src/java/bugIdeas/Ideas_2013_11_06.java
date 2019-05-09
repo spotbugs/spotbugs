@@ -23,10 +23,12 @@ public class Ideas_2013_11_06 {
         result |= flags == flags;
         return result;
     }
+
     @NoWarning("SA_FIELD_SELF_COMPUTATION")
     public int testUpdate() {
-        return flags ^(short) flags;
+        return flags ^ (short) flags;
     }
+
     @ExpectWarning("SA_FIELD_SELF_COMPUTATION")
     public int testUpdateTP() {
         return flags ^ flags;
@@ -41,6 +43,7 @@ public class Ideas_2013_11_06 {
         result |= x == (byte) x;
         return result;
     }
+
     @ExpectWarning("SA")
     public boolean testTP(int x) {
         boolean result = false;
@@ -48,6 +51,7 @@ public class Ideas_2013_11_06 {
         result |= x == x;
         return result;
     }
+
     @NoWarning("SA")
     public boolean test(long x) {
         boolean result = false;
@@ -58,6 +62,7 @@ public class Ideas_2013_11_06 {
         result |= x == (byte) x;
         return result;
     }
+
     @ExpectWarning("SA")
     public boolean testTP(long x) {
         return x == x;

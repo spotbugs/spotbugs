@@ -58,9 +58,9 @@ public class Bug3442048 {
         case SUNDAY:
             System.out.println("Mondays are bad, but Sunday is OK.");
             break;
-//        case MONDAY:
-//            System.out.println("Mondays are bad.");
-//            break;
+        //        case MONDAY:
+        //            System.out.println("Mondays are bad.");
+        //            break;
         case TUESDAY:
             System.out.println("Mondays are bad, but Tuesday is OK.");
             break;
@@ -84,18 +84,18 @@ public class Bug3442048 {
 
     public void tellItLikeItIs3(Day day) {
         switch (day) {
-//        case SUNDAY:
-//            System.out.println("Mondays are bad, but Sunday is OK.");
-//            break;
-//        case MONDAY:
-//            System.out.println("Mondays are bad.");
-//            break;
-//        case TUESDAY:
-//            System.out.println("Mondays are bad, but Tuesday is OK.");
-//            break;
-//        case WEDNESDAY:
-//            System.out.println("Mondays are bad, but Wednesday is OK.");
-//            break;
+        //        case SUNDAY:
+        //            System.out.println("Mondays are bad, but Sunday is OK.");
+        //            break;
+        //        case MONDAY:
+        //            System.out.println("Mondays are bad.");
+        //            break;
+        //        case TUESDAY:
+        //            System.out.println("Mondays are bad, but Tuesday is OK.");
+        //            break;
+        //        case WEDNESDAY:
+        //            System.out.println("Mondays are bad, but Wednesday is OK.");
+        //            break;
         case THURSDAY:
             System.out.println("Mondays are bad, but Thursday is OK.");
             break;

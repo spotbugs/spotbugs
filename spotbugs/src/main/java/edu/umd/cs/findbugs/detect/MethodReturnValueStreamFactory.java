@@ -143,4 +143,3 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
         return null;
     }
 }
-

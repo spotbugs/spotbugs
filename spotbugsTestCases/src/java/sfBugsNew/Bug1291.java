@@ -5,8 +5,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Bug1291 {
     Exception exception;
 
-    public void test() throws ArrayIndexOutOfBoundsException, UnsupportedOperationException {
-    }
+    public void test() throws ArrayIndexOutOfBoundsException, UnsupportedOperationException {}
 
     protected void a() {
         try {

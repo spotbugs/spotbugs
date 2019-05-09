@@ -18,6 +18,7 @@ public class Ideas_2011_11_15 {
         }
 
     }
+
     public int foo2(PreparedStatement stmt) throws Exception {
         ResultSet rs = null;
         try {

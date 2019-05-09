@@ -2,8 +2,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class N2 extends N1 {
     @ExpectWarning("Nm")
-    public void mincemeaT() {
-    }
+    public void mincemeaT() {}
 
     public String N1() {
         return "yeah";

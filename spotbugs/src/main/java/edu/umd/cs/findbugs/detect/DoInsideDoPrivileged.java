@@ -72,7 +72,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
             if ("java.lang.reflect.Field".equals(className) || "java.lang.reflect.Method".equals(className)) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED", LOW_PRIORITY).addClassAndMethod(this)
-                        .addCalledMethod(this), this);
+                                .addCalledMethod(this), this);
             }
 
         }
@@ -83,7 +83,7 @@ public class DoInsideDoPrivileged extends BytecodeScanningDetector {
                     && !("main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig()) && getMethod()
                             .isStatic())) {
                 bugAccumulator.accumulateBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addClass(classOfConstructedClass), this);
+                        .addClassAndMethod(this).addClass(classOfConstructedClass), this);
             }
         }
 

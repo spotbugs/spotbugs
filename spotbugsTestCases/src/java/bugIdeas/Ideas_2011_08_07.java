@@ -17,7 +17,7 @@ public class Ideas_2011_08_07 {
     }
 
     @Override
-	public String toString() {
+    public String toString() {
         return Integer.toString(x);
     }
 
@@ -28,13 +28,14 @@ public class Ideas_2011_08_07 {
         System.out.println(x);
     }
 
-    static class Bar{
+    static class Bar {
         final int x;
 
 
         Bar() {
-             x = 0;
+            x = 0;
         }
+
         Bar(int x) {
             this.x = x;
         }
@@ -43,6 +44,7 @@ public class Ideas_2011_08_07 {
         Bar plusOne() {
             return new Bar(x + 1);
         }
+
         Bar print() {
             System.out.println("x is " + x);
             return new Bar();
@@ -78,6 +80,7 @@ public class Ideas_2011_08_07 {
         Foo<String> plusOne() {
             return new Foo<String>(x + 1);
         }
+
         Foo<T> plusTwo() {
             return new Foo<T>(x + 2);
         }
@@ -100,14 +103,14 @@ public class Ideas_2011_08_07 {
 
 
         @Override
-		public String toString() {
+        public String toString() {
             return Integer.toString(x);
         }
 
 
     }
-//    @DesireWarning("")
-//    public static boolean test(@SlashedClassName String x, @DottedClassName String y) {
-//        return x.equals(y);
-//    }
+    //    @DesireWarning("")
+    //    public static boolean test(@SlashedClassName String x, @DottedClassName String y) {
+    //        return x.equals(y);
+    //    }
 }

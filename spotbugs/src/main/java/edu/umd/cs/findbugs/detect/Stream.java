@@ -240,7 +240,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
             try {
                 String classClosed = inv.getClassName(cpg);
 
-                if (relatedType(classClosed) ) {
+                if (relatedType(classClosed)) {
                     return true;
                 }
                 if ("java.io.ObjectOutput".equals(classClosed)) {
@@ -286,9 +286,9 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         }
         Stream other = (Stream) o;
         return getLocation().equals(other.getLocation())
-            && streamBase.equals(other.streamBase)
-            && getResourceClass().equals(other.getResourceClass())
-            && instanceParam == other.instanceParam;
+                && streamBase.equals(other.streamBase)
+                && getResourceClass().equals(other.getResourceClass())
+                && instanceParam == other.instanceParam;
     }
 
     @Override
@@ -321,4 +321,3 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
         return 0;
     }
 }
-

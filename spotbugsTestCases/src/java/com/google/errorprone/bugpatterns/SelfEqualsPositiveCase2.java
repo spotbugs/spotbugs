@@ -21,20 +21,21 @@ package com.google.errorprone.bugpatterns;
  */
 public class SelfEqualsPositiveCase2 {
 
-  public boolean test1() {
-    Object obj = new Object();
-    //BUG: Suggestion includes "true"
-    return obj.equals(obj);
-  }
+    public boolean test1() {
+        Object obj = new Object();
+        //BUG: Suggestion includes "true"
+        return obj.equals(obj);
+    }
 
-  private Object obj = new Object();
-  public boolean test2() {
-    //BUG: Suggestion includes "true"
-    return obj.equals(this.obj);
-  }
+    private Object obj = new Object();
 
-  public boolean test3() {
-    //BUG: Suggestion includes "true"
-    return equals(this);
-  }
+    public boolean test2() {
+        //BUG: Suggestion includes "true"
+        return obj.equals(this.obj);
+    }
+
+    public boolean test3() {
+        //BUG: Suggestion includes "true"
+        return equals(this);
+    }
 }

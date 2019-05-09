@@ -8,13 +8,13 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Feature318 {
     int add(int x, int y) {
-        return x+y;
+        return x + y;
     }
 
     String join(Collection c, String delimiter) {
         StringBuilder sb = new StringBuilder();
-        for(Object o : c) {
-            if(sb.length() > 0) {
+        for (Object o : c) {
+            if (sb.length() > 0) {
                 sb.append(delimiter);
             }
             sb.append(o);
@@ -23,8 +23,8 @@ public class Feature318 {
     }
 
     int[] copyRange(int[] src, int from, int to) {
-        int[] result = new int[to-from];
-        System.arraycopy(src, from, result, 0, to-from);
+        int[] result = new int[to - from];
+        System.arraycopy(src, from, result, 0, to - from);
         return result;
     }
 
@@ -36,10 +36,21 @@ public class Feature318 {
             setB(b);
         }
 
-        public void setA(int a) { this.a = a; }
-        public void setB(int b) { this.b = b; }
-        public void setC(int c) { this.c = c; }
-        public StringBuilder report(StringBuilder sb) { return sb.append(a).append(b).append(c); }
+        public void setA(int a) {
+            this.a = a;
+        }
+
+        public void setB(int b) {
+            this.b = b;
+        }
+
+        public void setC(int c) {
+            this.c = c;
+        }
+
+        public StringBuilder report(StringBuilder sb) {
+            return sb.append(a).append(b).append(c);
+        }
     }
 
     @NoWarning("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
@@ -59,7 +70,7 @@ public class Feature318 {
 
     @ExpectWarning("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
     void testAdd() {
-        add(3,4);
+        add(3, 4);
     }
 
     @ExpectWarning("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
@@ -74,13 +85,13 @@ public class Feature318 {
 
     @ExpectWarning("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
     void testNewObject() {
-        new ABC(1,2);
+        new ABC(1, 2);
     }
 
     @ExpectWarning("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
     void testNewObject2() {
         StringBuilder sb = new StringBuilder();
-        createABC(1,2,3);
+        createABC(1, 2, 3);
         System.out.println(sb);
     }
 

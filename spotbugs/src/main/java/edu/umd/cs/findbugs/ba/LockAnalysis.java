@@ -188,4 +188,3 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
     // driver.execute(argv[0]);
     // }
 }
-

@@ -67,7 +67,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
     public @CheckForNull Image getImage(Object element) {
         if (element instanceof BugGroup) {
             BugGroup group = (BugGroup) element;
-            switch(group.getType()) {
+            switch (group.getType()) {
             case Class:
             case Package:
             case Project:
@@ -75,7 +75,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
                 return wbProvider.getImage(group.getData());
             case BugRank: {
                 MarkerRank rank = (MarkerRank) group.getData();
-                if(rank == null){
+                if (rank == null) {
                     return null;
                 }
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();
@@ -83,7 +83,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
             case Confidence: {
                 MarkerConfidence markerConfidence = (MarkerConfidence) group.getData();
-                if(markerConfidence == null){
+                if (markerConfidence == null) {
                     return null;
                 }
                 ImageRegistry imageRegistry = FindbugsPlugin.getDefault().getImageRegistry();

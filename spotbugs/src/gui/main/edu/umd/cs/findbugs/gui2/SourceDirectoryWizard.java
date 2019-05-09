@@ -279,8 +279,7 @@ public class SourceDirectoryWizard extends JDialog {
                     }
 
                     @Override
-                    public void doneRecursiveDirectorySearch() {
-                    }
+                    public void doneRecursiveDirectorySearch() {}
 
                     @Override
                     public void startScanningArchives(int numArchivesToScan) {
@@ -288,8 +287,7 @@ public class SourceDirectoryWizard extends JDialog {
                     }
 
                     @Override
-                    public void doneScanningArchives() {
-                    }
+                    public void doneScanningArchives() {}
 
                     @Override
                     public void startScanningClasses(int numClassesToScan) {
@@ -297,20 +295,16 @@ public class SourceDirectoryWizard extends JDialog {
                     }
 
                     @Override
-                    public void finishClass() {
-                    }
+                    public void finishClass() {}
 
                     @Override
-                    public void doneScanningClasses() {
-                    }
+                    public void doneScanningClasses() {}
 
                     @Override
-                    public void finishArchive() {
-                    }
+                    public void finishArchive() {}
 
                     @Override
-                    public void startArchive(String name) {
-                    }
+                    public void startArchive(String name) {}
                 };
                 DiscoverSourceDirectories discoverSourceDirectories = new DiscoverSourceDirectories();
                 discoverSourceDirectories.setProject(project);

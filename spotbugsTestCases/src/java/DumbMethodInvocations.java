@@ -47,8 +47,7 @@ class DumbMethodInvocations implements Iterator {
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
 
     public void falsePositive() {
         Date today = Calendar.getInstance().getTime();

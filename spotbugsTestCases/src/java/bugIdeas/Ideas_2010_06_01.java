@@ -8,7 +8,7 @@ import java.util.Set;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
-public class Ideas_2010_06_01<K, V> extends AbstractMap<K,V> {
+public class Ideas_2010_06_01<K, V> extends AbstractMap<K, V> {
 
     static class NotWeird<K, V> extends AbstractMap<K, V> {
 

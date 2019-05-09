@@ -26,8 +26,7 @@ public class InnerClassAccess {
 
     private final String methodSig;
 
-    private @Nonnull
-    final XField field;
+    private @Nonnull final XField field;
 
     private final boolean isLoad;
 
@@ -58,4 +57,3 @@ public class InnerClassAccess {
         return isLoad;
     }
 }
-

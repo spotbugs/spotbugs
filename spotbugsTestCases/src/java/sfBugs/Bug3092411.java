@@ -21,11 +21,9 @@ public class Bug3092411 {
         myLock.lock();
         try {
             System.out.println("hi");
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("ex");
-        }
-        finally {
+        } finally {
             myCondition1.signalAll();
             myLock.unlock();
         }
@@ -36,26 +34,23 @@ public class Bug3092411 {
         myLock.lock();
         try {
             System.out.println("hi");
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("ex");
-        }
-        finally {
+        } finally {
             myLock.unlock();
             myCondition1.signalAll();
 
         }
     }
+
     @ExpectWarning("UL_UNRELEASED_LOCK_EXCEPTION_PATH")
     void func3() {
         myLock.lock();
         try {
             System.out.println("hi");
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("ex");
-        }
-        finally {
+        } finally {
             myCondition2.signalAll();
             myLock.unlock();
         }
@@ -68,12 +63,10 @@ public class Bug3092411 {
             System.out.println("hi");
             myCondition1.signalAll();
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("ex");
-        }
-        finally {
-           myLock.unlock();
+        } finally {
+            myLock.unlock();
         }
     }
 }

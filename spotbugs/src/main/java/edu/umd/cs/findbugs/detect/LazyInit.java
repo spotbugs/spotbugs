@@ -91,8 +91,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
     static {
         pattern.add(new Load("f", "val").label("start")).add(new IfNull("val").label("test"))
-        .add(new Wild(1, 1).label("createObject").dominatedBy("test"))
-        .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
+                .add(new Wild(1, 1).label("createObject").dominatedBy("test"))
+                .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
     }
 
     public LazyInit(BugReporter bugReporter) {
@@ -155,7 +155,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
     @Override
     public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         JavaClass javaClass = classContext.getJavaClass();
         MethodGen methodGen = classContext.getMethodGen(method);
         CFG cfg = classContext.getCFG(method);
@@ -372,7 +372,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         String sourceFile = javaClass.getSourceFileName();
         bugReporter.reportBug(new BugInstance(this, sawGetStaticAfterPutStatic ? "LI_LAZY_INIT_UPDATE_STATIC"
                 : "LI_LAZY_INIT_STATIC", priority).addClassAndMethod(methodGen, sourceFile).addField(xfield)
-                .describe("FIELD_ON").addSourceLine(classContext, methodGen, sourceFile, start, end));
+                        .describe("FIELD_ON").addSourceLine(classContext, methodGen, sourceFile, start, end));
         reported.set(testInstructionHandle.getPosition());
 
     }
@@ -383,8 +383,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         }
         Instruction instruction = nextHandle.getInstruction();
         return !(instruction instanceof ReturnInstruction
-            || instruction instanceof IfInstruction);
+                || instruction instanceof IfInstruction);
     }
 
 }
-

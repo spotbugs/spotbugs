@@ -27,8 +27,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Methods extends PreorderVisitor implements Detector, NonReportingDetector {
 
-    public Methods(BugReporter bugReporter) {
-    }
+    public Methods(BugReporter bugReporter) {}
 
     @Override
     public void visitClassContext(ClassContext classContext) {

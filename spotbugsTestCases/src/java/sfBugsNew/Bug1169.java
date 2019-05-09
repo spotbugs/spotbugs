@@ -28,62 +28,61 @@ public abstract class Bug1169 {
     @NoWarning("RCN,NP")
     public int foo() throws IOException {
         try (FileChannel c = open()) {
-            final MappedByteBuffer mb
-            = c.map(MapMode.READ_ONLY, 0L, c.size());
+            final MappedByteBuffer mb = c.map(MapMode.READ_ONLY, 0L, c.size());
 
             return mb.getInt();
-          }
+        }
     }
 
-     abstract FileChannel open();
+    abstract FileChannel open();
 
 
-     @NoWarning("RCN,NP")
-     @Nonnull
-     protected  <R> R executeEngine(@Nonnull final Engine<R> engine, @Nonnull final Path path) throws IOException {
-       try (final FileChannel c = open(path, StandardOpenOption.READ)) {
-         engine.reset();
+    @NoWarning("RCN,NP")
+    @Nonnull
+    protected <R> R executeEngine(@Nonnull final Engine<R> engine, @Nonnull final Path path) throws IOException {
+        try (final FileChannel c = open(path, StandardOpenOption.READ)) {
+            engine.reset();
 
-         final MappedByteBuffer mb = c.map(MapMode.READ_ONLY, 0L, c.size());
-         final int bufferLength = 8*1024;
-         final byte[] buffer = new byte[bufferLength];
-         while (mb.hasRemaining()) {
-           final int get = Math.min(mb.remaining(), bufferLength);
-           mb.get(buffer, 0, get);
-           engine.update(buffer, 0, get);
-         }
+            final MappedByteBuffer mb = c.map(MapMode.READ_ONLY, 0L, c.size());
+            final int bufferLength = 8 * 1024;
+            final byte[] buffer = new byte[bufferLength];
+            while (mb.hasRemaining()) {
+                final int get = Math.min(mb.remaining(), bufferLength);
+                mb.get(buffer, 0, get);
+                engine.update(buffer, 0, get);
+            }
 
-         return engine.digest();
-       }
+            return engine.digest();
+        }
 
-     }
+    }
 
 
-     @NoWarning("RCN,NP")
-     @Nonnull
-     public <R> R execute2(@Nonnull final Engine<R> engine, @Nonnull final Path path, @Nonnull final byte[] buffer)
-         throws UnsupportedOperationException, IOException {
+    @NoWarning("RCN,NP")
+    @Nonnull
+    public <R> R execute2(@Nonnull final Engine<R> engine, @Nonnull final Path path, @Nonnull final byte[] buffer)
+            throws UnsupportedOperationException, IOException {
 
-       try (FileChannel c = open(path, StandardOpenOption.READ)) {
-         engine.reset();
-         final long size = c.size();
+        try (FileChannel c = open(path, StandardOpenOption.READ)) {
+            engine.reset();
+            final long size = c.size();
 
-         long i = 0;
-         while (i < size) {
-           final MappedByteBuffer mb = c.map(MapMode.READ_ONLY, i, Math.min(size - i, Integer.MAX_VALUE));
-           final int bl = buffer.length;
-           while (mb.hasRemaining()) {
-             final int get = Math.min(mb.remaining(), bl);
-             mb.get(buffer, 0, get);
-             engine.update(buffer, 0, get);
-             i += get;
-           }
-         }
-         return engine.digest();
-       }
-     }
+            long i = 0;
+            while (i < size) {
+                final MappedByteBuffer mb = c.map(MapMode.READ_ONLY, i, Math.min(size - i, Integer.MAX_VALUE));
+                final int bl = buffer.length;
+                while (mb.hasRemaining()) {
+                    final int get = Math.min(mb.remaining(), bl);
+                    mb.get(buffer, 0, get);
+                    engine.update(buffer, 0, get);
+                    i += get;
+                }
+            }
+            return engine.digest();
+        }
+    }
 
-    abstract  FileChannel open(Path path, StandardOpenOption read);
+    abstract FileChannel open(Path path, StandardOpenOption read);
 
     @NoWarning("RCN,NP")
     public String reproduce() throws IOException {

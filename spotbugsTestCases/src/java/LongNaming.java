@@ -23,7 +23,6 @@ class LongNaming {
         }
 
         @ExpectWarning("Nm")
-        void Wait() {
-        }
+        void Wait() {}
     }
 }

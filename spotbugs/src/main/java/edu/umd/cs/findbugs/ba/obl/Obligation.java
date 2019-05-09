@@ -44,7 +44,7 @@ public class Obligation {
 
     private boolean userObligationType;
 
-    public Obligation(@DottedClassName  String className, int id) {
+    public Obligation(@DottedClassName String className, int id) {
         this.className = className;
         this.type = ObjectTypeFactory.getInstance(className);
         this.id = id;
@@ -77,4 +77,3 @@ public class Obligation {
         return lastDot >= 0 ? className.substring(lastDot + 1) : className;
     }
 }
-

@@ -61,6 +61,7 @@ public class Bug3167096 {
             System.out.println("FILEINPUTSTREAM_CLOSED_SUCCESSFULLY");
         }
     }
+
     @ExpectWarning("NP")
     public void method4(Object x, boolean b) {
         if (x == null) {

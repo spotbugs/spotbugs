@@ -36,8 +36,7 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
     /**
      * Constructor.
      */
-    public DataflowAnalysisException() {
-    }
+    public DataflowAnalysisException() {}
 
     /**
      * Constructor.
@@ -93,4 +92,3 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
         this.initCause(cause);
     }
 }
-

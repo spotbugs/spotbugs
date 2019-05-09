@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
  */
 public class IncompatibleEqualsPositiveCases {
 
-    @ExpectWarning(value="EC", num=7)
+    @ExpectWarning(value = "EC", num = 7)
     public boolean testEquality(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -42,7 +42,7 @@ public class IncompatibleEqualsPositiveCases {
             return true;
 
         //BUG: Suggestion includes "false"
-        if (i.equals((byte)17))
+        if (i.equals((byte) 17))
             return true;
 
         //BUG: Suggestion includes "false"
@@ -60,7 +60,7 @@ public class IncompatibleEqualsPositiveCases {
         return false;
     }
 
-    @ExpectWarning(value="EC", num=7)
+    @ExpectWarning(value = "EC", num = 7)
     public boolean testObjectsEquals(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -77,7 +77,7 @@ public class IncompatibleEqualsPositiveCases {
             return true;
 
         //BUG: Suggestion includes "false"
-        if (java.util.Objects.equals(i, (byte)17))
+        if (java.util.Objects.equals(i, (byte) 17))
             return true;
 
         //BUG: Suggestion includes "false"
@@ -95,7 +95,7 @@ public class IncompatibleEqualsPositiveCases {
     }
 
 
-    @ExpectWarning(value="EC", num=7)
+    @ExpectWarning(value = "EC", num = 7)
     public boolean testGuavaEquals(String s, Integer i, Double d, Object a[]) {
 
         //BUG: Suggestion includes "false"
@@ -112,7 +112,7 @@ public class IncompatibleEqualsPositiveCases {
             return true;
 
         //BUG: Suggestion includes "false"
-        if (Objects.equal(i, (byte)17))
+        if (Objects.equal(i, (byte) 17))
             return true;
 
         //BUG: Suggestion includes "false"

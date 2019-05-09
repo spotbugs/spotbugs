@@ -5,24 +5,19 @@ package edu.umd.cs.findbugs;
  */
 public class NoOpFindBugsProgress implements FindBugsProgress {
     @Override
-    public void reportNumberOfArchives(int numArchives) {
-    }
+    public void reportNumberOfArchives(int numArchives) {}
 
     @Override
-    public void finishArchive() {
-    }
+    public void finishArchive() {}
 
     @Override
-    public void startAnalysis(int numClasses) {
-    }
+    public void startAnalysis(int numClasses) {}
 
     @Override
-    public void finishClass() {
-    }
+    public void finishClass() {}
 
     @Override
-    public void finishPerClassAnalysis() {
-    }
+    public void finishPerClassAnalysis() {}
 
     @Override
     public void predictPassCount(int[] classesPerPass) {

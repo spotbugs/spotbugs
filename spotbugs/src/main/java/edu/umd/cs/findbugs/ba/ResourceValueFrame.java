@@ -85,7 +85,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
     }
 
     private static final String[] statusList = { "(escaped)", "(open)", "(open_exception)", "(closed)", "(created)",
-    "(nonexistent)" };
+        "(nonexistent)" };
 
     @Override
     public String toString() {
@@ -93,4 +93,3 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
     }
 
 }
-

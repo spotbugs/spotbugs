@@ -1,6 +1,5 @@
 class MapString {
-    public MapString(String s1, String s2) {
-    }
+    public MapString(String s1, String s2) {}
 }
 
 public class DemonstrateStringError {

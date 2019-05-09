@@ -12,8 +12,7 @@ public class TransientFieldNotRestoredFalsePositive implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    public void setX(int x) {
-    }
+    public void setX(int x) {}
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         System.out.println("read object " + this.getClass().getName());

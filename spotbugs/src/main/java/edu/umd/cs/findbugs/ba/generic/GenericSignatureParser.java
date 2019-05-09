@@ -208,8 +208,7 @@ public class GenericSignatureParser {
      * @return an iterator over the parameters of the generic signature of
      *         method. Returns null if the generic signature cannot be parsed
      */
-    public static @CheckForNull
-    Iterator<String> getGenericSignatureIterator(Method target) {
+    public static @CheckForNull Iterator<String> getGenericSignatureIterator(Method target) {
         try {
             GenericSignatureParser parser = null;
             String genericSignature = null;

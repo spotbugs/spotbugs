@@ -77,8 +77,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 
     public void addAllDefinitions(JavaClass obj) {
         String className2 = obj.getClassName();

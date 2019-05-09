@@ -34,6 +34,7 @@ public class Bug1221 {
 
         }
     }
+
     @NoWarning("OBL")
     void updateResetFailuresToZeroOK2(String ipAddr, Connection conn) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("UPDATE resetpasswordfailures SET failureCount=0 WHERE IPAddress=?");

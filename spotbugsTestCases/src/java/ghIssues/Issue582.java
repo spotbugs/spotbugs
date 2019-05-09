@@ -2,6 +2,7 @@ package ghIssues;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.CheckReturnValue;
+
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">GitHub issue</a>
  */

@@ -17,13 +17,11 @@ public final class Bug3343304 {
             parseLine();
         }
 
-        protected void doSomething() {
-        }
+        protected void doSomething() {}
     }
 
     static private final class FindBugs extends Abstract {
-        private @CheckForNull
-        Map<Integer, String> metrics = null;
+        private @CheckForNull Map<Integer, String> metrics = null;
 
         @Override
         protected void parseLine() {

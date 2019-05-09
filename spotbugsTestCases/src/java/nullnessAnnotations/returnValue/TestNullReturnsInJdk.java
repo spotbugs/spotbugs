@@ -16,48 +16,48 @@ public class TestNullReturnsInJdk {
     private static final File FILE = PATH.toFile();
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe3() throws IOException{
+    void npe3() throws IOException {
         use(Files.probeContentType(PATH).length());
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe4() throws IOException{
+    void npe4() throws IOException {
         use(PATH.getFileName().getNameCount());
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe5() throws IOException{
+    void npe5() throws IOException {
         use(PATH.getParent().getNameCount());
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe6() throws IOException{
+    void npe6() throws IOException {
         use(PATH.getRoot().getNameCount());
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe7() throws IOException{
+    void npe7() throws IOException {
         use(FILE.list().length);
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe8() throws IOException{
+    void npe8() throws IOException {
         use(FILE.list(null).length);
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe9() throws IOException{
+    void npe9() throws IOException {
         use(FILE.listFiles().length);
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe10() throws IOException{
-        use(FILE.listFiles((FileFilter)null).length);
+    void npe10() throws IOException {
+        use(FILE.listFiles((FileFilter) null).length);
     }
 
     @ExpectWarning("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    void npe11() throws IOException{
-        use(FILE.listFiles((FilenameFilter)null).length);
+    void npe11() throws IOException {
+        use(FILE.listFiles((FilenameFilter) null).length);
     }
 
     private void use(Object o) {

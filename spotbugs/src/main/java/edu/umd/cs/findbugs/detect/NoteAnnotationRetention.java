@@ -38,8 +38,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
 
     private boolean runtimeRetention;
 
-    public NoteAnnotationRetention(BugReporter bugReporter) {
-    }
+    public NoteAnnotationRetention(BugReporter bugReporter) {}
 
     @Override
     public void visitAnnotation(String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
@@ -64,7 +63,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements Detect
         for (String i : obj.getInterfaceNames()) {
             if ("java.lang.annotation.Annotation".equals(i)) {
                 AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase()
-                .setRuntimeRetention(getDottedClassName(), runtimeRetention);
+                        .setRuntimeRetention(getDottedClassName(), runtimeRetention);
             }
         }
 

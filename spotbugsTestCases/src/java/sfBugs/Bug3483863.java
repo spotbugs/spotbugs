@@ -37,7 +37,7 @@ public class Bug3483863 {
     interface IInterface2 extends IInterface1 {
 
         @Override
-		@DesireWarning(value = "NP", confidence = Confidence.LOW)
+        @DesireWarning(value = "NP", confidence = Confidence.LOW)
         @CheckForNull
         public Object get();
     }

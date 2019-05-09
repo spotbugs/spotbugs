@@ -284,4 +284,3 @@ public class Filter extends OrMatcher {
     }
 
 }
-

@@ -104,8 +104,7 @@ public class Ideas_2011_12_19 {
         return x.hashCode();
     }
 
-    void foo(boolean b) {
-    }
+    void foo(boolean b) {}
 
     boolean assertIsTrue(boolean b) {
         assert b;

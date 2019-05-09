@@ -247,7 +247,8 @@ public class Filter {
             addSwitchWithOptionalExtraPart("-shouldFix", "truth", "Only issues with a consensus view that they should be fixed");
 
             addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
-            addOption("-calls", "pattern", "allow only bugs that involve a call to a method that matches this pattern (matches with method class or name)");
+            addOption("-calls", "pattern",
+                    "allow only bugs that involve a call to a method that matches this pattern (matches with method class or name)");
 
             addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
             addOption("-category", "category", "allow only warnings with a category that starts with this string");
@@ -275,8 +276,8 @@ public class Filter {
             versions.put(v.getReleaseName(), v);
             timeStamps.put(v.getTimestamp(), v);
 
-            return getVersionNum(versions,  timeStamps,  val,
-                    roundToLaterVersion,  v.getSequenceNumber());
+            return getVersionNum(versions, timeStamps, val,
+                    roundToLaterVersion, v.getSequenceNumber());
         }
 
         public static long getVersionNum(Map<String, AppVersion> versions, SortedMap<Long, AppVersion> timeStamps, String val,
@@ -356,8 +357,7 @@ public class Filter {
             }
 
             long fixed = getVersionNum(collection, fixedAsString, true);
-            if (fixed >= 0)
-            {
+            if (fixed >= 0) {
                 last = fixed - 1; // fixed means last on previous sequence (ok
                 // if -1)
             }
@@ -457,7 +457,7 @@ public class Filter {
                 if (m == null) {
                     return false;
                 }
-                if (!callsPattern.matcher(m.getClassName()).find()  && !callsPattern.matcher(m.getMethodName()).find()) {
+                if (!callsPattern.matcher(m.getClassName()).find() && !callsPattern.matcher(m.getMethodName()).find()) {
                     return false;
                 }
             }

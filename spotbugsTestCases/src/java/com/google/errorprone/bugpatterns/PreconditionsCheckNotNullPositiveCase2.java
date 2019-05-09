@@ -21,8 +21,8 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class PreconditionsCheckNotNullPositiveCase2 {
-  public void error() {
-    //BUG: Suggestion includes "remove this line"
-    com.google.common.base.Preconditions.checkNotNull("string literal");
-  }
+    public void error() {
+        //BUG: Suggestion includes "remove this line"
+        com.google.common.base.Preconditions.checkNotNull("string literal");
+    }
 }

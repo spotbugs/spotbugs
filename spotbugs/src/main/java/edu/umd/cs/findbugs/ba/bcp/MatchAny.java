@@ -106,4 +106,3 @@ public class MatchAny extends PatternElement {
         return 1;
     }
 }
-

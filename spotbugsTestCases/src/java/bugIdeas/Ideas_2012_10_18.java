@@ -12,12 +12,12 @@ public class Ideas_2012_10_18 {
     int p;
 
     @ExpectWarning("BX_UNBOXING_IMMEDIATELY_REBOXED")
-    public void warning( Integer port) {
+    public void warning(Integer port) {
         this.port = port == null ? DEFAULT_PORT : port;
     }
 
     @NoWarning("BX_UNBOXING_IMMEDIATELY_REBOXED")
-    public void OK( Integer port) {
+    public void OK(Integer port) {
         this.p = port == null ? DEFAULT_PORT : port;
         this.port = port == null ? DEFAULT_BOXED_PORT : port;
         this.p = port == null ? DEFAULT_BOXED_PORT : port;

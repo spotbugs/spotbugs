@@ -133,8 +133,7 @@ public class SplitLayout implements FindBugsLayoutManager {
             public BasicSplitPaneDivider createDefaultDivider() {
                 return new BasicSplitPaneDivider(this) {
                     @Override
-                    public void setBorder(Border b) {
-                    }
+                    public void setBorder(Border b) {}
                 };
             }
         });

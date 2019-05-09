@@ -60,4 +60,3 @@ public abstract class AbstractBlockOrder implements BlockOrder {
         return comparator.compare(b1, b2);
     }
 }
-

@@ -20,13 +20,15 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Guava {
 
 
-    static class Pair<A,B> {
+    static class Pair<A, B> {
         final A a;
         final B b;
+
         public Pair(A a, B b) {
             this.a = a;
             this.b = b;
         }
+
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -35,6 +37,7 @@ public class Guava {
             result = prime * result + ((b == null) ? 0 : b.hashCode());
             return result;
         }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj)
@@ -58,7 +61,8 @@ public class Guava {
         }
 
     }
-    @ExpectWarning(value="GC", num=7)
+
+    @ExpectWarning(value = "GC", num = 7)
     public static void testMultimap(Multimap<String, Integer> mm) {
         mm.containsEntry("x", "y");
         mm.containsEntry(1, 5);
@@ -70,13 +74,13 @@ public class Guava {
     }
 
     @ExpectWarning("GC")
-    public static void testMultimap3( Multimap<Long, Long> counts, int minSize) {
+    public static void testMultimap3(Multimap<Long, Long> counts, int minSize) {
         List<Long> idsToRemove = new ArrayList<Long>();
         for (Long id : counts.keySet()) {
-          if (counts.get(id).size() < minSize)
-            idsToRemove.add(id);
-          }
-          counts.removeAll(idsToRemove);
+            if (counts.get(id).size() < minSize)
+                idsToRemove.add(id);
+        }
+        counts.removeAll(idsToRemove);
     }
 
 
@@ -88,8 +92,9 @@ public class Guava {
         mm.remove("x", 1);
         mm.removeAll("x");
     }
+
     @NoWarning("GC")
-    public static void testMultimapOK2(Multimap<String, Pair<Integer,Long>> mm) {
+    public static void testMultimapOK2(Multimap<String, Pair<Integer, Long>> mm) {
         Pair<Integer, Long> p = new Pair<Integer, Long>(1, 1L);
         mm.containsEntry("x", p);
         mm.containsKey("x");
@@ -100,13 +105,14 @@ public class Guava {
 
 
 
-    @ExpectWarning(value="GC", num=4)
+    @ExpectWarning(value = "GC", num = 4)
     public static void testMultiset(Multiset<String> ms) {
         ms.contains(1);
         ms.count(1);
         ms.remove(1);
         ms.remove(1, 2);
     }
+
     @NoWarning("GC")
     public static void testMultisetOK(Multiset<String> ms) {
         ms.contains("x");
@@ -114,7 +120,8 @@ public class Guava {
         ms.remove("x");
         ms.remove("x", 2);
     }
-    @ExpectWarning(value="GC", num=9)
+
+    @ExpectWarning(value = "GC", num = 9)
     public static void testTable(Table<String, Integer, Long> t) {
         t.contains("x", "x");
         t.contains(1, 1);
@@ -127,7 +134,7 @@ public class Guava {
         t.remove(1, 1);
     }
 
-    @NoWarning(value="GC")
+    @NoWarning(value = "GC")
     public static void testTableOK(Table<String, Integer, Long> t) {
         t.contains("x", 1);
         t.containsRow("x");
@@ -137,10 +144,10 @@ public class Guava {
         t.remove("x", 1);
     }
 
-    @ExpectWarning(value="EC", num=2)
+    @ExpectWarning(value = "EC", num = 2)
     public static void testObjects() {
         Objects.equal("x", 1);
-        Objects.equal("x",  new int[1]);
+        Objects.equal("x", new int[1]);
     }
 
     @NoWarning("EC")
@@ -148,7 +155,7 @@ public class Guava {
         Objects.equal("x", "X");
     }
 
-    @ExpectWarning(value="GC", num=3)
+    @ExpectWarning(value = "GC", num = 3)
     public static void testSets(Set<String> s1, Set<Integer> s2) {
         Sets.intersection(s1, s2);
         Sets.difference(s1, s2);
@@ -161,7 +168,8 @@ public class Guava {
         Sets.difference(s1, s2);
         Sets.symmetricDifference(s1, s2);
     }
-    @ExpectWarning(value="GC", num=5)
+
+    @ExpectWarning(value = "GC", num = 5)
     public static void testIterables(Iterable<String> i, Collection<Integer> c) {
         Iterables.contains(i, 1);
         Iterables.removeAll(i, c);
@@ -169,6 +177,7 @@ public class Guava {
         Iterables.elementsEqual(i, c);
         Iterables.frequency(i, 1);
     }
+
     @NoWarning("GC")
     public static void testIterablesOK(Iterable<String> i, Collection<String> c) {
         Iterables.contains(i, "x");
@@ -177,18 +186,20 @@ public class Guava {
         Iterables.elementsEqual(i, c);
         Iterables.frequency(i, "x");
     }
-    @ExpectWarning(value="GC", num=5)
+
+    @ExpectWarning(value = "GC", num = 5)
     public static void testIterators(Iterator<String> i, Collection<Integer> c) {
         Iterators.contains(i, 1);
-        Iterators.removeAll(i,c);
+        Iterators.removeAll(i, c);
         Iterators.retainAll(i, c);
         Iterators.elementsEqual(i, c.iterator());
         Iterators.frequency(i, 1);
     }
+
     @NoWarning("GC")
     public static void testIteratorsOK(Iterator<String> i, Collection<String> c) {
         Iterators.contains(i, "x");
-        Iterators.removeAll(i,c);
+        Iterators.removeAll(i, c);
         Iterators.retainAll(i, c);
         Iterators.elementsEqual(i, c.iterator());
         Iterators.frequency(i, "x");

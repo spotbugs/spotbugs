@@ -25,8 +25,8 @@ import com.google.common.base.Preconditions;
  * @author sjnickerson@google.com (Simon Nickerson)
  */
 public class PreconditionsExpensiveStringNegativeCase2 {
-  public void error() {
-    int foo = 42;
-    Preconditions.checkState(true, "The foo" + foo + " is not a good foo");
-  }
+    public void error() {
+        int foo = 42;
+        Preconditions.checkState(true, "The foo" + foo + " is not a good foo");
+    }
 }

@@ -123,4 +123,3 @@ public abstract class FieldAccess extends SingleInstruction {
 
     }
 }
-

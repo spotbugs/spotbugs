@@ -41,8 +41,7 @@ public class StoreAnalysis extends FieldSetAnalysis {
      */
 
     @Override
-    protected void sawLoad(FieldSet fact, XField field) {
-    }
+    protected void sawLoad(FieldSet fact, XField field) {}
 
     /*
      * (non-Javadoc)

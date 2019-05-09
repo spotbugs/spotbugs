@@ -5,10 +5,12 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug1322 {
     public void test() {}
+
     public void test(Inner arg) {}
 
     public static class Super {
         public void test() {}
+
         public void test(Inner arg) {}
     }
 

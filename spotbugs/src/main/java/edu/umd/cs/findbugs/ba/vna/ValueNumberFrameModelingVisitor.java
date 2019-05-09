@@ -71,7 +71,7 @@ import edu.umd.cs.findbugs.detect.FindNoSideEffectMethods.NoSideEffectMethodsDat
  * @author David Hovemeyer
  */
 public class ValueNumberFrameModelingVisitor extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame> implements
-Debug, ValueNumberAnalysisFeatures {
+        Debug, ValueNumberAnalysisFeatures {
 
     /*
      * ----------------------------------------------------------------------
@@ -184,7 +184,7 @@ Debug, ValueNumberAnalysisFeatures {
             return false;
         }
 
-        if(xfield.getSignature().equals("D") || xfield.getSignature().equals("J")) {
+        if (xfield.getSignature().equals("D") || xfield.getSignature().equals("J")) {
             return false;
         }
 
@@ -408,9 +408,9 @@ Debug, ValueNumberAnalysisFeatures {
         try {
 
             XMethod called = Hierarchy2.findExactMethod(ins, methodGen.getConstantPool(), Hierarchy.ANY_METHOD);
-            if (called != null ) {
+            if (called != null) {
                 NoSideEffectMethodsDatabase nse = Global.getAnalysisCache().getOptionalDatabase(NoSideEffectMethodsDatabase.class);
-                if(nse != null && !nse.is(called.getMethodDescriptor(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ)) {
+                if (nse != null && !nse.is(called.getMethodDescriptor(), MethodSideEffectStatus.SE, MethodSideEffectStatus.OBJ)) {
                     return;
                 }
             }
@@ -454,10 +454,10 @@ Debug, ValueNumberAnalysisFeatures {
     }
 
     public void visitInvokeOnException(Instruction obj) {
-        if(!REDUNDANT_LOAD_ELIMINATION || !getFrame().hasAvailableLoads()) {
+        if (!REDUNDANT_LOAD_ELIMINATION || !getFrame().hasAvailableLoads()) {
             return;
         }
-        if(obj instanceof INVOKEDYNAMIC) {
+        if (obj instanceof INVOKEDYNAMIC) {
             killLoadsOfObjectsPassed((INVOKEDYNAMIC) obj);
             return;
         }
@@ -469,11 +469,11 @@ Debug, ValueNumberAnalysisFeatures {
             getFrame().killAllLoads();
             return;
         }
-        if(inv instanceof INVOKEVIRTUAL && "cast".equals(inv.getMethodName(cpg)) && "java.lang.Class".equals(inv.getClassName(cpg))) {
+        if (inv instanceof INVOKEVIRTUAL && "cast".equals(inv.getMethodName(cpg)) && "java.lang.Class".equals(inv.getClassName(cpg))) {
             // No-op
             return;
         }
-        if(inv instanceof INVOKESTATIC) {
+        if (inv instanceof INVOKESTATIC) {
             String methodName = inv.getName(cpg);
             if (("forName".equals(methodName) && "java.lang.Class".equals(inv.getClassName(cpg)) || "class$".equals(methodName))
                     && "(Ljava/lang/String;)Ljava/lang/Class;".equals(inv.getSignature(cpg))
@@ -483,7 +483,7 @@ Debug, ValueNumberAnalysisFeatures {
         }
 
         killLoadsOfObjectsPassed(inv);
-        if(inv instanceof INVOKESTATIC) {
+        if (inv instanceof INVOKESTATIC) {
             getFrame().killAllLoadsOf(null);
         }
     }
@@ -645,7 +645,7 @@ Debug, ValueNumberAnalysisFeatures {
         } /* else if (false && RLE_DEBUG) {
             System.out.println("<<cache hit for " + handle.getPosition() + ": " + vlts(inputValueList) + " ==> "
                     + vlts(outputValueList) + ">>");
-        } */
+          } */
         return outputValueList;
     }
 
@@ -860,4 +860,3 @@ Debug, ValueNumberAnalysisFeatures {
     }
 
 }
-

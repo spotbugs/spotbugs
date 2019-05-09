@@ -223,6 +223,7 @@ public class Profiler implements XMLWriteable {
             return "";
         }
     }
+
     public void start(Class<?> c) {
         long currentNanoTime = System.nanoTime();
 

@@ -174,7 +174,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         int childCount = getChildCount(o);
         if (index < 0 || index >= childCount) {
             if (SystemProperties.ASSERTIONS_ENABLED) {
-                System.out.printf("Unable to get child %d of %d from %s:%s%n" , index, childCount, o.getClass().getSimpleName(), o);
+                System.out.printf("Unable to get child %d of %d from %s:%s%n", index, childCount, o.getClass().getSimpleName(), o);
             }
             return null;
         }
@@ -281,8 +281,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
     }
 
     @Override
-    public void valueForPathChanged(TreePath arg0, Object arg1) {
-    }
+    public void valueForPathChanged(TreePath arg0, Object arg1) {}
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
@@ -366,7 +365,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
 
         Debug.println("Please Wait called right before starting rebuild thread");
         mainFrame.acquireDisplayWait();
-        rebuildingThread =  edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
+        rebuildingThread = edu.umd.cs.findbugs.util.Util.runInDameonThread(new Runnable() {
             BugTreeModel newModel;
 
             @Override
@@ -526,8 +525,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
             int index = getIndexOfChild(pathToBug.getLastPathComponent(), toBug[x]);
 
             if (index == -1) {
-                if (MainFrame.GUI2_DEBUG)
-                {
+                if (MainFrame.GUI2_DEBUG) {
                     System.err.println("Node does not exist in the tree");// For
                 }
                 // example,
@@ -579,24 +577,21 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         // this will inform us when the garbage collector finds our old bug tree
         // models and deletes them, thus preventing obnoxiously hard to find
         // bugs from not remembering to remove the model from our listeners
-        Debug.println("The BugTreeModel has been DELETED!  This means there are no more references to it, and its finally off all of the stupid listener lists");
+        Debug.println(
+                "The BugTreeModel has been DELETED!  This means there are no more references to it, and its finally off all of the stupid listener lists");
     }
 
     @Override
-    public void columnMarginChanged(ChangeEvent arg0) {
-    }
+    public void columnMarginChanged(ChangeEvent arg0) {}
 
     @Override
-    public void columnSelectionChanged(ListSelectionEvent arg0) {
-    }
+    public void columnSelectionChanged(ListSelectionEvent arg0) {}
 
     @Override
-    public void treeExpanded(TreeExpansionEvent event) {
-    }
+    public void treeExpanded(TreeExpansionEvent event) {}
 
     @Override
-    public void treeCollapsed(TreeExpansionEvent event) {
-    }
+    public void treeCollapsed(TreeExpansionEvent event) {}
 
     private void setOldSelectedBugs() {
         selectedBugLeafNodes.clear();

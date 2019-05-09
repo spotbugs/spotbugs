@@ -32,7 +32,7 @@ public class InvalidCharComparisonPositiveCases {
 
         char d;
         //BUG: Suggestion includes "false"
-        if ( (d = (char) r.read()) == -1)
+        if ((d = (char) r.read()) == -1)
             return true;
 
 

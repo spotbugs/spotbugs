@@ -9,8 +9,7 @@ public class Issue0076 {
 
     private static class Handler implements Thread.UncaughtExceptionHandler {
         @Override
-        public void uncaughtException(Thread t, Throwable e) {
-        }
+        public void uncaughtException(Thread t, Throwable e) {}
     }
 
     @NoWarning("NP_NONNULL_PARAM_VIOLATION")

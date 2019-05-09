@@ -21,14 +21,13 @@ package com.google.errorprone.bugpatterns;
  */
 public class CheckReturnValueNegativeCases {
 
-  public void test1() {
-    test2();
-    Object obj = new String();
-    obj.toString();
-  }
+    public void test1() {
+        test2();
+        Object obj = new String();
+        obj.toString();
+    }
 
-  @SuppressWarnings("foo")  // wrong annotation
-  public void test2() {
-  }
+    @SuppressWarnings("foo") // wrong annotation
+    public void test2() {}
 
 }

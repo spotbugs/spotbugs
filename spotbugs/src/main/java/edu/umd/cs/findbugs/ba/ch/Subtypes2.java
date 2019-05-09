@@ -139,6 +139,7 @@ public class Subtypes2 {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
         return subtypes2.isSubtype(target, COLLECTION_TYPE);
     }
+
     /** A collection, a map, or some other container */
     static public boolean isContainer(ReferenceType target) throws ClassNotFoundException {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
@@ -148,17 +149,18 @@ public class Subtypes2 {
 
 
     public static boolean isJSP(JavaClass javaClass) {
-        @DottedClassName String className = javaClass.getClassName();
-        if ( className.endsWith("_jsp") || className.endsWith("_tag")) {
+        @DottedClassName
+        String className = javaClass.getClassName();
+        if (className.endsWith("_jsp") || className.endsWith("_tag")) {
             return true;
         }
-        for(Method m : javaClass.getMethods()) {
+        for (Method m : javaClass.getMethods()) {
             if (m.getName().startsWith("_jsp")) {
                 return true;
             }
         }
 
-        for(Field f : javaClass.getFields()) {
+        for (Field f : javaClass.getFields()) {
             if (f.getName().startsWith("_jsp")) {
                 return true;
             }
@@ -398,6 +400,7 @@ public class Subtypes2 {
         // OK, we've exhausted the possibilities now
         return false;
     }
+
     ClassDescriptor prevSubDesc, prevSuperDesc;
     boolean prevResult;
 
@@ -895,7 +898,7 @@ public class Subtypes2 {
      * @return Collection of all XClass objects
      */
     public Collection<XClass> getXClassCollection() {
-        return Collections.<XClass> unmodifiableCollection(xclassSet);
+        return Collections.<XClass>unmodifiableCollection(xclassSet);
     }
 
     /**
@@ -1154,6 +1157,7 @@ public class Subtypes2 {
 
         return false;
     }
+
     private Set<ClassDescriptor> computeKnownSupertypes(ClassDescriptor classDescriptor) throws ClassNotFoundException {
         LinkedList<ClassVertex> workList = new LinkedList<>();
 

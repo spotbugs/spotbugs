@@ -21,13 +21,13 @@ package com.google.errorprone.bugpatterns;
  */
 public class LongLiteralLowerCaseSuffixPositiveCase2 {
 
-  // This constant string includes non-ASCII characters to make sure that we're not confusing
-  // bytes and chars:
-  @SuppressWarnings("unused")
-  private static final String TEST_STRING = "Îñţérñåţîöñåļîžåţîờñ";
+    // This constant string includes non-ASCII characters to make sure that we're not confusing
+    // bytes and chars:
+    @SuppressWarnings("unused")
+    private static final String TEST_STRING = "Îñţérñåţîöñåļîžåţîờñ";
 
-  public void underscoredLowerCase() {
-    //BUG: Suggestion includes "value = 0_1__2L"
-    long value = 0_1__2l;
-  }
+    public void underscoredLowerCase() {
+        //BUG: Suggestion includes "value = 0_1__2L"
+        long value = 0_1__2l;
+    }
 }

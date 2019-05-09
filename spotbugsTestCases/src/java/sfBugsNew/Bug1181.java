@@ -86,7 +86,7 @@ public class Bug1181 {
 
     }
 
-    @ExpectWarning(value="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", num=4)
+    @ExpectWarning(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", num = 4)
     public void test2() {
         ClassA2 classA2 = new ClassA2();
         String maybeNull = classA2.methodThatMightReturnNull();
@@ -109,7 +109,7 @@ public class Bug1181 {
         methodThatTakesAStringArgumentButNotNull2(classA2.methodThatMightReturnNull());
 
 
-     // No warning, since method argument is flagged as @Nullable
+        // No warning, since method argument is flagged as @Nullable
         methodThatTakesAStringArgumentButNotNull(classA2.methodThatAlwaysReturnsNull());
 
         // Warning expected

@@ -48,7 +48,5 @@ abstract public class PreorderDetector extends PreorderVisitor implements Detect
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }
-

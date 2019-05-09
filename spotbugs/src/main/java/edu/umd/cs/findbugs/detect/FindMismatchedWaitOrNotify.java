@@ -174,7 +174,5 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }
-

@@ -27,8 +27,7 @@ package edu.umd.cs.findbugs.anttask;
 public class DataFile {
     String name;
 
-    public DataFile() {
-    }
+    public DataFile() {}
 
     /**
      * @param name

@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3553542 {
 
-    @DesireNoWarning( "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
+    @DesireNoWarning("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
     public static void checkIfNullIsReturned(GoodBehavingClass goodBehavingClass) {
         String isNullReturned;
 
@@ -37,7 +37,7 @@ public class Bug3553542 {
         checkIfNullIsReturned(new GoodBehavingClass());
         // Assume this is called in the third party implementation using this
         // FalsePositive as library code.
-//        checkIfNullIsReturned(new BadBehavingClass());
+        //        checkIfNullIsReturned(new BadBehavingClass());
     }
 
 
@@ -46,26 +46,27 @@ public class Bug3553542 {
     Object getGlobalError() {
         return globalError;
     }
+
     void myMethod() {
-      // some code
+        // some code
 
-      if (Math.random() > 0.5)
-          globalError = "x";
+        if (Math.random() > 0.5)
+            globalError = "x";
 
 
-      // some code
+        // some code
     }
 
     @NoWarning("RCN")
     void myProg() {
-      globalError = null;
-      myMethod();
+        globalError = null;
+        myMethod();
 
-      // FindBugs considers this check resundant
-      if (globalError != null) {
-        // do something
+        // FindBugs considers this check resundant
+        if (globalError != null) {
+            // do something
 
-      }
+        }
     }
 
 }

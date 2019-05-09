@@ -32,7 +32,7 @@ public class InvalidCharComparisonNegativeCases {
             return true;
 
         int d;
-        if ( (d = r.read()) == -1)
+        if ((d = r.read()) == -1)
             return true;
 
 

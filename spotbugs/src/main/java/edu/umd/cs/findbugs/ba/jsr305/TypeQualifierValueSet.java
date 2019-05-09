@@ -49,7 +49,7 @@ public class TypeQualifierValueSet {
 
     private State state = State.VALID;
 
-    final boolean  isStrict;
+    final boolean isStrict;
 
     public TypeQualifierValueSet(TypeQualifierValue<?> typeQualifierValue) {
         this.valueMap = new HashMap<>(3);
@@ -117,12 +117,15 @@ public class TypeQualifierValueSet {
     public Set<? extends SourceSinkInfo> getWhere(ValueNumber vn) {
         FlowValue f = getValue(vn);
         switch (f) {
-        case ALWAYS:  return getSourceSinkInfoSet(whereAlways, vn);
-        case NEVER:  return getSourceSinkInfoSet(whereNever, vn);
+        case ALWAYS:
+            return getSourceSinkInfoSet(whereAlways, vn);
+        case NEVER:
+            return getSourceSinkInfoSet(whereNever, vn);
         }
         return Collections.emptySet();
 
     }
+
     public Set<? extends SourceSinkInfo> getWhereAlways(ValueNumber vn) {
         return getSourceSinkInfoSet(whereAlways, vn);
     }
@@ -140,6 +143,7 @@ public class TypeQualifierValueSet {
 
         return sourceSinkInfoSet;
     }
+
     private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
         Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
@@ -313,7 +317,7 @@ public class TypeQualifierValueSet {
 
         for (ValueNumber vn : interesting) {
             FlowValue value = getValue(vn);
-            if (value == FlowValue.TOP ||  /* !isStrict && */ value == FlowValue.UNKNOWN) {
+            if (value == FlowValue.TOP || /* !isStrict && */ value == FlowValue.UNKNOWN) {
                 continue;
             }
             if (buf.length() > 1) {
@@ -327,10 +331,11 @@ public class TypeQualifierValueSet {
         return buf.toString();
     }
 
-    public String valueNumberToString(ValueNumber vn ) {
+    public String valueNumberToString(ValueNumber vn) {
         return valueNumberToString(vn, getValue(vn));
     }
-    public String valueNumberToString(ValueNumber vn, FlowValue value ) {
+
+    public String valueNumberToString(ValueNumber vn, FlowValue value) {
         StringBuilder buf = new StringBuilder();
 
         buf.append(vn.getNumber());

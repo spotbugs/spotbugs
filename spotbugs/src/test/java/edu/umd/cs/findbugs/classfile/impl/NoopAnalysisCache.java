@@ -49,7 +49,7 @@ public class NoopAnalysisCache implements IAnalysisCache {
     @Override
     public <E> E getClassAnalysis(Class<E> analysisClass,
             @Nonnull ClassDescriptor classDescriptor)
-                throws CheckedAnalysisException {
+            throws CheckedAnalysisException {
         return null;
     }
 

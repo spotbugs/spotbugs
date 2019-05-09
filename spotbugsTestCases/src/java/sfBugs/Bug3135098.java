@@ -9,17 +9,24 @@ public class Bug3135098 {
     @NoWarning("SF_SWITCH_NO_DEFAULT")
     public int test1(MyEnum e) {
         switch (e) {
-            case A: return 1;
-            case B: return 2;
+        case A:
+            return 1;
+        case B:
+            return 2;
         }
         return 3;
     }
+
     @NoWarning("SF_SWITCH_NO_DEFAULT")
     public int test2(MyEnum e) {
         int result = 0;
         switch (e) {
-            case A: result = 1; break;
-            case B: result = 2; break;
+        case A:
+            result = 1;
+            break;
+        case B:
+            result = 2;
+            break;
         }
         return result;
     }
@@ -27,7 +34,8 @@ public class Bug3135098 {
     @DesireWarning("SF_SWITCH_NO_DEFAULT")
     public int test3(MyEnum e) {
         switch (e) {
-            case A: return 1;
+        case A:
+            return 1;
         }
         return 3;
     }
@@ -36,9 +44,10 @@ public class Bug3135098 {
     /** Has bytecode identical to the above */
     public int test3a(MyEnum e) {
         switch (e) {
-            case A: return 1;
-            default:
-                return 3;
+        case A:
+            return 1;
+        default:
+            return 3;
         }
 
     }
@@ -47,12 +56,15 @@ public class Bug3135098 {
     public int test4(MyEnum e) {
         int result = 0;
         switch (e) {
-            case A: result = 1; break;
+        case A:
+            result = 1;
+            break;
         }
         return result;
     }
 
 
-    private enum MyEnum { A, B}
+    private enum MyEnum {
+        A, B
+    }
 }
-

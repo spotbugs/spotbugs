@@ -43,8 +43,7 @@ public class Bug3561466 {
     }
 
     static class CalculateSwingTask<T> {
-        CalculateSwingTask(List<?> items, Call<List<?>, List<String>> m, EvaluationContextUtils e) {
-        }
+        CalculateSwingTask(List<?> items, Call<List<?>, List<String>> m, EvaluationContextUtils e) {}
     }
 
     enum EvaluationContextUtils {

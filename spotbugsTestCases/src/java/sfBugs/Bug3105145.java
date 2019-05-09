@@ -13,7 +13,7 @@ public class Bug3105145 {
     @NoWarning("SQL_BAD_RESULTSET_ACCESS")
     public static String triggerBug(ResultSet resultSet) throws SQLException {
 
-            return resultSet.getString(FIRST_COLUMN_INDEX);
+        return resultSet.getString(FIRST_COLUMN_INDEX);
     }
 
 }

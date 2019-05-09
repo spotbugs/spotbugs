@@ -32,8 +32,7 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
  */
 public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase implements Detector, NonReportingDetector {
 
-    public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
-    }
+    public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {}
 
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -45,6 +44,5 @@ public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationD
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

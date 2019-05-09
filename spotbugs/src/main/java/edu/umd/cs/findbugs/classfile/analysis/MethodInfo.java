@@ -70,8 +70,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         long variableHasName;
         long variableIsSynthetic;
 
-        final @SlashedClassName
-        String className;
+        final @SlashedClassName String className;
 
         final String methodName, methodSignature;
 
@@ -107,6 +106,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         public String toString() {
             return "builder for " + className + "." + methodName + methodSignature;
         }
+
         public Builder(@SlashedClassName String className, String methodName, String methodSignature, int accessFlags) {
             this.className = className;
             this.methodName = methodName;
@@ -117,6 +117,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         public void setAccessMethodForMethod(String owner, String name, String sig, boolean isStatic) {
             accessMethodForMethod = new MethodDescriptor(owner, name, sig, isStatic);
         }
+
         public void setAccessMethodForField(String owner, String name, String sig, boolean isStatic) {
             accessMethodForField = new FieldDescriptor(owner, name, sig, isStatic);
         }
@@ -178,7 +179,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         public void addParameterAnnotation(int parameter, String name, AnnotationValue value) {
             ClassDescriptor annotationClass = DescriptorFactory.createClassDescriptorFromSignature(name);
             Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.computeIfAbsent(parameter,
-                k -> new HashMap<>());
+                    k -> new HashMap<>());
             map.put(annotationClass, value);
         }
 
@@ -232,8 +233,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     final String methodSourceSignature;
 
-    final @CheckForNull
-    String[] exceptions;
+    final @CheckForNull String[] exceptions;
 
     Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
@@ -255,6 +255,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     static MethodInfoDatabase getDatabase() {
         return Global.getAnalysisCache().getDatabase(MethodInfoDatabase.class);
     }
+
     static IdentityHashMap<MethodInfo, Void> getUnconditionalthrowers() {
         return getDatabase().unconditionalThrowers;
     }
@@ -274,6 +275,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     static IdentityHashMap<MethodInfo, Void> getIdentitymethods() {
         return getDatabase().identityMethods;
     }
+
     static public IdentityHashMap<MethodInfo, Void> getInvokeDynamicMethods() {
         return getDatabase().invokeDynamicMethods;
     }
@@ -284,7 +286,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             boolean usesInvokeDynamic, int methodCallCount, @CheckForNull String[] exceptions,
             @CheckForNull MethodDescriptor accessMethodForMethod,
             @CheckForNull FieldDescriptor accessMethodForField,
-            Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations, long variableIsSynthetic) {
+            Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations,
+            long variableIsSynthetic) {
         super(className, methodName, methodSignature, (accessFlags & Const.ACC_STATIC) != 0);
         this.accessFlags = accessFlags;
         this.exceptions = exceptions;
@@ -300,7 +303,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         if (accessMethodForMethod != null) {
             getAccessmethodformethod().put(this, accessMethodForMethod);
         }
-        if (accessMethodForField!= null) {
+        if (accessMethodForField != null) {
             getAccessmethodforfield().put(this, accessMethodForField);
         }
         if (isIdentity) {
@@ -318,8 +321,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @CheckForNull
-    String[] getThrownExceptions() {
+    public @CheckForNull String[] getThrownExceptions() {
         return exceptions;
     }
 
@@ -400,14 +402,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @DottedClassName
-    String getClassName() {
+    public @DottedClassName String getClassName() {
         return getClassDescriptor().toDottedClassName();
     }
 
     @Override
-    public @DottedClassName
-    String getPackageName() {
+    public @DottedClassName String getPackageName() {
         return getClassDescriptor().getPackageName();
     }
 
@@ -508,7 +508,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null) {
-            return Collections.<ClassDescriptor> emptySet();
+            return Collections.<ClassDescriptor>emptySet();
         }
         return map.keySet();
     }
@@ -519,8 +519,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @Nullable
-    AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
+    public @Nullable AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null) {
             return null;
@@ -532,7 +531,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public Collection<AnnotationValue> getParameterAnnotations(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null) {
-            return Collections.<AnnotationValue> emptySet();
+            return Collections.<AnnotationValue>emptySet();
         }
         return map.values();
     }
@@ -550,7 +549,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     @Override
     public Collection<AnnotationValue> getAnnotations() {
 
-        Collection<AnnotationValue> result =  methodAnnotations.values();
+        Collection<AnnotationValue> result = methodAnnotations.values();
         if (result.isEmpty() && isBridge()) {
             XMethod to = bridgeTo();
             if (to != null) {
@@ -591,7 +590,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<>(
                 methodParameterAnnotations);
         Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.computeIfAbsent(param,
-            k -> new HashMap<>());
+                k -> new HashMap<>());
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
 
         methodParameterAnnotations = updatedAnnotations;
@@ -617,8 +616,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @CheckForNull
-    AnnotatedObject getContainingScope() {
+    public @CheckForNull AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
@@ -650,19 +648,19 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     public boolean hasBackBranch() {
         return hasBackBranch;
     }
+
     @Override
     public boolean isStub() {
         return isStub;
     }
 
     @Override
-    public @CheckForNull
-    MethodDescriptor getAccessMethodForMethod() {
+    public @CheckForNull MethodDescriptor getAccessMethodForMethod() {
         return getAccessmethodformethod().get(this);
     }
+
     @Override
-    public @CheckForNull
-    FieldDescriptor getAccessMethodForField() {
+    public @CheckForNull FieldDescriptor getAccessMethodForField() {
         return getAccessmethodforfield().get(this);
     }
 

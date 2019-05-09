@@ -47,8 +47,7 @@ public class RedundantNullCheck {
         }
     }
 
-    public @CheckForNull
-    Object f() {
+    public @CheckForNull Object f() {
         return null;
     }
 

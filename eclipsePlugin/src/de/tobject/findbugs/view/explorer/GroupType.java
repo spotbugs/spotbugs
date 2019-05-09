@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package de.tobject.findbugs.view.explorer;
+
 import static de.tobject.findbugs.marker.FindBugsMarker.BUG_TYPE;
 import static de.tobject.findbugs.marker.FindBugsMarker.DETECTOR_PLUGIN_ID;
 import static de.tobject.findbugs.marker.FindBugsMarker.PATTERN_TYPE;
@@ -181,7 +182,7 @@ public enum GroupType {
         @Override
         BugCategory getIdentifier(IMarker marker) {
             BugPattern bugPattern = MarkerUtil.findBugPatternForMarker(marker);
-            if(bugPattern == null){
+            if (bugPattern == null) {
                 BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
                 if (bug == null) {
                     return null;
@@ -326,12 +327,12 @@ public enum GroupType {
         if (element instanceof String) {
             GroupType[] values = values();
             for (GroupType type : values) {
-                if(type.toString().equals(element)) {
+                if (type.toString().equals(element)) {
                     return type;
                 }
             }
             // legacy name for compatibility if restoring from saved
-            if("Priority".equals(element)) {
+            if ("Priority".equals(element)) {
                 return GroupType.Confidence;
             }
         }

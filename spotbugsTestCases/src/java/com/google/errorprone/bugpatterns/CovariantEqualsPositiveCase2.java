@@ -20,13 +20,13 @@ package com.google.errorprone.bugpatterns;
  * @author Eddie Aftandilian(eaftan@google.com)
  */
 public class CovariantEqualsPositiveCase2 {
-  int i, j, k;
+    int i, j, k;
 
-  //BUG: Suggestion includes "Did you mean '@Override'"
-  public boolean equals(CovariantEqualsPositiveCase2 other) {
-    if (i == other.i && j == other.j && k == other.k) {
-      return true;
+    //BUG: Suggestion includes "Did you mean '@Override'"
+    public boolean equals(CovariantEqualsPositiveCase2 other) {
+        if (i == other.i && j == other.j && k == other.k) {
+            return true;
+        }
+        return false;
     }
-    return false;
-  }
 }

@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Bug1357 {
 
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
-     static void readContent(File f) throws IOException {
+    static void readContent(File f) throws IOException {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(f));

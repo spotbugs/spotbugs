@@ -8,8 +8,7 @@ import javax.swing.JComboBox;
 
 public class WideComboBox<E> extends JComboBox<E> {
 
-    public WideComboBox() {
-    }
+    public WideComboBox() {}
 
     public WideComboBox(final E items[]) {
         super(items);

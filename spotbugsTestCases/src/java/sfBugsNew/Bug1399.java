@@ -51,7 +51,7 @@ public class Bug1399 {
 
     @ExpectWarning("OS_OPEN_STREAM")
     void test6(File f, byte b) throws IOException {
-        DirectoryStream<Path> c = Files.newDirectoryStream(Paths.get(""), (Filter)null);
+        DirectoryStream<Path> c = Files.newDirectoryStream(Paths.get(""), (Filter) null);
         c.hashCode();
     }
 

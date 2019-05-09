@@ -24,6 +24,7 @@ public class Ideas_2011_07_22 {
             System.out.println("Good");
         return x.hashCode();
     }
+
     @DesireNoWarning("NP_NULL_ON_SOME_PATH")
     public int getHashCode(Object x) {
         Preconditions.checkArgument(x != null, "x is null");
@@ -44,6 +45,7 @@ public class Ideas_2011_07_22 {
             System.out.println("huh?");
         return x.hashCode();
     }
+
     @NoWarning("NP_NULL_ON_SOME_PATH")
     @ExpectWarning("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public int getHashCode4(Object x) {
@@ -52,6 +54,7 @@ public class Ideas_2011_07_22 {
             System.out.println("huh?");
         return x.hashCode();
     }
+
     @NoWarning("NP_NULL_ON_SOME_PATH")
     @ExpectWarning("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public int getHashCode5(Object x) {
@@ -72,7 +75,7 @@ public class Ideas_2011_07_22 {
     @ExpectWarning("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
     public int getHashCode7(@Nullable Object x) {
         Preconditions.checkNotNull(x, "x is null %d", 42);
-       return 42;
+        return 42;
     }
 
 }

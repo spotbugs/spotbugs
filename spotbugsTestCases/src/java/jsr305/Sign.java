@@ -5,8 +5,7 @@ import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;
 
-public @TypeQualifier
-@interface Sign {
+public @TypeQualifier @interface Sign {
     @Exhaustive
     NumericSign value();
 

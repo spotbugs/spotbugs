@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 /**
  * @author Bill Pugh (bill.pugh@gmail.com)
  */
-public class  IncompatibleEqualsNegativeCases {
+public class IncompatibleEqualsNegativeCases {
 
 
     @NoWarning("EC")
@@ -83,7 +83,7 @@ public class  IncompatibleEqualsNegativeCases {
     }
 
     @NoWarning("EC")
-    public boolean testCollection(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3,  Object o) {
+    public boolean testCollection(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3, Object o) {
         if (c.equals(s))
             return true;
         if (s.equals(c))
@@ -97,8 +97,9 @@ public class  IncompatibleEqualsNegativeCases {
 
         return false;
     }
+
     @NoWarning("EC")
-    public boolean testCollectionWithGuava(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3,  Object o) {
+    public boolean testCollectionWithGuava(Collection<String> c, HashSet<String> s, TreeSet<String> s2, Set<String> s3, Object o) {
         if (Objects.equal(c, s))
             return true;
         if (Objects.equal(s, c))
@@ -114,16 +115,19 @@ public class  IncompatibleEqualsNegativeCases {
     }
 
     public void assertFalse(boolean b) {
-        if (b) throw new AssertionError();
+        if (b)
+            throw new AssertionError();
     }
 
     public static class DifferentClassesButMightBeEqual {
         DifferentClassesButMightBeEqual(int value) {
             this.value = value;
         }
+
         DifferentClassesButMightBeEqual() {
             this(42);
         }
+
         int value;
 
         @Override

@@ -68,11 +68,12 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
     Set<String> initializedFields = new HashSet<>();
 
     XField possibleOverwrite;
+
     @Override
     public void sawOpcode(int seen) {
 
         if (DEBUG) {
-            System.out.printf("%5d %12s %s%n", getPC(), Const.getOpcodeName(seen),stack);
+            System.out.printf("%5d %12s %s%n", getPC(), Const.getOpcodeName(seen), stack);
         }
         if (seen == Const.PUTFIELD) {
             OpcodeStack.Item top = stack.getStackItem(0);
@@ -151,9 +152,9 @@ public class FindFieldSelfAssignment extends OpcodeStackDetector implements Stat
         case 7:
             if (isRegisterStore() && register == getRegisterOperand()) {
                 bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-                .addClassAndMethod(this)
-                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
-                .addSourceLine(this));
+                        .addClassAndMethod(this)
+                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC() - 1))
+                        .addSourceLine(this));
             }
             state = 0;
             break;

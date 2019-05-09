@@ -5,13 +5,13 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Feature320 {
     public int add(int a, int b) {
-        return a+b;
+        return a + b;
     }
 
     // side effect is here
     public int printAndAdd(int a, int b) {
-        System.out.println(a+"+"+b+"="+(a+b));
-        return a+b;
+        System.out.println(a + "+" + b + "=" + (a + b));
+        return a + b;
     }
 
     @ExpectWarning("RpC_REPEATED_CONDITIONAL_TEST")

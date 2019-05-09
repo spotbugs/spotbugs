@@ -51,8 +51,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
 
     private DirectlyRelevantTypeQualifiersDatabase qualifiers;
 
-    public NoteDirectlyRelevantTypeQualifiers(BugReporter bugReporter) {
-    }
+    public NoteDirectlyRelevantTypeQualifiers(BugReporter bugReporter) {}
 
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -133,6 +132,5 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

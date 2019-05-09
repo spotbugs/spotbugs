@@ -13,6 +13,5 @@ public class Bug3598946 {
         someMethod("hello world", 0);
     }
 
-    public void someMethod(String s, int i) {
-    }
+    public void someMethod(String s, int i) {}
 }

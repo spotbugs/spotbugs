@@ -8,16 +8,20 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR {
 
 
-    @Nonnull static Object a;
+    @Nonnull
+    static Object a;
 
     @ExpectWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    @Nonnull static Object b;
+    @Nonnull
+    static Object b;
 
     @ExpectWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    @Nonnull Object x;
+    @Nonnull
+    Object x;
 
     @ExpectWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    @Nonnull Object y;
+    @Nonnull
+    Object y;
 
     static {
         a = "a";

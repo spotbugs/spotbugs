@@ -49,7 +49,5 @@ abstract public class AnnotationDetector extends AnnotationVisitor implements De
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }
-

@@ -46,8 +46,7 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
     }
 
     @Override
-    public void visit(JavaClass obj) {
-    }
+    public void visit(JavaClass obj) {}
 
     @Override
     public void visit(Method obj) {
@@ -68,10 +67,10 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements State
             if (getPC() - sawPutEntry <= 7 && seen == Const.INVOKEVIRTUAL && "closeEntry".equals(getNameConstantOperand())
                     && getClassConstantOperand().equals(streamType)) {
                 bugReporter
-                .reportBug(new BugInstance(this,
-                        "java/util/zip/ZipOutputStream".equals(streamType) ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
-                                : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
-                                .addSourceLine(this));
+                        .reportBug(new BugInstance(this,
+                                "java/util/zip/ZipOutputStream".equals(streamType) ? "AM_CREATES_EMPTY_ZIP_FILE_ENTRY"
+                                        : "AM_CREATES_EMPTY_JAR_FILE_ENTRY", NORMAL_PRIORITY).addClassAndMethod(this)
+                                                .addSourceLine(this));
             }
 
         }

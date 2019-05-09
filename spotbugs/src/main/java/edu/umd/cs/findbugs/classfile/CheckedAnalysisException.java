@@ -29,8 +29,7 @@ public class CheckedAnalysisException extends Exception {
     /**
      * Constructor.
      */
-    public CheckedAnalysisException() {
-    }
+    public CheckedAnalysisException() {}
 
     public CheckedAnalysisException(CheckedAnalysisException e) {
         super(e.getMessage(), e.getCause());

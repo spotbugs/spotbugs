@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.annotations.DesireWarning;
 public class Bug1246 {
 
     public static Reader getReader() throws FileNotFoundException {
-        return new  FileReader("whatever");
+        return new FileReader("whatever");
     }
 
     @DesireWarning("NP_DEREFERENCE_OF_READLINE_VALUE")

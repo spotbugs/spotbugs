@@ -15,23 +15,31 @@ public class Ideas_2011_01_17 {
     public @interface PK {
     }
 
-    @PK int key = 17;
+    @PK
+    int key = 17;
+
     @NoWarning("TQ")
-    @PK int getKeyAsInt() {
+    @PK
+    int getKeyAsInt() {
         return key;
     }
+
     @NoWarning("TQ")
-    @PK Integer getKeyAsInteger() {
+    @PK
+    Integer getKeyAsInteger() {
         return key;
     }
+
     @NoWarning("TQ")
     void setKeyAsInt(@PK int key) {
         this.key = key;
     }
+
     @NoWarning("TQ")
     void setKeyAsInteger(@PK Integer key) {
         this.key = key;
     }
+
     @NoWarning("TQ")
     static void test(Ideas_2011_01_17 x, Ideas_2011_01_17 y) {
         x.setKeyAsInt(y.getKeyAsInt());

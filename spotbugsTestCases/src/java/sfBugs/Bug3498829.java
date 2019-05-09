@@ -4,13 +4,15 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3498829 {
 
-    static enum Color {RED, YELLOW, GREEN };
+    static enum Color {
+        RED, YELLOW, GREEN
+    };
 
     @NoWarning("SF_SWITCH_NO_DEFAULT")
-    public static  int getValue(Color c) {
+    public static int getValue(Color c) {
 
         int result = 0;
-        switch(c) {
+        switch (c) {
         case RED:
             result = 1;
             break;

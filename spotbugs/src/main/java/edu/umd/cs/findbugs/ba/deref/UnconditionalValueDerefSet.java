@@ -335,7 +335,7 @@ public class UnconditionalValueDerefSet {
     public Set<Location> getUnconditionalDerefLocationSet(ValueNumber vn) {
         Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
         if (derefLocationSet == null) {
-            derefLocationSet = Collections.<Location> emptySet();
+            derefLocationSet = Collections.<Location>emptySet();
         }
         return derefLocationSet;
     }
@@ -393,7 +393,7 @@ public class UnconditionalValueDerefSet {
     private Set<Location> getDerefLocationSet(int vn) {
         for (Map.Entry<ValueNumber, Set<Location>> entry : derefLocationSetMap.entrySet()) {
             if (entry.getKey().getNumber() == vn) {
-                return Collections.<Location> unmodifiableSet(entry.getValue());
+                return Collections.<Location>unmodifiableSet(entry.getValue());
             }
         }
         return new HashSet<>();

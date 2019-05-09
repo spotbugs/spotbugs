@@ -113,23 +113,25 @@ public class IntAnnotation implements BugAnnotation {
         String base10 = Integer.toString(value);
 
         if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length()) {
-            return "0x"+base16;
+            return "0x" + base16;
         }
         return base10;
     }
+
     public static String getShortInteger(long value) {
         String base16 = Long.toHexString(value);
         int unique = uniqueDigits(base16);
         String base10 = Long.toString(value);
 
         if (unique <= 3 && base16.length() - unique >= 3 && base10.length() > base16.length()) {
-            return "0x"+base16;
+            return "0x" + base16;
         }
         return base10;
     }
+
     private static int uniqueDigits(String value) {
         Set<Character> used = new HashSet<>();
-        for(int i = 0; i < value.length(); i++) {
+        for (int i = 0; i < value.length(); i++) {
             used.add(value.charAt(i));
         }
         return used.size();
@@ -209,4 +211,3 @@ public class IntAnnotation implements BugAnnotation {
         return toString();
     }
 }
-

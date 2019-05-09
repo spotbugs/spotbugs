@@ -47,13 +47,10 @@ public class Bug3520549 {
         }
     }
 
-    void one(Thing.One thing) {
-    }
+    void one(Thing.One thing) {}
 
-    void two(Thing.Two thing) {
-    }
+    void two(Thing.Two thing) {}
 
-    void three(Thing.Three thing) {
-    }
+    void three(Thing.Three thing) {}
 
 }

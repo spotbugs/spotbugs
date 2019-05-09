@@ -76,7 +76,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
 
                 }
                 if (u != null) {
-                    Reader rawIn =  UserTextFile.bufferedReader(u.openStream());
+                    Reader rawIn = UserTextFile.bufferedReader(u.openStream());
                     processPackageList(rawIn);
                 }
 

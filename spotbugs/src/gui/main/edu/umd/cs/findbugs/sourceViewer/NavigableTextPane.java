@@ -40,8 +40,7 @@ import edu.umd.cs.findbugs.gui2.MainFrame;
  */
 public class NavigableTextPane extends JTextPane {
 
-    public NavigableTextPane() {
-    }
+    public NavigableTextPane() {}
 
     public NavigableTextPane(StyledDocument doc) {
         super(doc);

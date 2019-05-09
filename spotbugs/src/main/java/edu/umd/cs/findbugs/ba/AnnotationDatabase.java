@@ -388,7 +388,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
             return;
         }
         XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
-        if (!m.getClassName().equals(cName)){
+        if (!m.getClassName().equals(cName)) {
             return;
         }
         /*

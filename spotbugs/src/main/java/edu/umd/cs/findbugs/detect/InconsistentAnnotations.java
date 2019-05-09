@@ -85,6 +85,5 @@ public class InconsistentAnnotations implements Detector, UseAnnotationDatabase 
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

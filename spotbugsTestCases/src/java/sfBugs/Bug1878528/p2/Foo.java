@@ -9,7 +9,7 @@ public class Foo {
         s.toUpperCase();
         System.out.println(s);
 
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             s += "Hello";
         }
         s.toLowerCase();

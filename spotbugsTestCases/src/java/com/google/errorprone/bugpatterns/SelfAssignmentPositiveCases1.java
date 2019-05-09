@@ -22,36 +22,36 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class SelfAssignmentPositiveCases1 {
-  // TODO(eaftan): what happens with a static field that has the same name
-  // as a local field?
+    // TODO(eaftan): what happens with a static field that has the same name
+    // as a local field?
 
-  private int a;
+    private int a;
 
-  public void test1(int b) {
-    //BUG: Suggestion includes "this.a = b"
-    this.a = a;
-  }
-
-  public void test2(int b) {
-    //BUG: Suggestion includes "remove this line"
-    a = this.a;
-  }
-
-  public void test3() {
-    int a = 0;
-    //BUG: Suggestion includes "this.a = a"
-    a = a;
-  }
-
-  public void test4() {
-    //BUG: Suggestion includes "remove this line"
-    this.a = this.a;
-  }
-
-  public void test5() {
-    //BUG: Suggestion includes "this.a = a"
-    if ((a = a) != 10) {
-      System.out.println("foo");
+    public void test1(int b) {
+        //BUG: Suggestion includes "this.a = b"
+        this.a = a;
     }
-  }
+
+    public void test2(int b) {
+        //BUG: Suggestion includes "remove this line"
+        a = this.a;
+    }
+
+    public void test3() {
+        int a = 0;
+        //BUG: Suggestion includes "this.a = a"
+        a = a;
+    }
+
+    public void test4() {
+        //BUG: Suggestion includes "remove this line"
+        this.a = this.a;
+    }
+
+    public void test5() {
+        //BUG: Suggestion includes "this.a = a"
+        if ((a = a) != 10) {
+            System.out.println("foo");
+        }
+    }
 }

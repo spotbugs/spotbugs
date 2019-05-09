@@ -22,36 +22,35 @@ public class Bug3399101 {
     @CheckForNull
     @TypeQualifierDefault(ElementType.PARAMETER)
     @Retention(RetentionPolicy.RUNTIME)
-    public
-    @interface ParametersAreCheckForNullByDefault {
+    public @interface ParametersAreCheckForNullByDefault {
     }
 
-        @Nonnull
-        public Object field;
+    @Nonnull
+    public Object field;
 
-        @ExpectWarning("NP")
-        public Bug3399101(Object param) {
-                field = param;
-        }
+    @ExpectWarning("NP")
+    public Bug3399101(Object param) {
+        field = param;
+    }
 
-        @ExpectWarning("NP")
-        public void setField(Object param) {
-                field = param;
-        }
+    @ExpectWarning("NP")
+    public void setField(Object param) {
+        field = param;
+    }
 
-        @ExpectWarning("NP")
-        public void setField2(@CheckForNull Object param) {
-                field = param;
-        }
+    @ExpectWarning("NP")
+    public void setField2(@CheckForNull Object param) {
+        field = param;
+    }
 
-        @ExpectWarning("NP")
-        @Nonnull
-        public static Object getParam(Object param) {
-                return param;
-        }
+    @ExpectWarning("NP")
+    @Nonnull
+    public static Object getParam(Object param) {
+        return param;
+    }
 
-        @ExpectWarning("NP")
-        public int getHash(Object param) {
-                return param.hashCode();
-        }
+    @ExpectWarning("NP")
+    public int getHash(Object param) {
+        return param.hashCode();
+    }
 }

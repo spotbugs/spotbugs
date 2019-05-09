@@ -133,4 +133,3 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
         return (reference == null ? "" : reference.getNumber() + ".") + field;
     }
 }
-

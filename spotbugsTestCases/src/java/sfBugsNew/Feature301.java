@@ -4,9 +4,12 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Feature301 {
-    static abstract class Parent {}
-    static class Child extends Parent {}
-    static class GrantChild extends Child {}
+    static abstract class Parent {
+    }
+    static class Child extends Parent {
+    }
+    static class GrantChild extends Child {
+    }
 
     protected Number[] field = null;
     protected Number[] field2 = null;

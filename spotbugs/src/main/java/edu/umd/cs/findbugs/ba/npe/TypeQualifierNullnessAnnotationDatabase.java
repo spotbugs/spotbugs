@@ -97,7 +97,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
                 if (result == null) {
                     System.out.println("   ===> not found");
                 } else {
-                    System.out.println("   ===> " + tqa + "/" + result.toString() );
+                    System.out.println("   ===> " + tqa + "/" + result.toString());
                 }
             }
             return result;
@@ -110,8 +110,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
-            TypeQualifierAnnotation tqa
-            = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m,
+            TypeQualifierAnnotation tqa = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m,
                     parameter, nonnullTypeQualifierValue);
             NullnessAnnotation result = toNullnessAnnotation(tqa);
             return result;
@@ -119,18 +118,19 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
             profiler.end(this.getClass());
         }
     }
+
     public @CheckForNull NullnessAnnotation getInheritedAnnotation(XMethod m) {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
-            TypeQualifierAnnotation tqa
-            = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m, nonnullTypeQualifierValue);
+            TypeQualifierAnnotation tqa = TypeQualifierApplications.getInheritedTypeQualifierAnnotation(m, nonnullTypeQualifierValue);
             NullnessAnnotation result = toNullnessAnnotation(tqa);
             return result;
         } finally {
             profiler.end(this.getClass());
         }
     }
+
     public @CheckForNull NullnessAnnotation getDirectAnnotation(Object o) {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
@@ -156,7 +156,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
                 if (result == null) {
                     System.out.println("   ===> not found");
                 } else {
-                    System.out.println("   ===> " + tqa + "/" + result.toString() );
+                    System.out.println("   ===> " + tqa + "/" + result.toString());
                 }
             }
             return result;
@@ -321,8 +321,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         ((FieldInfo) xfield).addAnnotation(annotationValue);
     }
 
-    public @CheckForNull
-    XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
+    public @CheckForNull XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
         ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(cName);
         ClassInfo xclass;
 

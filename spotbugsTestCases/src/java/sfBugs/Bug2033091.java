@@ -37,6 +37,5 @@ public class Bug2033091 {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-    }
+    public static void main(String[] args) throws IOException {}
 }

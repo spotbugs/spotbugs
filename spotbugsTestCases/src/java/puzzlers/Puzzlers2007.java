@@ -27,7 +27,7 @@ public class Puzzlers2007 {
     }
 
     private static final String[] URL_NAMES = { "http://javapuzzlers.com", "http://apache2-snort.skybar.dreamhost.com",
-            "http://www.google.com", "http://javapuzzlers.com", "http://findbugs.sourceforge.net", "http://www.cs.umd.edu" };
+        "http://www.google.com", "http://javapuzzlers.com", "http://findbugs.sourceforge.net", "http://www.cs.umd.edu" };
 
     @ExpectWarning("Dm")
     public static void urlSet() throws MalformedURLException {
@@ -61,8 +61,7 @@ public class Puzzlers2007 {
         @ExpectWarning("SI")
         public static final Elvis ELVIS = new Elvis();
 
-        private Elvis() {
-        }
+        private Elvis() {}
 
         private static final Boolean LIVING = true;
 

@@ -22,15 +22,15 @@ package com.google.errorprone.bugpatterns;
 @SuppressWarnings("unchecked")
 public class FallthroughSuppressionNegativeCases extends FallthroughSuppressionToBeExtended {
 
-  @SuppressWarnings("unchecked")
-  public void suppressedMethod1a() {}
+    @SuppressWarnings("unchecked")
+    public void suppressedMethod1a() {}
 
-  @SuppressWarnings({"unchecked"})
-  public void suppressedMethod1b() {}
+    @SuppressWarnings({ "unchecked" })
+    public void suppressedMethod1b() {}
 
-  @SuppressWarnings({"varargs", "unchecked"})
-  public void suppressedMethod2() {}
+    @SuppressWarnings({ "varargs", "unchecked" })
+    public void suppressedMethod2() {}
 
-  @Override
-  public void overriddenMethod() {}
+    @Override
+    public void overriddenMethod() {}
 }

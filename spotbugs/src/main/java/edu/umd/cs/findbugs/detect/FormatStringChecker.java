@@ -109,13 +109,13 @@ public class FormatStringChecker extends OpcodeStackDetector {
                     && ("java/util/Formatter".equals(cl) && "format".equals(nm) || "java/lang/String".equals(cl)
                             && "format".equals(nm) || "java/io/PrintStream".equals(cl) && "format".equals(nm)
                             || "java/io/PrintStream".equals(cl) && "printf".equals(nm) || cl.endsWith("Writer")
-                            && "format".equals(nm) || cl.endsWith("Writer") && "printf".equals(nm)) || cl.endsWith("Logger")
-                            && nm.endsWith("fmt")) {
+                                    && "format".equals(nm) || cl.endsWith("Writer") && "printf".equals(nm)) || cl.endsWith("Logger")
+                                            && nm.endsWith("fmt")) {
 
                 if (formatString.indexOf('\n') >= 0) {
                     bugReporter.reportBug(new BugInstance(this, "VA_FORMAT_STRING_USES_NEWLINE", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
-                    .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
+                            .addClassAndMethod(this).addCalledMethod(this).addString(formatString)
+                            .describe(StringAnnotation.FORMAT_STRING_ROLE).addSourceLine(this));
                 }
             }
 

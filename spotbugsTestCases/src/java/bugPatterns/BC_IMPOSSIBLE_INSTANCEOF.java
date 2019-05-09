@@ -8,8 +8,7 @@ public class BC_IMPOSSIBLE_INSTANCEOF {
     // seen in edu.umd.cs.findbugs.ba.IncompatibleTypes
 
     @ExpectWarning("BC_IMPOSSIBLE_INSTANCEOF")
-    static public @Nonnull
-    boolean getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+    static public @Nonnull boolean getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType))
             return true;
 

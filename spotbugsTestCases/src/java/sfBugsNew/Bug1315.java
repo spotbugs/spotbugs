@@ -8,8 +8,8 @@ public class Bug1315 {
     @ExpectWarning("INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE")
     public String getLastListElement(List<String> list) {
         int s = list.size();
-        if(s >= 0) {
-            return list.get(s-1);
+        if (s >= 0) {
+            return list.get(s - 1);
         }
         return null;
     }

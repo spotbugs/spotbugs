@@ -4,8 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class SinksRequiringNonNull {
 
-    void f(@NonNull Object x) {
-    }
+    void f(@NonNull Object x) {}
 
     int g(Object x) {
         return x.hashCode();

@@ -20,5 +20,5 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public class FallthroughSuppressionToBeExtended {
-  public void overriddenMethod() {}
+    public void overriddenMethod() {}
 }

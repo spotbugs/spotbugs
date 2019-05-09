@@ -36,7 +36,7 @@ public class Bug3479234 {
     }
 
     @ExpectWarning("BC_UNCONFIRMED_CAST")
-    public  String getName3(Parent o1, Parent o2) {
+    public String getName3(Parent o1, Parent o2) {
 
         _p = o1;
         String s;
@@ -48,8 +48,9 @@ public class Bug3479234 {
 
         return s;
     }
+
     @ExpectWarning("BC_UNCONFIRMED_CAST")
-    public  String getName4(Parent o1, Parent o2) {
+    public String getName4(Parent o1, Parent o2) {
 
         _p = o1;
         String s;
@@ -61,6 +62,7 @@ public class Bug3479234 {
 
         return s;
     }
+
     @ExpectWarning("BC_UNCONFIRMED_CAST")
     public static String getName2(Parent o1, Parent o2) {
         String s;
@@ -72,6 +74,7 @@ public class Bug3479234 {
 
         return s;
     }
+
     @NoWarning("BC_UNCONFIRMED_CAST")
     public String getName() {
 
@@ -111,14 +114,14 @@ public class Bug3479234 {
     static class Original {
         private Parent _p;
         String _s;
+
         @NoWarning("BC_UNCONFIRMED_CAST")
-        public Original(Parent o)
-        {
+        public Original(Parent o) {
             _p = o;
 
-            if(_p instanceof Child)
-                _s = (String)((Child)_p)
-                .getValue();
+            if (_p instanceof Child)
+                _s = (String) ((Child) _p)
+                        .getValue();
             else
                 _s = "<anonymous>";
         }

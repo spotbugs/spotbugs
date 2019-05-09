@@ -10,12 +10,13 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Ideas_2011_05_18 implements Comparable<Ideas_2011_05_18> {
 
 
-     public Ideas_2011_05_18(int x) {
+    public Ideas_2011_05_18(int x) {
         super();
         this.x = x;
     }
 
     int x;
+
     @Override
     public int compareTo(Ideas_2011_05_18 that) {
         if (this.x < that.x)
@@ -27,10 +28,10 @@ public class Ideas_2011_05_18 implements Comparable<Ideas_2011_05_18> {
     }
 
     @Override
-	public boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (!(o instanceof Ideas_2011_05_18))
             return false;
-        return this.x == ((Ideas_2011_05_18)o).x;
+        return this.x == ((Ideas_2011_05_18) o).x;
     }
 
     @NoWarning("HE_USE_OF_UNHASHABLE_CLASS")
@@ -40,9 +41,9 @@ public class Ideas_2011_05_18 implements Comparable<Ideas_2011_05_18> {
         Set<Ideas_2011_05_18> s = new TreeSet<Ideas_2011_05_18>();
         s.add(five);
         s.add(six);
-        Map<Ideas_2011_05_18,Integer> m = new TreeMap<Ideas_2011_05_18,Integer>();
+        Map<Ideas_2011_05_18, Integer> m = new TreeMap<Ideas_2011_05_18, Integer>();
         m.put(five, 5);
-        m.put(six,6);
+        m.put(six, 6);
 
     }
 

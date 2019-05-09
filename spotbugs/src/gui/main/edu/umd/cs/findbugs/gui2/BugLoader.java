@@ -88,7 +88,7 @@ public class BugLoader {
      * @throws IOException
      */
     public static BugCollection doAnalysis(@Nonnull Project p, FindBugsProgress progressCallback) throws IOException,
-    InterruptedException {
+            InterruptedException {
         StringWriter stringWriter = new StringWriter();
         BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
         pcb.setPriorityThreshold(Priorities.LOW_PRIORITY);
@@ -136,8 +136,7 @@ public class BugLoader {
         return engine;
     }
 
-    public static @CheckForNull
-    SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File source) {
+    public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File source) {
         if (!source.isFile() || !source.canRead()) {
             JOptionPane.showMessageDialog(mainFrame, "Unable to read " + source);
             return null;
@@ -156,8 +155,7 @@ public class BugLoader {
         return col;
     }
 
-    public static @CheckForNull
-    SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
+    public static @CheckForNull SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url) {
 
         SortedBugCollection col = new SortedBugCollection(project);
         try {
@@ -194,7 +192,7 @@ public class BugLoader {
     }
 
     static void addDeadBugMatcher(BugCollection bugCollection) {
-        if (bugCollection == null  || !bugCollection.hasDeadBugs()) {
+        if (bugCollection == null || !bugCollection.hasDeadBugs()) {
             return;
         }
 
@@ -202,8 +200,7 @@ public class BugLoader {
         suppressionMatcher.softAdd(LastVersionMatcher.DEAD_BUG_MATCHER);
     }
 
-    public static @CheckForNull
-    Project loadProject(MainFrame mainFrame, File f) {
+    public static @CheckForNull Project loadProject(MainFrame mainFrame, File f) {
         try {
             Project project = Project.readXML(f);
             project.setGuiCallback(mainFrame.getGuiCallback());
@@ -277,8 +274,7 @@ public class BugLoader {
      * @param p
      * @return the bugs from the reanalysis, or null if cancelled
      */
-    public static @CheckForNull
-    BugCollection doAnalysis(@Nonnull Project p) {
+    public static @CheckForNull BugCollection doAnalysis(@Nonnull Project p) {
         requireNonNull(p, "null project");
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
@@ -300,8 +296,7 @@ public class BugLoader {
      * @param p
      * @return the bugs from the reanalysis, or null if canceled
      */
-    public static @CheckForNull
-    BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
+    public static @CheckForNull BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
         requireNonNull(p, "null project");
 
         BugCollection current = MainFrame.getInstance().getBugCollection();
@@ -316,9 +311,9 @@ public class BugLoader {
             return null;
         }
         if (current == null) {
-            current =  ac.getBugCollection();
+            current = ac.getBugCollection();
         } else {
-            current =  update.mergeCollections(current, ac.getBugCollection(), true, false);
+            current = update.mergeCollections(current, ac.getBugCollection(), true, false);
             if (current.hasDeadBugs()) {
                 addDeadBugMatcher(current);
             }

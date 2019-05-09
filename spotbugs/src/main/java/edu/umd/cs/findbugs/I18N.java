@@ -50,7 +50,7 @@ public class I18N {
         super();
     }
 
-    private static  I18N theInstance = new I18N();
+    private static I18N theInstance = new I18N();
 
     /**
      * Get the single object instance.
@@ -69,8 +69,7 @@ public class I18N {
      *
      */
     @Deprecated
-    public @Nonnull
-    String getMessage(String key) {
+    public @Nonnull String getMessage(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
@@ -86,17 +85,15 @@ public class I18N {
      * @param key
      *            which short message to retrieve
      */
-    public @Nonnull
-    String getShortMessage(String key) {
-        BugPattern bugPattern =  DetectorFactoryCollection.instance().lookupBugPattern(key);
+    public @Nonnull String getShortMessage(String key) {
+        BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
         }
         return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
     }
 
-    public @Nonnull
-    String getShortMessageWithoutCode(String key) {
+    public @Nonnull String getShortMessageWithoutCode(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
@@ -110,8 +107,7 @@ public class I18N {
      * @param key
      *            which HTML details for retrieve
      */
-    public @Nonnull
-    String getDetailHTML(String key) {
+    public @Nonnull String getDetailHTML(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
@@ -153,8 +149,7 @@ public class I18N {
      *            the short bug type code
      * @return the description of that short bug type code means
      */
-    public @Nonnull
-    String getBugTypeDescription(String shortBugType) {
+    public @Nonnull String getBugTypeDescription(String shortBugType) {
         BugCode bugCode = DetectorFactoryCollection.instance().lookupBugCode(shortBugType);
         if (bugCode == null) {
             return L10N.getLocalString("err.missing_code", "Error: missing bug code for key") + " " + shortBugType;
@@ -175,4 +170,3 @@ public class I18N {
         return (bc != null ? bc.getShortDescription() : category);
     }
 }
-

@@ -85,8 +85,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             addSwitch("-exitcode", "set exit code of process");
         }
 
-        public @Nonnull
-        Project getProject() {
+        public @Nonnull Project getProject() {
             return project;
         }
 
@@ -123,7 +122,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     File file = new File(tok.nextToken());
                     Boolean enabled = Boolean.valueOf(file.isFile());
                     customPlugins.put(file.getAbsolutePath(), enabled);
-                    if(enabled.booleanValue()) {
+                    if (enabled.booleanValue()) {
                         try {
                             Plugin.loadCustomPlugin(file, getProject());
                         } catch (PluginException e) {
@@ -200,7 +199,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
                     I18N.instance().getBugCategoryDescription(e.getKey()));
         }
 
-        if(commandLine.setExitCode){
+        if (commandLine.setExitCode) {
             int exitCode = 0;
             System.err.println("Calculating exit code...");
             if (storedException != null) {
@@ -214,10 +213,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
             }
             System.err.println("Exit code set to: " + exitCode);
             System.exit(exitCode);
-        } else
-            if (storedException != null) {
-                throw storedException;
-            }
+        } else if (storedException != null) {
+            throw storedException;
+        }
 
     }
 
@@ -245,8 +243,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
     }
 
     @Override
-    public @CheckForNull
-    BugCollection getBugCollection() {
+    public @CheckForNull BugCollection getBugCollection() {
         return null;
     }
 }

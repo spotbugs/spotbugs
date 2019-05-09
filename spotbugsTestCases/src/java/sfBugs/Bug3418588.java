@@ -93,7 +93,7 @@ public class Bug3418588 {
         } catch (SQLException e) {
             throw new Exception(e);
         } finally {
-             try {
+            try {
                 if (null != stmt)
                     stmt.close();
             } catch (Throwable e) {/* do nothing */

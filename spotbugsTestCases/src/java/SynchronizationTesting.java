@@ -6,7 +6,7 @@ public class SynchronizationTesting {
     /**
      * @param args
      */
-    @ExpectWarning(value = "ESync_EMPTY_SYNC", confidence=Confidence.MEDIUM)
+    @ExpectWarning(value = "ESync_EMPTY_SYNC", confidence = Confidence.MEDIUM)
     public static void main(String[] args) {
         Object o = new Object();
         synchronized (o) {

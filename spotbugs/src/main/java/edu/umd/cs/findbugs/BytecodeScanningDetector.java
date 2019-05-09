@@ -59,7 +59,5 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }
-

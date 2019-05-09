@@ -293,8 +293,7 @@ public class SourceFinder implements AutoCloseable {
 
         final CountDownLatch ready = new CountDownLatch(1);
 
-        public BlockingSourceRepository() {
-        }
+        public BlockingSourceRepository() {}
 
         public boolean isReady() {
             return ready.getCount() == 0;
@@ -534,7 +533,7 @@ public class SourceFinder implements AutoCloseable {
         return canonicalName;
     }
 
-    public static String getOrGuessSourceFile(SourceLineAnnotation source)  {
+    public static String getOrGuessSourceFile(SourceLineAnnotation source) {
         if (source.isSourceFileKnown()) {
             return source.getSourceFile();
         }

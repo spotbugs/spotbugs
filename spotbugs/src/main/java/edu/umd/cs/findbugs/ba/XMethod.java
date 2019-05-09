@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
  * @author David Hovemeyer
  * @author Bill Pugh
  */
-public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
+public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod {
     public boolean isNative();
 
     public boolean isAbstract();
@@ -87,22 +87,17 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      * method it bridges to, which is a method with an identical name but possibly co-variant arguments and
      * return values.
      */
-    public @CheckForNull
-    XMethod bridgeTo();
+    public @CheckForNull XMethod bridgeTo();
 
-    public @CheckForNull
-    XMethod bridgeFrom();
+    public @CheckForNull XMethod bridgeFrom();
 
-    public @CheckForNull
-    MethodDescriptor getAccessMethodForMethod();
+    public @CheckForNull MethodDescriptor getAccessMethodForMethod();
 
 
-    public @CheckForNull
-    FieldDescriptor getAccessMethodForField();
+    public @CheckForNull FieldDescriptor getAccessMethodForField();
 
 
-    public
-    XMethod resolveAccessMethodForMethod();
+    public XMethod resolveAccessMethodForMethod();
 
 
     /**
@@ -148,8 +143,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
      * @return AnnotationValue annotating the parameter, or null if parameter is
      *         not annotated with this kind of annotation
      */
-    public @CheckForNull
-    AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
+    public @CheckForNull AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
 
     /**
      * Get collection of all AnnotationValues applied directly to given
@@ -163,6 +157,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
     public Collection<AnnotationValue> getParameterAnnotations(int param);
 
     public boolean hasParameterAnnotations();
+
     /**
      * Get ClassDescriptors (annotation classes) of annotations applied directly
      * to this method.
@@ -203,6 +198,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod{
 
     /** Is the variable synthetic? */
     public boolean isVariableSynthetic(int param);
+
     /**
      * Destructively add an annotation. We do this for "built-in" annotations
      * that might not be directly evident in the code. It's not a great idea in

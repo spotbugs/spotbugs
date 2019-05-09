@@ -45,7 +45,7 @@ public class Bug1282 {
     @NoWarning("ISC_INSTANTIATE_STATIC_CLASS")
     public void test3() {
         final Property3 p = new Property3();
-       // compiler generates: static synthetic access$0(Bug1282$Property3, String) : void
+        // compiler generates: static synthetic access$0(Bug1282$Property3, String) : void
         p.name = "test";
 
         final PrintStream out = System.out;

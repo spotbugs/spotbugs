@@ -165,7 +165,5 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }
-

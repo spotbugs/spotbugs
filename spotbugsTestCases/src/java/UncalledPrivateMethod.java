@@ -19,11 +19,9 @@ public class UncalledPrivateMethod {
     }
 
     @ExpectWarning("UPM")
-    private void foobar(int i) {
-    }
+    private void foobar(int i) {}
 
-    private void foobar(double d) {
-    }
+    private void foobar(double d) {}
 
     public void f(double d) {
         foobar(d);

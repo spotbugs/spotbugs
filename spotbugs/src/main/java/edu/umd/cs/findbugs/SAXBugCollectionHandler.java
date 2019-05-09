@@ -390,7 +390,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private boolean isCompoundElementTag(String qName) {
-        return outerElementTags .contains(qName);
+        return outerElementTags.contains(qName);
     }
 
     private boolean isTopLevelFilter(String qName) {
@@ -497,7 +497,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     addMatcher(new ClassMatcher(classMatch));
                 }
             }
-        } else if("Not".equals(qName)) {
+        } else if ("Not".equals(qName)) {
             NotMatcher matcher = new NotMatcher();
             pushCompoundMatcherAsChild(matcher);
         } else if ("Source".equals(qName)) {

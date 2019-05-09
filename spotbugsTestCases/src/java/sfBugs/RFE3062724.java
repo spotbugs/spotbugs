@@ -15,12 +15,12 @@ public class RFE3062724 {
     }
 
     static class B extends A {
-        @ExpectWarning(value="SE_BAD_FIELD", confidence=Confidence.HIGH)
+        @ExpectWarning(value = "SE_BAD_FIELD", confidence = Confidence.HIGH)
         RFE3062724 notSerializable;
     }
 
     static class C extends A {
-        @ExpectWarning(value="SE_BAD_FIELD", confidence=Confidence.HIGH)
+        @ExpectWarning(value = "SE_BAD_FIELD", confidence = Confidence.HIGH)
         RFE3062724 notSerializable;
     }
 

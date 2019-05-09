@@ -69,9 +69,11 @@ public class TypeQualifierResolver {
 
     static final ClassDescriptor eclipseNonNull = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull");
 
-    static final ClassDescriptor checkerFrameworkNullable = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/Nullable");
+    static final ClassDescriptor checkerFrameworkNullable = DescriptorFactory.createClassDescriptor(
+            "org/checkerframework/checker/nullness/qual/Nullable");
 
-    static final ClassDescriptor checkerFrameworkNullableDecl = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl");
+    static final ClassDescriptor checkerFrameworkNullableDecl = DescriptorFactory.createClassDescriptor(
+            "org/checkerframework/checker/nullness/compatqual/NullableDecl");
 
     // javax.annotations.ParametersAreNonnullByDefault ?
     static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");

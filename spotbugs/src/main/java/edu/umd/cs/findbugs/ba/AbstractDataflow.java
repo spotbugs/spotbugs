@@ -30,7 +30,7 @@ package edu.umd.cs.findbugs.ba;
  * @author David Hovemeyer
  */
 public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> extends
-Dataflow<Fact, AnalysisType> {
+        Dataflow<Fact, AnalysisType> {
 
     /**
      * Constructor.

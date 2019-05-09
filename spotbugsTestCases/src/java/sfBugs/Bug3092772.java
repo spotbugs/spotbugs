@@ -14,11 +14,9 @@ public class Bug3092772 {
         PrintWriter out = new PrintWriter(o, true);
         try {
             System.out.println("hi");
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
-        }
-        finally {
+        } finally {
             if (o != System.out) {
                 out.close();
             }

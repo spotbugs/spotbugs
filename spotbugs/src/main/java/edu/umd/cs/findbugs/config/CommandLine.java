@@ -169,7 +169,7 @@ public abstract class CommandLine {
      */
 
     public String[] expandOptionFiles(String[] argv, boolean ignoreComments, boolean ignoreBlankLines) throws IOException,
-    HelpRequestedException {
+            HelpRequestedException {
         // Add all expanded options at the end of the options list, before the
         // list of
         // jar/zip/class files and directories.

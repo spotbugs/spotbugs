@@ -23,7 +23,6 @@ public class Bug1663624 {
         }
     }
 
-    private void foo(Object caretSelection) {
-    }
+    private void foo(Object caretSelection) {}
 
 }

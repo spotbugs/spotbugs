@@ -72,8 +72,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     private final ClassReader classReader;
 
-    private @SlashedClassName
-    String slashedClassName;
+    private @SlashedClassName String slashedClassName;
 
     //    private final ClassDescriptor expectedClassDescriptor;
 
@@ -187,8 +186,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public
-        void visitLocalVariable(String name,
+        public void visitLocalVariable(String name,
                 String desc,
                 String signature,
                 Label start,
@@ -262,8 +260,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 parameterLoadState = ParameterLoadState.LOADED_THIS;
 
                 match = true;
-            }
-            else if (parameterLoadState == ParameterLoadState.LOADED_THIS  && var > 0){
+            } else if (parameterLoadState == ParameterLoadState.LOADED_THIS && var > 0) {
                 parameterLoadState = ParameterLoadState.LOADED_THIS_AND_PARAMETER;
                 parameterForLoadState = var;
                 match = true;
@@ -430,7 +427,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             if (isAccessMethod && accessOwner != null) {
                 if (!accessForField && methodCallCount == 1) {
                     mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
-                } else if(accessForField && fieldInstructionCount == 1) {
+                } else if (accessForField && fieldInstructionCount == 1) {
                     boolean isSetter = methodDesc.endsWith(")V");
                     int numArg = new SignatureParser(methodDesc).getNumParameters();
                     int expected = 0;
@@ -531,6 +528,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
     enum ParameterLoadState {
         OTHER, LOADED_THIS, LOADED_THIS_AND_PARAMETER;
     }
+
     public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;

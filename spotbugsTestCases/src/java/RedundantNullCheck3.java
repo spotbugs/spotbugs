@@ -12,7 +12,7 @@ class RedundantNullCheck3 {
             in.close();
     }
 
-    @NoWarning(value="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", confidence = Confidence.MEDIUM)
+    @NoWarning(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", confidence = Confidence.MEDIUM)
     public void test2() throws Exception {
         FileInputStream in = new FileInputStream("/dev/null");
         // don't generate a warning here

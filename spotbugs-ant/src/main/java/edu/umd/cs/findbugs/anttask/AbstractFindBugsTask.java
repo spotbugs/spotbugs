@@ -49,8 +49,7 @@ public abstract class AbstractFindBugsTask extends Task {
 
         private String value;
 
-        public SystemProperty() {
-        }
+        public SystemProperty() {}
 
         public void setName(String name) {
             this.name = name;
@@ -297,7 +296,7 @@ public abstract class AbstractFindBugsTask extends Task {
             for (String pluginFile : pluginFileList) {
                 if (!pluginFile.endsWith(".jar")) {
                     throw new BuildException("plugin file " + pluginFile + " is not a Jar file " + "in task <" + getTaskName()
-                    + "/>", getLocation());
+                            + "/>", getLocation());
                 }
             }
         }

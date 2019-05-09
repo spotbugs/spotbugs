@@ -3,7 +3,6 @@ package bugIdeas;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2013_11_15 {

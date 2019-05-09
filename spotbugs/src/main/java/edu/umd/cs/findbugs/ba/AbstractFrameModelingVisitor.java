@@ -173,28 +173,22 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
      */
 
     @Override
-    public void visitStackInstruction(StackInstruction obj) {
-    }
+    public void visitStackInstruction(StackInstruction obj) {}
 
     @Override
-    public void visitLocalVariableInstruction(LocalVariableInstruction obj) {
-    }
+    public void visitLocalVariableInstruction(LocalVariableInstruction obj) {}
 
     @Override
-    public void visitBranchInstruction(BranchInstruction obj) {
-    }
+    public void visitBranchInstruction(BranchInstruction obj) {}
 
     @Override
-    public void visitLoadClass(LoadClass obj) {
-    }
+    public void visitLoadClass(LoadClass obj) {}
 
     @Override
-    public void visitFieldInstruction(FieldInstruction obj) {
-    }
+    public void visitFieldInstruction(FieldInstruction obj) {}
 
     @Override
-    public void visitIfInstruction(IfInstruction obj) {
-    }
+    public void visitIfInstruction(IfInstruction obj) {}
 
     /** To allow for calls to visitNULL2Z and visitNONNULL2Z, this method is made final.
      * If you want to override it, override visitConversionInstruction2 instead.
@@ -214,88 +208,67 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     }
 
     @Override
-    public void visitPopInstruction(PopInstruction obj) {
-    }
+    public void visitPopInstruction(PopInstruction obj) {}
 
     @Override
-    public void visitJsrInstruction(JsrInstruction obj) {
-    }
+    public void visitJsrInstruction(JsrInstruction obj) {}
 
     @Override
-    public void visitGotoInstruction(GotoInstruction obj) {
-    }
+    public void visitGotoInstruction(GotoInstruction obj) {}
 
     @Override
-    public void visitStoreInstruction(StoreInstruction obj) {
-    }
+    public void visitStoreInstruction(StoreInstruction obj) {}
 
     @Override
-    public void visitTypedInstruction(TypedInstruction obj) {
-    }
+    public void visitTypedInstruction(TypedInstruction obj) {}
 
     @Override
-    public void visitSelect(Select obj) {
-    }
+    public void visitSelect(Select obj) {}
 
     @Override
-    public void visitUnconditionalBranch(UnconditionalBranch obj) {
-    }
+    public void visitUnconditionalBranch(UnconditionalBranch obj) {}
 
     @Override
-    public void visitPushInstruction(PushInstruction obj) {
-    }
+    public void visitPushInstruction(PushInstruction obj) {}
 
     @Override
-    public void visitArithmeticInstruction(ArithmeticInstruction obj) {
-    }
+    public void visitArithmeticInstruction(ArithmeticInstruction obj) {}
 
     @Override
-    public void visitCPInstruction(CPInstruction obj) {
-    }
+    public void visitCPInstruction(CPInstruction obj) {}
 
     @Override
-    public void visitInvokeInstruction(InvokeInstruction obj) {
-    }
+    public void visitInvokeInstruction(InvokeInstruction obj) {}
 
     @Override
-    public void visitArrayInstruction(ArrayInstruction obj) {
-    }
+    public void visitArrayInstruction(ArrayInstruction obj) {}
 
     @Override
-    public void visitAllocationInstruction(AllocationInstruction obj) {
-    }
+    public void visitAllocationInstruction(AllocationInstruction obj) {}
 
     @Override
-    public void visitReturnInstruction(ReturnInstruction obj) {
-    }
+    public void visitReturnInstruction(ReturnInstruction obj) {}
 
     @Override
-    public void visitFieldOrMethod(FieldOrMethod obj) {
-    }
+    public void visitFieldOrMethod(FieldOrMethod obj) {}
 
     @Override
-    public void visitConstantPushInstruction(ConstantPushInstruction obj) {
-    }
+    public void visitConstantPushInstruction(ConstantPushInstruction obj) {}
 
     @Override
-    public void visitExceptionThrower(ExceptionThrower obj) {
-    }
+    public void visitExceptionThrower(ExceptionThrower obj) {}
 
     @Override
-    public void visitLoadInstruction(LoadInstruction obj) {
-    }
+    public void visitLoadInstruction(LoadInstruction obj) {}
 
     @Override
-    public void visitVariableLengthInstruction(VariableLengthInstruction obj) {
-    }
+    public void visitVariableLengthInstruction(VariableLengthInstruction obj) {}
 
     @Override
-    public void visitStackProducer(StackProducer obj) {
-    }
+    public void visitStackProducer(StackProducer obj) {}
 
     @Override
-    public void visitStackConsumer(StackConsumer obj) {
-    }
+    public void visitStackConsumer(StackConsumer obj) {}
 
     /*
      * ----------------------------------------------------------------------
@@ -1092,6 +1065,7 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
     public void visitIXOR(IXOR obj) {
         handleNormalInstruction(obj);
     }
+
     @Override
     public void visitINVOKEDYNAMIC(INVOKEDYNAMIC obj) {
         handleNormalInstruction(obj);
@@ -1277,4 +1251,3 @@ public abstract class AbstractFrameModelingVisitor<Value, FrameType extends Fram
         handleNormalInstruction(obj);
     }
 }
-

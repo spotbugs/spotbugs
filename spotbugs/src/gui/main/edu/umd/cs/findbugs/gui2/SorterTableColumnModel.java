@@ -93,6 +93,7 @@ public class SorterTableColumnModel implements TableColumnModel {
         shown.clear();
         shown.addAll(order);
     }
+
     public SorterTableColumnModel(Sortables[] columnHeaders) {
 
         MainFrame mainFrame = MainFrame.getInstance();
@@ -275,7 +276,7 @@ public class SorterTableColumnModel implements TableColumnModel {
 
     @Override
     public Enumeration<TableColumn> getColumns() {
-        return Collections.<TableColumn> enumeration(columnList);
+        return Collections.<TableColumn>enumeration(columnList);
     }
 
     @Override

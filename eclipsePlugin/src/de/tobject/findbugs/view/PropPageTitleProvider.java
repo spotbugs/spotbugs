@@ -68,7 +68,7 @@ public class PropPageTitleProvider extends BugLabelProvider {
 
     String getTitle(BugGroup group) {
         Object data = group.getData();
-        if(data == null){
+        if (data == null) {
             return null;
         }
         switch (group.getType()) {
@@ -81,9 +81,9 @@ public class PropPageTitleProvider extends BugLabelProvider {
         case Category:
             return getTitle((BugCategory) data);
         case Confidence:
-            return getTitle((MarkerConfidence)data);
+            return getTitle((MarkerConfidence) data);
         case BugRank:
-            return getTitle((MarkerRank)data);
+            return getTitle((MarkerRank) data);
         case Package:
             return getTitle((IPackageFragment) data);
         case Project:

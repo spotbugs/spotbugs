@@ -22,7 +22,7 @@ abstract class AbstractMissingHashCode {
 
         @Override
         @NoWarning("HE")
-        public int hashCode(){
+        public int hashCode() {
             return 0;
         }
 

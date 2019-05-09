@@ -9,11 +9,12 @@ public class Bug3102313 {
 
 
     @Override
-	public int hashCode() {
+    public int hashCode() {
         return getCurrencyCode().hashCode();
     }
+
     @Override
-	@NoWarning("NP")
+    @NoWarning("NP")
     public boolean equals(Object o) {
         try {
             return ((Bug3102313) o).getCurrencyCode().equals(getCurrencyCode());

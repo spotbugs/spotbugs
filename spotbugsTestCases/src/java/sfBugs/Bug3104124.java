@@ -33,8 +33,8 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 public class Bug3104124 {
 
 
-    @DesireWarning(value="OS_OPEN_STREAM_EXCEPTION_PATH", confidence=Confidence.MEDIUM)
-    @ExpectWarning(value="OS_OPEN_STREAM_EXCEPTION_PATH", confidence=Confidence.LOW)
+    @DesireWarning(value = "OS_OPEN_STREAM_EXCEPTION_PATH", confidence = Confidence.MEDIUM)
+    @ExpectWarning(value = "OS_OPEN_STREAM_EXCEPTION_PATH", confidence = Confidence.LOW)
     public static String fileToString(String fileName) {
         StringBuffer output = new StringBuffer();
         try {

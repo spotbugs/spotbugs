@@ -70,8 +70,7 @@ public class BlockType extends BitSet {
     /**
      * Constructor. Should only be called by BlockTypeAnalysis.
      */
-    BlockType() {
-    }
+    BlockType() {}
 
     @Override
     public int hashCode() {
@@ -98,7 +97,7 @@ public class BlockType extends BitSet {
             return false;
         }
         return isTop == other.isTop
-            && isValid == other.isValid;
+                && isValid == other.isValid;
     }
 
     /**
@@ -283,4 +282,3 @@ public class BlockType extends BitSet {
         ++depth;
     }
 }
-

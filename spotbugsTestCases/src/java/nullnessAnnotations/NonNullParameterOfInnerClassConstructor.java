@@ -9,15 +9,15 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  */
 public class NonNullParameterOfInnerClassConstructor {
 
-  private class Inner {
-    private final String a;
-    private final Object b;
+    private class Inner {
+        private final String a;
+        private final Object b;
 
-    @NoWarning("NP")
-    Inner(@NonNull String a, @Nullable Object b) {
-      this.a = a.toLowerCase();
-      this.b = b;
+        @NoWarning("NP")
+        Inner(@NonNull String a, @Nullable Object b) {
+            this.a = a.toLowerCase();
+            this.b = b;
+        }
+
     }
-
-  }
 }

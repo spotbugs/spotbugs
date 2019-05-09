@@ -228,8 +228,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 
     public boolean skipIfInsideCatchNull() {
         return classContext.getJavaClass().getClassName().indexOf("Test") >= 0 || method.getName().indexOf("test") >= 0
@@ -353,8 +352,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
     @Override
     public void foundGuaranteedNullDeref(@Nonnull Set<Location> assignedNullLocationSet, @Nonnull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
-            @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {
-    }
+            @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {}
 
     private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,
             Collection<Location> derefLocationSet) {

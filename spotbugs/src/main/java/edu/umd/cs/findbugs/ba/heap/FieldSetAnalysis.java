@@ -111,8 +111,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 
     }
 
-    private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact)
-    {
+    private void handleInstruction(InstructionHandle handle, BasicBlock basicBlock, FieldSet fact) {
         Instruction ins = handle.getInstruction();
         short opcode = ins.getOpcode();
         XField field;

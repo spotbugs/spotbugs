@@ -26,8 +26,7 @@ public final class Ideas_2010_08_30 implements Runnable {
         System.out.println("Hello");
     }
 
-    public @CheckForNull
-    String getFoo() {
+    public @CheckForNull String getFoo() {
         return null;
     }
 

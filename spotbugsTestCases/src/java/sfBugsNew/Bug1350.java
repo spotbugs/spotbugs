@@ -10,7 +10,7 @@ public class Bug1350 {
 
     @NoWarning("NP_NULL_ON_SOME_PATH_EXCEPTION")
     public String get() {
-        if(field == null) {
+        if (field == null) {
             try {
                 initField();
             } catch (IllegalStateException e) {
@@ -21,7 +21,7 @@ public class Bug1350 {
     }
 
     private void initField() {
-        if(field != null)
+        if (field != null)
             throw new IllegalStateException();
         field = 0;
     }
@@ -30,11 +30,10 @@ public class Bug1350 {
 
     @NoWarning("NP_ALWAYS_NULL_EXCEPTION")
     public void test() {
-        if(obj == null) {
+        if (obj == null) {
             try {
                 initObj();
-            }
-            catch(MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 System.err.println(obj.toString());
             }
         }
@@ -51,14 +50,14 @@ public class Bug1350 {
     }
 
     boolean flag = false;
+
     @NoWarning("UC_USELESS_CONDITION")
     public void ucTest() {
-        if(!flag) {
+        if (!flag) {
             try {
                 initObj();
-            }
-            catch(MalformedURLException e) {
-                if(flag) {
+            } catch (MalformedURLException e) {
+                if (flag) {
                     System.out.println("test");
                 }
             }

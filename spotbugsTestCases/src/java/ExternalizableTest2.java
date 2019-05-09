@@ -7,16 +7,13 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 public class ExternalizableTest2 implements Externalizable {
-    ExternalizableTest2() {
-    }
+    ExternalizableTest2() {}
 
     @Override
-    public void readExternal(ObjectInput in) {
-    }
+    public void readExternal(ObjectInput in) {}
 
     @Override
-    public void writeExternal(ObjectOutput out) {
-    }
+    public void writeExternal(ObjectOutput out) {}
 
     static class ExternalizableTest2a extends ExternalizableTest2 {
         int x;
@@ -31,8 +28,7 @@ public class ExternalizableTest2 implements Externalizable {
         }
 
         @Override
-        public void writeExternal(ObjectOutput out) {
-        }
+        public void writeExternal(ObjectOutput out) {}
     }
 
     static public void main(String args[]) throws Exception {

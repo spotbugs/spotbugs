@@ -12,7 +12,6 @@ import com.google.common.primitives.Shorts;
 import com.google.common.primitives.SignedBytes;
 import com.google.common.primitives.UnsignedBytes;
 
-import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Ideas_2011_08_01 {
@@ -23,7 +22,7 @@ public class Ideas_2011_08_01 {
         System.out.printf("%tr%n", t);
     }
 
-    @ExpectWarning(value="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", num = 9)
+    @ExpectWarning(value = "RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE", num = 9)
     public static int testGuavaPrimitiveCompareCalls() {
         int count = 0;
         if (Booleans.compare(false, true) == -1)

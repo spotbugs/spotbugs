@@ -67,7 +67,7 @@ public class BugResolutionAssociations {
         for (Entry<String, List<QuickFixContribution>> entry : set) {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
         }
-        if(sb.length() > 1) {
+        if (sb.length() > 1) {
             sb.setLength(sb.length() - 2);
         }
         return sb.toString();

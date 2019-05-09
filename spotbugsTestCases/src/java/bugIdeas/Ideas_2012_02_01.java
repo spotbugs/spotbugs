@@ -23,27 +23,27 @@ public class Ideas_2012_02_01 {
     }
 
 
-    static  @Foo int getFoo() {
+    static @Foo int getFoo() {
         return 42;
     }
+
     @ExpectWarning("TQ")
     Ideas_2012_02_01(int x, @Foo int foo) {
         this(x, foo, "x");
     }
+
     @ExpectWarning("TQ")
     Ideas_2012_02_01(int x, StringBuffer b) {
         this(x, getFoo(), b.toString());
     }
 
-    Ideas_2012_02_01(int x, @Bar int bar, String s) {
-    }
+    Ideas_2012_02_01(int x, @Bar int bar, String s) {}
 
     @ExpectWarning("TQ")
     Ideas_2012_02_01(@Foo int foo) {
         this(foo, "x");
     }
 
-    Ideas_2012_02_01(@Bar int bar, String s) {
-    }
+    Ideas_2012_02_01(@Bar int bar, String s) {}
 
 }

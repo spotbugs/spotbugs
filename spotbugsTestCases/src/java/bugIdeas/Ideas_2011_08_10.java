@@ -27,7 +27,8 @@ public abstract class Ideas_2011_08_10 {
     public void doNotReport2() {
         try {
             doIO();
-        } catch (IOException ignore) {} // warning shown with ecj (Eclipse) compiler (bad)
+        } catch (IOException ignore) {
+        } // warning shown with ecj (Eclipse) compiler (bad)
         System.out.println("foobar");
     }
 
@@ -35,7 +36,8 @@ public abstract class Ideas_2011_08_10 {
     public void report() {
         try {
             doIO();
-        } catch (IOException veryImportant) {}
+        } catch (IOException veryImportant) {
+        }
         System.out.println("foobar");
     }
 
@@ -43,7 +45,8 @@ public abstract class Ideas_2011_08_10 {
     public void report2() {
         try {
             doIO();
-        } catch (IOException veryImportant) {}
+        } catch (IOException veryImportant) {
+        }
     }
 
     @ExpectWarning("DE_MIGHT_IGNORE")
@@ -56,8 +59,7 @@ public abstract class Ideas_2011_08_10 {
         setSecurityManager0(s);
     }
 
-    public static void setSecurityManager0(final SecurityManager s) {
-    }
+    public static void setSecurityManager0(final SecurityManager s) {}
 
     @NoWarning("NP")
     public static void turnOffSecurity() {

@@ -21,13 +21,13 @@ package com.google.errorprone.bugpatterns;
  * @author adgar@google.com (Mike Edgar)
  */
 public class ArrayToStringNegativeCases {
-  public void objectEquals() {
-    Object a = new Object();
+    public void objectEquals() {
+        Object a = new Object();
 
-    if (a.toString().isEmpty()) {
-      System.out.println("string is empty!");
-    } else {
-      System.out.println("string is not empty!");
+        if (a.toString().isEmpty()) {
+            System.out.println("string is empty!");
+        } else {
+            System.out.println("string is not empty!");
+        }
     }
-  }
 }

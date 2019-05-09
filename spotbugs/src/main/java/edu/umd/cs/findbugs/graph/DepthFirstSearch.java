@@ -29,7 +29,7 @@ import java.util.Iterator;
  * @see AbstractDepthFirstSearch
  */
 public class DepthFirstSearch<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>>
-extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
+        extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
 
     /**
      * Constructor.
@@ -57,4 +57,3 @@ extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
     }
 
 }
-

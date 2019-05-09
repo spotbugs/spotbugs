@@ -95,10 +95,10 @@ public class Strings {
 
     private static boolean isInvalidXMLCharacter(int c) {
         return (c < XML_ALLOWED_LOW_CHARACTER_BOUND && c >= 0x0
-                // low-value characters allowed by XML 1.0 spec
-                // '\uFFFE' (&#65534;) cannot be deserialized by SAX reader.
+        // low-value characters allowed by XML 1.0 spec
+        // '\uFFFE' (&#65534;) cannot be deserialized by SAX reader.
                 && c != 0x9 && c != 0xA && c != 0xD)
-            || c == 0xFFFE;
+                || c == 0xFFFE;
     }
 
     private static volatile boolean xmlLowValueEscapeStringsInitialized = false;

@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.log.Profiler;
  * @author David Hovemeyer
  */
 public abstract class ResourceTrackingDetector<Resource, ResourceTrackerType extends ResourceTracker<Resource>> implements
-Detector {
+        Detector {
 
     private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
@@ -197,8 +197,6 @@ Detector {
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 
 }
-

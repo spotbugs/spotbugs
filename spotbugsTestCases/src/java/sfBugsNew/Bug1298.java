@@ -9,13 +9,13 @@ public class Bug1298 {
     public void testFallthrough(int x) {
         switch (x) {
         case 1:
-          System.out.println("irrelevant");
-          //$FALL-THROUGH$
+            System.out.println("irrelevant");
+            //$FALL-THROUGH$
         default:
-          System.out.println("irrelevant");
-          break;
+            System.out.println("irrelevant");
+            break;
         }
-      }
+    }
 
     @NoWarning("SF_SWITCH_NO_DEFAULT")
     public void testFallthrough2(int x) {
@@ -24,11 +24,11 @@ public class Bug1298 {
             System.out.println("boring");
             break;
         case 1:
-          System.out.println("irrelevant");
-          //$FALL-THROUGH$
+            System.out.println("irrelevant");
+            //$FALL-THROUGH$
         default:
-          System.out.println("irrelevant");
-          break;
+            System.out.println("irrelevant");
+            break;
         }
-      }
+    }
 }

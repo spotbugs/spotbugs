@@ -12,11 +12,12 @@ public class Bug3204236 {
         throw new IIOException("message");
     }
 
-    @ExpectWarning(value="DE")
+    @ExpectWarning(value = "DE")
     void g() {
         try {
             f();
-        } catch (final IIOException e) {}
+        } catch (final IIOException e) {
+        }
     }
 
 }

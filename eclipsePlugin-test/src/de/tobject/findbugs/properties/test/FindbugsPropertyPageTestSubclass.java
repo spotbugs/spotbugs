@@ -41,8 +41,7 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
 
     private ReportConfigurationTabTestSubclass reportTab;
 
-    public FindbugsPropertyPageTestSubclass() {
-    }
+    public FindbugsPropertyPageTestSubclass() {}
 
     /**
      * Some widgets of the properties page are only created if it is opened for

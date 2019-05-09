@@ -29,6 +29,5 @@ class TypeSafeEnum {
 
     public static TypeSafeEnum TWO = new TypeSafeEnum();
 
-    private TypeSafeEnum() {
-    }
+    private TypeSafeEnum() {}
 }

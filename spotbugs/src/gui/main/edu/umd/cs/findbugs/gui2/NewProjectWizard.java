@@ -141,7 +141,7 @@ public class NewProjectWizard extends FBDialog {
         final boolean reconfig = temp;
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setBorder(new EmptyBorder(5,5,5,5));
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         wizardComponents[0] = createFilePanel(
@@ -287,7 +287,7 @@ public class NewProjectWizard extends FBDialog {
         cancelButton.addActionListener(evt -> dispose());
 
         JPanel south = new JPanel(new BorderLayout());
-        south.setBorder(new EmptyBorder(5,5,5,5));
+        south.setBorder(new EmptyBorder(5, 5, 5, 5));
         south.add(new JSeparator(), BorderLayout.NORTH);
         south.add(buttons, BorderLayout.EAST);
 
@@ -354,7 +354,7 @@ public class NewProjectWizard extends FBDialog {
 
         myPanel.add(new JLabel(label), BorderLayout.NORTH);
         myPanel.add(textField, BorderLayout.CENTER);
-        myPanel.setBorder(new EmptyBorder(5,5,5,5));
+        myPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         return myPanel;
     }
@@ -483,8 +483,7 @@ public class NewProjectWizard extends FBDialog {
             if (list.getSelectedValues().length > 0) {
                 projectChanged = true;
             }
-            for (Object i : list.getSelectedValues())
-            {
+            for (Object i : list.getSelectedValues()) {
                 listModel.removeElement(i);
                 // If this is the primary class directories remove button, set
                 // it to disable finish when there are no class files being

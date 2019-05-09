@@ -64,8 +64,7 @@ public class L10N {
         }
     }
 
-    private L10N() {
-    }
+    private L10N() {}
 
     private static String lookup(ResourceBundle b, String key) {
         if (b == null || key == null) {

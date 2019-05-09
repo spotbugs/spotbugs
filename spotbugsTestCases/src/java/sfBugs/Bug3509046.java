@@ -25,6 +25,6 @@ public class Bug3509046 implements Serializable {
 
 
     @NoWarning("SE_BAD_FIELD")
-    private  Map<String, String> foo;
+    private Map<String, String> foo;
 
 }

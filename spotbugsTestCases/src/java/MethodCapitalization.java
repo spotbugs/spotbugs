@@ -1,8 +1,7 @@
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 class MethodCapitalization {
-    public void MethodCapitalization() {
-    }
+    public void MethodCapitalization() {}
 
     public int getX() {
         return 42;

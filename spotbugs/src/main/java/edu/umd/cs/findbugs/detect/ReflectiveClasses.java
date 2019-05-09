@@ -73,4 +73,3 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
         AnalysisContext.currentXFactory().addReflectiveClasses(d);
     }
 }
-

@@ -90,7 +90,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         super(className, DEFAULT_ROLE);
         if (fieldSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + fieldSig;
-        fieldSig = fieldSig.replace('.', '/');
+            fieldSig = fieldSig.replace('.', '/');
         }
         this.fieldName = fieldName;
         this.fieldSig = fieldSig;
@@ -198,6 +198,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
     public FieldDescriptor toFieldDescriptor() {
         return DescriptorFactory.instance().getFieldDescriptor(this);
     }
+
     /**
      * Get the field name.
      */

@@ -3,8 +3,7 @@ import java.awt.event.ActionListener;
 
 class SuperRI implements ActionListener, Cloneable {
     @Override
-    public void actionPerformed(ActionEvent ae) {
-    }
+    public void actionPerformed(ActionEvent ae) {}
 }
 
 // This is fine

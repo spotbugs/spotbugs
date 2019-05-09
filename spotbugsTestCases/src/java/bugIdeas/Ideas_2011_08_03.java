@@ -11,10 +11,11 @@ public class Ideas_2011_08_03 {
     public static boolean easy(String s) {
         return s.equals(s);
     }
+
     @ExpectWarning("SA_LOCAL_SELF_COMPARISON")
     public static String firstNonullString(Collection<String> c) {
         String found = null;
-        for(String s : c) {
+        for (String s : c) {
             if (s != null) {
                 if (found != null && found.equals(found))
                     System.out.println("Found it twice");

@@ -44,8 +44,7 @@ public class FindbugsTestPlugin extends AbstractUIPlugin {
     /**
      * The constructor
      */
-    public FindbugsTestPlugin() {
-    }
+    public FindbugsTestPlugin() {}
 
     /*
      * (non-Javadoc)

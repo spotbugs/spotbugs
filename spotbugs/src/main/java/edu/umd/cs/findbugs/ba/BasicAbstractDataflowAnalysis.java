@@ -136,8 +136,8 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
         Fact result = createFact();
         makeFactTop(result);
         if (this instanceof UnconditionalValueDerefAnalysis) {
-            ((UnconditionalValueDerefAnalysis)this).meetInto((UnconditionalValueDerefSet)predFact,
-                    edge, (UnconditionalValueDerefSet)result, true);
+            ((UnconditionalValueDerefAnalysis) this).meetInto((UnconditionalValueDerefSet) predFact,
+                    edge, (UnconditionalValueDerefSet) result, true);
         } else {
             meetInto(predFact, edge, result);
         }

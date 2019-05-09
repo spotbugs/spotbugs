@@ -11,7 +11,7 @@ public class Bug1244 {
     }
 
     @Override
-	public int hashCode() {
+    public int hashCode() {
         return a;
     }
 
@@ -30,7 +30,7 @@ public class Bug1244 {
         return true;
     }
 
-   static public class Wrong {
+    static public class Wrong {
         private final int a;
 
         public Wrong(int a) {
@@ -38,7 +38,7 @@ public class Bug1244 {
         }
 
         @Override
-		public int hashCode() {
+        public int hashCode() {
             return a;
         }
 
@@ -54,5 +54,5 @@ public class Bug1244 {
                 return false;
             return true;
         }
-   }
+    }
 }

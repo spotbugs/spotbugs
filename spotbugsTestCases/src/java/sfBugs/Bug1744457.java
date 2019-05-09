@@ -61,7 +61,7 @@ public class Bug1744457 {
         while (it.hasNext()) {
             String retrieve = it.next();
             if (retrieve != null && retrieve != "")
-               add += retrieve;
+                add += retrieve;
             System.out.println(add);
         }
     }
@@ -88,7 +88,7 @@ public class Bug1744457 {
         A.add("john");
         A.add("lily");
         A.add("tracy");
-        Iterator <String>it = A.iterator();
+        Iterator<String> it = A.iterator();
 
         it = A.iterator();
         String add = "";

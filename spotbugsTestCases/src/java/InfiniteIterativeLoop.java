@@ -12,8 +12,7 @@ public class InfiniteIterativeLoop {
 
     @NoWarning("IL")
     void falsePositive(int i) {
-        while (--i > 0)
-            ;
+        while (--i > 0);
     }
 
     @ExpectWarning("IL")

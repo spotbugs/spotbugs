@@ -41,4 +41,3 @@ public interface SearchTreeCallback<VertexType extends GraphVertex<VertexType>> 
      */
     public void addToSearchTree(VertexType parent, VertexType child);
 }
-

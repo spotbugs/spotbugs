@@ -70,9 +70,9 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
             if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0)) {
                 return;
             }
-    
+
             Set<String> dependencies = dependencyGraph.computeIfAbsent(clsName, k -> new HashSet<>());
-    
+
             dependencies.add(refClsName);
         }
     }

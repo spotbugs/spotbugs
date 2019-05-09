@@ -13,8 +13,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 
     private static class Y extends Thread {
         @Override
-        public void run() {
-        }
+        public void run() {}
     }
 
     private static class NotThread {
@@ -45,8 +44,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
         }
 
         @Override
-        protected void finalize() {
-        }
+        protected void finalize() {}
     }
 
     public Bleem makeBleem() {
@@ -65,8 +63,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     }
 
     @Override
-    public void run() {
-    }
+    public void run() {}
 
     public void badlock() {
         lock = new Object();
@@ -109,8 +106,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
     }
 
     public void spin() {
-        while (lock == null)
-            ;
+        while (lock == null);
     }
 
     @Override

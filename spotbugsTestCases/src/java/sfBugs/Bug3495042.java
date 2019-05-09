@@ -19,7 +19,7 @@ public class Bug3495042 {
         int n = N;
         int i = 0;
         while (n >= 10) {
-            n = n /10;
+            n = n / 10;
             i++;
         }
         return i;

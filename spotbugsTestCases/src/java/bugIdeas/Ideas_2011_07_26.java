@@ -3,8 +3,10 @@ package bugIdeas;
 public class Ideas_2011_07_26 {
 
     Boolean foo(int x) {
-        if (x > 0) return true;
-        if (x < 0) return false;
+        if (x > 0)
+            return true;
+        if (x < 0)
+            return false;
         return null;
     }
 

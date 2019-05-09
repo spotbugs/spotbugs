@@ -89,7 +89,7 @@ public class Feature332 {
 
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessMultiArray4() {
-        int[][] x = new int[][] {{1,2,3},{4,5,6}};
+        int[][] x = new int[][] { { 1, 2, 3 }, { 4, 5, 6 } };
         x[0][1] = 1;
         System.out.println("test");
     }
@@ -104,14 +104,14 @@ public class Feature332 {
 
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessObjectsArray() {
-        Point[] pts = new Point[] {new Point(), new Point(1,2), new Point(2,3)};
+        Point[] pts = new Point[] { new Point(), new Point(1, 2), new Point(2, 3) };
         pts[0].x = 2;
         System.out.println("test");
     }
 
     @NoWarning("UC")
     public void testUsefulObjectsArray(Point p) {
-        Point[] pts = new Point[] {p, new Point(1,2), new Point(2,3)};
+        Point[] pts = new Point[] { p, new Point(1, 2), new Point(2, 3) };
         pts[0].x = 2;
         System.out.println("test");
     }
@@ -120,7 +120,7 @@ public class Feature332 {
     public void testUselessReuse() {
         Point p = new Point();
         p.x = 10;
-        p.y = p.x+1;
+        p.y = p.x + 1;
         System.out.println("test");
     }
 
@@ -129,7 +129,7 @@ public class Feature332 {
         int[] x = new int[3];
         x[0] = 2;
         x[1] = 3;
-        x[2] = x[0]+x[1];
+        x[2] = x[0] + x[1];
         System.out.println("test");
     }
 
@@ -137,7 +137,7 @@ public class Feature332 {
     @ExpectWarning("UC_USELESS_OBJECT")
     public void testUselessArrayOfLists() {
         @SuppressWarnings("rawtypes")
-        List[] lists = new List[] {new ArrayList<>()};
+        List[] lists = new List[] { new ArrayList<>() };
         lists[0].add("test");
         System.out.println("test");
     }
@@ -146,7 +146,7 @@ public class Feature332 {
     @NoWarning("UC")
     public void testUsefulArrayOfLists(List<?> l) {
         @SuppressWarnings("rawtypes")
-        List[] lists = new List[] {l};
+        List[] lists = new List[] { l };
         lists[0].add("test");
         System.out.println("test");
     }
@@ -200,10 +200,10 @@ public class Feature332 {
     @NoWarning("UC")
     public void sizeUsed() {
         List<String> test = new ArrayList<>();
-        if(Math.random() > 0.5) {
+        if (Math.random() > 0.5) {
             test.add("qq");
         }
-        for(int p = test.size(); p > 0; p--) {
+        for (int p = test.size(); p > 0; p--) {
             System.out.println("qq");
         }
     }

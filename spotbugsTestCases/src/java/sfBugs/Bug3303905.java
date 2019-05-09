@@ -22,14 +22,14 @@ public class Bug3303905 {
     private transient String toString;
 
     @Override
-	public int hashCode() {
+    public int hashCode() {
         if (hashCode == 0)
             hashCode = sourceName.hashCode() + lineNumber;
         return hashCode;
     }
 
     @Override
-	public String toString() {
+    public String toString() {
         if (toString == null)
             toString = sourceName + ":" + lineNumber;
         return toString;

@@ -89,7 +89,7 @@ public class DetectorsExtensionHelper {
             if (libPathAsString == null) {
                 throw new IllegalArgumentException("Failed to resolve library path for: " + pluginId);
             }
-            if(set.containsKey(pluginId)) {
+            if (set.containsKey(pluginId)) {
                 throw new IllegalArgumentException("Duplicated '" + pluginId + "' contribution.");
             }
             set.put(pluginId, libPathAsString);
@@ -153,7 +153,7 @@ public class DetectorsExtensionHelper {
      */
     @CheckForNull
     private static String resolvePluginClassesDir(String bundleName, File sourceDir) {
-         if (sourceDir.listFiles() == null) {
+        if (sourceDir.listFiles() == null) {
             FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
                     "Failed to create temporary detector package for bundle " + sourceDir);
             return null;

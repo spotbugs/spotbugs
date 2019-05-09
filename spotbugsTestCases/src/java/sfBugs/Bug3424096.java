@@ -32,12 +32,10 @@ public class Bug3424096 {
             if (myEnum == MyEnum.CATCHED_IS_NOT_NULL) {
                 nullIsNotAllowed(catched);//Method call passes null to a nonnull parameter of nullIsNotAllowed(Exception)
             }
-            if(throwException)
-            {
+            if (throwException) {
                 nullIsNotAllowed(catched);//Method call passes null to a nonnull parameter of nullIsNotAllowed(Exception)
             }
-            if(!throwException)
-            {
+            if (!throwException) {
                 nullIsNotAllowed(catched);//Method call passes null to a nonnull parameter of nullIsNotAllowed(Exception)
             }
         } // finally
@@ -48,6 +46,7 @@ public class Bug3424096 {
     }
 
     private static void doSomethingWhichCouldThrowAnException(boolean throwException) throws Exception {
-        if(throwException) throw new Exception();
+        if (throwException)
+            throw new Exception();
     }
 }

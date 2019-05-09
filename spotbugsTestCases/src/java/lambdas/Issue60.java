@@ -17,7 +17,7 @@ public class Issue60 {
     }
 
     public Stream<String> keys() {
-        return Stream.<Properties> of()
+        return Stream.<Properties>of()
                 .flatMap(p -> p.stringPropertyNames().stream());
     }
 

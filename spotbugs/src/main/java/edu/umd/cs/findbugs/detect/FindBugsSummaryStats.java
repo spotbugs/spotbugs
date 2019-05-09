@@ -131,8 +131,7 @@ public class FindBugsSummaryStats extends PreorderVisitor implements Detector, B
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 
     @Override
     public void report(PrintStream out) {

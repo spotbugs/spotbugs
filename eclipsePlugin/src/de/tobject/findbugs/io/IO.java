@@ -86,7 +86,7 @@ public abstract class IO {
     private static void mkdirs(@Nonnull IResource resource, IProgressMonitor monitor) throws CoreException {
         IContainer container = resource.getParent();
         if (container.getType() == IResource.FOLDER && !container.exists()) {
-            if(!container.getParent().exists()) {
+            if (!container.getParent().exists()) {
                 mkdirs(container, monitor);
             }
             ((IFolder) container).create(true, true, monitor);

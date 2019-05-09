@@ -112,4 +112,3 @@ public abstract class XMLOutputUtil {
         }
     }
 }
-

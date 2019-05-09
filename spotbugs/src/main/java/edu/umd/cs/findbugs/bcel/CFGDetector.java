@@ -45,8 +45,7 @@ public abstract class CFGDetector implements Detector2 {
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
     @Override
-    public void finishPass() {
-    }
+    public void finishPass() {}
 
     /*
      * (non-Javadoc)
@@ -60,6 +59,7 @@ public abstract class CFGDetector implements Detector2 {
 
     protected ClassContext classContext;
     protected Method method;
+
     /*
      * (non-Javadoc)
      *

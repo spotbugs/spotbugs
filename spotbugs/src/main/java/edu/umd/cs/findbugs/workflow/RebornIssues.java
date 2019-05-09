@@ -43,8 +43,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 public class RebornIssues {
     BugCollection bugCollection;
 
-    public RebornIssues() {
-    }
+    public RebornIssues() {}
 
     public RebornIssues(BugCollection bugCollection) {
         this.bugCollection = bugCollection;

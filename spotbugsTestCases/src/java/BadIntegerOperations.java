@@ -239,6 +239,5 @@ class BadIntegerOperations {
         return Math.abs(i);
     }
 
-    public BadIntegerOperations() {
-    }
+    public BadIntegerOperations() {}
 }

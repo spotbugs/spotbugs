@@ -24,9 +24,9 @@ import com.google.common.base.Preconditions;
  * @author sjnickerson@google.com (Simon Nickerson)
  */
 public class PreconditionsExpensiveStringPositiveCase1 {
-  public void error() {
-    int foo = 42;
-    int bar = 78;
-    Preconditions.checkState(true, String.format("The foo %s (%s) is not a good foo", foo, bar));
-  }
+    public void error() {
+        int foo = 42;
+        int bar = 78;
+        Preconditions.checkState(true, String.format("The foo %s (%s) is not a good foo", foo, bar));
+    }
 }

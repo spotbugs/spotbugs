@@ -56,4 +56,3 @@ public abstract class OneVariableInstruction extends SingleInstruction {
     }
 
 }
-

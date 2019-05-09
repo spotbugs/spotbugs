@@ -81,8 +81,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     boolean classIsPublicOrProtected;
 
-    public static @CheckForNull
-    XMethod definedIn(JavaClass clazz, XMethod m) {
+    public static @CheckForNull XMethod definedIn(JavaClass clazz, XMethod m) {
         for (Method m2 : clazz.getMethods()) {
             if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) {
                 return XFactory.createXMethod(clazz, m2);
@@ -93,18 +92,18 @@ public class Naming extends PreorderVisitor implements Detector {
 
     public static boolean confusingMethodNamesWrongCapitalization(XMethod m1, XMethod m2) {
         return m1.isStatic() == m2.isStatic()
-            && !m1.getClassName().equals(m2.getClassName())
-            && !m1.getName().equals(m2.getName())
-            && m1.getName().equalsIgnoreCase(m2.getName())
-            && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
+                && !m1.getClassName().equals(m2.getClassName())
+                && !m1.getName().equals(m2.getName())
+                && m1.getName().equalsIgnoreCase(m2.getName())
+                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
     }
 
     public static boolean confusingMethodNamesWrongPackage(XMethod m1, XMethod m2) {
         return m1.isStatic() == m2.isStatic()
-            && !m1.getClassName().equals(m2.getClassName())
-            && m1.getName().equals(m2.getName())
-            && !m1.getSignature().equals(m2.getSignature())
-            && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
+                && !m1.getClassName().equals(m2.getClassName())
+                && m1.getName().equals(m2.getName())
+                && !m1.getSignature().equals(m2.getSignature())
+                && removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()));
     }
 
     // map of canonicalName -> Set<XMethod>
@@ -432,7 +431,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (badFieldName(obj)) {
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-            .addClass(this).addVisitedField(this));
+                            .addClass(this).addVisitedField(this));
         }
     }
 
@@ -447,8 +446,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
 
 
-    private static @CheckForNull
-    String getSignatureOfOuterClass(JavaClass obj) {
+    private static @CheckForNull String getSignatureOfOuterClass(JavaClass obj) {
         for (Field f : obj.getFields()) {
             if (f.getName().startsWith("this$")) {
                 return f.getSignature();
@@ -483,8 +481,7 @@ public class Naming extends PreorderVisitor implements Detector {
         return false;
     }
 
-    private static @CheckForNull
-    Method findVoidConstructor(JavaClass clazz) {
+    private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
         for (Method m : clazz.getMethods()) {
             if (isVoidConstructor(clazz, m)) {
                 return m;
@@ -545,7 +542,7 @@ public class Naming extends PreorderVisitor implements Detector {
         } else if (badMethodName(mName)) {
             bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-            .addClassAndMethod(this));
+                            .addClassAndMethod(this));
         }
 
         if (obj.isAbstract()) {

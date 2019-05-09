@@ -168,9 +168,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
                             bugReporter.reportBug(new BugInstance(this,
                                     STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"
                                             : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD", LOW_PRIORITY)
-                            .addField(
-                                    new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
-                                            false)).addClass(this).addSourceLine(this));
+                                                    .addField(
+                                                            new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
+                                                                    false)).addClass(this).addSourceLine(this));
                         }
                         break;
                     }

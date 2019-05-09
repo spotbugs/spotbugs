@@ -14,13 +14,13 @@ public class RFE2891944 {
         System.out.println(bd);
     }
 
-    @NoWarning(value="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE", confidence=Confidence.MEDIUM)
+    @NoWarning(value = "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE", confidence = Confidence.MEDIUM)
     public static void bug2() {
         BigDecimal bd = new BigDecimal(100.0);
         System.out.println(bd);
     }
 
-    @NoWarning(value="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE", confidence=Confidence.MEDIUM)
+    @NoWarning(value = "DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE", confidence = Confidence.MEDIUM)
     public static void bug3() {
         BigDecimal bd = new BigDecimal(1.0);
         System.out.println(bd);

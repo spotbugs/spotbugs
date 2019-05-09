@@ -74,8 +74,7 @@ public class JUnitDetectorAdapter implements Detector2 {
      * @see edu.umd.cs.findbugs.Detector2#finishPass()
      */
     @Override
-    public void finishPass() {
-    }
+    public void finishPass() {}
 
     /*
      * (non-Javadoc)

@@ -9,26 +9,27 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Feature333 {
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(long a, long b) {
-        return ((Long)a).compareTo(b);
+        return ((Long) a).compareTo(b);
     }
+
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(int a, int b) {
-        return ((Integer)a).compareTo(b);
+        return ((Integer) a).compareTo(b);
     }
 
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(String a, String b) {
-        return ((Integer)a.length()).compareTo(b.length());
+        return ((Integer) a.length()).compareTo(b.length());
     }
 
     @ExpectWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(Point a, Point b) {
-        return ((Integer)a.x).compareTo(b.x);
+        return ((Integer) a.x).compareTo(b.x);
     }
 
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(Point a, Integer b) {
-        return ((Integer)a.x).compareTo(b);
+        return ((Integer) a.x).compareTo(b);
     }
 
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
@@ -43,7 +44,7 @@ public class Feature333 {
 
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo(int a, List<Integer> b) {
-        return ((Integer)a).compareTo(b.get(0));
+        return ((Integer) a).compareTo(b.get(0));
     }
 
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
@@ -53,7 +54,7 @@ public class Feature333 {
 
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")
     public int compareTo3(int a, Integer b) {
-        return ((Integer)a).compareTo(b);
+        return ((Integer) a).compareTo(b);
     }
 
     @NoWarning("DM_BOXED_PRIMITIVE_FOR_COMPARE")

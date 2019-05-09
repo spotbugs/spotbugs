@@ -15,8 +15,7 @@ public class Bug2533036 {
         }
     }
 
-    static void m1(Z z) {
-    }
+    static void m1(Z z) {}
 
     @ExpectWarning("BC_UNCONFIRMED_CAST")
     static void m2(X x) {

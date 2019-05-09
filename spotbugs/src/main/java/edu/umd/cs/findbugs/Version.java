@@ -61,7 +61,7 @@ public class Version {
         if (!fromFile) {
             try {
                 final Enumeration<URL> resources = Version.class.getClassLoader()
-                    .getResources("META-INF/MANIFEST.MF");
+                        .getResources("META-INF/MANIFEST.MF");
                 while (resources.hasMoreElements()) {
                     try (final InputStream is = resources.nextElement().openStream()) {
                         final Manifest manifest = new Manifest(is);
@@ -109,7 +109,7 @@ public class Version {
             LOG.info(VERSION_STRING);
         } else if ("-plugins".equals(arg)) {
             DetectorFactoryCollection.instance();
-            for(Plugin p : Plugin.getAllPlugins()) {
+            for (Plugin p : Plugin.getAllPlugins()) {
                 LOG.info("Plugin: {}", p.getPluginId());
                 LOG.info("  description: {}", p.getShortDescription());
                 LOG.info("     provider: {}", p.getProvider());
@@ -123,7 +123,7 @@ public class Version {
                 }
                 LOG.info("");
             }
-        } else if ("-configuration".equals(arg)){
+        } else if ("-configuration".equals(arg)) {
             printVersion(true);
         } else {
             usage();
@@ -145,7 +145,7 @@ public class Version {
         }
         for (Plugin plugin : Plugin.getAllPlugins()) {
             LOG.info("Plugin {}, version {}, loaded from {}",
-                plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL());
+                    plugin.getPluginId(), plugin.getVersion(), plugin.getPluginLoader().getURL());
             if (plugin.isCorePlugin()) {
                 LOG.info("  is core plugin");
             }

@@ -43,50 +43,50 @@ public class Bug3566803 {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-                String driverName = "oracle.jdbc.driver.OracleDriver";
-                Class.forName(driverName);
-                String url = "";
-                String username = "";
-                String password = "";
+            String driverName = "oracle.jdbc.driver.OracleDriver";
+            Class.forName(driverName);
+            String url = "";
+            String username = "";
+            String password = "";
 
-                // Bug: We only close the resources opened in the last iteration
-                for (int i = 0; i < 10; i++) {
-                                connection = DriverManager.getConnection(url, username,
-                                                password);
+            // Bug: We only close the resources opened in the last iteration
+            for (int i = 0; i < 10; i++) {
+                connection = DriverManager.getConnection(url, username,
+                        password);
 
-                                pstmt = connection
-                                                .prepareStatement("SELECT count(1) from tab");
+                pstmt = connection
+                        .prepareStatement("SELECT count(1) from tab");
 
-                                rs = pstmt.executeQuery();
-                                while (rs.next()) {
-                                        System.out.println(rs.getString(1));
-                                }
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    System.out.println(rs.getString(1));
                 }
+            }
         } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            e.printStackTrace();
         } catch (SQLException sql) {
-                System.out.println("SQLException" + sql.getMessage());
+            System.out.println("SQLException" + sql.getMessage());
         } finally {
-                try {
-                        if (rs != null)
-                                rs.close();
-                } catch (SQLException e) {
-                        e.printStackTrace();
-                }
-                try {
-                        if (pstmt != null)
-                                pstmt.close();
-                } catch (SQLException e) {
-                        e.printStackTrace();
-                }
-                try {
-                        if (connection != null)
-                                connection.close();
-                } catch (SQLException e) {
-                        e.printStackTrace();
-                }
+            try {
+                if (rs != null)
+                    rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (pstmt != null)
+                    pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-}
+    }
 
 
 }

@@ -10,8 +10,7 @@ import javax.annotation.Nonnull;
 
 public class Bug2800825 {
 
-    public @Nonnull
-    Object getNonNullValue() {
+    public @Nonnull Object getNonNullValue() {
         return "dummy";
     }
 

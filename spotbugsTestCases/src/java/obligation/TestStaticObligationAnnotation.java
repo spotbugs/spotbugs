@@ -9,8 +9,7 @@ import edu.umd.cs.findbugs.annotations.DischargesObligation;
 @CleanupObligation
 public class TestStaticObligationAnnotation {
 
-    public static @CreatesObligation
-    TestStaticObligationAnnotation make() {
+    public static @CreatesObligation TestStaticObligationAnnotation make() {
         return new TestStaticObligationAnnotation();
     }
 
@@ -18,8 +17,7 @@ public class TestStaticObligationAnnotation {
 
     }
 
-    public static @DischargesObligation
-    void done() {
+    public static @DischargesObligation void done() {
 
     }
 

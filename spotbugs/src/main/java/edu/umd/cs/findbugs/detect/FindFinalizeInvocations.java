@@ -53,7 +53,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
         }
         if ("finalize".equals(getMethodName()) && "()V".equals(getMethodSig()) && (obj.getAccessFlags() & (Const.ACC_PUBLIC)) != 0) {
             bugReporter
-            .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
+                    .reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
         }
     }
 
@@ -91,7 +91,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "FI_EXPLICIT_INVOCATION", "finalize".equals(getMethodName())
                             && "()V".equals(getMethodSig()) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this)
-                            .addCalledMethod(this), this);
+                                    .addCalledMethod(this), this);
 
         }
         if (seen == Const.INVOKESPECIAL && "finalize".equals(getNameConstantOperand())) {

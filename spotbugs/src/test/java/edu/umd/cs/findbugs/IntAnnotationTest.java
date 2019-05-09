@@ -38,7 +38,7 @@ public class IntAnnotationTest {
         assertEquals("255", IntAnnotation.getShortInteger(255));
         assertEquals("-1", IntAnnotation.getShortInteger(-1));
         assertEquals("-2", IntAnnotation.getShortInteger(-2));
-        assertEquals( "0xffffffff",  IntAnnotation.getShortInteger(0xffffffffL));
+        assertEquals("0xffffffff", IntAnnotation.getShortInteger(0xffffffffL));
         assertEquals("0x1ffffffff", IntAnnotation.getShortInteger(0x1ffffffffL));
         assertEquals("0xfffffffff", IntAnnotation.getShortInteger(0xfffffffffL));
     }

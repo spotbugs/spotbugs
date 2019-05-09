@@ -1,4 +1,5 @@
 package lambdas;
+
 import javax.annotation.CheckForNull;
 
 public class Issue371 {

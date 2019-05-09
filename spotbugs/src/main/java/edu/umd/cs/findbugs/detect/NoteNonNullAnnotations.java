@@ -58,6 +58,5 @@ public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase imple
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

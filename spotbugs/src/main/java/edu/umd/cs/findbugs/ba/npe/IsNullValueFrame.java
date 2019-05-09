@@ -140,8 +140,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         this.decision = decision;
     }
 
-    public @CheckForNull
-    IsNullConditionDecision getDecision() {
+    public @CheckForNull IsNullConditionDecision getDecision() {
         return decision;
     }
 
@@ -171,8 +170,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
     }
 
-    public @CheckForNull
-    IsNullValue getKnownValue(ValueNumber valueNumber) {
+    public @CheckForNull IsNullValue getKnownValue(ValueNumber valueNumber) {
         assert trackValueNumbers;
         return knownValueMap.get(valueNumber);
     }
@@ -181,7 +179,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (trackValueNumbers) {
             return knownValueMap.keySet();
         } else {
-            return Collections.<ValueNumber> emptySet();
+            return Collections.<ValueNumber>emptySet();
         }
     }
 
@@ -189,7 +187,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (trackValueNumbers) {
             return knownValueMap.entrySet();
         } else {
-            return Collections.<Map.Entry<ValueNumber, IsNullValue>> emptySet();
+            return Collections.<Map.Entry<ValueNumber, IsNullValue>>emptySet();
         }
     }
 

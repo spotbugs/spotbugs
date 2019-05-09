@@ -28,6 +28,7 @@ public class Bug3464107 {
 
 
     }
+
     @Test
     @ExpectWarning("EC_INCOMPATIBLE_ARRAY_COMPARE")
     public void test3() {
@@ -36,6 +37,7 @@ public class Bug3464107 {
         org.testng.Assert.assertEquals((Object) numbers, (Object) numbers2);
 
     }
+
     @Test
     @NoWarning("EC")
     public void test4() {

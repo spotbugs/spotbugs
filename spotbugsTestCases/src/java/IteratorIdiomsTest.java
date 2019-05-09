@@ -31,8 +31,7 @@ public class IteratorIdiomsTest implements Iterator {
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
 }
 
 class NotAnIterator {
@@ -51,8 +50,7 @@ class NotAnIterator {
         return false;
     }
 
-    public void remove() {
-    }
+    public void remove() {}
 }
 
 class StringIterator implements Iterator<String> {
@@ -78,8 +76,7 @@ class StringIterator implements Iterator<String> {
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
 }
 
 class GenericIterator<X> implements Iterator<X> {
@@ -105,8 +102,7 @@ class GenericIterator<X> implements Iterator<X> {
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
 }
 
 class GenericIterator2<X extends Number> implements Iterator<X> {
@@ -132,6 +128,5 @@ class GenericIterator2<X extends Number> implements Iterator<X> {
     }
 
     @Override
-    public void remove() {
-    }
+    public void remove() {}
 }

@@ -23,18 +23,18 @@ package com.google.errorprone.bugpatterns;
  * @author eaftan@google.com (Eddie Aftandilian)
  */
 public enum CovariantEqualsPositiveCase4 {
-  MERCURY,
-  VENUS,
-  EARTH,
-  MARS,
-  JUPITER,
-  SATURN,
-  URANUS,
-  NEPTUNE,
-  PLUTO;   // I don't care what they say, Pluto *is* a planet.
+    MERCURY,
+    VENUS,
+    EARTH,
+    MARS,
+    JUPITER,
+    SATURN,
+    URANUS,
+    NEPTUNE,
+    PLUTO; // I don't care what they say, Pluto *is* a planet.
 
-  //BUG: Suggestion includes "remove this line"
-  public boolean equals(CovariantEqualsPositiveCase4 other) {
-    return this == other;
-  }
+    //BUG: Suggestion includes "remove this line"
+    public boolean equals(CovariantEqualsPositiveCase4 other) {
+        return this == other;
+    }
 }

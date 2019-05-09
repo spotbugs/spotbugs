@@ -30,6 +30,7 @@ public class Bug1241 {
 
         return one.compareTo(two); // Bug found on this line
     }
+
     @NoWarning("NP")
     static int nullSafeStringComparatorFixed2(final String one, final String two) {
         if (one == null ^ two == null) {

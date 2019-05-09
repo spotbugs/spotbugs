@@ -35,7 +35,6 @@ public class Finalizer {
 
     class Deviant extends Parent {
         @Override
-        protected void finalize() {
-        }
+        protected void finalize() {}
     }
 }

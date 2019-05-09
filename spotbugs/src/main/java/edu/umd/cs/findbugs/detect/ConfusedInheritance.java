@@ -56,6 +56,5 @@ public class ConfusedInheritance extends PreorderVisitor implements Detector {
     }
 
     @Override
-    public void report() {
-    }
+    public void report() {}
 }

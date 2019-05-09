@@ -27,6 +27,7 @@ public class Bug3152881 {
             }
         }
     }
+
     @NoWarning("OBL_UNSATISFIED_OBLIGATION")
     void falsePositive2(Connection connection)
             throws SQLException {

@@ -35,7 +35,7 @@ public enum BugRankCategory {
 
     @Nonnull
     static public BugRankCategory getRank(int rank) {
-        for(BugRankCategory c : values()) {
+        for (BugRankCategory c : values()) {
             if (rank <= c.maxRank) {
                 return c;
             }
@@ -49,9 +49,9 @@ public enum BugRankCategory {
 
     @Override
     public String toString() {
-        if(this == OF_CONCERN) {
+        if (this == OF_CONCERN) {
             return "Of Concern";
         }
-        return name().substring(0,1) + name().toLowerCase().substring(1, name().length());
+        return name().substring(0, 1) + name().toLowerCase().substring(1, name().length());
     }
 }

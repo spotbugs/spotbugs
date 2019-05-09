@@ -16,7 +16,7 @@ public class Feature328 {
         public int compareTo(FloatHolder o) {
             float d1 = d;
             float d2 = o.d;
-            return d1 > d2 ? 1: d1 == d2 ? 0 : -1;
+            return d1 > d2 ? 1 : d1 == d2 ? 0 : -1;
         }
     }
 
@@ -31,7 +31,7 @@ public class Feature328 {
         @ExpectWarning("CO_COMPARETO_INCORRECT_FLOATING")
         public int compareTo(FloatHolder2 o) {
             float diff = d - o.d;
-            return diff > 0 ? 1: diff < 0 ? 0 : -1;
+            return diff > 0 ? 1 : diff < 0 ? 0 : -1;
         }
     }
 
@@ -61,7 +61,7 @@ public class Feature328 {
         public int compareTo(DoubleHolder o) {
             double d1 = d;
             double d2 = o.d;
-            return d1 > d2 ? 1: d1 == d2 ? 0 : -1;
+            return d1 > d2 ? 1 : d1 == d2 ? 0 : -1;
         }
     }
 

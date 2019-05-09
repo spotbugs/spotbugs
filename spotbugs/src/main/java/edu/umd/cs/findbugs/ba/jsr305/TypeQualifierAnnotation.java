@@ -57,12 +57,13 @@ public class TypeQualifierAnnotation {
     // TypeQualifierAnnotation> map = new DualKeyHashMap <TypeQualifierValue,
     // When, TypeQualifierAnnotation> ();
 
-    private static ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>> instance = new ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>>() {
-        @Override
-        protected DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> initialValue() {
-            return new DualKeyHashMap<>();
-        }
-    };
+    private static ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>> instance =
+            new ThreadLocal<DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation>>() {
+                @Override
+                protected DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> initialValue() {
+                    return new DualKeyHashMap<>();
+                }
+            };
 
     public static void clearInstance() {
         instance.remove();
@@ -117,8 +118,7 @@ public class TypeQualifierAnnotation {
      *         both <code>a</code> or <code>b</code>, or null if no such
      *         TypeQualifierAnnotation exists
      */
-    public static @CheckForNull
-    TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineReturnValueMatrix);
     }
 
@@ -131,8 +131,7 @@ public class TypeQualifierAnnotation {
      * @return combined parameter annotation that is at least as wide as both a
      *         and b
      */
-    public static @Nonnull
-    TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @Nonnull TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineParameterMatrix);
     }
 
@@ -156,8 +155,7 @@ public class TypeQualifierAnnotation {
         }
     }
 
-    public static @Nonnull
-    Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
+    public static @Nonnull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
         Collection<TypeQualifierAnnotation> result = new LinkedList<>();
         for (Map.Entry<TypeQualifierValue<?>, When> e : map.entrySet()) {
             result.add(getValue(e.getKey(), e.getValue()));
@@ -165,8 +163,7 @@ public class TypeQualifierAnnotation {
         return result;
     }
 
-    public static @Nonnull
-    TypeQualifierAnnotation getValue(TypeQualifierValue<?> desc, When when) {
+    public static @Nonnull TypeQualifierAnnotation getValue(TypeQualifierValue<?> desc, When when) {
         DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> map = instance.get();
         TypeQualifierAnnotation result = map.get(desc, when);
         if (result != null) {

@@ -64,6 +64,7 @@ abstract class Bug2672946B extends Bug2672946A {
             System.out.println("Found it");
         return (Bug2672946B) field;
     }
+
     @ExpectWarning("NP")
     public Object foo() {
         if (bar().hashCode() == 17)
@@ -77,18 +78,21 @@ abstract class Bug2672946B extends Bug2672946A {
             return "x";
         return null;
     }
+
     @ExpectWarning("NP")
     public Object foo3() {
         if (bar2().hashCode() == 17)
             return "x";
         return null;
     }
+
     @ExpectWarning("NP")
     public Object foo4() {
         if (getField2().hashCode() == 17)
             return "x";
         return null;
     }
+
     abstract Object bar();
 
     abstract @CheckForNull Object bar2();

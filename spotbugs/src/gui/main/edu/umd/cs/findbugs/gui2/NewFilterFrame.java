@@ -126,8 +126,8 @@ public class NewFilterFrame extends FBDialog {
         north.add(comboBox);
         north.add(new JLabel(" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "));
         String[] filterModes = { edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to"),
-                edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after"),
-                edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") };
+            edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after"),
+            edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") };
         final JComboBox<String> filterModeComboBox = new JComboBox<>(filterModes);
         north.add(filterModeComboBox);
         north.add(new JLabel(":"));

@@ -2,7 +2,7 @@ import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 class SynchronizationTest5 {
-    @ExpectWarning(value = "IS2_INCONSISTENT_SYNC", confidence=Confidence.MEDIUM)
+    @ExpectWarning(value = "IS2_INCONSISTENT_SYNC", confidence = Confidence.MEDIUM)
     int x;
 
     public synchronized void add1() {

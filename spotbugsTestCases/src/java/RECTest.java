@@ -16,8 +16,7 @@ public class RECTest {
         throw new IOException();
     }
 
-    public void throwsNothing() {
-    }
+    public void throwsNothing() {}
 
     public void throwsException() throws Exception {
         throw new Exception();
@@ -31,8 +30,7 @@ public class RECTest {
         throw new IOException();
     }
 
-    private void dontTriggerEmptyExceptionHandler() {
-    }
+    private void dontTriggerEmptyExceptionHandler() {}
 
     // should fail -- catches E, but E not thrown
     public void testFail() {

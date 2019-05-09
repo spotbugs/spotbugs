@@ -46,8 +46,7 @@ public class MethodHash implements Comparable<MethodHash> {
     /**
      * Constructor. computeHash(Method) must be used to initialize the contents.
      */
-    public MethodHash() {
-    }
+    public MethodHash() {}
 
     /**
      * Constructor.

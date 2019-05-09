@@ -24,6 +24,6 @@ package com.google.errorprone.bugpatterns;
  */
 public class CovariantEqualsPositiveCase5 {
 
-  //BUG: Suggestion includes "@Override"
-  public native boolean equals(CovariantEqualsPositiveCase5 other);
+    //BUG: Suggestion includes "@Override"
+    public native boolean equals(CovariantEqualsPositiveCase5 other);
 }

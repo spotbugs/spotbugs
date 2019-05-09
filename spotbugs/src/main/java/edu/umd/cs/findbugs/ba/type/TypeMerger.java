@@ -42,4 +42,3 @@ public interface TypeMerger {
      */
     public Type mergeTypes(Type a, Type b) throws DataflowAnalysisException;
 }
-
