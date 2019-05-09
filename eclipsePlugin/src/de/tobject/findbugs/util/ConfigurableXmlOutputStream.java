@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Assert;
@@ -61,7 +61,7 @@ public class ConfigurableXmlOutputStream implements XMLOutput {
      */
     public ConfigurableXmlOutputStream(OutputStream os, boolean plainText) {
         this.plainText = plainText;
-        this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+        this.out = new OutputStreamWriter(os, StandardCharsets.UTF_8);
         this.nestingLevel = 0;
         this.newLine = true;
     }
