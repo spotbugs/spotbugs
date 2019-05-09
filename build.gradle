@@ -1,5 +1,6 @@
 plugins {
   id 'org.sonarqube' version '2.6.2'
+  id "com.diffplug.gradle.spotless" version "3.23.0"
 }
 
 version = '4.0.0-SNAPSHOT'
@@ -14,6 +15,7 @@ subprojects {
   apply from: "$rootDir/gradle/idea.gradle"
   apply from: "$rootDir/gradle/test.gradle"
   apply from: "$rootDir/gradle/jacoco.gradle"
+  apply from: "$rootDir/gradle/spotless.gradle"
 
   group = 'com.github.spotbugs'
   version = rootProject.version

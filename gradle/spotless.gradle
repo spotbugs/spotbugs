@@ -1,0 +1,9 @@
+apply plugin: "com.diffplug.gradle.spotless"
+
+spotless {
+  java {
+    removeUnusedImports()
+    eclipse().configFile "${rootProject.projectDir}/gradle/eclipse-formatter.xml"
+    endWithNewline()
+  }
+}
