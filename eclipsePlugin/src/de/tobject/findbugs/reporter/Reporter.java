@@ -23,6 +23,7 @@ package de.tobject.findbugs.reporter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -193,8 +194,9 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
         Profiler profiler = stats.getProfiler();
         PrintStream printStream;
+        
         try {
-            printStream = new PrintStream(stream, false, "UTF-8");
+            printStream = new PrintStream(stream, false, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e1) {
             // can never happen with UTF-8
             return;

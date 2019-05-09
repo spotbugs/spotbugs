@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -138,7 +139,7 @@ public class SAXBugCollectionHandlerTest {
 
         // read it back in
         SortedBugCollection bc = new SortedBugCollection();
-        bc.readXML(new StringReader(new String(outBytes.toByteArray(), "UTF-8")));
+        bc.readXML(new StringReader(new String(outBytes.toByteArray(), StandardCharsets.UTF_8)));
 
         // check it
         assertEquals(1, bc.getCollection().size());
