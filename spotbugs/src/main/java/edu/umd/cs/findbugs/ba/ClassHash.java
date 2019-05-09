@@ -25,6 +25,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -172,7 +173,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 
         // Compute digest of method names and signatures, in order.
         // Also, compute method hashes.
-        CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
+        CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
         for (Method method : methodList) {
             work(digest, method.getName(), encoder);
             work(digest, method.getSignature(), encoder);

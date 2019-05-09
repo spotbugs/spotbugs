@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.annotation.WillCloseWhenClosed;
 
@@ -83,7 +84,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
      *            name of stylesheet
      */
     public OutputStreamXMLOutput(@WillCloseWhenClosed OutputStream os, String stylesheet) {
-        this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+        this.out = new OutputStreamWriter(os, StandardCharsets.UTF_8);
         this.nestingLevel = 0;
         this.newLine = true;
         this.stylesheet = stylesheet;
