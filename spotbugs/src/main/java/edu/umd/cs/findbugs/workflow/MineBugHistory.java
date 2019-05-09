@@ -159,18 +159,16 @@ public class MineBugHistory {
 
         AppVersion currentAppVersion = bugCollection.getCurrentAppVersion();
         sequenceToAppVersionMap.put(sequenceNumber, currentAppVersion);
-
-        for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
-            BugInstance bugInstance = j.next();
-
+    
+        for (BugInstance bugInstance : bugCollection) {
             for (int i = 0; i <= maxSequence; ++i) {
                 if (bugInstance.getFirstVersion() > i) {
                     continue;
                 }
                 boolean activePrevious = bugInstance.getFirstVersion() < i
-                        && (!bugInstance.isDead() || bugInstance.getLastVersion() >= i - 1);
+                    && (!bugInstance.isDead() || bugInstance.getLastVersion() >= i - 1);
                 boolean activeCurrent = !bugInstance.isDead() || bugInstance.getLastVersion() >= i;
-
+            
                 int key = getKey(activePrevious, activeCurrent);
                 if (key == REMOVED && !bugInstance.isRemovedByChangeOfPersistingClass()) {
                     key = REMOVEDCODE;

@@ -129,9 +129,8 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             warningsByClass = new HashMap<>();
             warningsByMethod = new HashMap<>();
             warningsByField = new HashMap<>();
-
-            for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
-                BugInstance warning = i.next();
+    
+            for (BugInstance warning : bugCollection) {
                 MethodAnnotation method = warning.getPrimaryMethod();
                 if (method != null) {
                     MethodDescriptor methodDesc = method.toMethodDescriptor();
@@ -147,14 +146,13 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     FieldDescriptor fieldDescriptor = field.toFieldDescriptor();
                     Collection<BugInstance> warnings = warningsByField.computeIfAbsent(fieldDescriptor,
                         k -> new LinkedList<>());
-    
                     warnings.add(warning);
                 }
-
+        
                 ClassAnnotation clazz = warning.getPrimaryClass();
                 if (clazz != null) {
                     ClassDescriptor classDesc = clazz.getClassDescriptor();
-                    if(field != null && classDesc.equals(field.getClassDescriptor())) {
+                    if (field != null && classDesc.equals(field.getClassDescriptor())) {
                         continue;
                     }
                     if (method != null && classDesc.equals(method.getClassDescriptor())) {
@@ -164,7 +162,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                         k -> new LinkedList<>());
                     warnings.add(warning);
                 }
-
+        
             }
 
         }

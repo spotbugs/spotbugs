@@ -617,8 +617,7 @@ public class SortedBugCollection implements BugCollection {
     private void writeBugPatterns(XMLOutput xmlOutput) throws IOException {
         // Find bug types reported
         Set<String> bugTypeSet = new HashSet<>();
-        for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
-            BugInstance bugInstance = i.next();
+        for (BugInstance bugInstance : this) {
             BugPattern bugPattern = bugInstance.getBugPattern();
             bugTypeSet.add(bugPattern.getType());
         }
@@ -653,8 +652,7 @@ public class SortedBugCollection implements BugCollection {
     private void writeBugCodes(XMLOutput xmlOutput) throws IOException {
         // Find bug codes reported
         Set<String> bugCodeSet = new HashSet<>();
-        for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
-            BugInstance bugInstance = i.next();
+        for (BugInstance bugInstance : this) {
             String bugCode = bugInstance.getAbbrev();
             if (bugCode != null) {
                 bugCodeSet.add(bugCode);
@@ -686,8 +684,7 @@ public class SortedBugCollection implements BugCollection {
     private void writeBugCategories(XMLOutput xmlOutput) throws IOException {
         // Find bug categories reported
         Set<String> bugCatSet = new HashSet<>();
-        for (Iterator<BugInstance> i = iterator(); i.hasNext();) {
-            BugInstance bugInstance = i.next();
+        for (BugInstance bugInstance : this) {
             BugPattern bugPattern = bugInstance.getBugPattern();
             bugCatSet.add(bugPattern.getCategory());
         }

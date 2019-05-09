@@ -183,11 +183,9 @@ public class ClassContext {
      */
     public void purgeMethodAnalyses(MethodDescriptor methodDescriptor) {
         Set<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> entrySet = methodAnalysisObjectMap.entrySet();
-        for (Iterator<Map.Entry<Class<?>, Map<MethodDescriptor, Object>>> i = entrySet.iterator(); i.hasNext();) {
-            Map.Entry<Class<?>, Map<MethodDescriptor, Object>> entry = i.next();
-
+        for (Map.Entry<Class<?>, Map<MethodDescriptor, Object>> entry : entrySet) {
             Class<?> cls = entry.getKey();
-
+        
             // FIXME: hack
             if (!DataflowAnalysis.class.isAssignableFrom(cls) && !Dataflow.class.isAssignableFrom(cls)) {
                 // There is really no need to purge analysis results
@@ -196,7 +194,7 @@ public class ClassContext {
                 // to be purged.
                 continue;
             }
-
+        
             entry.getValue().remove(methodDescriptor);
         }
     }

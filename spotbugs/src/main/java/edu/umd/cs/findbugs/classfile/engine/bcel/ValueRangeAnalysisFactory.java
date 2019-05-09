@@ -764,16 +764,14 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         if (!redundantConditions.isEmpty()) {
             BitSet assertionBlocks = new BitSet();
             MethodGen methodGen = cfg.getMethodGen();
-            Iterator<InstructionHandle> iterator = methodGen.getInstructionList().iterator();
-            while(iterator.hasNext()) {
-                InstructionHandle ih = iterator.next();
-                if(ih.getInstruction() instanceof GETSTATIC) {
+            for (InstructionHandle ih : methodGen.getInstructionList()) {
+                if (ih.getInstruction() instanceof GETSTATIC) {
                     Instruction next = ih.getNext().getInstruction();
-                    if(next instanceof IFNE) {
-                        GETSTATIC getStatic = (GETSTATIC)ih.getInstruction();
+                    if (next instanceof IFNE) {
+                        GETSTATIC getStatic = (GETSTATIC) ih.getInstruction();
                         if ("$assertionsDisabled".equals(getStatic.getFieldName(methodGen.getConstantPool()))
-                                && "Z".equals(getStatic.getSignature(methodGen.getConstantPool()))) {
-                            int end = ((IFNE)next).getTarget().getPosition();
+                            && "Z".equals(getStatic.getSignature(methodGen.getConstantPool()))) {
+                            int end = ((IFNE) next).getTarget().getPosition();
                             assertionBlocks.set(ih.getNext().getPosition(), end);
                         }
                     }
