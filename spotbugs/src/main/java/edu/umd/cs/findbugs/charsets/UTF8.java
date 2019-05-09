@@ -34,7 +34,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import javax.annotation.WillCloseWhenClosed;
@@ -47,7 +46,7 @@ public class UTF8 {
     /**
      *
      */
-    private static final String UTF_8 = "UTF-8";
+    private static final String UTF_8 = StandardCharsets.UTF_8.name();
 
     public static PrintStream printStream(OutputStream out) {
         return printStream(out, false);
