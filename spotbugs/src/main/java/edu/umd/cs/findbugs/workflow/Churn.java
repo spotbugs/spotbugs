@@ -108,10 +108,8 @@ public class Churn {
         data.put("all", all);
         aliveAt = new int[(int) bugCollection.getSequenceNumber() + 1];
         diedAfter = new int[(int) bugCollection.getSequenceNumber() + 1];
-
-        for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
-            BugInstance bugInstance = j.next();
-
+    
+        for (BugInstance bugInstance : bugCollection) {
             String key = getKey(bugInstance);
             Data d = data.get(key);
             if (d == null) {
@@ -119,16 +117,16 @@ public class Churn {
             }
             d.update(bugInstance);
             all.update(bugInstance);
-
+        
             long first = bugInstance.getFirstVersion();
             long last = bugInstance.getLastVersion();
-
+        
             if (last != -1) {
                 System.out.printf("%3d #fixed %s%n", last, key);
             }
             if (first != 0 && last != -1) {
                 int lifespan = (int) (last - first + 1);
-
+            
                 System.out.printf("%3d #age %s%n", lifespan, key);
                 System.out.printf("%3d %3d #spread %s%n", first, last, key);
                 diedAfter[lifespan]++;

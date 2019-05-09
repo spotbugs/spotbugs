@@ -822,42 +822,40 @@ public class FindInconsistentSync2 implements Detector {
         }
 
         int count = 0;
-        Iterator<InstructionHandle> it = il.iterator();
-        while (it.hasNext()) {
-            InstructionHandle ih = it.next();
+        for (InstructionHandle ih : il) {
             switch (ih.getInstruction().getOpcode()) {
-            case Const.GETFIELD:
-                count++;
-                if (count > 1) {
+                case Const.GETFIELD:
+                    count++;
+                    if (count > 1) {
+                        return false;
+                    }
+                    break;
+                case Const.PUTFIELD:
+                case Const.BALOAD:
+                case Const.CALOAD:
+                case Const.DALOAD:
+                case Const.FALOAD:
+                case Const.IALOAD:
+                case Const.LALOAD:
+                case Const.SALOAD:
+                case Const.AALOAD:
+                case Const.BASTORE:
+                case Const.CASTORE:
+                case Const.DASTORE:
+                case Const.FASTORE:
+                case Const.IASTORE:
+                case Const.LASTORE:
+                case Const.SASTORE:
+                case Const.AASTORE:
+                case Const.PUTSTATIC:
                     return false;
-                }
-                break;
-            case Const.PUTFIELD:
-            case Const.BALOAD:
-            case Const.CALOAD:
-            case Const.DALOAD:
-            case Const.FALOAD:
-            case Const.IALOAD:
-            case Const.LALOAD:
-            case Const.SALOAD:
-            case Const.AALOAD:
-            case Const.BASTORE:
-            case Const.CASTORE:
-            case Const.DASTORE:
-            case Const.FASTORE:
-            case Const.IASTORE:
-            case Const.LASTORE:
-            case Const.SASTORE:
-            case Const.AASTORE:
-            case Const.PUTSTATIC:
-                return false;
-            case Const.INVOKESTATIC:
-            case Const.INVOKEVIRTUAL:
-            case Const.INVOKEINTERFACE:
-            case Const.INVOKESPECIAL:
-            case Const.GETSTATIC:
-                // no-op
-
+                case Const.INVOKESTATIC:
+                case Const.INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESPECIAL:
+                case Const.GETSTATIC:
+                    // no-op
+            
             }
         }
         // System.out.println("Found getter method: " + method.getName());

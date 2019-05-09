@@ -284,10 +284,8 @@ public class UserPreferences implements Cloneable {
             String key = "recent" + i;
             props.put(key, projectName);
         }
-
-        Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, Boolean> entry = it.next();
+    
+        for (Entry<String, Boolean> entry : detectorEnablementMap.entrySet()) {
             props.put("detector" + entry.getKey(), entry.getKey() + BOOL_SEPARATOR + String.valueOf(entry.getValue().booleanValue()));
         }
 

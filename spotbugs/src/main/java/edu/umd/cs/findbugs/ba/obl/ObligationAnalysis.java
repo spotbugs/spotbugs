@@ -428,14 +428,12 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             // When both inputFact and result fact have a State
             // with a common ObligationSet, we combine them into
             // a single State.
-            for (Iterator<ObligationSet> i = allObligationSets.iterator(); i.hasNext();) {
-                ObligationSet obligationSet = i.next();
-
+            for (ObligationSet obligationSet : allObligationSets) {
                 State stateInInputFact = inputFact.getStateWithObligationSet(obligationSet);
                 State stateInResultFact = result.getStateWithObligationSet(obligationSet);
-
+        
                 State stateToAdd;
-
+        
                 if (stateInInputFact != null && stateInResultFact != null) {
                     // Combine the two states,
                     // using the shorter path as the basis
@@ -446,7 +444,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                     if (stateInInputFact.getPath().getLength() < path.getLength()) {
                         path = stateInInputFact.getPath();
                     }
-
+            
                     stateToAdd = new State(factory);
                     stateToAdd.getObligationSet().copyFrom(obligationSet);
                     stateToAdd.getPath().copyFrom(path);
@@ -455,7 +453,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                 } else {
                     stateToAdd = stateInResultFact.duplicate();
                 }
-
+        
                 updatedStateMap.put(stateToAdd.getObligationSet(), stateToAdd);
             }
 
