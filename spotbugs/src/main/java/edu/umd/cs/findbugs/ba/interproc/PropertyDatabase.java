@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -193,7 +194,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
     public void write(@WillClose OutputStream out) throws IOException {
     
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, UTF8.charset))) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
         
             TreeSet<KeyType> sortedMethodSet = new TreeSet<>();
             sortedMethodSet.addAll(propertyMap.keySet());
