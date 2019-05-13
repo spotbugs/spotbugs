@@ -66,6 +66,7 @@ dependencies {
   compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
   compile 'commons-lang:commons-lang:2.6'
   compile 'org.slf4j:slf4j-api:1.8.0-beta2'
+  compile 'net.sf.saxon:Saxon-HE:9.9.1-2'
   logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
 
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.

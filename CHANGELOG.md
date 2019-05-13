@@ -6,6 +6,14 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
+### Fixed
+
+* HTML report cannot be generated with `fancy-hist.xsl` ([#944](https://github.com/spotbugs/spotbugs/issues/944))
+
+### Added
+
+* Depend on XLS2 engine explicitly ([#944](https://github.com/spotbugs/spotbugs/issues/944))
+
 ### Changed
 
 * Replace to try-with-resources
