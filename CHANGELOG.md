@@ -23,6 +23,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Change to removeIf from Iterator and Iterator.remove
 * Use Map.computeIfAbsent instead of Map.get and Map.put
 * Use for-each instead of for-loop and while-loop
+* Bump up SLF4J API to `1.8.0-beta4`
 
 ## 4.0.0-beta1 - 2019-03-27
 
