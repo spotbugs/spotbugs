@@ -60,7 +60,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
             xsl.setSystemId(stylesheet);
 
             // Create a transformer using the stylesheet
-            TransformerFactory factory = TransformerFactory.newInstance();
+            TransformerFactory factory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
             Transformer transformer = factory.newTransformer(xsl);
 
             // Source document is the XML generated from the BugCollection
