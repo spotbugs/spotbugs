@@ -509,7 +509,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         }
         StreamSource xsl = new StreamSource(xslInputStream);
 
-        TransformerFactory tf = TransformerFactory.newInstance();
+        TransformerFactory tf = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
         Transformer transformer = tf.newTransformer(xsl);
         transformer.transform(in, out);
 
