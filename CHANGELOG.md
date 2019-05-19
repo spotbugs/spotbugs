@@ -12,7 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 
-* Depend on XLS2 engine explicitly ([#944](https://github.com/spotbugs/spotbugs/issues/944))
+* Depend on XSLT 2 engine explicitly ([#944](https://github.com/spotbugs/spotbugs/issues/944))
 
 ### Changed
 
