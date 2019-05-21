@@ -38,8 +38,8 @@ msgstr "`Gradle プラグインの公式ページ <https://plugins.gradle.org/pl
 #: ../../gradle.rst:11
 msgid ""
 "Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to "
-"use v5 or later."
-msgstr "SpotBugs PluginはGradleバージョン4をサポートしません。バージョン5以降を使用してください。"
+"use v5.1 or later."
+msgstr "SpotBugs PluginはGradleバージョン4をサポートしません。バージョン5.1以降を使用してください。"
 
 #: ../../gradle.rst:14
 msgid "Tasks introduced by this Gradle Plugin"
@@ -107,4 +107,3 @@ msgid ""
 "So define sourceSets explicitly, then SpotBugs Gradle plugin generates "
 "tasks for each of them."
 msgstr "sourceSet を明示的に定義すると，SpotBugs Gradle プラグインは sourceSet ごとにタスクを生成します。"
-

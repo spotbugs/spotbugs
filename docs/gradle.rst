@@ -8,7 +8,7 @@ Use SpotBugs Gradle Plugin
 
 Please follow instruction found on `official Gradle Plugin page <https://plugins.gradle.org/plugin/com.github.spotbugs>`_.
 
-Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to use v5 or later.
+Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to use v5.1 or later.
 
 Tasks introduced by this Gradle Plugin
 --------------------------------------
