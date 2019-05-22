@@ -45,7 +45,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-  archives jar, sourcesJar
+  archives sourcesJar
 }
 
 jacocoTestReport {
