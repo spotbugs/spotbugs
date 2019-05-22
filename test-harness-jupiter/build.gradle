@@ -39,7 +39,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-  archives jar, javadocJar, sourcesJar
+  archives javadocJar, sourcesJar
 }
 
 uploadArchives {
