@@ -125,7 +125,7 @@ public class Location implements Comparable<Location> {
     @Override
     public int hashCode() {
         if (hash == 0) {
-            return hash = System.identityHashCode(basicBlock) + handle.getPosition();
+            return hash = Objects.hash(basicBlock.getLabel(), handle.getPosition());
         }
         return hash;
     }
@@ -136,7 +136,8 @@ public class Location implements Comparable<Location> {
             return false;
         }
         Location other = (Location) o;
-        return basicBlock == other.basicBlock && handle == other.handle;
+        return basicBlock.getLabel() == other.basicBlock.getLabel()
+                && handle.getPosition() == other.handle.getPosition();
     }
 
     @Override

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
@@ -69,7 +68,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
     private final ValueNumber[] entryLocalValueList;
 
-    private final IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
+    private final HashMap<Integer, ValueNumber> exceptionHandlerValueNumberMap;
 
     private ValueNumber thisValue;
 
@@ -94,7 +93,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
             this.entryLocalValueList[i] = factory.createFreshValue();
         }
 
-        this.exceptionHandlerValueNumberMap = new IdentityHashMap<>();
+        this.exceptionHandlerValueNumberMap = new HashMap<>();
 
         // For non-static methods, keep track of which value represents the
         // "this" reference
@@ -452,10 +451,11 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     // }
 
     private ValueNumber getExceptionValueNumber(BasicBlock handlerBlock) {
-        ValueNumber valueNumber = exceptionHandlerValueNumberMap.get(handlerBlock);
+        Integer handlerBlockLabel = handlerBlock.getLabel();
+        ValueNumber valueNumber = exceptionHandlerValueNumberMap.get(handlerBlockLabel);
         if (valueNumber == null) {
             valueNumber = factory.createFreshValue();
-            exceptionHandlerValueNumberMap.put(handlerBlock, valueNumber);
+            exceptionHandlerValueNumberMap.put(handlerBlockLabel, valueNumber);
         }
         return valueNumber;
     }
