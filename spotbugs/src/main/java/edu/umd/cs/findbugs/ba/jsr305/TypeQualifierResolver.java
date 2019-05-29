@@ -73,6 +73,10 @@ public class TypeQualifierResolver {
 
     static final ClassDescriptor checkerFrameworkNullableDecl = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl");
 
+    static final ClassDescriptor checkerFrameworkNonNull = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/NonNull");
+
+    static final ClassDescriptor checkerFrameworkNonNullDecl = DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NonNullDecl");
+
     // javax.annotations.ParametersAreNonnullByDefault ?
     static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
 
@@ -150,7 +154,9 @@ public class TypeQualifierResolver {
                         || annotationClass.equals(androidxNonNull)
                         || annotationClass.equals(eclipseNonNull)
                         || annotationClass.equals(eclipseNonNullByDefault)
-                        || annotationClass.equals(intellijNotNull)) {
+                        || annotationClass.equals(intellijNotNull)
+                        || annotationClass.equals(checkerFrameworkNonNull)
+                        || annotationClass.equals(checkerFrameworkNonNullDecl)) {
                     resolveTypeQualifierNicknames(new AnnotationValue(JSR305NullnessAnnotations.NONNULL), result, onStack);
                     return;
                 }
