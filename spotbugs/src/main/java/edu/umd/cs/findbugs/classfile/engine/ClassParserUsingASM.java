@@ -517,6 +517,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 mBuilder.addParameterAnnotation(typeRefObject.getFormalParameterIndex(), desc, value);
                 return value.getAnnotationVisitor();
             }
+            if (typeRefObject.getSort() == TypeReference.METHOD_RETURN) {
+                // treat as method annotation
+                AnnotationValue value = new AnnotationValue(desc);
+                mBuilder.addAnnotation(desc, value);
+                return value.getAnnotationVisitor();
+            }
             return null;
         }
     }

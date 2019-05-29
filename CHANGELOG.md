@@ -6,6 +6,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
+### Added
+
+* Provide support for CheckerFramework @NonNull annotation
+* Recognize CheckerFramework type annotations on method return values ([#960](https://github.com/spotbugs/spotbugs/pull/960))
+
 ## 4.0.0-beta2 - 2019-05-21
 
 ### Fixed
