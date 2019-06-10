@@ -395,10 +395,10 @@ public class BugInfoView extends AbstractFindbugsView {
     }
 
     private static String toSafeHtml(String s) {
-        if (s.indexOf(">") >= 0) {
+        if (s.indexOf('>') >= 0) {
             s = s.replace(">", "&gt;");
         }
-        if (s.indexOf("<") >= 0) {
+        if (s.indexOf('<') >= 0) {
             s = s.replace("<", "&lt;");
         }
         return s;
