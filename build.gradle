@@ -1,5 +1,5 @@
 plugins {
-  id 'org.sonarqube' version '2.6.2'
+  id 'org.sonarqube' version '2.7.1'
 }
 
 version = '4.0.0-SNAPSHOT'
