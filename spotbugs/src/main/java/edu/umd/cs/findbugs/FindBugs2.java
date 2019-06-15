@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import org.apache.bcel.classfile.ClassFormatException;
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1104,19 +1103,13 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                                 if (isHuge && !FirstPassDetector.class.isAssignableFrom(detector.getClass())) {
                                     return null;
                                 }
-                                if (DEBUG) {
-                                    System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
-                                }
+                                LOG.debug("Applying {} to {}", detector.getDetectorClassName(), classDescriptor);
                                 try {
                                     profiler.start(detector.getClass());
                                     detector.visitClass(classDescriptor);
-                                } catch (ClassFormatException e) {
-                                    logRecoverableException(classDescriptor, detector, e);
                                 } catch (MissingClassException e) {
                                     Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
-                                } catch (CheckedAnalysisException e) {
-                                    logRecoverableException(classDescriptor, detector, e);
-                                } catch (RuntimeException e) {
+                                } catch (CheckedAnalysisException | RuntimeException e) {
                                     logRecoverableException(classDescriptor, detector, e);
                                 } finally {
                                     profiler.end(detector.getClass());
