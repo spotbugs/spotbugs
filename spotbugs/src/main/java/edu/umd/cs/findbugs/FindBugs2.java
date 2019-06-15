@@ -1237,6 +1237,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
             // Away we go!
 
             FindBugs.runMain(findBugs, commandLine);
+        } finally {
+            service.shutdown();
         }
     }
 
