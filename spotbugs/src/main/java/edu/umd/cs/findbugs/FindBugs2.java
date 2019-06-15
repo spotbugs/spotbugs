@@ -1096,8 +1096,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     currentAnalysisContext.setClassBeingAnalyzed(classDescriptor);
 
                     try {
-                        Collection<Callable<Void>> tasks = Arrays.stream(detectorList).map(detector -> {
-                            return (Callable<Void>) () -> {
+                        Collection<Callable<Void>> tasks = Arrays.stream(detectorList).map(detector ->
+                            (Callable<Void>) () -> {
                                 if (Thread.interrupted()) {
                                     throw new InterruptedException();
                                 }
@@ -1122,8 +1122,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                                     profiler.end(detector.getClass());
                                 }
                                 return null;
-                            };
-                        }).collect(Collectors.toList());
+                            }
+                        ).collect(Collectors.toList());
                         service.invokeAll(tasks).forEach(future -> {
                             try {
                                 future.get();
