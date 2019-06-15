@@ -21,15 +21,21 @@ package edu.umd.cs.findbugs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class CurrentThreadExecutorServiceTest {
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
 
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
         Thread currentThread = Thread.currentThread();
         ExecutorService executorService = new CurrentThreadExecutorService();
         AtomicBoolean isCalled = new AtomicBoolean();
@@ -42,6 +48,18 @@ public class CurrentThreadExecutorServiceTest {
         } finally {
             executorService.shutdown();
         }
+        assertTrue(executorService.awaitTermination(1, TimeUnit.SECONDS));
+        assertTrue(executorService.isShutdown());
+        assertTrue(executorService.isTerminated());
     }
 
+    @Test
+    public void testCloseTwice() {
+        ExecutorService executorService = new CurrentThreadExecutorService();
+        List<Runnable> remaining = executorService.shutdownNow();
+        assertTrue(remaining.isEmpty());
+
+        expected.expect(IllegalStateException.class);
+        executorService.shutdown();
+    }
 }
