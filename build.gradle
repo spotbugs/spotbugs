@@ -38,14 +38,13 @@ wrapper {
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
 task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
-  dependsOn(subprojects.test)
+  dependsOn(subprojects.jacocoTestReport)
 
   executionData = files(subprojects.jacocoTestReport.executionData)
-  sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(subprojects.sourceSets.main.output)
+  sourceDirectories = files(subprojects.jacocoTestReport.sourceDirectories)
 
   // Only enable class directories related to non-test project
-  classDirectories = files(subprojects.sourceSets.main.output).filter {
+  classDirectories = files(subprojects.jacocoTestReport.classDirectories).filter {
     !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")
   }
 
