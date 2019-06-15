@@ -75,6 +75,7 @@ class CurrentThreadExecutorService extends AbstractExecutorService {
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) {
         if (!isShutdown) {
+            // this ExecutorService is not designed to share among threads, then simply throw IllegalStateException
             throw new IllegalStateException("awaitTermination() should be called after the shutdown");
         }
         return true;

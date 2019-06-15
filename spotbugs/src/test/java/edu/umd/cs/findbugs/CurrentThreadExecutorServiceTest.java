@@ -62,4 +62,11 @@ public class CurrentThreadExecutorServiceTest {
         expected.expect(IllegalStateException.class);
         executorService.shutdown();
     }
+
+    @Test
+    public void awaitTerminationWithoutShutdown() throws InterruptedException {
+        ExecutorService executorService = new CurrentThreadExecutorService();
+        expected.expect(IllegalStateException.class);
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
+    }
 }
