@@ -1129,7 +1129,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                                 future.get();
                             } catch (InterruptedException e) {
                                 LOG.warn("Thread interrupted during analysis", e);
-                                Thread.interrupted();
+                                Thread.currentThread().interrupt();
                             } catch (ExecutionException e) {
                                 throw new AnalysisException("Exeption was thrown during analysis", e);
                             }
