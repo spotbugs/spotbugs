@@ -21,9 +21,12 @@ package edu.umd.cs.findbugs.log;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.EmptyStackException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +39,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -48,7 +53,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author pugh
  */
 @NotThreadSafe
-public class Profiler implements XMLWriteable {
+public class Profiler implements IProfiler, XMLWriteable {
 
     final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
     final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
@@ -238,6 +243,11 @@ public class Profiler implements XMLWriteable {
             return "";
         }
     }
+
+    /**
+     * @param c
+     *            The class of detector, analyzer or others that is NOT shared among worker threads.
+     */
     public void start(Class<?> c) {
         long currentNanoTime = System.nanoTime();
 
@@ -250,6 +260,10 @@ public class Profiler implements XMLWriteable {
 
     }
 
+    /**
+     * @param c
+     *            The class of detector, analyzer or others that is NOT shared among worker threads.
+     */
     public void end(Class<?> c) {
         // System.err.println("pop " + c.getSimpleName());
         long currentNanoTime = System.nanoTime();
@@ -282,9 +296,9 @@ public class Profiler implements XMLWriteable {
     }
 
     public static class ClassNameComparator implements Comparator<Class<?>> {
-        final protected Profiler profiler;
+        final protected IProfiler profiler;
 
-        public ClassNameComparator(Profiler p) {
+        public ClassNameComparator(IProfiler p) {
             this.profiler = p;
         }
 
@@ -309,7 +323,7 @@ public class Profiler implements XMLWriteable {
 
     public static class TotalTimeComparator extends ClassNameComparator {
 
-        public TotalTimeComparator(Profiler p) {
+        public TotalTimeComparator(IProfiler p) {
             super(p);
         }
 
@@ -328,7 +342,7 @@ public class Profiler implements XMLWriteable {
     }
 
     public static class TimePerCallComparator extends ClassNameComparator {
-        public TimePerCallComparator(Profiler p) {
+        public TimePerCallComparator(IProfiler p) {
             super(p);
         }
 
@@ -349,7 +363,7 @@ public class Profiler implements XMLWriteable {
     }
 
     public static class TotalCallsComparator extends ClassNameComparator {
-        public TotalCallsComparator(Profiler p) {
+        public TotalCallsComparator(IProfiler p) {
             super(p);
         }
 
@@ -372,7 +386,9 @@ public class Profiler implements XMLWriteable {
     /**
      * Default implementation uses {@link TotalTimeComparator} and prints out
      * class statistics based on total time spent fot a class
+     * @deprecated use {@link ProfileSummary#report} instead.
      */
+    @Deprecated
     public void report() {
         if (!REPORT) {
             return;
@@ -382,9 +398,10 @@ public class Profiler implements XMLWriteable {
 
     /**
      * @param reportComparator
-     *            non null comparator instance which will be used to sort the
-     *            report statistics
+     *            non null comparator instance which will be used to sort the report statistics
+     * @deprecated use {@link ProfileSummary#report} instead.
      */
+    @Deprecated
     public void report(Comparator<Class<?>> reportComparator, Filter filter, PrintStream stream) {
         stream.println("PROFILE REPORT");
         try {
@@ -425,6 +442,7 @@ public class Profiler implements XMLWriteable {
         startTimes.clear();
     }
 
+    @Override
     public Profile getProfile(Class<?> c) {
         Profile result = profile.get(c);
         if (result == null) {
@@ -438,13 +456,10 @@ public class Profiler implements XMLWriteable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml
-     * .XMLOutput)
+    /**
+     * @deprecated use {@link ProfileSummary#writeXML} instead.
      */
+    @Deprecated
     @Override
     public void writeXML(XMLOutput xmlOutput) throws IOException {
         xmlOutput.startTag("FindBugsProfile");
@@ -470,5 +485,20 @@ public class Profiler implements XMLWriteable {
             }
         }
         xmlOutput.closeTag("FindBugsProfile");
+    }
+
+    @NonNull
+    Set<Class<?>> getTargetClasses() {
+        return profile.keySet();
+    }
+
+    @NonNull
+    Collection<Profile> getProfiles() {
+        return profile.values();
+    }
+
+    @CheckReturnValue
+    boolean contains(@NonNull Class<?> targetClass) {
+        return profile.containsKey(Objects.requireNonNull(targetClass));
     }
 }
