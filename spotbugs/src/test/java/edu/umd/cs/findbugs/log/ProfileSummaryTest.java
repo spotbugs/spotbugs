@@ -93,7 +93,6 @@ public class ProfileSummaryTest {
         summary.writeXML(output);
         output.finish();
         String xml = byteArray.toString(StandardCharsets.UTF_8.name());
-        System.err.println(xml);
         assertThat(xml, containsString("name=\"java.lang.Object\""));
         assertThat(xml, containsString("name=\"java.lang.String\""));
     }
