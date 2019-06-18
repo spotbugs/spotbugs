@@ -989,7 +989,7 @@ public class SourceLineAnnotation implements BugAnnotation {
             .map(AnalysisContext::getSourceFinder)
             .orElse(null);
     }
-    
+
     public void setSynthetic(boolean synthetic) {
         this.synthetic = synthetic;
     }
