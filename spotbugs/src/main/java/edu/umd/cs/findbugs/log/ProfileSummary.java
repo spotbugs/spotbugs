@@ -27,12 +27,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.log.Profiler.Filter;
 import edu.umd.cs.findbugs.log.Profiler.Profile;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -66,7 +66,7 @@ public class ProfileSummary implements IProfiler, XMLWriteable {
      * @param filter
      * @param stream
      */
-    public void report(Comparator<Class<?>> reportComparator, Filter filter, PrintStream stream) {
+    public void report(Comparator<Class<?>> reportComparator, Predicate<Profile> filter, PrintStream stream) {
         stream.println("PROFILE REPORT");
         try {
             TreeSet<Class<?>> treeSet = Arrays.stream(profilers)
@@ -77,7 +77,7 @@ public class ProfileSummary implements IProfiler, XMLWriteable {
 
             for (Class<?> c : treeSet) {
                 Profile p = getProfile(c);
-                if (filter.accepts(p)) {
+                if (filter.test(p)) {
                     long time = p.totalTime.get();
                     int callCount = p.totalCalls.get();
                     stream.printf("%8d  %8d  %8d %s%n", Long.valueOf(TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)),
