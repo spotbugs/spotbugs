@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Comparator;
 import java.util.EmptyStackException;
+import java.util.Map;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -38,16 +41,34 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
+ * <p>
+ * This class is mutable and not synchronized, so create independent {@link Profiler} instance for each worker thread.
+ * </p>
+ *
  * @author pugh
  */
+@NotThreadSafe
 public class Profiler implements XMLWriteable {
 
     final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
     final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
+    private final Stack<Clock> startTimes = new Stack<>();
+
+    private final Stack<Object> context = new Stack<>();
+
+    /**
+     * <p>
+     * Using {@link ConcurrentMap} just for historical reason. It can be {@link Map} because the Profiler class itself
+     * is not thread-safe.
+     * </p>
+     */
+    private final ConcurrentMap<Class<?>, Profile> profile = new ConcurrentHashMap<>();
+
+    /**
+     * The default constructor for {@link Profiler}.
+     */
     public Profiler() {
-        startTimes = new Stack<>();
-        profile = new ConcurrentHashMap<>();
         if (REPORT) {
             System.err.println("Profiling activated");
         }
@@ -197,12 +218,6 @@ public class Profiler implements XMLWriteable {
         }
 
     }
-
-    final Stack<Clock> startTimes;
-
-    final ConcurrentMap<Class<?>, Profile> profile;
-
-    final Stack<Object> context = new Stack<>();
 
     public void startContext(Object context) {
         this.context.push(context);
