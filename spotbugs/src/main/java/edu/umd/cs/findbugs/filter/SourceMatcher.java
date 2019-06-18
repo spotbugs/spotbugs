@@ -23,6 +23,9 @@ package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -30,7 +33,7 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class SourceMatcher implements Matcher {
-    private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
+    private static final Logger LOG = LoggerFactory.getLogger(SourceMatcher.class);
 
     private final NameMatch fileName;
 
@@ -55,7 +58,7 @@ public class SourceMatcher implements Matcher {
         // the result is false no matter what.
         boolean result = false;
         String bugFileName = primaryClassAnnotation.getSourceFileName();
-        if(bugFileName != null && !bugFileName.isEmpty()){
+        if(bugFileName != null && !bugFileName.isEmpty()) {
             
             // Check if the files are already matching and store the result
             // This is the check which just compares in a simple way and does not obey
@@ -69,9 +72,7 @@ public class SourceMatcher implements Matcher {
             }
         }
         
-        if (DEBUG) {
-            System.out.println("Matching " + bugFileName + " with " + fileName + ", result = " + result);
-        }
+        LOG.debug("Matching {} with {}, result = {}", bugFileName, fileName, result);
         return result;
     }
 
