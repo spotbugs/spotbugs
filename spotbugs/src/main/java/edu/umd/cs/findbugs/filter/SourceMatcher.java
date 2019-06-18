@@ -51,12 +51,18 @@ public class SourceMatcher implements Matcher {
             return false;
         }
         
+        // Create the variable to store the result. If there is no valid bug file name,
+        // the result is false no matter what.
         boolean result = false;
         String bugFileName = primaryClassAnnotation.getSourceFileName();
         if(bugFileName != null && !bugFileName.isEmpty()){
+            
+            // Check if the files are already matching and store the result
+            // This is the check which just compares in a simple way and does not obey
+            // the full path of the file.
             result = fileName.match(bugFileName);
             
-            // if no result try to match with the full path as well
+            // if no result try again to match with the full path as well
             if (!result && bugInstance.getPrimarySourceLineAnnotation().isSourceFileKnown()) {
                 bugFileName = bugInstance.getPrimarySourceLineAnnotation().getRealSourcePath();
                 result = fileName.match(bugFileName);
