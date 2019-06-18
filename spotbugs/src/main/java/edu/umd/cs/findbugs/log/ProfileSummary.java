@@ -58,7 +58,7 @@ public class ProfileSummary implements IProfiler, XMLWriteable {
      * Report summarized profile to given {@link PrintStream}.
      * </p>
      * <p>
-     * This method does not check the state of given {@link PrintStream}, and it is caller&apos;s duty to check it by
+     * This method does not check the state of given {@link PrintStream}, and it is {@literal caller's} duty to check it by
      * {@link PrintStream#checkError()}.
      * </p>
      *
