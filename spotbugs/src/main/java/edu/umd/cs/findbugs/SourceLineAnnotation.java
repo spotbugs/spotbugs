@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -51,6 +52,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import javax.annotation.CheckReturnValue;
 
 /**
  * A BugAnnotation that records a range of source lines in a class.
@@ -942,6 +944,50 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
         String sourcePath = packageName.replace('.', CANONICAL_PACKAGE_SEPARATOR) + sourceFile;
         return sourcePath;
+    }
+
+    /**
+     * Returns the complete path of the source file the analyzed class has been generated from,
+     * if this information is available to the current AnalysisContext, otherwise falls back to getSourcePath().
+     *
+     * @return the complete path of the source file the analyzed class has been generated from,
+     * otherwise falls back to getSourcePath().
+     */
+    public String getRealSourcePath() {
+        if (isSourceFileKnown()) {
+            SourceFinder sourceFinder = getSourceFinder();
+            if (sourceFinder != null)
+            {
+                try {
+                    return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
+                } catch (IOException e) {
+                    AnalysisContext.logError("Error resolving Real SourcePath (only relative source path will be available) ", e);
+                }
+            }
+            else {
+                AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
+            }
+        }
+        return getSourcePath();
+    }
+
+    /**
+     * This method hands back a SourceFinder for this SourceLineAnnotation.
+     * It can be used to identify the full path of a source file rather than
+     * just the class name. The method either tries to find it in the currently
+     * set project or in the Analysis Context.
+     * @return the currently available SourceFinder, or null if it could not be found
+     */
+    private @CheckReturnValue SourceFinder getSourceFinder() {
+        Project project = myProject.get();
+        // First try to identify the correct SourceFinder by the set project
+        if (project != null) {
+            return project.getSourceFinder();
+        }
+        // if this is not successful try to find the SourceFinder using the Analysis Context
+        return Optional.ofNullable(AnalysisContext.currentAnalysisContext())
+            .map(AnalysisContext::getSourceFinder)
+            .orElse(null);
     }
 
     public void setSynthetic(boolean synthetic) {
