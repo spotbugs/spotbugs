@@ -337,7 +337,7 @@ public class Update {
         BugRanker.trimToMaxRank(newCollection, maxRank);
         if (sloppyMatch) {
             TreeSet<BugInstance> sloppyUnique = new TreeSet<>(new SloppyBugComparator());
-            for(Iterator<BugInstance> i = newCollection.iterator(); i.hasNext(); ) {
+            for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
                 if (!sloppyUnique.add(i.next())) {
                     i.remove();
                 }

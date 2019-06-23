@@ -86,7 +86,7 @@ public class FileBugHash {
                 hashes.put(key, buf);
             }
             buf.append(bug.getInstanceKey()).append("-").append(source.getStartLine()).append(".")
-            .append(source.getStartBytecode()).append(" ");
+                    .append(source.getStartBytecode()).append(" ");
             Integer count = counts.get(key);
             if (count == null) {
                 counts.put(key, 1);
@@ -100,8 +100,7 @@ public class FileBugHash {
         return counts.keySet();
     }
 
-    public @CheckForNull
-    String getHash(String sourceFile) {
+    public @CheckForNull String getHash(String sourceFile) {
         StringBuilder rawHash = hashes.get(sourceFile);
         if (rawHash == null || digest == null) {
             return null;
