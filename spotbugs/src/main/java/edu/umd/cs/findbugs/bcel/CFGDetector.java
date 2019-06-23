@@ -60,6 +60,7 @@ public abstract class CFGDetector implements Detector2 {
 
     protected ClassContext classContext;
     protected Method method;
+
     /*
      * (non-Javadoc)
      *

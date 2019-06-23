@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -179,18 +178,18 @@ public class UserPreferences implements Cloneable {
         try (BufferedInputStream prefStream = new BufferedInputStream(in)) {
             props.load(prefStream);
         }
-    
+
         if (props.size() == 0) {
             return;
         }
 
         Properties prefixlessProperties = new Properties();
         for (Map.Entry<?, ?> e : props.entrySet()) {
-            if(e.getKey() instanceof String) {
+            if (e.getKey() instanceof String) {
                 String key = e.getKey().toString();
                 String value = e.getValue().toString();
                 prefixlessProperties.setProperty(key.replace("/instance/edu.umd.cs.findbugs.plugin.eclipse/", "")
-                                                    .replace("/instance/com.github.spotbugs.plugin.eclipse/", ""), value);
+                        .replace("/instance/com.github.spotbugs.plugin.eclipse/", ""), value);
             } else {
                 prefixlessProperties.put(e.getKey(), e.getValue());
             }
@@ -284,7 +283,7 @@ public class UserPreferences implements Cloneable {
             String key = "recent" + i;
             props.put(key, projectName);
         }
-    
+
         for (Entry<String, Boolean> entry : detectorEnablementMap.entrySet()) {
             props.put("detector" + entry.getKey(), entry.getKey() + BOOL_SEPARATOR + String.valueOf(entry.getValue().booleanValue()));
         }
@@ -303,7 +302,7 @@ public class UserPreferences implements Cloneable {
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
         writeProperties(props, KEY_PLUGIN, customPlugins);
-    
+
         try (OutputStream prefStream = new BufferedOutputStream(out)) {
             props.store(prefStream, "SpotBugs User Preferences");
             prefStream.flush();
@@ -482,7 +481,7 @@ public class UserPreferences implements Cloneable {
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-        + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
+                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
     }
 
     @Override
@@ -597,16 +596,16 @@ public class UserPreferences implements Cloneable {
      * @see Plugin#isCorePlugin()
      * @see Plugin#isGloballyEnabled()
      */
-    public Set<String> getCustomPlugins(boolean enabled){
+    public Set<String> getCustomPlugins(boolean enabled) {
         Set<Entry<String, Boolean>> entrySet = customPlugins.entrySet();
         Set<String> result = new TreeSet<>();
         for (Entry<String, Boolean> entry : entrySet) {
-            if(enabled) {
-                if(entry.getValue() != null && entry.getValue().booleanValue()) {
+            if (enabled) {
+                if (entry.getValue() != null && entry.getValue().booleanValue()) {
                     result.add(entry.getKey());
                 }
             } else {
-                if(entry.getValue() == null || !entry.getValue().booleanValue()) {
+                if (entry.getValue() == null || !entry.getValue().booleanValue()) {
                     result.add(entry.getKey());
                 }
             }

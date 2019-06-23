@@ -118,6 +118,7 @@ public class BugPattern implements Comparable<BugPattern> {
         return DetectorFactoryCollection.instance().getBugCode(abbrev);
 
     }
+
     /**
      * Get the BugCategory
      */
@@ -208,7 +209,7 @@ public class BugPattern implements Comparable<BugPattern> {
     }
 
     public String wrapInDescriptionLink(String text) {
-        if(url == null) {
+        if (url == null) {
             return text;
         }
         return "<a href=\"" + url + "#" + type + "\">" + text + "</a>";

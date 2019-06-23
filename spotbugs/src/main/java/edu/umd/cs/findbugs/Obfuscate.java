@@ -124,7 +124,7 @@ public class Obfuscate {
 
         if ("hashCode".equals(methodName) && "()I".equals(methodSignature) || "equals".equals(methodName)
                 && "(Ljava/lang/Object;)Z".equals(methodSignature) || "compareTo".equals(methodName)
-                && "(Ljava/lang/Object;)I".equals(methodSignature) || "<init>".equals(methodName)
+                        && "(Ljava/lang/Object;)I".equals(methodSignature) || "<init>".equals(methodName)
                 || "<clinit>".equals(methodName)) {
             // don't need to obfuscate method name
         } else {

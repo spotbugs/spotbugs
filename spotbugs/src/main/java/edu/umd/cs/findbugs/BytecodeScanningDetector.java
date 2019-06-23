@@ -62,4 +62,3 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
     public void report() {
     }
 }
-

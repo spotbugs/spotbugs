@@ -119,4 +119,3 @@ public class Transpose<GraphType extends Graph<EdgeType, VertexType>, EdgeType e
     }
 
 }
-

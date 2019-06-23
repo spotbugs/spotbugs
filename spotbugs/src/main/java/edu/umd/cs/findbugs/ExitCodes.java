@@ -40,4 +40,3 @@ public interface ExitCodes {
      */
     public static final int BUGS_FOUND_FLAG = 1;
 }
-

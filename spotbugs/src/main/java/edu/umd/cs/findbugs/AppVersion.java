@@ -138,9 +138,9 @@ public class AppVersion implements XMLWriteable, Cloneable {
         xmlOutput.openCloseTag(
                 ELEMENT_NAME,
                 new XMLAttributeList().addAttribute("sequence", String.valueOf(sequence))
-                .addAttribute("timestamp", String.valueOf(timestamp)).addAttribute("release", releaseName)
-                .addAttribute("codeSize", String.valueOf(codeSize))
-                .addAttribute("numClasses", String.valueOf(numClasses)));
+                        .addAttribute("timestamp", String.valueOf(timestamp)).addAttribute("release", releaseName)
+                        .addAttribute("codeSize", String.valueOf(codeSize))
+                        .addAttribute("numClasses", String.valueOf(numClasses)));
     }
 
     /*

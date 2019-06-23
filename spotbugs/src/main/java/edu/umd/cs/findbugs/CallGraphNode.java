@@ -34,4 +34,3 @@ public class CallGraphNode extends AbstractVertex<CallGraphEdge, CallGraphNode> 
         return method;
     }
 }
-

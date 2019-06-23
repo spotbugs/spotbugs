@@ -196,4 +196,3 @@ public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, Verte
     }
 
 }
-

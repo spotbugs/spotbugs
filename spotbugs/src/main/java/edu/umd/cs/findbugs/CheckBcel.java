@@ -98,10 +98,10 @@ public class CheckBcel {
      */
     public static boolean check() {
         Class<?> objectType;
-        Class<?>  type;
-        Class<?>  constants;
-        Class<?>  emptyVis;
-        Class<?>  repository;
+        Class<?> type;
+        Class<?> constants;
+        Class<?> emptyVis;
+        Class<?> repository;
         try {
             objectType = Class.forName(ORG_APACHE_BCEL_GENERIC_OBJECT_TYPE);
             type = Class.forName(ORG_APACHE_BCEL_GENERIC_TYPE);

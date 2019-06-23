@@ -37,4 +37,3 @@ public interface GraphVertex<ActualVertexType> extends Comparable<ActualVertexTy
     public void setLabel(int label);
 
 }
-

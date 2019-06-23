@@ -57,80 +57,80 @@ public abstract class FindBugs {
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:less.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:default.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] DEFAULT_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:more.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false), };
 
     /**
      * Analysis settings for -effort:max.
      */
     @SuppressFBWarnings(value = "MS_MUTABLE_ARRAY", justification = "Would have to break APIs to fix this properly")
     public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[] {
-            new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
-            new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
-            new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true), };
+        new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MERGE_SIMILAR_WARNINGS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
+        new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+        new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, true), };
 
     /**
      * Debug tracing.
@@ -150,6 +150,7 @@ public abstract class FindBugs {
     public static void setNoAnalysis() {
         noAnalysis = true;
     }
+
     /**
      * @return Returns the noAnalysis.
      */
@@ -498,7 +499,7 @@ public abstract class FindBugs {
      * @throws org.dom4j.DocumentException
      */
     public static BugReporter configureBaselineFilter(BugReporter bugReporter, String baselineFileName) throws IOException,
-    DocumentException {
+            DocumentException {
         return new ExcludingHashesBugReporter(bugReporter, baselineFileName);
     }
 

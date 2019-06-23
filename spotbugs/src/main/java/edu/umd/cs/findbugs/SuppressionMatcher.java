@@ -37,9 +37,9 @@ public class SuppressionMatcher implements Matcher {
 
     public void addPackageSuppressor(PackageWarningSuppressor suppressor) {
         String packageName = suppressor.getPackageName();
-    
+
         Collection<WarningSuppressor> c = suppressedPackageWarnings.computeIfAbsent(packageName,
-            k -> new LinkedList<>());
+                k -> new LinkedList<>());
         c.add(suppressor);
     }
 
@@ -82,4 +82,3 @@ public class SuppressionMatcher implements Matcher {
     }
 
 }
-

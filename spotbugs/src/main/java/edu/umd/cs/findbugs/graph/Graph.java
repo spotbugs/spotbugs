@@ -182,4 +182,3 @@ public interface Graph<EdgeType extends GraphEdge<EdgeType, VertexType>, VertexT
     public Iterator<VertexType> predecessorIterator(VertexType target);
 
 }
-

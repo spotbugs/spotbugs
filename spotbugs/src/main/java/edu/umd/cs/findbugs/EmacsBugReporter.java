@@ -122,8 +122,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
     }
 
     @Override
-    public @CheckForNull
-    BugCollection getBugCollection() {
+    public @CheckForNull BugCollection getBugCollection() {
         return null;
     }
 

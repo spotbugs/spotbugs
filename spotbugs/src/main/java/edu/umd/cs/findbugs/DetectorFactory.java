@@ -418,8 +418,7 @@ public class DetectorFactory {
      * Get the full name of the detector. This is the name of the detector
      * class, with package qualification.
      */
-    public @Nonnull @DottedClassName
-    String getFullName() {
+    public @Nonnull @DottedClassName String getFullName() {
         return className;
     }
 

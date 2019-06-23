@@ -54,7 +54,7 @@ public class RegenerateClassFeatures {
 
         ArrayList<JavaClass> classList = new ArrayList<>();
 
-        try (ZipFile zipFile = new ZipFile(jarFile)){
+        try (ZipFile zipFile = new ZipFile(jarFile)) {
 
             // Add all classes to repository (for hierarchy queries)
             Enumeration<? extends ZipEntry> entries = zipFile.entries();

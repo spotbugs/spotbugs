@@ -79,4 +79,3 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
      */
     public void finishPerClassAnalysis();
 }
-

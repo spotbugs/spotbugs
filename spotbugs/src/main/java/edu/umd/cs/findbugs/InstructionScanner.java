@@ -43,4 +43,3 @@ public interface InstructionScanner {
      */
     public boolean isDone();
 }
-

@@ -256,7 +256,7 @@ public class SystemProperties {
                 String ignored = String.format(URL_REWRITE_FORMAT, "");
             } catch (PatternSyntaxException e) {
                 throw new IllegalArgumentException("Bad findbugs.urlRewritePattern '" + URL_REWRITE_PATTERN_STRING + "' - "
-                        + e.getClass().getSimpleName() + ": "+ e.getMessage());
+                        + e.getClass().getSimpleName() + ": " + e.getMessage());
             } catch (IllegalFormatException e) {
                 throw new IllegalArgumentException("Bad findbugs.urlRewriteFormat '" + URL_REWRITE_FORMAT + "' - "
                         + e.getClass().getSimpleName() + ": " + e.getMessage());

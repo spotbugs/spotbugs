@@ -268,8 +268,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 createExecutionPlan();
 
                 for (Plugin p : detectorFactoryCollection.plugins()) {
-                    for (ComponentPlugin<BugReporterDecorator> brp
-                            : p.getComponentPlugins(BugReporterDecorator.class)) {
+                    for (ComponentPlugin<BugReporterDecorator> brp : p.getComponentPlugins(BugReporterDecorator.class)) {
                         if (brp.isEnabledByDefault() && !brp.isNamed(explicitlyDisabledBugReporterDecorators)
                                 || brp.isNamed(explicitlyEnabledBugReporterDecorators)) {
                             bugReporter = BugReporterDecorator.construct(brp, bugReporter);
@@ -299,7 +298,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     Map<String, ICodeBaseEntry> codebase = classPath.getApplicationCodebaseEntries();
                     if (analysisOptions.noClassOk) {
                         System.err.println("No classfiles specified; output will have no warnings");
-                    } else if  (codebase.isEmpty()) {
+                    } else if (codebase.isEmpty()) {
                         throw new IOException("No files to analyze could be opened");
                     } else {
                         throw new NoClassesFoundToAnalyzeException(classPath);
@@ -519,7 +518,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else if (deferredError == null){
+                } else if (deferredError == null) {
                     deferredError = new IllegalArgumentException(message, e);
                 }
             }
@@ -535,7 +534,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 String message = "Unable to read filter: " + entry.getKey() + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else if (deferredError == null){
+                } else if (deferredError == null) {
                     deferredError = new IllegalArgumentException(message, e);
                 }
             }
@@ -554,7 +553,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 String message = "Unable to read filter: " + excludeFilterFile + " : " + e.getMessage();
                 if (getBugReporter() != null) {
                     getBugReporter().logError(message, e);
-                } else if (deferredError == null){
+                } else if (deferredError == null) {
                     deferredError = new IllegalArgumentException(message, e);
                 }
             }
@@ -630,6 +629,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         return analysisCache;
     }
+
     /**
      * Register the "built-in" analysis engines with given IAnalysisCache.
      *
@@ -886,7 +886,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
      *            name of source info file (null if none)
      */
     public static void createAnalysisContext(Project project, List<ClassDescriptor> appClassList,
-            @CheckForNull String sourceInfoFileName) throws  IOException {
+            @CheckForNull String sourceInfoFileName) throws IOException {
         AnalysisContext analysisContext = new AnalysisContext(project);
 
         // Make this the current analysis context
@@ -903,7 +903,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         }
     }
 
-    public static void setAppClassList(List<ClassDescriptor> appClassList)  {
+    public static void setAppClassList(List<ClassDescriptor> appClassList) {
         AnalysisContext analysisContext = AnalysisContext
                 .currentAnalysisContext();
 
@@ -1032,7 +1032,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 Collection<ClassDescriptor> classCollection = (isNonReportingFirstPass) ? referencedClassSet : appClassList;
                 AnalysisContext.currentXFactory().canonicalizeAll();
                 if (PROGRESS || LIST_ORDER) {
-                    System.out.printf("%6d : Pass %d: %d classes%n", (System.currentTimeMillis() - startTime)/1000, passCount,  classCollection.size());
+                    System.out.printf("%6d : Pass %d: %d classes%n", (System.currentTimeMillis() - startTime) / 1000, passCount, classCollection
+                            .size());
                     if (DEBUG) {
                         XFactory.profile();
                     }
@@ -1068,7 +1069,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     long classStartNanoTime = 0;
                     if (PROGRESS) {
                         classStartNanoTime = System.nanoTime();
-                        System.out.printf("%6d %d/%d  %d/%d %s%n", (System.currentTimeMillis() - startTime)/1000,
+                        System.out.printf("%6d %d/%d  %d/%d %s%n", (System.currentTimeMillis() - startTime) / 1000,
                                 passCount, executionPlan.getNumPasses(), count,
                                 classCollection.size(), classDescriptor);
                     }
@@ -1087,7 +1088,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     boolean isHuge = currentAnalysisContext.isTooBig(classDescriptor);
                     if (isHuge && currentAnalysisContext.isApplicationClass(classDescriptor)) {
                         bugReporter.reportBug(new BugInstance("SKIPPED_CLASS_TOO_BIG", Priorities.NORMAL_PRIORITY)
-                        .addClass(classDescriptor));
+                                .addClass(classDescriptor));
                     }
                     currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
                     notifyClassObservers(classDescriptor);
@@ -1095,28 +1096,26 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     currentAnalysisContext.setClassBeingAnalyzed(classDescriptor);
 
                     try {
-                        Collection<Callable<Void>> tasks = Arrays.stream(detectorList).map(detector ->
-                            (Callable<Void>) () -> {
-                                if (Thread.interrupted()) {
-                                    throw new InterruptedException();
-                                }
-                                if (isHuge && !FirstPassDetector.class.isAssignableFrom(detector.getClass())) {
-                                    return null;
-                                }
-                                LOG.debug("Applying {} to {}", detector.getDetectorClassName(), classDescriptor);
-                                try {
-                                    profiler.start(detector.getClass());
-                                    detector.visitClass(classDescriptor);
-                                } catch (MissingClassException e) {
-                                    Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
-                                } catch (CheckedAnalysisException | RuntimeException e) {
-                                    logRecoverableException(classDescriptor, detector, e);
-                                } finally {
-                                    profiler.end(detector.getClass());
-                                }
+                        Collection<Callable<Void>> tasks = Arrays.stream(detectorList).map(detector -> (Callable<Void>) () -> {
+                            if (Thread.interrupted()) {
+                                throw new InterruptedException();
+                            }
+                            if (isHuge && !FirstPassDetector.class.isAssignableFrom(detector.getClass())) {
                                 return null;
                             }
-                        ).collect(Collectors.toList());
+                            LOG.debug("Applying {} to {}", detector.getDetectorClassName(), classDescriptor);
+                            try {
+                                profiler.start(detector.getClass());
+                                detector.visitClass(classDescriptor);
+                            } catch (MissingClassException e) {
+                                Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
+                            } catch (CheckedAnalysisException | RuntimeException e) {
+                                logRecoverableException(classDescriptor, detector, e);
+                            } finally {
+                                profiler.end(detector.getClass());
+                            }
+                            return null;
+                        }).collect(Collectors.toList());
                         service.invokeAll(tasks).forEach(future -> {
                             try {
                                 future.get();
@@ -1136,12 +1135,13 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                         profiler.endContext(currentClassName);
                         currentAnalysisContext.clearClassBeingAnalyzed();
                         if (PROGRESS) {
-                            long usecs = (System.nanoTime() - classStartNanoTime)/1000;
+                            long usecs = (System.nanoTime() - classStartNanoTime) / 1000;
                             if (usecs > 15000) {
                                 int classSize = currentAnalysisContext.getClassSize(classDescriptor);
-                                long speed = usecs /classSize;
+                                long speed = usecs / classSize;
                                 if (speed > 15) {
-                                    System.out.printf("  %6d usecs/byte  %6d msec  %6d bytes  %d pass %s%n", speed, usecs/1000, classSize, passCount,
+                                    System.out.printf("  %6d usecs/byte  %6d msec  %6d bytes  %d pass %s%n", speed, usecs / 1000, classSize,
+                                            passCount,
                                             classDescriptor);
                                 }
                             }

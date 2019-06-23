@@ -80,7 +80,7 @@ public class Plugin {
 
     private final LinkedHashMap<String, BugCategory> bugCategories;
 
-    private final HashMap<String,String> myGlobalOptions;
+    private final HashMap<String, String> myGlobalOptions;
 
     private final DualKeyHashMap<Class<?>, String, ComponentPlugin<?>> componentPlugins;
 
@@ -101,7 +101,9 @@ public class Plugin {
 
     private final boolean cannotDisable;
 
-    static enum EnabledState { PLUGIN_DEFAULT, ENABLED, DISABLED }
+    static enum EnabledState {
+        PLUGIN_DEFAULT, ENABLED, DISABLED
+    }
 
     private EnabledState enabled;
 
@@ -120,7 +122,7 @@ public class Plugin {
         }
         assert enabled || !cannotDisable;
         myGlobalOptions = new HashMap<>();
-        componentPlugins = new DualKeyHashMap<> ();
+        componentPlugins = new DualKeyHashMap<>();
         this.version = version;
         this.releaseDate = releaseDate;
         this.detectorFactoryList = new ArrayList<>();
@@ -181,7 +183,7 @@ public class Plugin {
         myGlobalOptions.put(key, value);
     }
 
-    Map<String,String> getMyGlobalOptions() {
+    Map<String, String> getMyGlobalOptions() {
         return Collections.unmodifiableMap(myGlobalOptions);
     }
 
@@ -201,14 +203,14 @@ public class Plugin {
      *
      * @return the website, or null if the was not specified
      */
-    public  @CheckForNull String getWebsite() {
+    public @CheckForNull String getWebsite() {
         if (website == null) {
             return null;
         }
         return website.toASCIIString();
     }
 
-    public  @CheckForNull URI getWebsiteURI() {
+    public @CheckForNull URI getWebsiteURI() {
         return website;
     }
 
@@ -393,8 +395,9 @@ public class Plugin {
 
     public String getShortPluginId() {
         int i = pluginId.lastIndexOf('.');
-        return pluginId.substring(i+1);
+        return pluginId.substring(i + 1);
     }
+
     /**
      * Set the analysis engine registrar class that, when instantiated, can be
      * used to register the plugin's analysis engines with the analysis cache.
@@ -424,8 +427,7 @@ public class Plugin {
         public boolean choose(DetectorFactory factory);
     }
 
-    private @CheckForNull
-    DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
+    private @CheckForNull DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
         for (DetectorFactory factory : getDetectorFactories()) {
             if (chooser.choose(factory)) {
                 return factory;
@@ -474,15 +476,15 @@ public class Plugin {
     }
 
     @SuppressWarnings("unchecked")
-    public <T>  ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
+    public <T> ComponentPlugin<T> getComponentPlugin(Class<T> componentClass, String name) {
         return (ComponentPlugin<T>) componentPlugins.get(componentClass, name);
     }
 
     public static synchronized @CheckForNull Plugin getByPluginId(String name) {
-        if(name == null) {
+        if (name == null) {
             return null;
         }
-        for(Plugin plugin : allPlugins.values()) {
+        for (Plugin plugin : allPlugins.values()) {
             // the second part is questionable, as this may lead to id collisions
             if (name.equals(plugin.getPluginId()) /*|| name.equals(plugin.getShortPluginId())*/) {
                 return plugin;
@@ -504,7 +506,7 @@ public class Plugin {
 
     public static synchronized Collection<String> getAllPluginIds() {
         ArrayList<String> result = new ArrayList<>();
-        for(Plugin p : allPlugins.values()) {
+        for (Plugin p : allPlugins.values()) {
             result.add(p.getPluginId());
         }
         return result;
@@ -659,7 +661,7 @@ public class Plugin {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
-    public static @CheckForNull  Plugin addCustomPlugin(URI u) throws PluginException {
+    public static @CheckForNull Plugin addCustomPlugin(URI u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
@@ -685,7 +687,7 @@ public class Plugin {
     public static synchronized void removeCustomPlugin(Plugin plugin) {
         Set<Entry<URI, Plugin>> entrySet = Plugin.allPlugins.entrySet();
         for (Entry<URI, Plugin> entry : entrySet) {
-            if(entry.getValue() == plugin) {
+            if (entry.getValue() == plugin) {
                 Plugin.allPlugins.remove(entry.getKey());
                 PluginLoader.loadedPluginIds.remove(plugin.getPluginId());
                 break;

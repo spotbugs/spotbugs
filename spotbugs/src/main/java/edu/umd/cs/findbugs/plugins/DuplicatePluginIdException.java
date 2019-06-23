@@ -34,9 +34,11 @@ public class DuplicatePluginIdException extends RuntimeException {
     public String getPluginId() {
         return pluginId;
     }
+
     public URL getLoadedFrom() {
         return loadedFrom;
     }
+
     public URL getPreviouslyLoadedFrom() {
         return previouslyLoadedFrom;
     }

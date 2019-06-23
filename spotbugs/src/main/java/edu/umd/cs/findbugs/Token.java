@@ -98,4 +98,3 @@ public class Token {
         return lexeme;
     }
 }
-

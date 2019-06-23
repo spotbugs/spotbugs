@@ -78,4 +78,3 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
 
     public String toString(ClassAnnotation primaryClass);
 }
-

@@ -123,9 +123,7 @@ public class DelegatingBugReporter implements BugReporter {
     }
 
     @Override
-    public @CheckForNull
-    BugCollection getBugCollection() {
+    public @CheckForNull BugCollection getBugCollection() {
         return delegate.getBugCollection();
     }
 }
-

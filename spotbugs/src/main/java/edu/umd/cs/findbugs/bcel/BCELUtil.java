@@ -96,30 +96,32 @@ public abstract class BCELUtil {
             return true;
         }
 
-        for(Attribute a : m.getAttributes()) {
+        for (Attribute a : m.getAttributes()) {
             if (a instanceof Synthetic) {
                 return true;
             }
         }
         return false;
     }
+
     public static boolean isSynthetic(JavaClass j) {
         if (j.isSynthetic()) {
             return true;
         }
 
-        for(Attribute a : j.getAttributes()) {
+        for (Attribute a : j.getAttributes()) {
             if (a instanceof Synthetic) {
                 return true;
             }
         }
         return false;
     }
+
     public static boolean isSynthetic(FieldGenOrMethodGen m) {
         if (m.isSynthetic()) {
             return true;
         }
-        for(Attribute a : m.getAttributes()) {
+        for (Attribute a : m.getAttributes()) {
             if (a instanceof Synthetic) {
                 return true;
             }

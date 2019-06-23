@@ -40,12 +40,13 @@ public class SwitchHandler {
     public int stackSize() {
         return switchOffsetStack.size();
     }
+
     int numEnumValues(@CheckForNull XClass c) {
         if (c == null) {
             return -1;
         }
         int total = 0;
-        for(XField f : c.getXFields()) {
+        for (XField f : c.getXFields()) {
             if (f.isEnum()) {
                 total++;
             }
@@ -57,7 +58,8 @@ public class SwitchHandler {
 
         assert dbc.getOpcode() == Const.TABLESWITCH || dbc.getOpcode() == Const.LOOKUPSWITCH;
         int[] switchOffsets = dbc.getSwitchOffsets();
-        SwitchDetails details = new SwitchDetails(dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(enumType));
+        SwitchDetails details = new SwitchDetails(dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(
+                enumType));
 
 
         int size = switchOffsetStack.size();
@@ -113,10 +115,11 @@ public class SwitchHandler {
         if (switchOffsetStack.isEmpty()) {
             throw new IllegalStateException("No current switch statement");
         }
-        SwitchDetails details = switchOffsetStack.get(switchOffsetStack.size()-1);
+        SwitchDetails details = switchOffsetStack.get(switchOffsetStack.size() - 1);
         return SourceLineAnnotation.fromVisitedInstructionRange(
-                detector.getClassContext(), detector, details.switchPC, details.switchPC + details.maxOffset-1);
+                detector.getClassContext(), detector, details.switchPC, details.switchPC + details.maxOffset - 1);
     }
+
     public static class SwitchDetails {
         final int switchPC;
 

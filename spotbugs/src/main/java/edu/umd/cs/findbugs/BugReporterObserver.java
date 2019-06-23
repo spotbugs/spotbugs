@@ -37,4 +37,3 @@ public interface BugReporterObserver {
      */
     public void reportBug(BugInstance bugInstance);
 }
-

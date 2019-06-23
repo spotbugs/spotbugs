@@ -42,6 +42,7 @@ public class CommandLineUiCallback implements IGuiCallback {
 
     public CommandLineUiCallback() {
     }
+
     BufferedReader br = UserTextFile.bufferedReader(System.in);
 
     @Override
@@ -92,7 +93,7 @@ public class CommandLineUiCallback implements IGuiCallback {
         case 'c':
             return JOptionPane.CANCEL_OPTION;
         default:
-            System.out.println("You entered '" + option +"'");
+            System.out.println("You entered '" + option + "'");
             return -1;
         }
     }

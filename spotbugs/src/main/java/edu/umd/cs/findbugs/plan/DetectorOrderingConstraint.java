@@ -75,4 +75,3 @@ public class DetectorOrderingConstraint {
         return earlier.toString() + " -> " + later.toString();
     }
 }
-

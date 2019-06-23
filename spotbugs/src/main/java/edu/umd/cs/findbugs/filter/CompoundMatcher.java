@@ -98,4 +98,3 @@ public abstract class CompoundMatcher implements Matcher {
         return Integer.MAX_VALUE;
     }
 }
-

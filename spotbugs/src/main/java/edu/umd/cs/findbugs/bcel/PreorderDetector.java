@@ -51,4 +51,3 @@ abstract public class PreorderDetector extends PreorderVisitor implements Detect
     public void report() {
     }
 }
-

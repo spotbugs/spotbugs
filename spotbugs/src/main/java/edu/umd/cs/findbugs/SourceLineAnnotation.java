@@ -956,15 +956,13 @@ public class SourceLineAnnotation implements BugAnnotation {
     public String getRealSourcePath() {
         if (isSourceFileKnown()) {
             SourceFinder sourceFinder = getSourceFinder();
-            if (sourceFinder != null)
-            {
+            if (sourceFinder != null) {
                 try {
                     return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
                 } catch (IOException e) {
                     AnalysisContext.logError("Error resolving Real SourcePath (only relative source path will be available) ", e);
                 }
-            }
-            else {
+            } else {
                 AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");
             }
         }
@@ -986,8 +984,8 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
         // if this is not successful try to find the SourceFinder using the Analysis Context
         return Optional.ofNullable(AnalysisContext.currentAnalysisContext())
-            .map(AnalysisContext::getSourceFinder)
-            .orElse(null);
+                .map(AnalysisContext::getSourceFinder)
+                .orElse(null);
     }
 
     public void setSynthetic(boolean synthetic) {
