@@ -102,8 +102,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      *            until the analysis is either finished or interrupted.
      */
 
-    public static void show(@Nonnull
-            Project project, AnalysisCallback callback, boolean joinThread) {
+    public static void show(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
         AnalyzingDialog dialog = new AnalyzingDialog(project, callback, joinThread);
         MainFrame.getInstance().acquireDisplayWait();
         try {
@@ -265,12 +264,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
                 Logger.getLogger(AnalyzingDialog.class.getName()).log(Level.WARNING, "IO Error while performing analysis", e);
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
-                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName()  + ": " + e.getMessage());
+                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName() + ": " + e.getMessage());
                 return;
             } catch (Throwable e) {
                 callback.analysisInterrupted();
                 scheduleDialogCleanup();
-                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName()  + ": " + e.getMessage());
+                scheduleErrorDialog("Analysis failed", e.getClass().getSimpleName() + ": " + e.getMessage());
                 return;
             }
 

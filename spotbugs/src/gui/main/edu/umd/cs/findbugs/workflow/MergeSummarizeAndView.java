@@ -68,8 +68,7 @@ public class MergeSummarizeAndView {
 
         public boolean alwaysShowGui = false;
 
-        public @CheckForNull
-        Date baselineDate;
+        public @CheckForNull Date baselineDate;
     }
 
     static class MSVCommandLine extends CommandLine {
@@ -358,4 +357,3 @@ public class MergeSummarizeAndView {
     static final long NOW = System.currentTimeMillis();
 
 }
-

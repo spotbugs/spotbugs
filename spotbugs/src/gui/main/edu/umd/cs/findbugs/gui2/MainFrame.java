@@ -345,9 +345,9 @@ public class MainFrame extends FBFrame implements LogSync {
     void callOnClose() {
         if (projectChanged && !SystemProperties.getBoolean("findbugs.skipSaveChangesWarning")) {
             Object[] options = {
-                    L10N.getLocalString("dlg.save_btn", "Save"),
-                    L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
-                    L10N.getLocalString("dlg.cancel_btn", "Cancel"),
+                L10N.getLocalString("dlg.save_btn", "Save"),
+                L10N.getLocalString("dlg.dontsave_btn", "Don't Save"),
+                L10N.getLocalString("dlg.cancel_btn", "Cancel"),
             };
             int value = JOptionPane.showOptionDialog(this, getActionWithoutSavingMsg("closing"),
                     L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"),
@@ -625,7 +625,7 @@ public class MainFrame extends FBFrame implements LogSync {
             return msg;
         }
         return L10N.getLocalString("msg.you_are_" + action + "_txt", "You are " + action) + " "
-        + L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
+                + L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?");
     }
 
     public void updateBugTree() {
@@ -728,8 +728,8 @@ public class MainFrame extends FBFrame implements LogSync {
             BugPattern bugPattern = bug.getBugPattern();
             String detailText =
                     bugPattern.getDetailText()
-                    +"<br><p> <b>Bug kind and pattern: " +
-                    bugPattern.getAbbrev() + " - " + bugPattern.getType();
+                            + "<br><p> <b>Bug kind and pattern: " +
+                            bugPattern.getAbbrev() + " - " + bugPattern.getType();
             String txt = bugPattern.getDetailHTML(detailText);
             summaryHtmlArea.setText(txt);
 

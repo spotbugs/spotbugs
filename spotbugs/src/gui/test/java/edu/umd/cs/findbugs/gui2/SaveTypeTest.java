@@ -34,7 +34,8 @@ public class SaveTypeTest {
         assertEquals(type, SaveType.forFile(new File(file)));
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "DMI_HARDCODED_ABSOLUTE_FILENAME", justification = "No actual disk access, just fake paths for testing")
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "DMI_HARDCODED_ABSOLUTE_FILENAME",
+            justification = "No actual disk access, just fake paths for testing")
     @Test
     public void testSaveTypes() {
         check(SaveType.HTML_OUTPUT, "/home/pugh/bugs.html");

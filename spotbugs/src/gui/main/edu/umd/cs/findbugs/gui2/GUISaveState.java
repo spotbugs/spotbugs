@@ -540,9 +540,11 @@ public class GUISaveState {
     public List<String> getEnabledPlugins() {
         return enabledPlugins;
     }
+
     public Collection<URI> getCustomPlugins() {
         return customPlugins;
     }
+
     public boolean addCustomPlugin(URL u) {
         try {
             return customPlugins.add(u.toURI());
@@ -550,6 +552,7 @@ public class GUISaveState {
             throw new IllegalArgumentException("Error converting to uri: " + u, e);
         }
     }
+
     public List<String> getDisabledPlugins() {
         return disabledPlugins;
     }

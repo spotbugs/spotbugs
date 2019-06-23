@@ -80,7 +80,7 @@ public class AboutDialog extends javax.swing.JDialog {
         BufferedReader reader = null;
         try {
             StringBuilder buf = new StringBuilder();
-
+    
             // Open the file as a stream
             in = getClass().getClassLoader().getResourceAsStream(fileName);
             if (in == null)
@@ -88,16 +88,16 @@ public class AboutDialog extends javax.swing.JDialog {
                         edu.umd.cs.findbugs.L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"),
                         new Object[] { fileName }));
             reader = UTF8.bufferedReader(in);
-
+    
             // Replace instances of @VERSION@ with actual version number
-
+    
             String line;
             while ((line = reader.readLine()) != null) {
                 line = pattern.matcher(line).replaceAll(Version.RELEASE);
                 buf.append(line);
                 buf.append('\n');
             }
-
+    
             // Load the page into the editor pane
             String text = buf.toString();
             pane.setContentType("text/html");

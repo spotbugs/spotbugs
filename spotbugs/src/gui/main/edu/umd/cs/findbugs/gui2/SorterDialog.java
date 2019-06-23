@@ -111,7 +111,7 @@ public class SorterDialog extends FBDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 1;
-        gbc.insets = new Insets(2,5,2,5);
+        gbc.insets = new Insets(2, 5, 2, 5);
         insidePanel.add(new JLabel("<html><h2>1. Choose bug properties"), gbc);
         insidePanel.add(new CheckBoxList<>(checkBoxSortList.toArray(new JCheckBox[checkBoxSortList.size()])), gbc);
 

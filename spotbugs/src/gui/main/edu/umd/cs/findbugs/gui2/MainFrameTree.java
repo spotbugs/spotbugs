@@ -163,11 +163,11 @@ public class MainFrameTree {
 
     private void warnUserOfFilters() {
         JOptionPane
-        .showMessageDialog(
-                mainFrame,
-                edu.umd.cs.findbugs.L10N
-                .getLocalString("dlg.everything_is_filtered",
-                        "All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
+                .showMessageDialog(
+                        mainFrame,
+                        edu.umd.cs.findbugs.L10N
+                                .getLocalString("dlg.everything_is_filtered",
+                                        "All bugs in this project appear to be filtered out.  \nYou may wish to check your filter settings in the preferences menu."),
                         "Warning", JOptionPane.WARNING_MESSAGE);
     }
 
@@ -222,12 +222,12 @@ public class MainFrameTree {
                 while (count == startCount) {
                     deletePath = deletePath.getParentPath();
                     if (deletePath.getParentPath() == null)// We are at the
-                        // top of the
-                        // tree, don't
-                        // let this be
-                        // removed,
-                        // rebuild tree
-                        // from root.
+                    // top of the
+                    // tree, don't
+                    // let this be
+                    // removed,
+                    // rebuild tree
+                    // from root.
                     {
                         Matcher m1 = mainFrame.getCurrentSelectedBugAspects().getMatcher();
                         Filter suppressionFilter1 = MainFrame.getInstance().getProject().getSuppressionFilter();
@@ -558,7 +558,7 @@ public class MainFrameTree {
                 return;
             }
 
-            if(currentSelectedBugLeaf == path.getLastPathComponent()) {
+            if (currentSelectedBugLeaf == path.getLastPathComponent()) {
                 // sync mainFrame if user just clicks on the same bug
                 mainFrame.syncBugInformation();
             }
@@ -600,6 +600,7 @@ public class MainFrameTree {
 
     private class MyTreeSelectionListener implements TreeSelectionListener {
         private volatile boolean ignoreSelection = false;
+
         @Override
         public void valueChanged(TreeSelectionEvent selectionEvent) {
             if (ignoreSelection) {
