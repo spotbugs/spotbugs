@@ -115,17 +115,17 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 
     private static IsNullValue[][] createInstanceByFlagList() {
         final int max = FLAG_MASK >>> FLAG_SHIFT;
-    IsNullValue[][] result = new IsNullValue[max + 1][];
-    for (int i = 0; i <= max; ++i) {
-        final int flags = i << FLAG_SHIFT;
-        result[i] = new IsNullValue[] { new IsNullValue(NULL | flags), new IsNullValue(CHECKED_NULL | flags),
+        IsNullValue[][] result = new IsNullValue[max + 1][];
+        for (int i = 0; i <= max; ++i) {
+            final int flags = i << FLAG_SHIFT;
+            result[i] = new IsNullValue[] { new IsNullValue(NULL | flags), new IsNullValue(CHECKED_NULL | flags),
                 new IsNullValue(NN | flags), new IsNullValue(CHECKED_NN | flags),
                 null, // NO_KABOOM_NN values must be allocated dynamically
                 new IsNullValue(NSP | flags), new IsNullValue(NN_UNKNOWN | flags), new IsNullValue(NCP2 | flags),
                 new IsNullValue(NCP3 | flags), };
-    }
+        }
 
-    return result;
+        return result;
     }
 
     // Fields
@@ -355,6 +355,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     public static IsNullValue parameterMarkedAsNonnull(XMethodParameter mp) {
         return instanceByFlagsList[PARAM >> FLAG_SHIFT][NN];
     }
+
     /**
      * Get non-reporting non-null value. This is what we use for unknown values.
      */

@@ -71,7 +71,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @see IsNullValueFrameModelingVisitor
  */
 public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame> implements EdgeTypes,
-IsNullValueAnalysisFeatures {
+        IsNullValueAnalysisFeatures {
     static final boolean DEBUG = SystemProperties.getBoolean("inva.debug");
 
     static {
@@ -100,8 +100,7 @@ IsNullValueAnalysisFeatures {
 
     private JavaClassAndMethod classAndMethod;
 
-    private final @CheckForNull
-    PointerEqualityCheck pointerEqualityCheck;
+    private final @CheckForNull PointerEqualityCheck pointerEqualityCheck;
 
     public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
             TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
@@ -128,8 +127,7 @@ IsNullValueAnalysisFeatures {
         INIT, START, SAW1, SAW2, IFEQUAL, IFNOTEQUAL;
     }
 
-    public static @CheckForNull
-    PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
+    public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
         PointerEqualityCheckState state = PointerEqualityCheckState.INIT;
         int target = Integer.MAX_VALUE;
         Location test = null;
@@ -188,8 +186,7 @@ IsNullValueAnalysisFeatures {
         return null;
     }
 
-    private @CheckForNull
-    ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
+    private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
         if (pointerEqualityCheck == null || pc < pointerEqualityCheck.firstValuePC) {
             return null;
         }
@@ -293,7 +290,7 @@ IsNullValueAnalysisFeatures {
 
     }
 
-    public void startTransfer()  {
+    public void startTransfer() {
         lastFrame = null;
         instanceOfFrame = null;
     }
@@ -358,8 +355,8 @@ IsNullValueAnalysisFeatures {
         Location location = new Location(handle, basicBlock);
         ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
         if (!vnaFrameAfter.isValid()) {
-            assert false : "Invalid VNA after location " + location + " in " +  SignatureConverter.convertMethodSignature(methodGen);
-        return;
+            assert false : "Invalid VNA after location " + location + " in " + SignatureConverter.convertMethodSignature(methodGen);
+            return;
         }
         for (int i = start; i < fact.getNumSlots(); ++i) {
             ValueNumber value = vnaFrameAfter.getValue(i);
@@ -379,8 +376,8 @@ IsNullValueAnalysisFeatures {
         if (visitor.getSlotContainingNewNullValue() >= 0) {
             ValueNumber newNullValue = vnaFrameAfter.getValue(visitor.getSlotContainingNewNullValue());
             addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(location, newNullValue// ,
-                    // handle
-                    ));
+            // handle
+            ));
         }
 
     }
@@ -514,7 +511,7 @@ IsNullValueAnalysisFeatures {
                         }
                     }
                 } // if (edgeType == IFCMP_EDGE || edgeType ==
-                // FALL_THROUGH_EDGE)
+                  // FALL_THROUGH_EDGE)
 
                 // If this is a fall-through edge from a null check,
                 // then we know the value checked is not null.
@@ -552,7 +549,7 @@ IsNullValueAnalysisFeatures {
                         tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
                     }
                 } // if (sourceBlock.isNullCheck() && edgeType ==
-                // FALL_THROUGH_EDGE)
+                  // FALL_THROUGH_EDGE)
 
                 if (propagatePhiNodeInformation && targetVnaFrame.phiNodeForLoads) {
                     if (DEBUG) {

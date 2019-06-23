@@ -39,8 +39,8 @@ final class ValidationSecurityManager extends SecurityManager {
         }
 
     }
-    public static <A extends Annotation> When sandboxedValidation(A proxy, TypeQualifierValidator<A> v, @CheckForNull
-            Object constantValue) {
+
+    public static <A extends Annotation> When sandboxedValidation(A proxy, TypeQualifierValidator<A> v, @CheckForNull Object constantValue) {
         if (performingValidation.get()) {
             throw new IllegalStateException("recursive validation");
         }
@@ -59,7 +59,7 @@ final class ValidationSecurityManager extends SecurityManager {
             } catch (ClassCastException e) {
                 Class<? extends Annotation> c = proxy.getClass();
                 System.out.println(c.getName() + " extends " + c.getSuperclass().getName());
-                for(Class<?> i : c.getInterfaces()) {
+                for (Class<?> i : c.getInterfaces()) {
                     System.out.println("  " + i.getName());
                 }
                 throw e;
@@ -105,7 +105,8 @@ final class ValidationSecurityManager extends SecurityManager {
         }
     }
 
-    private ValidationSecurityManager() { }
+    private ValidationSecurityManager() {
+    }
 
     private boolean inValidation() {
         for (Class<?> c : getClassContext()) {

@@ -173,7 +173,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     public void edgeTransfer(Edge edge, StateSet fact) throws DataflowAnalysisException {
 
         if (edge.isExceptionEdge()) {
-            if ( !edge.isFlagSet(EdgeTypes.CHECKED_EXCEPTIONS_FLAG)) {
+            if (!edge.isFlagSet(EdgeTypes.CHECKED_EXCEPTIONS_FLAG)) {
                 //
                 // Ignore all exception edges except those on which
                 // checked exceptions are thrown.
@@ -207,9 +207,9 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         if (isPossibleIfComparison(edge)) {
             Obligation comparedObligation = comparesObligationTypeToNull(edge);
             if (comparedObligation != null/*
-             * && comparedObligation.equals(
-             * possiblyLeakedObligation)
-             */) {
+                                          * && comparedObligation.equals(
+                                          * possiblyLeakedObligation)
+                                          */) {
                 if (DEBUG_NULL_CHECK) {
                     System.out.println("Deleting " + comparedObligation.toString() + " on edge from comparison "
                             + edge.getSource().getLastInstruction());
@@ -396,7 +396,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         }
 
         // Handle easy top and bottom cases
-        if (inputFact.isTop() || result.isBottom() ) {
+        if (inputFact.isTop() || result.isBottom()) {
             // Nothing to do
         } else if (inputFact.isBottom() || result.isTop() || result.isEmpty()) {
             copy(inputFact, result);
@@ -409,7 +409,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                 System.out.printf("  edge %s -> %s%n", from, to);
             }
             // Nothing to do
-        } else if(!inputFact.isOnExceptionPath() && !inputFact.isEmpty()
+        } else if (!inputFact.isOnExceptionPath() && !inputFact.isEmpty()
                 && result.isOnExceptionPath()) {
             if (DEBUG) {
                 System.out.println("overwriting " + result + " with " + inputFact);
@@ -431,9 +431,9 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             for (ObligationSet obligationSet : allObligationSets) {
                 State stateInInputFact = inputFact.getStateWithObligationSet(obligationSet);
                 State stateInResultFact = result.getStateWithObligationSet(obligationSet);
-        
+
                 State stateToAdd;
-        
+
                 if (stateInInputFact != null && stateInResultFact != null) {
                     // Combine the two states,
                     // using the shorter path as the basis
@@ -444,7 +444,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                     if (stateInInputFact.getPath().getLength() < path.getLength()) {
                         path = stateInInputFact.getPath();
                     }
-            
+
                     stateToAdd = new State(factory);
                     stateToAdd.getObligationSet().copyFrom(obligationSet);
                     stateToAdd.getPath().copyFrom(path);
@@ -453,7 +453,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                 } else {
                     stateToAdd = stateInResultFact.duplicate();
                 }
-        
+
                 updatedStateMap.put(stateToAdd.getObligationSet(), stateToAdd);
             }
 
@@ -461,4 +461,3 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         }
     }
 }
-

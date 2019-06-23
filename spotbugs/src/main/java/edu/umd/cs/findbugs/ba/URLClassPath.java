@@ -361,7 +361,7 @@ public class URLClassPath implements AutoCloseable, Serializable {
      *             if an IO error occurs trying to determine whether or not the
      *             resource exists
      */
-    private InputStream getInputStreamForResource(String resourceName)  {
+    private InputStream getInputStreamForResource(String resourceName) {
         // Try each classpath entry, in order, until we find one
         // that has the resource. Catch and ignore IOExceptions.
 
@@ -496,4 +496,3 @@ public class URLClassPath implements AutoCloseable, Serializable {
         return Archive.ARCHIVE_EXTENSION_SET.contains(fileExtension);
     }
 }
-

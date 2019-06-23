@@ -56,4 +56,3 @@ public class NullType extends ReferenceType implements ExtendedTypes {
         return theInstance;
     }
 }
-

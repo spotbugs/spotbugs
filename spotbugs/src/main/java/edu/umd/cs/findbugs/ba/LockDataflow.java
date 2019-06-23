@@ -29,4 +29,3 @@ public class LockDataflow extends Dataflow<LockSet, LockAnalysis> {
         super(cfg, lockAnalysis);
     }
 }
-

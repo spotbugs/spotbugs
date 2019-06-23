@@ -43,53 +43,51 @@ public interface AnalysisFeatures {
 
     public static class Builder {
         static int next = NUM_BOOLEAN_ANALYSIS_PROPERTIES;
-        private static @AnalysisFeature int asFeatureNum(int num) { return num; }
-        static @AnalysisFeature
-        public int build(String name) {
+
+        private static @AnalysisFeature int asFeatureNum(int num) {
+            return num;
+        }
+
+        static @AnalysisFeature public int build(String name) {
             int num = next++;
             return asFeatureNum(num);
         }
 
     }
+
     /**
      * Determine (1) what exceptions can be thrown on exception edges, (2) which
      * catch blocks are reachable, and (3) which exception edges carry only
      * "implicit" runtime exceptions.
      */
-    public static final @AnalysisFeature
-    int ACCURATE_EXCEPTIONS = 0;
+    public static final @AnalysisFeature int ACCURATE_EXCEPTIONS = 0;
 
     /**
      * A boolean flag which if set means that analyses should try to conserve
      * space at the expense of precision.
      */
-    public static final @AnalysisFeature
-    int CONSERVE_SPACE = 1;
+    public static final @AnalysisFeature int CONSERVE_SPACE = 1;
 
     /**
      * If true, model the effect of instanceof checks in type analysis.
      */
-    public static final @AnalysisFeature
-    int MODEL_INSTANCEOF = 2;
+    public static final @AnalysisFeature int MODEL_INSTANCEOF = 2;
 
     /**
      * Skip generating CFG's and methodGen's for huge methods
      */
-    public static final @AnalysisFeature
-    int SKIP_HUGE_METHODS = 3;
+    public static final @AnalysisFeature int SKIP_HUGE_METHODS = 3;
 
     /**
      * Perform interative opcode stack analysis: always enabled.
      */
-    public static final @Deprecated @AnalysisFeature
-    int INTERATIVE_OPCODE_STACK_ANALYSIS = 4;
+    public static final @Deprecated @AnalysisFeature int INTERATIVE_OPCODE_STACK_ANALYSIS = 4;
 
     /**
      * In the null pointer analysis, track null values that are guaranteed to be
      * dereferenced on some (non-implicit-exception) path.
      */
-    public static final @AnalysisFeature
-    int TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS = 5;
+    public static final @AnalysisFeature int TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS = 5;
 
     /**
      * In the null pointer analysis, track value numbers that are known to be
@@ -98,8 +96,7 @@ public interface AnalysisFeatures {
      * value is recoverable by redundant load elimination or forward
      * substitution.
      */
-    public static final @AnalysisFeature
-    int TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS = 6;
+    public static final @AnalysisFeature int TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS = 6;
 
     /**
      * Merge similar warnings. If we are tracking warnings across versions, it
@@ -107,8 +104,7 @@ public interface AnalysisFeatures {
      * compare the warnings in two different versions, we will not be able to
      * match them up correctly.
      */
-    public static final @AnalysisFeature
-    int MERGE_SIMILAR_WARNINGS = 7;
+    public static final @AnalysisFeature int MERGE_SIMILAR_WARNINGS = 7;
 
     /**
      * Number of boolean analysis properties reserved for the bytecode analysis
@@ -117,8 +113,6 @@ public interface AnalysisFeatures {
      * @deprecated - use Builder instead
      */
     @Deprecated
-    public static final @AnalysisFeature
-    int NUM_BOOLEAN_ANALYSIS_PROPERTIES = 128;
+    public static final @AnalysisFeature int NUM_BOOLEAN_ANALYSIS_PROPERTIES = 128;
 
 }
-

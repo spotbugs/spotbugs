@@ -91,7 +91,7 @@ public class PatternMatcher implements DFSEdgeTypes {
      *            the Method to analyze
      */
     public PatternMatcher(ByteCodePattern pattern, ClassContext classContext, Method method) throws CFGBuilderException,
-    DataflowAnalysisException {
+            DataflowAnalysisException {
         this.pattern = pattern;
         this.cfg = classContext.getCFG(method);
         this.cpg = classContext.getConstantPoolGen();
@@ -564,4 +564,3 @@ public class PatternMatcher implements DFSEdgeTypes {
 
     }
 }
-

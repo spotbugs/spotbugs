@@ -189,13 +189,13 @@ public class SourceFile {
         if (data != null) {
             return;
         }
-    
+
         try (InputStream in = dataSource.open()) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
+
             addLineOffset(0); // Line 0 starts at offset 0
             LineNumberMapBuilder mapBuilder = new LineNumberMapBuilder(this);
-        
+
             // Copy all of the data from the file into the byte array output
             // stream
             byte[] buf = new byte[1024];
@@ -205,7 +205,7 @@ public class SourceFile {
                 out.write(buf, 0, n);
             }
             mapBuilder.eof();
-        
+
             setData(out.toByteArray());
         }
 
@@ -225,4 +225,3 @@ public class SourceFile {
         return dataSource.getLastModified();
     }
 }
-

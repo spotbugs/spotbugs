@@ -189,16 +189,14 @@ public class SourceInfoMap {
         /**
          * @return Returns the start.
          */
-        public @Nonnull
-        Integer getStart() {
+        public @Nonnull Integer getStart() {
             return start;
         }
 
         /**
          * @return Returns the end.
          */
-        public @Nonnull
-        Integer getEnd() {
+        public @Nonnull Integer getEnd() {
             return end;
         }
 
@@ -290,8 +288,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         field
      */
-    public @CheckForNull
-    SourceLineRange getFieldLine(String className, String fieldName) {
+    public @CheckForNull SourceLineRange getFieldLine(String className, String fieldName) {
         return fieldLineMap.get(new FieldDescriptor(className, fieldName));
     }
 
@@ -307,8 +304,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         method
      */
-    public @CheckForNull
-    SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
+    public @CheckForNull SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
         return methodLineMap.get(new MethodDescriptor(className, methodName, methodSignature));
     }
 
@@ -320,8 +316,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         class
      */
-    public @CheckForNull
-    SourceLineRange getClassLine(String className) {
+    public @CheckForNull SourceLineRange getClassLine(String className) {
         return classLineMap.get(className);
     }
 
@@ -342,10 +337,10 @@ public class SourceInfoMap {
             String line;
             int lparen;
             String version;
-        
+
             while ((line = reader.readLine()) != null) {
                 ++lineNumber;
-            
+
                 if (lineNumber == 1) {
                     if (DEBUG) {
                         System.out.println("First line: " + line);
@@ -361,14 +356,14 @@ public class SourceInfoMap {
                         if (!"1.0".equals(version)) {
                             throw new IOException("Unsupported sourceInfo version " + version);
                         }
-                    
+
                         // Version looks good. Skip to next line of file.
                         continue;
                     }
                 }
-            
+
                 StringTokenizer tokenizer = new StringTokenizer(line, ",");
-            
+
                 String className = tokenizer.nextToken();
                 String next = tokenizer.nextToken();
                 if (DIGITS.matcher(next).matches()) {
@@ -382,13 +377,13 @@ public class SourceInfoMap {
                     // Line number for method
                     String methodName = next.substring(0, lparen);
                     String methodSignature = next.substring(lparen);
-                
+
                     if ("init^".equals(methodName)) {
                         methodName = "<init>";
                     } else if ("clinit^".equals(methodName)) {
                         methodName = "<clinit>";
                     }
-                
+
                     SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
                     methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
                     if (DEBUG) {
@@ -403,7 +398,7 @@ public class SourceInfoMap {
                         System.out.println("field:" + className + "," + fieldName + "," + range);
                     }
                 }
-            
+
                 // Note: we could complain if there are more tokens,
                 // but instead we'll just ignore them.
             }

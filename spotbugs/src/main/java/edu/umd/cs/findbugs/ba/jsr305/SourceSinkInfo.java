@@ -197,13 +197,13 @@ public class SourceSinkInfo implements Comparable<SourceSinkInfo> {
         }
         SourceSinkInfo other = (SourceSinkInfo) obj;
         return Objects.equals(constantValue, other.constantValue)
-            && interproc == other.interproc
-            && local == other.local
-            && Objects.equals(location, other.location)
-            && parameter == other.parameter
-            && type == other.type
-            && Objects.equals(vn, other.vn)
-            && when == other.when;
+                && interproc == other.interproc
+                && local == other.local
+                && Objects.equals(location, other.location)
+                && parameter == other.parameter
+                && type == other.type
+                && Objects.equals(vn, other.vn)
+                && when == other.when;
     }
 
     /*

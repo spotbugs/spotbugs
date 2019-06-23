@@ -38,4 +38,3 @@ public interface SourceFileDataSource {
 
     public long getLastModified();
 }
-

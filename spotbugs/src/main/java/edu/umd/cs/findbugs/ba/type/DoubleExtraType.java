@@ -57,4 +57,3 @@ public class DoubleExtraType extends Type implements ExtendedTypes {
         return theInstance;
     }
 }
-

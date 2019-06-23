@@ -54,8 +54,7 @@ public abstract class ValueNumberSourceInfo {
      *            TODO
      * @return the annotation
      */
-    public static @CheckForNull
-    BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
+    public static @CheckForNull BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame, @CheckForNull String partialRole) {
         if (location.getHandle().getInstruction() instanceof ACONST_NULL) {
             StringAnnotation nullConstant = new StringAnnotation("null");
@@ -94,8 +93,7 @@ public abstract class ValueNumberSourceInfo {
      *            TODO
      * @return the annotation
      */
-    public static @Nonnull
-    BugAnnotation findRequiredAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
+    public static @Nonnull BugAnnotation findRequiredAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame, @CheckForNull String partialRole) {
         BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, partialRole);
         if (result != null) {
@@ -160,8 +158,7 @@ public abstract class ValueNumberSourceInfo {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    static @CheckForNull
-    public BugAnnotation getFromValueNumber(ClassContext classContext, Method method, Location location, int stackPos)
+    static @CheckForNull public BugAnnotation getFromValueNumber(ClassContext classContext, Method method, Location location, int stackPos)
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
         if (!vnaFrame.isValid()) {

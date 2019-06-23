@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
-import edu.umd.cs.findbugs.util.Values;
 
 /**
  * A TypeMerger which applies standard Java semantics when merging Types.
@@ -168,7 +167,7 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
             // We want to preserve the ExceptionSets associated,
             // in order to track the exact set of exceptions
             if (isObjectType(aType) && isObjectType(bType)
-                    && ((aType == T_EXCEPTION || isThrowable(aRef))  && (bType == T_EXCEPTION ||   isThrowable(bRef)))) {
+                    && ((aType == T_EXCEPTION || isThrowable(aRef)) && (bType == T_EXCEPTION || isThrowable(bRef)))) {
                 ExceptionSet union = exceptionSetFactory.createExceptionSet();
                 if (aType == Const.T_OBJECT && "Ljava/lang/Throwable;".equals(aRef.getSignature())) {
                     return aRef;
@@ -232,9 +231,9 @@ public class StandardTypeMerger implements TypeMerger, ExtendedTypes {
     }
 
     private boolean isThrowable(ReferenceType ref) /*
-     * throws
-     * ClassNotFoundException
-     */{
+                                                   * throws
+                                                   * ClassNotFoundException
+                                                   */ {
         try {
 
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();

@@ -92,9 +92,11 @@ public class Hierarchy {
      * @return true if clsName is a subtype of possibleSupertypeClassName, false
      *         if not
      */
-    public static boolean isSubtype(@DottedClassName String clsName, @DottedClassName String possibleSupertypeClassName) throws ClassNotFoundException {
+    public static boolean isSubtype(@DottedClassName String clsName, @DottedClassName String possibleSupertypeClassName)
+            throws ClassNotFoundException {
         Subtypes2 subtypes2 = Global.getAnalysisCache().getDatabase(Subtypes2.class);
-        return subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(clsName), DescriptorFactory.createClassDescriptorFromDottedClassName(possibleSupertypeClassName));
+        return subtypes2.isSubtype(DescriptorFactory.createClassDescriptorFromDottedClassName(clsName), DescriptorFactory
+                .createClassDescriptorFromDottedClassName(possibleSupertypeClassName));
     }
 
     /**
@@ -317,13 +319,12 @@ public class Hierarchy {
      * @return the JavaClassAndMethod, or null if no matching method can be
      *         found
      */
-    public static @CheckForNull
-    JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg) throws ClassNotFoundException {
+    public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg)
+            throws ClassNotFoundException {
         return findInvocationLeastUpperBound(inv, cpg, ANY_METHOD);
     }
 
-    public static @CheckForNull
-    JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg,
+    public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg,
             JavaClassAndMethodChooser methodChooser) throws ClassNotFoundException {
 
         if (DEBUG_METHOD_LOOKUP) {
@@ -369,8 +370,7 @@ public class Hierarchy {
                 opcode == Const.INVOKEINTERFACE);
     }
 
-    public static @CheckForNull
-    JavaClassAndMethod findInvocationLeastUpperBound(JavaClass jClass, String methodName, String methodSig,
+    public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(JavaClass jClass, String methodName, String methodSig,
             JavaClassAndMethodChooser methodChooser, boolean invokeInterface) throws ClassNotFoundException {
         JavaClassAndMethod result = findMethod(jClass, methodName, methodSig, methodChooser);
         if (result != null) {
@@ -424,13 +424,12 @@ public class Hierarchy {
      * @return the JavaClassAndMethod, or null if no such method exists in the
      *         class
      */
-    public static @CheckForNull
-    JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
+    public static @CheckForNull JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
         return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
     }
 
-    public static @CheckForNull
-    JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig, JavaClassAndMethodChooser chooser) {
+    public static @CheckForNull JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig,
+            JavaClassAndMethodChooser chooser) {
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + javaClass.getClassName());
         }
@@ -466,8 +465,7 @@ public class Hierarchy {
      * @return the JavaClassAndMethod, or null if no such method exists in the
      *         class
      */
-    public static @CheckForNull
-    XMethod findMethod(ClassDescriptor classDesc, String methodName, String methodSig, boolean isStatic) {
+    public static @CheckForNull XMethod findMethod(ClassDescriptor classDesc, String methodName, String methodSig, boolean isStatic) {
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + classDesc.getClassName());
         }
@@ -495,8 +493,7 @@ public class Hierarchy {
      *         class
      */
     @Deprecated
-    public static @CheckForNull
-    JavaClassAndMethod findConcreteMethod(JavaClass javaClass, String methodName, String methodSig) {
+    public static @CheckForNull JavaClassAndMethod findConcreteMethod(JavaClass javaClass, String methodName, String methodSig) {
 
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + javaClass.getClassName());
@@ -532,8 +529,7 @@ public class Hierarchy {
      * @return the XMethod, or null if no such method exists in the class
      */
     @Deprecated
-    public static @CheckForNull
-    XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig, JavaClassAndMethodChooser chooser) {
+    public static @CheckForNull XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig, JavaClassAndMethodChooser chooser) {
         JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
         return result == null ? null : XFactory.createXMethod(result.getJavaClass(), result.getMethod());
     }
@@ -814,7 +810,7 @@ public class Hierarchy {
         }
 
         if (receiverType instanceof NullType) {
-            return Collections.<JavaClassAndMethod> emptySet();
+            return Collections.<JavaClassAndMethod>emptySet();
         }
         AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
 
@@ -857,7 +853,7 @@ public class Hierarchy {
                 if (false && subTypeSet.size() > 500) {
                     new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
                             + " of which implement " + methodName + methodSig + " " + invokeInstruction)
-                    .printStackTrace(System.out);
+                                    .printStackTrace(System.out);
                 }
 
             }
@@ -920,8 +916,7 @@ public class Hierarchy {
      * @return an XField object representing the field, or null if no such field
      *         could be found
      */
-    public static XField findXField(String className, String fieldName, String fieldSig, boolean isStatic)
-    {
+    public static XField findXField(String className, String fieldName, String fieldSig, boolean isStatic) {
 
         return XFactory.createXField(className, fieldName, fieldSig, isStatic);
     }
@@ -994,4 +989,3 @@ public class Hierarchy {
     }
 
 }
-

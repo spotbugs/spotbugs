@@ -60,4 +60,3 @@ public class Monitorenter extends OneVariableInstruction {
         return addOrCheckDefinition(lock, bindingSet);
     }
 }
-

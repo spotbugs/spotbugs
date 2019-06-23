@@ -136,18 +136,18 @@ public class AssertionMethods {
 
                     if (isUserAssertionMethod(className, methodName)
                             || className.endsWith("Assert")
-                            && methodName.startsWith("is")
+                                    && methodName.startsWith("is")
                             || (voidReturnType || boolReturnType)
-                            && (classNameLC.indexOf("assert") >= 0 || methodNameLC.startsWith("throw")
-                            || methodName.startsWith("affirm") || methodName.startsWith("panic")
-                            || "logTerminal".equals(methodName) || methodName.startsWith("logAndThrow")
-                            || "insist".equals(methodNameLC) || "usage".equals(methodNameLC)
-                            || "exit".equals(methodNameLC) || methodNameLC.startsWith("fail")
-                            || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
-                            || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
-                            || methodNameLC.indexOf("abort") >= 0
-                            // || methodNameLC.indexOf("check") >= 0
-                            || methodNameLC.indexOf("failed") >= 0) || "addOrThrowException".equals(methodName)) {
+                                    && (classNameLC.indexOf("assert") >= 0 || methodNameLC.startsWith("throw")
+                                            || methodName.startsWith("affirm") || methodName.startsWith("panic")
+                                            || "logTerminal".equals(methodName) || methodName.startsWith("logAndThrow")
+                                            || "insist".equals(methodNameLC) || "usage".equals(methodNameLC)
+                                            || "exit".equals(methodNameLC) || methodNameLC.startsWith("fail")
+                                            || methodNameLC.startsWith("fatal") || methodNameLC.indexOf("assert") >= 0
+                                            || methodNameLC.indexOf("legal") >= 0 || methodNameLC.indexOf("error") >= 0
+                                            || methodNameLC.indexOf("abort") >= 0
+                                            // || methodNameLC.indexOf("check") >= 0
+                                            || methodNameLC.indexOf("failed") >= 0) || "addOrThrowException".equals(methodName)) {
                         assertionMethodRefSet.set(i);
                         if (DEBUG) {
                             System.out.println("==> YES");
@@ -219,7 +219,7 @@ public class AssertionMethods {
                 return true;
             }
             return "org.apache.log4j.Level".equals(className)
-                && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName));
+                    && ("ERROR".equals(fieldName) || "FATAL".equals(fieldName));
         }
         return false;
     }
@@ -231,4 +231,3 @@ public class AssertionMethods {
         return isAssertionMethod;
     }
 }
-

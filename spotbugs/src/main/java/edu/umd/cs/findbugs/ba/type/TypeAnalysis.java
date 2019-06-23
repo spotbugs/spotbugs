@@ -536,8 +536,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
                     // No information about propagated exceptions, so
                     // pick a type conservatively using the handler catch type.
                     catchType = exceptionGen.getCatchType();
-                    if (catchType == null)
-                    {
+                    if (catchType == null) {
                         catchType = Type.THROWABLE; // handle catches anything
                         // throwable
                     }
@@ -593,7 +592,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
 
         if ((edgeType == EdgeTypes.IFCMP_EDGE && (branchOpcode == Const.IFNE || branchOpcode == Const.IFGT || branchOpcode == Const.IFNULL))
 
-                || (edgeType == EdgeTypes.FALL_THROUGH_EDGE && (branchOpcode == Const.IFEQ || branchOpcode == Const.IFLE || branchOpcode == Const.IFNONNULL))) {
+                || (edgeType == EdgeTypes.FALL_THROUGH_EDGE && (branchOpcode == Const.IFEQ || branchOpcode == Const.IFLE
+                        || branchOpcode == Const.IFNONNULL))) {
             // System.out.println("Successful check on edge " + edge);
 
             // Successful instanceof check.
@@ -832,8 +832,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
      *            the basic block
      * @return the set of exceptions that can be thrown by the block
      */
-    private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock) throws
-    DataflowAnalysisException {
+    private ExceptionSet computeThrownExceptionTypes(BasicBlock basicBlock) throws DataflowAnalysisException {
 
         ExceptionSet exceptionTypeSet = exceptionSetFactory.createExceptionSet();
         InstructionHandle pei = basicBlock.getExceptionThrower();

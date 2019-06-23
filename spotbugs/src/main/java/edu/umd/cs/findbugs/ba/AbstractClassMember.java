@@ -25,8 +25,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public abstract class AbstractClassMember implements ClassMember {
-    private final @DottedClassName
-    String className;
+    private final @DottedClassName String className;
 
     private final String name;
 

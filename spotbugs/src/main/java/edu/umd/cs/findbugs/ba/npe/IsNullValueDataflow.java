@@ -34,4 +34,3 @@ public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNu
     }
 
 }
-

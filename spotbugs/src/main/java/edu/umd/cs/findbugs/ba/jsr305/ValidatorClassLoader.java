@@ -56,6 +56,7 @@ class ValidatorClassLoader extends ClassLoader {
 
         return super.loadClass(name, resolve);
     }
+
     @Override
     public Class<?> findClass(@DottedClassName String name) throws ClassNotFoundException {
         if (TypeQualifierValue.DEBUG_CLASSLOADING) {
@@ -83,7 +84,7 @@ class ValidatorClassLoader extends ClassLoader {
     }
 
 
-    private Class<?> findClass(@DottedClassName String name, byte [] b)  {
+    private Class<?> findClass(@DottedClassName String name, byte[] b) {
         try {
             if (TypeQualifierValue.DEBUG_CLASSLOADING) {
                 System.out.println("Loading " + b.length + " bytes for class " + name);

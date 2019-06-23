@@ -193,4 +193,3 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
     }
 
 }
-

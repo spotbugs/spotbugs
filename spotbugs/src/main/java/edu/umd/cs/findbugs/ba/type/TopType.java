@@ -58,4 +58,3 @@ public class TopType extends Type implements ExtendedTypes {
         return theInstance;
     }
 }
-

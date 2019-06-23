@@ -38,4 +38,3 @@ public class LongOrDoubleLocalVariable implements Variable {
         return topValue.equals(otherLongOrDouble.topValue) && nextValue.equals(otherLongOrDouble.nextValue);
     }
 }
-
