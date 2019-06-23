@@ -170,7 +170,7 @@ public abstract class AbstractPluginTest {
         performDummySearch();
         waitForJobs();
         processUiEvents(100);
-//        processUiEvents(10000);
+        //        processUiEvents(10000);
     }
 
     /**
@@ -200,7 +200,7 @@ public abstract class AbstractPluginTest {
 
     protected static void processUiEvents(long delayInMilliseconds) {
         long start = System.currentTimeMillis();
-        long sleepTime = delayInMilliseconds > 10? 10 : delayInMilliseconds;
+        long sleepTime = delayInMilliseconds > 10 ? 10 : delayInMilliseconds;
         while (true) {
             try {
                 Thread.sleep(sleepTime);
@@ -208,7 +208,7 @@ public abstract class AbstractPluginTest {
                 e.printStackTrace();
             }
             processUiEvents();
-            if(System.currentTimeMillis() - start > delayInMilliseconds){
+            if (System.currentTimeMillis() - start > delayInMilliseconds) {
                 break;
             }
         }

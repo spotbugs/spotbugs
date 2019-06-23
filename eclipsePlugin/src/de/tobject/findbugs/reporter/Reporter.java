@@ -194,7 +194,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
         Profiler profiler = stats.getProfiler();
         PrintStream printStream;
-        
+
         try {
             printStream = new PrintStream(stream, false, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e1) {
@@ -207,7 +207,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
 
         printToStream("\nTotal calls:");
         int numClasses = stats.getNumClasses();
-        if(numClasses > 0) {
+        if (numClasses > 0) {
             profiler.report(new Profiler.TotalCallsComparator(profiler), new Profiler.FilterByCalls(numClasses),
                     printStream);
 
@@ -237,9 +237,9 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public void observeClass(ClassDescriptor classDescriptor) {
         String className = classDescriptor.getDottedClassName();
 
-//        if (DEBUG) {
-//            System.out.println("Observing class: " + className); //$NON-NLS-1$
-//        }
+        //        if (DEBUG) {
+        //            System.out.println("Observing class: " + className); //$NON-NLS-1$
+        //        }
 
         if (monitor.isCanceled()) {
             // causes break in FindBugs main loop

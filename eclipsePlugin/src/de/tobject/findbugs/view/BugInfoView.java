@@ -224,17 +224,17 @@ public class BugInfoView extends AbstractFindbugsView {
         }
     }
 
-    private  void createAnnotationList(Composite parent) {
+    private void createAnnotationList(Composite parent) {
         ExpandableComposite exp = new ExpandableComposite(parent, SWT.NONE,
                 ExpandableComposite.TREE_NODE
-                | ExpandableComposite.COMPACT
-                | ExpandableComposite.EXPANDED
-//                | ExpandableComposite.NO_TITLE
-//                | ExpandableComposite.FOCUS_TITLE
-//                | ExpandableComposite.TITLE_BAR
-//                | ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
-                //| ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
-                );
+                        | ExpandableComposite.COMPACT
+                        | ExpandableComposite.EXPANDED
+        //                | ExpandableComposite.NO_TITLE
+        //                | ExpandableComposite.FOCUS_TITLE
+        //                | ExpandableComposite.TITLE_BAR
+        //                | ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
+        //| ExpandableComposite.LEFT_TEXT_CLIENT_ALIGNMENT
+        );
         exp.addExpansionListener(expansionListener);
         exp.setText("Navigation");
         annotationList = new List(exp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
@@ -309,7 +309,7 @@ public class BugInfoView extends AbstractFindbugsView {
         if (!hasBug) {
             return text.toString();
         }
-        if(text.lastIndexOf("</p>") == -1 || text.lastIndexOf("<br>") == -1) {
+        if (text.lastIndexOf("</p>") == -1 || text.lastIndexOf("<br>") == -1) {
             text.append("\n<p>");
         }
         text.append(getBugDetails());
@@ -345,10 +345,10 @@ public class BugInfoView extends AbstractFindbugsView {
         StringBuilder sb = new StringBuilder();
         int rank = 0;
         MarkerConfidence confidence = MarkerConfidence.Ignore;
-        if(bug != null) {
+        if (bug != null) {
             confidence = MarkerConfidence.getConfidence(bug.getPriority());
             rank = bug.getBugRank();
-        } else if(marker != null) {
+        } else if (marker != null) {
             confidence = MarkerUtil.findConfidenceForMarker(marker);
             rank = MarkerUtil.findBugRankForMarker(marker);
         }
@@ -368,7 +368,7 @@ public class BugInfoView extends AbstractFindbugsView {
         sb.append("\n<br><b>Type</b>: ").append(pattern.getAbbrev()).append(", <b>Category</b>: ");
         sb.append(pattern.getCategory());
         BugCategory category = DetectorFactoryCollection.instance().getBugCategory(pattern.getCategory());
-        if(category != null) {
+        if (category != null) {
             sb.append(" (");
             sb.append(category.getShortDescription());
             sb.append(")");
@@ -439,7 +439,7 @@ public class BugInfoView extends AbstractFindbugsView {
         // bug may be null, but if so then the error has already been logged.
         if (bug != null) {
             annotationList.add(bug.getMessageWithoutPrefix());
-            for(BugAnnotation ba : bug.getAnnotationsForMessage(false)) {
+            for (BugAnnotation ba : bug.getAnnotationsForMessage(false)) {
                 annotationList.add(ba.toString());
             }
         }
@@ -452,7 +452,7 @@ public class BugInfoView extends AbstractFindbugsView {
         }
 
         if (file != null) {
-            IProject p =  file.getProject();
+            IProject p = file.getProject();
             try {
                 if (p.hasNature(JavaCore.NATURE_ID)) {
                     return JavaCore.create(p);
@@ -553,7 +553,7 @@ public class BugInfoView extends AbstractFindbugsView {
                     FindbugsPlugin.getDefault().logException(e, "Could not open editor for " + theAnnotation);
                 }
             }
-            if(marker != null) {
+            if (marker != null) {
                 int line = marker.getAttribute(IMarker.LINE_NUMBER, EditorUtil.DEFAULT_LINE_IN_EDITOR);
                 EditorUtil.goToLine(activeEditor, line);
             }
@@ -563,25 +563,26 @@ public class BugInfoView extends AbstractFindbugsView {
     }
 
     private static String stripFirstAndLast(String s) {
-        return s.substring(1, s.length()-1);
+        return s.substring(1, s.length() - 1);
     }
+
     private static IMethod getIMethod(IType type, MethodAnnotation mma) throws JavaModelException {
         String name = mma.getMethodName();
         SignatureParser parser = new SignatureParser(mma.getMethodSignature());
         String[] arguments = parser.getArguments();
 
 
-        nextMethod: for(IMethod m : type.getMethods()) {
+        nextMethod: for (IMethod m : type.getMethods()) {
             if (!m.getElementName().equals(name)) {
                 continue nextMethod;
             }
 
-            String [] mArguments = m.getParameterTypes();
+            String[] mArguments = m.getParameterTypes();
             if (arguments.length != mArguments.length) {
                 continue nextMethod;
             }
 
-            for(int i = 0; i < arguments.length; i++) {
+            for (int i = 0; i < arguments.length; i++) {
                 String a = arguments[i];
                 String ma = mArguments[i];
                 while (a.startsWith("[") && ma.startsWith("[")) {
@@ -606,13 +607,13 @@ public class BugInfoView extends AbstractFindbugsView {
     }
 
     private void copyInfoToClipboard() {
-        if(bug == null) {
+        if (bug == null) {
             return;
         }
         StringBuffer sb = new StringBuffer();
         sb.append(removeHtmlMarkup(getHtml()));
         sb.append("\n\n");
-        for(BugAnnotation ba : bug.getAnnotationsForMessage(true)) {
+        for (BugAnnotation ba : bug.getAnnotationsForMessage(true)) {
             sb.append(ba.toString()).append("\n");
         }
         sb.append("\n");
@@ -699,7 +700,7 @@ public class BugInfoView extends AbstractFindbugsView {
         if (bug == null) {
             return;
         }
-        if(file != null) {
+        if (file != null) {
             setContentDescription(file.getName() +
                     ": " + marker.getAttribute(IMarker.LINE_NUMBER, 0));
         } else {

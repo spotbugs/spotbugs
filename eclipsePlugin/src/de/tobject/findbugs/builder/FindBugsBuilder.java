@@ -94,7 +94,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         default: {
 
             FindbugsPlugin.getDefault()
-            .logWarning("UKNOWN BUILD kind" + kind);
+                    .logWarning("UKNOWN BUILD kind" + kind);
             doBuild(args, monitor, kind);
             break;
         }
@@ -106,11 +106,11 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         MarkerUtil.removeMarkers(getProject());
     }
-    
+
     @Override
     public ISchedulingRule getRule(int kind, Map<String, String> args) {
-    	// lock only the current project during analysis, not the complete workspace. that allows other builders to run in parallel
-    	return getProject();
+        // lock only the current project during analysis, not the complete workspace. that allows other builders to run in parallel
+        return getProject();
     }
 
     /**
@@ -141,9 +141,9 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
                 files.add(new WorkItem(project));
             } else {
                 files = ResourceUtils.collectIncremental(resourceDelta);
-                if(files.size() == 1){
+                if (files.size() == 1) {
                     IResource corespondingResource = files.get(0).getCorespondingResource();
-                    if(corespondingResource != null) {
+                    if (corespondingResource != null) {
                         resource = corespondingResource;
                     }
                 }
@@ -168,7 +168,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         IPreferenceStore store = FindbugsPlugin.getPluginPreferences(getProject());
         boolean runAsJob = store.getBoolean(FindBugsConstants.KEY_RUN_ANALYSIS_AS_EXTRA_JOB);
         FindBugsJob fbJob = new StartedFromBuilderJob("Finding bugs in " + resource.getName() + "...", resource, resources);
-        if(runAsJob) {
+        if (runAsJob) {
             // run asynchronously, so there might be more similar jobs waiting to run
             if (DEBUG) {
                 FindbugsPlugin.log("cancelSimilarJobs");
@@ -209,7 +209,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         }
 
         @Override
-        protected boolean supportsMulticore(){
+        protected boolean supportsMulticore() {
             return MutexSchedulingRule.MULTICORE;
         }
 

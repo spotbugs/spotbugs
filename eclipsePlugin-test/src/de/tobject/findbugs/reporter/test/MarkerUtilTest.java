@@ -94,7 +94,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
         IMarker marker = getAnyMarker();
-        assertFalse(MarkerUtil.isFiltered(marker, Collections.<String> emptySet()));
+        assertFalse(MarkerUtil.isFiltered(marker, Collections.<String>emptySet()));
     }
 
     @Test
@@ -107,8 +107,8 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_NullMarker()  {
-        assertTrue(MarkerUtil.isFiltered(null, Collections.<String> emptySet()));
+    public void testIsFiltered_NullMarker() {
+        assertTrue(MarkerUtil.isFiltered(null, Collections.<String>emptySet()));
     }
 
     @Test

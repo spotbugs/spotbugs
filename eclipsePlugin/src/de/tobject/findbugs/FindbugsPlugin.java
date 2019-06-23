@@ -130,7 +130,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     @java.lang.SuppressWarnings("restriction")
     public static final IPath DEFAULT_PREFS_PATH = new Path(EclipsePreferences.DEFAULT_PREFERENCES_DIRNAME)
-    .append("edu.umd.cs.findbugs.core.prefs");
+            .append("edu.umd.cs.findbugs.core.prefs");
 
     public static final IPath DEPRECATED_PREFS_PATH = new Path(".fbprefs");
 
@@ -212,7 +212,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
         Version.registerApplication("SpotBugs-Eclipse", Version.VERSION_STRING);
 
-         // configure debugging
+        // configure debugging
         configurePluginDebugOptions();
 
         // initialize resource strings
@@ -256,7 +256,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         System.out.printf("Class loaders for %s:%n", c.getName());
         ClassLoader loader = c.getClassLoader();
         while (loader != null) {
-            System.out.printf("  %s %s%n", loader.toString(),  loader.getClass().getSimpleName());
+            System.out.printf("  %s %s%n", loader.toString(), loader.getClass().getSimpleName());
             loader = loader.getParent();
         }
 
@@ -274,7 +274,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *            true if we MUST set plugins even if the given list is empty
      */
     public static synchronized void applyCustomDetectors(boolean force) {
-        if(customDetectorsInitialized && !force) {
+        if (customDetectorsInitialized && !force) {
             return;
         }
         customDetectorsInitialized = true;
@@ -283,7 +283,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         SortedMap<String, String> contributedDetectors = DetectorsExtensionHelper.getContributedDetectors();
         UserPreferences corePreferences = getCorePreferences(null, force);
         detectorPaths.addAll(corePreferences.getCustomPlugins(true));
-        if(DEBUG) {
+        if (DEBUG) {
             dumpClassLoader(FindbugsPlugin.class);
             dumpClassLoader(Plugin.class);
             System.out.println("applyCustomDetectors - going to add " + detectorPaths.size() + " plugin urls...");
@@ -299,7 +299,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             Plugin fbPlugin = entry.getValue();
             String pluginId = fbPlugin.getPluginId();
             // ignore all custom plugins with the same plugin id as already loaded
-            if(contributedDetectors.containsKey(pluginId)) {
+            if (contributedDetectors.containsKey(pluginId)) {
                 contributedDetectors.remove(pluginId);
                 detectorPaths.remove(pluginId);
             }
@@ -335,12 +335,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         // adding custom plugins configured via properties, but only if they are not loaded yet
         for (String path : detectorPaths) {
             // this is plugin id, so we can't use it as URL
-            if(new Path(path).segmentCount() == 1) {
+            if (new Path(path).segmentCount() == 1) {
                 continue;
             }
             path = FindBugsWorker.getFilterPath(path, null).toOSString();
             URI uri = new File(path).toURI();
-            if(allPlugins.containsKey(uri)) {
+            if (allPlugins.containsKey(uri)) {
                 continue;
             }
             ValidationStatus status = validator.validate(path);
@@ -374,7 +374,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             // "Buddy" classloading
             // see also: Eclipse-BuddyPolicy attribute in MANIFEST.MF
             Plugin fbPlugin = Plugin.addCustomPlugin(uri, FindbugsPlugin.class.getClassLoader());
-            if(fbPlugin != null) {
+            if (fbPlugin != null) {
                 // TODO line below required to enable this *optional* plugin
                 // but it should be taken by FB core from the findbugs.xml,
                 // which currently only works for *core* plugins only
@@ -1008,7 +1008,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             for (Entry<Object, Object> entry : props.entrySet()) {
                 store.putValue((String) entry.getKey(), (String) entry.getValue());
             }
-            if(store instanceof IPersistentPreferenceStore){
+            if (store instanceof IPersistentPreferenceStore) {
                 IPersistentPreferenceStore store2 = (IPersistentPreferenceStore) store;
                 try {
                     store2.save();
@@ -1025,14 +1025,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     private static void resetStore(IPreferenceStore store, String prefix) {
         int start = 0;
         // 99 is paranoia.
-        while(start < 99){
+        while (start < 99) {
             String name = prefix + start;
-            if(store.contains(name)){
+            if (store.contains(name)) {
                 store.setToDefault(name);
             } else {
                 break;
             }
-            start ++;
+            start++;
         }
     }
 
@@ -1162,7 +1162,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static Set<BugCode> getFilteredPatternTypes() {
         Set<BugCode> set = new HashSet<>();
         Set<String> patternTypes = getFilteredIds();
-        for(BugCode next :  DetectorFactoryCollection.instance().getBugCodes()) {
+        for (BugCode next : DetectorFactoryCollection.instance().getBugCodes()) {
             String type = next.getAbbrev();
             if (!patternTypes.contains(type)) {
                 continue;
@@ -1181,9 +1181,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     public static void log(String msg) {
         log(msg, null);
-     }
+    }
 
-     public static void log(String msg, Exception e) {
-        plugin.getLog().log(new Status(IStatus.INFO, FindbugsPlugin.PLUGIN_ID,  msg, e));
-     }
+    public static void log(String msg, Exception e) {
+        plugin.getLog().log(new Status(IStatus.INFO, FindbugsPlugin.PLUGIN_ID, msg, e));
+    }
 }

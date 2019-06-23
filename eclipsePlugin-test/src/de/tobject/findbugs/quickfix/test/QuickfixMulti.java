@@ -55,7 +55,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
     @Override
     protected TestScenario getTestScenario() {
-          return TestScenario.MULTIQUICKFIX;
+        return TestScenario.MULTIQUICKFIX;
     }
 
     @BeforeClass
@@ -76,11 +76,12 @@ public class QuickfixMulti extends AbstractQuickfixTest {
     @Test
     public void testMultiUseValueOf() throws Exception {
         QuickFixTestPackager packager = new QuickFixTestPackager();
-        packager.addBugPatterns("DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR","DM_FP_NUMBER_CTOR");
+        packager.addBugPatterns("DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR", "DM_FP_NUMBER_CTOR",
+                "DM_FP_NUMBER_CTOR");
         packager.addExpectedLines(6, //OneProblemHere.java
-                11,24,   //TwoProblemsHere.java
-                7,9,16  //ThreeProblemsHere.java
-                );
+                11, 24, //TwoProblemsHere.java
+                7, 9, 16 //ThreeProblemsHere.java
+        );
         packager.setExpectedLabels(0, "Use Double.valueOf(6.1) instead");
         packager.setExpectedLabels(1, "Use Double.valueOf(7.1) instead");
         packager.setExpectedLabels(2, "Use Double.valueOf(7.2) instead");
@@ -102,7 +103,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         markers = filterMarkers(markers, packages);
         sortMarkers(markers);
 
-        assertEquals("Too many or too few markers",packages.size(), markers.length);
+        assertEquals("Too many or too few markers", packages.size(), markers.length);
 
         assertPresentBugPatterns(packages, markers);
         assertPresentLabels(packages, markers);
@@ -125,8 +126,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
                 if (fileName.endsWith(".java")) {
                     assertEqualFiles(getExpectedOutputFile(fileName), getInputCompilationUnit(fileName));
                 }
-            }
-            else if (resource instanceof IFolder) {
+            } else if (resource instanceof IFolder) {
                 checkJavaFiles(((IFolder) resource).members());
             }
         }
@@ -137,7 +137,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(markers[0]);
         if (resolutions[0] instanceof WorkbenchMarkerResolution) {
             //this represents one of the bugs a user would click on in the problems menu
-            WorkbenchMarkerResolution resolutionFromProblemsMenu = ((WorkbenchMarkerResolution)resolutions[0]);
+            WorkbenchMarkerResolution resolutionFromProblemsMenu = ((WorkbenchMarkerResolution) resolutions[0]);
 
             //in theory, we should have filtered all the bugs of the passed in type
             //So, findOtherMarkers should return them all
@@ -145,7 +145,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
 
             resolutionFromProblemsMenu.run(markers, null);
         } else {
-            fail("Should have been a WorkBenchMarkerResolution: "+resolutions[0]);
+            fail("Should have been a WorkBenchMarkerResolution: " + resolutions[0]);
         }
 
     }
@@ -155,7 +155,7 @@ public class QuickfixMulti extends AbstractQuickfixTest {
         ArrayList<IMarker> filteredMarkers = new ArrayList<>();
 
         Set<String> bugPatternTypes = new HashSet<>();
-        for(QuickFixTestPackage pack : list) {
+        for (QuickFixTestPackage pack : list) {
             bugPatternTypes.add(pack.expectedPattern);
         }
 

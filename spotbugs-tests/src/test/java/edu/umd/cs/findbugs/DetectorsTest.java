@@ -62,12 +62,12 @@ public class DetectorsTest {
 
     private IFindBugsEngine engine;
 
-    private  File spotbugsTestCases;
+    private File spotbugsTestCases;
 
     /** detectors which are disabled by default but which must be used in test */
-    private final String[] enabledDetectors = {"CheckExpectedWarnings","InefficientMemberAccess","EmptyZipFileEntry"};
+    private final String[] enabledDetectors = { "CheckExpectedWarnings", "InefficientMemberAccess", "EmptyZipFileEntry" };
 
-    public  File getFindbugsTestCases()  {
+    public File getFindbugsTestCases() {
         if (spotbugsTestCases != null) {
             return spotbugsTestCases;
         }
@@ -208,14 +208,14 @@ public class DetectorsTest {
 
         for (String s : analyzeMe) {
             project.addFile(getFindbugsTestCasesFile(s).getPath());
-            if(s.indexOf("Eclipse") >= 0){
+            if (s.indexOf("Eclipse") >= 0) {
                 // TODO see testAllRegressionFilesEcj() comments
                 engine.setNoClassOk(true);
             }
         }
 
         File lib = getFindbugsTestCasesFile("lib");
-        for(File f : lib.listFiles()) {
+        for (File f : lib.listFiles()) {
             String path = f.getPath();
             if (f.canRead() && path.endsWith(".jar")) {
                 project.addAuxClasspathEntry(path);

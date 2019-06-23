@@ -119,14 +119,14 @@ class RefreshJob extends Job implements IViewerRefreshJob {
                             }
                         }
                     } finally {
-                        if(viewer != null && !viewer.getControl().isDisposed()) {
+                        if (viewer != null && !viewer.getControl().isDisposed()) {
                             viewer.getControl().setRedraw(true);
                         }
                     }
                 }
             });
         }
-        if(!monitor.isCanceled()) {
+        if (!monitor.isCanceled()) {
             monitor.worked(totalWork);
             monitor.done();
         }
@@ -136,7 +136,7 @@ class RefreshJob extends Job implements IViewerRefreshJob {
     private static boolean containsRoot(Set<BugGroup> changedParents) {
         for (BugGroup parent : changedParents) {
             boolean isRoot = parent.getParent() == null;
-            if(isRoot) {
+            if (isRoot) {
                 return true;
             }
         }

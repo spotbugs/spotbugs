@@ -780,7 +780,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         // getLocation());
         // }
 
-        List<String> efforts = Arrays.asList( "min", "less", "default", "more", "max");
+        List<String> efforts = Arrays.asList("min", "less", "default", "more", "max");
         if (effort != null && !efforts.contains(effort)) {
             throw new BuildException("effort attribute must be one of " + efforts);
         }
@@ -1008,4 +1008,3 @@ public class FindBugsTask extends AbstractFindBugsTask {
         }
     }
 }
-

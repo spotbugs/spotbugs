@@ -72,7 +72,7 @@ public class CreateSuperCallResolution extends BugResolution {
      * @param options optional arguments
      */
     @Override
-    public void setOptions(@Nonnull Map<String, String> options){
+    public void setOptions(@Nonnull Map<String, String> options) {
         insertFirst = Boolean.parseBoolean(options.get("insertFirst"));
     }
 

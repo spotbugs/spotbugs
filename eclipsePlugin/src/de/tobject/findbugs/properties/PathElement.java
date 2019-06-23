@@ -38,7 +38,7 @@ public class PathElement implements IPathElement {
         this.status = status;
         String osString = path.toOSString();
         boolean userEnabled;
-        if(!osString.contains("|")) {
+        if (!osString.contains("|")) {
             this.path = path;
             // old style: no enablement at all => always on
             userEnabled = true;
@@ -64,12 +64,12 @@ public class PathElement implements IPathElement {
     public String toString() {
         String id = getId();
         String string = path.toOSString();
-        if(id != null) {
+        if (id != null) {
             string += " [" + id + "]";
         }
-        if(system) {
+        if (system) {
             string += " (system/";
-            if(enabled) {
+            if (enabled) {
                 string += "enabled)";
             } else {
                 string += "disabled)";
@@ -121,13 +121,13 @@ public class PathElement implements IPathElement {
 
     @Override
     public String getId() {
-        if(status instanceof ValidationStatus) {
+        if (status instanceof ValidationStatus) {
             ValidationStatus vs = (ValidationStatus) status;
             String id = vs.getSummary().id;
-            if(id != null && !ValidationStatus.UNKNOWN_VALUE.equals(id)) {
+            if (id != null && !ValidationStatus.UNKNOWN_VALUE.equals(id)) {
                 return id;
             }
         }
-        return system? path.toString() : null;
+        return system ? path.toString() : null;
     }
 }

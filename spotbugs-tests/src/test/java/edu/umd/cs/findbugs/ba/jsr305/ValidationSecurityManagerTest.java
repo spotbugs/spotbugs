@@ -40,13 +40,12 @@ public class ValidationSecurityManagerTest {
 
 
     private static final SlashedClassName ANNOTATION = AnnotationTemplate.class.getAnnotation(SlashedClassName.class);
+
     static class BadValidator implements TypeQualifierValidator<SlashedClassName> {
 
         @Override
-        public @Nonnull
-        When forConstantValue(@Nonnull
-                SlashedClassName annotation, Object value) {
-            Thread  t = new Thread() {
+        public @Nonnull When forConstantValue(@Nonnull SlashedClassName annotation, Object value) {
+            Thread t = new Thread() {
                 @Override
                 public void run() {
                     System.out.println("bang");
@@ -74,12 +73,15 @@ public class ValidationSecurityManagerTest {
         t.start();
         t.join();
         assertEquals(true, b.get());
-        for (File f :  File.listRoots()) {
+        for (File f : File.listRoots()) {
             f.listFiles();
         }
     }
 
-    @SlashedClassName static class AnnotationTemplate {}
+    @SlashedClassName
+    static class AnnotationTemplate {
+    }
+
     @Test
     public void test() throws InterruptedException {
         ValidationSecurityManager sm = ValidationSecurityManager.INSTANCE;

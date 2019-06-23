@@ -29,7 +29,8 @@ public class PreconditionsCheckNotNullCanIgnoreReturnValueTest {
 
     @Test
     public void testDoNotWarnOnCanIgnoreReturnValue() {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/bugPatterns/RV_RETURN_VALUE_IGNORED_Guava_Preconditions.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get(
+                "../spotbugsTestCases/build/classes/java/main/bugPatterns/RV_RETURN_VALUE_IGNORED_Guava_Preconditions.class"));
         assertThat(bugCollection, is(emptyIterable()));
     }
 

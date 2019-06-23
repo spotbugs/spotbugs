@@ -66,10 +66,10 @@ public class DetectorProvider extends PathsProvider {
 
         Set<String> disabledSystemPlugins = new HashSet<>();
         Set<URI> customPlugins = new HashSet<>();
-        Set<Entry<String,Boolean>> entrySet = pluginPaths.entrySet();
+        Set<Entry<String, Boolean>> entrySet = pluginPaths.entrySet();
         for (Entry<String, Boolean> entry : entrySet) {
             String idOrPath = entry.getKey();
-            if(new Path(idOrPath).segmentCount() == 1) {
+            if (new Path(idOrPath).segmentCount() == 1) {
                 PathElement element = new PathElement(new Path(idOrPath), Status.OK_STATUS);
                 element.setSystem(true);
                 if (!entry.getValue().booleanValue()) {
@@ -90,7 +90,7 @@ public class DetectorProvider extends PathsProvider {
             ValidationStatus status = validator.validate(pluginPath.toOSString());
             PathElement element = new PathElement(pluginPath, status);
             Plugin plugin = Plugin.getByPluginId(status.getSummary().id);
-            if(plugin != null && !uri.equals(plugin.getPluginLoader().getURI())) {
+            if (plugin != null && !uri.equals(plugin.getPluginLoader().getURI())) {
                 // disable contribution if the plugin is already there
                 // but loaded from different location
                 element.setEnabled(false);
@@ -108,7 +108,7 @@ public class DetectorProvider extends PathsProvider {
             String pluginId = entry.getKey();
             URI uri = new Path(entry.getValue()).toFile().toURI();
             Plugin plugin = allPlugins.get(uri);
-            if(plugin != null && !isEclipsePluginDisabled(pluginId, allPlugins)) {
+            if (plugin != null && !isEclipsePluginDisabled(pluginId, allPlugins)) {
                 PluginElement element = new PluginElement(plugin, true);
                 newPaths.add(0, element);
                 customPlugins.add(uri);
@@ -118,9 +118,9 @@ public class DetectorProvider extends PathsProvider {
         // Remaining plugins contributed by FB itself
         for (Plugin plugin : allPlugins.values()) {
             PluginElement element = new PluginElement(plugin, false);
-            if(!customPlugins.contains(plugin.getPluginLoader().getURI())) {
+            if (!customPlugins.contains(plugin.getPluginLoader().getURI())) {
                 newPaths.add(0, element);
-                if(disabledSystemPlugins.contains(plugin.getPluginId())) {
+                if (disabledSystemPlugins.contains(plugin.getPluginId())) {
                     element.setEnabled(false);
                 }
             }
@@ -134,7 +134,7 @@ public class DetectorProvider extends PathsProvider {
      */
     static boolean isEclipsePluginDisabled(String pluginId, Map<URI, Plugin> allPlugins) {
         for (Plugin plugin : allPlugins.values()) {
-            if(pluginId.equals(plugin.getPluginId())) {
+            if (pluginId.equals(plugin.getPluginId())) {
                 return false;
             }
         }
@@ -156,7 +156,7 @@ public class DetectorProvider extends PathsProvider {
         DetectorValidator validator = new DetectorValidator();
         IStatus bad = null;
         for (IPathElement path : paths) {
-            if(path.isSystem()) {
+            if (path.isSystem()) {
                 continue;
             }
             String pathStr = FindBugsWorker.getFilterPath(path.getPath(), null).toOSString();

@@ -609,10 +609,10 @@ public class FilterBugsDialog extends SelectionDialog {
             public int compare(Object o1, Object o2) {
                 String text1 = labelProvider.getText(o1);
                 String text2 = labelProvider.getText(o2);
-                if(text1 == null){
+                if (text1 == null) {
                     return -1;
                 }
-                if(text2 == null){
+                if (text2 == null) {
                     return 1;
                 }
                 return text1.compareTo(text2);
@@ -691,7 +691,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
     private boolean shouldReportMissing(BugPattern bugPattern) {
         return !bugPattern.isDeprecated()
-        // reported many times by some test code
+                // reported many times by some test code
                 && !"UNKNOWN".equals(bugPattern.getType())
                 // reported many times by some test code
                 && !"EXPERIMENTAL".equals(bugPattern.getCategory())

@@ -32,9 +32,10 @@ public enum TestScenario {
     DEFAULT(new String[] { "/defaultScenario" }, false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR" }, 2),
     QUICKFIX(new String[] { "/quickfixScenario" }, false, new String[] {}, 0),
     QUICKFIX_WITH_JUNIT(new String[] { "/quickfixScenario" }, true, new String[] {}, 0),
-    MULTIQUICKFIX(new String[] { "/multiQuickfixScenario" }, false, new String[]{}, 0),
+    MULTIQUICKFIX(new String[] { "/multiQuickfixScenario" }, false, new String[] {}, 0),
     JDT(new String[] { "/jdtScenario" }, false, new String[] {}, 0),
-    TWO_SRC_FOLDERS(new String[] { "/defaultScenario", "secondSrcScenario" }, false, new String[] {"URF_UNREAD_FIELD", "DM_STRING_CTOR", "DM_NUMBER_CTOR" }, 2);
+    TWO_SRC_FOLDERS(new String[] { "/defaultScenario", "secondSrcScenario" }, false, new String[] { "URF_UNREAD_FIELD", "DM_STRING_CTOR",
+        "DM_NUMBER_CTOR" }, 2);
 
     private String[] testFilesPaths;
 

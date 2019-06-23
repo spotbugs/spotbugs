@@ -148,11 +148,11 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
         // Obtain all markers in the editor
         IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
-        if(resource == null){
+        if (resource == null) {
             return;
         }
         IMarker[] allMarkers = MarkerUtil.getMarkers(resource, IResource.DEPTH_ZERO);
-        if(allMarkers.length == 0) {
+        if (allMarkers.length == 0) {
             return;
         }
         // Discover relevant markers, i.e. FindBugsMarkers
@@ -213,7 +213,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
      */
     @CheckForNull
     protected AbstractMarkerAnnotationModel getModel() {
-        if(editor == null) {
+        if (editor == null) {
             return null;
         }
         IDocumentProvider provider = editor.getDocumentProvider();
