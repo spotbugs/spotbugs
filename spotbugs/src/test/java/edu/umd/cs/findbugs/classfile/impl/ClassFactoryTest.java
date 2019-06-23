@@ -38,7 +38,7 @@ import org.junit.Test;
 public class ClassFactoryTest {
 
     @Before
-    public void setUp () {
+    public void setUp() {
         Global.setAnalysisCacheForCurrentThread(new NoopAnalysisCache());
     }
 

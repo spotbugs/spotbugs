@@ -75,7 +75,8 @@ public class GenericUtilitiesTest {
     public void testOKSignaturesThatHaveCausedProblems() {
         GenericUtilities.getType("[Ljava/util/Map$Entry<Ljava/lang/String;[B>;");
         GenericUtilities.getType("[Ljava/util/Map<Ljava/lang/String;[Ljava/lang/String;>;");
-        GenericUtilities.getType("Lcom/palantir/finance/commons/service/calculator/Call<-Ljava/util/List<!*>;+Ljava/util/List<Ljava/lang/String;>;>;");
+        GenericUtilities.getType(
+                "Lcom/palantir/finance/commons/service/calculator/Call<-Ljava/util/List<!*>;+Ljava/util/List<Ljava/lang/String;>;>;");
     }
 
     @Test
