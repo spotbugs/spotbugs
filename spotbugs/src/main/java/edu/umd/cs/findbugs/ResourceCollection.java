@@ -106,4 +106,3 @@ public class ResourceCollection<Resource> {
         return locationToResourceMap.get(location);
     }
 }
-

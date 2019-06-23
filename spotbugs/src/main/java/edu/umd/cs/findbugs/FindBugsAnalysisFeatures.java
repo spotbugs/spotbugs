@@ -39,17 +39,15 @@ public abstract class FindBugsAnalysisFeatures {
      * the heuristics as BugProperties (for consumption by a
      * machine-learning-based ranking algorithm).
      */
-    public static final @AnalysisFeature
-    int RELAXED_REPORTING_MODE = AnalysisFeatures.Builder.build("RELAXED_REPORTING_MODE");
+    public static final @AnalysisFeature int RELAXED_REPORTING_MODE = AnalysisFeatures.Builder.build("RELAXED_REPORTING_MODE");
 
     /**
      * Enable interprocedural analysis.
      */
-    public static final @AnalysisFeature
-    int INTERPROCEDURAL_ANALYSIS = AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS");
+    public static final @AnalysisFeature int INTERPROCEDURAL_ANALYSIS = AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS");
 
-    public static final @AnalysisFeature
-    int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = AnalysisFeatures.Builder.build("INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES");
+    public static final @AnalysisFeature int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = AnalysisFeatures.Builder.build(
+            "INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES");
 
     static void setProperty(@AnalysisFeature int property, boolean value) {
         AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);

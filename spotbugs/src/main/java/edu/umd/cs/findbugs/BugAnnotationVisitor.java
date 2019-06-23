@@ -36,4 +36,3 @@ public interface BugAnnotationVisitor {
 
     public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }
-

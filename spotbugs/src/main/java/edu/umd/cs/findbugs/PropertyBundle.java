@@ -92,7 +92,7 @@ public class PropertyBundle {
         if (contents == null) {
             return;
         }
-        
+
         try (InputStream in = new ByteArrayInputStream(contents.getBytes(StandardCharsets.ISO_8859_1))) {
             properties.load(in);
         } catch (IOException e) {

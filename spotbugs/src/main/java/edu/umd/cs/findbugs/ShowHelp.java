@@ -34,12 +34,12 @@ public class ShowHelp {
         System.out.println("Command line options");
 
         TreeSet<FindBugsMain> cmds = new TreeSet<>();
-        for(Plugin p : Plugin.getAllPlugins()) {
-            for(FindBugsMain m : p.getAllFindBugsMain()) {
+        for (Plugin p : Plugin.getAllPlugins()) {
+            for (FindBugsMain m : p.getAllFindBugsMain()) {
                 cmds.add(m);
             }
         }
-        for(FindBugsMain m : cmds) {
+        for (FindBugsMain m : cmds) {
             System.out.printf("fb %-12s %-12s %s%n", m.cmd, m.kind, m.description);
         }
 

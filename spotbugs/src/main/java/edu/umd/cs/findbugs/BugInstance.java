@@ -25,7 +25,6 @@ import java.util.*;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -153,6 +152,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     public static class NoSuchBugPattern extends IllegalArgumentException {
         public final String type;
+
         public NoSuchBugPattern(String type) {
             super("Can't find definition of bug type " + type);
             this.type = type;
@@ -176,7 +176,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
         BugPattern p = DetectorFactoryCollection.instance().lookupBugPattern(type);
         if (p == null) {
-            if ( missingBugTypes.add(type)) {
+            if (missingBugTypes.add(type)) {
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new NoSuchBugPattern(type));
             }
@@ -370,8 +370,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
         } else if (value == Priorities.EXP_PRIORITY) {
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
-        }
-        else {
+        } else {
             priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This
         }
         // probably shouldn't ever happen, but what the hell, let's be complete
@@ -595,7 +594,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * such annotation exists;
      */
     public @CheckForNull <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
-        for(BugAnnotation a : annotationList) {
+        for (BugAnnotation a : annotationList) {
             if (c.isInstance(a) && Objects.equals(role, a.getDescription())) {
                 return c.cast(a);
             }
@@ -852,7 +851,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         if (annotationList.size() != 2) {
             return;
         }
-        priority+=2;
+        priority += 2;
         setProperty("FOUND_IN_SYNTHETIC_METHOD", "true");
         if (SystemProperties.ASSERTIONS_ENABLED && AnalysisContext.analyzingApplicationClass() && priority <= 3) {
             AnalysisContext.logError("Adding error " + getBugPattern().getType() + " to synthetic method " + getPrimaryMethod());
@@ -944,7 +943,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addClass(@SlashedClassName(when = When.UNKNOWN)  String className) {
+    public BugInstance addClass(@SlashedClassName(when = When.UNKNOWN) String className) {
         ClassAnnotation classAnnotation = new ClassAnnotation(ClassName.toDottedClassName(className));
         add(classAnnotation);
         return this;
@@ -1962,6 +1961,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         BugCode bugCode = pattern.getBugCode();
         return bugCode.getCWEid();
     }
+
     public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("type", type).addAttribute("priority",
                 String.valueOf(priority));
@@ -2033,7 +2033,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             primaryAnnotations.put(getPrimaryField(), null);
             primaryAnnotations.put(getPrimaryMethod(), null);
         } else {
-            primaryAnnotations = Collections.<BugAnnotation, Void> emptyMap();
+            primaryAnnotations = Collections.<BugAnnotation, Void>emptyMap();
         }
 
         boolean foundSourceAnnotation = false;
@@ -2051,11 +2051,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
         if (propertyListHead != null) {
             List<BugProperty> props = new ArrayList<>();
-            for(BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
+            for (BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
                 props.add(prop);
             }
             Collections.sort(props, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-            for(BugProperty prop : props) {
+            for (BugProperty prop : props) {
                 prop.writeXML(xmlOutput);
             }
         }
@@ -2126,13 +2126,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return this.addOptionalAnnotation(b);
     }
 
-    public static @CheckForNull
-    BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
+    public static @CheckForNull BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
         return getSourceForStackValue(classContext, method, location, 0);
     }
 
-    public static @CheckForNull
-    BugAnnotation getSourceForStackValue(ClassContext classContext, Method method, Location location, int depth) {
+    public static @CheckForNull BugAnnotation getSourceForStackValue(ClassContext classContext, Method method, Location location, int depth) {
         try {
             int pc = location.getHandle().getPosition();
             OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
@@ -2146,8 +2144,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         }
     }
 
-    public static @CheckForNull
-    BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack, int stackPos) {
+    public static @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack,
+            int stackPos) {
         if (stack.isTop()) {
             return null;
         }
@@ -2168,8 +2166,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     }
 
-    public static @CheckForNull
-    BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
+    public static @CheckForNull BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
         LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
         if (lv != null && lv.isNamed()) {
             return lv;
@@ -2244,8 +2241,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return this;
     }
 
-    public static @CheckForNull
-    BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
+    public static @CheckForNull BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
         if (item == null) {
             return null;
         }

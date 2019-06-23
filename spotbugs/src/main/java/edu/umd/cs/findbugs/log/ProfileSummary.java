@@ -129,8 +129,6 @@ public class ProfileSummary implements IProfiler, XMLWriteable {
                 .filter(profiler -> profiler.contains(clazz))
                 .map(profiler -> profiler.getProfile(clazz))
                 .findFirst()
-                .orElseThrow(() ->
-                    new IllegalArgumentException("Specified class " + clazz + " is not analyzed")
-        );
+                .orElseThrow(() -> new IllegalArgumentException("Specified class " + clazz + " is not analyzed"));
     }
 }

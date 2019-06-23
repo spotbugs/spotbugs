@@ -463,10 +463,10 @@ public class SortedBugCollection implements BugCollection {
         xmlOutput.openTag(
                 ROOT_ELEMENT_NAME,
                 new XMLAttributeList().addAttribute("version", analysisVersion)
-                .addAttribute("sequence", String.valueOf(getSequenceNumber()))
-                .addAttribute("timestamp", String.valueOf(getTimestamp()))
-                .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
-                .addAttribute("release", getReleaseName()));
+                        .addAttribute("sequence", String.valueOf(getSequenceNumber()))
+                        .addAttribute("timestamp", String.valueOf(getTimestamp()))
+                        .addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
+                        .addAttribute("release", getReleaseName()));
         project.writeXML(xmlOutput, null, this);
     }
 
@@ -782,7 +782,7 @@ public class SortedBugCollection implements BugCollection {
         }
 
         in.reset();
-    
+
         try (BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -844,7 +844,7 @@ public class SortedBugCollection implements BugCollection {
 
     public static class MultiversionBugInstanceComparator extends BugInstanceComparator {
 
-        private MultiversionBugInstanceComparator(){
+        private MultiversionBugInstanceComparator() {
         }
 
         @Override
@@ -1006,7 +1006,7 @@ public class SortedBugCollection implements BugCollection {
         }
         if (className.startsWith("[")) {
             assert false : "Bad class name " + className;
-        return;
+            return;
         }
         if (className.endsWith(";")) {
             addError("got signature rather than classname: " + className, new IllegalArgumentException());
@@ -1081,7 +1081,7 @@ public class SortedBugCollection implements BugCollection {
         if (sequence == 0) {
             return false;
         }
-        for(BugInstance b : bugSet) {
+        for (BugInstance b : bugSet) {
             if (b.isDead()) {
                 return true;
             }
@@ -1243,7 +1243,7 @@ public class SortedBugCollection implements BugCollection {
 
     public InputStream progessMonitoredInputStream(File f, String msg) throws IOException {
         long length = f.length();
-        if (length > Integer.MAX_VALUE){
+        if (length > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("File " + f + " is too big at " + length + " bytes");
         }
         InputStream in = new FileInputStream(f);
@@ -1299,4 +1299,3 @@ public class SortedBugCollection implements BugCollection {
         return bugSet.stream().map(Object::toString).collect(Collectors.joining(",", "[", "]"));
     }
 }
-

@@ -46,4 +46,3 @@ public class CallGraphEdge extends AbstractEdge<CallGraphEdge, CallGraphNode> {
         return getTarget().getMethod();
     }
 }
-

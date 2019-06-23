@@ -225,4 +225,3 @@ public class Tokenizer {
         return new Token(Token.WORD, result.toString());
     }
 }
-

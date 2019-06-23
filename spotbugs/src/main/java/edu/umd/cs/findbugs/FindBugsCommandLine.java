@@ -92,8 +92,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
         return settingList;
     }
 
-    public @Nonnull
-    Project getProject() {
+    public @Nonnull Project getProject() {
         return project;
     }
 
@@ -143,7 +142,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
                 File file = new File(tok.nextToken());
                 Boolean enabled = Boolean.valueOf(file.isFile());
                 customPlugins.put(file.getAbsolutePath(), enabled);
-                if(enabled.booleanValue()) {
+                if (enabled.booleanValue()) {
                     try {
                         Plugin.loadCustomPlugin(file, getProject());
                     } catch (PluginException e) {

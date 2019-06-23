@@ -37,4 +37,3 @@ public interface VertexCombinator<VertexType extends GraphVertex<VertexType>> {
      */
     public VertexType combineVertices(Set<VertexType> vertexSet);
 }
-

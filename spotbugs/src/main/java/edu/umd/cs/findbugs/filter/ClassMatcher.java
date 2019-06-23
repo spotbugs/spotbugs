@@ -78,4 +78,3 @@ public class ClassMatcher implements Matcher {
         xmlOutput.openCloseTag("Class", attributes);
     }
 }
-

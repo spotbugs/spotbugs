@@ -41,7 +41,7 @@ public class NewResults {
 
     public SortedBugCollection execute() {
         SortedBugCollection result = new SortedBugCollection();
-    
+
         for (BugInstance bugInstance : newCollection) {
             if (!origCollection.contains(bugInstance)) {
                 result.add(bugInstance);
@@ -68,4 +68,3 @@ public class NewResults {
         result.writeXML(outputFilename);
     }
 }
-

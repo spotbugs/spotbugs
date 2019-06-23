@@ -42,4 +42,3 @@ public interface Detector extends Priorities {
      */
     public void report();
 }
-

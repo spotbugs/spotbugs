@@ -107,4 +107,3 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
         return xslInputStream;
     }
 }
-

@@ -61,12 +61,12 @@ public class DeepSubtypeAnalysis {
                 return 1.0;
             }
         }
-        double result =  isDeepSerializable(type.getSignature());
+        double result = isDeepSerializable(type.getSignature());
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
             List<? extends ReferenceType> parameters = gt.getParameters();
             if (parameters != null) {
-                for(ReferenceType t : parameters) {
+                for (ReferenceType t : parameters) {
                     double r = isDeepSerializable(t);
                     if (result > r) {
                         result = r;
@@ -77,6 +77,7 @@ public class DeepSubtypeAnalysis {
 
         return result;
     }
+
     public static ReferenceType getLeastSerializableTypeComponent(ReferenceType type)
             throws ClassNotFoundException {
         if (type instanceof ArrayType) {
@@ -90,12 +91,12 @@ public class DeepSubtypeAnalysis {
         }
 
         ReferenceType result = type;
-        double value =  isDeepSerializable(type.getSignature());
+        double value = isDeepSerializable(type.getSignature());
         if (type instanceof GenericObjectType && Subtypes2.isContainer(type)) {
             GenericObjectType gt = (GenericObjectType) type;
             List<? extends ReferenceType> parameters = gt.getParameters();
             if (parameters != null) {
-                for(ReferenceType t : parameters) {
+                for (ReferenceType t : parameters) {
                     double r = isDeepSerializable(t);
                     if (value > r) {
                         value = r;

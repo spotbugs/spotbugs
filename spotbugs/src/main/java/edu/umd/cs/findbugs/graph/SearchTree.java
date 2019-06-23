@@ -81,4 +81,3 @@ public class SearchTree<VertexType extends GraphVertex<VertexType>> {
     }
 
 }
-

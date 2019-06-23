@@ -168,4 +168,3 @@ public abstract class ByteCodePatternDetector implements Detector {
     public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
             throws CFGBuilderException, DataflowAnalysisException;
 }
-

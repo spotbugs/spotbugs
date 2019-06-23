@@ -109,4 +109,3 @@ public class MergeVertices<GraphType extends Graph<EdgeType, VertexType>, EdgeTy
     }
 
 }
-

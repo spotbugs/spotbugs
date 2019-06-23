@@ -43,15 +43,11 @@ import javax.annotation.CheckForNull;
  */
 public class NameMatch {
 
-    private @CheckForNull
-    final
-    String spec;
+    private @CheckForNull final String spec;
 
-    private @CheckForNull
-    String exact;
+    private @CheckForNull String exact;
 
-    private @CheckForNull
-    Pattern pattern;
+    private @CheckForNull Pattern pattern;
 
     @Override
     public int hashCode() {

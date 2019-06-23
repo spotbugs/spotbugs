@@ -106,7 +106,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
         this.methodName = methodName;
         if (methodSig.indexOf('.') >= 0) {
             assert false : "signatures should not be dotted: " + methodSig;
-        methodSig = methodSig.replace('.', '/');
+            methodSig = methodSig.replace('.', '/');
         }
         this.methodSig = methodSig;
         this.isStatic = isStatic;
@@ -540,6 +540,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
     public boolean isSignificant() {
         String role = getDescription();
         return !Arrays.asList(METHOD_DANGEROUS_TARGET, METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL,
-            METHOD_SAFE_TARGET, METHOD_EQUALS_USED, METHOD_COMPUTED_IN).contains(role);
+                METHOD_SAFE_TARGET, METHOD_EQUALS_USED, METHOD_COMPUTED_IN).contains(role);
     }
 }

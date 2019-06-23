@@ -28,7 +28,7 @@ package edu.umd.cs.findbugs.graph;
  * @author David Hovemeyer
  */
 public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertexType>, ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>>
-implements GraphVertex<ActualVertexType> {
+        implements GraphVertex<ActualVertexType> {
 
     private int label;
 
@@ -56,7 +56,7 @@ implements GraphVertex<ActualVertexType> {
         if (o == null || o.getClass() != this.getClass()) {
             return false;
         }
-        AbstractVertex<?,?> other = (AbstractVertex<?,?>) o;
+        AbstractVertex<?, ?> other = (AbstractVertex<?, ?>) o;
         return other.getLabel() == this.getLabel();
     }
 
@@ -134,4 +134,3 @@ implements GraphVertex<ActualVertexType> {
     }
 
 }
-

@@ -52,4 +52,3 @@ abstract public class AnnotationDetector extends AnnotationVisitor implements De
     public void report() {
     }
 }
-

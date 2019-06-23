@@ -186,4 +186,3 @@ public class StringAnnotation implements BugAnnotation {
         return toString();
     }
 }
-

@@ -153,6 +153,7 @@ public interface BugCollection extends Iterable<BugInstance> {
     public long getSequenceNumber();
 
     public boolean isMultiversion();
+
     public boolean hasDeadBugs();
 
 

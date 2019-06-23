@@ -64,7 +64,7 @@ public class TypeMatcher implements Matcher {
         }
         String typeDescriptor = typeAnnotation.getTypeDescriptor();
         return descriptor.match(typeDescriptor)
-            && (typeParameters == null || typeParameters.equals(typeAnnotation.getTypeParameters()));
+                && (typeParameters == null || typeParameters.equals(typeAnnotation.getTypeParameters()));
     }
 
     @Override
@@ -78,4 +78,3 @@ public class TypeMatcher implements Matcher {
         xmlOutput.openCloseTag("Type", attributes);
     }
 }
-

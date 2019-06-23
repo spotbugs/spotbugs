@@ -35,4 +35,3 @@ public interface VertexChooser<VertexType extends GraphVertex<VertexType>> {
     public boolean isChosen(VertexType v);
 
 }
-

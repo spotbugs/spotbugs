@@ -179,7 +179,7 @@ public class ExecutionPlan {
 
             }
         } while (change);
-    
+
         factoryMap.entrySet().removeIf(e -> !factoryChooser.choose(e.getValue()));
 
         // Build inter-pass constraint graph
@@ -313,7 +313,7 @@ public class ExecutionPlan {
     }
 
     private void createConstraintEdges(ConstraintGraph result, Set<DetectorNode> earlierSet, Set<DetectorNode> laterSet,
-            DetectorOrderingConstraint constraint)  {
+            DetectorOrderingConstraint constraint) {
 
         // It is perfectly fine for a constraint to produce no edges
         // if any detector it specifies is not enabled.
@@ -341,7 +341,7 @@ public class ExecutionPlan {
                 DetectorNode node = i.next();
                 if (constraintGraph.getNumIncomingEdges(node) == 0) {
                     inDegreeZeroList.add(node);
-                } else if (DEBUG ) {
+                } else if (DEBUG) {
                     System.out.println("Can't schedule " + node.getFactory().getShortName());
                     Iterator<ConstraintEdge> incomingEdgeIterator = constraintGraph.incomingEdgeIterator(node);
                     while (incomingEdgeIterator.hasNext()) {
@@ -471,8 +471,7 @@ public class ExecutionPlan {
         pass.append(factory);
     }
 
-    private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass)
-    {
+    private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass) {
         DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
         Arrays.sort(unassignedList, (a, b) -> {
             // Sort first by plugin id...
@@ -528,4 +527,3 @@ public class ExecutionPlan {
         execPlan.print();
     }
 }
-

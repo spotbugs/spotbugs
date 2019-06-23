@@ -218,10 +218,8 @@ public class XDocsBugReporter extends TextUIBugReporter {
      */
 
     @Override
-    public @Nonnull
-    BugCollection getBugCollection() {
+    public @Nonnull BugCollection getBugCollection() {
         return bugCollection;
     }
 
 }
-

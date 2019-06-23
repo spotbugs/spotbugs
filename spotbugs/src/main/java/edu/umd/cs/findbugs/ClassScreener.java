@@ -181,4 +181,3 @@ public class ClassScreener implements IClassScreener {
         return patternList.isEmpty();
     }
 }
-

@@ -37,4 +37,3 @@ public interface InstructionScannerGenerator {
      */
     public InstructionScanner createScanner();
 }
-

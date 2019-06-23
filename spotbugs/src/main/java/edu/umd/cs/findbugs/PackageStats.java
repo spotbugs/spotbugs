@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -58,6 +57,7 @@ class BugCounts {
         }
 
     }
+
     public final int getTotalBugs() {
         if (nBugs == null) {
             return 0;
@@ -86,12 +86,13 @@ class BugCounts {
      *            an output stream for which startTag has been called but
      *            stopTag has not.
      */
-    public  void writeBugPriorities(XMLOutput xmlOutput) throws IOException {
+    public void writeBugPriorities(XMLOutput xmlOutput) throws IOException {
         if (nBugs == null) {
             return;
         }
         writeBugPriorities(xmlOutput, nBugs);
     }
+
     public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int nBugs[]) throws IOException {
         int i = nBugs.length;
         while (--i > 0) {
@@ -145,8 +146,7 @@ public class PackageStats extends BugCounts implements XMLWriteable {
             return name;
         }
 
-        public @CheckForNull
-        String getSourceFile() {
+        public @CheckForNull String getSourceFile() {
             return sourceFile;
         }
 
@@ -350,4 +350,3 @@ public class PackageStats extends BugCounts implements XMLWriteable {
         packageMembers.entrySet().removeIf(e -> !classPattern.matcher(e.getKey()).find());
     }
 }
-

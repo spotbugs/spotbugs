@@ -263,7 +263,7 @@ public class DiscoverSourceDirectories {
     }
 
     private IClassPath buildClassPath(IClassPathBuilder builder, IClassFactory factory) throws InterruptedException, IOException,
-    CheckedAnalysisException {
+            CheckedAnalysisException {
 
         progress.startScanningArchives(project.getFileCount());
 
@@ -285,7 +285,7 @@ public class DiscoverSourceDirectories {
     }
 
     private String findFullyQualifiedSourceFileName(IClassPath classPath, ClassDescriptor classDesc) throws IOException,
-    CheckedAnalysisException {
+            CheckedAnalysisException {
         try {
             // Open and parse the class file to attempt
             // to discover the source file name.

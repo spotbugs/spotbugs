@@ -68,4 +68,3 @@ public class ConstraintEdge extends AbstractEdge<ConstraintEdge, DetectorNode> {
         return constraint.isSingleSource();
     }
 }
-

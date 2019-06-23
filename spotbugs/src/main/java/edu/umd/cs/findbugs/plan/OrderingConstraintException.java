@@ -45,4 +45,3 @@ public class OrderingConstraintException extends CheckedAnalysisException {
         super(msg);
     }
 }
-

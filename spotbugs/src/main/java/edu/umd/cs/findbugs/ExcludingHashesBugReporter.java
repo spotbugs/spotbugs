@@ -50,7 +50,7 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
      * @throws DocumentException
      */
     public static void addToExcludedInstanceHashes(Set<String> instanceHashesToExclude, String baseline) throws IOException,
-    DocumentException {
+            DocumentException {
         Project project = new Project();
         BugCollection origCollection;
         origCollection = new SortedBugCollection(project);

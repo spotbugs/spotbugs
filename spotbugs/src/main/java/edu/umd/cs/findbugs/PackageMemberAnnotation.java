@@ -37,8 +37,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLines {
     private static final long serialVersionUID = -8208567669352996892L;
 
-    protected final @DottedClassName
-    String className;
+    protected final @DottedClassName String className;
 
     protected String description;
 
@@ -74,7 +73,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
         }
         if (className.indexOf('/') >= 0) {
             assert false : "classname " + className + " should be dotted";
-        className = className.replace('/', '.');
+            className = className.replace('/', '.');
         }
         this.className = className;
         this.sourceFileName = sourceFileName;
@@ -87,16 +86,14 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     /**
      * Get the dotted class name.
      */
-    public final @DottedClassName
-    String getClassName() {
+    public final @DottedClassName String getClassName() {
         return className;
     }
 
     /**
      * Get the dotted class name.
      */
-    public final @SlashedClassName
-    String getSlashedClassName() {
+    public final @SlashedClassName String getSlashedClassName() {
         return ClassName.toSlashedClassName(className);
     }
 
@@ -114,8 +111,7 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     /**
      * Get the package name.
      */
-    public final @DottedClassName
-    String getPackageName() {
+    public final @DottedClassName String getPackageName() {
         int lastDot = className.lastIndexOf('.');
         if (lastDot < 0) {
             return "";
@@ -232,4 +228,3 @@ public abstract class PackageMemberAnnotation extends BugAnnotationWithSourceLin
     }
 
 }
-

@@ -61,8 +61,8 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
             }
         }
         return methodAnnotation != null
-            && name.match(methodAnnotation.getMethodName())
-            && (signature == null || signature.match(methodAnnotation.getMethodSignature()));
+                && name.match(methodAnnotation.getMethodName())
+                && (signature == null || signature.match(methodAnnotation.getMethodSignature()));
     }
 
     @Override
@@ -97,4 +97,3 @@ public class MethodMatcher extends MemberMatcher implements Matcher {
         xmlOutput.openCloseTag("Method", attributes);
     }
 }
-
