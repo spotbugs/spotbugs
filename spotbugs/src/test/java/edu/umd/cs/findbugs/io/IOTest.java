@@ -34,7 +34,7 @@ public class IOTest {
     Random r = new Random();
 
     private byte[] randomBytes(int size) {
-        byte [] result = new byte[size];
+        byte[] result = new byte[size];
         r.nextBytes(result);
         return result;
     }
@@ -42,9 +42,9 @@ public class IOTest {
     @Test
     public void testReadAllWithCorrectSize() throws IOException {
 
-        for(int i = 10; i <= 10000; i *= 10) {
-            byte [] input = randomBytes(i);
-            byte [] output = IO.readAll(new ByteArrayInputStream(input), i);
+        for (int i = 10; i <= 10000; i *= 10) {
+            byte[] input = randomBytes(i);
+            byte[] output = IO.readAll(new ByteArrayInputStream(input), i);
             Assert.assertArrayEquals(input, output);
         }
     }
@@ -52,9 +52,9 @@ public class IOTest {
     @Test
     public void testReadAllWithSmallSize() throws IOException {
 
-        for(int i = 10; i <= 10000; i *= 10) {
-            byte [] input = randomBytes(i);
-            byte [] output = IO.readAll(new ByteArrayInputStream(input), i-9);
+        for (int i = 10; i <= 10000; i *= 10) {
+            byte[] input = randomBytes(i);
+            byte[] output = IO.readAll(new ByteArrayInputStream(input), i - 9);
             Assert.assertArrayEquals(input, output);
         }
     }
@@ -62,9 +62,9 @@ public class IOTest {
     @Test
     public void testReadAllWithLargeSize() throws IOException {
 
-        for(int i = 10; i <= 10000; i *= 10) {
-            byte [] input = randomBytes(i);
-            byte [] output = IO.readAll(new ByteArrayInputStream(input), i+29);
+        for (int i = 10; i <= 10000; i *= 10) {
+            byte[] input = randomBytes(i);
+            byte[] output = IO.readAll(new ByteArrayInputStream(input), i + 29);
             Assert.assertArrayEquals(input, output);
         }
     }
@@ -72,9 +72,9 @@ public class IOTest {
     @Test
     public void testReadAllWithoutSize() throws IOException {
 
-        for(int i = 10; i <= 10000; i *= 10) {
-            byte [] input = randomBytes(i);
-            byte [] output = IO.readAll(new ByteArrayInputStream(input));
+        for (int i = 10; i <= 10000; i *= 10) {
+            byte[] input = randomBytes(i);
+            byte[] output = IO.readAll(new ByteArrayInputStream(input));
             Assert.assertArrayEquals(input, output);
         }
     }

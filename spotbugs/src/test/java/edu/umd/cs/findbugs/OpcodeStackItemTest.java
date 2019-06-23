@@ -39,16 +39,17 @@ public class OpcodeStackItemTest {
 
     @Test
     public void testMergeTypeOnly() {
-        OpcodeStack.Item intOnly =  OpcodeStack.Item.typeOnly("I");
+        OpcodeStack.Item intOnly = OpcodeStack.Item.typeOnly("I");
         OpcodeStack.Item zeroItem = new OpcodeStack.Item("I", 0);
 
         OpcodeStack.Item m1 = OpcodeStack.Item.merge(intOnly, zeroItem);
-        assertEquals(0,m1.getConstant());
+        assertEquals(0, m1.getConstant());
         OpcodeStack.Item m2 = OpcodeStack.Item.merge(zeroItem, intOnly);
-        assertEquals(0,m2.getConstant());
+        assertEquals(0, m2.getConstant());
     }
 
     private static final String NEW_ITEM_KIND_NAME = "newItemKindName";
+
     @Test
     public void testDefineNewItemKind() {
         int defined = OpcodeStack.Item.defineSpecialKind(NEW_ITEM_KIND_NAME);

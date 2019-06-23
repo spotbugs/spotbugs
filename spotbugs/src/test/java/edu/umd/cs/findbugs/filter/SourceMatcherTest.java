@@ -54,7 +54,7 @@ public class SourceMatcherTest {
         bug = new BugInstance("UUF_UNUSED_FIELD", 0);
         fileName = "bla.groovy";
     }
-    
+
     @After
     public void tearDown() {
         // Some other test cases fail in case the context is not correctly

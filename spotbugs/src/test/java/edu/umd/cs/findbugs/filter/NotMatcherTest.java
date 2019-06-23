@@ -81,7 +81,7 @@ public class NotMatcherTest {
         assertSame("Should return child matcher.", wrappedMatcher, notMatcher.originalMatcher());
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void throwsExceptionWhenTryingToGetNonExistentChildMatcher() {
         new NotMatcher().originalMatcher();
     }
