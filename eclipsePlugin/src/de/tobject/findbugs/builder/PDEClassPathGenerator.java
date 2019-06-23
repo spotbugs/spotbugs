@@ -91,7 +91,7 @@ public class PDEClassPathGenerator {
             String[] defaultClassPath = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
             for (String classpathEntry : defaultClassPath) {
                 IPath path = new Path(classpathEntry);
-                if(isValidPath(path)) {
+                if (isValidPath(path)) {
                     classPath.add(path.toOSString());
                 }
             }
@@ -107,10 +107,9 @@ public class PDEClassPathGenerator {
                                 IPath path = iClasspathEntry.getPath();
                                 // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
                                 if (isValidPath(path) &&
-                                		("rt.jar".equals(path.lastSegment())
-                                			|| "jrt-fs.jar".equals(path.lastSegment())
-                                			|| "jce.jar".equals(path.lastSegment())
-                                        )) {
+                                        ("rt.jar".equals(path.lastSegment())
+                                                || "jrt-fs.jar".equals(path.lastSegment())
+                                                || "jce.jar".equals(path.lastSegment()))) {
                                     classPath.add(path.toOSString());
                                 }
                             }
@@ -137,20 +136,20 @@ public class PDEClassPathGenerator {
 
     private static void resolveInWorkspace(IClasspathEntry classpathEntry, Set<String> classPath, Set<IProject> projectOnCp) {
         int entryKind = classpathEntry.getEntryKind();
-        switch (entryKind){
+        switch (entryKind) {
         case IClasspathEntry.CPE_PROJECT:
             Set<String> cp = resolveProjectClassPath(classpathEntry.getPath(), projectOnCp);
             classPath.addAll(cp);
             break;
         case IClasspathEntry.CPE_VARIABLE:
             classpathEntry = JavaCore.getResolvedClasspathEntry(classpathEntry);
-            if(classpathEntry == null) {
+            if (classpathEntry == null) {
                 return;
             }
             //$FALL-THROUGH$
         case IClasspathEntry.CPE_LIBRARY:
             String lib = resolveLibrary(classpathEntry.getPath());
-            if(lib != null) {
+            if (lib != null) {
                 classPath.add(lib);
             }
             break;
@@ -164,30 +163,30 @@ public class PDEClassPathGenerator {
 
     @CheckForNull
     private static String resolveLibrary(IPath path) {
-        if(path == null || path.segmentCount() != 1) {
+        if (path == null || path.segmentCount() != 1) {
             return null;
         }
         IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-        if(resource == null || !resource.isAccessible()){
+        if (resource == null || !resource.isAccessible()) {
             return null;
         }
         IPath location = resource.getLocation();
-        return location == null? null : location.toOSString();
+        return location == null ? null : location.toOSString();
     }
 
     private static Set<String> resolveProjectClassPath(IPath path, Set<IProject> projectOnCp) {
-        if(path == null || path.segmentCount() != 1) {
+        if (path == null || path.segmentCount() != 1) {
             return Collections.emptySet();
         }
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(path.lastSegment());
 
         // prevent endless loops because of cyclic project dependencies
-        if(project == null || projectOnCp.contains(project)){
+        if (project == null || projectOnCp.contains(project)) {
             return Collections.emptySet();
         }
         projectOnCp.add(project);
         IJavaProject javaProject2 = JavaCore.create(project);
-        if(javaProject2 != null){
+        if (javaProject2 != null) {
             return createJavaClasspath(javaProject2, projectOnCp);
         }
         return Collections.emptySet();
@@ -227,9 +226,9 @@ public class PDEClassPathGenerator {
             appendBundleToClasspath(bd, pdeClassPath, defaultOutputLocation);
         }
 
-        if(defaultOutputLocation != null) {
+        if (defaultOutputLocation != null) {
             String defaultOutput = defaultOutputLocation.toOSString();
-            if(pdeClassPath.indexOf(defaultOutput) > 0) {
+            if (pdeClassPath.indexOf(defaultOutput) > 0) {
                 pdeClassPath.remove(defaultOutput);
                 pdeClassPath.add(0, defaultOutput);
             }
@@ -239,7 +238,7 @@ public class PDEClassPathGenerator {
 
     private static void appendBundleToClasspath(BundleDescription bd, List<String> pdeClassPath, IPath defaultOutputLocation) {
         IPluginModelBase model = PluginRegistry.findModel(bd);
-        if(model == null) {
+        if (model == null) {
             return;
         }
         ArrayList<IClasspathEntry> classpathEntries = new ArrayList<>();
@@ -256,14 +255,14 @@ public class PDEClassPathGenerator {
                 continue;
             }
             String locationStr = location.toOSString();
-            if (pdeClassPath.contains(locationStr)){
+            if (pdeClassPath.contains(locationStr)) {
                 continue;
             }
             // extra cleanup for some directories on classpath
             String bundleLocation = bd.getLocation();
-            if(bundleLocation != null && !"jar".equals(location.getFileExtension()) &&
-                    new File(bundleLocation).isDirectory()){
-                if(bd.getSymbolicName().equals(location.lastSegment())) {
+            if (bundleLocation != null && !"jar".equals(location.getFileExtension()) &&
+                    new File(bundleLocation).isDirectory()) {
+                if (bd.getSymbolicName().equals(location.lastSegment())) {
                     // ignore badly resolved plugin directories inside workspace
                     // ("." as classpath is resolved as plugin root directory)
                     // which is, if under workspace, NOT a part of the classpath
@@ -289,7 +288,7 @@ public class PDEClassPathGenerator {
         // BundleDescription[] requires = PDEState.getDependentBundles(target);
         BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
         for (BundleDescription bundleDescription : bundles2) {
-            if(bundleDescription == null) {
+            if (bundleDescription == null) {
                 continue;
             }
             if (!bundles.contains(bundleDescription)) {

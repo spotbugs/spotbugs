@@ -132,7 +132,7 @@ public class QuickfixTest extends AbstractQuickfixTest {
     }
 
     @Override
-    protected String getOutputFolderName()  {
+    protected String getOutputFolderName() {
         return "/quickfixOutput/";
     }
 

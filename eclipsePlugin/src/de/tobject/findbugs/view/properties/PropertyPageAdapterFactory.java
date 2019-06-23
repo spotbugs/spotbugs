@@ -191,8 +191,9 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
     public static String getReadableName(Method method) {
         String name = method.getName();
-        return (name.startsWith("get") || name.startsWith("has")) ? name.substring(3) : name.startsWith("is") ? name.substring(2)
-                : name;
+        return (name.startsWith("get") || name.startsWith("has")) ? name.substring(3)
+                : name.startsWith("is") ? name.substring(2)
+                        : name;
     }
 
     static enum PropId {
@@ -324,7 +325,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         @Override
         public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-            if(isDisposed) {
+            if (isDisposed) {
                 return;
             }
             // adapt text selection in java editor to FB marker

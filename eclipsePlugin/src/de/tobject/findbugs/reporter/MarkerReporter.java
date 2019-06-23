@@ -19,6 +19,7 @@
  */
 
 package de.tobject.findbugs.reporter;
+
 import static de.tobject.findbugs.marker.FindBugsMarker.BUG_TYPE;
 import static de.tobject.findbugs.marker.FindBugsMarker.DETECTOR_PLUGIN_ID;
 import static de.tobject.findbugs.marker.FindBugsMarker.FIRST_VERSION;
@@ -99,7 +100,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     private void addMarker(MarkerParameter mp) throws CoreException {
         Map<String, Object> attributes = createMarkerAttributes(mp);
-        if(attributes.isEmpty()){
+        if (attributes.isEmpty()) {
             collection.remove(mp.bug);
             return;
         }
@@ -128,8 +129,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
         newMarker.setAttributes(attributes);
     }
 
-    private static @CheckForNull
-    IMarker findSameBug(Map<String, Object> attributes, IMarker[] existingMarkers) throws CoreException {
+    private static @CheckForNull IMarker findSameBug(Map<String, Object> attributes, IMarker[] existingMarkers) throws CoreException {
         Object bugId = attributes.get(UNIQUE_ID);
         if (bugId == null) {
             return null;
@@ -198,7 +198,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
         // Set unique id of the plugin, so we can easily refer back
         // to it later: for example, when the user group markers by plugin.
         DetectorFactory detectorFactory = mp.bug.getDetectorFactory();
-        if(detectorFactory != null) {
+        if (detectorFactory != null) {
             String pluginId = detectorFactory.getPlugin().getPluginId();
             if (pluginId != null) {
                 attributes.put(DETECTOR_PLUGIN_ID, pluginId);
@@ -209,11 +209,11 @@ public class MarkerReporter implements IWorkspaceRunnable {
             Iterator<DetectorFactory> fit = DetectorFactoryCollection.instance().factoryIterator();
             while (fit.hasNext()) {
                 DetectorFactory df2 = fit.next();
-                if(!df2.isReportingDetector()) {
+                if (!df2.isReportingDetector()) {
                     continue;
                 }
                 Set<BugPattern> patterns = df2.getReportedBugPatterns();
-                if(patterns.contains(pattern)){
+                if (patterns.contains(pattern)) {
                     String pluginId = df2.getPlugin().getPluginId();
                     if (pluginId != null) {
                         attributes.put(DETECTOR_PLUGIN_ID, pluginId);
@@ -222,7 +222,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
                 }
             }
         }
-        if(attributes.get(DETECTOR_PLUGIN_ID) == null){
+        if (attributes.get(DETECTOR_PLUGIN_ID) == null) {
             attributes.clear();
             return attributes;
         }
@@ -244,7 +244,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
     private static String getMessage(MarkerParameter mp) {
         String message = mp.bug.getMessageWithoutPrefix();
-        message += " ["+ mp.bug.getBugRankCategory() + "(" + mp.bug.getBugRank() +
+        message += " [" + mp.bug.getBugRankCategory() + "(" + mp.bug.getBugRank() +
                 "), " + MarkerConfidence.getConfidence(mp.bug.getPriority()) + " confidence]";
         return message;
     }

@@ -85,7 +85,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToConflictingFilters()  {
+    public void testAddFileToConflictingFilters() {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -105,7 +105,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToExcludeBugsFilter()  {
+    public void testAddFileToExcludeBugsFilter() {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -126,7 +126,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToExcludeFilter()  {
+    public void testAddFileToExcludeFilter() {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -169,7 +169,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testAddFileToIncludeFilter()  {
+    public void testAddFileToIncludeFilter() {
         // Check that there are no filter files
         assertNoFilterFiles();
 
@@ -190,7 +190,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDeselectAllCategories()  {
+    public void testDeselectAllCategories() {
         // Add all categories
         addAllBugCategories();
         assertAllBugCategoriesSelected(true);
@@ -210,7 +210,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDisableAllDetectors()  {
+    public void testDisableAllDetectors() {
         // Enable all detectors
         getProjectPreferences().enableAllDetectors(true);
         assertAllVisibleDetectorsEnabled(true);
@@ -251,7 +251,7 @@ public class PropertiesPageTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testDisableProjectProperties()  {
+    public void testDisableProjectProperties() {
         // Create the properties page and the dialog
         FindbugsPropertyPageTestSubclass page = createProjectPropertiesPage();
         PropertiesTestDialog dialog = createAndOpenProjectPropertiesDialog(page);

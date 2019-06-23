@@ -264,7 +264,7 @@ public class FindBugsAction implements IObjectActionDelegate {
         }
 
         @Override
-        protected boolean supportsMulticore(){
+        protected boolean supportsMulticore() {
             return MutexSchedulingRule.MULTICORE;
         }
 

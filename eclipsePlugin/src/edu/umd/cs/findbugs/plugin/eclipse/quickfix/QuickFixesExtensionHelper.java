@@ -103,13 +103,13 @@ public class QuickFixesExtensionHelper {
             }
             QuickFixContribution qf = createQuickFix(configElt, clazzFqn, label, pattern, args);
             List<QuickFixContribution> list = set.get(pattern);
-            if(list == null) {
+            if (list == null) {
                 list = new ArrayList<>();
                 set.put(pattern, list);
             }
-            if(list.contains(qf)) {
+            if (list.contains(qf)) {
                 throw new IllegalArgumentException("Duplicated quick fix contribution for pattern '"
-                        + pattern + "': " + qf  + ".");
+                        + pattern + "': " + qf + ".");
             }
             list.add(qf);
         } catch (Throwable e) {
@@ -130,7 +130,7 @@ public class QuickFixesExtensionHelper {
         });
     }
 
-    static boolean isEmpty(String s){
+    static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
     }
 }

@@ -15,7 +15,7 @@ subprojects {
   apply from: "$rootDir/gradle/idea.gradle"
   apply from: "$rootDir/gradle/test.gradle"
   apply from: "$rootDir/gradle/jacoco.gradle"
-  if (project.name.equals("spotbugs")) {
+  if (!project.name.equals("spotbugsTestCases")) {
     apply from: "$rootDir/gradle/spotless.gradle"
   }
 

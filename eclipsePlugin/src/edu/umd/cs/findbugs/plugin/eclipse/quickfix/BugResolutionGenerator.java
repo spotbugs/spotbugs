@@ -65,7 +65,7 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
     @Override
     public IMarkerResolution[] getResolutions(IMarker marker) {
         String type = MarkerUtil.getBugPatternString(marker);
-        if(type == null){
+        if (type == null) {
             return null;
         }
         BugResolutionAssociations resolutions = getBugResolutions();
@@ -78,7 +78,7 @@ public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
     @Override
     public boolean hasResolutions(IMarker marker) {
         String type = MarkerUtil.getBugPatternString(marker);
-        if(type == null){
+        if (type == null) {
             return false;
         }
         BugResolutionAssociations resolutions = getBugResolutions();

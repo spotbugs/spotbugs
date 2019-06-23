@@ -297,7 +297,7 @@ public abstract class AbstractFindBugsTask extends Task {
             for (String pluginFile : pluginFileList) {
                 if (!pluginFile.endsWith(".jar")) {
                     throw new BuildException("plugin file " + pluginFile + " is not a Jar file " + "in task <" + getTaskName()
-                    + "/>", getLocation());
+                            + "/>", getLocation());
                 }
             }
         }

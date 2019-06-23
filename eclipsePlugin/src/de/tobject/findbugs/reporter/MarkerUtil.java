@@ -116,7 +116,8 @@ public final class MarkerUtil {
      *            the project
      * @param monitor
      */
-    public static void createMarkers(final IJavaProject javaProject, final SortedBugCollection theCollection, final ISchedulingRule rule, IProgressMonitor monitor) {
+    public static void createMarkers(final IJavaProject javaProject, final SortedBugCollection theCollection, final ISchedulingRule rule,
+            IProgressMonitor monitor) {
         if (monitor.isCanceled()) {
             return;
         }
@@ -135,7 +136,7 @@ public final class MarkerUtil {
                     FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
                     return e.getStatus();
                 }
-                return monitor1.isCanceled()? Status.CANCEL_STATUS : Status.OK_STATUS;
+                return monitor1.isCanceled() ? Status.CANCEL_STATUS : Status.OK_STATUS;
             }
         };
         wsJob.setRule(rule);
@@ -163,7 +164,7 @@ public final class MarkerUtil {
         while (iterator.hasNext() && !monitor.isCanceled()) {
             BugInstance bug = iterator.next();
             DetectorFactory detectorFactory = bug.getDetectorFactory();
-            if(detectorFactory != null && !detectorFactory.getPlugin().isGloballyEnabled()){
+            if (detectorFactory != null && !detectorFactory.getPlugin().isGloballyEnabled()) {
                 continue;
             }
             MarkerParameter mp = createMarkerParameter(project, bug);
@@ -207,13 +208,13 @@ public final class MarkerUtil {
         int startLine = DONT_KNOW_LINE;
 
         // only update if we don't already tried it
-        if(primaryLine != DONT_KNOW_LINE) {
+        if (primaryLine != DONT_KNOW_LINE) {
             // XXX "first line of a file" is too simplistic. What if we have inner types?
             if (primaryLine <= 1 && type instanceof IType) {
                 IType iType = (IType) type;
                 try {
                     startLine = getLineStart(iType);
-                    if(startLine > 0) {
+                    if (startLine > 0) {
                         if (Reporter.DEBUG) {
                             System.out.println("4. Fixed start line to: " + startLine + " on " + type.getElementName());
                         }
@@ -239,10 +240,10 @@ public final class MarkerUtil {
         } else {
             parameter = new MarkerParameter(bug, resource, primaryLine, primaryLine);
         }
-//        if (Reporter.DEBUG) {
-//            System.out
-//            .println("Creating marker for " + resource.getPath() + ": line " + parameter.primaryLine + bug.getMessage());
-//        }
+        //        if (Reporter.DEBUG) {
+        //            System.out
+        //            .println("Creating marker for " + resource.getPath() + ": line " + parameter.primaryLine + bug.getMessage());
+        //        }
         return parameter;
     }
 
@@ -272,15 +273,14 @@ public final class MarkerUtil {
      *            the project
      * @return the IResource representing the Java class
      */
-    private static @CheckForNull
-    IJavaElement getJavaElement(BugInstance bug, IJavaProject project) throws JavaModelException {
+    private static @CheckForNull IJavaElement getJavaElement(BugInstance bug, IJavaProject project) throws JavaModelException {
 
         SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
         String qualifiedClassName = primarySourceLineAnnotation.getClassName();
 
-//        if (Reporter.DEBUG) {
-//            System.out.println("Looking up class: " + packageName + ", " + qualifiedClassName);
-//        }
+        //        if (Reporter.DEBUG) {
+        //            System.out.println("Looking up class: " + packageName + ", " + qualifiedClassName);
+        //        }
 
         Matcher m = fullName.matcher(qualifiedClassName);
         IType type;
@@ -327,7 +327,7 @@ public final class MarkerUtil {
         // TODO don't use "1", use "0" ?
         if (startLine <= 1 && type != null) {
             FieldAnnotation primaryField = bug.getPrimaryField();
-            if(primaryField != null) {
+            if (primaryField != null) {
                 completeFieldInfo(qualifiedClassName, type, bug, primaryField);
             }
         }
@@ -371,7 +371,7 @@ public final class MarkerUtil {
             return;
         }
         int lineNbr = scanner.getLineNumber(sourceRange.getOffset());
-        if(lineNbr > 0){
+        if (lineNbr > 0) {
             String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
             field.setSourceLines(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
             if (Reporter.DEBUG) {
@@ -389,9 +389,10 @@ public final class MarkerUtil {
         return sourceFileStr;
     }
 
-    private static void completeInnerClassInfo(String qualifiedClassName, String innerName, @Nonnull IType type, BugInstance bug) throws JavaModelException {
+    private static void completeInnerClassInfo(String qualifiedClassName, String innerName, @Nonnull IType type, BugInstance bug)
+            throws JavaModelException {
         int lineNbr = findChildSourceLine(type, innerName, bug);
-        if(lineNbr > 0){
+        if (lineNbr > 0) {
             String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
             if (sourceFileStr != null && sourceFileStr.length() > 0) {
                 bug.addSourceLine(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
@@ -570,8 +571,7 @@ public final class MarkerUtil {
         job.scheduleInteractive();
     }
 
-    public static @CheckForNull
-    BugCode findBugCodeForMarker(IMarker marker) {
+    public static @CheckForNull BugCode findBugCodeForMarker(IMarker marker) {
         try {
             Object bugCode = marker.getAttribute(FindBugsMarker.PATTERN_TYPE);
             if (bugCode instanceof String) {
@@ -591,6 +591,7 @@ public final class MarkerUtil {
     public static int findPrimaryLineForMaker(IMarker marker) {
         return marker.getAttribute(FindBugsMarker.PRIMARY_LINE, DONT_KNOW_LINE);
     }
+
     /**
      * @return priority (aka confidence)
      */
@@ -609,7 +610,7 @@ public final class MarkerUtil {
     }
 
     @CheckForNull
-    public static String getBugPatternString(IMarker marker){
+    public static String getBugPatternString(IMarker marker) {
         try {
             return (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
         } catch (CoreException e) {
@@ -618,8 +619,7 @@ public final class MarkerUtil {
         }
     }
 
-    public static @CheckForNull
-    IJavaElement findJavaElementForMarker(IMarker marker) {
+    public static @CheckForNull IJavaElement findJavaElementForMarker(IMarker marker) {
         try {
             Object elementId = marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
             if (elementId instanceof String) {
@@ -632,8 +632,7 @@ public final class MarkerUtil {
         return null;
     }
 
-    public static @CheckForNull
-    Plugin findDetectorPluginFor(IMarker marker) {
+    public static @CheckForNull Plugin findDetectorPluginFor(IMarker marker) {
         try {
             Object pluginId = marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID);
             if (pluginId instanceof String) {
@@ -689,7 +688,7 @@ public final class MarkerUtil {
     @SuppressWarnings("restriction")
     private static boolean isDirectChild(String parentId, String childId) {
         return childId.startsWith(parentId) && (childId.length() > (parentId.length() + 1))
-                // if there is NOT a class file separator, then it's not a direct child
+        // if there is NOT a class file separator, then it's not a direct child
                 && childId.charAt(parentId.length()) == JavaElement.JEM_CLASSFILE;
     }
 
@@ -731,8 +730,7 @@ public final class MarkerUtil {
      * @return the BugInstance associated with the marker, or null if we can't
      *         find the BugInstance
      */
-    public static @CheckForNull
-    BugInstance findBugInstanceForMarker(IMarker marker) {
+    public static @CheckForNull BugInstance findBugInstanceForMarker(IMarker marker) {
         BugCollectionAndInstance bci = findBugCollectionAndInstanceForMarker(marker);
         if (bci == null) {
             return null;
@@ -748,8 +746,7 @@ public final class MarkerUtil {
      * @return the BugInstance associated with the marker, or null if we can't
      *         find the BugInstance
      */
-    public static @CheckForNull
-    BugCollectionAndInstance findBugCollectionAndInstanceForMarker(IMarker marker) {
+    public static @CheckForNull BugCollectionAndInstance findBugCollectionAndInstanceForMarker(IMarker marker) {
 
         IResource resource = marker.getResource();
         IProject project = resource.getProject();
@@ -796,7 +793,7 @@ public final class MarkerUtil {
                 return null;
             }
             BugInstance bug = bugCollection.findBug(bugId, bugType, primaryLineNumber.intValue());
-            if(bug == null) {
+            if (bug == null) {
                 FindbugsPlugin.getDefault().logError(
                         "Could not get find bug for marker on " + resource + ": (" + bugId + ", " + primaryLineNumber + ")");
                 return null;
@@ -991,8 +988,8 @@ public final class MarkerUtil {
      */
     @Nonnull
     public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
-        if(fileOrFolder.getType() == IResource.PROJECT) {
-            if(!fileOrFolder.isAccessible()) {
+        if (fileOrFolder.getType() == IResource.PROJECT) {
+            if (!fileOrFolder.isAccessible()) {
                 // user just closed the project decorator is working on, avoid exception here
                 return EMPTY;
             }

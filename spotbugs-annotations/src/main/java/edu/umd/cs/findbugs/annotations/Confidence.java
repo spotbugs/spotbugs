@@ -33,7 +33,7 @@ public enum Confidence {
     /** Given a numeric confidence value, report the corresponding confidence enum value */
     @NonNull
     static public Confidence getConfidence(int prio) {
-        for(Confidence c : values()) {
+        for (Confidence c : values()) {
             if (prio <= c.confidenceValue) {
                 return c;
             }

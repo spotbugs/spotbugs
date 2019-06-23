@@ -64,7 +64,7 @@ public class FindBugsWorkerTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testFilter() throws CoreException{
+    public void testFilter() throws CoreException {
         assertNoBugs();
 
         setFilterFile(true);

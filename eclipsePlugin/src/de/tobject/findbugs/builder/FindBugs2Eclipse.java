@@ -62,10 +62,10 @@ import edu.umd.cs.findbugs.log.Profiler.Profile;
 public class FindBugs2Eclipse extends FindBugs2 {
 
     private static WeakHashMap<IProject, SoftReference<List<String>>> auxClassPaths =
-        new WeakHashMap<>();
+            new WeakHashMap<>();
 
     private static WeakHashMap<IProject, SoftReference<Map<ClassDescriptor, Object>>> classAnalysisCache =
-        new WeakHashMap<>();
+            new WeakHashMap<>();
 
     private AnalysisCache analysisCache;
     private final IProject project;
@@ -77,22 +77,22 @@ public class FindBugs2Eclipse extends FindBugs2 {
     private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
-            if(event.getSource() instanceof IProject) {
+            if (event.getSource() instanceof IProject) {
                 cleanClassClache((IProject) event.getSource());
             } else if (event.getResource() instanceof IProject) {
                 cleanClassClache((IProject) event.getResource());
-            } else if(event.getDelta() != null) {
+            } else if (event.getDelta() != null) {
                 final Set<IProject> affectedProjects = new HashSet<>();
                 final IResourceDelta delta = event.getDelta();
                 try {
                     delta.accept(new IResourceDeltaVisitor() {
                         @Override
                         public boolean visit(IResourceDelta d1) throws CoreException {
-                            if(d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
+                            if (d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
                                 return true;
                             }
                             IResource resource = d1.getResource();
-                            if(resource instanceof IProject) {
+                            if (resource instanceof IProject) {
                                 affectedProjects.add((IProject) resource);
                                 return false;
                             }
@@ -113,7 +113,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
         super();
         this.project = project;
         this.cacheClassData = cacheClassData;
-        if(cacheClassData) {
+        if (cacheClassData) {
             int eventMask = IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_CLOSE;
             ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener, eventMask);
         }
@@ -123,9 +123,9 @@ public class FindBugs2Eclipse extends FindBugs2 {
     @Override
     protected IAnalysisCache createAnalysisCache() throws IOException {
         IAnalysisCache cache = super.createAnalysisCache();
-        if(cache instanceof AnalysisCache) {
-            analysisCache = (AnalysisCache)cache;
-            if(cacheClassData) {
+        if (cache instanceof AnalysisCache) {
+            analysisCache = (AnalysisCache) cache;
+            if (cacheClassData) {
                 reuseClassCache();
             }
         }
@@ -134,7 +134,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     @Override
     protected void clearCaches() {
-        if(analysisCache != null) {
+        if (analysisCache != null) {
             postProcessCaches();
         }
         super.clearCaches();
@@ -142,7 +142,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     @Override
     public void dispose() {
-        if(analysisCache != null) {
+        if (analysisCache != null) {
             analysisCache.dispose();
             analysisCache = null;
         }
@@ -151,8 +151,8 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     private void reuseClassCache() {
         SoftReference<Map<ClassDescriptor, Object>> wr = classAnalysisCache.get(project);
-        Map<ClassDescriptor, Object> classAnalysis = wr != null? wr.get() : null;
-        if(classAnalysis != null) {
+        Map<ClassDescriptor, Object> classAnalysis = wr != null ? wr.get() : null;
+        if (classAnalysis != null) {
             analysisCache.reuseClassAnalysis(ClassData.class, classAnalysis);
             // TODO would be nice to reuse ClassInfoAnalysisEngine: XClass.class,
             // JavaClassAnalysisEngine: JavaClass.class
@@ -165,14 +165,14 @@ public class FindBugs2Eclipse extends FindBugs2 {
         IClassPath classPath = analysisCache.getClassPath();
 
         Map<ClassDescriptor, Object> classAnalysis = analysisCache.getClassAnalysis(ClassData.class);
-        if(classAnalysis == null) {
+        if (classAnalysis == null) {
             return;
         }
-        Set<Entry<ClassDescriptor,Object>> entrySet = classAnalysis.entrySet();
+        Set<Entry<ClassDescriptor, Object>> entrySet = classAnalysis.entrySet();
         AnalysisData data = new AnalysisData();
         for (Entry<ClassDescriptor, Object> entry : entrySet) {
-            data.classCount ++;
-            if(!(entry.getValue() instanceof ClassData)) {
+            data.classCount++;
+            if (!(entry.getValue() instanceof ClassData)) {
                 continue;
             }
             ClassData cd = (ClassData) entry.getValue();
@@ -182,15 +182,15 @@ public class FindBugs2Eclipse extends FindBugs2 {
         DescriptorFactory descriptorFactory = DescriptorFactory.instance();
         for (Entry<String, ICodeBaseEntry> entry : entrySet2) {
             String className = entry.getKey();
-            if(cacheClassData) {
-                if(className.endsWith(".class")) {
+            if (cacheClassData) {
+                if (className.endsWith(".class")) {
                     className = className.substring(0, className.length() - 6);
                 }
                 classAnalysis.remove(descriptorFactory.getClassDescriptor(className));
             }
             data.byteSizeApp += entry.getValue().getNumBytes();
         }
-        if(cacheClassData) {
+        if (cacheClassData) {
             // create new reference not reachable to anyone except us
             classAnalysis = new HashMap<>(classAnalysis);
             classAnalysisCache.put(project, new SoftReference<>(classAnalysis));
@@ -201,7 +201,7 @@ public class FindBugs2Eclipse extends FindBugs2 {
     @SuppressWarnings("boxing")
     private void reportExtraData(AnalysisData data) {
         SortedBugCollection bugCollection = reporter.getBugCollection();
-        if(bugCollection == null) {
+        if (bugCollection == null) {
             return;
         }
         if (FindBugsConsole.getConsole() == null) {
@@ -217,11 +217,11 @@ public class FindBugs2Eclipse extends FindBugs2 {
         long totalClassReadTime = TimeUnit.MILLISECONDS.convert(profile.getTotalTime(), TimeUnit.NANOSECONDS);
         long totalTime = TimeUnit.MILLISECONDS.convert(footprint.getClockTime(), TimeUnit.MILLISECONDS);
 
-        double classReadSpeed = totalClassReadTime > 0? data.byteSize * 1000.0 / totalClassReadTime : 0;
-        double classCountSpeed = totalTime > 0? data.classCount * 1000.0 / totalTime : 0;
-        double classPart = totalTime > 0? totalClassReadTime * 100.0 / totalTime : 0;
-        double appPart = data.byteSize > 0? data.byteSizeApp * 100.0 / data.byteSize : 0;
-        double bytesPerClass = data.classCount > 0? ((double) data.byteSize)  / data.classCount : 0;
+        double classReadSpeed = totalClassReadTime > 0 ? data.byteSize * 1000.0 / totalClassReadTime : 0;
+        double classCountSpeed = totalTime > 0 ? data.classCount * 1000.0 / totalTime : 0;
+        double classPart = totalTime > 0 ? totalClassReadTime * 100.0 / totalTime : 0;
+        double appPart = data.byteSize > 0 ? data.byteSizeApp * 100.0 / data.byteSize : 0;
+        double bytesPerClass = data.classCount > 0 ? ((double) data.byteSize) / data.classCount : 0;
         long peakMemory = footprint.getPeakMemory() / (1024 * 1024);
         pw.printf("%n");
         pw.printf("Total bugs            : %1$ 20d %n", stats.getTotalBugs());
@@ -257,10 +257,10 @@ public class FindBugs2Eclipse extends FindBugs2 {
     static void checkClassPathChanges(List<String> auxClassPath, IProject project) {
         SoftReference<List<String>> wr = auxClassPaths.get(project);
         List<String> oldAuxCp = wr != null ? wr.get() : null;
-        if(oldAuxCp != null && !oldAuxCp.equals(auxClassPath)) {
+        if (oldAuxCp != null && !oldAuxCp.equals(auxClassPath)) {
             auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<>(auxClassPath)));
             classAnalysisCache.remove(project);
-        } else if(oldAuxCp == null){
+        } else if (oldAuxCp == null) {
             auxClassPaths.put(project, new SoftReference<List<String>>(new ArrayList<>(auxClassPath)));
         }
     }

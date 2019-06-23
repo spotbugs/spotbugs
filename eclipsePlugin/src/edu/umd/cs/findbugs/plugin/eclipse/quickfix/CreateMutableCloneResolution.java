@@ -90,7 +90,7 @@ public class CreateMutableCloneResolution extends BugResolution {
 
         ConditionalExpression conditionalExpression = workingUnit.getAST().newConditionalExpression();
         conditionalExpression.setElseExpression(castRet);
-        conditionalExpression.setThenExpression(workingUnit.getAST().newNullLiteral() );
+        conditionalExpression.setThenExpression(workingUnit.getAST().newNullLiteral());
 
         InfixExpression nullTest = workingUnit.getAST().newInfixExpression();
         nullTest.setOperator(InfixExpression.Operator.EQUALS);

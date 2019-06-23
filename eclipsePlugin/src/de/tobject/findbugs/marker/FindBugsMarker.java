@@ -103,10 +103,10 @@ public interface FindBugsMarker {
      * @see BugRankCategory
      */
     enum MarkerRank {
-         Scariest("buggy-tiny.png", BugRankCategory.SCARIEST),
-         Scary("buggy-tiny-orange.png",  BugRankCategory.SCARY),
-         Troubling("buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
-         OfConcern("buggy-tiny-yellow2.png", BugRankCategory.OF_CONCERN);
+        Scariest("buggy-tiny.png", BugRankCategory.SCARIEST),
+        Scary("buggy-tiny-orange.png", BugRankCategory.SCARY),
+        Troubling("buggy-tiny-yellow.png", BugRankCategory.TROUBLING),
+        OfConcern("buggy-tiny-yellow2.png", BugRankCategory.OF_CONCERN);
 
         private final String icon;
         private final BugRankCategory rankCategory;
@@ -132,7 +132,7 @@ public interface FindBugsMarker {
 
         @Override
         public String toString() {
-            if(this == OfConcern) {
+            if (this == OfConcern) {
                 return "Of Concern";
             }
             return name();
@@ -147,12 +147,12 @@ public interface FindBugsMarker {
 
         private final Confidence confidence;
 
-        private MarkerConfidence(Confidence confidence){
+        private MarkerConfidence(Confidence confidence) {
             this.confidence = confidence;
 
         }
 
-        public String iconName(){
+        public String iconName() {
             return "confidence-" + name().toLowerCase() + ".png";
         }
 
@@ -164,11 +164,11 @@ public interface FindBugsMarker {
          * @return matching confidence, never null
          */
         @Nonnull
-        public static MarkerConfidence getConfidence(int bugPrio){
+        public static MarkerConfidence getConfidence(int bugPrio) {
             Confidence con = Confidence.getConfidence(bugPrio);
             MarkerConfidence[] values = MarkerConfidence.values();
             for (MarkerConfidence mc : values) {
-                if(mc.confidence == con){
+                if (mc.confidence == con) {
                     return mc;
                 }
             }
@@ -180,7 +180,7 @@ public interface FindBugsMarker {
          * @return matching confidence, never null
          */
         @Nonnull
-        public static MarkerConfidence getConfidence(String confidence){
+        public static MarkerConfidence getConfidence(String confidence) {
             try {
                 return MarkerConfidence.valueOf(confidence);
             } catch (IllegalArgumentException e) {

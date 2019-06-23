@@ -121,13 +121,12 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                     return false;
                 }
 
-                if(methodAnn.getMethodName().startsWith("apply") && fullClassName != null) {
+                if (methodAnn.getMethodName().startsWith("apply") && fullClassName != null) {
                     Matcher m = ANON_FUNCTION_SCALA_PATTERN.matcher(fullClassName);
-                    if(m.find()) { //Scala function enclose in
+                    if (m.find()) { //Scala function enclose in
                         criteriaMatches &= methodAnn.getMethodName().equals(methodName) || methodName.equals(m.group(1));
                     }
-                }
-                else { //
+                } else { //
                     criteriaMatches &= methodAnn.getMethodName().equals(methodName);
                 }
             }
@@ -157,11 +156,11 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                 if (srcAnn == null) {
                     return false;
                 }
-                criteriaMatches &= srcAnn.getStartLine()-1 <= lineNumberApprox && lineNumberApprox <= srcAnn.getEndLine()+1;
+                criteriaMatches &= srcAnn.getStartLine() - 1 <= lineNumberApprox && lineNumberApprox <= srcAnn.getEndLine() + 1;
             }
-            if(jspFile != null) {
+            if (jspFile != null) {
                 ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
-                String fullName = classAnn.getClassName().replaceAll("\\.","/").replaceAll("_005f","_").replaceAll("_jsp", ".jsp");
+                String fullName = classAnn.getClassName().replaceAll("\\.", "/").replaceAll("_005f", "_").replaceAll("_jsp", ".jsp");
                 //String simpleName = fullName.substring(fullName.lastIndexOf("/") + 1);
                 criteriaMatches &= fullName.endsWith(jspFile);
             }
@@ -171,8 +170,8 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                     return false;
                 }
                 boolean found = false;
-                for(Integer potentialMatch : multipleChoicesLine) {
-                    if(srcAnn.getStartLine()-1 <= potentialMatch && potentialMatch <= srcAnn.getEndLine()+1) {
+                for (Integer potentialMatch : multipleChoicesLine) {
+                    if (srcAnn.getStartLine() - 1 <= potentialMatch && potentialMatch <= srcAnn.getEndLine() + 1) {
                         found = true;
                     }
                 }

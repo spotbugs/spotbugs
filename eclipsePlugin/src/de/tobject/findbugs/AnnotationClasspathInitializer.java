@@ -20,7 +20,7 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
 
     private static final String JSR305_ANNOTATIONS = "JSR305_ANNOTATIONS";
 
-	private static final String FINDBUGS_LIBRARY = "/lib/spotbugs-annotations-" + Version.VERSION_STRING + ".jar";
+    private static final String FINDBUGS_LIBRARY = "/lib/spotbugs-annotations-" + Version.VERSION_STRING + ".jar";
 
     private static final String JSR305_LIBRARY = "/lib/jsr305-3.0.1.jar";
 
@@ -52,12 +52,12 @@ public class AnnotationClasspathInitializer extends ClasspathVariableInitializer
         URL installLocation = bundle.getEntry(libName);
         if (installLocation == null) {
             // check if we debugging eclipse and see classpath of the findbugs core project
-        	Bundle bundle2 = Platform.getBundle("spotbugs");
-            if(bundle2 != null){
+            Bundle bundle2 = Platform.getBundle("spotbugs");
+            if (bundle2 != null) {
                 installLocation = bundle2.getEntry(libName);
             }
 
-            if(installLocation == null){
+            if (installLocation == null) {
                 FindbugsPlugin.getDefault().logError("Library not found in plugin: " + libName);
                 return null;
             }

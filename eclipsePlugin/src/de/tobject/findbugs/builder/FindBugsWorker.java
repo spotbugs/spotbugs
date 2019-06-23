@@ -114,7 +114,7 @@ public class FindBugsWorker {
      *             or is not open
      */
     public FindBugsWorker(IProject project, IProgressMonitor monitor) throws CoreException {
-        this((IResource)project, monitor);
+        this((IResource) project, monitor);
     }
 
     /**
@@ -207,7 +207,7 @@ public class FindBugsWorker {
         findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
         findBugs.setMergeSimilarWarnings(false);
 
-        if(cacheClassData) {
+        if (cacheClassData) {
             FindBugs2Eclipse.checkClassPathChanges(findBugs.getProject().getAuxClasspathEntryList(), project);
         }
 
@@ -323,6 +323,7 @@ public class FindBugsWorker {
         }
 
     }
+
     /**
      * Update the BugCollection for the project.
      *
@@ -339,7 +340,7 @@ public class FindBugsWorker {
 
             st.newPoint("mergeBugCollections");
             SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection, incremental);
-             resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
+            resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
             resultCollection.setTimestamp(System.currentTimeMillis());
 
             // will store bugs in the default FB file + Eclipse project session
@@ -373,7 +374,7 @@ public class FindBugsWorker {
     private Map<String, Boolean> relativeToAbsolute(Map<String, Boolean> map) {
         Map<String, Boolean> resultMap = new TreeMap<>();
         for (Entry<String, Boolean> entry : map.entrySet()) {
-            if(!entry.getValue().booleanValue()) {
+            if (!entry.getValue().booleanValue()) {
                 continue;
             }
             String filePath = entry.getKey();
@@ -495,7 +496,7 @@ public class FindBugsWorker {
             IClasspathEntry classpathEntry = entries[i];
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
                 IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry, defaultOutputLocation);
-                if(outputLocation == null) {
+                if (outputLocation == null) {
                     continue;
                 }
                 IResource cpeResource = root.findMember(classpathEntry.getPath());
@@ -506,7 +507,7 @@ public class FindBugsWorker {
                 }
                 // TODO not clear if it is absolute in workspace or in global FS
                 IPath srcLocation = ResourceUtils.relativeToAbsolute(classpathEntry.getPath());
-                if(srcLocation != null) {
+                if (srcLocation != null) {
                     srcToOutputMap.put(srcLocation, outputLocation);
                 }
             }
