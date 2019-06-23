@@ -206,7 +206,7 @@ public enum Sortables implements Comparator<String> {
                 }
             } catch (NumberFormatException e) {
             } // Somebody's playing silly buggers with dollar signs, just do it
-            // lexicographically
+              // lexicographically
 
             // Otherwise, lexicographicalify it
             return one.compareTo(two);

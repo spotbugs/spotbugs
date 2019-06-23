@@ -58,8 +58,7 @@ public class HighlightInformation {
         foundLineNum = line;
     }
 
-    public @CheckForNull
-    Color getHighlight(Integer line) {
+    public @CheckForNull Color getHighlight(Integer line) {
         return map.get(line);
     }
 }

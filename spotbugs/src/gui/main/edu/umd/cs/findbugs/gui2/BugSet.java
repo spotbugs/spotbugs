@@ -107,7 +107,7 @@ public class BugSet implements Iterable<BugLeafNode> {
     }
 
     BugSet(BugCollection bugCollection) {
-        this(Collections.<BugLeafNode> emptyList());
+        this(Collections.<BugLeafNode>emptyList());
         for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
             mainList.add(new BugLeafNode(i.next()));
         }
@@ -296,17 +296,18 @@ public class BugSet implements Iterable<BugLeafNode> {
         mainList = copy;
 
         if (SystemProperties.ASSERTIONS_ENABLED) {
-            for(int i = 0; i < mainList.size(); i++) {
+            for (int i = 0; i < mainList.size(); i++) {
                 BugLeafNode nodeI = mainList.get(i);
 
-                for(int j = i+1; j < mainList.size(); j++) {
+                for (int j = i + 1; j < mainList.size(); j++) {
                     BugLeafNode nodeJ = mainList.get(j);
                     if (comparator.compare(nodeI, nodeJ) > 0) {
                         throw new AssertionError(
                                 String.format("bug list isn't consistently sorted (%d:%s) vs. (%d:%s)",
                                         i, nodeI.getBug().getInstanceHash(), j, nodeJ.getBug().getInstanceHash()));
                     }
-                }}
+                }
+            }
         }
 
 

@@ -132,8 +132,8 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder(30)
-            .append(filterBy).append(' ')
-            .append(L10N.getLocalString("dlg.is", "is")).append(' ');
+                .append(filterBy).append(' ')
+                .append(L10N.getLocalString("dlg.is", "is")).append(' ');
         switch (mode) {
         case FILTER_EXACTLY:
             result.append(L10N.getLocalString("mode.equal_to", "equal to"));

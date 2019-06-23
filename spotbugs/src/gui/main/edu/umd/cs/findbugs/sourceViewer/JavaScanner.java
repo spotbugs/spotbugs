@@ -44,10 +44,10 @@ public class JavaScanner {
 
     static {
         String[] keywordList = new String[] { "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class",
-                "const", "continue", "default", "do", "double", "else", "enum", "extends", "false", "final", "finally", "float",
-                "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "null",
-                "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch",
-                "synchronized", "this", "throw", "throws", "transient", "true", "try", "void", "volatile", "while" };
+            "const", "continue", "default", "do", "double", "else", "enum", "extends", "false", "final", "finally", "float",
+            "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new", "null",
+            "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch",
+            "synchronized", "this", "throw", "throws", "transient", "true", "try", "void", "volatile", "while" };
         int max = 0;
         for (String s : keywordList) {
             if (max < s.length()) {
@@ -138,8 +138,8 @@ public class JavaScanner {
                         } while (c2 == '*');
                     }
                 }
-            kind = JAVADOC;
-            return kind;
+                kind = JAVADOC;
+                return kind;
             }
         } else if (c == '"') {
             kind = QUOTE;
@@ -158,16 +158,13 @@ public class JavaScanner {
             // need to catch '"' so isn't considered to start a String
             kind = QUOTE; // or NORMAL_TEXT ?
             char c2 = iterator.current();
-            if (c2 == '\\')
-            {
+            if (c2 == '\\') {
                 c2 = iterator.next(); // advance past the escape char
             }
-            if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE)
-            {
+            if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE) {
                 c2 = iterator.next(); // advance past the content char
             }
-            if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE)
-            {
+            if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE) {
                 iterator.next(); // advance past closing char
             }
 

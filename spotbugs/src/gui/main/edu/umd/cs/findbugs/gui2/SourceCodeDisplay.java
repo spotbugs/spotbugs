@@ -74,13 +74,14 @@ public final class SourceCodeDisplay implements Runnable {
             this.bug = bug;
             this.source = source;
         }
+
         final BugInstance bug;
         final SourceLineAnnotation source;
     }
 
-    final BlockingQueue<DisplayMe> queue = new   LinkedBlockingQueue<>();
+    final BlockingQueue<DisplayMe> queue = new LinkedBlockingQueue<>();
 
-    public  void displaySource(BugInstance bug, SourceLineAnnotation source) {
+    public void displaySource(BugInstance bug, SourceLineAnnotation source) {
         queue.add(new DisplayMe(bug, source));
     }
 

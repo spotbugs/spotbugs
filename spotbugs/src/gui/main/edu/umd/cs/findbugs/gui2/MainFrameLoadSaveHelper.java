@@ -170,8 +170,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
                 } else {
                     saveAs();
                 }
-            } else if (response == JOptionPane.CANCEL_OPTION)
-            {
+            } else if (response == JOptionPane.CANCEL_OPTION) {
                 return true;
                 // IF no, do nothing.
             }
@@ -294,26 +293,27 @@ public class MainFrameLoadSaveHelper implements Serializable {
                             L10N.getLocalString("dlg.analysis_exists_lbl", "This html output already exists.\nReplace it?"),
                             L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.WARNING_MESSAGE);
-                    break;case XML_ANALYSIS:
-                        response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
-                                L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
-                                L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
-                                JOptionPane.WARNING_MESSAGE);
-                        break;
-                    case FBP_FILE:
-                        response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
-                                L10N.getLocalString("FB Project File already exists",
-                                        "This FB project file already exists.\nDo you want to replace it?"), L10N.getLocalString(
-                                                "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-                        break;
-                    case FBA_FILE:
-                        response = JOptionPane.showConfirmDialog(saveOpenFileChooser, L10N.getLocalString(
-                                "FB Analysis File already exists",
-                                "This FB analysis file already exists.\nDo you want to replace it?"), L10N.getLocalString(
-                                        "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-                        break;
-                    default:
-                        assert false;
+                    break;
+                case XML_ANALYSIS:
+                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
+                            L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
+                            L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.WARNING_MESSAGE);
+                    break;
+                case FBP_FILE:
+                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser,
+                            L10N.getLocalString("FB Project File already exists",
+                                    "This FB project file already exists.\nDo you want to replace it?"), L10N.getLocalString(
+                                            "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    break;
+                case FBA_FILE:
+                    response = JOptionPane.showConfirmDialog(saveOpenFileChooser, L10N.getLocalString(
+                            "FB Analysis File already exists",
+                            "This FB analysis file already exists.\nDo you want to replace it?"), L10N.getLocalString(
+                                    "dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    break;
+                default:
+                    assert false;
                 }
 
                 if (response == JOptionPane.OK_OPTION) {
@@ -437,10 +437,10 @@ public class MainFrameLoadSaveHelper implements Serializable {
     SaveReturn printHtml(final File f) {
 
         Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(() -> {
-            HTMLBugReporter reporter = new HTMLBugReporter( mainFrame.getProject(), "default.xsl");
+            HTMLBugReporter reporter = new HTMLBugReporter(mainFrame.getProject(), "default.xsl");
             reporter.setIsRelaxed(true);
             reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
-            for(BugInstance bug : mainFrame.getBugCollection().getCollection()) {
+            for (BugInstance bug : mainFrame.getBugCollection().getCollection()) {
                 try {
                     if (mainFrame.getViewFilter().show(bug)) {
                         reporter.reportBug(bug);
