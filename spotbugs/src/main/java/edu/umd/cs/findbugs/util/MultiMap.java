@@ -54,6 +54,7 @@ public class MultiMap<K, V> {
     public boolean containsKey(K k) {
         return map.containsKey(k);
     }
+
     public void clear() {
         map.clear();
     }
@@ -86,7 +87,7 @@ public class MultiMap<K, V> {
         if (s != null) {
             return s;
         }
-        return Collections.<V> emptySet();
+        return Collections.<V>emptySet();
     }
 
     public Map<K, Collection<V>> asMap() {

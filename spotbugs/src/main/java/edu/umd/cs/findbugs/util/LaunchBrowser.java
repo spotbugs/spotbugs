@@ -159,8 +159,8 @@ public class LaunchBrowser {
      */
     public static boolean showDocument(URL url) {
         return showDocumentViaDesktop(url)
-            || showDocumentViaExec(url)
-            || JavaWebStart.showViaWebStart(url);
+                || showDocumentViaExec(url)
+                || JavaWebStart.showViaWebStart(url);
     }
 
 }
