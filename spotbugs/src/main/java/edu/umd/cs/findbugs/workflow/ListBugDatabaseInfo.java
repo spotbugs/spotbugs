@@ -90,7 +90,7 @@ public class ListBugDatabaseInfo {
     }
 
     private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException,
-    DocumentException {
+            DocumentException {
         SortedBugCollection origCollection;
         origCollection = new SortedBugCollection();
 

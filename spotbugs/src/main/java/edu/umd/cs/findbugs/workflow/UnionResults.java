@@ -92,6 +92,7 @@ public class UnionResults {
         merge(null, result, newCollection);
         return result;
     }
+
     static public void merge(HashSet<String> hashes, SortedBugCollection into, SortedBugCollection from) {
 
         for (BugInstance bugInstance : from.getCollection()) {
@@ -107,7 +108,7 @@ public class UnionResults {
         Project project2 = from.getProject();
         project.add(project2);
 
-        for(AnalysisError error : from.getErrors()) {
+        for (AnalysisError error : from.getErrors()) {
             into.addError(error);
         }
 
@@ -157,4 +158,3 @@ public class UnionResults {
     }
 
 }
-
