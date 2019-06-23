@@ -75,7 +75,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/sql/ResultSet"))) {
+        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/sql/ResultSet"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -89,8 +89,8 @@ public class BadResultSetAccess extends OpcodeStackDetector {
             if (("java/sql/ResultSet".equals(clsConstant) && ((methodName.startsWith("get") && dbFieldTypesSet
                     .contains(methodName.substring(3))) || (methodName.startsWith("update") && dbFieldTypesSet
                             .contains(methodName.substring(6)))))
-                            || (("java/sql/PreparedStatement".equals(clsConstant) && ((methodName.startsWith("set") && dbFieldTypesSet
-                                    .contains(methodName.substring(3))))))) {
+                    || (("java/sql/PreparedStatement".equals(clsConstant) && ((methodName.startsWith("set") && dbFieldTypesSet
+                            .contains(methodName.substring(3))))))) {
                 String signature = getSigConstantOperand();
                 int numParms = PreorderVisitor.getNumberArguments(signature);
                 if (stack.getStackDepth() >= numParms) {
@@ -100,7 +100,7 @@ public class BadResultSetAccess extends OpcodeStackDetector {
                         bugReporter.reportBug(new BugInstance(this,
                                 "java/sql/PreparedStatement".equals(clsConstant) ? "SQL_BAD_PREPARED_STATEMENT_ACCESS"
                                         : "SQL_BAD_RESULTSET_ACCESS", item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                                                .addClassAndMethod(this).addSourceLine(this));
                     }
                 }
             }
@@ -108,4 +108,3 @@ public class BadResultSetAccess extends OpcodeStackDetector {
 
     }
 }
-

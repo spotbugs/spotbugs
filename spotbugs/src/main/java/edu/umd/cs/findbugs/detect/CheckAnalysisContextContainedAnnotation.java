@@ -69,6 +69,7 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         return false;
 
     }
+
     @Override
     public void visit(Field field) {
         if (!field.isStatic()) {
@@ -82,10 +83,12 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
                 && getXField().getAnnotation(ConstantAnnotation) == null) {
             boolean flagged = analysisContextContained(getXClass());
 
-            bugReporter.reportBug(new BugInstance(this, "TESTING", flagged ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addField(this).addType(signature));
+            bugReporter.reportBug(new BugInstance(this, "TESTING", flagged ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addField(this).addType(
+                    signature));
 
         }
     }
+
     @Override
     public void visit(Code code) {
         boolean interesting = testingEnabled;
@@ -123,13 +126,12 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
         }
         Object value = right.getConstant();
         return value instanceof Integer
-            && ((Integer) value).intValue() != 0
-            && !m.isStatic()
-            && m.isPublic()
-            && (("compareTo".equals(m.getName()) && "(Ljava/lang/Object;)I".equals(m.getSignature()))
-                ||
-                ("compare".equals(m.getName()) && "(Ljava/lang/Object;Ljava/lang/Object;)I".equals(m.getSignature()))
-            );
+                && ((Integer) value).intValue() != 0
+                && !m.isStatic()
+                && m.isPublic()
+                && (("compareTo".equals(m.getName()) && "(Ljava/lang/Object;)I".equals(m.getSignature()))
+                        ||
+                        ("compare".equals(m.getName()) && "(Ljava/lang/Object;Ljava/lang/Object;)I".equals(m.getSignature())));
     }
 
     @Override

@@ -75,6 +75,7 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
         }
 
         Set<ClassDescriptor> classes = new HashSet<>();
+
         @Override
         protected void addMethodAnnotation(@DottedClassName String cName, String mName, String mSig, boolean isStatic,
                 DefaultEncodingAnnotation annotation) {
@@ -150,7 +151,7 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
     @Override
     public boolean shouldVisit(JavaClass obj) {
         Set<ClassDescriptor> called = getXClass().getCalledClassDescriptors();
-        for(ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
+        for (ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
             if (called.contains(c)) {
                 return true;
             }
@@ -158,12 +159,14 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
 
         return false;
     }
+
     @Override
     public void visit(Code code) {
         super.visit(code); // make callbacks to sawOpcode for all opcodes
         bugAccumulator.reportAccumulatedBugs();
 
     }
+
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {

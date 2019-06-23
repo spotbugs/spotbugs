@@ -73,7 +73,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
     abstract protected void reportBug(BugInstance bug);
 
     public BuildUnconditionalParamDerefDatabase() {
-        this.nonnullTypeQualifierValue =  TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
+        this.nonnullTypeQualifierValue = TypeQualifierValue.getValue(javax.annotation.Nonnull.class, null);
     }
 
     @Override
@@ -208,25 +208,24 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
             property.setParamsWithProperty(unconditionalDerefSet);
 
             AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase()
-            .setProperty(xmethod.getMethodDescriptor(), property);
+                    .setProperty(xmethod.getMethodDescriptor(), property);
             if (DEBUG) {
                 System.out.println("Unconditional deref: " + xmethod + "=" + property);
             }
         } catch (CheckedAnalysisException e) {
             AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-            .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
+                    .logError("Error analyzing " + xmethod + " for unconditional deref training", e);
         }
     }
 
     public boolean isCaught(ClassContext classContext, Method method, UnconditionalValueDerefSet entryFact, ValueNumber paramVN) {
         boolean caught = true;
 
-        Set<Location> dereferenceSites
-        = entryFact.getDerefLocationSet(paramVN);
+        Set<Location> dereferenceSites = entryFact.getDerefLocationSet(paramVN);
         if (dereferenceSites != null && !dereferenceSites.isEmpty()) {
             ConstantPool cp = classContext.getJavaClass().getConstantPool();
 
-            for(Location loc : dereferenceSites) {
+            for (Location loc : dereferenceSites) {
                 if (!FindNullDeref.catchesNull(cp, method.getCode(), loc)) {
                     caught = false;
                 }

@@ -113,7 +113,7 @@ public class InitializeNonnullFieldsInConstructor extends OpcodeStackDetector {
                 }
 
                 BugInstance b = new BugInstance(this, "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", priority)
-                .addClassAndMethod(this).addField(f);
+                        .addClassAndMethod(this).addField(f);
                 bugReporter.reportBug(b);
             }
 

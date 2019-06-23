@@ -138,8 +138,8 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
                     bugAccumulator.accumulateBug(new BugInstance(this, "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
                             isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                    .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
-                    sourceLineAnnotation);
+                                    .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE),
+                            sourceLineAnnotation);
 
                 }
             } catch (ClassNotFoundException e) {

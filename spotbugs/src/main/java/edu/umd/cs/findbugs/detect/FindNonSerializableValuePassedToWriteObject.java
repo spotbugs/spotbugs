@@ -146,8 +146,8 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
                 bugReporter.reportBug(new BugInstance(this, "DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
                         isSerializable < 0.15 ? HIGH_PRIORITY : isSerializable > 0.5 ? LOW_PRIORITY : NORMAL_PRIORITY)
-                .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE)
-                .addSourceLine(sourceLineAnnotation));
+                                .addClassAndMethod(methodGen, sourceFile).addType(problem).describe(TypeAnnotation.FOUND_ROLE)
+                                .addSourceLine(sourceLineAnnotation));
 
             } catch (ClassNotFoundException e) {
                 // ignore

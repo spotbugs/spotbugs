@@ -110,7 +110,8 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                 && getNameConstantOperand().equals(getMethodName())
                 && getSigConstantOperand().equals(getMethodSig())
                 && (seen == Const.INVOKESTATIC) == getMethod().isStatic()
-                && (seen == Const.INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || Const.CONSTRUCTOR_NAME.equals(getMethodName()))) {
+                && (seen == Const.INVOKESPECIAL) == (getMethod().isPrivate() && !getMethod().isStatic() || Const.CONSTRUCTOR_NAME.equals(
+                        getMethodName()))) {
             Type arguments[] = getMethod().getArgumentTypes();
             // stack.getStackDepth() >= parameters
             int parameters = arguments.length;

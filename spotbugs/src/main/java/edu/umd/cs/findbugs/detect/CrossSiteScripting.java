@@ -102,10 +102,10 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         top = null;
         if (seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC || seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
             int[] params = allFileNameStringMethods.get(getMethodDescriptorOperand());
-            if(params != null) {
+            if (params != null) {
                 int numArgs = getNumberArguments(getSigConstantOperand());
-                for(int param : params) {
-                    OpcodeStack.Item path = stack.getStackItem(numArgs-1-param);
+                for (int param : params) {
+                    OpcodeStack.Item path = stack.getStackItem(numArgs - 1 - param);
                     if (isTainted(path)) {
                         String bugPattern = taintPriority(path) == Priorities.HIGH_PRIORITY ? "PT_ABSOLUTE_PATH_TRAVERSAL"
                                 : "PT_RELATIVE_PATH_TRAVERSAL";
@@ -168,12 +168,12 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                     if ("sendError".equals(calledMethodName)) {
                         annotateAndReport(
                                 new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SEND_ERROR", taintPriority(writing))
-                                .addClassAndMethod(this),
+                                        .addClassAndMethod(this),
                                 writing);
                     } else {
                         annotateAndReport(
                                 new BugInstance(this, "HRS_REQUEST_PARAMETER_TO_HTTP_HEADER", taintPriority(writing))
-                                .addClassAndMethod(this),
+                                        .addClassAndMethod(this),
                                 writing);
                     }
                 }
@@ -193,12 +193,12 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 if (isTainted(writing)) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", taintPriority(writing))
-                            .addClassAndMethod(this),
+                                    .addClassAndMethod(this),
                             writing);
                 } else if (isTainted(oldTop)) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_JSP_WRITER", Priorities.NORMAL_PRIORITY)
-                            .addClassAndMethod(this),
+                                    .addClassAndMethod(this),
                             oldTop);
                 }
             } else if (calledClassName.startsWith("java/io/") && calledClassName.endsWith("Writer")
@@ -209,12 +209,12 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 if (isTainted(writing) && writingTo.isServletWriter()) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", taintPriority(writing))
-                            .addClassAndMethod(this),
+                                    .addClassAndMethod(this),
                             writing);
                 } else if (isTainted(oldTop) && writingTo.isServletWriter()) {
                     annotateAndReport(
                             new BugInstance(this, "XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER", Priorities.NORMAL_PRIORITY)
-                            .addClassAndMethod(this),
+                                    .addClassAndMethod(this),
                             writing);
                 }
 

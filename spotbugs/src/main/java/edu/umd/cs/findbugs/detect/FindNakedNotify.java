@@ -77,8 +77,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case 2:
             if (seen == Const.INVOKEVIRTUAL
-            && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))
-            && "()V".equals(getSigConstantOperand())) {
+                    && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))
+                    && "()V".equals(getSigConstantOperand())) {
                 stage = 3;
                 notifyPC = getPC();
             } else {

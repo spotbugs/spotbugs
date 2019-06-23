@@ -106,7 +106,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
                     priority = adjustPriority(priority);
                 }
                 bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", priority)
-                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
                 reportedForThisClass = true;
 
             } else if (state == 1 && !methodIsStatic && !classIsFinal && classIsVisibleToOtherPackages

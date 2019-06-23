@@ -68,8 +68,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
                 && methodName.indexOf("debug") == -1 && methodName.indexOf("Debug") == -1
                 && methodName.indexOf("trace") == -1 && methodName.indexOf("Trace") == -1
                 && !Const.CONSTRUCTOR_NAME.equals(methodName) && !Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
-            for(AnnotationEntry a : obj.getAnnotationEntries()) {
-                String typeName =  a.getAnnotationType();
+            for (AnnotationEntry a : obj.getAnnotationEntries()) {
+                String typeName = a.getAnnotationType();
                 if ("Ljavax/annotation/PostConstruct;".equals(typeName)
                         || "Ljavax/annotation/PreDestroy;".equals(typeName)) {
                     return;
@@ -108,17 +108,18 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         String simpleClassName = parts[parts.length - 1];
 
         ConstantPool cp = classContext.getJavaClass().getConstantPool();
-        for(Constant constant : cp.getConstantPool()) {
-            if(constant instanceof ConstantMethodHandle) {
+        for (Constant constant : cp.getConstantPool()) {
+            if (constant instanceof ConstantMethodHandle) {
                 int kind = ((ConstantMethodHandle) constant).getReferenceKind();
-                if(kind >= 5 && kind <= 9) {
-                    Constant ref = cp.getConstant(((ConstantMethodHandle)constant).getReferenceIndex());
-                    if(ref instanceof ConstantCP) {
+                if (kind >= 5 && kind <= 9) {
+                    Constant ref = cp.getConstant(((ConstantMethodHandle) constant).getReferenceIndex());
+                    if (ref instanceof ConstantCP) {
                         String className = cp.getConstantString(((ConstantCP) ref).getClassIndex(), Const.CONSTANT_Class);
                         ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(((ConstantCP) ref).getNameAndTypeIndex());
-                        String name = ((ConstantUtf8)cp.getConstant(nameAndType.getNameIndex())).getBytes();
-                        String signature = ((ConstantUtf8)cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(className), name, signature, kind==6 /* invokestatic */);
+                        String name = ((ConstantUtf8) cp.getConstant(nameAndType.getNameIndex())).getBytes();
+                        String signature = ((ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(className), name, signature,
+                                kind == 6 /* invokestatic */);
                         calledMethods.add(called);
                         calledMethodNames.add(name.toLowerCase());
                     }
@@ -148,4 +149,3 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         calledMethods = null;
     }
 }
-

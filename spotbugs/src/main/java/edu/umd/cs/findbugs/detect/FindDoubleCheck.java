@@ -173,7 +173,7 @@ public class FindDoubleCheck extends OpcodeStackDetector {
                         bugReporter.reportBug(new BugInstance(this, "DC_DOUBLECHECK", NORMAL_PRIORITY).addClassAndMethod(this)
                                 .addField(f).describe("FIELD_ON").addSourceLineRange(this, startPC, endPC));
                     } else {
-                        if(declaration.isReferenceType()) {
+                        if (declaration.isReferenceType()) {
                             currentDoubleCheckField = declaration;
                             assignPC = getPC();
                         }
@@ -183,15 +183,15 @@ public class FindDoubleCheck extends OpcodeStackDetector {
             }
             break;
         case 4:
-            if(currentDoubleCheckField != null) {
-                switch(seen) {
+            if (currentDoubleCheckField != null) {
+                switch (seen) {
                 case Const.MONITOREXIT:
                     stage++;
                     break;
                 case Const.INVOKEINTERFACE:
                 case Const.INVOKESPECIAL:
                 case Const.INVOKEVIRTUAL:
-                    if(nse.is(getMethodDescriptorOperand(), MethodSideEffectStatus.OBJ, MethodSideEffectStatus.SE)) {
+                    if (nse.is(getMethodDescriptorOperand(), MethodSideEffectStatus.OBJ, MethodSideEffectStatus.SE)) {
                         checkStackValue(getNumberArguments(getMethodDescriptorOperand().getSignature()));
                     }
                     break;
@@ -218,7 +218,7 @@ public class FindDoubleCheck extends OpcodeStackDetector {
 
     private void checkStackValue(int arg) {
         Item item = getStack().getStackItem(arg);
-        if(item.getXField() == currentDoubleCheckField) {
+        if (item.getXField() == currentDoubleCheckField) {
             bugReporter.reportBug(new BugInstance(this, "DC_PARTIALLY_CONSTRUCTED", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addField(currentDoubleCheckField).describe("FIELD_ON").addSourceLine(this).addSourceLine(this, assignPC)
                     .describe("SOURCE_LINE_STORED"));

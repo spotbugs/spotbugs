@@ -113,7 +113,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Math"))) {
+        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Math"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -166,4 +166,3 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
         }
     }
 }
-

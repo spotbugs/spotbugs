@@ -89,7 +89,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
                                 if (f.getName().equals(local.getName()) && (f.isStatic() || !getMethod().isStatic())) {
                                     bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_SELF_ASSIGNMENT_INSTEAD_OF_FIELD",
                                             priority).addClassAndMethod(this).add(local).addField(f)
-                                            .describe(FieldAnnotation.DID_YOU_MEAN_ROLE).addSourceLine(this));
+                                                    .describe(FieldAnnotation.DID_YOU_MEAN_ROLE).addSourceLine(this));
                                     return;
 
                                 }

@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -178,9 +177,10 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
             }
         } else if ((seen == Const.INVOKESPECIAL && !(Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && !getClassConstantOperand().equals(
                 getClassName())))
-                || (seen == Const.INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(getClassConstantOperand()))
-                        || (seen == Const.INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
-                        || (seen == Const.INVOKEVIRTUAL && "start".equals(getNameConstantOperand()))) {
+                || (seen == Const.INVOKESTATIC && "doPrivileged".equals(getNameConstantOperand()) && "java/security/AccessController".equals(
+                        getClassConstantOperand()))
+                || (seen == Const.INVOKEVIRTUAL && getClassConstantOperand().equals(getClassName()))
+                || (seen == Const.INVOKEVIRTUAL && "start".equals(getNameConstantOperand()))) {
 
             inConstructor = false;
         }

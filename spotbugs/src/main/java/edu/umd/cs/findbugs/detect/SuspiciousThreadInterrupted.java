@@ -59,7 +59,7 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Thread"))) {
+        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/lang/Thread"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -126,10 +126,10 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
                     && "interrupted".equals(getNameConstantOperand()) && "()Z".equals(getSigConstantOperand())) {
                 if (state == SEEN_POP_AFTER_CURRENTTHREAD) {
                     bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)
-                    .addClassAndMethod(this).addSourceLine(this));
+                            .addClassAndMethod(this).addSourceLine(this));
                 } else if (state == SEEN_UNKNOWNCONTEXT_POP) {
                     bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_UNKNOWNTHREAD", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addSourceLine(this));
+                            .addClassAndMethod(this).addSourceLine(this));
                 }
             }
             state = SEEN_NOTHING;
@@ -137,4 +137,3 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
         }
     }
 }
-

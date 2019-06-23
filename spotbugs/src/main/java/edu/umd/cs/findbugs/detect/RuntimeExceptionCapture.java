@@ -97,8 +97,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     }
 
     private static class ExceptionThrown {
-        public @DottedClassName
-        String exceptionClass;
+        public @DottedClassName String exceptionClass;
 
         public int offset;
 
@@ -267,4 +266,3 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     }
 
 }
-

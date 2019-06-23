@@ -129,7 +129,7 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
                 Number n2 = (Number) second.getConstant();
                 if (n1 != null && Double.isNaN(n1.doubleValue()) || n2 != null && Double.isNaN(n2.doubleValue())) {
                     BugInstance bug = new BugInstance(this, "FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER", HIGH_PRIORITY)
-                    .addClassAndMethod(this);
+                            .addClassAndMethod(this);
                     bugAccumulator.accumulateBug(bug, this);
                     state = SAW_NOTHING;
                     break;
@@ -190,6 +190,6 @@ public class FindFloatEquality extends OpcodeStackDetector implements StatelessD
 
     static boolean sameField(Item i1, Item i2) {
         return Objects.equals(i1.getXField(), i2.getXField())
-            && i1.getFieldLoadedFromRegister() == i2.getFieldLoadedFromRegister();
+                && i1.getFieldLoadedFromRegister() == i2.getFieldLoadedFromRegister();
     }
 }

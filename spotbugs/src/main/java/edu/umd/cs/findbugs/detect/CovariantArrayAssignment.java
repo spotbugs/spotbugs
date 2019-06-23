@@ -64,7 +64,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
     private static boolean allImplementationsDerivedFromSubclass(@SlashedClassName String superClass, @SlashedClassName String subClass) {
         ClassDescriptor superDescriptor = DescriptorFactory.createClassDescriptor(superClass);
         XClass xClass = AnalysisContext.currentXFactory().getXClass(superDescriptor);
-        if(xClass == null || (!xClass.isInterface() && !xClass.isAbstract())) {
+        if (xClass == null || (!xClass.isInterface() && !xClass.isAbstract())) {
             return false;
         }
         try {
@@ -92,28 +92,28 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if ((isRegisterStore() && !isRegisterLoad()) || seen == Const.PUTFIELD || seen == Const.PUTSTATIC || seen == Const.ARETURN) {
             Item valueItem = getStack().getStackItem(0);
-            if(!valueItem.isNull() && valueItem.isNewlyAllocated() && valueItem.getSignature().startsWith("[L")
-                    && !((Integer)0).equals(valueItem.getConstant())) {
-                String valueClass = valueItem.getSignature().substring(2, valueItem.getSignature().length()-1);
+            if (!valueItem.isNull() && valueItem.isNewlyAllocated() && valueItem.getSignature().startsWith("[L")
+                    && !((Integer) 0).equals(valueItem.getConstant())) {
+                String valueClass = valueItem.getSignature().substring(2, valueItem.getSignature().length() - 1);
                 String arraySignature = null;
                 int priority = LOW_PRIORITY;
                 String pattern = null;
                 FieldDescriptor field = null;
-                if(seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
+                if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
                     arraySignature = getSigConstantOperand();
                     pattern = "CAA_COVARIANT_ARRAY_FIELD";
                     field = getFieldDescriptorOperand();
-                    if(field instanceof XField) {
-                        XField xField = (XField)field;
-                        if((xField.isPublic() || xField.isProtected())) {
+                    if (field instanceof XField) {
+                        XField xField = (XField) field;
+                        if ((xField.isPublic() || xField.isProtected())) {
                             XClass xClass = AnalysisContext.currentXFactory().getXClass(xField.getClassDescriptor());
-                            if(xClass != null && xClass.isPublic()) {
+                            if (xClass != null && xClass.isPublic()) {
                                 priority = NORMAL_PRIORITY;
                             }
                         }
                     }
-                } else if(seen == Const.ARETURN) {
-                    if(getXMethod().bridgeFrom() == null) {
+                } else if (seen == Const.ARETURN) {
+                    if (getXMethod().bridgeFrom() == null) {
                         pattern = "CAA_COVARIANT_ARRAY_RETURN";
                         arraySignature = new SignatureParser(getMethodSig()).getReturnTypeSignature();
                         if (!arraySignature.equals("[Ljava/lang/Object;")
@@ -123,24 +123,24 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                     }
                 } else {
                     LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                    if(lvt != null) {
+                    if (lvt != null) {
                         LocalVariable localVariable = lvt.getLocalVariable(getRegisterOperand(), getNextPC());
-                        if(localVariable != null) {
+                        if (localVariable != null) {
                             pattern = "CAA_COVARIANT_ARRAY_LOCAL";
                             arraySignature = localVariable.getSignature();
                         }
                     }
                 }
-                if(arraySignature != null && arraySignature.startsWith("[L")) {
-                    String arrayClass = arraySignature.substring(2, arraySignature.length()-1);
-                    if(!valueClass.equals(arrayClass)) {
-                        if(priority == NORMAL_PRIORITY && allImplementationsDerivedFromSubclass(arrayClass, valueClass)) {
+                if (arraySignature != null && arraySignature.startsWith("[L")) {
+                    String arrayClass = arraySignature.substring(2, arraySignature.length() - 1);
+                    if (!valueClass.equals(arrayClass)) {
+                        if (priority == NORMAL_PRIORITY && allImplementationsDerivedFromSubclass(arrayClass, valueClass)) {
                             priority = LOW_PRIORITY;
                         }
                         BugInstance bug = new BugInstance(this, pattern, priority).addClassAndMethod(this)
                                 .addFoundAndExpectedType(valueItem.getSignature(), arraySignature)
                                 .addSourceLine(this).addValueSource(valueItem, this);
-                        if(field != null) {
+                        if (field != null) {
                             bug.addField(field);
                         }
                         accumulator.accumulateBug(bug, this);
@@ -151,23 +151,23 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
 
         if (seen == Const.AASTORE) {
             Item valueItem = getStack().getStackItem(0);
-            if(!valueItem.isNull()) {
+            if (!valueItem.isNull()) {
                 Item arrayItem = getStack().getStackItem(2);
                 String arraySignature = arrayItem.getSignature();
                 String valueSignature = valueItem.getSignature();
                 // if valueSignature is "Ljava/lang/Object;" then OpcodeStack probably could not define actual type at all: skip this case
-                if(arraySignature.startsWith("[L") && valueSignature.startsWith("L") && !valueSignature.equals("Ljava/lang/Object;")) {
-                    String arrayClass = arraySignature.substring(2, arraySignature.length()-1);
-                    String valueClass = valueSignature.substring(1, valueSignature.length()-1);
+                if (arraySignature.startsWith("[L") && valueSignature.startsWith("L") && !valueSignature.equals("Ljava/lang/Object;")) {
+                    String arrayClass = arraySignature.substring(2, arraySignature.length() - 1);
+                    String valueClass = valueSignature.substring(1, valueSignature.length() - 1);
                     try {
                         ClassDescriptor valueClassDescriptor = DescriptorFactory.createClassDescriptor(valueClass);
                         ClassDescriptor arrayClassDescriptor = DescriptorFactory.createClassDescriptor(arrayClass);
                         if (!AnalysisContext.currentAnalysisContext().getSubtypes2()
                                 .isSubtype(valueClassDescriptor, arrayClassDescriptor)) {
-                            int priority = HIGH_PRIORITY;   // in this case we may be pretty sure that if this line is executed ArrayStoreException will happen
-                            if(AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(arrayClassDescriptor, valueClassDescriptor)) {
+                            int priority = HIGH_PRIORITY; // in this case we may be pretty sure that if this line is executed ArrayStoreException will happen
+                            if (AnalysisContext.currentAnalysisContext().getSubtypes2().isSubtype(arrayClassDescriptor, valueClassDescriptor)) {
                                 priority = NORMAL_PRIORITY;
-                                if(allImplementationsDerivedFromSubclass(valueClass, arrayClass)) {
+                                if (allImplementationsDerivedFromSubclass(valueClass, arrayClass)) {
                                     // Every implementation of valueClass also extends arrayClass
                                     // In this case ArrayStoreException will never occur in current project
                                     // So it's enough that we reported a bug when this array was created
@@ -175,7 +175,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                                 }
                             }
                             BugInstance bug = new BugInstance(this, "CAA_COVARIANT_ARRAY_ELEMENT_STORE", priority).addClassAndMethod(this)
-                                    .addFoundAndExpectedType(valueSignature, 'L'+arrayClass+';')
+                                    .addFoundAndExpectedType(valueSignature, 'L' + arrayClass + ';')
                                     .addSourceLine(this)
                                     .addValueSource(valueItem, this)
                                     .addValueSource(arrayItem, this);

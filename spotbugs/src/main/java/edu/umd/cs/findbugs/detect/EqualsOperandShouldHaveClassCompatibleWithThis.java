@@ -121,7 +121,7 @@ public class EqualsOperandShouldHaveClassCompatibleWithThis extends OpcodeStackD
                     priority++;
                 }
                 bugAccumulator.accumulateBug(new BugInstance(this, "EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS", priority)
-                .addClassAndMethod(this).addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
+                        .addClassAndMethod(this).addType(c).describe(TypeAnnotation.FOUND_ROLE), this);
                 classSummary.checksForEqualTo(thisClassDescriptor, c);
 
             } catch (ClassNotFoundException e) {

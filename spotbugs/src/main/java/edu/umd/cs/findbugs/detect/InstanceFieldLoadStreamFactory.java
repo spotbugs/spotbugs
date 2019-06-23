@@ -95,4 +95,3 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
         }
     }
 }
-

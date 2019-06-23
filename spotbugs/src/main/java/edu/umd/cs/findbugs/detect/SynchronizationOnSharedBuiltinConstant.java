@@ -49,7 +49,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
         this.bugAccumulator = new BugAccumulator(bugReporter);
         badSignatures = new HashSet<>();
         badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
-                "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;" }));
+            "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;" }));
     }
 
     private static boolean newlyConstructedObject(OpcodeStack.Item item) {
@@ -94,7 +94,7 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
             if ("Ljava/lang/String;".equals(syncSignature) && constant instanceof String) {
 
                 pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
-                .addClassAndMethod(this);
+                        .addClassAndMethod(this);
 
                 String value = (String) constant;
                 if (identified.matcher(value).matches()) {
@@ -112,8 +112,8 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
                 }
                 if (newlyConstructedObject(summary)) {
                     pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE", NORMAL_PRIORITY)
-                    .addClassAndMethod(this).addType(syncSignature).addOptionalField(field)
-                    .addOptionalLocalVariable(this, top);
+                            .addClassAndMethod(this).addType(syncSignature).addOptionalField(field)
+                            .addOptionalLocalVariable(this, top);
                 } else if (isSyncOnBoolean) {
                     pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_BOOLEAN", priority).addClassAndMethod(this)
                             .addOptionalField(field).addOptionalLocalVariable(this, top);

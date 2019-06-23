@@ -39,9 +39,9 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
         case Const.FMUL:
         case Const.FDIV:
             if (getFullyQualifiedMethodName().indexOf("float") == -1 && getFullyQualifiedMethodName().indexOf("Float") == -1
-            && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
+                    && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
                 bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", LOW_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
             }
             break;
         case Const.FCMPG:
@@ -51,7 +51,7 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
         case Const.FSUB:
         case Const.FREM:
             if (getFullyQualifiedMethodName().indexOf("float") == -1 && getFullyQualifiedMethodName().indexOf("Float") == -1
-            && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
+                    && getFullyQualifiedMethodName().indexOf("FLOAT") == -1) {
                 bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION", NORMAL_PRIORITY).addClassAndMethod(
                         this).addSourceLine(this));
             }

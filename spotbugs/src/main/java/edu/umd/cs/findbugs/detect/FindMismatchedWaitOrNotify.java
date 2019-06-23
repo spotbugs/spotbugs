@@ -177,4 +177,3 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
     public void report() {
     }
 }
-

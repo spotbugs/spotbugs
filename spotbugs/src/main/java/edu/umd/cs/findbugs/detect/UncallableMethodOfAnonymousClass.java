@@ -192,7 +192,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             if (potentialSuperCall == null) {
                 String role = ClassAnnotation.SUPERCLASS_ROLE;
 
-                @DottedClassName String superclassName =  ClassName.toDottedClassName(getSuperclassName());
+                @DottedClassName
+                String superclassName = ClassName.toDottedClassName(getSuperclassName());
                 if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName)) {
 
                     try {
@@ -209,8 +210,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 try {
                     XClass from = Global.getAnalysisCache().getClassAnalysis(XClass.class,
                             DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
-                    XMethod  potentialMatch = null;
-                    for(XMethod m : from.getXMethods()) {
+                    XMethod potentialMatch = null;
+                    for (XMethod m : from.getXMethods()) {
                         if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
                             if (potentialMatch == null) {
                                 potentialMatch = m;
@@ -223,7 +224,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                     }
                     if (potentialMatch != null) {
                         pendingBug.addMethod(potentialMatch)
-                        .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
+                                .describe(MethodAnnotation.METHOD_DID_YOU_MEAN_TO_OVERRIDE);
                     }
 
                 } catch (CheckedAnalysisException e) {

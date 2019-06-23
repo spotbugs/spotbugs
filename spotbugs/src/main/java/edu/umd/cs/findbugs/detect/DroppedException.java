@@ -104,7 +104,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
         return asUnsignedByte(a[i]) << 8 | asUnsignedByte(a[i + 1]);
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "UC_USELESS_CONDITION", justification = "To be fixed in SpotBugs 4.0.0, see https://github.com/spotbugs/spotbugs/issues/84")
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "UC_USELESS_CONDITION",
+            justification = "To be fixed in SpotBugs 4.0.0, see https://github.com/spotbugs/spotbugs/issues/84")
     @Override
     public void visit(Code obj) {
 
@@ -133,7 +134,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
                     break;
                 }
                 j += 1 + Const.getNoOfOperands(opcode);
-                if (opcode >= Const.IRETURN && opcode <= Const.RETURN || opcode >= Const.IFEQ && opcode <= Const.GOTO && (opcode != Const.GOTO || j < end)) {
+                if (opcode >= Const.IRETURN && opcode <= Const.RETURN || opcode >= Const.IFEQ && opcode <= Const.GOTO && (opcode != Const.GOTO
+                        || j < end)) {
                     exitInTryBlock = true;
                     if (DEBUG) {
                         System.out.println("\texit: " + opcode + " in " + getFullyQualifiedMethodName());
@@ -152,7 +154,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
             if (handled < 5) {
                 continue;
             }
-            @DottedClassName String causeName;
+            @DottedClassName
+            String causeName;
             if (cause == 0) {
                 causeName = "java.lang.Throwable";
             } else {
@@ -299,10 +302,10 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 if (startsWithASTORE03) {
                     register = opcode - Const.ASTORE_0;
                 } else if (opcode == Const.ASTORE) {
-                    register =  asUnsignedByte(code[handled + 1]);
+                    register = asUnsignedByte(code[handled + 1]);
                 }
                 if (register >= 0) {
-                    LocalVariableAnnotation lva = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, handled+2, handled+1);
+                    LocalVariableAnnotation lva = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, handled + 2, handled + 1);
                     String name = lva.getName();
                     if (DEBUG) {
                         System.out.println("Name: " + name);
@@ -327,7 +330,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 }
 
                 BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE", priority)
-                .addClassAndMethod(this);
+                        .addClassAndMethod(this);
                 bugInstance.addClass(causeName).describe("CLASS_EXCEPTION");
                 bugInstance.addSourceLine(srcLine);
                 bugAccumulator.accumulateBug(bugInstance, srcLine);
@@ -407,8 +410,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
             }
 
             int offset = sourceFile.getLineOffset(scanStartLine - 1);
-            if (offset < 0)
-            {
+            if (offset < 0) {
                 return false; // Source file has changed?
             }
             Tokenizer tokenizer = new Tokenizer(UTF8.reader(sourceFile.getInputStreamFromOffset(offset)));
@@ -435,8 +437,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 tokenList.add(token);
             }
 
-            if (eolOfCatchBlockStart < 0)
-            {
+            if (eolOfCatchBlockStart < 0) {
                 return false; // Couldn't scan line reported as start of catch
                 // block
             }
@@ -455,8 +456,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
                 }
             }
 
-            if (!foundCatch)
-            {
+            if (!foundCatch) {
                 return false; // Couldn't find "catch" keyword
             }
 
@@ -536,4 +536,3 @@ public class DroppedException extends PreorderVisitor implements Detector {
         return false;
     }
 }
-
