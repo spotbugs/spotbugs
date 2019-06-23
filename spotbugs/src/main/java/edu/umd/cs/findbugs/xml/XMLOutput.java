@@ -135,4 +135,3 @@ public interface XMLOutput {
     @DischargesObligation
     public void finish() throws IOException;
 }
-

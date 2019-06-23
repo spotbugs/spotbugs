@@ -36,4 +36,3 @@ public interface XMLWriteable {
      */
     public void writeXML(XMLOutput xmlOutput) throws IOException;
 }
-

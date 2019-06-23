@@ -91,4 +91,3 @@ public abstract class QuoteMetaCharacters {
         return -1;
     }
 }
-

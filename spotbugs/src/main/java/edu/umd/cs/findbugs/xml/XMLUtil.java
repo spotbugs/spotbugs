@@ -30,7 +30,7 @@ public class XMLUtil {
 
     @SuppressWarnings("unchecked")
     public static <T> List<T> selectNodes(Node node, String arg0) {
-        return (List<T>)node.selectNodes(arg0);
+        return (List<T>) node.selectNodes(arg0);
     }
 
 }
