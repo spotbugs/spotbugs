@@ -105,7 +105,7 @@ public class PrintClass {
             for (int i = 0; i < files; i++) {
                 file_name[i] = file_name[i].replace('.', '/');
             }
-            try(ZipFile z = new ZipFile(zip_file)){
+            try (ZipFile z = new ZipFile(zip_file)) {
                 TreeSet<ZipEntry> zipEntries = new TreeSet<>(new ZipEntryComparator());
                 for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();) {
                     zipEntries.add(e.nextElement());

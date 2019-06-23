@@ -121,12 +121,12 @@ public class AnnotationVisitor extends PreorderVisitor {
     }
 
     /*
-
+    
     private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
     private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
     private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
     private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
-
+    
     private Map<String, Object> readAnnotationValues(DataInputStream bytes, int numPairs) throws IOException {
         Map<String, Object> values = new HashMap<String, Object>();
         for (int j = 0; j < numPairs; j++) {
@@ -143,8 +143,8 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
         return values;
     }
-
-
+    
+    
     private @DottedClassName
     String getAnnotationName(DataInputStream bytes) throws IOException {
         int annotationNameIndex = bytes.readUnsignedShort();
@@ -155,8 +155,8 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
         return annotationName;
     }
-
-
+    
+    
     private Object readAnnotationValue(DataInputStream bytes) throws IOException {
         try {
             char tag = (char) bytes.readUnsignedByte();
