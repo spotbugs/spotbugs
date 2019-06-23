@@ -51,7 +51,7 @@ public class CbeckMustOverrideSuperAnnotation extends OpcodeStackDetector {
 
     @Override
     public void visit(Code code) {
-        if(!testingEnabled){
+        if (!testingEnabled) {
             return;
         }
         if (getMethod().isStatic() || getMethod().isPrivate()) {

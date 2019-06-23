@@ -80,8 +80,7 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException
-    {
+    private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         CFG cfg = classContext.getCFG(method);
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();

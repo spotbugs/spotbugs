@@ -106,16 +106,16 @@ public class DumbMethodInvocations implements Detector {
 
             MethodDescriptor md = new MethodDescriptor(iins, cpg);
             if (allDatabasePasswordMethods.containsKey(md)) {
-                for(int paramNumber : allDatabasePasswordMethods.get(md)) {
+                for (int paramNumber : allDatabasePasswordMethods.get(md)) {
                     Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
                     if (operandValue.isConstantString()) {
                         String password = operandValue.getConstantString();
                         if (password.length() == 0) {
                             bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                         } else {
                             bugAccumulator.accumulateBug(new BugInstance(this, "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                         }
 
                     }
@@ -131,12 +131,12 @@ public class DumbMethodInvocations implements Detector {
                 int v = operandValue.getConstantInt();
                 if (v == 0) {
                     bugAccumulator.accumulateBug(new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
-                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                            .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                 }
 
             } else if (allFileNameStringMethods.containsKey(md)) {
 
-                for(int paramNumber : allFileNameStringMethods.get(md)) {
+                for (int paramNumber : allFileNameStringMethods.get(md)) {
                     Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
                     if (!operandValue.isConstantString()) {
                         continue;
@@ -151,8 +151,8 @@ public class DumbMethodInvocations implements Detector {
                             priority = HIGH_PRIORITY;
                         }
                         bugAccumulator.accumulateBug(new BugInstance(this, "DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
-                        .addClassAndMethod(methodGen, sourceFile).addString(v).describe("FILE_NAME"), classContext,
-                        methodGen, sourceFile, location);
+                                .addClassAndMethod(methodGen, sourceFile).addString(v).describe("FILE_NAME"), classContext,
+                                methodGen, sourceFile, location);
                     }
                 }
 
@@ -174,7 +174,7 @@ public class DumbMethodInvocations implements Detector {
         }
         if (v.length() >= 2 && v.charAt(1) == ':') {
             char driveletter = v.charAt(0);
-            if((driveletter >= 'A' && driveletter <= 'Z') || (driveletter >= 'a' && driveletter <= 'z')) {
+            if ((driveletter >= 'A' && driveletter <= 'Z') || (driveletter >= 'a' && driveletter <= 'z')) {
                 return true;
             }
         }

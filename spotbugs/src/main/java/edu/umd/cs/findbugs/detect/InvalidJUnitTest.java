@@ -137,8 +137,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     private boolean hasSuite(Method[] methods) {
         for (Method m : methods) {
             if (m.getName().equals("suite") && m.isPublic() && m.isStatic()
-                    // && m.getReturnType().equals(junit.framework.Test.class)
-                    // && m.getArgumentTypes().length == 0
+            // && m.getReturnType().equals(junit.framework.Test.class)
+            // && m.getArgumentTypes().length == 0
                     && m.getSignature().equals("()Ljunit/framework/Test;")) {
                 return true;
             }
@@ -196,7 +196,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
                 if (superCode != null && superCode.getCode().length > 3) {
                     bugReporter.reportBug(new BugInstance(this, getMethodName().equals("setUp") ? "IJU_SETUP_NO_SUPER"
                             : "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY).addClassAndMethod(this).addMethod(we, superMethod)
-                            .describe(MethodAnnotation.METHOD_OVERRIDDEN).addSourceLine(this, offset));
+                                    .describe(MethodAnnotation.METHOD_OVERRIDDEN).addSourceLine(this, offset));
                 }
             }
         }
@@ -223,4 +223,3 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
         }
     }
 }
-

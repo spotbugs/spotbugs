@@ -325,7 +325,8 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             if (methodDescriptor.getName().equals(Const.CONSTRUCTOR_NAME)) {
                 try {
 
-                    if (subtypes2.isSubtype(methodDescriptor.getClassDescriptor(), DescriptorFactory.createClassDescriptorFromDottedClassName(obligation.getClassName()))) {
+                    if (subtypes2.isSubtype(methodDescriptor.getClassDescriptor(), DescriptorFactory.createClassDescriptorFromDottedClassName(
+                            obligation.getClassName()))) {
                         return;
                     }
 
@@ -377,10 +378,10 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             List<PossibleObligationTransfer> transferList;
 
             public PostProcessingPathVisitor(Obligation possiblyLeakedObligation/*
-             * ,
-             * int
-             * initialLeakCount
-             */, State state) {
+                                                                                * ,
+                                                                                * int
+                                                                                * initialLeakCount
+                                                                                */, State state) {
                 this.possiblyLeakedObligation = possiblyLeakedObligation;
                 this.state = state;
                 this.adjustedLeakCount = state.getObligationSet().getCount(possiblyLeakedObligation.getId());
@@ -416,7 +417,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                     Instruction ins = handle.getInstruction();
                     short opcode = ins.getOpcode();
                     if (DEBUG) {
-                        System.out.printf("%3d %s%n", handle.getPosition(),Const.getOpcodeName(opcode));
+                        System.out.printf("%3d %s%n", handle.getPosition(), Const.getOpcodeName(opcode));
                     }
 
                     if (opcode == Const.PUTFIELD || opcode == Const.PUTSTATIC || opcode == Const.ARETURN) {
@@ -681,7 +682,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
                             if (entryState.getObligationSet().getCount(obligation.getId()) > 0) {
                                 lastSourceLine = SourceLineAnnotation.forFirstLineOfMethod(methodDescriptor);
                                 lastSourceLine
-                                .setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
+                                        .setDescription(SourceLineAnnotation.ROLE_OBLIGATION_CREATED_BY_WILLCLOSE_PARAMETER);
                                 bugInstance.add(lastSourceLine);
                                 sawFirstCreation = true;
 

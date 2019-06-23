@@ -402,11 +402,11 @@ public class FindDeadLocalStores implements Detector {
                                 initializationOf = ClassName.toSignature(v.getClassName());
                                 foundDeadClassInitialization = true;
                             } else {
-                                AnalysisContext.logError("LDC loaded " + value + "at " + location.getHandle().getPosition() + " in " + classContext.getFullyQualifiedMethodName(method));
+                                AnalysisContext.logError("LDC loaded " + value + "at " + location.getHandle().getPosition() + " in " + classContext
+                                        .getFullyQualifiedMethodName(method));
                             }
 
-                        }
-                        else {
+                        } else {
                             continue; // not an interesting DLS
                         }
 
@@ -427,7 +427,7 @@ public class FindDeadLocalStores implements Detector {
                         }
                         BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_STORE_OF_CLASS_LITERAL",
                                 Priorities.NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFileName).add(lvAnnotation)
-                                .addType(initializationOf);
+                                        .addType(initializationOf);
                         accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
                         continue;
                     }
@@ -505,7 +505,8 @@ public class FindDeadLocalStores implements Detector {
                     // Look for objects created but never used
 
                     Instruction prevIns = prev.getInstruction();
-                    if ((prevIns instanceof INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(((INVOKESPECIAL) prevIns).getMethodName(methodGen.getConstantPool())))
+                    if ((prevIns instanceof INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(((INVOKESPECIAL) prevIns).getMethodName(methodGen
+                            .getConstantPool())))
                             || prevIns instanceof ANEWARRAY
                             || prevIns instanceof NEWARRAY
                             || prevIns instanceof MULTIANEWARRAY) {
@@ -703,7 +704,7 @@ public class FindDeadLocalStores implements Detector {
                 propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, localName);
             }
         }
-
+    
     }*/
 
     /**

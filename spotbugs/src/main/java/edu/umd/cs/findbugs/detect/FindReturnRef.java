@@ -114,10 +114,10 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (isPotentialCapture(top)) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addReferencedField(this)
-                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(),
-                                getPC(), getPC() - 1)), this);
+                                .addClassAndMethod(this)
+                                .addReferencedField(this)
+                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(),
+                                        getPC(), getPC() - 1)), this);
             }
         }
         if (!staticMethod && seen == Const.PUTFIELD && nonPublicFieldOperand()
@@ -127,10 +127,10 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (isPotentialCapture(top) && target.getRegisterNumber() == 0) {
                 bugAccumulator.accumulateBug(
                         new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
-                        .addClassAndMethod(this)
-                        .addReferencedField(this)
-                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(),
-                                getPC(), getPC() - 1)), this);
+                                .addClassAndMethod(this)
+                                .addReferencedField(this)
+                                .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), top.getRegisterNumber(),
+                                        getPC(), getPC() - 1)), this);
             }
         }
 
@@ -163,13 +163,13 @@ public class FindReturnRef extends OpcodeStackDetector {
         }
         thisOnTOS = false;
         if (check && fieldOnTOS && seen == Const.ARETURN
-                /*
-                 * && !sigOnStack.equals("Ljava/lang/String;") &&
-                 * sigOnStack.indexOf("Exception") == -1 && sigOnStack.indexOf("[") >= 0
-                 */
+        /*
+         * && !sigOnStack.equals("Ljava/lang/String;") &&
+         * sigOnStack.indexOf("Exception") == -1 && sigOnStack.indexOf("[") >= 0
+         */
                 && nameOnStack.indexOf("EMPTY") == -1 && MutableStaticFields.mutableSignature(sigOnStack)) {
             bugAccumulator.accumulateBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
-            .addClassAndMethod(this).addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic), this);
+                    .addClassAndMethod(this).addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic), this);
         }
 
         fieldOnTOS = false;

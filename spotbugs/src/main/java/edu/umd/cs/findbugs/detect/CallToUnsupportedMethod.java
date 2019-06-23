@@ -90,8 +90,8 @@ public class CallToUnsupportedMethod implements Detector {
      * @param method
      */
     private void analyzeMethod(ClassContext classContext, Method method) throws MethodUnprofitableException, CFGBuilderException,
-    DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method)|| (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
+            DataflowAnalysisException {
+        if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
             return;
         }
         CFG cfg = classContext.getCFG(method);
@@ -155,8 +155,8 @@ public class CallToUnsupportedMethod implements Detector {
                 }
             }
             BugInstance bug = new BugInstance(this, "DMI_UNSUPPORTED_METHOD", priority)
-            .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(constantPoolGen, inv)
-            .addSourceLine(classContext, method, location);
+                    .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(constantPoolGen, inv)
+                    .addSourceLine(classContext, method, location);
             bugReporter.reportBug(bug);
 
         }

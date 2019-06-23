@@ -67,7 +67,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
 
     @Override
     public void visit(Code obj) {
-        if (isInnerClass  && !BCELUtil.isSynthetic(getMethod())) {
+        if (isInnerClass && !BCELUtil.isSynthetic(getMethod())) {
             super.visit(obj);
             iteratorBug = null;
         }
@@ -80,7 +80,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
                 LocalVariableTable lvt = getMethod().getLocalVariableTable();
                 if (lvt != null) {
                     LocalVariable localVariable = lvt.getLocalVariable(getRegisterOperand(), getNextPC());
-                    if(localVariable == null || localVariable.getName().endsWith("$")) {
+                    if (localVariable == null || localVariable.getName().endsWith("$")) {
                         // iterator() result is stored to the synthetic variable which has no name in LVT or name is suffixed with '$'
                         // Looks like it's for-each cycle like for(Object obj : this)
                         // Do not report such case
@@ -88,7 +88,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
                     }
                 }
             }
-            if(iteratorBug != null) {
+            if (iteratorBug != null) {
                 bugAccumulator.accumulateBug(iteratorBug, this);
             }
             iteratorBug = null;
@@ -105,7 +105,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
                 || invokedMethod.isSynthetic()) {
             return;
         }
-        if(getStack().getStackItem(getNumberArguments(getSigConstantOperand())).getRegisterNumber() != 0) {
+        if (getStack().getStackItem(getNumberArguments(getSigConstantOperand())).getRegisterNumber() != 0) {
             // called not for this object
             return;
         }
@@ -138,9 +138,9 @@ public class ConfusionBetweenInheritedAndOuterMethod extends OpcodeStackDetector
                 }
 
                 BugInstance bug = new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
-                .addClassAndMethod(this).addMethod(invokedMethod).describe("METHOD_INHERITED")
-                .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET");
-                if(invokedMethod.getName().equals("iterator") && invokedMethod.getSignature().equals("()Ljava/util/Iterator;")
+                        .addClassAndMethod(this).addMethod(invokedMethod).describe("METHOD_INHERITED")
+                        .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET");
+                if (invokedMethod.getName().equals("iterator") && invokedMethod.getSignature().equals("()Ljava/util/Iterator;")
                         && Subtypes2.instanceOf(getDottedClassName(), "java.lang.Iterable")) {
                     iteratorBug = bug;
                 } else {

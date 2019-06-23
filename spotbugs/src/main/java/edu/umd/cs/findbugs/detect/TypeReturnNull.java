@@ -51,11 +51,11 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
         SignatureParser sp = new SignatureParser(getMethodSig());
         // Check to see if the method has expected return type
         String returnSignature = sp.getReturnTypeSignature();
-        if (!matchesReturnSignature(returnSignature)){
+        if (!matchesReturnSignature(returnSignature)) {
             return;
         }
 
-        if (isExplicitlyNullable()){
+        if (isExplicitlyNullable()) {
             return;
         }
 
@@ -73,7 +73,7 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.ARETURN && getPrevOpcode(1) == Const.ACONST_NULL){
+        if (seen == Const.ARETURN && getPrevOpcode(1) == Const.ACONST_NULL) {
             accumulateBug();
         }
     }

@@ -89,7 +89,7 @@ public class SynchronizingOnContentsOfFieldToProtectField extends OpcodeStackDet
                     priority = Priorities.NORMAL_PRIORITY;
                 }
                 pendingBug = new BugInstance(this, "ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD", priority)
-                .addClassAndMethod(this).addField(syncField).addSourceLine(this);
+                        .addClassAndMethod(this).addField(syncField).addSourceLine(this);
                 countDown = 2;
 
             }

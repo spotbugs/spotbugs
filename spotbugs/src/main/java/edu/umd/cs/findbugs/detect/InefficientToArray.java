@@ -149,4 +149,3 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
         }
     }
 }
-

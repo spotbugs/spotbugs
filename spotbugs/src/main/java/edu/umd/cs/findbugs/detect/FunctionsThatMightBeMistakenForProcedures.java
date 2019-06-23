@@ -101,7 +101,8 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     int updates;
 
-    @CheckForNull BugInstance inferredMethod;
+    @CheckForNull
+    BugInstance inferredMethod;
 
     @Override
     public void visit(Code code) {
@@ -241,7 +242,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             if (inferredMethod != null) {
                 inferredMethod.addCalledMethod(xMethod);
             }
-            if (okToIgnore.contains(xMethod) ) {
+            if (okToIgnore.contains(xMethod)) {
                 returnSelf++;
                 break;
             }
@@ -253,7 +254,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                     voidConstructor = "()V".equals(sig);
                 } else {
                     SignatureParser parser = new SignatureParser(sig);
-                    voidConstructor = parser.getNumParameters()  <= 1;
+                    voidConstructor = parser.getNumParameters() <= 1;
                 }
                 if (voidConstructor) {
                     returnSelf++;
@@ -289,7 +290,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
             }
 
         }
-        break;
+            break;
         case Const.PUTFIELD: {
 
             OpcodeStack.Item rv = stack.getStackItem(1);
@@ -301,7 +302,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
             }
         }
-        break;
+            break;
         default:
             break;
         }

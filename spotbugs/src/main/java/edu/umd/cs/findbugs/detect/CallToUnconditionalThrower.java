@@ -148,9 +148,9 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
             boolean newResult = foundThrower && !foundNonThrower;
             if (newResult) {
                 bugReporter.reportBug(new BugInstance(this, "TESTING", Priorities.NORMAL_PRIORITY)
-                .addClassAndMethod(classContext.getJavaClass(), method)
-                .addString("Call to method that always throws Exception").addMethod(primaryXMethod)
-                .describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, loc));
+                        .addClassAndMethod(classContext.getJavaClass(), method)
+                        .addString("Call to method that always throws Exception").addMethod(primaryXMethod)
+                        .describe(MethodAnnotation.METHOD_CALLED).addSourceLine(classContext, method, loc));
             }
 
         }
@@ -159,7 +159,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(!testingEnabled){
+        if (!testingEnabled) {
             return;
         }
         analysisContext = AnalysisContext.currentAnalysisContext();

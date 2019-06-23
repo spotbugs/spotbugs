@@ -171,7 +171,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, lastPC, getPC());
                     found.add(sourceLineAnnotation);
-                } else if ( getPC() >= biggestJumpTarget) {
+                } else if (getPC() >= biggestJumpTarget) {
                     SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
                     if (DEBUG) {
                         System.out.printf("Found fallthrough to default offset at %d (BJT is %d)%n", getPC(), biggestJumpTarget);
@@ -203,7 +203,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     // killed store
                     priority = HIGH_PRIORITY;
                     bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-                    .addClassAndMethod(this).addField(f), this);
+                            .addClassAndMethod(this).addField(f), this);
 
                 }
                 potentiallyDeadFields.add(f);
@@ -237,7 +237,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 priority = HIGH_PRIORITY;
                 deadStore = LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC() - 1, getPC());
                 bugAccumulator.accumulateBug(new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-                .addClassAndMethod(this).add(deadStore), this);
+                        .addClassAndMethod(this).add(deadStore), this);
 
             }
             potentiallyDeadStores.set(register);
@@ -262,8 +262,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         switch (seen) {
         case Const.TABLESWITCH:
         case Const.LOOKUPSWITCH:
-            if (justSawHashcode)
-            {
+            if (justSawHashcode) {
                 break; // javac compiled switch statement
             }
             reachable = false;
@@ -304,12 +303,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             reachable = true;
         }
 
-        justSawHashcode =   seen == Const.INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
+        justSawHashcode = seen == Const.INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
         lastPC = getPC();
         fallthroughDistance++;
     }
 
     boolean justSawHashcode;
+
     /**
      *
      */

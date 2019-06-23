@@ -42,8 +42,9 @@ public class IOStreamFactory implements StreamFactory {
 
     @Override
     public String toString() {
-        return "IOStreamFactory("+baseClassType+")";
+        return "IOStreamFactory(" + baseClassType + ")";
     }
+
     public IOStreamFactory(String baseClass, String[] uninterestingSubclassList, String bugType) {
         this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
         this.uninterestingSubclassTypeList = new ObjectType[uninterestingSubclassList.length];
@@ -73,7 +74,7 @@ public class IOStreamFactory implements StreamFactory {
                     }
                 }
                 Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
-                .setIgnoreImplicitExceptions(true);
+                        .setIgnoreImplicitExceptions(true);
                 if (!isUninteresting) {
                     result.setInteresting(bugType);
                 }
@@ -86,4 +87,3 @@ public class IOStreamFactory implements StreamFactory {
         return null;
     }
 }
-

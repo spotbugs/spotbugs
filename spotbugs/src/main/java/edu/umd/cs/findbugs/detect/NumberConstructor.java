@@ -59,11 +59,13 @@ public class NumberConstructor extends OpcodeStackDetector {
     static class Pair {
         final MethodDescriptor boxingMethod;
         final MethodDescriptor parsingMethod;
+
         public Pair(MethodDescriptor boxingMethod, MethodDescriptor parsingMethod) {
             this.boxingMethod = boxingMethod;
             this.parsingMethod = parsingMethod;
         }
     }
+
     private final Map<String, Pair> boxClasses = new HashMap<>();
 
     private final List<MethodDescriptor> methods = new ArrayList<>();
@@ -89,11 +91,11 @@ public class NumberConstructor extends OpcodeStackDetector {
     }
 
     private void handle(@SlashedClassName String className, boolean isFloatingPoint, String sig) {
-        MethodDescriptor boxingMethod = new MethodDescriptor(className, "valueOf", sig + "L" + className +";", true);
-        MethodDescriptor parsingMethod = new MethodDescriptor(className, "valueOf", "(Ljava/lang/String;)" + "L" + className +";", true);
+        MethodDescriptor boxingMethod = new MethodDescriptor(className, "valueOf", sig + "L" + className + ";", true);
+        MethodDescriptor parsingMethod = new MethodDescriptor(className, "valueOf", "(Ljava/lang/String;)" + "L" + className + ";", true);
         boxClasses.put(className, new Pair(boxingMethod, parsingMethod));
         methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"));
-        methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, sig+"V"));
+        methods.add(new MethodDescriptor(className, Const.CONSTRUCTOR_NAME, sig + "V"));
     }
 
     /**
@@ -118,13 +120,13 @@ public class NumberConstructor extends OpcodeStackDetector {
 
     private boolean matchArguments(String sig1, String sig2) {
         int lastParen = sig1.indexOf(')');
-        String args = sig1.substring(0, lastParen+1);
+        String args = sig1.substring(0, lastParen + 1);
         return sig2.startsWith(args);
     }
 
     private @CheckForNull MethodDescriptor getShouldCall() {
         String cls = getClassConstantOperand();
-        Pair pair =  boxClasses.get(cls);
+        Pair pair = boxClasses.get(cls);
         if (pair == null) {
             return null;
         }
@@ -145,6 +147,7 @@ public class NumberConstructor extends OpcodeStackDetector {
 
         return null;
     }
+
     @Override
     public void sawOpcode(int seen) {
         // only acts on constructor invoke
@@ -155,7 +158,8 @@ public class NumberConstructor extends OpcodeStackDetector {
         if (!Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
             return;
         }
-        @SlashedClassName String cls = getClassConstantOperand();
+        @SlashedClassName
+        String cls = getClassConstantOperand();
         MethodDescriptor shouldCall = getShouldCall();
         if (shouldCall == null) {
             return;

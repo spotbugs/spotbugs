@@ -100,4 +100,3 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
     }
 
 }
-

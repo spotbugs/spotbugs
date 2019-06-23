@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -162,7 +161,7 @@ public class UnreadFields extends OpcodeStackDetector {
 
     final ClassDescriptor externalizable = DescriptorFactory.createClassDescriptor(java.io.Externalizable.class);
 
-    final  ClassDescriptor serializable = DescriptorFactory.createClassDescriptor(java.io.Serializable.class);
+    final ClassDescriptor serializable = DescriptorFactory.createClassDescriptor(java.io.Serializable.class);
 
     final ClassDescriptor remote = DescriptorFactory.createClassDescriptor(java.rmi.Remote.class);
 
@@ -170,9 +169,9 @@ public class UnreadFields extends OpcodeStackDetector {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
         AnalysisContext context = AnalysisContext.currentAnalysisContext();
-        data.reflectiveFields.add( XFactory.createXField("java.lang.System", "in", "Ljava/io/InputStream;", true));
-        data.reflectiveFields.add( XFactory.createXField("java.lang.System", "out", "Ljava/io/PrintStream;", true));
-        data.reflectiveFields.add( XFactory.createXField("java.lang.System", "err", "Ljava/io/PrintStream;", true));
+        data.reflectiveFields.add(XFactory.createXField("java.lang.System", "in", "Ljava/io/InputStream;", true));
+        data.reflectiveFields.add(XFactory.createXField("java.lang.System", "out", "Ljava/io/PrintStream;", true));
+        data.reflectiveFields.add(XFactory.createXField("java.lang.System", "err", "Ljava/io/PrintStream;", true));
         data = context.getUnreadFieldsData();
         context.setUnreadFields(this);
     }
@@ -321,7 +320,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 || annotationClass.endsWith("SpringBean")
                 || "com.google.inject.Inject".equals(annotationClass)
                 || annotationClass.startsWith("com.google.") && annotationClass.endsWith(".Bind")
-                && annotationClass.hashCode() == -243168318
+                        && annotationClass.hashCode() == -243168318
                 || annotationClass.startsWith("org.nuxeo.common.xmap.annotation")
                 || annotationClass.startsWith("com.google.gwt.uibinder.client")
                 || annotationClass.startsWith("org.springframework.beans.factory.annotation")
@@ -578,13 +577,14 @@ public class UnreadFields extends OpcodeStackDetector {
                     }
                 }
                 bugAccumulator.accumulateBug(new BugInstance(this, "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", priority)
-                .addClassAndMethod(this).addField(f), this);
+                        .addClassAndMethod(this).addField(f), this);
 
             }
         }
 
         // Store annotation for the anonymous class creation
-        if (seen == Const.INVOKESPECIAL && getMethodDescriptorOperand().getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(getClassConstantOperand())) {
+        if (seen == Const.INVOKESPECIAL && getMethodDescriptorOperand().getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(
+                getClassConstantOperand())) {
             List<BugAnnotation> annotation = new ArrayList<>();
             annotation.add(ClassAnnotation.fromClassDescriptor(getClassDescriptor()));
             annotation.add(MethodAnnotation.fromVisitedMethod(this));
@@ -592,15 +592,16 @@ public class UnreadFields extends OpcodeStackDetector {
             anonymousClassAnnotation.put(getClassDescriptorOperand().getDottedClassName(), annotation);
         }
 
-        if (seen == Const.PUTFIELD || seen == Const.ASTORE || seen == Const.ASTORE_0 || seen == Const.ASTORE_1 || seen == Const.ASTORE_2 || seen == Const.ASTORE_3) {
+        if (seen == Const.PUTFIELD || seen == Const.ASTORE || seen == Const.ASTORE_0 || seen == Const.ASTORE_1 || seen == Const.ASTORE_2
+                || seen == Const.ASTORE_3) {
             Item item = stack.getStackItem(0);
             XMethod xMethod = item.getReturnValueOf();
-            if(xMethod != null && xMethod.getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(xMethod.getClassName())) {
+            if (xMethod != null && xMethod.getName().equals(Const.CONSTRUCTOR_NAME) && ClassName.isAnonymous(xMethod.getClassName())) {
                 List<BugAnnotation> annotations = anonymousClassAnnotation.get(xMethod.getClassName());
-                if(annotations == null) {
+                if (annotations == null) {
                     annotations = new ArrayList<>();
                 }
-                if(seen == Const.PUTFIELD) {
+                if (seen == Const.PUTFIELD) {
                     annotations.add(FieldAnnotation.fromReferencedField(this));
                 } else {
                     annotations.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getNextPC()));
@@ -665,7 +666,8 @@ public class UnreadFields extends OpcodeStackDetector {
 
         computePlacesAssumedNonnull: if (seen == Const.GETFIELD || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE
                 || seen == Const.INVOKESPECIAL || seen == Const.PUTFIELD || seen == Const.IALOAD || seen == Const.AALOAD || seen == Const.BALOAD
-                || seen == Const.CALOAD || seen == Const.SALOAD || seen == Const.IASTORE || seen == Const.AASTORE || seen == Const.BASTORE || seen == Const.CASTORE
+                || seen == Const.CALOAD || seen == Const.SALOAD || seen == Const.IASTORE || seen == Const.AASTORE || seen == Const.BASTORE
+                || seen == Const.CASTORE
                 || seen == Const.SASTORE || seen == Const.ARRAYLENGTH) {
             int pos = 0;
             switch (seen) {
@@ -703,8 +705,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 if (f != null
                         && !f.isStatic()
                         && !data.nullTested.contains(f)
-                        && !((data.writtenInConstructorFields.contains(f) || data.writtenInInitializationFields.contains(f)) && data.writtenNonNullFields
-                                .contains(f))) {
+                        && !((data.writtenInConstructorFields.contains(f) || data.writtenInInitializationFields.contains(f))
+                                && data.writtenNonNullFields
+                                        .contains(f))) {
                     try {
                         IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
                         IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactBeforeExceptionCheck(invDataflow.getCFG(),
@@ -714,7 +717,7 @@ public class UnreadFields extends OpcodeStackDetector {
                         }
 
                     } catch (CheckedAnalysisException e) {
-                        AnalysisContext.logError("INV dataflow error when analyzing "+getMethodDescriptor(), e);
+                        AnalysisContext.logError("INV dataflow error when analyzing " + getMethodDescriptor(), e);
                     }
                     if (DEBUG) {
                         System.out.println("RRR: " + f + " " + data.nullTested.contains(f) + " "
@@ -872,7 +875,7 @@ public class UnreadFields extends OpcodeStackDetector {
         declaredFields.removeAll(data.containerFields);
         declaredFields.removeAll(data.reflectiveFields);
         declaredFields.removeIf(f -> f.isSynthetic() && !f.getName().startsWith("this$") || f.getName()
-            .startsWith("_"));
+                .startsWith("_"));
 
         TreeSet<XField> notInitializedInConstructors = new TreeSet<>(declaredFields);
         notInitializedInConstructors.retainAll(data.readFields);
@@ -880,7 +883,7 @@ public class UnreadFields extends OpcodeStackDetector {
         notInitializedInConstructors.retainAll(data.assumedNonNull.keySet());
         notInitializedInConstructors.removeAll(data.writtenInConstructorFields);
         notInitializedInConstructors.removeAll(data.writtenInInitializationFields);
-    
+
         notInitializedInConstructors.removeIf(AccessibleEntity::isStatic);
 
         TreeSet<XField> readOnlyFields = new TreeSet<>(declaredFields);
@@ -967,7 +970,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 if (assumedNonnullAt.size() < 4) {
                     for (ProgramPoint p : assumedNonnullAt) {
                         BugInstance bug = new BugInstance(this, "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", priority)
-                        .addClass(className).addField(f).addMethod(p.getMethodAnnotation());
+                                .addClass(className).addField(f).addMethod(p.getMethodAnnotation());
                         bugAccumulator.accumulateBug(bug, p.getSourceLineAnnotation());
                     }
                 }
@@ -1169,7 +1172,7 @@ public class UnreadFields extends OpcodeStackDetector {
                         if (isAnonymousInnerClass) {
                             bugInstance = new BugInstance(this, "SIC_INNER_SHOULD_BE_STATIC_ANON", priority);
                             List<BugAnnotation> annotations = anonymousClassAnnotation.remove(f.getClassDescriptor().getDottedClassName());
-                            if(annotations != null) {
+                            if (annotations != null) {
                                 bugInstance.addClass(className).describe(ClassAnnotation.ANONYMOUS_ROLE);
                                 bugInstance.addAnnotations(annotations);
                             } else {
@@ -1196,7 +1199,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 } else if (!data.writtenFields.contains(f)) {
                     bugReporter.reportBug(new BugInstance(this,
                             (f.isPublic() || f.isProtected()) ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" : "UUF_UNUSED_FIELD",
-                                    NORMAL_PRIORITY).addClass(className).addField(f).lowerPriorityIfDeprecated());
+                            NORMAL_PRIORITY).addClass(className).addField(f).lowerPriorityIfDeprecated());
                 } else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
                     int priority = NORMAL_PRIORITY;
                     if (f.isStatic()) {
@@ -1207,7 +1210,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     }
                     bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
                             (f.isPublic() || f.isProtected()) ? "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" : "URF_UNREAD_FIELD",
-                                    priority), f));
+                            priority), f));
                 }
             }
         }

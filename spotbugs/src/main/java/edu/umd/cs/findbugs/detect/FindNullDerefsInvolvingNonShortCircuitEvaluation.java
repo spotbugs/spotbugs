@@ -120,8 +120,9 @@ public class FindNullDerefsInvolvingNonShortCircuitEvaluation extends OpcodeStac
                     System.out.println("target: " + branchInstruction.getTarget());
                     System.out.println("next: " + branch.getHandle().getNext());
                 }
-                Location guaranteed = findLocation(cfg, nullGuaranteesBranch ? branchInstruction.getTarget() : branch.getHandle()
-                        .getNext());
+                Location guaranteed = findLocation(cfg, nullGuaranteesBranch ? branchInstruction.getTarget()
+                        : branch.getHandle()
+                                .getNext());
                 if (guaranteed == null) {
                     return;
                 }

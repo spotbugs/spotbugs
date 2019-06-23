@@ -55,7 +55,7 @@ public class AtomicityProblem extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/util/concurrent/ConcurrentHashMap"))) {
+        if (hasInterestingClass(classContext.getJavaClass().getConstantPool(), Collections.singleton("java/util/concurrent/ConcurrentHashMap"))) {
             super.visitClassContext(classContext);
         }
     }
@@ -127,8 +127,8 @@ public class AtomicityProblem extends OpcodeStackDetector {
                 if (xClass != null && "put".equals(methodName)) {
                     if ((getPC() < lastQuestionableCheckTarget) && (lastQuestionableCheckTarget != -1)) {
                         bugReporter.reportBug(new BugInstance(this, "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION", priority)
-                        .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
-                        .addSourceLine(this));
+                                .addClassAndMethod(this).addType(xClass.getClassDescriptor()).addCalledMethod(this)
+                                .addSourceLine(this));
                     }
                 }
             }

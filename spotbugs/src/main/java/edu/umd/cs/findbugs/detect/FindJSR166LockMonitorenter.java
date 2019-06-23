@@ -185,9 +185,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 
                         if (m != null && m.isPublic() && c.isPublic()) {
                             bugReporter.reportBug(new BugInstance(this, "JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT", priority)
-                            .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addMethod(m)
-                            .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addType(classDescriptor)
-                            .describe(TypeAnnotation.FOUND_ROLE).addSourceLine(classContext, method, location));
+                                    .addClassAndMethod(classContext.getJavaClass(), method).addCalledMethod(cpg, iv).addMethod(m)
+                                    .describe(MethodAnnotation.METHOD_ALTERNATIVE_TARGET).addType(classDescriptor)
+                                    .describe(TypeAnnotation.FOUND_ROLE).addSourceLine(classContext, method, location));
                         }
 
                     } catch (CheckedAnalysisException e) {
@@ -233,13 +233,13 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             if (isSubtype) {
                 bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", isUtilConcurrentSig ? HIGH_PRIORITY
                         : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+                                .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
             } else if (isUtilConcurrentSig) {
 
                 int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;
                 bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_UTILCONCURRENT_MONITORENTER", priority)
-                .addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-                .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+                        .addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
+                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
 
             }
         }
@@ -249,4 +249,3 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
     public void report() {
     }
 }
-

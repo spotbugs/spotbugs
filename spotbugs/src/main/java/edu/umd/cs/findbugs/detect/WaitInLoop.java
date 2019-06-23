@@ -60,7 +60,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
         if ((sawWait || sawAwait) && waitAt < earliestJump) {
             String bugType = sawWait ? "WA_NOT_IN_LOOP" : "WA_AWAIT_NOT_IN_LOOP";
             bugReporter.reportBug(new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
-            .addClassAndMethod(this).addSourceLine(this, waitAt));
+                    .addClassAndMethod(this).addSourceLine(this, waitAt));
         }
         if (sawNotify) {
             bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY).addClassAndMethod(this)
@@ -104,9 +104,9 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 
         String sig = getSigConstantOperand();
         return ("await".equals(name) && ("()V".equals(sig) || "(JLjava/util/concurrent/TimeUnit;)V".equals(sig)))
-            || ("awaitNanos".equals(name) && "(J)V".equals(sig))
-            || ("awaitUninterruptibly".equals(name) && "()V".equals(sig))
-            || ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig));
+                || ("awaitNanos".equals(name) && "(J)V".equals(sig))
+                || ("awaitUninterruptibly".equals(name) && "()V".equals(sig))
+                || ("awaitUntil".equals(name) && "(Ljava/util/Date;)V".equals(sig));
     }
 
     private boolean isMonitorWait() {

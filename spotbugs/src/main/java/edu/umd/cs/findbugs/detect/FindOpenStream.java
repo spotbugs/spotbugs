@@ -95,13 +95,13 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         // Examine InputStreams, OutputStreams, Readers, and Writers,
         // ignoring byte array, char array, and String variants.
         streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream", new String[] { "java.io.ByteArrayInputStream",
-                "java.io.StringBufferInputStream", "java.io.PipedInputStream" }, "OS_OPEN_STREAM"));
+            "java.io.StringBufferInputStream", "java.io.PipedInputStream" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream", new String[] { "java.io.ByteArrayOutputStream",
-        "java.io.PipedOutputStream" }, "OS_OPEN_STREAM"));
+            "java.io.PipedOutputStream" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.Reader", new String[] { "java.io.StringReader",
-                "java.io.CharArrayReader", "java.io.PipedReader" }, "OS_OPEN_STREAM"));
+            "java.io.CharArrayReader", "java.io.PipedReader" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.io.Writer", new String[] { "java.io.StringWriter",
-                "java.io.CharArrayWriter", "java.io.PipedWriter" }, "OS_OPEN_STREAM"));
+            "java.io.CharArrayWriter", "java.io.PipedWriter" }, "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new IOStreamFactory("java.util.zip.ZipFile", new String[0], "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.lang.Class", "getResourceAsStream",
                 "(Ljava/lang/String;)Ljava/io/InputStream;", "OS_OPEN_STREAM"));
@@ -114,7 +114,8 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
                 "(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newByteChannel",
-                "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;", "OS_OPEN_STREAM"));
+                "(Ljava/nio/file/Path;Ljava/util/Set;[Ljava/nio/file/attribute/FileAttribute;)Ljava/nio/channels/SeekableByteChannel;",
+                "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
                 "(Ljava/nio/file/Path;)Ljava/nio/file/DirectoryStream;", "OS_OPEN_STREAM"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.nio.file.Files", "newDirectoryStream",
@@ -281,7 +282,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     // class containing one of these words, then we don't run the
     // detector on the class.
     private static final String[] PRESCREEN_CLASS_LIST = { "Stream", "Reader", "Writer", "ZipFile", "JarFile", "DriverManager",
-            "Connection", "Statement", "Files" };
+        "Connection", "Statement", "Files" };
 
     /*
      * (non-Javadoc)
@@ -470,9 +471,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
             }
 
             bugAccumulator.accumulateBug(new BugInstance(this, pos.bugType, pos.priority)
-            .addClassAndMethod(methodGen, sourceFile).addTypeOfNamedClass(leakClass)
-            .describe(TypeAnnotation.CLOSEIT_ROLE), SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
-                    sourceFile, stream.getLocation().getHandle()));
+                    .addClassAndMethod(methodGen, sourceFile).addTypeOfNamedClass(leakClass)
+                    .describe(TypeAnnotation.CLOSEIT_ROLE), SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
+                            sourceFile, stream.getLocation().getHandle()));
         }
     }
 
@@ -534,4 +535,3 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     // }
 
 }
-

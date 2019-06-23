@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +109,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         if (reporter == null) {
             if (!warned) {
                 System.err
-                .println("*** NOTE ***: CheckExpectedWarnings disabled because bug reporter doesn't use a BugCollection");
+                        .println("*** NOTE ***: CheckExpectedWarnings disabled because bug reporter doesn't use a BugCollection");
                 warned = true;
             }
             return;
@@ -129,13 +128,13 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             warningsByClass = new HashMap<>();
             warningsByMethod = new HashMap<>();
             warningsByField = new HashMap<>();
-    
+
             for (BugInstance warning : bugCollection) {
                 MethodAnnotation method = warning.getPrimaryMethod();
                 if (method != null) {
                     MethodDescriptor methodDesc = method.toMethodDescriptor();
                     Collection<BugInstance> warnings = warningsByMethod.computeIfAbsent(methodDesc,
-                        k -> new LinkedList<>());
+                            k -> new LinkedList<>());
                     warnings.add(warning);
                 }
                 FieldAnnotation field = warning.getPrimaryField();
@@ -145,10 +144,10 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                     }
                     FieldDescriptor fieldDescriptor = field.toFieldDescriptor();
                     Collection<BugInstance> warnings = warningsByField.computeIfAbsent(fieldDescriptor,
-                        k -> new LinkedList<>());
+                            k -> new LinkedList<>());
                     warnings.add(warning);
                 }
-        
+
                 ClassAnnotation clazz = warning.getPrimaryClass();
                 if (clazz != null) {
                     ClassDescriptor classDesc = clazz.getClassDescriptor();
@@ -159,10 +158,10 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                         continue;
                     }
                     Collection<BugInstance> warnings = warningsByClass.computeIfAbsent(classDesc,
-                        k -> new LinkedList<>());
+                            k -> new LinkedList<>());
                     warnings.add(warning);
                 }
-        
+
             }
 
         }
@@ -280,7 +279,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 minPriority = Priority.valueOf(wantedPriority.value).getPriorityValue();
             }
 
-            if (DEBUG)  {
+            if (DEBUG) {
                 if (warnings == null) {
                     System.out.println("Checking " + expectedBugCodes + " against no bugs");
                 } else {
@@ -325,7 +324,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
                 for (SourceLineAnnotation s : bugs) {
                     reporter.reportBug(bug.add(s));
                 }
-            } else if(num > 1){
+            } else if (num > 1) {
                 // For example, we told it that we expected 3 warnings, and saw 4 warnings
                 // num == 1 is default value. So if we set a non default value, and see more warnings
                 // as expected, it's a problem
@@ -338,11 +337,11 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     public BugInstance makeWarning(String bugPattern, Object descriptor, int priority, ClassDescriptor cd) {
         BugInstance bug = new BugInstance(this, bugPattern, priority).addClass(cd);
         if (descriptor instanceof FieldDescriptor) {
-            bug.addField((FieldDescriptor)descriptor);
+            bug.addField((FieldDescriptor) descriptor);
         } else if (descriptor instanceof MethodDescriptor) {
-            bug.addMethod((MethodDescriptor)descriptor);
+            bug.addMethod((MethodDescriptor) descriptor);
         } else if (descriptor instanceof ClassDescriptor) {
-            bug.addClass((ClassDescriptor)descriptor);
+            bug.addClass((ClassDescriptor) descriptor);
         }
         if (DEBUG) {
             System.out.println("Reporting " + bug);
@@ -351,7 +350,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
     }
 
-    private static Collection<SourceLineAnnotation> countWarnings( Collection<BugInstance> warnings,
+    private static Collection<SourceLineAnnotation> countWarnings(Collection<BugInstance> warnings,
             @CheckForNull String bugCode,
             int desiredPriority, int rank) {
 

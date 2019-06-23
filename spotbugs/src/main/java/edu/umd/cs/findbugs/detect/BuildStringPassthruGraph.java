@@ -94,7 +94,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
             }
             MethodParameter other = (MethodParameter) obj;
             return Objects.equals(md, other.md)
-                && parameterNumber == other.parameterNumber;
+                    && parameterNumber == other.parameterNumber;
         }
     }
 
@@ -120,8 +120,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
                 new MethodDescriptor("java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/PrintStream", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
-                new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V")
-                );
+                new MethodDescriptor("java/io/PrintWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"));
 
         private final Map<MethodParameter, Set<MethodParameter>> graph = new HashMap<>();
 
@@ -165,11 +164,11 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
             Map<MethodDescriptor, int[]> result = new HashMap<>();
             for (MethodParameter found : findLinked(inputs)) {
                 int[] params = result.get(found.getMethodDescriptor());
-                if(params == null) {
-                    params = new int[] {found.getParameterNumber()};
+                if (params == null) {
+                    params = new int[] { found.getParameterNumber() };
                     result.put(found.getMethodDescriptor(), params);
                 } else {
-                    int[] newParams = new int[params.length+1];
+                    int[] newParams = new int[params.length + 1];
                     System.arraycopy(params, 0, newParams, 0, params.length);
                     newParams[params.length] = found.getParameterNumber();
                     result.put(found.getMethodDescriptor(), newParams);
@@ -184,7 +183,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
          */
         public Map<MethodDescriptor, int[]> getFileNameStringMethods() {
             Set<MethodParameter> fileNameStringMethods = new HashSet<>();
-            for(MethodDescriptor md : FILENAME_STRING_METHODS) {
+            for (MethodDescriptor md : FILENAME_STRING_METHODS) {
                 fileNameStringMethods.add(new MethodParameter(md, 0));
             }
             return findLinkedMethods(fileNameStringMethods);
@@ -208,26 +207,26 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
     public void visitMethod(Method obj) {
         argNums = null;
         Type[] argumentTypes = obj.getArgumentTypes();
-        if(argumentTypes.length == 0) {
+        if (argumentTypes.length == 0) {
             return;
         }
         int lvNum = obj.isStatic() ? 0 : 1;
         nArgs = argumentTypes.length;
         int argCount = lvNum;
-        for(Type type : argumentTypes) {
-            argCount+=type.getSize();
+        for (Type type : argumentTypes) {
+            argCount += type.getSize();
         }
-        for(int i=0; i<nArgs; i++) {
-            if(argumentTypes[i].getSignature().equals("Ljava/lang/String;")) {
-                if(argNums == null) {
+        for (int i = 0; i < nArgs; i++) {
+            if (argumentTypes[i].getSignature().equals("Ljava/lang/String;")) {
+                if (argNums == null) {
                     argNums = new int[argCount];
                     Arrays.fill(argNums, -1);
                 }
                 argNums[lvNum] = i;
             }
-            lvNum+=argumentTypes[i].getSize();
+            lvNum += argumentTypes[i].getSize();
         }
-        if(argNums != null) {
+        if (argNums != null) {
             passedParameters = new List[nArgs];
         }
         super.visitMethod(obj);
@@ -259,7 +258,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
             if (param < argNums.length) {
                 int argNum = argNums[param];
                 argNums[param] = -1;
-                if(argNum >= 0) {
+                if (argNum >= 0) {
                     passedParameters[argNum] = null;
                 }
             }

@@ -45,8 +45,7 @@ public class InefficientIndexOf extends OpcodeStackDetector {
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),
-            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I")
-            );
+            new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"));
 
     public InefficientIndexOf(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -54,7 +53,7 @@ public class InefficientIndexOf extends OpcodeStackDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if(hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
+        if (hasInterestingMethod(classContext.getJavaClass().getConstantPool(), methods)) {
             super.visitClassContext(classContext);
         }
     }
@@ -76,8 +75,9 @@ public class InefficientIndexOf extends OpcodeStackDetector {
                     OpcodeStack.Item item = stack.getStackItem(stackOff);
                     Object o = item.getConstant();
                     if (o != null && ((String) o).length() == 1) {
-                        bugReporter.reportBug(new BugInstance(this, lastIndexOf ? "IIO_INEFFICIENT_LAST_INDEX_OF" : "IIO_INEFFICIENT_INDEX_OF", LOW_PRIORITY).addClassAndMethod(this)
-                                .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, lastIndexOf ? "IIO_INEFFICIENT_LAST_INDEX_OF" : "IIO_INEFFICIENT_INDEX_OF",
+                                LOW_PRIORITY).addClassAndMethod(this)
+                                        .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
                     }
                 }
             }

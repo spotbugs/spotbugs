@@ -86,9 +86,8 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
                     || ("getAppletContext".equals(method) && "()Ljava/applet/AppletContext;".equals(signature))
                     || ("getParameter".equals(method) && "(Ljava/lang/String;)Ljava/lang/String;".equals(signature))) {
                 bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
             }
         }
     }
 }
-

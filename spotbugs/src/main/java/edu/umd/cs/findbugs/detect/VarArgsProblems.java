@@ -143,8 +143,8 @@ public class VarArgsProblems extends BytecodeScanningDetector implements Statele
                         priority = HIGH_PRIORITY;
                     }
                     bugReporter.reportBug(new BugInstance(this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)
-                    .addClassAndMethod(this).addType(primitiveArraySig).describe(TypeAnnotation.FOUND_ROLE)
-                    .addCalledMethod(this).addSourceLine(this));
+                            .addClassAndMethod(this).addType(primitiveArraySig).describe(TypeAnnotation.FOUND_ROLE)
+                            .addCalledMethod(this).addSourceLine(this));
                 }
                 state = SEEN_NOTHING;
                 break;

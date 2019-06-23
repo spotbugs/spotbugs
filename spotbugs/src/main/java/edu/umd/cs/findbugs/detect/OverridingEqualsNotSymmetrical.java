@@ -81,7 +81,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
     public void visit(Code obj) {
         if (EQUALS_NAME.equals(getMethodName()) && !getMethod().isStatic() && getMethod().isPublic()
                 && EQUALS_SIGNATURE.equals(getMethodSig())) {
-            sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals = sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = alwaysTrue = alwaysFalse = sawStaticDelegate = sawEqualsBuilder = false;
+            sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals =
+                    sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = alwaysTrue = alwaysFalse = sawStaticDelegate =
+                            sawEqualsBuilder = false;
             sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
             equalsCalls = 0;
             super.visit(obj);
@@ -115,7 +117,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             } else {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                     bugReporter
-                    .reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this));
+                            .reportBug(new BugInstance(this, "EQ_UNUSUAL", Priorities.NORMAL_PRIORITY).addClassAndMethod(this));
                 }
             }
             ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
@@ -214,7 +216,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 && seen == Const.INVOKESTATIC
                 && getCode().getCode().length == 6
                 && (getPrevOpcode(1) == Const.ALOAD_0 && getPrevOpcode(2) == Const.ALOAD_1 || getPrevOpcode(1) == Const.ALOAD_1
-                && getPrevOpcode(2) == Const.ALOAD_0)) {
+                        && getPrevOpcode(2) == Const.ALOAD_0)) {
             sawStaticDelegate = true;
         }
 
@@ -248,7 +250,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             checkForComparingClasses();
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass()) && dangerDanger) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_COMPARING_CLASS_NAMES", Priorities.NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this));
+                        .addClassAndMethod(this).addSourceLine(this));
             }
         }
 
@@ -366,7 +368,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                                 int priority = Priorities.NORMAL_PRIORITY;
 
                                 BugInstance bug = new BugInstance(this, "EQ_GETCLASS_AND_CLASS_CONSTANT", priority)
-                                .addClassAndMethod(this);
+                                        .addClassAndMethod(this);
 
                                 try {
 
@@ -410,8 +412,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             if (childKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS
                     && parentKind == EqualsKindSummary.KindOfEquals.INSTANCE_OF_EQUALS) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC", NORMAL_PRIORITY)
-                .add(childClass).addMethod(equalsMethod.get(childClass)).addMethod(equalsMethod.get(parentClass))
-                .describe(MethodAnnotation.METHOD_OVERRIDDEN));
+                        .add(childClass).addMethod(equalsMethod.get(childClass)).addMethod(equalsMethod.get(parentClass))
+                        .describe(MethodAnnotation.METHOD_OVERRIDDEN));
             }
         }
     }

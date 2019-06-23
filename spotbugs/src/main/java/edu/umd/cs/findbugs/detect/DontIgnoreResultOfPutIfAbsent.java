@@ -232,7 +232,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                             && !(invoke instanceof INVOKESTATIC)) {
                         TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
                         Type objType = typeFrame.getStackValue(2);
-                        if(extendsConcurrentMap(ClassName.toDottedClassName(ClassName.fromFieldSignature(objType.getSignature())))) {
+                        if (extendsConcurrentMap(ClassName.toDottedClassName(ClassName.fromFieldSignature(objType.getSignature())))) {
                             InstructionHandle next = handle.getNext();
                             boolean isIgnored = next != null && next.getInstruction() instanceof POP;
                             //                        boolean isImmediateNullTest = next != null
@@ -255,8 +255,8 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                                         Type type = typeFrame.getTopValue();
                                         int priority = getPriorityForBeingMutable(type);
                                         BugInstance bugInstance = new BugInstance(this, pattern, priority)
-                                        .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke)
-                                        .add(new TypeAnnotation(type)).add(ba);
+                                                .addClassAndMethod(methodGen, sourceFileName).addCalledMethod(methodGen, invoke)
+                                                .add(new TypeAnnotation(type)).add(ba);
                                         SourceLineAnnotation where = SourceLineAnnotation.fromVisitedInstruction(classContext,
                                                 method, location);
                                         accumulator.accumulateBug(bugInstance, where);

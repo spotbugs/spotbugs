@@ -296,7 +296,7 @@ public class FindBadCast2 implements Detector {
                 assert castSig.length() > 1;
                 if (!isCast) {
                     accumulator.accumulateBug(new BugInstance(this, "NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
-                    .addClassAndMethod(methodGen, sourceFile).addType(castSig), sourceLineAnnotation);
+                            .addClassAndMethod(methodGen, sourceFile).addType(castSig), sourceLineAnnotation);
                 }
                 continue;
 
@@ -332,11 +332,13 @@ public class FindBadCast2 implements Detector {
 
             if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
                 if (castSig2.charAt(0) == '['
-                        && ("Ljava/io/Serializable;".equals(refSig2) || "Ljava/lang/Object;".equals(refSig2) || "Ljava/lang/Cloneable;".equals(refSig2))) {
+                        && ("Ljava/io/Serializable;".equals(refSig2) || "Ljava/lang/Object;".equals(refSig2) || "Ljava/lang/Cloneable;".equals(
+                                refSig2))) {
                     continue;
                 }
                 if (refSig2.charAt(0) == '['
-                        && ("Ljava/io/Serializable;".equals(castSig2) || "Ljava/lang/Object;".equals(castSig2) || "Ljava/lang/Cloneable;".equals(castSig2))) {
+                        && ("Ljava/io/Serializable;".equals(castSig2) || "Ljava/lang/Object;".equals(castSig2) || "Ljava/lang/Cloneable;".equals(
+                                castSig2))) {
                     continue;
                 }
                 int priority = HIGH_PRIORITY;
@@ -344,10 +346,10 @@ public class FindBadCast2 implements Detector {
                     priority = LOW_PRIORITY;
                 }
                 // report bug only if types are not equal, see bug 3598482
-                if(!typesAreEqual){
+                if (!typesAreEqual) {
                     bugReporter.reportBug(new BugInstance(this, isCast ? "BC_IMPOSSIBLE_CAST" : "BC_IMPOSSIBLE_INSTANCEOF", priority)
-                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
-                    .addSourceLine(sourceLineAnnotation));
+                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
+                            .addSourceLine(sourceLineAnnotation));
                 }
                 continue;
             }
@@ -386,8 +388,8 @@ public class FindBadCast2 implements Detector {
                 if (upcast || typesAreEqual) {
                     if (!isCast) {
                         accumulator.accumulateBug(new BugInstance(this, "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
-                        sourceLineAnnotation);
+                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
+                                sourceLineAnnotation);
                     }
                 } else {
                     boolean castMayThrow = !Repository.instanceOf(refJavaClass, castJavaClass);
@@ -473,15 +475,16 @@ public class FindBadCast2 implements Detector {
                         }
 
                         bugReporter.reportBug(new BugInstance(this, bugPattern, isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                        .addClassAndMethod(methodGen, sourceFile)
-                        .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
-                        .addSourceLine(sourceLineAnnotation));
+                                .addClassAndMethod(methodGen, sourceFile)
+                                .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
+                                .addSourceLine(sourceLineAnnotation));
                     } else if (isCast && rank < 0.9
                             && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)) {
 
                         int priority = NORMAL_PRIORITY;
 
-                        @CheckForNull String oldCheck = instanceOfChecks.get(valueSource);
+                        @CheckForNull
+                        String oldCheck = instanceOfChecks.get(valueSource);
                         if (DEBUG) {
                             System.out.println("Old check: " + oldCheck);
                         }
@@ -545,7 +548,7 @@ public class FindBadCast2 implements Detector {
                         if (wasMethodInvocationWasGeneric && valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
                             continue;
                         }
-                        if (constantClass != null && pcForConstantClass +20 >= pc && valueNumber.hasFlag(ValueNumber.RETURN_VALUE)
+                        if (constantClass != null && pcForConstantClass + 20 >= pc && valueNumber.hasFlag(ValueNumber.RETURN_VALUE)
                                 && ClassName.toDottedClassName(constantClass).equals(castName)) {
                             priority += 2;
                         }
@@ -560,7 +563,7 @@ public class FindBadCast2 implements Detector {
                             }
                         }
 
-                        if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) &&  priority < Priorities.LOW_PRIORITY) {
+                        if (valueNumber.hasFlag(ValueNumber.RETURN_VALUE) && priority < Priorities.LOW_PRIORITY) {
                             priority = Priorities.LOW_PRIORITY;
                         }
                         if (DEBUG) {
@@ -596,8 +599,8 @@ public class FindBadCast2 implements Detector {
                             }
 
                             BugInstance bugInstance = new BugInstance(this, bug, priority)
-                            .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
-                            .addOptionalAnnotation(valueSource);
+                                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType)
+                                    .addOptionalAnnotation(valueSource);
 
                             accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
                         }
@@ -612,10 +615,10 @@ public class FindBadCast2 implements Detector {
                 if (isCast && "[Ljava/lang/Object;".equals(refSig) && source instanceof MethodAnnotation
                         && "toArray".equals(((MethodAnnotation) source).getMethodName())
                         && "()[Ljava/lang/Object;".equals(((MethodAnnotation) source).getMethodSignature())) {
-                    bugReporter.reportBug(new BugInstance(this,  "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", HIGH_PRIORITY)
-                    .addClassAndMethod(methodGen, sourceFile)
-                    .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
-                    .addSourceLine(sourceLineAnnotation));
+                    bugReporter.reportBug(new BugInstance(this, "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", HIGH_PRIORITY)
+                            .addClassAndMethod(methodGen, sourceFile)
+                            .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
+                            .addSourceLine(sourceLineAnnotation));
                 }
 
 

@@ -108,7 +108,7 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
             break;
         case 1:
             if (seen == Const.INVOKEVIRTUAL && "getClass".equals(getNameConstantOperand())
-            && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
+                    && "()Ljava/lang/Class;".equals(getSigConstantOperand())) {
                 state = 2;
             } else {
                 state = 0;
@@ -131,7 +131,7 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
         case 4:
             if (seen == Const.MONITORENTER) {
                 pendingBug = new BugInstance(this, "WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL", NORMAL_PRIORITY)
-                .addClassAndMethod(this).addSourceLine(this);
+                        .addClassAndMethod(this).addSourceLine(this);
             }
             state = 0;
             seenGetStatic = seenPutStatic = false;

@@ -168,4 +168,3 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
     public void report() {
     }
 }
-

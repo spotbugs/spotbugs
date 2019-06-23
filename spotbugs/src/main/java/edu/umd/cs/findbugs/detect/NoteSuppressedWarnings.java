@@ -134,7 +134,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
             suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, getPackageName().replace('/', '.')));
         } else if (visitingMethod()) {
             suppressionMatcher
-            .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
+                    .addSuppressor(new MethodWarningSuppressor(pattern, clazz, MethodAnnotation.fromVisitedMethod(this)));
         } else if (visitingField()) {
             suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz, FieldAnnotation.fromVisitedField(this)));
         } else {
