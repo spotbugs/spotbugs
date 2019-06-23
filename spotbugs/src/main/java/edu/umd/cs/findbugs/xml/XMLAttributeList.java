@@ -135,4 +135,3 @@ public class XMLAttributeList {
         return Strings.escapeXml(rawValue);
     }
 }
-
