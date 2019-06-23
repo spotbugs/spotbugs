@@ -4,11 +4,11 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2019-??-??
+## 4.0.0-beta3 - 2019-06-24
 
 ### Added
 
-* Provide support for CheckerFramework @NonNull annotation
+* Provide support for CheckerFramework `@NonNull` annotation
 * Recognize CheckerFramework type annotations on method return values ([#960](https://github.com/spotbugs/spotbugs/pull/960))
 * The feature toggle `spotbugs.experimental.multiThread` for experimental multi-thread analysis
 * Add management for source filter using full source path, if available and simple filename does not already match ([#694](https://github.com/spotbugs/spotbugs/issues/694))
