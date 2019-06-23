@@ -52,7 +52,7 @@ public class FieldDescriptor extends FieldOrMethodDescriptor implements Comparab
 
     @Override
     public int compareTo(ComparableField o) {
-        return FieldOrMethodDescriptor.compareTo(this, (FieldDescriptor)o);
+        return FieldOrMethodDescriptor.compareTo(this, (FieldDescriptor) o);
     }
 
     @Override

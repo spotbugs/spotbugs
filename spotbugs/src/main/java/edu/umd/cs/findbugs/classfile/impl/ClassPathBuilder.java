@@ -225,7 +225,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      */
     @Override
     public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException,
-    InterruptedException {
+            InterruptedException {
         // Discover all directly and indirectly referenced codebases
         processWorkList(classPath, projectWorkList, progress);
 
@@ -280,7 +280,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
         // Make sure we always know if we can't find system classes
         ICodeBaseEntry resource = classPath.lookupResource("java/lang/Object.class");
-        if(resource == null){
+        if (resource == null) {
             throw new ResourceNotFoundException("java/lang/Object.class");
         }
     }
@@ -400,9 +400,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
             }
         }
 
-        if(isJava9orLater()){
+        if (isJava9orLater()) {
             Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "lib/jrt-fs.jar");
-            if(Files.isRegularFile(jrtFsJar)){
+            if (Files.isRegularFile(jrtFsJar)) {
                 addWorkListItemsForClasspath(workList, jrtFsJar.toString());
             }
         }
@@ -603,7 +603,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
             if (item.getCodeBaseLocator() instanceof FilesystemCodeBaseLocator) {
                 FilesystemCodeBaseLocator l = (FilesystemCodeBaseLocator) item.getCodeBaseLocator();
                 if (l.getPathName().endsWith(".java")) {
-                    if (DEBUG){
+                    if (DEBUG) {
                         System.err.println("Ignoring .java file \"" + l.getPathName() + "\" specified in classpath or auxclasspath");
                     }
                     continue;
@@ -629,9 +629,8 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 // In addition, if it is an application codebase then
                 // make a list of application classes.
                 if (discoveredCodeBase.getCodeBase() instanceof IScannableCodeBase
-                        && ( discoveredCodeBase.codeBase.isApplicationCodeBase()
-                                || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED)
-                        ) {
+                        && (discoveredCodeBase.codeBase.isApplicationCodeBase()
+                                || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED)) {
                     scanCodebase(classPath, workList, discoveredCodeBase);
                 }
 
@@ -641,7 +640,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
             } catch (IOException e) {
                 if (item.isAppCodeBase() || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED) {
                     if (e instanceof FileNotFoundException) {
-                        if(item.isAppCodeBase()){
+                        if (item.isAppCodeBase()) {
                             errorLogger.logError("File from project not found: " + item.getCodeBaseLocator(), e);
                         } else {
                             errorLogger.logError("File from auxiliary classpath not found: " + item.getCodeBaseLocator(), e);

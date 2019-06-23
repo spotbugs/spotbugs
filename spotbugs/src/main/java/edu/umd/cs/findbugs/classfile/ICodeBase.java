@@ -44,6 +44,7 @@ public interface ICodeBase extends AutoCloseable {
         /** Codebase was discovered in the system classpath. */
         IN_SYSTEM_CLASSPATH,
     }
+
     /**
      * Get the codebase locator describing the location of this codebase.
      *

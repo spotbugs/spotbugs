@@ -105,8 +105,7 @@ public class DescriptorFactory {
         }
     }
 
-    public @Nonnull
-    ClassDescriptor getClassDescriptor(Class<?> actualClass) {
+    public @Nonnull ClassDescriptor getClassDescriptor(Class<?> actualClass) {
         return getClassDescriptorForDottedClassName(actualClass.getName());
     }
 
@@ -117,8 +116,7 @@ public class DescriptorFactory {
      *            a class name in VM (slashed) format
      * @return ClassDescriptor for that class
      */
-    public @Nonnull
-    ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
+    public @Nonnull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
         assert className.indexOf('.') == -1;
         ClassDescriptor classDescriptor = classDescriptorMap.get(className);
         if (classDescriptor == null) {
@@ -289,8 +287,7 @@ public class DescriptorFactory {
      * Create a class descriptor from a field signature
      *
      */
-    public static @CheckForNull
-    ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
+    public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
         int start = signature.indexOf('L');
         if (start < 0) {
             return null;
