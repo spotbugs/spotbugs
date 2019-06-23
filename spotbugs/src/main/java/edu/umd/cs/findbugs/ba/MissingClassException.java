@@ -32,9 +32,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 public class MissingClassException extends DataflowAnalysisException {
     private static final long serialVersionUID = 1L;
 
-    private @DottedClassName
-    final
-    String className;
+    private @DottedClassName final String className;
 
     private MissingClassException(String className) {
         super("Missing class" + (className != null ? ": " + className : ""));

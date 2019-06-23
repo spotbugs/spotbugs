@@ -68,8 +68,7 @@ class UnresolvedXMethod extends AbstractMethod {
     }
 
     @Override
-    public @CheckForNull
-    AnnotatedObject getContainingScope() {
+    public @CheckForNull AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
@@ -154,8 +153,7 @@ class UnresolvedXMethod extends AbstractMethod {
     }
 
     @Override
-    public @CheckForNull
-    String getSourceSignature() {
+    public @CheckForNull String getSourceSignature() {
         return null;
     }
 
@@ -187,7 +185,7 @@ class UnresolvedXMethod extends AbstractMethod {
         HashMap<Integer, Map<ClassDescriptor, AnnotationValue>> updatedAnnotations = new HashMap<>(
                 methodParameterAnnotations);
         Map<ClassDescriptor, AnnotationValue> paramMap = updatedAnnotations.computeIfAbsent(param,
-            k -> new HashMap<>());
+                k -> new HashMap<>());
         paramMap.put(annotationValue.getAnnotationClass(), annotationValue);
 
         methodParameterAnnotations = updatedAnnotations;
@@ -198,7 +196,7 @@ class UnresolvedXMethod extends AbstractMethod {
     public Collection<ClassDescriptor> getParameterAnnotationDescriptors(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null) {
-            return Collections.<ClassDescriptor> emptySet();
+            return Collections.<ClassDescriptor>emptySet();
         }
         return map.keySet();
     }
@@ -209,8 +207,7 @@ class UnresolvedXMethod extends AbstractMethod {
     }
 
     @Override
-    public @Nullable
-    AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
+    public @Nullable AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null) {
             return null;
@@ -222,7 +219,7 @@ class UnresolvedXMethod extends AbstractMethod {
     public Collection<AnnotationValue> getParameterAnnotations(int param) {
         Map<ClassDescriptor, AnnotationValue> map = methodParameterAnnotations.get(param);
         if (map == null) {
-            return Collections.<AnnotationValue> emptySet();
+            return Collections.<AnnotationValue>emptySet();
         }
         return map.values();
     }
@@ -286,10 +283,12 @@ class UnresolvedXMethod extends AbstractMethod {
     public MethodDescriptor getAccessMethodForMethod() {
         return null;
     }
+
     @Override
     public FieldDescriptor getAccessMethodForField() {
         return null;
     }
+
     /* (non-Javadoc)
      * @see edu.umd.cs.findbugs.ba.XMethod#isVariableSynthetic(int)
      */

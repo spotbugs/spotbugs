@@ -18,6 +18,7 @@
  */
 
 package edu.umd.cs.findbugs.ba;
+
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -278,8 +279,7 @@ public class AnalysisContext implements AutoCloseable {
         return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
-    private static @CheckForNull
-    RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
+    private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             return null;
@@ -475,7 +475,7 @@ public class AnalysisContext implements AutoCloseable {
             AnalysisContext.logError("Error getting class data for " + desc, e);
             return 10000;
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Could not get class context for "  + desc, e);
+            AnalysisContext.logError("Could not get class context for " + desc, e);
             return 10000;
         }
     }
@@ -504,7 +504,7 @@ public class AnalysisContext implements AutoCloseable {
             AnalysisContext.logError("Error getting class data for " + desc, e);
             return true;
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Could not get class context for "  + desc, e);
+            AnalysisContext.logError("Could not get class context for " + desc, e);
             return true;
         }
         return false;
@@ -540,13 +540,13 @@ public class AnalysisContext implements AutoCloseable {
     public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository
         // implementation
-        requireNonNull (className, "className is null");
+        requireNonNull(className, "className is null");
         if (originalRepository == null) {
             throw new IllegalStateException("originalRepository is null");
         }
 
         JavaClass clazz = originalRepository.findClass(className);
-        if(clazz != null){
+        if (clazz != null) {
             return clazz;
         }
         // XXX workaround for system classes missing on Java 9
@@ -730,7 +730,7 @@ public class AnalysisContext implements AutoCloseable {
                 System.out.println("Loading default " + description + " from " + resourceName + " @ "
                         + database.getClass().getResource(resourceName) + " ... ");
             }
-            try(InputStream in = database.getClass().getResourceAsStream(resourceName)){
+            try (InputStream in = database.getClass().getResourceAsStream(resourceName)) {
                 if (in == null) {
                     AnalysisContext.logError("Unable to load " + description + " from resource " + resourceName);
                 } else {
@@ -1097,4 +1097,3 @@ public class AnalysisContext implements AutoCloseable {
     }
 
 }
-

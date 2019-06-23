@@ -64,7 +64,7 @@ public class TypeQualifierDatabase {
      */
     public void setReturnValue(MethodDescriptor methodDesc, TypeQualifierValue<?> tqv, TypeQualifierAnnotation tqa) {
         Map<TypeQualifierValue<?>, TypeQualifierAnnotation> map = returnValueMap.computeIfAbsent(methodDesc,
-            k -> new HashMap<>());
+                k -> new HashMap<>());
         map.put(tqv, tqa);
 
         if (DEBUG) {

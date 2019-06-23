@@ -134,4 +134,3 @@ public class AnalysisException extends UncheckedAnalysisException {
         super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins, throwable);
     }
 }
-

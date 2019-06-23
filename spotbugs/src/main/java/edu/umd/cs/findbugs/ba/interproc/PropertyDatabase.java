@@ -39,7 +39,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.FieldOrMethodDescriptor;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -82,8 +81,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      *            the key
      * @return the property, or null if no property is set for this key
      */
-    public @CheckForNull
-    ValueType getProperty(KeyType key) {
+    public @CheckForNull ValueType getProperty(KeyType key) {
         return propertyMap.get(key);
     }
 
@@ -138,7 +136,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @throws PropertyDatabaseFormatException
      */
     public void read(@WillClose InputStream in) throws IOException, PropertyDatabaseFormatException {
-    
+
         try (BufferedReader reader = new BufferedReader(Util.getReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -152,7 +150,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
                 }
                 KeyType key = parseKey(line.substring(0, bar));
                 ValueType property = decodeProperty(line.substring(bar + 1));
-            
+
                 setProperty(key, property);
             }
         }
@@ -192,17 +190,17 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @throws IOException
      */
     public void write(@WillClose OutputStream out) throws IOException {
-    
+
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
-        
+
             TreeSet<KeyType> sortedMethodSet = new TreeSet<>();
             sortedMethodSet.addAll(propertyMap.keySet());
             for (KeyType key : sortedMethodSet) {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor())) {
-                
+
                     ValueType property = propertyMap.get(key);
-                
+
                     writeKey(writer, key);
                     writer.write("|");
                     writer.write(encodeProperty(property));

@@ -185,7 +185,7 @@ public class Invoke extends PatternElement {
 
     private StringMatcher createMatcher(String s) {
         return s.startsWith("/") ? (StringMatcher) new RegexpStringMatcher(s.substring(1))
-        : (StringMatcher) new ExactStringMatcher(s);
+                : (StringMatcher) new ExactStringMatcher(s);
     }
 
     @Override
@@ -246,4 +246,3 @@ public class Invoke extends PatternElement {
         return 1;
     }
 }
-

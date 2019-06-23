@@ -52,4 +52,3 @@ public class ResourceValue {
         return (this == instance) ? "I" : "-";
     }
 }
-

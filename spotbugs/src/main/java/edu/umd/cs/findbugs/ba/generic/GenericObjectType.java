@@ -53,11 +53,9 @@ public class GenericObjectType extends ObjectType {
 
     final List<? extends ReferenceType> parameters;
 
-    final @CheckForNull
-    String variable;
+    final @CheckForNull String variable;
 
-    final @CheckForNull
-    ReferenceType extension;
+    final @CheckForNull ReferenceType extension;
 
     public ReferenceType produce() {
         return getTypeCategory().produce(this);
@@ -161,8 +159,7 @@ public class GenericObjectType extends ObjectType {
         }
     }
 
-    public @CheckForNull
-    List<? extends ReferenceType> getParameters() {
+    public @CheckForNull List<? extends ReferenceType> getParameters() {
         if (parameters == null) {
             return null;
         }

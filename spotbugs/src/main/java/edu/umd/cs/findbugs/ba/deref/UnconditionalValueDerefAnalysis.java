@@ -245,7 +245,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         // returns normally.
         // TODO: at some point, evaluate whether we should revisit this
         if (isAssertion(handle) // || handle.getInstruction() instanceof ATHROW
-                ) {
+        ) {
             if (DEBUG) {
                 System.out.println("MAKING BOTTOM0 AT: " + location);
             }
@@ -328,7 +328,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     public static Set<ValueNumber> checkUnconditionalDerefDatabase(Location location, ValueNumberFrame vnaFrame,
             ConstantPoolGen constantPool, @CheckForNull IsNullValueFrame invFrame, TypeDataflow typeDataflow)
-                    throws DataflowAnalysisException {
+            throws DataflowAnalysisException {
         if (invFrame != null && !invFrame.isValid()) {
             return Collections.emptySet();
         }
@@ -660,8 +660,8 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     private static boolean reportDereference(IsNullValue value) {
         return !(value.isDefinitelyNotNull()
-            || value.isDefinitelyNull()
-            || (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()));
+                || value.isDefinitelyNull()
+                || (IGNORE_DEREF_OF_NCP && value.isNullOnComplicatedPath()));
     }
 
     /**
@@ -906,8 +906,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
      *            edge to check
      * @return possibly-modified dataflow fact
      */
-    private @CheckForNull
-    ValueNumber findValueKnownNonnullOnBranch(UnconditionalValueDerefSet fact, Edge edge) {
+    private @CheckForNull ValueNumber findValueKnownNonnullOnBranch(UnconditionalValueDerefSet fact, Edge edge) {
 
         IsNullValueFrame invFrame = invDataflow.getResultFact(edge.getSource());
         if (!invFrame.isValid()) {
@@ -951,8 +950,8 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         }
         InstructionHandle h = edge.getSource().getLastInstruction();
         return h != null
-            && h.getInstruction() instanceof IFNONNULL
-            && isNullCheck(h, methodGen.getConstantPool());
+                && h.getInstruction() instanceof IFNONNULL
+                && isNullCheck(h, methodGen.getConstantPool());
     }
 
     @Override

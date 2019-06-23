@@ -78,4 +78,3 @@ public interface ExtendedTypes {
      */
     public static final byte T_AVAIL_TYPE = 100;
 }
-

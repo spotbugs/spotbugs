@@ -207,8 +207,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
      * @return the instruction's successor, or null if the instruction is the
      *         last in the basic block
      */
-    public @CheckForNull
-    InstructionHandle getSuccessorOf(InstructionHandle handle) {
+    public @CheckForNull InstructionHandle getSuccessorOf(InstructionHandle handle) {
         if (VERIFY_INTEGRITY && !containsInstruction(handle)) {
             throw new IllegalStateException();
         }
@@ -471,4 +470,3 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
         this.numNonExceptionSuccessors = numNonExceptionSuccessors;
     }
 }
-

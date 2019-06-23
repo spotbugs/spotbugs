@@ -59,7 +59,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Visitor to model the effects of bytecode instructions on the types of the
@@ -125,7 +124,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             genericLocalVariables = null;
         } else {
             genericLocalVariables = new BitSet();
-            for(LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
+            for (LocalVariable lv : localTypeTable.getLocalVariableTypeTable()) {
                 if (lv.getSignature().indexOf('<') > 0) {
                     genericLocalVariables.set(lv.getIndex());
                 }
@@ -220,7 +219,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
             throw new InvalidBytecodeException("Unpredictable stack consumption for " + ins);
         }
         if (numWordsConsumed > frame.getStackDepth()) {
-            throw new InvalidBytecodeException("Stack underflow for " + ins + ", " + numWordsConsumed + " needed, " + frame.getStackDepth() + " avail, frame is " + frame);
+            throw new InvalidBytecodeException("Stack underflow for " + ins + ", " + numWordsConsumed + " needed, " + frame.getStackDepth()
+                    + " avail, frame is " + frame);
         }
         try {
             while (numWordsConsumed-- > 0) {
@@ -630,7 +630,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         if (className.startsWith("java.util") && className.endsWith("Map")) {
             if ("keySet".equals(methodName) && "()Ljava/util/Set;".equals(signature)
                     && handleGetMapView(frame, "java.util.Set", 0, 2) || "values".equals(methodName)
-                    && "()Ljava/util/Collection;".equals(signature) && handleGetMapView(frame, "java.util.Collection", 1, 2)) {
+                            && "()Ljava/util/Collection;".equals(signature) && handleGetMapView(frame, "java.util.Collection", 1, 2)) {
                 return;
             }
         }
@@ -732,7 +732,9 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
     }
 
-    public static final Pattern mapSignaturePattern = Pattern.compile("<(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;>.*Ljava/util/(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|/)*)?Map<T\\1;T\\2;>;.*");
+    public static final Pattern mapSignaturePattern = Pattern.compile(
+            "<(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*):L[^;]*;>.*Ljava/util/(\\p{javaJavaIdentifierStart}(\\p{javaJavaIdentifierPart}|/)*)?Map<T\\1;T\\2;>;.*");
+
     public static boolean isStraightGenericMap(ClassDescriptor c) {
         if (c.matches(Map.class)) {
             return true;
@@ -1505,4 +1507,3 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         return typesComputedFromGenerics.contains(t);
     }
 }
-

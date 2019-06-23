@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-    private final static boolean TRACE =  SystemProperties.getBoolean("vna.trace");
+    private final static boolean TRACE = SystemProperties.getBoolean("vna.trace");
 
     public static final boolean DEBUG = TRACE || SystemProperties.getBoolean("vna.debug");
 
@@ -163,9 +163,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
         SignatureParser sigParser = new SignatureParser(methodGen.getSignature());
         int p = 0;
-        int slotOffset =  methodGen.isStatic() ? 0 : 1;
+        int slotOffset = methodGen.isStatic() ? 0 : 1;
 
-        for ( String paramSig : sigParser.parameterSignatures()) {
+        for (String paramSig : sigParser.parameterSignatures()) {
             if (p == param) {
                 return getEntryValue(slotOffset);
             }
@@ -197,14 +197,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     @Override
     public void transfer(BasicBlock basicBlock, InstructionHandle end, ValueNumberFrame start, ValueNumberFrame result)
             throws DataflowAnalysisException {
-        if(basicBlock.isExceptionThrower() && isFactValid(start)) {
+        if (basicBlock.isExceptionThrower() && isFactValid(start)) {
             /* If exceptionThrower is invoke instruction then it's possible that
              * it was partially executed before an exception occurred
              * So we have to kill available loads when control is transferred to the catch block
              */
             InstructionHandle handle = basicBlock.getExceptionThrower();
             Instruction inst = handle.getInstruction();
-            if(inst instanceof InvokeInstruction || inst instanceof INVOKEDYNAMIC) {
+            if (inst instanceof InvokeInstruction || inst instanceof INVOKEDYNAMIC) {
                 copy(start, result);
                 visitor.setFrameAndLocation(result, new Location(handle, basicBlock));
                 visitor.setHandle(handle);
@@ -328,10 +328,10 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         if (fact == null) {
             if (TRACE) {
                 System.out
-                .println("Initialized fact after " + location + " @ "
-                        + Integer.toHexString(System.identityHashCode(location)) + " in "
-                        + Integer.toHexString(System.identityHashCode(this)) + " : "
-                        + factAfterLocationMap.containsKey(location));
+                        .println("Initialized fact after " + location + " @ "
+                                + Integer.toHexString(System.identityHashCode(location)) + " in "
+                                + Integer.toHexString(System.identityHashCode(this)) + " : "
+                                + factAfterLocationMap.containsKey(location));
             }
 
             fact = createFact();
@@ -354,15 +354,15 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
     /*
     private static class ValueCompacter {
         public final BitSet valuesUsed;
-
+    
         public int numValuesUsed;
-
+    
         public final int[] discovered;
-
+    
         public ValueCompacter(int origNumValuesAllocated) {
             valuesUsed = new BitSet();
             numValuesUsed = 0;
-
+    
             // The "discovered" array tells us the mapping of old value numbers
             // to new (which are based on order of discovery). Negative values
             // specify value numbers which are not actually used (and thus can
@@ -372,15 +372,15 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
                 discovered[i] = -1;
             }
         }
-
+    
         public boolean isUsed(int number) {
             return valuesUsed.get(number);
         }
-
+    
         public void setUsed(int number) {
             valuesUsed.set(number, true);
         }
-
+    
         public int allocateValue() {
             return numValuesUsed++;
         }
@@ -415,11 +415,11 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         if (!frame.isValid()) {
             return;
         }
-
+    
         for (int j = 0; j < frame.getNumSlots(); ++j) {
             ValueNumber value = frame.getValue(j);
             int number = value.getNumber();
-
+    
             if (!compacter.isUsed(number)) {
                 compacter.discovered[number] = compacter.allocateValue();
                 compacter.setUsed(number);
@@ -460,9 +460,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         return valueNumber;
     }
 
-    public @CheckForNull
-    @DottedClassName
-    String getClassName(ValueNumber v) {
+    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
         return factory.getClassName(v);
     }
 }

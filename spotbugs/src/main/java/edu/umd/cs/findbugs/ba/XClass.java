@@ -43,8 +43,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
      * @return ClassDescriptor of this class's immediate superclass, or null if
      *         this class has no immediate superclass
      */
-    public @CheckForNull
-    ClassDescriptor getSuperclassDescriptor();
+    public @CheckForNull ClassDescriptor getSuperclassDescriptor();
 
     /**
      * Get ClassDescriptors of interfaces directly implemented by this class.
@@ -76,8 +75,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
      *
      * @return the Source attribute
      */
-    public @CheckForNull
-    String getSource();
+    public @CheckForNull String getSource();
 
     @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors();

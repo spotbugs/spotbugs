@@ -202,4 +202,3 @@ public class TypeFrame extends Frame<Type> {
     }
 
 }
-

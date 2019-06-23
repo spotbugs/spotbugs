@@ -52,7 +52,7 @@ public class RepositoryClassParser {
      * @param fileName
      *            name of the class file
      */
-    public RepositoryClassParser(String fileName)  {
+    public RepositoryClassParser(String fileName) {
         classParser = new ClassParser(fileName);
     }
 
@@ -82,4 +82,3 @@ public class RepositoryClassParser {
         return jclass;
     }
 }
-

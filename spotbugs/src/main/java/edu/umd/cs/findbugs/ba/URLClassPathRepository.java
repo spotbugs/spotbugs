@@ -202,4 +202,3 @@ public class URLClassPathRepository implements Repository {
         return new ClassPath(urlClassPath.getClassPath());
     }
 }
-

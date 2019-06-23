@@ -57,4 +57,3 @@ public abstract class AbstractField extends AbstractClassMember implements XFiel
                 isStatic());
     }
 }
-

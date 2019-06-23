@@ -271,4 +271,3 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
         return cfgModified;
     }
 }
-

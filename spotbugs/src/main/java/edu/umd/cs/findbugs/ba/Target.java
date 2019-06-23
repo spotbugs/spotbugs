@@ -27,8 +27,7 @@ import org.apache.bcel.generic.InstructionHandle;
 public class Target {
     private final InstructionHandle targetInstruction;
 
-    private @Edge.Type
-    final int edgeType;
+    private @Edge.Type final int edgeType;
 
     /**
      * Constructor.

@@ -51,4 +51,3 @@ public abstract class ForwardDataflowAnalysis<Fact> extends AbstractDataflowAnal
         return new ReversePostOrder(cfg, dfs);
     }
 }
-

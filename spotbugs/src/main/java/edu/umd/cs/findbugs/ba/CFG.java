@@ -126,8 +126,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
             while (next == null) {
                 // Make sure we have an instruction iterator
                 if (instructionIter == null) {
-                    if (!blockIter.hasNext())
-                    {
+                    if (!blockIter.hasNext()) {
                         return; // At end
                     }
                     curBlock = blockIter.next();
@@ -136,8 +135,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
                 if (instructionIter.hasNext()) {
                     next = new Location(instructionIter.next(), curBlock);
-                }
-                else {
+                } else {
                     instructionIter = null; // Go to next block
                 }
             }
@@ -505,7 +503,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
         return getEdgeWithType(outgoingEdgeIterator(basicBlock), edgeType);
     }
 
-    private Edge getEdgeWithType(Iterator<Edge> iter,  @Type int edgeType) {
+    private Edge getEdgeWithType(Iterator<Edge> iter, @Type int edgeType) {
         while (iter.hasNext()) {
             Edge edge = iter.next();
             if (edge.getType() == edgeType) {
@@ -643,4 +641,3 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
     }
 
 }
-

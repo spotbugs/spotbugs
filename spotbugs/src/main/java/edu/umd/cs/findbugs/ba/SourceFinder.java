@@ -534,7 +534,7 @@ public class SourceFinder implements AutoCloseable {
         return canonicalName;
     }
 
-    public static String getOrGuessSourceFile(SourceLineAnnotation source)  {
+    public static String getOrGuessSourceFile(SourceLineAnnotation source) {
         if (source.isSourceFileKnown()) {
             return source.getSourceFile();
         }

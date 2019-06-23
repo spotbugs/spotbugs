@@ -100,4 +100,3 @@ public class ThrownException {
         return this.type.equals(other.type) && this.explicit == other.explicit;
     }
 }
-

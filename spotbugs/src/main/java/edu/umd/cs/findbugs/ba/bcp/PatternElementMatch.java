@@ -188,4 +188,3 @@ public class PatternElementMatch {
         return lhs == rhs;
     }
 }
-

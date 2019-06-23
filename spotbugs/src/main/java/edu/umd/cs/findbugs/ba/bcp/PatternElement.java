@@ -165,8 +165,7 @@ public abstract class PatternElement {
      *         PatternElement and BindingSet; if the match is not successful,
      *         returns null
      */
-    public abstract @CheckForNull
-    MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
+    public abstract @CheckForNull MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
             BindingSet bindingSet) throws DataflowAnalysisException;
 
     /**
@@ -231,4 +230,3 @@ public abstract class PatternElement {
         return buf.toString();
     }
 }
-

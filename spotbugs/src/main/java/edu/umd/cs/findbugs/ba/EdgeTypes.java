@@ -142,4 +142,3 @@ public interface EdgeTypes {
      */
     public static final int EXPLICIT_EXCEPTIONS_FLAG = 2;
 }
-

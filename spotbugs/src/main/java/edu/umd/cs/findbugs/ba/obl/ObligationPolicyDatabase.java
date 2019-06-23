@@ -97,7 +97,7 @@ public class ObligationPolicyDatabase {
 
     public void setStrictChecking(boolean strictChecking) {
         if (DEBUG) {
-            System.out.println("Setting strict checking to " + strictChecking );
+            System.out.println("Setting strict checking to " + strictChecking);
         }
         this.strictChecking = strictChecking;
     }
@@ -116,8 +116,7 @@ public class ObligationPolicyDatabase {
             boolean matched = entry.getActions(receiverType, methodName, signature, isStatic, actionList);
 
             if (DEBUG) {
-                if (matched)
-                {
+                if (matched) {
                     System.out.println(" Entry " + entry + "  ==> MATCH");
                     //                else
                     //                    System.out.println("  ==> no match");
@@ -133,4 +132,3 @@ public class ObligationPolicyDatabase {
         return Collections.unmodifiableList(entryList);
     }
 }
-

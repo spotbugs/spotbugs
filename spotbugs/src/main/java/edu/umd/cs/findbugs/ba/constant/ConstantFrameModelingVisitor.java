@@ -62,8 +62,7 @@ public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<C
         Constant c = f.getValue(v);
         if (c.isConstantInteger()) {
             f.setValue(v, new Constant(c.getConstantInt() + amount));
-        }
-        else {
+        } else {
             f.setValue(v, Constant.NOT_CONSTANT);
             LOG.trace("after iinc: {}", getFrame());
         }

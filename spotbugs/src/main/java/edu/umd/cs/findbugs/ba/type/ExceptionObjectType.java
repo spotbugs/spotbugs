@@ -121,4 +121,3 @@ public class ExceptionObjectType extends ObjectType implements ExtendedTypes {
         return buf.toString();
     }
 }
-

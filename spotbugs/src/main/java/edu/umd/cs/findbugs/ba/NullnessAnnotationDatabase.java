@@ -98,7 +98,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
                 if (!m.isStatic()
                         && ("clone".equals(name) && "()Ljava/lang/Object;".equals(signature) || "toString".equals(name)
                                 && "()Ljava/lang/String;".equals(signature) || m.isPrivate() && "readResolve".equals(name)
-                                && "()Ljava/lang/Object;".equals(signature))) {
+                                        && "()Ljava/lang/Object;".equals(signature))) {
                     NullnessAnnotation result = super.getDirectAnnotation(m);
                     if (result != null) {
                         return result;

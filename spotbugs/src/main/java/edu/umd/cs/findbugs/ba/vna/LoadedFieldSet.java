@@ -156,4 +156,3 @@ public class LoadedFieldSet {
         return loadHandleSet.get(handle.getPosition());
     }
 }
-

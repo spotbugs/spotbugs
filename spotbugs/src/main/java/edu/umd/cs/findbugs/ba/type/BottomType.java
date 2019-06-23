@@ -58,4 +58,3 @@ public class BottomType extends Type implements ExtendedTypes {
         return theInstance;
     }
 }
-

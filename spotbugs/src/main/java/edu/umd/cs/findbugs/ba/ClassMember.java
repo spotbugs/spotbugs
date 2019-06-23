@@ -32,20 +32,18 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer
  */
-public interface ClassMember extends Serializable, AccessibleEntity,  FieldOrMethodName {
+public interface ClassMember extends Serializable, AccessibleEntity, FieldOrMethodName {
 
     /**
      * Get the full (dotted) name of the class (if the object represents a
      * class) or the class the entity is defined in (if a field or method).
      */
-    public @DottedClassName
-    String getClassName();
+    public @DottedClassName String getClassName();
 
     /**
      * Get the (dotted) name of the package in which the entity is defined.
      */
-    public @DottedClassName
-    String getPackageName();
+    public @DottedClassName String getPackageName();
 
     /**
      * Get the name of the field/method.
@@ -63,8 +61,7 @@ public interface ClassMember extends Serializable, AccessibleEntity,  FieldOrMet
      * Get the signature representing the field/method's type, including generic
      * type
      */
-    public @CheckForNull
-    String getSourceSignature();
+    public @CheckForNull String getSourceSignature();
 
     /**
      * Did we find a declaration of this entity?
