@@ -292,8 +292,7 @@ public class ClassParser implements ClassParserInterface {
      * @return the class name
      * @throws InvalidClassFileFormatException
      */
-    private @SlashedClassName
-    String getClassName(int index) throws InvalidClassFileFormatException {
+    private @SlashedClassName String getClassName(int index) throws InvalidClassFileFormatException {
         if (index == 0) {
             return null;
         }
@@ -395,7 +394,7 @@ public class ClassParser implements ClassParserInterface {
      *
     private MethodDescriptor readMethod(ClassDescriptor thisClassDescriptor) throws InvalidClassFileFormatException, IOException {
         return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<MethodDescriptor>() {
-
+    
             @Override
             public MethodDescriptor create(String className, String name, String signature, int accessFlags) {
                 return DescriptorFactory.instance().getMethodDescriptor(className, name, signature,
@@ -423,7 +422,7 @@ public class ClassParser implements ClassParserInterface {
         int name_index = in.readUnsignedShort();
         int descriptor_index = in.readUnsignedShort();
         int attributes_count = in.readUnsignedShort();
-
+    
         String name = getUtf8String(name_index);
         String signature = getUtf8String(descriptor_index);
         if (attributes_count < 0) {
@@ -432,7 +431,7 @@ public class ClassParser implements ClassParserInterface {
         for (int i = 0; i < attributes_count; i++) {
             readAttribute();
         }
-
+    
         return creator.create(thisClassDescriptor.getClassName(), name, signature, access_flags);
     }*/
 
@@ -445,12 +444,12 @@ public class ClassParser implements ClassParserInterface {
     private void readAttribute() throws IOException, InvalidClassFileFormatException {
         int attribute_name_index = in.readUnsignedShort();
         String attrName = getUtf8String(attribute_name_index);
-
+    
         int attribute_length = in.readInt();
         if (attribute_length < 0) {
             throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
         }
-
+    
         if (attrName.equals("InnerClasses")) {
             readInnerClassesAttribute(attribute_length);
         } else {
@@ -471,13 +470,13 @@ public class ClassParser implements ClassParserInterface {
         if (attribute_length != number_of_classes * 8) {
             throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
         }
-
+    
         for (int i = 0; i < number_of_classes; i++) {
             int inner_class_info_index = in.readUnsignedShort();
             int outer_class_info_index = in.readUnsignedShort();
             int inner_name_index = in.readUnsignedShort();
             int inner_class_access_flags = in.readUnsignedShort();
-
+    
             //            if (outer_class_info_index != 0) {
             //                // Record which class this class is a member of.
             //                this.immediateEnclosingClass = getClassDescriptor(outer_class_info_index);

@@ -87,7 +87,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         }
     }
 
-    public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException{
+    public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException {
         HashMap<String, Object> packageToModule = new LinkedHashMap<>();
         Path path = fs.getPath("packages");
         Files.list(path).forEach(p -> {
@@ -97,12 +97,12 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
                     Path module = modIter.next();
                     String packageKey = fileName(p).replace('.', '/');
                     String modulePath = fileName(module);
-                    if(!modIter.hasNext() && !packageToModule.containsKey(packageKey)){
+                    if (!modIter.hasNext() && !packageToModule.containsKey(packageKey)) {
                         packageToModule.put(packageKey, modulePath);
                     } else {
                         @SuppressWarnings("unchecked")
                         Set<Object> modules = (Set<Object>) packageToModule.get(packageKey);
-                        if(modules == null){
+                        if (modules == null) {
                             modules = new LinkedHashSet<>();
                             packageToModule.put(packageKey, modules);
                         }
@@ -122,17 +122,17 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         resourceName = translateResourceName(resourceName);
         String packageName = getPackage(resourceName);
         Object moduleNameOrSet = packageToModuleMap.get(packageName);
-        if(moduleNameOrSet == null){
+        if (moduleNameOrSet == null) {
             return null;
         }
-        if(moduleNameOrSet instanceof String){
+        if (moduleNameOrSet instanceof String) {
             return createEntry(resourceName, (String) moduleNameOrSet);
         } else {
             @SuppressWarnings("unchecked")
             Set<String> modules = (Set<String>) moduleNameOrSet;
             for (String moduleName : modules) {
                 ICodeBaseEntry entry = createEntry(resourceName, moduleName);
-                if(entry != null){
+                if (entry != null) {
                     return entry;
                 }
             }
@@ -143,7 +143,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     @CheckForNull
     private ICodeBaseEntry createEntry(String resourceName, String moduleName) {
         Path resolved = root.resolve(moduleName + "/" + resourceName);
-        if(Files.exists(resolved)){
+        if (Files.exists(resolved)) {
             return new JrtfsCodebaseEntry(resolved, root, this);
         }
         return null;
@@ -151,7 +151,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
 
     private static String getPackage(String resourceName) {
         int lastSlash = resourceName.lastIndexOf('/');
-        if(lastSlash > 0){
+        if (lastSlash > 0) {
             return resourceName.substring(0, lastSlash);
         }
         return resourceName;
@@ -193,7 +193,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
 
     @Override
     public void close() {
-        if(fs != null){
+        if (fs != null) {
             try {
                 fs.close();
             } catch (IOException e) {
@@ -208,9 +208,9 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     }
 
     @Nonnull
-    static String fileName(Path p){
+    static String fileName(Path p) {
         Path name = p.getFileName();
-        return name != null? name.toString() : "";
+        return name != null ? name.toString() : "";
     }
 
     static boolean isClassFile(Path p) {
@@ -303,7 +303,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
                 return false;
             }
             JrtfsCodebaseEntry other = (JrtfsCodebaseEntry) obj;
-            if(!Objects.equals(codebase, other.codebase)){
+            if (!Objects.equals(codebase, other.codebase)) {
                 return false;
             }
             return Objects.equals(path, other.path);

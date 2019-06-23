@@ -165,10 +165,10 @@ public class CFGFactory extends AnalysisFactory<CFG> {
                 changed = changed || pruner.wasCFGModified();
             } catch (MissingClassException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                .reportMissingClass(e.getClassNotFoundException());
+                        .reportMissingClass(e.getClassNotFoundException());
             } catch (DataflowAnalysisException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-                .logError("unable to extract type analysis", e);
+                        .logError("unable to extract type analysis", e);
             } catch (ClassNotFoundException e) {
                 AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
             }

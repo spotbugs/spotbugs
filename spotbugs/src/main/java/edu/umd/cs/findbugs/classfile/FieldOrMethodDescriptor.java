@@ -30,8 +30,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  */
 public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
 
-    private final @SlashedClassName
-    String slashedClassName;
+    private final @SlashedClassName String slashedClassName;
 
     private final String name;
 
@@ -66,8 +65,7 @@ public abstract class FieldOrMethodDescriptor implements FieldOrMethodName {
      *
      * @return Returns the class name
      */
-    public @SlashedClassName
-    String getSlashedClassName() {
+    public @SlashedClassName String getSlashedClassName() {
         return slashedClassName;
     }
 

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author David Hovemeyer
  */
 public class NonImplicitExceptionPostDominatorsAnalysisFactory extends
-AnalysisFactory<NonImplicitExceptionPostDominatorsAnalysis> {
+        AnalysisFactory<NonImplicitExceptionPostDominatorsAnalysis> {
     /**
      * Constructor.
      */

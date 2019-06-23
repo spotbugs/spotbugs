@@ -66,7 +66,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
 
         Collection<ClassDescriptor> referencedClassDescriptorList;
 
-        Set<ClassDescriptor> calledClassDescriptors = Collections.<ClassDescriptor> emptySet();
+        Set<ClassDescriptor> calledClassDescriptors = Collections.<ClassDescriptor>emptySet();
 
         public ClassNameAndSuperclassInfo build() {
             return new ClassNameAndSuperclassInfo(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry,
