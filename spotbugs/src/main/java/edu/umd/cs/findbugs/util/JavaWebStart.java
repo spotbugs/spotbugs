@@ -33,11 +33,9 @@ import javax.swing.JOptionPane;
  */
 public class JavaWebStart {
 
-    static final @CheckForNull
-    Method jnlpShowDocumentMethod;
+    static final @CheckForNull Method jnlpShowDocumentMethod;
 
-    static final @CheckForNull
-    Method jnlpGetCodeBaseMethod;
+    static final @CheckForNull Method jnlpGetCodeBaseMethod;
 
     static final Object jnlpBasicService; // will not be null if
     // jnlpShowMethod!=null
