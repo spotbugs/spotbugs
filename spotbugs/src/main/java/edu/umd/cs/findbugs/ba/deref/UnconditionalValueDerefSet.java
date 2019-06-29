@@ -373,8 +373,7 @@ public class UnconditionalValueDerefSet {
             } else {
                 buf.append('?');
             }
-            TreeSet<Location> derefLocationSet = new TreeSet<>();
-            derefLocationSet.addAll(getDerefLocationSet(i));
+            TreeSet<Location> derefLocationSet = new TreeSet<>(getDerefLocationSet(i));
             boolean firstLoc = true;
             for (Location location : derefLocationSet) {
                 if (firstLoc) {

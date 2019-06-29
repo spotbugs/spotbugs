@@ -449,8 +449,7 @@ public class ExecutionPlan {
     }
 
     private Set<DetectorFactory> getUnassignedSet() {
-        Set<DetectorFactory> unassignedSet = new HashSet<>();
-        unassignedSet.addAll(factoryMap.values());
+        Set<DetectorFactory> unassignedSet = new HashSet<>(factoryMap.values());
         unassignedSet.removeAll(assignedToPassSet);
         return unassignedSet;
     }

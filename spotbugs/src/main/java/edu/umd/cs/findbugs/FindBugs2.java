@@ -742,8 +742,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         }
         Set<String> referencedPackageSet = new HashSet<>();
 
-        LinkedList<ClassDescriptor> workList = new LinkedList<>();
-        workList.addAll(appClassList);
+        LinkedList<ClassDescriptor> workList = new LinkedList<>(appClassList);
 
         Set<ClassDescriptor> seen = new HashSet<>();
         Set<ClassDescriptor> appClassSet = new HashSet<>(appClassList);

@@ -194,8 +194,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
         boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
 
-            TreeSet<KeyType> sortedMethodSet = new TreeSet<>();
-            sortedMethodSet.addAll(propertyMap.keySet());
+            TreeSet<KeyType> sortedMethodSet = new TreeSet<>(propertyMap.keySet());
             for (KeyType key : sortedMethodSet) {
                 if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassDescriptor())) {
 
