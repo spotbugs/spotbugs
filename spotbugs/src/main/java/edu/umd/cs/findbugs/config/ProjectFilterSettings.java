@@ -384,9 +384,7 @@ public class ProjectFilterSettings implements Cloneable {
      * @return the set of active categories
      */
     public Set<String> getActiveCategorySet() {
-        Set<String> result = new TreeSet<>();
-        result.addAll(this.activeBugCategorySet);
-        return result;
+        return new TreeSet<>(this.activeBugCategorySet);
     }
 
     /**

@@ -307,8 +307,7 @@ public class TypeQualifierValueSet {
             return state.toString();
         }
 
-        TreeSet<ValueNumber> interesting = new TreeSet<>();
-        interesting.addAll(valueMap.keySet());
+        TreeSet<ValueNumber> interesting = new TreeSet<>(valueMap.keySet());
 
         StringBuilder buf = new StringBuilder();
 
@@ -364,8 +363,7 @@ public class TypeQualifierValueSet {
     }
 
     private static void appendSourceSinkInfos(StringBuilder buf, String key, Set<? extends SourceSinkInfo> sourceSinkInfoSet) {
-        TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<>();
-        sortedLocSet.addAll(sourceSinkInfoSet);
+        TreeSet<SourceSinkInfo> sortedLocSet = new TreeSet<>(sourceSinkInfoSet);
         boolean first = true;
         buf.append(key);
         buf.append("(");

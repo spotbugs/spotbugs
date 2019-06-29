@@ -703,8 +703,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
 
         // See if there are any safe targets
-        Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<>();
-        safeCallTargetSet.addAll(targetMethodSet);
+        Set<JavaClassAndMethod> safeCallTargetSet = new HashSet<>(targetMethodSet);
         safeCallTargetSet.removeAll(dangerousCallTargetList);
         if (safeCallTargetSet.isEmpty()) {
             propertySet.addProperty(NullArgumentWarningProperty.ALL_DANGEROUS_TARGETS);

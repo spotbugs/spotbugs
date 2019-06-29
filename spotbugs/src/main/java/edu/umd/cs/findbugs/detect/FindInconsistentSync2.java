@@ -888,8 +888,7 @@ public class FindInconsistentSync2 implements Detector {
 
         // Initially, assume no methods are called from an
         // unlocked context
-        Set<Method> lockedMethodSet = new HashSet<>();
-        lockedMethodSet.addAll(Arrays.asList(methodList));
+        Set<Method> lockedMethodSet = new HashSet<>(Arrays.asList(methodList));
 
         // Assume all public methods are called from
         // unlocked context
