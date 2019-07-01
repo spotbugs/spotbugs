@@ -6,7 +6,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
-* Replace Collection addAll by constructor
 ## 4.0.0-beta3 - 2019-06-24
 
 ### Added
