@@ -91,7 +91,7 @@ public class AnalysisError {
         for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
             arr.add(aExceptionStackTrace.toString());
         }
-        String[] tmp = arr.toArray(new String[arr.size()]);
+        String[] tmp = arr.toArray(new String[0]);
         return tmp;
     }
 

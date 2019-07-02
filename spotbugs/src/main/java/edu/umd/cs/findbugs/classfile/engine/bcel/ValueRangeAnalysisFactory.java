@@ -629,7 +629,7 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
 
         public RedundantCondition[] getRedundantConditions() {
-            return redundantConditions.toArray(new RedundantCondition[redundantConditions.size()]);
+            return redundantConditions.toArray(new RedundantCondition[0]);
         }
     }
 

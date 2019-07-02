@@ -54,6 +54,6 @@ public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
         for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             resultList.add(i.next());
         }
-        return resultList.toArray(new String[resultList.size()]);
+        return resultList.toArray(new String[0]);
     }
 }

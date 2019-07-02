@@ -700,7 +700,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     bugCollection.addError(analysisError);
                 } else if (BugCollection.ERROR_ELEMENT_NAME.equals(qName)) {
                     if (stackTrace.size() > 0) {
-                        analysisError.setStackTrace(stackTrace.toArray(new String[stackTrace.size()]));
+                        analysisError.setStackTrace(stackTrace.toArray(new String[0]));
                     }
                     bugCollection.addError(analysisError);
                 } else if (BugCollection.MISSING_CLASS_ELEMENT_NAME.equals(qName)) {

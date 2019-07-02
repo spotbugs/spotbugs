@@ -331,7 +331,7 @@ public class PluginLoader {
                 throw new PluginException("Failed loading manifest for plugin jar: " + url, e);
             }
         }
-        return urls.toArray(new URL[urls.size()]);
+        return urls.toArray(new URL[0]);
     }
 
     private static void addClassPathFromManifest(@Nonnull URL url, @Nonnull List<URL> urls,

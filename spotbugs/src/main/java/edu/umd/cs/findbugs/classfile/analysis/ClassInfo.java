@@ -119,7 +119,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             if (fieldInfoList.size() == 0) {
                 fields = FieldInfo.EMPTY_ARRAY;
             } else {
-                fields = fieldInfoList.toArray(new FieldInfo[fieldInfoList.size()]);
+                fields = fieldInfoList.toArray(new FieldInfo[0]);
             }
 
 
@@ -173,7 +173,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
             if (methodInfoList.size() == 0) {
                 methods = MethodInfo.EMPTY_ARRAY;
             } else {
-                methods = methodInfoList.toArray(new MethodInfo[methodInfoList.size()]);
+                methods = methodInfoList.toArray(new MethodInfo[0]);
             }
 
             return new ClassInfo(classDescriptor, classSourceSignature, superclassDescriptor, interfaceDescriptorList,
@@ -257,7 +257,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         };
         List<MethodInfo> result = TopologicalSort.sortByCallGraph(Arrays.asList(xMethods), edges1);
         assert xMethods.length == result.size();
-        return result.toArray(new MethodInfo[result.size()]);
+        return result.toArray(new MethodInfo[0]);
     }
 
     /**
