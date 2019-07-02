@@ -19,6 +19,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -304,9 +305,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
         HashSet<String> result = new HashSet<>();
         ExceptionTable exceptionTable = m.getExceptionTable();
         if (exceptionTable != null) {
-            for (String e : exceptionTable.getExceptionNames()) {
-                result.add(e);
-            }
+            Collections.addAll(result, exceptionTable.getExceptionNames());
         }
         return result;
     }

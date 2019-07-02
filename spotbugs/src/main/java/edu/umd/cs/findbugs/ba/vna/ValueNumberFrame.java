@@ -582,9 +582,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         if (REDUNDANT_LOAD_ELIMINATION) {
             for (Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
                 if (e.getValue() != null) {
-                    for (ValueNumber v2 : e.getValue()) {
-                        result.add(v2);
-                    }
+                    Collections.addAll(result, e.getValue());
                 }
             }
         }

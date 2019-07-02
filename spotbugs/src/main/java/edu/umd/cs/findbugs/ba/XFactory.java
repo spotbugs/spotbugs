@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -591,9 +592,7 @@ public class XFactory {
                     worklist.add(superClass);
                 }
                 if (originalDescriptor.isStatic()) {
-                    for (ClassDescriptor i : xClass.getInterfaceDescriptorList()) {
-                        worklist.add(i);
-                    }
+                    Collections.addAll(worklist, xClass.getInterfaceDescriptorList());
                 }
 
             }
