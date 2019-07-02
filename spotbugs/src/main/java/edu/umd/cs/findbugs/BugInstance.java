@@ -1860,7 +1860,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         shortPattern = bugPattern.getShortDescription();
         try {
             FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+            return format.format(annotationList.toArray(new BugAnnotation[0]), getPrimaryClass());
         } catch (RuntimeException e) {
             AnalysisContext.logError("Error generating bug msg ", e);
             return shortPattern + " [Error generating customized description]";
@@ -1879,7 +1879,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
         try {
             FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass(), true);
+            return format.format(annotationList.toArray(new BugAnnotation[0]), getPrimaryClass(), true);
         } catch (RuntimeException e) {
             AnalysisContext.logError("Error generating bug msg ", e);
             return shortPattern + " [Error3 generating customized description]";
@@ -1896,7 +1896,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         String pattern = bugPattern.getAbbrev() + ": " + getLongDescription();
         FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
         try {
-            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+            return format.format(annotationList.toArray(new BugAnnotation[0]), getPrimaryClass());
         } catch (RuntimeException e) {
             AnalysisContext.logError("Error generating bug msg ", e);
             return bugPattern.getShortDescription() + " [Error generating customized description]";

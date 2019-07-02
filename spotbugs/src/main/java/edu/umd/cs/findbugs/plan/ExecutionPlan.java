@@ -471,7 +471,7 @@ public class ExecutionPlan {
     }
 
     private void appendDetectorsToPass(Collection<DetectorFactory> detectorSet, AnalysisPass pass) {
-        DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[detectorSet.size()]);
+        DetectorFactory[] unassignedList = detectorSet.toArray(new DetectorFactory[0]);
         Arrays.sort(unassignedList, (a, b) -> {
             // Sort first by plugin id...
             int cmp = a.getPlugin().getPluginId().compareTo(b.getPlugin().getPluginId());

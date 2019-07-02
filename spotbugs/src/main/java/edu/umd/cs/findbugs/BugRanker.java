@@ -315,7 +315,7 @@ public class BugRanker {
         }
         rankers.add(getCoreRanker());
 
-        return rankBugPattern(pattern, rankers.toArray(new BugRanker[rankers.size()]));
+        return rankBugPattern(pattern, rankers.toArray(new BugRanker[0]));
     }
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {

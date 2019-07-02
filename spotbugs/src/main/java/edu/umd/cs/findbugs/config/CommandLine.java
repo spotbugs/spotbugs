@@ -197,7 +197,7 @@ public abstract class CommandLine {
             resultList.add(argv[i]);
         }
 
-        return resultList.toArray(new String[resultList.size()]);
+        return resultList.toArray(new String[0]);
     }
 
     public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {

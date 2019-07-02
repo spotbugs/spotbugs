@@ -372,14 +372,14 @@ public class Project implements XMLWriteable, AutoCloseable {
      * Get project files as an array of Strings.
      */
     public String[] getFileArray() {
-        return analysisTargets.toArray(new String[analysisTargets.size()]);
+        return analysisTargets.toArray(new String[0]);
     }
 
     /**
      * Get source dirs as an array of Strings.
      */
     public String[] getSourceDirArray() {
-        return srcDirList.toArray(new String[srcDirList.size()]);
+        return srcDirList.toArray(new String[0]);
     }
 
     /**
