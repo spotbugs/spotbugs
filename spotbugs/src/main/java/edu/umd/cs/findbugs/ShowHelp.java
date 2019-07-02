@@ -35,9 +35,7 @@ public class ShowHelp {
 
         TreeSet<FindBugsMain> cmds = new TreeSet<>();
         for (Plugin p : Plugin.getAllPlugins()) {
-            for (FindBugsMain m : p.getAllFindBugsMain()) {
-                cmds.add(m);
-            }
+            cmds.addAll(p.getAllFindBugsMain());
         }
         for (FindBugsMain m : cmds) {
             System.out.printf("fb %-12s %-12s %s%n", m.cmd, m.kind, m.description);
