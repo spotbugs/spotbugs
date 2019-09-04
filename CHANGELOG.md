@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 
 * default.xsl declares it is a 2.0 stylesheet, but it appears to have issues with a 2.0 processor ([#958](https://github.com/spotbugs/spotbugs/issues/958))
+* update relaxing nullness check for nullable annotation
 
 ## 4.0.0-beta3 - 2019-06-24
 
