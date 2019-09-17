@@ -55,13 +55,13 @@ install:
 
 script:
   - jdk_switcher use openjdk8
-  - ./gradlew classes testClasses -S
+  - ./gradlew classes testClasses -S -PchecksumPrint -PchecksumFailOn=build_finish
   - if [[ $TRAVIS_JDK_VERSION == "openjdk11" ]]; then export JAVA_HOME=$HOME/openjdk11; fi
-  - ./gradlew -v --no-daemon
-  - ./gradlew build smoketest -x signArchives -S --no-daemon
+  - ./gradlew -v --no-daemon -PchecksumPrint -PchecksumFailOn=build_finish
+  - ./gradlew build smoketest -x signArchives -S --no-daemon -PchecksumPrint -PchecksumFailOn=build_finish
   - jdk_switcher use openjdk8
-  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew sonarqube -S; fi
-  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew spotlessCheck -S; fi
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew sonarqube -S -PchecksumPrint -PchecksumFailOn=build_finish; fi
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew spotlessCheck -S -PchecksumPrint -PchecksumFailOn=build_finish; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
