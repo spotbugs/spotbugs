@@ -63,18 +63,12 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allSource
 }
 
-artifacts {
-  archives javadocJar, sourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'SpotBugs Annotations'
-        description 'Annotations the SpotBugs tool supports'
-      }
-    }
+publishing.publications.maven {
+  artifact javadocJar
+  artifact sourcesJar
+  pom {
+    name = 'SpotBugs Annotations'
+    description = 'Annotations the SpotBugs tool supports'
   }
 }
 

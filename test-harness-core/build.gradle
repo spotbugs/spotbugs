@@ -16,18 +16,12 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allSource
 }
 
-artifacts {
-  archives javadocJar, sourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'Core of Test Harness for SpotBugs Plugin'
-        description 'Core feature to support unit test for SpotBugs Plugin'
-      }
-    }
+publishing.publications.maven {
+  artifact javadocJar
+  artifact sourcesJar
+  pom {
+    name = 'Core of Test Harness for SpotBugs Plugin'
+    description = 'Core feature to support unit test for SpotBugs Plugin'
   }
 }
 
