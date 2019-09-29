@@ -8,7 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 
-* update ASM to 7.2 beta that supports Java 14
+* update ASM to 7.2 that supports Java 14
 
 ### Fixed
 
