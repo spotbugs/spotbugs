@@ -245,11 +245,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
   from sourceSets.main.allSource
 }
 
-artifacts {
-  archives javadocJar
-  archives sourcesJar
-}
-
 apply plugin: 'distribution'
 distributions {
   main {
@@ -326,14 +321,12 @@ task smokeTest {
   }
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'SpotBugs'
-        description "SpotBugs: Because it's easy!"
-      }
-    }
+publishing.publications.maven {
+  artifact javadocJar
+  artifact sourcesJar
+  pom {
+    name = 'SpotBugs'
+    description = "SpotBugs: Because it's easy!"
   }
 }
 

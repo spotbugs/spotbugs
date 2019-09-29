@@ -113,7 +113,7 @@ deploy:
     skip_cleanup: true
     # wait until uploading task finishes, because it may cost more than 10 minutes without any output
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    script: .travis/travis_wait "./gradlew uploadArchives"
+    script: .travis/travis_wait "./gradlew publish"
     on:
       jdk: openjdk8
       branch: master
@@ -121,7 +121,7 @@ deploy:
     skip_cleanup: true
     # wait until uploading task finishes, because it may cost more than 10 minutes without any output
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    script: .travis/travis_wait "./gradlew uploadArchives"
+    script: .travis/travis_wait "./gradlew publish"
     on:
       tags: true
       jdk: openjdk8
