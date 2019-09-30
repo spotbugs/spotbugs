@@ -2,13 +2,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT") && /* for Eclipse plugin */ !version.contains("-SNAPSHOT.")
-signing {
-  required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:uploadArchives") }
-  sign publishing.publications.maven
-}
-tasks.withType(Sign) {
-  onlyIf { isReleaseVersion }
-}
 
 publishing {
   repositories {
@@ -83,4 +76,13 @@ publishing {
       }
     }
   }
+}
+
+signing {
+  required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:publish") }
+  sign publishing.publications.maven
+}
+
+tasks.withType(Sign) {
+  onlyIf { isReleaseVersion }
 }
