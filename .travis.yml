@@ -58,7 +58,7 @@ script:
   - ./gradlew classes testClasses -S
   - if [[ $TRAVIS_JDK_VERSION == "openjdk11" ]]; then export JAVA_HOME=$HOME/openjdk11; fi
   - ./gradlew -v --no-daemon
-  - ./gradlew build smoketest -x signArchives -S --no-daemon
+  - ./gradlew build smoketest -S --no-daemon
   - jdk_switcher use openjdk8
   - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew sonarqube -S; fi
   - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew spotlessCheck -S; fi
