@@ -8,7 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 
-* Bump up Apache Commons BCEL to the version 6.4.0
+* Bump up Apache Commons BCEL to the version 6.4.1
 * update ASM to 7.2 that supports Java 14
 
 ## 4.0.0-beta4 - 2019-08-20
