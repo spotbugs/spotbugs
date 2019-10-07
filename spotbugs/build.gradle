@@ -65,7 +65,7 @@ dependencies {
   compile 'org.ow2.asm:asm-commons:7.2'
   compile 'org.ow2.asm:asm-tree:7.2'
   compile 'org.ow2.asm:asm-util:7.2'
-  compile 'org.apache.bcel:bcel:6.4.0'
+  compile 'org.apache.bcel:bcel:6.4.1'
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'org.dom4j:dom4j:2.1.1'
   compile 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
