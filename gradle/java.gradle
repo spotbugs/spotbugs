@@ -6,3 +6,11 @@ tasks.withType(JavaCompile) {
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
+
+// make the build reproducible https://reproducible-builds.org/
+tasks.withType(AbstractArchiveTask) {
+  preserveFileTimestamps = false
+  reproducibleFileOrder = true
+  dirMode = 0775
+  fileMode = 0664
+}
