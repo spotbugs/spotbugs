@@ -39,3 +39,4 @@ Contents
    links
    bugDescriptions
    migration
+   annotation
