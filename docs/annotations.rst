@@ -63,6 +63,7 @@ The annotation based approach is useless for lambdas.
 Nullable
 ---------------------------
 The annotated element could be null under some circumstances.
+This is treated the same way as not being annotated.
 
 OverrideMustInvoke
 ---------------------------
