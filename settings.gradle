@@ -18,3 +18,18 @@ gradleEnterprise {
     termsOfServiceAgree = 'yes'
   }
 }
+
+boolean isCiServer = System.getenv().containsKey("CI")
+buildCache {
+  remote(HttpBuildCache) {
+    url = 'https://spotbugs.kengo-toda.jp/cache/'
+    push = isCiServer
+    if (isCiServer) {
+      print "Connecting to Gradle Build-Cache with write access..."
+      credentials {
+        username = 'travis'
+        password = System.getenv('GRADLE_BUILD_CACHE_PASSWORD')
+      }
+    }
+  }
+}
