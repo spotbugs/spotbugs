@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2016-2017, spotbugs community
+# Copyright (C) 2016-2019, spotbugs community
 # This file is distributed under the same license as the spotbugs package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
@@ -124,4 +124,3 @@ msgid ""
 "Note that you need to enable new rules manually in your SonarQube "
 "profile, or newly added rules will not be used at analysis."
 msgstr ""
-
