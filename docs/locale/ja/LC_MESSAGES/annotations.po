@@ -214,7 +214,7 @@ msgid ""
 "Used to indicate that the nullness of element is unknown, or may vary in "
 "unknown ways in subclasses."
 msgstr ""
-"修飾された要素がnullになるかどうかが不明な際、サブクラスによって決定される歳に利用します。"
+"修飾された要素がnullになるかどうかが不明な際、またはサブクラスによって決定される際に利用します。"
 
 #: ../../annotations.rst:99
 msgid "edu.umd.cs.findbugs.annotations.CleanupObligation (Deprecated)"
