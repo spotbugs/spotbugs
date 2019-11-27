@@ -52,6 +52,9 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.CheckReturnValue;
 
 /**
@@ -62,6 +65,8 @@ import javax.annotation.CheckReturnValue;
  */
 public class SourceLineAnnotation implements BugAnnotation {
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SourceLineAnnotation.class);
 
     public static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
 
@@ -960,7 +965,7 @@ public class SourceLineAnnotation implements BugAnnotation {
                 try {
                     return new File(sourceFinder.findSourceFile(this).getFullFileName()).getCanonicalPath();
                 } catch (IOException e) {
-                    AnalysisContext.logError("Error resolving Real SourcePath (only relative source path will be available) ", e);
+                    LOG.debug("Error resolving Real SourcePath (only relative source path will be available) ", e);
                 }
             } else {
                 AnalysisContext.logError("No SourceFinder found (only relative source path will be available) ");

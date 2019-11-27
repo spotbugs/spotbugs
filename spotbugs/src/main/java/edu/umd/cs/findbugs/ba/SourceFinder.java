@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -512,7 +513,11 @@ public class SourceFinder implements AutoCloseable {
             }
         }
 
-        throw new FileNotFoundException("Can't find source file " + fileName);
+        String sourceRepositories = repositoryList.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        throw new FileNotFoundException("Can't find source file " + fileName + " (source repositories="
+                + sourceRepositories + ")");
     }
 
     public static String getPlatformName(String packageName, String fileName) {
