@@ -408,26 +408,26 @@ public abstract class FindBugs {
 
         if (verbose || commandLine.setExitCode()) {
             LOG.log(FINE, "Warnings generated: {0}", bugCount);
-            LOG.log(FINE, "Missing classes: {0}", missingClassCount);
+            LOG.log(FINEST, "Missing classes: {0}", missingClassCount);
             LOG.log(FINE, "Analysis errors: {0}", errorCount);
         }
 
         if (commandLine.setExitCode()) {
             int exitCode = 0;
-            LOG.info("Calculating exit code...");
+            LOG.finest("Calculating exit code...");
             if (errorCount > 0) {
                 exitCode |= ExitCodes.ERROR_FLAG;
                 LOG.log(FINE, "Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
             }
             if (missingClassCount > 0) {
                 exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                LOG.log(FINE, "Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
+                LOG.log(FINEST, "Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
             }
             if (bugCount > 0) {
                 exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                LOG.log(FINE, "Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
+                LOG.log(FINEST, "Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
             }
-            LOG.log(FINE, "Exit code set to: {0}", exitCode);
+            LOG.log(FINEST, "Exit code set to: {0}", exitCode);
 
             System.exit(exitCode);
         }
