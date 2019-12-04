@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2019-??-??
 
+### Changed
+
+* Rejuvenated log levels.
+
 ### Fixed
 
 * Suppress `Error resolving Real SourcePath (only relative source path will be available)` warning. [#1009](https://github.com/spotbugs/spotbugs/issues/1009)
