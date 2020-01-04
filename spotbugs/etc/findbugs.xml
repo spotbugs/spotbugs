@@ -298,7 +298,7 @@
           <Detector class="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" speed="fast"
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
-                    reports="US_USELESS_SUPPRESSION,US_USELESS_SUPPRESSION_ON_CLASS,US_USELESS_SUPPRESSION_ON_FIELD,US_USELESS_SUPPRESSION_ON_METHOD,US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER,US_USELESS_SUPPRESSION_ON_PACKAGE"
+                    reports="US_USELESS_SUPPRESSION_ON_CLASS,US_USELESS_SUPPRESSION_ON_FIELD,US_USELESS_SUPPRESSION_ON_METHOD,US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER,US_USELESS_SUPPRESSION_ON_PACKAGE"
                     hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"
                     reports="" hidden="true"/>
@@ -1348,9 +1348,9 @@
           <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" />
           <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="HSM" type="HSM_HIDING_METHOD" category="CORRECTNESS"/>
-          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION" category="CORRECTNESS"/>
-          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_FIELD" category="CORRECTNESS"/>
-          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_CLASS" category="CORRECTNESS"/>
-          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="CORRECTNESS"/>
-          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="CORRECTNESS"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_FIELD" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_CLASS" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
 </FindbugsPlugin>

@@ -607,6 +607,10 @@ This version contains no change, except for the solution for [a deployment probl
 
 ## 4.0.0-beta5 - 2020-01-14
 
+### Added
+
+* Reporting useless `@SuppressFBWarnings` annotations
+
 ### Fixed
 
 * Suppress `Error resolving Real SourcePath (only relative source path will be available)` warning. [#1009](https://github.com/spotbugs/spotbugs/issues/1009)
