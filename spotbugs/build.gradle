@@ -79,6 +79,7 @@ dependencies {
   compile project(':spotbugs-annotations')
 
   testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-core:3.2.4'
   testCompile 'org.apache.ant:ant:1.9.4'
   testCompile 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
   testCompile sourceSets.gui.output
