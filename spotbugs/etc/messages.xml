@@ -8351,19 +8351,8 @@ after the call to initLogging, the logger configuration is lost
       </Details>
   </BugPattern>
 
-  <BugPattern type="US_USELESS_SUPPRESSION">
-    <ShortDescription>Useless suppression</ShortDescription>
-    <LongDescription>Suppressing annotation is unnecessary</LongDescription>
-    <Details>
-      <![CDATA[<p>
-      Suppressing annotations should be removed from the source code as soon as they are no more needed.
-      Leaving them may result in accidental warnings suppression.
-      </p>]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="US_USELESS_SUPPRESSION_ON_CLASS">
-    <ShortDescription>Useless suppression</ShortDescription>
+    <ShortDescription>Useless suppression on a class</ShortDescription>
     <LongDescription>Suppressing annotation on the class {0} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
@@ -8374,7 +8363,7 @@ after the call to initLogging, the logger configuration is lost
   </BugPattern>
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_FIELD">
-    <ShortDescription>Useless suppression</ShortDescription>
+    <ShortDescription>Useless suppression on a field</ShortDescription>
     <LongDescription>Suppressing annotation on the field {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
@@ -8385,7 +8374,7 @@ after the call to initLogging, the logger configuration is lost
   </BugPattern>
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD">
-    <ShortDescription>Useless suppression</ShortDescription>
+    <ShortDescription>Useless suppression on a method</ShortDescription>
     <LongDescription>Suppressing annotation on the method {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
@@ -8396,7 +8385,7 @@ after the call to initLogging, the logger configuration is lost
   </BugPattern>
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER">
-    <ShortDescription>Useless suppression</ShortDescription>
+    <ShortDescription>Useless suppression on a method parameter</ShortDescription>
     <LongDescription>Suppressing annotation on the parameter {2} of the method {1} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>
@@ -8407,7 +8396,7 @@ after the call to initLogging, the logger configuration is lost
   </BugPattern>
 
   <BugPattern type="US_USELESS_SUPPRESSION_ON_PACKAGE">
-    <ShortDescription>Useless suppression</ShortDescription>
+    <ShortDescription>Useless suppression on a package</ShortDescription>
     <LongDescription>Suppressing annotation on the package {0} is unnecessary</LongDescription>
     <Details>
       <![CDATA[<p>

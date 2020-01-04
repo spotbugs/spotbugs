@@ -44,7 +44,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import org.apache.bcel.classfile.LineNumberTable;
 
 public class NoteSuppressedWarnings extends AnnotationVisitor implements Detector, NonReportingDetector {
 
