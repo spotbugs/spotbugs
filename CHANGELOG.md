@@ -4,7 +4,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2019-??-??
+## Unreleased - 2020-??-??
 
 ### Fixed
 
@@ -13,7 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 
 * Bump up Apache Commons BCEL to the version 6.4.1
-* update ASM to 7.2 that supports Java 14
+* update ASM to 7.3.1 that supports Java 14 and 15
 
 ## 4.0.0-beta4 - 2019-08-20
 
