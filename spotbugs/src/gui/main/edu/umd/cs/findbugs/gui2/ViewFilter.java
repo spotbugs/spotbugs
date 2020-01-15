@@ -63,6 +63,7 @@ public class ViewFilter {
 
     enum RankFilter implements ViewFilterEnum {
         SCARIEST(4, "Scariest"), SCARY(9, "Scary"), TROUBLING(14, "Troubling"), ALL(Integer.MAX_VALUE, "All bug ranks");
+
         final int maxRank;
 
         final String displayName;

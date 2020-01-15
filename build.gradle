@@ -1,6 +1,6 @@
 plugins {
   id 'org.sonarqube' version '2.7.1'
-  id "com.diffplug.gradle.spotless" version "3.23.0"
+  id "com.diffplug.gradle.spotless" version "3.27.1"
 }
 
 version = '4.0.0-SNAPSHOT'
@@ -44,11 +44,11 @@ task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
   dependsOn(subprojects.jacocoTestReport)
 
-  executionData = files(subprojects.jacocoTestReport.executionData)
-  sourceDirectories = files(subprojects.jacocoTestReport.sourceDirectories)
+  executionData.setFrom files(subprojects.jacocoTestReport.executionData)
+  sourceDirectories.setFrom files(subprojects.jacocoTestReport.sourceDirectories)
 
   // Only enable class directories related to non-test project
-  classDirectories = files(subprojects.jacocoTestReport.classDirectories).filter {
+  classDirectories.setFrom files(subprojects.jacocoTestReport.classDirectories).filter {
     !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")
   }
 
@@ -59,7 +59,7 @@ task jacocoRootReport(type: JacocoReport) {
   }
 
   doFirst {
-    executionData = files(executionData.findAll { it.exists() })
+    executionData.setFrom files(executionData.findAll { it.exists() })
   }
 }
 tasks.sonarqube.dependsOn jacocoRootReport
