@@ -1,17 +1,17 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
 
 dependencies {
-  compile(project(':spotbugs')) {
+  implementation(project(':spotbugs')) {
     transitive = true
   }
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
-  compile project(':spotbugs-annotations')
-  compile project(':spotbugsTestCases')
-  compile project(':test-harness')
+  api project(':spotbugs-annotations')
+  implementation project(':spotbugsTestCases')
+  implementation project(':test-harness')
 
-  compile 'org.hamcrest:hamcrest-all:1.3'
-  compile 'org.apache.ant:ant:1.9.4'
+  implementation 'org.hamcrest:hamcrest-all:1.3'
+  implementation 'org.apache.ant:ant:1.9.4'
 }
 
 

@@ -5,7 +5,7 @@ apply from: "$rootDir/gradle/maven.gradle"
 dependencies {
   compileOnly 'junit:junit:4.12'
   compileOnly project(':spotbugs')
-  compile project(':test-harness-core')
+  implementation project(':test-harness-core')
 }
 
 task javadocJar(type: Jar) {

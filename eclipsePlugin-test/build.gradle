@@ -14,14 +14,14 @@ sourceSets {
 }
 
 dependencies {
-  compile(project(':eclipsePlugin')) {
+  implementation(project(':eclipsePlugin')) {
     transitive = true
   }
-  compile project(path: ':eclipsePlugin', configuration: 'compileOnly')
+  implementation project(path: ':eclipsePlugin', configuration: 'compileOnly')
 
-  compile project(':test-harness')
-  compile 'org.hamcrest:hamcrest-all:1.3'
-  compile 'org.apache.ant:ant:1.9.4'
+  implementation project(':test-harness')
+  implementation 'org.hamcrest:hamcrest-all:1.3'
+  implementation 'org.apache.ant:ant:1.9.4'
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
