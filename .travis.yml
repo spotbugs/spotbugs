@@ -58,10 +58,10 @@ script:
   - ./gradlew classes testClasses -S
   - if [[ $TRAVIS_JDK_VERSION == "openjdk11" ]]; then export JAVA_HOME=$HOME/openjdk11; fi
   - ./gradlew -v --no-daemon
-  - ./gradlew build smoketest javadoc -S --no-daemon
+  - ./gradlew build smoketest -S --no-daemon
   - jdk_switcher use openjdk8
-  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew test jacocoRootReport sonarqube -S --no-daemon --info; fi
-  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew spotlessCheck -S; fi
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew test jacocoRootReport sonarqube -S --no-daemon; fi
+  - if [[ $TRAVIS_JDK_VERSION == "openjdk8" ]]; then ./gradlew spotlessCheck -S --no-daemon; fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
