@@ -47,8 +47,3 @@ task sourcesJar(type: Jar) {
 artifacts {
   archives sourcesJar
 }
-
-jacocoTestReport {
-  additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
-  additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
-}
