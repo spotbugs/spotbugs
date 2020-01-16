@@ -17,3 +17,5 @@ test {
     excludes = ['jdk.internal.*']
   }
 }
+
+tasks.test.finalizedBy jacocoTestReport

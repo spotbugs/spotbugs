@@ -7,7 +7,6 @@ version = '4.0.0-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/sonar.gradle"
 
 subprojects {
   apply from: "$rootDir/gradle/java.gradle"
@@ -41,10 +40,8 @@ wrapper {
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
 task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
-  def reportTasks = subprojects.tasks.flatten().grep{
-    it instanceof JacocoReport
-  }
-  dependsOn(reportTasks)
+  def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
+  dependsOn reportTasks
 
   executionData.setFrom reportTasks.executionData
   sourceDirectories.setFrom reportTasks.sourceDirectories
@@ -59,6 +56,6 @@ task jacocoRootReport(type: JacocoReport) {
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
     xml.enabled = true
   }
-
 }
-tasks.sonarqube.dependsOn jacocoRootReport
+
+apply from: "$rootDir/gradle/sonar.gradle"
