@@ -10,6 +10,7 @@ dependencies {
   implementation project(':spotbugsTestCases')
   implementation project(':test-harness')
 
+  implementation 'junit:junit:4.12'
   implementation 'org.hamcrest:hamcrest-all:1.3'
   implementation 'org.apache.ant:ant:1.9.4'
 }
