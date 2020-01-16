@@ -1,5 +1,4 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
 
 sourceSets {
   main {
