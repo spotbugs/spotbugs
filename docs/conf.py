@@ -283,4 +283,4 @@ extensions += ['code-template']
 # URL to distribute SpotBugs package
 # http://www.sphinx-doc.org/en/stable/ext/extlinks.html
 extensions += ['sphinx.ext.extlinks']
-extlinks = {'dist': ('http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/' + release + '/spotbugs-' + release + '.%s', '')}
+extlinks = {'dist': ('https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/' + release + '/spotbugs-' + release + '.%s', '')}
