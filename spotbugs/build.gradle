@@ -1,7 +1,3 @@
-// plugins {
-//   id "com.github.spotbugs" version "1.6.5"
-// }
-
 apply from: "$rootDir/gradle/jacoco.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 apply from: "$rootDir/gradle/checkstyle.gradle"

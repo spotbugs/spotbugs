@@ -14,7 +14,6 @@ subprojects {
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"
   apply from: "$rootDir/gradle/test.gradle"
-  apply from: "$rootDir/gradle/jacoco.gradle"
   if (!project.name.equals("spotbugsTestCases")) {
     apply from: "$rootDir/gradle/spotless.gradle"
   }
@@ -42,13 +41,16 @@ wrapper {
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
 task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
-  dependsOn(subprojects.jacocoTestReport)
+  def reportTasks = subprojects.tasks.flatten().grep{
+    it instanceof JacocoReport
+  }
+  dependsOn(reportTasks)
 
-  executionData.setFrom subprojects.jacocoTestReport.executionData
-  sourceDirectories.setFrom subprojects.jacocoTestReport.sourceDirectories
+  executionData.setFrom reportTasks.executionData
+  sourceDirectories.setFrom reportTasks.sourceDirectories
 
   // Only enable class directories related to non-test project
-  classDirectories.setFrom files(subprojects.jacocoTestReport.classDirectories).filter {
+  classDirectories.setFrom files(reportTasks.classDirectories).filter {
     !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")
   }
 
