@@ -68,7 +68,7 @@ dependencies {
         '**/*source_*.jar'
         ])
 
-  compile(project(':spotbugs')) {
+  api (project(':spotbugs')) {
     transitive = true
   }
 }

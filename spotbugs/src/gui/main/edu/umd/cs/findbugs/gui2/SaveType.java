@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.util.Util;
 
 enum SaveType {
     NOT_KNOWN, HTML_OUTPUT, XML_ANALYSIS, FBP_FILE, FBA_FILE;
+
     public FindBugsFileFilter getFilter() {
         switch (this) {
         case XML_ANALYSIS:

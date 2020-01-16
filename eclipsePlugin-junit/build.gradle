@@ -1,13 +1,14 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/jacoco.gradle"
 
 dependencies {
-  compile project(':eclipsePlugin')
-  testCompile project(path: ':eclipsePlugin', configuration: 'compileOnly')
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.mockito:mockito-core:2.23.0'
+  implementation project(':eclipsePlugin')
+  testImplementation project(path: ':eclipsePlugin', configuration: 'compileOnly')
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.mockito:mockito-core:2.23.0'
 }
 
 jacocoTestReport {
-  additionalSourceDirs = files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
-  additionalClassDirs = files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
+  additionalSourceDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
+  additionalClassDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
 }

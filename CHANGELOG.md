@@ -6,6 +6,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 
+### Changed
+
+* change the dependency on `jaxen` to `runtime` scope
+* change the dependency on `saxon` to `runtime` scope
+
 ## 4.0.0-beta5 - 2020-01-14
 
 ### Fixed

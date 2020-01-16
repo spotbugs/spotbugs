@@ -1,11 +1,11 @@
 apply plugin: 'org.sonarqube'
 
-def isTarget = 'master'.equals(System.env.TRAVIS_BRANCH) || 'release-3.1'.equals(System.env.TRAVIS_BRANCH)
+def isTarget = 'master' == System.env.TRAVIS_BRANCH
 
 // for security reasons travis secure variables are defined when build is
 // initiated by a pull request from same repository only
 // so pull requests from external repositories can not be analysed by sonar
-def isSecure = 'true'.equals(System.env.TRAVIS_SECURE_ENV_VARS)
+def isSecure = 'true' == System.env.TRAVIS_SECURE_ENV_VARS
 
 if (!isSecure || !isTarget) {
     rootProject.tasks['sonarqube'].setEnabled(false)
@@ -14,8 +14,8 @@ if (!isSecure || !isTarget) {
 
 def isPush = 'push'.equals(System.env.TRAVIS_EVENT_TYPE);
 def isPullRequest = 'pull_request'.equals(System.env.TRAVIS_EVENT_TYPE);
-
 rootProject.tasks['sonarqube'].setEnabled(isPush || isPullRequest)
+rootProject.tasks['sonarqube'].dependsOn jacocoRootReport
 
 sonarqube {
     properties {

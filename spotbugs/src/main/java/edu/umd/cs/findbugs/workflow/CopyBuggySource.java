@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 public class CopyBuggySource {
     enum SrcKind {
         DIR, ZIP, Z0P_GZ;
+
         static SrcKind get(File f) {
             if (f.exists() && f.isDirectory() && f.canWrite()) {
                 return DIR;
