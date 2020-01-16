@@ -18,7 +18,7 @@ dependencies {
 
 test {
   doFirst {
-    def auxClasspath = project(':spotbugsTestCases').configurations.runtime.resolvedConfiguration.resolvedArtifacts.file
+    def auxClasspath = project(':spotbugsTestCases').configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.file
     systemProperty 'AUX_CLASSPATH', auxClasspath.join(',')
   }
 }
