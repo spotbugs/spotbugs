@@ -14,10 +14,10 @@ if (!isSecure || !isTarget) {
 
 def isPush = 'push'.equals(System.env.TRAVIS_EVENT_TYPE);
 def isPullRequest = 'pull_request'.equals(System.env.TRAVIS_EVENT_TYPE);
+rootProject.tasks['sonarqube'].setEnabled(isPush || isPullRequest)
+rootProject.tasks['sonarqube'].dependsOn jacocoRootReport
 
 sonarqube {
-    enabled (isPush || isPullRequest)
-    dependsOn jacocoRootReport
     properties {
         property 'sonar.host.url', System.env.SONAR_HOST_URL
         property 'sonar.login', System.env.SONAR_LOGIN
