@@ -44,7 +44,8 @@ task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
   dependsOn(subprojects.jacocoTestReport)
 
-  sourceDirectories.setFrom files(subprojects.jacocoTestReport.sourceDirectories)
+  executionData.setFrom subprojects.jacocoTestReport.executionData
+  sourceDirectories.setFrom subprojects.jacocoTestReport.sourceDirectories
 
   // Only enable class directories related to non-test project
   classDirectories.setFrom files(subprojects.jacocoTestReport.classDirectories).filter {
@@ -57,8 +58,5 @@ task jacocoRootReport(type: JacocoReport) {
     xml.enabled = true
   }
 
-  doFirst {
-    executionData.setFrom subprojects.jacocoTestReport.executionData.filter { it.exists() }
-  }
 }
 tasks.sonarqube.dependsOn jacocoRootReport
