@@ -4,107 +4,176 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 msgid ""
-msgstr "Project-Id-Version: spotbugs 3.1\n"
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-28 08:46+0900\n"
+"POT-Creation-Date: 2020-01-18 08:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../migration.rst:2
+#: /documents/docs/migration.rst:2
+msgid "Guide for migration from SpotBugs 3.1 to 4.0"
+msgstr "SpotBugs 3.1 から 4.0 への移行ガイド"
+
+#: /documents/docs/migration.rst:5
+msgid "for SpotBugs Users"
+msgstr "SpotBugsユーザ向け"
+
+#: /documents/docs/migration.rst:7
+msgid ""
+"SpotBugs now use SLF4J instead of calling STDERR/STDOUT directly. So when"
+" you run SpotBugs, it is recommended to have a SLF4J binding in "
+"classpath."
+msgstr ""
+"SpotBugsは標準入出力を直接使うのではなく、SLF4Jを使うようになりました。"
+"よってSpotBugs実行時はSLF4Jバインディングがひとつクラスパスに含まれている必要があります。"
+
+#: /documents/docs/migration.rst:8
+msgid ""
+"SQL files in SpotBugs project are dropped. Generally it does not affect "
+"your usage."
+msgstr ""
+"SpotBugsプロジェクトに含まれていたSQLファイルは削除されました。"
+"これは基本的な用途には影響しません。"
+
+
+#: /documents/docs/migration.rst:9
+msgid "JNLP (Applet) support is dropped."
+msgstr "JNLP (Applet)のサポートは廃止されました。"
+
+#: /documents/docs/migration.rst:12
+msgid "for Plugin Developers"
+msgstr "プラグイン開発者向け"
+
+#: /documents/docs/migration.rst:14
+msgid ""
+"The `speed` attribute of `Detector` element in `findbugs.xml` is "
+"deprecated."
+msgstr ""
+"`findbugs.xml` に含まれる `Detector` 要素の `speed` 属性は非推奨になりました。"
+
+#: /documents/docs/migration.rst:15
+msgid ""
+"The dependency on `jaxen` has been changed to `runtime` scope. Generally "
+"it does not affect your project because SpotBugs does not depend on it "
+"directly."
+msgstr ""
+"`jaxen` への依存が `runtime` スコープに変更されました。SpotBugsはこれに直接依存して"
+"はいないため、プラグインプロジェクトには影響しません。"
+
+#: /documents/docs/migration.rst:16
+msgid "The dependency on `Saxon-HE` has added as a `runtime` scope dependency."
+msgstr "`Saxon-HE` への依存が `runtime` スコープで追加されました。"
+
+#: /documents/docs/migration.rst:17
+msgid ""
+"Some deprecated APIs have been removed, refer the javadoc and migrate to "
+"preferred API before you migrate to SpotBugs 4.0."
+msgstr ""
+"いくつかの非推奨だったAPIが削除されました。4.0へ移行する前に、Javadocを参考に推奨されたAPI"
+"に移行してください。"
+
+#: /documents/docs/migration.rst:20
 msgid "Guide for migration from FindBugs 3.0 to SpotBugs 3.1"
 msgstr "FindBugs 3.0 から SpotBugs 3.1 への移行ガイド"
 
-#: ../../migration.rst:5
+#: /documents/docs/migration.rst:23
 msgid "com.google.code.findbugs:findbugs"
 msgstr ""
 
-#: ../../migration.rst:7
+#: /documents/docs/migration.rst:25
 msgid ""
 "Simply replace ``com.google.code.findbugs:findbugs`` with "
 "``com.github.spotbugs:spotbugs``."
-msgstr "``com.google.code.findbugs:findbugs`` を ``com.github.spotbugs:spotbugs`` に替えてください。"
+msgstr ""
+"``com.google.code.findbugs:findbugs`` を ``com.github.spotbugs:spotbugs`` "
+"に替えてください。"
 
-#: ../../migration.rst:16
+#: /documents/docs/migration.rst:34
 msgid "com.google.code.findbugs:jsr305"
 msgstr ""
 
-#: ../../migration.rst:18
+#: /documents/docs/migration.rst:36
 msgid ""
 "JSR305 is already Dormant status, so SpotBugs does not release ``jsr305``"
 " jar file. Please continue using findbugs' one."
-msgstr "JSR305 は，すでに休止状態なので，SpotBugs は ``jsr305`` jarファイルをリリースしません。FindBugs のものを使い続けてください。"
+msgstr ""
+"JSR305 は，すでに休止状態なので，SpotBugs は ``jsr305`` jarファイルをリリースしません。FindBugs "
+"のものを使い続けてください。"
 
-#: ../../migration.rst:22
+#: /documents/docs/migration.rst:40
 msgid "com.google.code.findbugs:findbugs-annotations"
 msgstr ""
 
-#: ../../migration.rst:24
+#: /documents/docs/migration.rst:42
 msgid "Please depend on ``spotbugs-annotations`` instead."
 msgstr "代わりに ``spotbugs-annotations`` に依存してください。"
 
-#: ../../migration.rst:33
+#: /documents/docs/migration.rst:51
 msgid "com.google.code.findbugs:annotations"
 msgstr ""
 
-#: ../../migration.rst:35
+#: /documents/docs/migration.rst:53
 msgid ""
 "Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-"
 "annotations:1.0`` instead."
-msgstr "代わりに ``spotbugs-annotations`` と ``net.jcip:jcip-annotations:1.0`` の両方に依存してください。"
+msgstr ""
+"代わりに ``spotbugs-annotations`` と ``net.jcip:jcip-annotations:1.0`` "
+"の両方に依存してください。"
 
-#: ../../migration.rst:44
+#: /documents/docs/migration.rst:62
 msgid "FindBugs Ant task"
 msgstr "FindBugs Ant タスク"
 
-#: ../../migration.rst:46
+#: /documents/docs/migration.rst:64
 msgid "Please replace ``findbugs-ant.jar`` with ``spotbugs-ant.jar``."
 msgstr "``findbugs-ant.jar`` を ``spotbugs-ant.jar`` に替えてください。"
 
-#: ../../migration.rst:66
+#: /documents/docs/migration.rst:84
 msgid "FindBugs Maven plugin"
 msgstr "FindBugs Maven プラグイン"
 
-#: ../../migration.rst:68
+#: /documents/docs/migration.rst:86
 msgid ""
 "Please use `com.github.spotbugs:spotbugs-maven-plugin` instead of "
 "`org.codehaus.mojo:findbugs-maven-plugin`."
-msgstr "`org.codehaus.mojo:findbugs-maven-plugin` の代わりに `com.github.spotbugs:spotbugs-maven-plugin` を使用してください。"
+msgstr ""
+"`org.codehaus.mojo:findbugs-maven-plugin` の代わりに `com.github.spotbugs"
+":spotbugs-maven-plugin` を使用してください。"
 
-#: ../../migration.rst:74
+#: /documents/docs/migration.rst:92
 msgid "FindBugs Gradle plugin"
 msgstr "FindBugs Gradle プラグイン"
 
-#: ../../migration.rst:76
+#: /documents/docs/migration.rst:94
 msgid ""
 "Please use spotbugs plugin found on "
 "https://plugins.gradle.org/plugin/com.github.spotbugs"
-msgstr "https://plugins.gradle.org/plugin/com.github.spotbugs にある spotbugs プラグインを使用してください。"
+msgstr ""
+"https://plugins.gradle.org/plugin/com.github.spotbugs にある spotbugs "
+"プラグインを使用してください。"
 
-#: ../../migration.rst:82
+#: /documents/docs/migration.rst:100
 msgid "FindBugs Eclipse plugin"
 msgstr "FindBugs Eclipse プラグイン"
 
-#: ../../migration.rst:84
+#: /documents/docs/migration.rst:102
 msgid "Please use following update site instead."
 msgstr "代わりに次の更新サイトをご利用ください。"
 
-#: ../../migration.rst:86
+#: /documents/docs/migration.rst:104
 msgid "https://spotbugs.github.io/eclipse/ (to use stable version)"
 msgstr "https://spotbugs.github.io/eclipse/ (安定バージョンを使用する)"
 
-#: ../../migration.rst:87
+#: /documents/docs/migration.rst:105
 msgid "https://spotbugs.github.io/eclipse-candidate/ (to use candidate version)"
 msgstr "https://spotbugs.github.io/eclipse-candidate/ (候補バージョンを使用する)"
 
-#: ../../migration.rst:88
+#: /documents/docs/migration.rst:106
 msgid "https://spotbugs.github.io/eclipse-latest/ (to use latest build)"
 msgstr "https://spotbugs.github.io/eclipse-latest/ (最新のビルドを使用する)"
-
-#~ msgid "xml"
-#~ msgstr ""
-
