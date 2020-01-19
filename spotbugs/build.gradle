@@ -89,11 +89,6 @@ dependencies {
   guiTestCompileOnly project(':spotbugs-annotations')
 }
 
-// spotbugs {
-//   effort = "max"
-//   reportLevel = "high"
-// }
-
 clean {
   delete ".libs"
 }

@@ -1,4 +1,5 @@
 apply plugin: 'java-library'
+apply plugin: 'jp.skypencil.spotbugs.snom'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -13,4 +14,11 @@ tasks.withType(AbstractArchiveTask) {
   reproducibleFileOrder = true
   dirMode = 0775
   fileMode = 0664
+}
+
+spotbugs {
+    toolVersion = '4.0.0-beta5'
+    ignoreFailures = true
+    effort = 'max'
+    reportLevel = 'high'
 }
