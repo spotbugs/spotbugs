@@ -337,19 +337,6 @@ jacocoTestReport {
   classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
 }
 
-tasks.spotbugsMain {
-  reports {
-    text {
-      enabled = true
-    }
-  }
-  doLast {
-    file("$buildDir/reports/spotbugs/main/spotbugs.txt").readLines().forEach {
-        println "[spotbugs]: $it"
-    }
-  }
-}
-
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
 // TODO : bugdesc
