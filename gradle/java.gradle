@@ -22,6 +22,7 @@ spotbugs {
     toolVersion = '4.0.0-beta5'
     effort = 'max'
     reportLevel = 'high'
+    maxHeapSize = '1g'
 }
 tasks.withType(SpotBugsTask) {
     reports {
