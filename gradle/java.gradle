@@ -20,7 +20,6 @@ def classLoader = plugins.getAt( 'jp.skypencil.spotbugs.snom' ).class.classLoade
 def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
 spotbugs {
     toolVersion = '4.0.0-beta5'
-    ignoreFailures = true
     effort = 'max'
     reportLevel = 'high'
 }
