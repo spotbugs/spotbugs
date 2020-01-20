@@ -24,11 +24,13 @@ spotbugs {
     reportLevel = 'high'
     maxHeapSize = '1g'
 }
-tasks.withType(SpotBugsTask) {
-    reports {
-        html {
-            enabled = true
-            stylesheet = 'fancy-hist.xsl'
+/*tasks.withType(SpotBugsTask) {
+    if (!reports?:text.enabled) {
+        reports {
+            html {
+                enabled = true
+                stylesheet = 'fancy-hist.xsl'
+            }
         }
     }
-}
+}*/
