@@ -16,9 +16,19 @@ tasks.withType(AbstractArchiveTask) {
   fileMode = 0664
 }
 
+def classLoader = plugins.getAt( 'jp.skypencil.spotbugs.snom' ).class.classLoader
+def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
 spotbugs {
     toolVersion = '4.0.0-beta5'
     ignoreFailures = true
     effort = 'max'
     reportLevel = 'high'
+}
+tasks.withType(SpotBugsTask) {
+    reports {
+        html {
+            enabled = true
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
 }
