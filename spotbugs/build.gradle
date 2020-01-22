@@ -107,7 +107,7 @@ tasks.withType(Jar).all {
 eclipse.classpath {
   plusConfigurations += [ configurations.compileOnly ]
   plusConfigurations += [ configurations.guiCompileOnly ]
-  plusConfigurations += [ configurations.testImplementation ]
+  plusConfigurations += [ configurations.testCompileClasspath ]
 }
 
 eclipse.classpath.file {
