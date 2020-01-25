@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.util.NotImplementedYetException;
+import org.xml.sax.Attributes;
+
 import java.io.Serializable;
 
 /**
@@ -77,4 +80,8 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
     public boolean isSignificant();
 
     public String toString(ClassAnnotation primaryClass);
+
+    public static BugAnnotation fromXML(String qName, Attributes attributes){
+        throw new NotImplementedYetException(qName+" not implement fromXML");
+    }
 }

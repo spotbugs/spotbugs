@@ -23,6 +23,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -573,7 +576,29 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else if ("UserAnnotation".equals(qName)) {
             // legacy from the cloud plugin stuff
         } else {
-            throw new SAXException("Unknown bug annotation named " + qName);
+            // @Anemone, add custom bug annotation types,
+            // which can be deserialized with 'fromXML' method in its class.
+            for (Plugin plugin:Plugin.getAllPlugins()){
+                Class<?> annotationClazz;
+                try {
+                    // The qName should equal to its classname, so there can reflect.
+                    annotationClazz=plugin.getClassLoader().loadClass(qName);
+                    Method fromXML=annotationClazz.getMethod("fromXML", String.class, Attributes.class);
+                    bugAnnotation = (BugAnnotation) fromXML.invoke(null, qName, attributes);
+                    break;
+                } catch ( NoSuchMethodException | IllegalAccessException | ClassCastException e) {
+                    e.printStackTrace();
+                    throw new SAXException(e.toString());
+                } catch (ClassNotFoundException e) {
+                    continue;
+                } catch (InvocationTargetException e) {
+                    e.getTargetException().printStackTrace();
+                    throw new SAXException(e.getTargetException().toString());
+                }
+
+            }
+            if (bugAnnotation==null)
+                throw new SAXException("Unknown bug annotation named " + qName);
         }
 
         if (bugAnnotation != null) {
