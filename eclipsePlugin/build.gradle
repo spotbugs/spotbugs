@@ -93,7 +93,7 @@ javadoc {
 }
 
 task copyLibsForEclipse(type: Copy) {
-    dependsOn project(':spotbugs').configurations.compileClasspath
+    dependsOn project(':spotbugs').configurations.runtimeClasspath
     from ('../spotbugs/.libs') {
       include "*.jar"
       exclude "*xml-apis*.jar"
