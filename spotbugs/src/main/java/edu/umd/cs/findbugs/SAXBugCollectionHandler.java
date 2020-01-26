@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -578,15 +577,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else {
             // @Anemone, add custom bug annotation types,
             // which can be deserialized with 'fromXML' method in its class.
-            for (Plugin plugin:Plugin.getAllPlugins()){
+            for (Plugin plugin : Plugin.getAllPlugins()) {
                 Class<?> annotationClazz;
                 try {
                     // The qName should equal to its classname, so there can reflect.
-                    annotationClazz=plugin.getClassLoader().loadClass(qName);
-                    Method fromXML=annotationClazz.getMethod("fromXML", String.class, Attributes.class);
+                    annotationClazz = plugin.getClassLoader().loadClass(qName);
+                    Method fromXML = annotationClazz.getMethod("fromXML", String.class, Attributes.class);
                     bugAnnotation = (BugAnnotation) fromXML.invoke(null, qName, attributes);
                     break;
-                } catch ( NoSuchMethodException | IllegalAccessException | ClassCastException e) {
+                } catch (NoSuchMethodException | IllegalAccessException | ClassCastException e) {
                     e.printStackTrace();
                     throw new SAXException(e.toString());
                 } catch (ClassNotFoundException e) {
@@ -597,7 +596,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 }
 
             }
-            if (bugAnnotation==null)
+            if (bugAnnotation == null)
                 throw new SAXException("Unknown bug annotation named " + qName);
         }
 

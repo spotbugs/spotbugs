@@ -81,7 +81,7 @@ public interface BugAnnotation extends Comparable<BugAnnotation>, XMLWriteableWi
 
     public String toString(ClassAnnotation primaryClass);
 
-    public static BugAnnotation fromXML(String qName, Attributes attributes){
-        throw new NotImplementedYetException(qName+" not implement fromXML");
+    public static BugAnnotation fromXML(String qName, Attributes attributes) {
+        throw new NotImplementedYetException(qName + " not implement fromXML");
     }
 }
