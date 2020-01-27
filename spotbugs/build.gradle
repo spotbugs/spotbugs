@@ -271,6 +271,7 @@ distributions {
 
 distTar.compression = Compression.GZIP
 tasks['assemble'].dependsOn tasks['assembleDist']
+tasks['jar'].dependsOn tasks['updateManifest']
 
 task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
