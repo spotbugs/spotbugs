@@ -7,6 +7,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2020-??-??
 * add custom bug annotation support
 
+### Fixed
+
+* Latest 4.0.0 Eclipse plugin is not functional ([#1067](https://github.com/spotbugs/spotbugs/issues/1067))
+
 ## 4.0.0-RC1 - 2020-01-17
 
 ### Changed
