@@ -107,7 +107,7 @@ tasks.withType(Jar).all {
 eclipse.classpath {
   plusConfigurations += [ configurations.compileOnly ]
   plusConfigurations += [ configurations.guiCompileOnly ]
-  plusConfigurations += [ configurations.testImplementation ]
+  plusConfigurations += [ configurations.testRuntimeClasspath ]
 }
 
 eclipse.classpath.file {
@@ -126,7 +126,7 @@ eclipse.classpath.file {
 }
 
 task copyLibsForEclipse (type: Copy) {
-    from configurations.compileClasspath.files
+    from configurations.runtimeClasspath.files
     into ".libs"
     include "*.jar"
     exclude "*xml-apis*.jar"
@@ -136,7 +136,7 @@ task copyLibsForEclipse (type: Copy) {
     into ".libs"
     include "*.jar"
 
-    from configurations.testCompileClasspath.files
+    from configurations.testRuntimeClasspath.files
     into ".libs"
     include "*.jar"
 
@@ -150,7 +150,7 @@ task copyLibsForEclipse (type: Copy) {
 }
 
 task updateManifest {
-  dependsOn configurations.compileClasspath, copyLibsForEclipse
+  dependsOn configurations.runtimeClasspath, copyLibsForEclipse
   doLast {
     def manifestSpec = manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
@@ -251,7 +251,7 @@ distributions {
          include 'README'
       }
       from 'licenses'
-      from([configurations.compileClasspath, configurations.logBinding]) {
+      from([configurations.runtimeClasspath, configurations.logBinding]) {
         into 'lib'
         include '**/*.jar'
       }
@@ -271,6 +271,7 @@ distributions {
 
 distTar.compression = Compression.GZIP
 tasks['assemble'].dependsOn tasks['assembleDist']
+tasks['jar'].dependsOn tasks['updateManifest']
 
 task distSrcZip(type:Exec) {
   commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
