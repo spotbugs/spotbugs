@@ -246,7 +246,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
             } else if (isBoring(lhsAnnotation)) {
                 throw new IllegalStateException("Impossible");
             } else {
-                cmp=lhsAnnotation.compareTo(rhsAnnotation);
+                cmp = lhsAnnotation.compareTo(rhsAnnotation);
             }
             if (cmp != 0) {
                 return cmp;
