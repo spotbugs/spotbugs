@@ -567,6 +567,7 @@ public class Update {
 
     enum MatchOldBugs {
         IF_LIVE, IF_CLASS_NOT_SEEN_UNTIL_NOW, ALWAYS;
+
         boolean match(BugInstance b) {
             switch (this) {
             case ALWAYS:
