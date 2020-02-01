@@ -104,7 +104,9 @@ deploy:
       condition: "$TRAVIS_TAG != *'_RC'* && $TRAVIS_TAG != *'_beta'*"
   - provider: releases
     api_key: $GITHUB_TOKEN
-    file: "eclipsePlugin/build/distributions/eclipsePlugin.zip"
+    file:
+      - "eclipsePlugin/build/distributions/eclipsePlugin.zip"
+      - "spotbugs/build/distributions/*"
     skip_cleanup: true
     on:
       tags: true
