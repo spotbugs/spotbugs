@@ -283,5 +283,5 @@ extensions += ['code-template']
 # URL to distribute SpotBugs package
 # http://www.sphinx-doc.org/en/stable/ext/extlinks.html
 extensions += ['sphinx.ext.extlinks']
-tag = release.replace('-', '_')
+tag = release.replace('-', '_').lower()
 extlinks = {'dist': ('https://github.com/spotbugs/spotbugs/releases/download/' + tag + '/spotbugs-' + release + '.%s', '')}
