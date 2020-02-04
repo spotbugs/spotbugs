@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs;
 
 public class ParameterWarningSuppressor extends ClassWarningSuppressor {
 
+    private final static String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER";
+
     final MethodAnnotation method;
 
     final int register;
@@ -31,5 +33,13 @@ public class ParameterWarningSuppressor extends ClassWarningSuppressor {
             System.out.println("Suppressing " + bugInstance);
         }
         return true;
+    }
+
+    @Override
+    public BugInstance buildUselessSuppressionBugInstance() {
+        return new BugInstance(BUG_TYPE, PRIORITY)
+                .addClass(clazz.getClassDescriptor())
+                .addMethod(method)
+                .addParameterAnnotation(register, LocalVariableAnnotation.PARAMETER_ROLE);
     }
 }

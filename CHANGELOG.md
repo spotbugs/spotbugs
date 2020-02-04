@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 
+### Added
+
+* Reporting useless `@SuppressFBWarnings` annotations
+
 ## 4.0.0-RC2 - 2020-01-29
 
 ### Fixed
