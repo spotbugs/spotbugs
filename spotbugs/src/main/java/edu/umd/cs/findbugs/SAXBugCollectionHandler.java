@@ -25,11 +25,7 @@ import static java.util.Collections.unmodifiableSet;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
@@ -109,6 +105,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     private final @CheckForNull File base;
 
     private final String topLevelName;
+
+    private final Map<String, Method> qnameCache = new HashMap<>();
 
     private SAXBugCollectionHandler(String topLevelName, @CheckForNull BugCollection bugCollection,
             @CheckForNull Project project, @CheckForNull File base) {
@@ -577,27 +575,34 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else {
             // @Anemone, add custom bug annotation types,
             // which can be deserialized with 'fromXML' method in its class.
+            Method fromXML = qnameCache.get(qName);
             for (Plugin plugin : Plugin.getAllPlugins()) {
-                Class<?> annotationClazz;
-                try {
-                    // The qName should equal to its classname, so there can reflect.
-                    annotationClazz = plugin.getClassLoader().loadClass(qName);
-                    Method fromXML = annotationClazz.getMethod("fromXML", String.class, Attributes.class);
-                    bugAnnotation = (BugAnnotation) fromXML.invoke(null, qName, attributes);
-                    break;
-                } catch (NoSuchMethodException | IllegalAccessException | ClassCastException e) {
-                    e.printStackTrace();
-                    throw new SAXException(e.toString());
-                } catch (ClassNotFoundException e) {
-                    continue;
-                } catch (InvocationTargetException e) {
-                    e.getTargetException().printStackTrace();
-                    throw new SAXException(e.getTargetException().toString());
+                if (fromXML == null) {
+                    Class<?> annotationClazz;
+                    try {
+                        // The qName should equal to its classname, so there can reflect.
+                        annotationClazz = plugin.getClassLoader().loadClass(qName);
+                        fromXML = annotationClazz.getMethod("fromXML", String.class, Attributes.class);
+                        break;
+                    } catch (NoSuchMethodException | ClassCastException e) {
+                        e.printStackTrace();
+                        throw new SAXException(e.toString());
+                    } catch (ClassNotFoundException ignored) {
+                    }
                 }
-
             }
-            if (bugAnnotation == null)
+            if (fromXML == null) {
                 throw new SAXException("Unknown bug annotation named " + qName);
+            }
+            try {
+                bugAnnotation = (BugAnnotation) fromXML.invoke(null, qName, attributes);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new SAXException(e.toString());
+            } catch (InvocationTargetException e) {
+                e.getTargetException().printStackTrace();
+                throw new SAXException(e.getTargetException().toString());
+            }
         }
 
         if (bugAnnotation != null) {
