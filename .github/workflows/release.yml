@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@722adc6
-      - name: Set up JDK 11
+      - name: Set up JDK 8
         uses: actions/setup-java@081536e
         with:
           java-version: '8.0.x'
