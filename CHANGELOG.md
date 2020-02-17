@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 
+### Fixed
+
+* Resolved Saxon warning ([#1077](https://github.com/spotbugs/spotbugs/issues/1077))
+
 ## 4.0.0 - 2020-02-15
 
 ### Fixed
