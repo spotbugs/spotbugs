@@ -54,6 +54,11 @@ import java.util.zip.GZIPOutputStream;
 import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.TransformerException;
 
 import org.dom4j.Document;
@@ -349,8 +354,15 @@ public class SortedBugCollection implements BugCollection {
 
             XMLReader xr;
             try {
-                xr = XMLReaderFactory.createXMLReader();
-            } catch (SAXException e) {
+                SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+                parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+                parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",  Boolean.TRUE);
+                parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",  Boolean.FALSE);
+                parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+                parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+                SAXParser parser = parserFactory.newSAXParser();
+                xr = parser.getXMLReader();
+            } catch (SAXException | ParserConfigurationException e) {
                 AnalysisContext.logError("Couldn't create XMLReaderFactory", e);
                 throw new DocumentException("Sax error ", e);
             }
