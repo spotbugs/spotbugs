@@ -29,6 +29,11 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 
 import javax.annotation.WillClose;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLInputFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -128,7 +133,7 @@ public class Filter extends OrMatcher {
     public Filter(String fileName) throws IOException {
         try {
             parse(fileName);
-        } catch (SAXException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             throw new IOException(e.getMessage());
         }
     }
@@ -143,7 +148,7 @@ public class Filter extends OrMatcher {
     public Filter(InputStream stream) throws IOException {
         try {
             parse("", stream);
-        } catch (SAXException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             throw new IOException(e.getMessage());
         }
     }
@@ -198,9 +203,9 @@ public class Filter extends OrMatcher {
      *            name of the filter file
      * @throws IOException
      * @throws SAXException
-     * @throws FilterException
+     * @throws ParserConfigurationException
      */
-    private void parse(String fileName) throws IOException, SAXException {
+    private void parse(String fileName) throws IOException, SAXException, ParserConfigurationException {
         FileInputStream fileInputStream = new FileInputStream(new File(fileName));
         parse(fileName, fileInputStream);
     }
@@ -212,12 +217,19 @@ public class Filter extends OrMatcher {
      *            name of the filter file
      * @throws IOException
      * @throws SAXException
-     * @throws FilterException
+     * @throws ParserConfigurationException
      */
-    private void parse(String fileName, @WillClose InputStream stream) throws IOException, SAXException {
+    private void parse(String fileName, @WillClose InputStream stream) throws IOException, SAXException, ParserConfigurationException {
         try {
             SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, new File(fileName));
-            XMLReader xr = XMLReaderFactory.createXMLReader();
+            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+            parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",  Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",  Boolean.FALSE);
+            parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+            parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+            SAXParser parser = parserFactory.newSAXParser();
+            XMLReader xr = parser.getXMLReader();
             xr.setContentHandler(handler);
             xr.setErrorHandler(handler);
             Reader reader = Util.getReader(stream);

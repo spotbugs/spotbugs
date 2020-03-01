@@ -20,6 +20,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Upgraded log4j2 to 2.13.1
 * Upgraded from commons-lang2 to commons-lang3 3.10
 * Added commons-text 1.8 due to items deprecated in commons-lang3 and moved to this project
+* replaced usage of org.xml.sax.helpers.XMLReaderFactory (deprecated since jdk9) with javax.xml.parsers.SAXParserFactory
 
 ## 4.0.1 - 2020-03-19
 
