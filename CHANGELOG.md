@@ -6,6 +6,29 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 
+### Fixed
+
+* Resolved Saxon warning ([#1077](https://github.com/spotbugs/spotbugs/issues/1077))
+* Unclear message of `SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION` ((#1091)[https://github.com/spotbugs/spotbugs/pull/1091])
+
+## 4.0.0 - 2020-02-15
+
+### Fixed
+
+* [Duplicated word in bug descriptions](https://github.com/spotbugs/spotbugs/commit/0d50f0056d7b34e09b472079120bf5ea2abddc45)
+
+## 4.0.0-RC3 - 2020-02-04
+
+This version contains no change, except for the solution for [a deployment problem](https://issues.sonatype.org/browse/MVNCENTRAL-5548).
+
+## 4.0.0-RC2 - 2020-01-29
+
+### Fixed
+
+* Latest 4.0.0 Eclipse plugin is not functional ([#1067](https://github.com/spotbugs/spotbugs/issues/1067))
+
+## 4.0.0-RC1 - 2020-01-17
+
 ### Changed
 
 * change the dependency on `jaxen` to `runtime` scope

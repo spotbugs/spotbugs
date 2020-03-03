@@ -93,10 +93,20 @@ javadoc {
 }
 
 task copyLibsForEclipse(type: Copy) {
-    dependsOn configurations.compile
-    from configurations.compile.files {
+    from ('../spotbugs/.libs') {
       include "*.jar"
       exclude "*xml-apis*.jar"
+      exclude "*ant-*.jar"
+      exclude "Apple*.jar"
+      exclude "hamcrest*.jar"
+      exclude "slf4j-*alpha*.jar"
+      exclude "Saxon*.jar"
+    }
+    from ('../spotbugs/build/libs') {
+      include "*.jar"
+    }
+    from ('../spotbugs-annotations/build/libs') {
+      include "*.jar"
     }
     into "lib"
 }
@@ -136,6 +146,8 @@ task updateManifest {
     props.store(file('build.properties').newWriter(), null)
   }
 }
+
+tasks['compileJava'].dependsOn ':spotbugs:jar'
 
 // create manifest when importing to eclipse
 tasks.eclipse.dependsOn copyLibsForEclipse, updateManifest

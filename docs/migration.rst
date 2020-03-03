@@ -1,3 +1,21 @@
+Guide for migration from SpotBugs 3.1 to 4.0
+============================================
+
+for SpotBugs Users
+------------------
+
+* SpotBugs now use SLF4J instead of calling STDERR/STDOUT directly. So when you run SpotBugs, it is recommended to have a SLF4J binding in classpath.
+* SQL files in SpotBugs project are dropped. Generally it does not affect your usage.
+* JNLP (Applet) support is dropped.
+
+for Plugin Developers
+---------------------
+
+* The `speed` attribute of `Detector` element in `findbugs.xml` is deprecated.
+* The dependency on `jaxen` has been changed to `runtime` scope. Generally it does not affect your project because SpotBugs does not depend on it directly.
+* The dependency on `Saxon-HE` has added as a `runtime` scope dependency.
+* Some deprecated APIs have been removed, refer the javadoc and migrate to preferred API before you migrate to SpotBugs 4.0.
+
 Guide for migration from FindBugs 3.0 to SpotBugs 3.1
 =====================================================
 

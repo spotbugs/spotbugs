@@ -1,0 +1,37 @@
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@722adc6
+      - name: Set up JDK 8
+        uses: actions/setup-java@081536e
+        with:
+          java-version: '8.0.x'
+      - uses: actions/cache@cffae95
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output .github/workflows/secring .github/workflows/secring.gpg
+          gpg --import --batch .github/workflows/secring
+          echo ossrhUsername=eller86 >> gradle.properties
+          echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
+          echo "signing.keyId=${SIGNING_KEY_ID}" >> gradle.properties
+          echo "signing.password=${SIGNING_PASSWORD}" >> gradle.properties
+          ./gradlew publish --no-daemon
+        env:
+          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}

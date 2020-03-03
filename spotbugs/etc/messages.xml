@@ -2101,7 +2101,7 @@ bug detectors.</p>
     </Details>
   </BugPattern>
   <BugPattern type="TESTING1">
-    <ShortDescription>Testing 1 </ShortDescription>
+    <ShortDescription>Testing 1</ShortDescription>
     <LongDescription>Test warning 1 generated in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -2367,7 +2367,7 @@ will need to be changed in order to compile it in later versions of Java.</p>
   </BugPattern>
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
     <ShortDescription>Fields of immutable classes should be final</ShortDescription>
-    <LongDescription>{1.givenClass} should be final since {0} is marked as Immutable.  </LongDescription>
+    <LongDescription>{1.givenClass} should be final since {0} is marked as Immutable.</LongDescription>
     <Details>
 <![CDATA[
   <p> The class is annotated with net.jcip.annotations.Immutable or javax.annotation.concurrent.Immutable,
@@ -2730,7 +2730,7 @@ SQL injection attacks.
   </BugPattern>
   <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
     <ShortDescription>A prepared statement is generated from a nonconstant String</ShortDescription>
-    <LongDescription>A prepared statement is generated from a nonconstant String in {1} </LongDescription>
+    <LongDescription>A prepared statement is generated from a nonconstant String in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>The code creates an SQL prepared statement from a nonconstant String.
@@ -2871,7 +2871,7 @@ on objects referenced by X, because they may already be getting finalized in a s
   </BugPattern>
   <BugPattern type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS">
     <ShortDescription>Equals checks for incompatible operand</ShortDescription>
-    <LongDescription>{1} checks for operand being a {2.givenClass} </LongDescription>
+    <LongDescription>{1} checks for operand being a {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> This equals method is checking to see if the argument is some incompatible type
@@ -2983,7 +2983,7 @@ invoking super.equals(o).
     <Details>
 <![CDATA[
   <p> This class defines an equals method that overrides an equals method in a superclass. Both equals methods
-methods use <code>instanceof</code> in the determination of whether two objects are equal. This is fraught with peril,
+use <code>instanceof</code> in the determination of whether two objects are equal. This is fraught with peril,
 since it is important that the equals method is symmetrical (in other words, <code>a.equals(b) == b.equals(a)</code>).
 If B is a subtype of A, and A's equals method checks that the argument is an instanceof A, and B's equals method
 checks that the argument is an instanceof B, it is quite likely that the equivalence relation defined by these
@@ -3006,7 +3006,7 @@ It is better to check if <code>this.getClass() == o.getClass()</code>.
     </Details>
   </BugPattern>
   <BugPattern type="EQ_UNUSUAL">
-    <ShortDescription>Unusual equals method </ShortDescription>
+    <ShortDescription>Unusual equals method</ShortDescription>
     <LongDescription>{1} is unusual</LongDescription>
     <Details>
 <![CDATA[
@@ -3300,7 +3300,7 @@ the recommended <code>hashCode</code> implementation to use is:</p>
   </BugPattern>
   <BugPattern type="ES_COMPARING_STRINGS_WITH_EQ">
     <ShortDescription>Comparison of String objects using == or !=</ShortDescription>
-    <LongDescription>Comparison of String objects using == or != in {1} </LongDescription>
+    <LongDescription>Comparison of String objects using == or != in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>This code compares <code>java.lang.String</code> objects for reference
@@ -3314,7 +3314,7 @@ using the <code>equals(Object)</code> method instead.</p>
   </BugPattern>
   <BugPattern type="ES_COMPARING_PARAMETER_STRING_WITH_EQ">
     <ShortDescription>Comparison of String parameter using == or !=</ShortDescription>
-    <LongDescription>Comparison of String parameter using == or != in {1} </LongDescription>
+    <LongDescription>Comparison of String parameter using == or != in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>This code compares a <code>java.lang.String</code> parameter for reference
@@ -3691,7 +3691,7 @@ For example, in the following code, <code>foo</code> will be null.</p>
     </Details>
   </BugPattern>
   <BugPattern type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT">
-    <ShortDescription>Synchronization on interned String </ShortDescription>
+    <ShortDescription>Synchronization on interned String</ShortDescription>
     <LongDescription>Synchronization on interned String in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -3985,7 +3985,7 @@ could be changed by malicious code or
   </BugPattern>
   <BugPattern type="MS_CANNOT_BE_FINAL">
     <ShortDescription>Field isn't final and can't be protected from malicious code</ShortDescription>
-    <LongDescription>{1} isn't final and can't be protected from malicious code </LongDescription>
+    <LongDescription>{1} isn't final and can't be protected from malicious code</LongDescription>
     <Details>
 <![CDATA[
   <p>
@@ -4287,7 +4287,7 @@ be confusing to users of this class.</p>
     </Details>
   </BugPattern>
   <BugPattern type="SE_READ_RESOLVE_IS_STATIC">
-    <ShortDescription>The readResolve method must not be declared as a static method.  </ShortDescription>
+    <ShortDescription>The readResolve method must not be declared as a static method.</ShortDescription>
     <LongDescription>{1} should be declared as an instance method rather than a static method</LongDescription>
     <Details>
 <![CDATA[
@@ -4309,7 +4309,7 @@ This might be intentional and OK, but should be reviewed to ensure it is what is
     </Details>
   </BugPattern>
   <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
-    <ShortDescription>The readResolve method must be declared with a return type of Object. </ShortDescription>
+    <ShortDescription>The readResolve method must be declared with a return type of Object.</ShortDescription>
     <LongDescription>The method {1} must be declared with a return type of Object rather than {1.returnType}</LongDescription>
     <Details>
 <![CDATA[
@@ -4320,7 +4320,7 @@ mechanism, it must be declared to have a return type of Object.
     </Details>
   </BugPattern>
   <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
-    <ShortDescription>Transient field of class that isn't Serializable. </ShortDescription>
+    <ShortDescription>Transient field of class that isn't Serializable.</ShortDescription>
     <LongDescription>{1.givenClass} is transient but {0} isn't Serializable</LongDescription>
     <Details>
 <![CDATA[
@@ -4333,7 +4333,7 @@ it may indicate a misunderstanding of how serialization works.
     </Details>
   </BugPattern>
   <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
-    <ShortDescription>Transient field that isn't set by deserialization. </ShortDescription>
+    <ShortDescription>Transient field that isn't set by deserialization.</ShortDescription>
     <LongDescription>The field {1} is transient but isn't set by deserialization</LongDescription>
     <Details>
 <![CDATA[
@@ -4360,8 +4360,8 @@ deserialized instance of the class.
     <Details>
 <![CDATA[
   <p> This class implements the <code>Externalizable</code> interface, but does
-  not define a void constructor. When Externalizable objects are deserialized,
-   they first need to be constructed by invoking the void
+  not define a public void constructor. When Externalizable objects are deserialized,
+   they first need to be constructed by invoking the public void
    constructor. Since this class does not have one,
    serialization and deserialization will fail at runtime.</p>
 ]]>
@@ -4641,8 +4641,8 @@ consider removing it from the class.</p>
     </Details>
   </BugPattern>
   <BugPattern type="QF_QUESTIONABLE_FOR_LOOP">
-    <ShortDescription>Complicated, subtle or wrong increment in for-loop </ShortDescription>
-    <LongDescription>Complicated, subtle or wrong increment in for-loop {1} </LongDescription>
+    <ShortDescription>Complicated, subtle or wrong increment in for-loop</ShortDescription>
+    <LongDescription>Complicated, subtle or wrong increment in for-loop {1}</LongDescription>
     <Details>
 <![CDATA[
    <p>Are you sure this for loop is incrementing the correct variable?
@@ -4833,7 +4833,7 @@ inner object.&nbsp; This reference makes the instances
     </Details>
   </BugPattern>
   <BugPattern type="WA_NOT_IN_LOOP">
-    <ShortDescription>Wait not in loop </ShortDescription>
+    <ShortDescription>Wait not in loop</ShortDescription>
     <LongDescription>Wait not in loop in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -4845,7 +4845,7 @@ inner object.&nbsp; This reference makes the instances
     </Details>
   </BugPattern>
   <BugPattern type="WA_AWAIT_NOT_IN_LOOP">
-    <ShortDescription>Condition.await() not in loop </ShortDescription>
+    <ShortDescription>Condition.await() not in loop</ShortDescription>
     <LongDescription>Condition.await() not in loop in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -5263,7 +5263,7 @@ for null.  This may lead to a <code>NullPointerException</code> when the code is
    </Details>
   </BugPattern>
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
-    <ShortDescription>Method call passes null to a non-null parameter </ShortDescription>
+    <ShortDescription>Method call passes null to a non-null parameter</ShortDescription>
     <LongDescription>Null passed for non-null parameter of {2.givenClass} in {1}</LongDescription>
     <Details>
       <![CDATA[
@@ -5764,7 +5764,7 @@ public void foo() {
     </Details>
   </BugPattern>
   <BugPattern type="SA_LOCAL_DOUBLE_ASSIGNMENT">
-    <ShortDescription>Double assignment of local variable </ShortDescription>
+    <ShortDescription>Double assignment of local variable</ShortDescription>
     <LongDescription>Double assignment of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -5885,7 +5885,7 @@ generator is <code>Integer.MIN_VALUE</code>, then the result will be negative as
     </Details>
   </BugPattern>
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_HASHCODE">
-    <ShortDescription>Bad attempt to compute absolute value of signed 32-bit hashcode </ShortDescription>
+    <ShortDescription>Bad attempt to compute absolute value of signed 32-bit hashcode</ShortDescription>
     <LongDescription>Bad attempt to compute absolute value of signed 32-bit hashcode in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -5988,7 +5988,7 @@ This comparison is vacuous and possibly incorrect.
   </BugPattern>
   <BugPattern type="INT_VACUOUS_COMPARISON">
     <ShortDescription>Vacuous comparison of integer value</ShortDescription>
-    <LongDescription>Vacuous comparison of integer value {1} </LongDescription>
+    <LongDescription>Vacuous comparison of integer value {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> There is an integer comparison that always returns
@@ -5999,7 +5999,7 @@ the same value (e.g., x &lt;= Integer.MAX_VALUE).
   </BugPattern>
   <BugPattern type="INT_BAD_REM_BY_1">
     <ShortDescription>Integer remainder modulo 1</ShortDescription>
-    <LongDescription>Integer remainder modulo 1 computed in {1} </LongDescription>
+    <LongDescription>Integer remainder modulo 1 computed in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> Any expression (exp % 1) is guaranteed to always return zero.
@@ -6010,7 +6010,7 @@ Did you mean (exp &amp; 1) or (exp % 2) instead?
   </BugPattern>
   <BugPattern type="BIT_IOR_OF_SIGNED_BYTE">
     <ShortDescription>Bitwise OR of signed byte value</ShortDescription>
-    <LongDescription>Bitwise OR of signed byte value computed in {1} </LongDescription>
+    <LongDescription>Bitwise OR of signed byte value computed in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> Loads a byte value (e.g., a value loaded from a byte array or returned by a method
@@ -6041,7 +6041,7 @@ for(int i = 0; i &lt; 4; i++) {
   </BugPattern>
   <BugPattern type="BIT_ADD_OF_SIGNED_BYTE">
     <ShortDescription>Bitwise add of signed byte value</ShortDescription>
-    <LongDescription>Bitwise add of signed byte value computed in {1} </LongDescription>
+    <LongDescription>Bitwise add of signed byte value computed in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> Adds a byte value and a value which is known to have the 8 lower bits clear.
@@ -6445,7 +6445,7 @@ super.tearDown(), but doesn't.</p>
     </Details>
   </BugPattern>
   <BugPattern type="IJU_SUITE_NOT_STATIC">
-    <ShortDescription>TestCase implements a non-static suite method </ShortDescription>
+    <ShortDescription>TestCase implements a non-static suite method</ShortDescription>
     <LongDescription>TestCase {0} implements a non-static suite method</LongDescription>
     <Details>
 <![CDATA[
@@ -6455,7 +6455,7 @@ super.tearDown(), but doesn't.</p>
     </Details>
   </BugPattern>
   <BugPattern type="IJU_BAD_SUITE_METHOD">
-    <ShortDescription>TestCase declares a bad suite method </ShortDescription>
+    <ShortDescription>TestCase declares a bad suite method</ShortDescription>
     <LongDescription>Bad declaration for suite method in {0}</LongDescription>
     <Details>
 <![CDATA[
@@ -6590,7 +6590,7 @@ only checks to see if they are the same array, and ignores the contents of the a
     </Details>
   </BugPattern>
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
-    <ShortDescription>Unneeded use of currentThread() call, to call interrupted() </ShortDescription>
+    <ShortDescription>Unneeded use of currentThread() call, to call interrupted()</ShortDescription>
     <LongDescription>{1} makes an unneeded call to currentThread() just to call interrupted()</LongDescription>
     <Details>
 <![CDATA[
@@ -7168,7 +7168,7 @@ false if <code>o</code> is not the same type as <code>this</code>.
     </Details>
   </BugPattern>
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
-    <ShortDescription>Questionable cast to abstract collection </ShortDescription>
+    <ShortDescription>Questionable cast to abstract collection</ShortDescription>
     <LongDescription>Questionable cast from Collection to abstract class {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -7530,7 +7530,7 @@ publicized the bug pattern</a>.
     </Details>
   </BugPattern>
   <BugPattern type="IM_BAD_CHECK_FOR_ODD">
-    <ShortDescription>Check for oddness that won't work for negative numbers </ShortDescription>
+    <ShortDescription>Check for oddness that won't work for negative numbers</ShortDescription>
     <LongDescription>Check for oddness that won't work for negative numbers in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -7787,7 +7787,7 @@ It is likely that the wrong value is being passed as a parameter.
   </BugPattern>
   <BugPattern type="DMI_VACUOUS_SELF_COLLECTION_CALL">
     <ShortDescription>Vacuous call to collections</ShortDescription>
-    <LongDescription>For any collection c, calling c.{2.name}(c) doesn't make sense </LongDescription>
+    <LongDescription>For any collection c, calling c.{2.name}(c) doesn't make sense</LongDescription>
     <Details>
      <![CDATA[
      <p> This call doesn't make sense. For any collection <code>c</code>, calling <code>c.containsAll(c)</code> should
@@ -7798,7 +7798,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
   </BugPattern>
   <BugPattern type="PZ_DONT_REUSE_ENTRY_OBJECTS_IN_ITERATORS">
     <ShortDescription>Don't reuse entry objects in iterators</ShortDescription>
-    <LongDescription>{0} is both an Iterator and a Map.Entry </LongDescription>
+    <LongDescription>{0} is both an Iterator and a Map.Entry</LongDescription>
     <Details>
      <![CDATA[
      <p> The entrySet() method is allowed to return a view of the
@@ -7902,7 +7902,7 @@ and <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6178997">JDK Bu
   </BugPattern>
   <BugPattern type="TQ_COMPARING_VALUES_WITH_INCOMPATIBLE_TYPE_QUALIFIERS">
     <ShortDescription>Comparing values with incompatible type qualifiers</ShortDescription>
-    <LongDescription>Value annotated as having the type qualifier {2.simpleName} is compared for equality with a value that never has that qualifier </LongDescription>
+    <LongDescription>Value annotated as having the type qualifier {2.simpleName} is compared for equality with a value that never has that qualifier</LongDescription>
     <Details>
       <![CDATA[
         <p>

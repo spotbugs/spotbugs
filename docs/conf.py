@@ -17,7 +17,7 @@ import os
 
 html_context = {
   'version' : '4.0',
-  'full_version' : '4.0.0-beta5',
+  'full_version' : '4.0.0',
   'maven_plugin_version' : '3.1.12.2',
   'gradle_plugin_version' : '3.0.0',
   'archetype_version' : '0.2.2'
@@ -283,4 +283,5 @@ extensions += ['code-template']
 # URL to distribute SpotBugs package
 # http://www.sphinx-doc.org/en/stable/ext/extlinks.html
 extensions += ['sphinx.ext.extlinks']
-extlinks = {'dist': ('https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/' + release + '/spotbugs-' + release + '.%s', '')}
+tag = release.replace('-', '_').lower()
+extlinks = {'dist': ('https://github.com/spotbugs/spotbugs/releases/download/' + tag + '/spotbugs-' + release + '.%s', '')}
