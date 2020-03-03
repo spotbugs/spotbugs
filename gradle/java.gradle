@@ -1,5 +1,5 @@
 apply plugin: 'java-library'
-apply plugin: 'jp.skypencil.spotbugs.snom'
+apply plugin: 'com.github.spotbugs'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -16,10 +16,9 @@ tasks.withType(AbstractArchiveTask) {
   fileMode = 0664
 }
 
-def classLoader = plugins.getAt( 'jp.skypencil.spotbugs.snom' ).class.classLoader
+def classLoader = plugins.getAt( 'com.github.spotbugs' ).class.classLoader
 def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
 spotbugs {
-    toolVersion = '4.0.0-beta5'
     effort = 'max'
     reportLevel = 'high'
     maxHeapSize = '1g'
