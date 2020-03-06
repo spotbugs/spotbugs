@@ -1,7 +1,7 @@
 plugins {
   id 'org.sonarqube' version '2.7.1'
   id "com.diffplug.gradle.spotless" version "3.27.1"
-  id "com.github.spotbugs" version "4.0.0"
+  id "com.github.spotbugs" version "4.0.1"
 }
 
 version = '4.0.1-SNAPSHOT'
