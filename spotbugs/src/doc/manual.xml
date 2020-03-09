@@ -928,6 +928,18 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
+  <term><command>-parseStdinAsOptions</command> </term>
+  <listitem>
+    <para>
+    Read additional options from from standard input, with each new line as a separate argument.
+    This option is incompatible with other arguments using standard input,
+    such as -auxclasspathFromInput and reading files or data from standard input.
+    -auxclasspathFromInput can be replaced with -auxclasspath followed by a classpath line.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><command>-auxclasspath</command> <replaceable>classpath</replaceable></term>
   <listitem>
     <para>

@@ -247,10 +247,17 @@ These options are only accepted by the Text User Interface.
 -userPrefs *edu.umd.cs.findbugs.core.prefs*:
   Set the path of the user preferences file to use, which might override some of the options above.
   Specifying userPrefs as first argument would mean some later options will override them, as last argument would mean they will override some previous options).
-  This rationale behind this option is to reuse SpotBugs Eclipse project settings for command line execution.
+  The rationale behind this option is to reuse SpotBugs Eclipse project settings for command line execution.
 
 -showPlugins:
   Show list of available detector plugins.
+
+-parseStdinAsOptions:
+    Read additional options from from standard input, with each new line as a separate argument.
+    This option is incompatible with other arguments using standard input,
+    such as -auxclasspathFromInput and reading files or data from standard input.
+    -auxclasspathFromInput can be replaced with -auxclasspath followed by a classpath line.
+    The rationale behind this option is to bypass the inherent operating systme limit on the size and number of provided command line arguments.
 
 Output options
 **************
