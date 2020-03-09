@@ -101,6 +101,11 @@ import edu.umd.cs.findbugs.ExitCodes;
 
 public class FindBugsTask extends AbstractFindBugsTask {
 
+    /**
+     * Arguments longer than this value will be passed via STDIN
+     */
+    private static final int MAXIMUM_DIRECTLY_PASSED_ARGUMENT_LENGTH = 100;
+
     private String effort;
 
     private boolean conserveSpace;
@@ -903,7 +908,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (excludePath != null) {
             String excludePathValue = excludePath.toString();
             if (!excludePathValue.isEmpty()) {
-                if (excludePathValue.length() > 100) {
+                if (excludePathValue.length() > MAXIMUM_DIRECTLY_PASSED_ARGUMENT_LENGTH) {
                     addArg("-parseStdinAsOptions");
                     String[] result = excludePathValue.split(java.io.File.pathSeparator);
                     for (int x = 0; x < result.length; x++) {
@@ -928,7 +933,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
         if (includePath != null) {
             String includePathValue = includePath.toString();
             if (!includePathValue.isEmpty()) {
-                if (includePathValue.length() > 100) {
+                if (includePathValue.length() > MAXIMUM_DIRECTLY_PASSED_ARGUMENT_LENGTH) {
                     addArg("-parseStdinAsOptions");
                     String[] result = includePathValue.split(java.io.File.pathSeparator);
                     for (int x = 0; x < result.length; x++) {
@@ -969,9 +974,13 @@ public class FindBugsTask extends AbstractFindBugsTask {
                 String unreadReference = auxClasspath.toString();
                 String auxClasspathString = auxClasspath.toString();
                 if (!auxClasspathString.isEmpty()) {
-                    if (auxClasspathString.length() > 100) {
-                        addArg("-auxclasspathFromInput");
-                        setInputString(auxClasspathString);
+                    if (auxClasspathString.length() > MAXIMUM_DIRECTLY_PASSED_ARGUMENT_LENGTH) {
+                        addArg("-parseStdinAsOptions");
+
+                        appendToInputString("-auxclasspath");
+                        appendToInputString('\n');
+                        appendToInputString(auxClasspathString);
+                        appendToInputString('\n');
                     } else {
                         addArg("-auxclasspath");
                         addArg(auxClasspathString);
@@ -982,8 +991,20 @@ public class FindBugsTask extends AbstractFindBugsTask {
             }
         }
         if (sourcePath != null) {
-            addArg("-sourcepath");
-            addArg(sourcePath.toString());
+            String sourcePathValue = sourcePath.toString();
+            if (!sourcePathValue.isEmpty()) {
+                if (sourcePathValue.length() > MAXIMUM_DIRECTLY_PASSED_ARGUMENT_LENGTH) {
+                    addArg("-parseStdinAsOptions");
+
+                    appendToInputString("-sourcepath");
+                    appendToInputString('\n');
+                    appendToInputString(sourcePathValue);
+                    appendToInputString('\n');
+                } else {
+                    addArg("-sourcepath");
+                    addArg(sourcePathValue);
+                }
+            }
         }
         if (outputFileName != null) {
             addArg("-outputFile");
