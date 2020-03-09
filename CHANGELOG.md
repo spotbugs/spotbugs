@@ -62,6 +62,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 * Resolved Saxon warning ([#1077](https://github.com/spotbugs/spotbugs/issues/1077))
 * Unclear message of `SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION` ([#1091](https://github.com/spotbugs/spotbugs/pull/1091))
+* Allow any ant task or command-line user to specify large values or many arguments ([#1098](https://github.com/spotbugs/spotbugs/pull/1098))
 
 ## 4.0.0 - 2020-02-15
 
