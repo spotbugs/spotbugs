@@ -282,7 +282,7 @@
 		<xsl:copy-of select="$bugTableHeader"/>
 		<xsl:apply-templates select="$warningSet">
 			<xsl:sort select="@abbrev"/>
-			<xsl:sort select="Class/@classname"/>
+			<xsl:sort select="Class[1]/@classname"/>
 		</xsl:apply-templates>
 	</table>
 </xsl:template>
