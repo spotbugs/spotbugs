@@ -81,7 +81,7 @@ dependencies {
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiImplementation 'commons-lang:commons-lang:2.6'
-  guiImplementation 'org.dom4j:dom4j:2.1.0'
+  guiImplementation 'org.dom4j:dom4j:2.1.1'
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
   guiTestImplementation sourceSets.gui.runtimeClasspath
