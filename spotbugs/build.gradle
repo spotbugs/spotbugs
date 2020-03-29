@@ -74,9 +74,9 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  testImplementation 'junit:junit:4.12'
   testImplementation 'org.apache.ant:ant:1.9.4'
   testImplementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.11.1'
+  testImplementation 'junit:junit:4.13'
   testImplementation sourceSets.gui.output
 
   guiImplementation sourceSets.main.runtimeClasspath
