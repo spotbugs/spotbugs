@@ -21,14 +21,15 @@
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
     <jar href="dom4j-2.1.1.jar"/>
-    <jar href="asm-7.2.jar"/>
-    <jar href="asm-analysis-7.2.jar"/>
-    <jar href="asm-commons-7.2.jar"/>
-    <jar href="asm-tree-7.2.jar"/>
-    <jar href="asm-util-7.2.jar"/>
-    <jar href="asm-xml-7.2.jar"/>
+    <jar href="asm-7.3.1.jar"/>
+    <jar href="asm-analysis-7.3.1.jar"/>
+    <jar href="asm-commons-7.3.1.jar"/>
+    <jar href="asm-tree-7.3.1.jar"/>
+    <jar href="asm-util-7.3.1.jar"/>
+    <jar href="asm-xml-7.3.1.jar"/>
     <jar href="jaxen-1.1.6.jar"/>
-    <jar href="commons-lang-2.6.jar"/>
+    <jar href="commons-lang3-3.10.jar"/>
+    <jar href="commons-text-1.8.jar"/>
     <jar href="jsr305.jar"/>
     <property name="findbugs.jaws" value="true"/>
     <property name="findbugs.noSummary" value="true"/>
