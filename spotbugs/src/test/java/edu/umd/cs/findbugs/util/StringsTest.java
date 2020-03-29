@@ -21,13 +21,14 @@ package edu.umd.cs.findbugs.util;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class StringsTest {
 
     public static String[] escapedStrings = {
         // mixed entities/unicode escape sequences
-        "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 &#955; \\\\u0007",
+        "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 λ \\\\u0007",
         // *even* series of prefixed slashes + \\u -> do escape
         "a b c \\\\\\u0005",
         // *odd* series of prefixed slashes + \\u -> don't escape
@@ -38,7 +39,7 @@ public class StringsTest {
         "\\\\\\",
         // make sure that normal characters are handled correctly if they
         // appear after escapes
-        "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 &#955; \\\\u0007 a b c 1 2 3",
+        "a b c 1 2 3 &amp; &lt; &gt; &quot; &apos; \\u0005 \\u0013 λ \\\\u0007 a b c 1 2 3",
         // escaping a null string should be safe
         null,
         // an empty string should be safe too
@@ -55,7 +56,7 @@ public class StringsTest {
             if (unescapedStrings[i] == null) {
                 assert (Strings.escapeXml(unescapedStrings[i]) == null);
             } else {
-                assert (Strings.escapeXml(unescapedStrings[i]).compareTo(escapedStrings[i]) == 0);
+                Assert.assertEquals(escapedStrings[i], Strings.escapeXml(unescapedStrings[i]));
             }
         }
     }
