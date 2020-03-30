@@ -36,7 +36,7 @@
    <!--xsl:key name="lbc-category-key"    match="/BugCollection/BugInstance" use="@category" /-->
    <xsl:key name="lbc-code-key"        match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
    <xsl:key name="lbc-bug-key"         match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
-   <xsl:key name="lbp-class-b-t"  match="/BugCollection/BugInstance" use="concat(Class/@classname,@type)" />
+   <xsl:key name="lbp-class-b-t"  match="/BugCollection/BugInstance" use="concat(Class[1]/@classname,@type)" />
 
 <xsl:template match="/" >
 
@@ -580,7 +580,7 @@
 
 <xsl:template name="list-by-category-and-code" >
    <xsl:param name="category" select="''" />
-   <xsl:variable name="unique-code" select="/BugCollection/BugInstance[@category=$category and not(@last) and generate-id()= generate-id(key('lbc-code-key',concat(@category,@abbrev)))]/@abbrev" />
+   <xsl:variable name="unique-code" select="/BugCollection/BugInstance[@category=$category and not(@last) and generate-id()= generate-id(key('lbc-code-key',concat(@category,@abbrev)) [1] )]/@abbrev" />
    <xsl:for-each select="$unique-code">
       <xsl:sort select="." order="ascending" />
          <xsl:call-template name="codes">
@@ -626,7 +626,7 @@
 <xsl:template name="list-by-category-and-code-and-bug" >
    <xsl:param name="category" select="''" />
    <xsl:param name="code" select="''" />
-   <xsl:variable name="unique-bug" select="/BugCollection/BugInstance[@category=$category and not(@last) and @abbrev=$code and generate-id()= generate-id(key('lbc-bug-key',concat(@category,@abbrev,@type)))]/@type" />
+   <xsl:variable name="unique-bug" select="/BugCollection/BugInstance[@category=$category and not(@last) and @abbrev=$code and generate-id()= generate-id(key('lbc-bug-key',concat(@category,@abbrev,@type)) [1] )]/@type" />
    <xsl:for-each select="$unique-bug">
       <xsl:sort select="." order="ascending" />
          <xsl:call-template name="bugs">
@@ -802,7 +802,7 @@
 <xsl:template name="list-by-package-and-class-and-bug" >
    <xsl:param name="package" select="''" />
    <xsl:param name="class" select="''" />
-   <xsl:variable name="unique-class-bugs" select="/BugCollection/BugInstance[not(@last) and Class[position()=1 and @classname=$class] and generate-id() = generate-id(key('lbp-class-b-t',concat(Class/@classname,@type)))]/@type" />
+   <xsl:variable name="unique-class-bugs" select="/BugCollection/BugInstance[not(@last) and Class[position()=1 and @classname=$class] and generate-id() = generate-id(key('lbp-class-b-t',concat(Class[1]/@classname,@type)) [1] )]/@type" />
 
    <xsl:for-each select="$unique-class-bugs">
       <xsl:sort select="." order="ascending" />
