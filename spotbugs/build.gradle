@@ -56,11 +56,11 @@ sourceSets {
 }
 
 dependencies {
-  api 'org.ow2.asm:asm:7.3.1'
-  api 'org.ow2.asm:asm-analysis:7.3.1'
-  api 'org.ow2.asm:asm-commons:7.3.1'
-  api 'org.ow2.asm:asm-tree:7.3.1'
-  api 'org.ow2.asm:asm-util:7.3.1'
+  api 'org.ow2.asm:asm:8.0.1'
+  api 'org.ow2.asm:asm-analysis:8.0.1'
+  api 'org.ow2.asm:asm-commons:8.0.1'
+  api 'org.ow2.asm:asm-tree:8.0.1'
+  api 'org.ow2.asm:asm-util:8.0.1'
   api 'org.apache.bcel:bcel:6.4.1'
   api 'net.jcip:jcip-annotations:1.0'
   api 'org.dom4j:dom4j:2.1.1'
