@@ -8,7 +8,7 @@ Use SpotBugs Gradle Plugin
 
 Please follow instruction found on `official Gradle Plugin page <https://plugins.gradle.org/plugin/com.github.spotbugs>`_.
 
-Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to use v5.1 or later.
+Note that SpotBugs Gradle Plugin does not support Gradle v4, you need to use v5.6 or later.
 
 Tasks introduced by this Gradle Plugin
 --------------------------------------
@@ -20,10 +20,13 @@ This Gradle Plugin introduces two tasks: `spotbugsMain` and `spotbugsTest`.
 
 SpotBugs Gradle Plugin adds task dependency from `check` to these tasks, so you can simply run ``./gradlew check`` to run SpotBugs.
 
+If you do not want to generate tasks automatically, use `the SpotBugs Base Plugin <https://plugins.gradle.org/plugin/com.github.spotbugs-base>`_ instead.
+This plugin does not generate tasks so you can configure from scratch.
+
 Configure Gradle Plugin
 -----------------------
 
-Current version of SpotBugs Gradle Plugin uses the same way with FindBugs Gradle Plugin to configure. Please check the document for `FindBugsExtension <http://gradle.monochromeroad.com/docs/dsl/org.gradle.api.plugins.quality.FindBugsExtension.html>`_.
+This plugin uses the Extension to configure. Please check the document for `SpotBugsExtension <https://spotbugs-gradle-plugin.netlify.app/com/github/spotbugs/snom/SpotBugsExtension.html>`_.
 
 For instance, to specify the version of SpotBugs, you can configure like below:
 
@@ -38,26 +41,10 @@ To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like
 .. code-block:: groovy
 
   dependencies {
-    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.7.1'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
   }
 
-Generate SpotBugs Tasks with Android Gradle Plugin
---------------------------------------------------
+Other usage
+-----------
 
-SpotBugs Gradle Plugin generates task for each sourceSet.
-But Android Gradle Plugin does not generate sourceSet by default (Java plugin does).
-
-So define sourceSets explicitly, then SpotBugs Gradle plugin generates tasks for each of them.
-
-.. code-block:: groovy
-
-  sourceSets {
-    // we define `main` sourceSet here, so SpotBugs Gradle Plugin generates `spotbugsMain` task
-    main {
-      java.srcDirs = ['src/main/java']
-    }
-  }
-
-  tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    // configure automatically generated tasks
-  }
+Visit `the official README <https://github.com/spotbugs/spotbugs-gradle-plugin#readme>`_ for detail.
