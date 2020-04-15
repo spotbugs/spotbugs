@@ -33,12 +33,10 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLInputFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SAXBugCollectionHandler;
@@ -224,8 +222,8 @@ public class Filter extends OrMatcher {
             SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, new File(fileName));
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",  Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",  Boolean.FALSE);
+            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
             parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
             parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
             SAXParser parser = parserFactory.newSAXParser();

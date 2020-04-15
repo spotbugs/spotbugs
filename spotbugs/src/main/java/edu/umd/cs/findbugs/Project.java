@@ -58,13 +58,11 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLInputFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -689,8 +687,8 @@ public class Project implements XMLWriteable, AutoCloseable {
 
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",  Boolean.TRUE);
-            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",  Boolean.FALSE);
+            parserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            parserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", Boolean.FALSE);
             parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
             parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
             SAXParser parser = parserFactory.newSAXParser();
@@ -740,7 +738,7 @@ public class Project implements XMLWriteable, AutoCloseable {
             try {
                 return Project.readXML(projectFile);
             } catch (SAXException | ParserConfigurationException e) {
-                IOException ioe = new IOException("Couldn't read saved FindBugs project",e);
+                IOException ioe = new IOException("Couldn't read saved FindBugs project", e);
                 throw ioe;
             }
         }
