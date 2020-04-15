@@ -15,6 +15,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 
+* Upgrade ASM to 8.0.1 which supports Java14
 * Upgraded junit4 to 4.13
 * Upgraded ant to 1.10.7
 * Upgraded log4j2 to 2.13.1
