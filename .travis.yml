@@ -55,7 +55,7 @@ install:
 
 script:
   - jdk_switcher use openjdk8
-  - ./gradlew classes testClasses -S
+  - ./gradlew spotlessCheck classes testClasses -S
   - if [[ $TRAVIS_JDK_VERSION == "openjdk11" ]]; then export JAVA_HOME=$HOME/openjdk11; fi
   - ./gradlew -v --no-daemon
   - ./gradlew build smoketest -S --no-daemon
