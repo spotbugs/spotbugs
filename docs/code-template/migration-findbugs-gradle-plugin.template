@@ -6,7 +6,7 @@ spotbugs {
 }
 
 // To generate an HTML report instead of XML
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
   reports.xml.enabled = false
   reports.html.enabled = true
 }
