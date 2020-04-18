@@ -26,13 +26,13 @@ jobs:
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output .github/workflows/secring .github/workflows/secring.gpg
           gpg --import --batch .github/workflows/secring
+          echo verbose >> ~/.gnupg/gpg.conf
           export GPG_TTY=$(tty)
           echo ossrhUsername=eller86 >> gradle.properties
           echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
-          echo "signing.keyId=${SIGNING_KEY_ID}" >> gradle.properties
           echo "signing.gnupg.keyName=${SIGNING_KEY_ID}" >> gradle.properties
+          echo "signing.gnupg.passphrase=${SIGNING_PASSWORD}" >> gradle.properties
           echo "signing.gnupg.executable=gpg" >> gradle.properties
-          echo "signing.password=${SIGNING_PASSWORD}" >> gradle.properties
           ./gradlew publish --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
