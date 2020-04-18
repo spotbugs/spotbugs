@@ -29,7 +29,7 @@ jobs:
           echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
           echo "signing.keyId=${SIGNING_KEY_ID}" >> gradle.properties
           echo "signing.password=${SIGNING_PASSWORD}" >> gradle.properties
-          echo "secretKeyRingFile=$(pwd)/.github/workflows/secring" >> gradle.properties
+          echo "signing.secretKeyRingFile=$(pwd)/.github/workflows/secring" >> gradle.properties
           ./gradlew publish --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
