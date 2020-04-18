@@ -79,10 +79,5 @@ publishing {
 }
 
 signing {
-  required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:publish") }
   sign publishing.publications.maven
-}
-
-tasks.withType(Sign) {
-  onlyIf { isReleaseVersion }
 }

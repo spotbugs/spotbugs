@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - issue-1106
     tags:
       - '**'
 
