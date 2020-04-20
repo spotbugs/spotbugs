@@ -79,7 +79,7 @@ publishing {
 }
 
 signing {
-  required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:publish") }
+  useGpgCmd()
   sign publishing.publications.maven
 }
 
