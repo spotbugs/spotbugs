@@ -7,7 +7,7 @@
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/findbugs.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jdepend-2.9.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/bcel.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/dom4j-2.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/dom4j-2.1.3.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/AppleJavaExtensions.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/junit.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-7.3.1.jar</AuxClasspathEntry>
