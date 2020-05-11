@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 
+### Fixed
+
+* Avoid changing the SecurityManager when launched as an IntelliJ IDEA plugin. 
+
 ## 4.0.2 - 2020-04-15
 
 ### Fixed
