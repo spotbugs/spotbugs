@@ -3,7 +3,7 @@ plugins {
   id "com.diffplug.gradle.spotless" version "3.27.1"
 }
 
-version = '4.0.3'
+version = '4.0.4-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
