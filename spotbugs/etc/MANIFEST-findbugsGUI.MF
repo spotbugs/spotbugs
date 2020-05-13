@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: edu.umd.cs.findbugs.LaunchAppropriateUI
-Class-Path: bcel.jar dom4j-2.1.1.jar jaxen-1.1.6.jar asm-8.0.1.jar asm-analysis-8.0.1.jar asm-commons-8.0.1.jar asm-tree-8.0.1.jar asm-util-8.0.1.jar asm-xml-8.0.1.jar jsr305.jar commons-lang3-3.10.jar commons-text-1.8.jar plastic.jar
+Class-Path: bcel.jar dom4j-2.1.3.jar jaxen-1.1.6.jar asm-8.0.1.jar asm-analysis-8.0.1.jar asm-commons-8.0.1.jar asm-tree-8.0.1.jar asm-util-8.0.1.jar asm-xml-8.0.1.jar jsr305.jar commons-lang3-3.10.jar commons-text-1.8.jar plastic.jar
