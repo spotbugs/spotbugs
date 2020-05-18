@@ -23,7 +23,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Download Eclipse
         run: |
-          wget 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz
+          wget -nv 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz
           tar xzvf eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
       - name: Build
