@@ -37,3 +37,18 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      - name: Create Release
+        # attach zip, tgz and eclipse plugin to the GitHub Release
+        # https://github.com/github/hub#github-actions
+        # https://github.com/actions/upload-release-asset/issues/28#issuecomment-617208601
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -x
+          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+          assets=()
+          for asset in ./spotbugs/build/distributions/*; do
+            assets+=("-a" "$asset")
+          done
+          bin/hub release create "${assets[@]}" -F build/release.md "${{ github.ref }}"
