@@ -28,6 +28,7 @@ jobs:
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
       - name: Build
         run: |
+          git fetch origin master
           ./gradlew spotlessCheck build smoketest sonarqube --no-daemon --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
