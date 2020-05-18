@@ -4,7 +4,7 @@ def token = System.env.SONAR_LOGIN
 
 sonarqube {
     properties {
-        property 'sonar.coverage.jacoco.xmlReportPaths', "${rootProject.buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+        property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.destination
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.login', token
         property 'sonar.organization', 'spotbugs'
@@ -17,5 +17,5 @@ tasks.sonarqube {
     onlyIf {
         token != null
     }
-    mustRunAfter jacocoTestReport
+    dependsOn jacocoRootReport
 }
