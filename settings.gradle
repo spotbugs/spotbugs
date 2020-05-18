@@ -8,3 +8,9 @@ if (new File(rootDir, eclipseFile).exists()) {
 
 include ':test-harness-core', ':test-harness-jupiter'
 
+gradleEnterprise {
+  buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+  }
+}
