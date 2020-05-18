@@ -1,7 +1,23 @@
-plugins {
-  id 'org.sonarqube' version '2.8'
-  id "com.diffplug.gradle.spotless" version "3.27.1"
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+
+    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8"
+    constraints {
+      classpath ('org.sonarsource.scanner.api:sonar-scanner-api:2.15.0.2182') {
+        because 'version 2.14 has a connection leak bug (SC-1431)'
+      }
+    }
+  }
 }
+
+apply plugin: "org.sonarqube"
+apply plugin: "com.diffplug.gradle.spotless"
 
 version = '4.0.4-SNAPSHOT'
 
