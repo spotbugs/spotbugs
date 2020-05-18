@@ -15,6 +15,9 @@ buildscript {
       classpath ('org.sonarsource.scanner.api:sonar-scanner-api:2.15.0.2182') {
         because 'version 2.14 has a connection leak bug (SC-1431)'
       }
+      classpath ('org.sonarsource.sonarqube:sonar-scanner-engine:8.3.1.34397') {
+        because 'make sure the DefaultScannerWsClient in the CLASSPATH is updated'
+      }
     }
   }
 }
