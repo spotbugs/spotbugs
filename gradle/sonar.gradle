@@ -1,12 +1,9 @@
 apply plugin: 'org.sonarqube'
 
-def token = System.env.SONAR_LOGIN
-
 sonarqube {
     properties {
         property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.destination
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.login', token
         property 'sonar.organization', 'spotbugs'
         property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
         property 'sonar.projectName', 'SpotBugs'
@@ -14,8 +11,5 @@ sonarqube {
 }
 
 tasks.sonarqube {
-    onlyIf {
-        token != null
-    }
     dependsOn jacocoRootReport
 }
