@@ -26,4 +26,6 @@ jobs:
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
       - name: Build
         run: |
-          ./gradlew build --no-daemon
+          ./gradlew spotlessCheck build smoketest sonarqube --no-daemon
+        env:
+          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
