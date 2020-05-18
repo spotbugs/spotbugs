@@ -7,8 +7,11 @@ buildscript {
   dependencies {
     classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
 
-    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8"
+    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin"
     constraints {
+      classpath ("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8") {
+        because 'to keep using the latest version'
+      }
       classpath ('org.sonarsource.scanner.api:sonar-scanner-api:2.15.0.2182') {
         because 'version 2.14 has a connection leak bug (SC-1431)'
       }
