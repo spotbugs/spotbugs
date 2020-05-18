@@ -31,3 +31,4 @@ jobs:
           ./gradlew spotlessCheck build smoketest sonarqube --no-daemon
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
