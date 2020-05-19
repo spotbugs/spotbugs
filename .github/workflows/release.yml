@@ -29,6 +29,7 @@ jobs:
       - name: Build
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output .github/workflows/secring .github/workflows/secring.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           gpg --import --batch .github/workflows/secring
           export GPG_TTY=$(tty)
           echo ossrhUsername=eller86 >> gradle.properties
@@ -36,9 +37,11 @@ jobs:
           echo "signing.gnupg.keyName=${SIGNING_KEY_ID}" >> gradle.properties
           echo "signing.gnupg.passphrase=${SIGNING_PASSWORD}" >> gradle.properties
           echo "signing.gnupg.executable=gpg" >> gradle.properties
+          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           ./gradlew publish --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}

@@ -29,8 +29,12 @@ jobs:
       - name: Build
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         run: |
+          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
+          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           ./gradlew spotlessCheck build smoketest sonarqube --no-daemon --scan -Dsonar.login=$SONAR_LOGIN
         env:
-          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
