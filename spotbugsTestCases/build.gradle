@@ -65,10 +65,21 @@ task classesJava11(type:JavaCompile) {
   source = file('src/java11')
 }
 
+task classesJava14(type:JavaCompile) {
+  sourceCompatibility = '14'
+  targetCompatibility = '14'
+  it.options.compilerArgs.add('--enable-preview')
+  destinationDir = file("$buildDir/classes/java/java14")
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java14')
+}
+
 if (System.getProperty("java.specification.version") == "1.8") {
   // JDK11 removed several deprecated methods like Thread#destroy() and System.runFinalizersOnExit().
   // so code that depends on them should be built only on JDK8.
   tasks['classes'].dependsOn classesJava8
+} else if (System.getProperty("java.specification.version") == "14") {
+  tasks['classes'].dependsOn classesJava14
 } else {
   tasks['classes'].dependsOn classesJava11
 }
