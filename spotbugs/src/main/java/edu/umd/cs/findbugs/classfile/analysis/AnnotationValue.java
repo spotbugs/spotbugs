@@ -188,7 +188,6 @@ public class AnnotationValue {
 
         /**
          * @param name
-         * @param result
          */
         private AnnotationArrayVisitor(String name) {
             super(FindBugsASM.ASM_VERSION);
