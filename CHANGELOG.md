@@ -415,7 +415,9 @@ This version contains no change, except for the solution for [a deployment probl
 * Better handling for JDT illegal signatures([#55](https://github.com/spotbugs/spotbugs/pull/55))
 * StaticCalendarDetector is constantly throwing ClassNotFoundExceptions ([#76](https://github.com/spotbugs/spotbugs/pull/76))
 * ClassFormatException when analyze class with lambda (INVOKEDYNAMIC) ([#60](https://github.com/spotbugs/spotbugs/issues/60))
+* Spotbugs does not find some warnings/errors within class that extends some other class([Bug#675](https://github.com/spotbugs/spotbugs/issues/675))
 
 ## FindBugs 3.0.1 or older
 
 Check [changelog at SourceForge](http://findbugs.sourceforge.net/Changes.html).
+
