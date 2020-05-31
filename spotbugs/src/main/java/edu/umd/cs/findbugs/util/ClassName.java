@@ -258,14 +258,24 @@ public abstract class ClassName {
         return packageName.substring(0, prefixLength - 1);
     }
 
+    /**
+     * Does a class name matches the search Strings?
+     * Only the name is analyzed. No classes are loaded or looked up.
+     *
+     * @param className
+     *            a class name
+     * @param classSearchStrings
+     *            a searching Strings
+     * @return true if class name matches the prefixes
+     */
     public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
         String[] pp = classSearchStrings;
         if (pp == null || pp.length == 0) {
             return true;
         }
-
         for (String p : pp) {
-            if (p.length() > 0 && className.indexOf(p) >= 0) {
+//            if (p.length() > 0 && className.indexOf(p) >= 0) {
+            if (p.length() > 0 && className.toLowerCase().indexOf(p.toLowerCase()) >= 0) {
                 return true;
             }
         }
