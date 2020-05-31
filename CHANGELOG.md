@@ -14,6 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Numerous places in manifest, jnlp files, and sample analysis xml were indicating older asm that was already upgraded to 7.3.1, fixed
 * Added commons-text 1.8 which treats &#955; properly in xml as it is allowed as λ.  Associated test was corrected to use proper junit and &#955; was changed to λ.  The escape only was applicable to html.  Commons-lang original treatment was incorrect.
 * Resolved fatal exception in html report if BugInstance contains multiple Class elements ([#1025](https://github.com/spotbugs/spotbugs/issues/1025))
+* Spotbugs does not find some warnings/errors within class that extends some other class([Bug#675](https://github.com/spotbugs/spotbugs/issues/675))
 
 ### Changed
 
@@ -415,7 +416,6 @@ This version contains no change, except for the solution for [a deployment probl
 * Better handling for JDT illegal signatures([#55](https://github.com/spotbugs/spotbugs/pull/55))
 * StaticCalendarDetector is constantly throwing ClassNotFoundExceptions ([#76](https://github.com/spotbugs/spotbugs/pull/76))
 * ClassFormatException when analyze class with lambda (INVOKEDYNAMIC) ([#60](https://github.com/spotbugs/spotbugs/issues/60))
-* Spotbugs does not find some warnings/errors within class that extends some other class([Bug#675](https://github.com/spotbugs/spotbugs/issues/675))
 
 ## FindBugs 3.0.1 or older
 
