@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 
+### Fixed
+
+- Spotbugs does not find some warnings/errors within class that extends some other class([Bug#675](https://github.com/spotbugs/spotbugs/issues/675))
+
 ## 4.0.2 - 2020-04-15
 
 ### Fixed
@@ -14,7 +18,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Numerous places in manifest, jnlp files, and sample analysis xml were indicating older asm that was already upgraded to 7.3.1, fixed
 * Added commons-text 1.8 which treats &#955; properly in xml as it is allowed as λ.  Associated test was corrected to use proper junit and &#955; was changed to λ.  The escape only was applicable to html.  Commons-lang original treatment was incorrect.
 * Resolved fatal exception in html report if BugInstance contains multiple Class elements ([#1025](https://github.com/spotbugs/spotbugs/issues/1025))
-* Spotbugs does not find some warnings/errors within class that extends some other class([Bug#675](https://github.com/spotbugs/spotbugs/issues/675))
 
 ### Changed
 
