@@ -32,7 +32,7 @@ jobs:
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-          ./gradlew spotlessCheck build smoketest sonarqube --no-daemon -Dsonar.login=$SONAR_LOGIN
+          ./gradlew spotlessCheck build smoketest sonarqube --no-daemon --scan -Dsonar.login=$SONAR_LOGIN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
