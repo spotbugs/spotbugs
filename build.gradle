@@ -1,8 +1,31 @@
-plugins {
-  id 'org.sonarqube' version '2.7.1'
-  id "com.diffplug.gradle.spotless" version "3.27.1"
-  id 'org.gradle.crypto.checksum' version '1.1.0'
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+
+    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin"
+    constraints {
+      classpath ("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8") {
+        because 'to keep using the latest version'
+      }
+      classpath ('org.sonarsource.scanner.api:sonar-scanner-api:2.15.0.2182') {
+        because 'version 2.14 has a connection leak bug (SC-1431)'
+      }
+      classpath ('org.sonarsource.sonarqube:sonar-scanner-engine:8.3.1.34397') {
+        because 'make sure the DefaultScannerWsClient in the CLASSPATH is updated'
+      }
+    }
+
+    classpath "gradle.plugin.org.gradle.crypto:checksum:1.2.0"
+  }
 }
+
+apply plugin: "org.sonarqube"
+apply plugin: "com.diffplug.gradle.spotless"
 
 version = '4.0.4-SNAPSHOT'
 
