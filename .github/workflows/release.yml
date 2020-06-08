@@ -32,7 +32,7 @@ jobs:
           echo ossrhUsername=eller86 >> gradle.properties
           echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-          ./gradlew assemble publish --no-daemon --parallel
+          ./gradlew assemble publish createReleaseBody --no-daemon --parallel
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

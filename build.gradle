@@ -87,6 +87,10 @@ import org.gradle.crypto.checksum.Checksum
 
 def createReleaseBody = tasks.register("createReleaseBody")
 def createChecksums = tasks.register("createChecksums", Checksum)
+def publishTask = tasks.findByName("publish")
+if (publishTask == null) {
+  publishTask = tasks.findByName("publishToMavenLocal")
+}
 def outputFile = file("$buildDir/release.md")
 def inputFile =  subprojects.collect {
   it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
@@ -95,8 +99,10 @@ def inputFile =  subprojects.collect {
 }
 
 createChecksums.configure {
-  mustRunAfter assemble
   files = files(inputFile)
+  if (publishTask != null) {
+    dependsOn publishTask
+  }
 }
 createReleaseBody.configure {
   inputs.files fileTree("$buildDir/checksums").matching {
@@ -126,10 +132,6 @@ createReleaseBody.configure {
       outputFile << "| ${ name } | ${hash[0]} |\n"
     }
   }
-}
-
-project.getTasksByName("publish", true).forEach {
-  it.dependsOn createReleaseBody
 }
 
 apply from: "$rootDir/gradle/sonar.gradle"
