@@ -19,11 +19,14 @@ buildscript {
         because 'make sure the DefaultScannerWsClient in the CLASSPATH is updated'
       }
     }
+
+    classpath "gradle.plugin.org.gradle.crypto:checksum:1.2.0"
   }
 }
 
 apply plugin: "org.sonarqube"
 apply plugin: "com.diffplug.gradle.spotless"
+apply plugin: "org.gradle.crypto.checksum"
 
 version = '4.0.4-SNAPSHOT'
 
@@ -78,6 +81,55 @@ task jacocoRootReport(type: JacocoReport) {
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
     xml.enabled = true
   }
+}
+
+import org.gradle.crypto.checksum.Checksum
+
+def createReleaseBody = tasks.register("createReleaseBody")
+def createChecksums = tasks.register("createChecksums", Checksum)
+def outputFile = file("$buildDir/release.md")
+def inputFile =  subprojects.collect {
+  it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
+}.flatten().collect {
+  it.file
+}
+
+createChecksums.configure {
+  mustRunAfter assemble
+  files = files(inputFile)
+}
+createReleaseBody.configure {
+  inputs.files fileTree("$buildDir/checksums").matching {
+    include "*.sha256"
+  }
+  outputs.file outputFile
+  dependsOn createChecksums
+
+  doLast {
+    outputFile.delete()
+    outputFile << """SpotBugs ${project.version}
+
+### CHANGELOG
+- https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+
+### CHECKSUM
+| file | checksum (sha256) |
+| ---- | ----------------- |
+"""
+    fileTree("$buildDir/checksums").matching {
+      include "*.sha256"
+    }.sort {
+      it.name
+    }.forEach {
+      def name = it.name.replace(".sha256", "")
+      def hash = it as String[]
+      outputFile << "| ${ name } | ${hash[0]} |\n"
+    }
+  }
+}
+
+project.getTasksByName("publish", true).forEach {
+  it.dependsOn createReleaseBody
 }
 
 apply from: "$rootDir/gradle/sonar.gradle"

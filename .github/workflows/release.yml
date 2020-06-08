@@ -32,7 +32,7 @@ jobs:
           echo ossrhUsername=eller86 >> gradle.properties
           echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-          ./gradlew publish --no-daemon
+          ./gradlew assemble publish --no-daemon --parallel
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -62,3 +62,17 @@ jobs:
           personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
           publish_branch: gh-pages
           publish_dir: ./eclipsePlugin/build/site/eclipse
+      - name: Create Release
+        # attach zip, tgz and eclipse plugin to the GitHub Release
+        # https://github.com/github/hub#github-actions
+        # https://github.com/actions/upload-release-asset/issues/28#issuecomment-617208601
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -x
+          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+          assets=()
+          for asset in ./spotbugs/build/distributions/*; do
+            assets+=("-a" "$asset")
+          done
+          bin/hub release create "${assets[@]}" -F build/release.md "${{ github.ref }}"
