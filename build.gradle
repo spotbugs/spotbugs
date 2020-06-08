@@ -26,6 +26,7 @@ buildscript {
 
 apply plugin: "org.sonarqube"
 apply plugin: "com.diffplug.gradle.spotless"
+apply plugin: "org.gradle.crypto.checksum"
 
 version = '4.0.4-SNAPSHOT'
 
