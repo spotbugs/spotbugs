@@ -62,6 +62,10 @@ jobs:
           personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
           publish_branch: gh-pages
           publish_dir: ./eclipsePlugin/build/site/eclipse
+      - name: Get the version
+        if: startsWith(github.ref, 'refs/tags/')
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
       - name: Create Release
         # attach zip, tgz and eclipse plugin to the GitHub Release
         # https://github.com/github/hub#github-actions
@@ -76,4 +80,4 @@ jobs:
           for asset in ./spotbugs/build/distributions/*; do
             assets+=("-a" "$asset")
           done
-          bin/hub release create "${assets[@]}" -F build/release.md "${{ github.ref }}"
+          bin/hub release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}"
