@@ -6,9 +6,11 @@ package ghIssues;
  **/
 
 public final class Issue1155 {
-    public static void require(boolean condition, String error) {
-        if (!condition) {
-            throw new IllegalStateException(error);
+    // ================================================================================
+    // The problem situation
+    public static void check(boolean condition) {
+        if (condition) {
+            throw new IllegalStateException("Should have found it");
         }
     }
 
@@ -18,23 +20,25 @@ public final class Issue1155 {
      * So if 'found' is null the return statement is never reached.
      * So the reported NP_NULL_ON_SOME_PATH on the dereference of 'found' in the return statement is incorrect.
      */
-    public int demoOfInvalidReport(String input, String findValue) {
+    public int demoOfInvalidReport(boolean use, String input) {
         String found = null;
-        if (input.contains(findValue)) {
+        if (use) {
             found = input;
         }
 
-        require(found != null, "Should have found it");
+        check(found == null);
         return found.length();
     }
+
+    // ================================================================================
 
     /*
      * The exact same code as above but now the static method has been inlined.
      * This does not give an error report (which is correct).
      */
-    public int demoOfCorrectReport(String input, String findValue) {
+    public int demoOfCorrectNoReport(boolean use, String input) {
         String found = null;
-        if (input.contains(findValue)) {
+        if (use) {
             found = input;
         }
 
@@ -42,6 +46,32 @@ public final class Issue1155 {
             throw new IllegalStateException("Should have found it");
         }
 
+        return found.length();
+    }
+
+    // ================================================================================
+    // The problem situation with only the 'check' method is now called 'failIf'
+    // THE NAME OF THE STATIC METHOD ELIMINATES THE PROBLEM ?!?!?!
+
+    public static void failIf(boolean condition) {
+        if (condition) {
+            throw new IllegalStateException("Should have found it");
+        }
+    }
+
+    /*
+     * This static method call will throw an exception if 'found' is null.
+     * The 'require' method is a static method and cannot be overridden to change the behavior.
+     * So if 'found' is null the return statement is never reached.
+     * So the reported NP_NULL_ON_SOME_PATH on the dereference of 'found' in the return statement is incorrect.
+     */
+    public int demoOfCorrectNoReportDifferentMethodName(boolean use, String input) {
+        String found = null;
+        if (use) {
+            found = input;
+        }
+
+        failIf(found == null);
         return found.length();
     }
 
