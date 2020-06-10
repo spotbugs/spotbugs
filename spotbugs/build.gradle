@@ -75,8 +75,16 @@ dependencies {
     exclude group: 'xpp3',             module: 'xpp3'
   }
   implementation 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
-  api 'org.apache.commons:commons-lang3:3.10'
-  api 'org.apache.commons:commons-text:1.8'
+  api 'org.apache.commons:commons-lang3'
+  api 'org.apache.commons:commons-text'
+  constraints {
+    implementation('org.apache.commons:commons-text:1.8') {
+      because 'this is the latest version'
+    }
+    implementation('org.apache.commons:commons-lang3:3.10') {
+      because 'version 3.9 pulled from commons-text is too old, and commons-text has no later release'
+    }
+  }
   api 'org.slf4j:slf4j-api:1.8.0-beta4'
   implementation 'net.sf.saxon:Saxon-HE:9.9.1-2'
   logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1'
@@ -91,12 +99,9 @@ dependencies {
   testImplementation sourceSets.gui.output
 
   guiImplementation sourceSets.main.runtimeClasspath
-  guiImplementation 'org.apache.commons:commons-lang3:3.10'
-  guiImplementation 'org.apache.commons:commons-text:1.8'
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
   guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.12'
   guiTestCompileOnly project(':spotbugs-annotations')
 }
 
