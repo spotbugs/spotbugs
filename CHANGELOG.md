@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 
 * dependency conflict around apache-commons-lang3 ([#1135](https://github.com/spotbugs/spotbugs/issues/1135))
+* plain.xsl declares it is a 2.0 stylesheet, but it appears to have issues with a 2.0 processor
 
 ### Changed
 
