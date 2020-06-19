@@ -290,6 +290,7 @@ task featureJar(type:Zip) {
   }
   destinationDir = file("${buildDir}/site/eclipse/features/")
   finalizedBy testFeatureJar
+  dependsOn project(':spotbugs').tasks.assemble
 }
 
 task featureCandidateJar(type:Zip) {
