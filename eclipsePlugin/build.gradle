@@ -229,12 +229,14 @@ def distSpec = copySpec {
 }
 
 task distZip(type:Zip, dependsOn:jar) {
+  dependsOn project(':spotbugs').tasks.assemble
   with distSpec
   into "${eclipsePluginId}_${project.version}"
   archiveName = "${eclipsePluginId}_${project.version}.zip"
 }
 
 task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
+  dependsOn project(':spotbugs').tasks.assemble
   with distSpec
   archiveName = "${eclipsePluginId}_${project.version}.jar"
   destinationDir = file("${buildDir}/site/eclipse/plugins/")
