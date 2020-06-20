@@ -1,10 +1,35 @@
-plugins {
-  id 'org.sonarqube' version '2.7.1'
-  id "com.diffplug.gradle.spotless" version "3.27.1"
-  id "com.github.spotbugs" version "4.0.1"
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+
+    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin"
+    constraints {
+      classpath ("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8") {
+        because 'to keep using the latest version'
+      }
+      classpath ('org.sonarsource.scanner.api:sonar-scanner-api:2.15.0.2182') {
+        because 'version 2.14 has a connection leak bug (SC-1431)'
+      }
+      classpath ('org.sonarsource.sonarqube:sonar-scanner-engine:8.3.1.34397') {
+        because 'make sure the DefaultScannerWsClient in the CLASSPATH is updated'
+      }
+    }
+
+    classpath "gradle.plugin.org.gradle.crypto:checksum:1.2.0"
+    classpath "gradle.plugin.com.github.spotbugs.snom:spotbugs-gradle-plugin:4.4.1"
+  }
 }
 
-version = '4.0.1-SNAPSHOT'
+apply plugin: "org.sonarqube"
+apply plugin: "com.diffplug.gradle.spotless"
+apply plugin: "org.gradle.crypto.checksum"
+
+version = '4.0.5-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
@@ -56,6 +81,57 @@ task jacocoRootReport(type: JacocoReport) {
     // JaCoCo SonarQube plugin needs a XML file to parse
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
     xml.enabled = true
+  }
+}
+
+import org.gradle.crypto.checksum.Checksum
+
+def createReleaseBody = tasks.register("createReleaseBody")
+def createChecksums = tasks.register("createChecksums", Checksum)
+def publishTask = tasks.findByName("publish")
+if (publishTask == null) {
+  publishTask = tasks.findByName("publishToMavenLocal")
+}
+def outputFile = file("$buildDir/release.md")
+def inputFile =  subprojects.collect {
+  it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
+}.flatten().collect {
+  it.file
+}
+
+createChecksums.configure {
+  files = files(inputFile)
+  if (publishTask != null) {
+    dependsOn publishTask
+  }
+}
+createReleaseBody.configure {
+  inputs.files fileTree("$buildDir/checksums").matching {
+    include "*.sha256"
+  }
+  outputs.file outputFile
+  dependsOn createChecksums
+
+  doLast {
+    outputFile.delete()
+    outputFile << """SpotBugs ${project.version}
+
+### CHANGELOG
+- https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+
+### CHECKSUM
+| file | checksum (sha256) |
+| ---- | ----------------- |
+"""
+    fileTree("$buildDir/checksums").matching {
+      include "*.sha256"
+    }.sort {
+      it.name
+    }.forEach {
+      def name = it.name.replace(".sha256", "")
+      def hash = it as String[]
+      outputFile << "| ${ name } | ${hash[0]} |\n"
+    }
   }
 }
 

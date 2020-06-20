@@ -78,9 +78,19 @@ publishing {
   }
 }
 
+def signingKey = System.getenv("SIGNING_KEY")
+def signingPassword = System.getenv("SIGNING_PASSWORD")
+
 signing {
-  required { isReleaseVersion && gradle.taskGraph.hasTask(":${project.name}:publish") }
-  sign publishing.publications.maven
+  if (signingKey != null &&
+          signingPassword != null &&
+          !signingKey.isEmpty() &&
+          !signingPassword.isEmpty()) {
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.maven
+  } else {
+    logger.warn('The signing key and password are null. This can be ignored if this is a pull request.')
+  }
 }
 
 tasks.withType(Sign) {

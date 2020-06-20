@@ -7,19 +7,20 @@
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/findbugs.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jdepend-2.9.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/bcel.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/dom4j-2.1.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/dom4j-2.1.3.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/AppleJavaExtensions.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/junit.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-7.2.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-analysis-7.2.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-commons-7.2.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-tree-7.2.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-util-7.2.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-xml-7.2.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-7.3.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-analysis-7.3.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-commons-7.3.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-tree-7.3.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-util-7.3.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/asm-xml-7.3.1.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jaxen-1.1.6.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jsr305.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jFormatString.jar</AuxClasspathEntry>
-    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/commons-lang-2.6.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/commons-lang3-3.10.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/commons-text-1.8.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/Users/pugh/Documents/fb-trunk/findbugs/lib/jcip-annotations.jar</AuxClasspathEntry>
     <SrcDir>/Users/pugh/Documents/fb-trunk/findbugs/src/java</SrcDir>
     <SrcDir>/Users/pugh/Documents/fb-trunk/findbugs/src/gui</SrcDir>

@@ -42,8 +42,15 @@ public class SystemProperties {
 
     public final static boolean ASSERTIONS_ENABLED;
 
-    public final static boolean RUNNING_IN_ECLIPSE = SystemProperties.class.getClassLoader().getClass().getCanonicalName()
-            .startsWith("org.eclipse.osgi");
+    public final static boolean RUNNING_IN_ECLIPSE;
+
+    public final static boolean RUNNING_AS_IDE_PLUGIN;
+
+    static {
+        String name = SystemProperties.class.getClassLoader().getClass().getCanonicalName();
+        RUNNING_IN_ECLIPSE = name.startsWith("org.eclipse.osgi");
+        RUNNING_AS_IDE_PLUGIN = RUNNING_IN_ECLIPSE || name.startsWith("com.intellij.ide.");
+    }
 
     final static String OS_NAME;
     static {

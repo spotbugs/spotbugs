@@ -182,8 +182,6 @@ public class GenericObjectType extends ObjectType {
     /**
      * Create a GenericObjectType that represents a Wildcard with extensions
      *
-     * @param variable
-     *            the type variable e.g. <code>T</code>
      */
     GenericObjectType(@Nonnull String wildcard, @CheckForNull ReferenceType extension) {
         super(Type.OBJECT.getClassName());

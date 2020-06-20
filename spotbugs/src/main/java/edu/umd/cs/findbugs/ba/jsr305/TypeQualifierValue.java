@@ -137,10 +137,13 @@ public class TypeQualifierValue<A extends Annotation> {
         if (xclass != null) {
             ClassDescriptor checkerName = DescriptorFactory.createClassDescriptor(typeQualifier.getClassName() + "$Checker");
 
-            if (!SystemProperties.RUNNING_IN_ECLIPSE) {
-                /**   don't do this if running in Eclipse; check below is the quick
-                fix for bug 3599258 (Random obscure Eclipse failures during
-                 analysis) */
+            if (!SystemProperties.RUNNING_AS_IDE_PLUGIN) {
+                /* don't do this if running in Eclipse; check below is the quick
+                   fix for bug 3599258 (Random obscure Eclipse failures during analysis)
+                   
+                   Also don't do this if running in IntelliJ IDEA. This causes weird issues
+                   either (see IDEA-230268) 
+                 */
 
                 try {
                     Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);

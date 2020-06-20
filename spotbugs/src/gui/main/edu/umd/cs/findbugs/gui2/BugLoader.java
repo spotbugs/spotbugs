@@ -34,6 +34,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;
@@ -207,7 +208,7 @@ public class BugLoader {
             return project;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(mainFrame, "Could not read " + f + "; " + e.getMessage());
-        } catch (SAXException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             JOptionPane.showMessageDialog(mainFrame, "Could not read  project from " + f + "; " + e.getMessage());
         }
         return null;

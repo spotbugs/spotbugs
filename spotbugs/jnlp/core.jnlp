@@ -16,11 +16,12 @@
     <jar href="AppleJavaExtensions.jar"/>
     <jar href="bcel.jar"/>
     <jar href="dom4j-2.1.1.jar"/>
-    <jar href="asm-3.3.jar"/>
-    <jar href="asm-tree-3.3.jar"/>
-    <jar href="asm-commons-3.3.jar"/>
+    <jar href="asm-7.3.1.jar"/>
+    <jar href="asm-tree-7.3.1.jar"/>
+    <jar href="asm-commons-7.3.1.jar"/>
     <jar href="jaxen-1.1.6.jar"/>
-    <jar href="commons-lang-2.6.jar"/>
+    <jar href="commons-lang3-3.10.jar"/>
+    <jar href="commons-text-1.8.jar"/>
     <jar href="jsr305.jar"/>
   </resources>
   <component-desc />
