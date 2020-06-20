@@ -27,19 +27,17 @@ jobs:
           wget -nv 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz
           tar xzvf eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
-      - name: Extract GitHub Secrets to local files
-        run: |
-          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-        env:
-          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
-        if: ${{ GPG_SECRET_PASSPHRASE != '' }}
       - name: Build
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         run: |
+          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
+          if ["$GPG_SECRET_PASSPHRASE" != ""]; then
+            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          fi
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
           ./gradlew spotlessCheck build smoketest sonarqube --no-daemon --parallel -Dsonar.login=$SONAR_LOGIN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
