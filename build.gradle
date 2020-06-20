@@ -28,7 +28,7 @@ apply plugin: "org.sonarqube"
 apply plugin: "com.diffplug.gradle.spotless"
 apply plugin: "org.gradle.crypto.checksum"
 
-version = '4.0.5-SNAPSHOT'
+version = '4.0.5'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
