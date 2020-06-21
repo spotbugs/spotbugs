@@ -143,18 +143,18 @@ public class StackMapAnalyzer {
                 Class<StackMapEntry> c = StackMapEntry.class;
                 Field result;
                 try {
-                    result = c.getDeclaredField("frame_type");
+                    result = c.getDeclaredField("frameType");
                     result.setAccessible(true);
                     return result;
                 } catch (NoSuchFieldException e1) {
-                    throw new AssertionError("frame_type field doesn't exist");
+                    throw new AssertionError("frameType field doesn't exist");
                 } catch (SecurityException e2) {
                     return null;
                 }
 
             });
         } catch (Exception e) {
-            AnalysisContext.logError("Unable to create frame_type accessor", e);
+            AnalysisContext.logError("Unable to create frameType accessor", e);
             f = null;
         }
         if (DEBUG) {
