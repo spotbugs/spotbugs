@@ -4,6 +4,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased - 2020-??-??
+
 ## 4.0.6 - 2020-06-23
 ### Fixed
 * Use method call instead of reflection to get BCEL frame type ([#1176](https://github.com/spotbugs/spotbugs/issues/1176))
