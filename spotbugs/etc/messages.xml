@@ -5600,7 +5600,7 @@ than are different than you would get using <code>.equals(...)</code>.
     <LongDescription>Using pointer equality to compare a {2.givenClass} with a {3.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method uses using pointer equality to compare two references that seem to be of
+<p> This method uses pointer equality to compare two references that seem to be of
 different types.  The result of this comparison will always be false at runtime.
 </p>
 ]]>
