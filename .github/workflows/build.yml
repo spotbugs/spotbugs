@@ -35,7 +35,7 @@ jobs:
           if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
             gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
           fi
-          ./gradlew spotlessCheck build smoketest sonarqube --no-daemon -Dsonar.login=$SONAR_LOGIN
+          ./gradlew spotlessCheck build smoketest --no-daemon
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
