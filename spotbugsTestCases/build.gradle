@@ -78,3 +78,7 @@ sonarqube {
   // as it is test data, not real code
   skipProject true
 }
+
+spotbugs {
+  ignoreFailures = true
+}

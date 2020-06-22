@@ -522,3 +522,7 @@ task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
 }
 
 tasks['assemble'].dependsOn eclipseSite, eclipseSiteZip
+
+spotbugs {
+  ignoreFailures = true
+}

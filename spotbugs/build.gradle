@@ -106,11 +106,6 @@ dependencies {
   guiTestCompileOnly project(':spotbugs-annotations')
 }
 
-// spotbugs {
-//   effort = "max"
-//   reportLevel = "high"
-// }
-
 clean {
   delete ".libs"
 }
@@ -360,6 +355,9 @@ jacocoTestReport {
   classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
 }
 
+spotbugsTest {
+  ignoreFailures = true
+}
 // TODO : generatemanual (we should decide what to do with the manual)
 // TODO : generatepdfmanual
 // TODO : bugdesc
