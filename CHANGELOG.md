@@ -5,9 +5,13 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2020-??-??
+
+## 4.0.5 - 2020-06-20
 ### Fixed
 
 * dependency conflict around apache-commons-lang3 ([#1135](https://github.com/spotbugs/spotbugs/issues/1135))
+* plain.xsl declares it is a 2.0 stylesheet, but it appears to have issues with a 2.0 processor
+* eclipse plugin does not contain `lib/spotbugs.jar`  ([#1158](https://github.com/spotbugs/spotbugs/issues/1158))
 
 ### Changed
 

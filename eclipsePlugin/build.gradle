@@ -234,10 +234,24 @@ task distZip(type:Zip, dependsOn:jar) {
   archiveName = "${eclipsePluginId}_${project.version}.zip"
 }
 
+task testPluginJar {
+  doLast {
+    def spotbugsJar = zipTree("$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar")
+            .matching { include 'lib/spotbugs.jar' }
+            .singleFile
+    if (!spotbugsJar.exists()) {
+      throw GradleException('Eclipse plugin does not contain spotbugs.jar');
+    } else {
+      println 'Eclipse plugin contains spotbugs.jar'
+    }
+  }
+}
+
 task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
   with distSpec
   archiveName = "${eclipsePluginId}_${project.version}.jar"
   destinationDir = file("${buildDir}/site/eclipse/plugins/")
+  finalizedBy testPluginJar
 }
 
 task pluginCandidateJar(type:Copy, dependsOn:pluginJar) {
