@@ -29,7 +29,8 @@ import javax.annotation.WillCloseWhenClosed;
 
 import edu.umd.cs.findbugs.annotations.DischargesObligation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import edu.umd.cs.findbugs.util.Strings;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Write XML to an output stream.
@@ -188,7 +189,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 
     @Override
     public void writeText(String text) throws IOException {
-        out.write(Strings.escapeXml(text));
+        out.write(StringEscapeUtils.escapeXml10(text));
     }
 
     @Override

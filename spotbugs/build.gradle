@@ -78,7 +78,6 @@ dependencies {
   api libs.asm.util
   api 'org.apache.bcel:bcel:6.13.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  api('org.dom4j:dom4j:2.2.0')
   api 'com.google.code.gson:gson:2.14.0'
   api 'org.apache.commons:commons-lang3:3.21.0'
   api 'org.apache.commons:commons-text:1.15.0'
@@ -87,6 +86,7 @@ dependencies {
 
   // These annotations are provided as a separate jar (spotbugs-annotations). Ant and plugin users must add a dependency on spotbugs-annotations if they need annotation classes.
   api project(':spotbugs-annotations')
+  api project(':spotbugs-entities')
 
   constraints {
     logBinding('org.apache.logging.log4j:log4j-core') {
@@ -104,7 +104,6 @@ dependencies {
     }
   }
 
-  implementation 'jaxen:jaxen:2.0.6' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   implementation 'net.sf.saxon:Saxon-HE:12.10'
   implementation libs.log4j.core
 
@@ -158,7 +157,7 @@ eclipse.classpath.file {
       }
     }
     classpath.entries.forEach { ClasspathEntry entry ->
-      if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
+      if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !entry.path.contains('spotbugs-entities') && !Files.isDirectory(Path.of(entry.path))) {
         entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
         entry.exported = true
       }
@@ -189,6 +188,7 @@ TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Cop
   include '*.jar'
   exclude '*xml-apis*.jar'
   exclude '*spotbugs-annotations*.jar'
+  exclude '*spotbugs-entities*.jar'
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
