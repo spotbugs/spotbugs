@@ -1,0 +1,53 @@
+apply from: "$rootDir/gradle/checkstyle.gradle"
+apply from: "$rootDir/gradle/javadoc.gradle"
+apply from: "$rootDir/gradle/maven.gradle"
+
+dependencies {
+    api project(':spotbugs-annotations')
+    api('org.dom4j:dom4j:2.1.3') {
+        // exclude transitive dependencies to keep compatible with dom4j 2.1.1
+        // https://github.com/dom4j/dom4j/issues/85
+        // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
+        exclude group: 'jaxen',            module: 'jaxen'
+        exclude group: 'javax.xml.stream', module: 'stax-api'
+        exclude group: 'net.java.dev.msv', module: 'xsdlib'
+        exclude group: 'javax.xml.bind',   module: 'jaxb-api'
+        exclude group: 'pull-parser',      module: 'pull-parser'
+        exclude group: 'xpp3',             module: 'xpp3'
+    }
+    implementation 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
+
+    api 'org.apache.commons:commons-text'
+    constraints {
+        api ('org.apache.commons:commons-text:1.8') {
+            because 'this is the latest version'
+        }
+        api ('org.apache.commons:commons-lang3:3.10') {
+            because 'version 3.9 pulled from commons-text is too old, and commons-text has no later release'
+        }
+    }
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing.publications.maven {
+    artifact javadocJar
+    artifact sourcesJar
+    pom {
+        name = 'SpotBugs Entities'
+        description = 'Entities for SpotBugs'
+    }
+}
+
+// Module name should be reverse-DNS (com.github.spotbugs) just like package name
+// http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
+ext.moduleName = 'com.github.spotbugs.entities'
+apply from: "$rootDir/gradle/jigsaw.gradle"
