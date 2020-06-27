@@ -26,7 +26,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-import edu.umd.cs.findbugs.util.Strings;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Helper class to format attributes in an XML tag.
@@ -132,6 +132,6 @@ public class XMLAttributeList {
      * @return a properly quoted representation of the value
      */
     public static String getQuotedAttributeValue(@Nonnull String rawValue) {
-        return Strings.escapeXml(rawValue);
+        return StringEscapeUtils.escapeXml10(rawValue);
     }
 }

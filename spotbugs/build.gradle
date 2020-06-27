@@ -67,17 +67,6 @@ dependencies {
   api libs.asm.util
   api 'org.apache.bcel:bcel:6.10.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  api('org.dom4j:dom4j:2.2.0') {
-    // exclude transitive dependencies to keep compatible with dom4j 2.1.1
-    // https://github.com/dom4j/dom4j/issues/85
-    // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
-    exclude group: 'jaxen',            module: 'jaxen'
-    exclude group: 'javax.xml.stream', module: 'stax-api'
-    exclude group: 'net.java.dev.msv', module: 'xsdlib'
-    exclude group: 'javax.xml.bind',   module: 'jaxb-api'
-    exclude group: 'pull-parser',      module: 'pull-parser'
-    exclude group: 'xpp3',             module: 'xpp3'
-  }
   constraints {
     logBinding('org.apache.logging.log4j:log4j-core') {
       version {
@@ -96,7 +85,6 @@ dependencies {
   api 'org.apache.commons:commons-lang3:3.18.0'
   api 'org.apache.commons:commons-text:1.14.0'
   api 'org.slf4j:slf4j-api:2.0.17'
-  implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   implementation 'net.sf.saxon:Saxon-HE:12.8'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
@@ -106,6 +94,7 @@ dependencies {
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
+  api project(':spotbugs-entities')
 
   api 'com.google.code.gson:gson:2.13.1'
 
@@ -147,6 +136,7 @@ eclipse.classpath.file {
          classpath.entries.forEach {
              entry ->
                if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')
+                   && !entry.path.contains('spotbugs-entities')
                    && !java.nio.file.Files.isDirectory(java.nio.file.Paths.get(entry.path))) {
                    entry.path = '.libs/' + java.nio.file.Paths.get(entry.path).getFileName().toString()
                    entry.exported = true
@@ -176,6 +166,7 @@ TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Cop
     include '*.jar'
     exclude '*xml-apis*.jar'
     exclude '*spotbugs-annotations*.jar'
+    exclude '*spotbugs-entities*.jar'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
