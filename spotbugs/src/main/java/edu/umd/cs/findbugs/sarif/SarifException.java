@@ -3,7 +3,11 @@ package edu.umd.cs.findbugs.sarif;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

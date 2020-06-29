@@ -7,6 +7,7 @@ import java.util.Objects;
 
 /**
  * Object which represents reportingDescriptor in {@code run.driver.rules} property. (§3.19.23)
+ * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317836">3.49 reportingDescriptor object</a>
  */
 final class Rule {
     @NonNull

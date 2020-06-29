@@ -7,6 +7,7 @@ import java.util.Objects;
 
 /**
  * Object which represents result object in {@code run.results} property. (§3.14.23)
+ * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317638">3.27 result object</a>
  */
 final class Result {
     final String ruleId;

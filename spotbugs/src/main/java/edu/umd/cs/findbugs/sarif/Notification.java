@@ -9,6 +9,7 @@ import java.util.Objects;
 
 /**
  * A class representing {@code notification} object (§3.58) in {@code run.invocations.toolExecutionNotifications} (§3.20.21)
+ * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317894">3.58 notification object</a>
  */
 class Notification {
     @NonNull
