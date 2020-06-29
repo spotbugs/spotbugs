@@ -7,8 +7,8 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONArray;
 import org.json.JSONWriter;
 
-import java.io.PrintWriter;
 import java.util.Locale;
+import java.util.Set;
 
 public class SarifBugReporter extends BugCollectionBugReporter {
     public SarifBugReporter(Project project) {
@@ -41,7 +41,19 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         // SpotBugs refers JVM config to decide which language we use.
         jsonWriter.key("language").value(Locale.getDefault().getLanguage());
         jsonWriter.key("rules").value(rules);
-        // TODO process "notifications"
+        processNotifications(jsonWriter);
         jsonWriter.endObject().endObject();
+    }
+
+    private void processNotifications(JSONWriter jsonWriter) {
+        jsonWriter.key("notifications").array();
+        Set<String> missingClasses = getMissingClasses();
+        if (missingClasses != null && !missingClasses.isEmpty()) {
+            String message = String.format("Classes needed for analysis were missing: %s", missingClasses.toString());
+            Notification notification = new Notification("spotbugs-missing-classes", message, Level.ERROR, null);
+            jsonWriter.value(notification.toJsonObject());
+        }
+        getQueuedErrors().stream().map(Notification::fromError).map(Notification::toJsonObject).forEach(jsonWriter::value);
+        jsonWriter.endArray();
     }
 }

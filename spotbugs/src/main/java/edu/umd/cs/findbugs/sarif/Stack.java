@@ -24,7 +24,11 @@ class Stack {
 
     static Stack fromThrowable(Throwable throwable) {
         List<StackFrame> frames = Arrays.stream(Objects.requireNonNull(throwable).getStackTrace()).map(StackFrame::fromStackTraceElement).collect(Collectors.toList());
-        return new Stack(throwable.getMessage(), frames);
+        String message = throwable.getMessage();
+        if (message == null) {
+            message = "no message given";
+        }
+        return new Stack(message, frames);
     }
 
     JSONObject toJsonObject() {

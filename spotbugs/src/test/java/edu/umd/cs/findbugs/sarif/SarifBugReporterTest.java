@@ -1,7 +1,15 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
@@ -20,6 +28,8 @@ import java.util.Locale;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SarifBugReporterTest {
     private SarifBugReporter reporter;
@@ -131,5 +141,83 @@ public class SarifBugReporterTest {
         assertThat(message.getString("id"), is("default"));
         JSONArray arguments = message.getJSONArray("arguments");
         assertThat(arguments.getInt(0), is(10));
+    }
+
+    @Test
+    public void testMissingClassNotification() {
+        ClassDescriptor classDescriptor = DescriptorFactory.instance().getClassDescriptor("com/github/spotbugs/MissingClass");
+        reporter.reportMissingClass(classDescriptor);
+        reporter.finish();
+
+        // then
+        String json = writer.toString();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JSONObject tool = run.getJSONObject("tool");
+        JSONObject driver = tool.getJSONObject("driver");
+        JSONArray notifications = driver.getJSONArray("notifications");
+
+        assertThat(notifications.length(), is(1));
+        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-missing-classes"));
+        assertThat(notification.getJSONObject("message").getString("text"), is("Classes needed for analysis were missing: [com.github.spotbugs.MissingClass]"));
+    }
+
+    @Test
+    public void testErrorNotification() {
+        reporter.logError("Unexpected Error");
+        reporter.finish();
+
+        String json = writer.toString();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JSONObject tool = run.getJSONObject("tool");
+        JSONObject driver = tool.getJSONObject("driver");
+        JSONArray notifications = driver.getJSONArray("notifications");
+
+        assertThat(notifications.length(), is(1));
+        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
+        assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
+        assertFalse(notification.has("exception"));
+    }
+
+    @Test
+    public void testExceptionNotification() {
+        reporter.logError("Unexpected Error", new Exception("Unexpected Problem"));
+        reporter.finish();
+
+        String json = writer.toString();
+        System.err.println(json);
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JSONObject tool = run.getJSONObject("tool");
+        JSONObject driver = tool.getJSONObject("driver");
+        JSONArray notifications = driver.getJSONArray("notifications");
+
+        assertThat(notifications.length(), is(1));
+        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
+        assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
+        assertTrue(notification.has("exception"));
+    }
+
+    @Test
+    public void testExceptionNotificationWithoutMessage() {
+        reporter.logError("Unexpected Error", new Exception());
+        reporter.finish();
+
+        String json = writer.toString();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JSONObject tool = run.getJSONObject("tool");
+        JSONObject driver = tool.getJSONObject("driver");
+        JSONArray notifications = driver.getJSONArray("notifications");
+
+        assertThat(notifications.length(), is(1));
+        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
+        assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
+        assertTrue(notification.has("exception"));
     }
 }
