@@ -76,10 +76,10 @@ public class OverridingMethodsMustInvokeSuperDetector extends OpcodeStackDetecto
         final String methodSig;
         XMethod bridgeFrom = getXMethod().bridgeFrom();
 
-        if (bridgeFrom != null) {
-            methodSig = bridgeFrom.getSignature();
-        } else {
+        if (bridgeFrom == null) {
             methodSig = getMethodSig();
+        } else {
+            methodSig = bridgeFrom.getSignature();
         }
 
         return methodSig;
