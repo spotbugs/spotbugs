@@ -23,7 +23,7 @@ final class Rule {
         this.defaultText = Objects.requireNonNull(defaultText);
     }
 
-    JSONObject toJsonObject() {
+    JSONObject toJSONObject() {
         JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", defaultText));
         return new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put("messageStrings",
                 messageStrings);

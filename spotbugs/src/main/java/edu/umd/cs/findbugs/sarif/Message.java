@@ -19,7 +19,7 @@ final class Message {
         this.arguments = Collections.unmodifiableList(Objects.requireNonNull(arguments));
     }
 
-    JSONObject toJsonObject() {
+    JSONObject toJSONObject() {
         JSONObject jsonObject = new JSONObject().put("id", "default");
         if (!arguments.isEmpty()) {
             for (Object arg : arguments) {

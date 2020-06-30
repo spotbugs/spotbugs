@@ -44,10 +44,10 @@ class Location {
         }
     }
 
-    JSONObject toJsonObject() {
+    JSONObject toJSONObject() {
         JSONObject result = new JSONObject();
-        physicalLocations.forEach(physicalLocation -> result.append("physicalLocations", physicalLocation.toJsonObject()));
-        logicalLocations.forEach(logicalLocation -> result.append("logicalLocation", logicalLocation.toJsonObject()));
+        physicalLocations.forEach(physicalLocation -> result.append("physicalLocations", physicalLocation.toJSONObject()));
+        logicalLocations.forEach(logicalLocation -> result.append("logicalLocation", logicalLocation.toJSONObject()));
         return result;
     }
 
@@ -84,7 +84,7 @@ class Location {
             this.uriBaseId = uriBaseId;
         }
 
-        JSONObject toJsonObject() {
+        JSONObject toJSONObject() {
             return new JSONObject().put("uri", uri).putOpt("uriBaseId", uriBaseId);
         }
 
@@ -121,7 +121,7 @@ class Location {
             return new Region(annotation.getStartLine(), annotation.getEndLine());
         }
 
-        JSONObject toJsonObject() {
+        JSONObject toJSONObject() {
             return new JSONObject().put("startLine", startLine).put("endLine", endLine);
         }
     }
@@ -140,8 +140,8 @@ class Location {
             this.region = region;
         }
 
-        JSONObject toJsonObject() {
-            return new JSONObject().put("artifactLocation", artifactLocation.toJsonObject()).putOpt("region", region.toJsonObject());
+        JSONObject toJSONObject() {
+            return new JSONObject().put("artifactLocation", artifactLocation.toJSONObject()).putOpt("region", region.toJSONObject());
         }
 
         static PhysicalLocation fromBugAnnotation(SourceLineAnnotation bugAnnotation) {
@@ -169,7 +169,7 @@ class Location {
             this.kind = Objects.requireNonNull(kind);
         }
 
-        JSONObject toJsonObject() {
+        JSONObject toJSONObject() {
             return new JSONObject().put("name", name).put("decoratedName", decoratedName).put("kind", kind);
         }
 

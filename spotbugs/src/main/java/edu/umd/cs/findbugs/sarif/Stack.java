@@ -32,9 +32,9 @@ class Stack {
         return new Stack(message, frames);
     }
 
-    JSONObject toJsonObject() {
+    JSONObject toJSONObject() {
         JSONObject result = new JSONObject().put("messsage", new JSONObject().put("text", message));
-        frames.forEach(stackFrame -> result.append("frames", stackFrame.toJsonObject()));
+        frames.forEach(stackFrame -> result.append("frames", stackFrame.toJSONObject()));
         return result;
     }
 
@@ -54,7 +54,7 @@ class Stack {
             return new StackFrame(Objects.requireNonNull(element).toString());
         }
 
-        JSONObject toJsonObject() {
+        JSONObject toJSONObject() {
             return new JSONObject().put("location", new JSONObject().put("message", message));
         }
     }

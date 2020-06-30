@@ -44,10 +44,10 @@ class SarifException {
         return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable), innerExceptions);
     }
 
-    JSONObject toJsonObject() {
+    JSONObject toJSONObject() {
         JSONObject result = new JSONObject().put("exception", new JSONObject().put("kind", kind).put("message", new JSONObject().put("text",
-                message))).put("stack", stack.toJsonObject());
-        innerExceptions.forEach(innerException -> result.append("innerExceptions", innerException.toJsonObject()));
+                message))).put("stack", stack.toJSONObject());
+        innerExceptions.forEach(innerException -> result.append("innerExceptions", innerException.toJSONObject()));
         return result;
     }
 }

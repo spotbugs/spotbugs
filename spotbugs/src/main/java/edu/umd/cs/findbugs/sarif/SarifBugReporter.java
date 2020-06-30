@@ -56,9 +56,9 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         if (missingClasses != null && !missingClasses.isEmpty()) {
             String message = String.format("Classes needed for analysis were missing: %s", missingClasses.toString());
             Notification notification = new Notification("spotbugs-missing-classes", message, Level.ERROR, null);
-            jsonWriter.value(notification.toJsonObject());
+            jsonWriter.value(notification.toJSONObject());
         }
-        getQueuedErrors().stream().map(Notification::fromError).map(Notification::toJsonObject).forEach(jsonWriter::value);
+        getQueuedErrors().stream().map(Notification::fromError).map(Notification::toJSONObject).forEach(jsonWriter::value);
         jsonWriter.endArray();
     }
 }

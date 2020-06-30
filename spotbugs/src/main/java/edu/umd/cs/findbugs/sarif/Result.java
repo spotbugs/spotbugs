@@ -21,7 +21,7 @@ final class Result {
         this.message = Objects.requireNonNull(message);
     }
 
-    JSONObject toJsonObject() {
-        return new JSONObject().put("ruleId", ruleId).put("ruleIndex", ruleIndex).put("message", message.toJsonObject());
+    JSONObject toJSONObject() {
+        return new JSONObject().put("ruleId", ruleId).put("ruleIndex", ruleIndex).put("message", message.toJSONObject());
     }
 }

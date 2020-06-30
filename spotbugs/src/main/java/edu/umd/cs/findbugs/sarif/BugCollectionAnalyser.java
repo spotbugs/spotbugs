@@ -32,7 +32,7 @@ class BugCollectionAnalyser {
     JSONArray getRules() {
         JSONArray array = new JSONArray();
         for (Rule rule : rules) {
-            array.put(rule.toJsonObject());
+            array.put(rule.toJSONObject());
         }
         return array;
     }
@@ -40,7 +40,7 @@ class BugCollectionAnalyser {
     JSONArray getResults() {
         JSONArray array = new JSONArray();
         for (Result result : results) {
-            array.put(result.toJsonObject());
+            array.put(result.toJSONObject());
         }
         return array;
     }
