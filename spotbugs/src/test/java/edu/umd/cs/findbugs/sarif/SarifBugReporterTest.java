@@ -57,7 +57,7 @@ public class SarifBugReporterTest {
 
     @After
     public void teardown() {
-        AnalysisContext.currentAnalysisContext().close();
+        AnalysisContext.removeCurrentAnalysisContext();
         Global.removeAnalysisCacheForCurrentThread();
     }
 

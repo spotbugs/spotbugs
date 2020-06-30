@@ -18,7 +18,7 @@ public class SAXBugCollectionHandlerTest {
 
     @Before
     public void setUp() {
-        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), null);;
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());;
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
     }
