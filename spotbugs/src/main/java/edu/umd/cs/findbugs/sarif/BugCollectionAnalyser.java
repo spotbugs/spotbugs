@@ -27,7 +27,7 @@ class BugCollectionAnalyser {
                     processRule(t, bug.getBugPattern())
             );
 
-            results.add(processResult(index, bug));
+            processResult(index, bug);
         });
     }
 
@@ -47,9 +47,10 @@ class BugCollectionAnalyser {
         return array;
     }
 
-    private Result processResult(int index, BugInstance bug) {
+    private void processResult(int index, BugInstance bug) {
         List<String> arguments = bug.getAnnotations().stream().map(annotation -> annotation.format("", null)).collect(Collectors.toList());
-        return new Result(bug.getType(), index, new Message(arguments));
+        Result result = new Result(bug.getType(), index, new Message(arguments));
+        results.add(result);
     }
 
     private int processRule(String type, BugPattern bugPattern) {
