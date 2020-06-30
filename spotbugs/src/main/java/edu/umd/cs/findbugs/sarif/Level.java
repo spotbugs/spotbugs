@@ -33,16 +33,16 @@ enum Level implements JSONString {
 
     static Level fromPriority(int priority) {
         switch (priority) {
-            case Priorities.HIGH_PRIORITY:
-                return ERROR;
-            case Priorities.NORMAL_PRIORITY:
-            case Priorities.LOW_PRIORITY:
-                return WARNING;
-            case Priorities.EXP_PRIORITY:
-            case Priorities.IGNORE_PRIORITY:
-                return NOTE;
-            default:
-                throw new IllegalArgumentException(String.format("Unknown property %d is given", priority));
+        case Priorities.HIGH_PRIORITY:
+            return ERROR;
+        case Priorities.NORMAL_PRIORITY:
+        case Priorities.LOW_PRIORITY:
+            return WARNING;
+        case Priorities.EXP_PRIORITY:
+        case Priorities.IGNORE_PRIORITY:
+            return NOTE;
+        default:
+            throw new IllegalArgumentException(String.format("Unknown property %d is given", priority));
         }
     }
 }

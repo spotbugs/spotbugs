@@ -55,7 +55,8 @@ class Location {
         Objects.requireNonNull(bugInstance);
 
         final PhysicalLocation physicalLocation = findPhysicalLocation(bugInstance);
-        return LogicalLocation.fromBugAnnotations(bugInstance.getAnnotations()).map(logicalLocation -> new Location(physicalLocation, logicalLocation));
+        return LogicalLocation.fromBugAnnotations(bugInstance.getAnnotations()).map(logicalLocation -> new Location(physicalLocation,
+                logicalLocation));
     }
 
     @CheckForNull

@@ -23,9 +23,7 @@ class BugCollectionAnalyser {
     BugCollectionAnalyser(@NonNull BugCollection bugCollection) {
         bugCollection.forEach(bug -> {
             String type = bug.getType();
-            int index = typeToIndex.computeIfAbsent(type, (t) ->
-                    processRule(t, bug.getBugPattern())
-            );
+            int index = typeToIndex.computeIfAbsent(type, (t) -> processRule(t, bug.getBugPattern()));
 
             processResult(index, bug);
         });

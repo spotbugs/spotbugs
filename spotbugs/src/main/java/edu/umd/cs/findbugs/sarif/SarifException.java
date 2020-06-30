@@ -39,14 +39,15 @@ class SarifException {
         List<Throwable> innerThrowables = new ArrayList<>();
         innerThrowables.add(throwable.getCause());
         innerThrowables.addAll(Arrays.asList(throwable.getSuppressed()));
-        List<SarifException> innerExceptions = innerThrowables.stream().filter(Objects::nonNull).map(SarifException::fromThrowable).collect(Collectors.toList());
-        return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable),innerExceptions);
+        List<SarifException> innerExceptions = innerThrowables.stream().filter(Objects::nonNull).map(SarifException::fromThrowable).collect(Collectors
+                .toList());
+        return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable), innerExceptions);
     }
 
     JSONObject toJsonObject() {
-        JSONObject result = new JSONObject().put("exception", new JSONObject().put("kind", kind).put("message", new JSONObject().put("text", message))).put("stack", stack.toJsonObject());
+        JSONObject result = new JSONObject().put("exception", new JSONObject().put("kind", kind).put("message", new JSONObject().put("text",
+                message))).put("stack", stack.toJsonObject());
         innerExceptions.forEach(innerException -> result.append("innerExceptions", innerException.toJsonObject()));
         return result;
     }
 }
-

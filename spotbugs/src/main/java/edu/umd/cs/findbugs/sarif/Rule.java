@@ -25,6 +25,7 @@ final class Rule {
 
     JSONObject toJsonObject() {
         JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", defaultText));
-        return new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put("messageStrings", messageStrings);
+        return new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put("messageStrings",
+                messageStrings);
     }
 }

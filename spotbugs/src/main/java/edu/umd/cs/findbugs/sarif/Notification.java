@@ -29,7 +29,8 @@ class Notification {
     }
 
     JSONObject toJsonObject() {
-        JSONObject result = new JSONObject().put("descriptor", new JSONObject().put("id", id)).put("message", new JSONObject().put("text", message)).put("level", level);
+        JSONObject result = new JSONObject().put("descriptor", new JSONObject().put("id", id)).put("message", new JSONObject().put("text", message))
+                .put("level", level);
         if (exception != null) {
             result.put("exception", exception.toJsonObject());
         }

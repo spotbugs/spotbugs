@@ -23,7 +23,8 @@ class Stack {
     }
 
     static Stack fromThrowable(Throwable throwable) {
-        List<StackFrame> frames = Arrays.stream(Objects.requireNonNull(throwable).getStackTrace()).map(StackFrame::fromStackTraceElement).collect(Collectors.toList());
+        List<StackFrame> frames = Arrays.stream(Objects.requireNonNull(throwable).getStackTrace()).map(StackFrame::fromStackTraceElement).collect(
+                Collectors.toList());
         String message = throwable.getMessage();
         if (message == null) {
             message = "no message given";
