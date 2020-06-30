@@ -114,7 +114,8 @@ public class SarifBugReporterTest {
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
         final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
         final String EXPECTED_DESCRIPTION = "describing about this bug type...";
-        BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "addrev", "category", false, EXPECTED_DESCRIPTION, "describing about this bug type with value {0}...", "detailText", null, 0);
+        BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "addrev", "category", false, EXPECTED_DESCRIPTION,
+                "describing about this bug type with value {0}...", "detailText", null, 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
         // when
@@ -160,7 +161,8 @@ public class SarifBugReporterTest {
         assertThat(notifications.length(), is(1));
         JSONObject notification = notifications.getJSONObject(0);
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-missing-classes"));
-        assertThat(notification.getJSONObject("message").getString("text"), is("Classes needed for analysis were missing: [com.github.spotbugs.MissingClass]"));
+        assertThat(notification.getJSONObject("message").getString("text"), is(
+                "Classes needed for analysis were missing: [com.github.spotbugs.MissingClass]"));
     }
 
     @Test

@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.Priorities;
 import org.json.JSONObject;
-import org.json.Property;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
