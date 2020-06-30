@@ -17,12 +17,16 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
     @Override
     public void finish() {
-        JSONWriter jsonWriter = new JSONWriter(outputStream);
-        jsonWriter.object();
-        jsonWriter.key("version").value("2.1.0").key("$schema").value("https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json");
-        processRuns(jsonWriter);
-        jsonWriter.endObject();
-        super.finish();
+        try {
+            JSONWriter jsonWriter = new JSONWriter(outputStream);
+            jsonWriter.object();
+            jsonWriter.key("version").value("2.1.0").key("$schema").value("https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json");
+            processRuns(jsonWriter);
+            jsonWriter.endObject();
+            getBugCollection().bugsPopulated();
+        } finally {
+            outputStream.close();
+        }
     }
 
     private void processRuns(@NonNull JSONWriter jsonWriter) {
