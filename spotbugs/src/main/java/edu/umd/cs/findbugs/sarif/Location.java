@@ -13,8 +13,8 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,7 +55,7 @@ class Location {
         Objects.requireNonNull(bugInstance);
 
         final PhysicalLocation physicalLocation = findPhysicalLocation(bugInstance);
-        return LogicalLocation.fromBugAnnotations(bugInstance.getAnnotations()).map(logicalLocation -> new Location(physicalLocation,
+        return LogicalLocation.fromBugInstance(bugInstance).map(logicalLocation -> new Location(physicalLocation,
                 logicalLocation));
     }
 
@@ -63,7 +63,7 @@ class Location {
     private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance) {
         try {
             SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
-            return PhysicalLocation.fromBugAnnotation(sourceLine);
+            return PhysicalLocation.fromBugAnnotation(sourceLine).orElse(null);
         } catch (IllegalStateException e) {
             // no sourceline info found
             return null;
@@ -88,12 +88,16 @@ class Location {
             return new JSONObject().put("uri", uri).putOpt("uriBaseId", uriBaseId);
         }
 
-        static ArtifactLocation fromBugAnnotation(@NonNull SourceLineAnnotation bugAnnotation) {
+        static Optional<ArtifactLocation> fromBugAnnotation(@NonNull SourceLineAnnotation bugAnnotation) {
             Objects.requireNonNull(bugAnnotation);
             // relative path from sourceRoot, see SourceFinder class for example
             String sourceFile = bugAnnotation.getSourceFile();
             // TODO support multiple srcRoot
-            return new ArtifactLocation(URI.create(sourceFile), "srcRoot");
+            try {
+                return Optional.of(new ArtifactLocation(new URI(sourceFile), "srcRoot"));
+            } catch (URISyntaxException e) {
+                return Optional.empty();
+            }
         }
     }
 
@@ -117,8 +121,12 @@ class Location {
             this.endLine = endLine;
         }
 
-        static Region fromBugAnnotation(SourceLineAnnotation annotation) {
-            return new Region(annotation.getStartLine(), annotation.getEndLine());
+        static Optional<Region> fromBugAnnotation(SourceLineAnnotation annotation) {
+            if (annotation.getStartLine() <= 0 || annotation.getEndLine() <= 0) {
+                return Optional.empty();
+            } else {
+                return Optional.of(new Region(annotation.getStartLine(), annotation.getEndLine()));
+            }
         }
 
         JSONObject toJSONObject() {
@@ -144,10 +152,10 @@ class Location {
             return new JSONObject().put("artifactLocation", artifactLocation.toJSONObject()).putOpt("region", region.toJSONObject());
         }
 
-        static PhysicalLocation fromBugAnnotation(SourceLineAnnotation bugAnnotation) {
-            ArtifactLocation artifactLocation = ArtifactLocation.fromBugAnnotation(bugAnnotation);
-            Region region = Region.fromBugAnnotation(bugAnnotation);
-            return new PhysicalLocation(artifactLocation, region);
+        static Optional<PhysicalLocation> fromBugAnnotation(SourceLineAnnotation bugAnnotation) {
+            Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(bugAnnotation);
+            Optional<Region> region = Region.fromBugAnnotation(bugAnnotation);
+            return artifactLocation.map(location -> new PhysicalLocation(location, region.orElse(null)));
         }
     }
 
@@ -157,33 +165,34 @@ class Location {
     static final class LogicalLocation {
         @NonNull
         final String name;
-        @NonNull
+        @Nullable
         final String decoratedName;
         @NonNull
         final String kind;
         // TODO resolve fullyQualifiedName parameter
 
-        LogicalLocation(@NonNull String name, @NonNull String decoratedName, @NonNull String kind) {
+        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind) {
             this.name = Objects.requireNonNull(name);
-            this.decoratedName = Objects.requireNonNull(decoratedName);
+            this.decoratedName = decoratedName;
             this.kind = Objects.requireNonNull(kind);
         }
 
         JSONObject toJSONObject() {
-            return new JSONObject().put("name", name).put("decoratedName", decoratedName).put("kind", kind);
+            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind);
         }
 
         @NonNull
-        static Optional<LogicalLocation> fromBugAnnotations(@NonNull Collection<? extends BugAnnotation> annotations) {
-            Objects.requireNonNull(annotations);
-            return annotations.stream().map(annotation -> {
+        static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
+            Objects.requireNonNull(bugInstance);
+            ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
+            return bugInstance.getAnnotations().stream().map(annotation -> {
                 String kind = findKind(annotation);
                 if (kind == null) {
                     return null;
                 }
-                String name = annotation.format("name", null);
-                String decoratedName = annotation.format("register", null);
-                return new LogicalLocation(name, decoratedName, kind);
+                String name = annotation.format("givenClass", primaryClass);
+                // TODO how to find decoratedName
+                return new LogicalLocation(name, null, kind);
             }).filter(Objects::nonNull).findFirst();
         }
 

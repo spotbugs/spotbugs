@@ -119,7 +119,7 @@ public class SarifBugReporterTest {
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
         // when
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("TheTargetClass"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/taeget/Class"));
         reporter.finish();
 
         // then
