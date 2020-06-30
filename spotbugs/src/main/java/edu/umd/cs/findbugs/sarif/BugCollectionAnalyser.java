@@ -6,10 +6,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONArray;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class BugCollectionAnalyser {
@@ -47,7 +44,9 @@ class BugCollectionAnalyser {
 
     private void processResult(int index, BugInstance bug) {
         List<String> arguments = bug.getAnnotations().stream().map(annotation -> annotation.format("", null)).collect(Collectors.toList());
-        Result result = new Result(bug.getType(), index, new Message(arguments));
+        List<Location> locations = new ArrayList<>();
+        Location.fromBugInstance(bug).ifPresent(locations::add);
+        Result result = new Result(bug.getType(), index, new Message(arguments), locations);
         results.add(result);
     }
 
