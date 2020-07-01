@@ -1,6 +1,15 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.PluginLoader;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -218,7 +227,7 @@ public class SarifBugReporterTest {
     }
 
     @Test
-    public void testHelpUri() {
+    public void testHelpUriAndTags() {
         BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
@@ -234,6 +243,10 @@ public class SarifBugReporterTest {
         assertThat(rules.length(), is(1));
         JSONObject rule = rules.getJSONObject(0);
         assertThat(rule.get("helpUri"), is("https://example.com/help.html#TYPE"));
+
+        JSONArray tags = rule.getJSONObject("properties").getJSONArray("tags");
+        assertThat(tags.length(), is(1));
+        assertThat(tags.get(0), is("category"));
     }
 
     @Test

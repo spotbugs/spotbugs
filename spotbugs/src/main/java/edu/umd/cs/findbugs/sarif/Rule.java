@@ -3,9 +3,13 @@ package edu.umd.cs.findbugs.sarif;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,24 +25,41 @@ final class Rule {
     final String defaultText;
     @Nullable
     final URI helpUri;
+    @NonNull
+    final List<String> tags;
 
-    Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String defaultText, @Nullable URI helpUri) {
+    Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String defaultText, @Nullable URI helpUri, @NonNull List<String> tags) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
+        this.tags = Collections.unmodifiableList(tags);
     }
 
     JSONObject toJSONObject() {
         JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", defaultText));
-        return new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put(
+        JSONObject result = new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put(
                 "messageStrings",
                 messageStrings).putOpt("helpUri", helpUri);
+        if (!tags.isEmpty()) {
+            JSONObject propertyBag = new JSONObject().put("tags", new JSONArray(tags));
+            result.put("properties", propertyBag);
+        }
+        return result;
     }
 
     @NonNull
     static Rule fromBugPattern(BugPattern bugPattern) {
         URI helpUri = bugPattern.getUri().orElse(null);
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getLongDescription(), helpUri);
+
+        String category = bugPattern.getCategory();
+        List<String> tags;
+        if (StringUtils.isEmpty(category)) {
+            tags = Collections.emptyList();
+        } else {
+            tags = Collections.singletonList(category);
+        }
+
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getLongDescription(), helpUri, tags);
     }
 }
