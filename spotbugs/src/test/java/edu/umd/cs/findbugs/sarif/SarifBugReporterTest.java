@@ -1,12 +1,6 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -240,5 +234,30 @@ public class SarifBugReporterTest {
         assertThat(rules.length(), is(1));
         JSONObject rule = rules.getJSONObject(0);
         assertThat(rule.get("helpUri"), is("https://example.com/help.html#TYPE"));
+    }
+
+    @Test
+    public void testExtensions() throws PluginException {
+        PluginLoader pluginLoader = DetectorFactoryCollection.instance().getCorePlugin().getPluginLoader();
+        Plugin plugin = new Plugin("pluginId", "version", null, pluginLoader, true, false);
+        DetectorFactoryCollection dfc = new DetectorFactoryCollection(plugin);
+        try {
+            DetectorFactoryCollection.resetInstance(dfc);
+            reporter.finish();
+        } finally {
+            DetectorFactoryCollection.resetInstance(null);
+        }
+
+        String json = writer.toString();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JSONObject tool = run.getJSONObject("tool");
+        JSONArray extensions = tool.getJSONArray("extensions");
+
+        assertThat(extensions.length(), is(1));
+        JSONObject extension = extensions.getJSONObject(0);
+
+        assertThat(extension.get("name"), is("pluginId"));
+        assertThat(extension.get("version"), is("version"));
     }
 }

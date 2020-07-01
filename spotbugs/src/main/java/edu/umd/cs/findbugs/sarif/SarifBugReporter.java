@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.BugCollectionBugReporter;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.Version;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONArray;
 import org.json.JSONWriter;
@@ -39,7 +37,9 @@ public class SarifBugReporter extends BugCollectionBugReporter {
     }
 
     private void processTool(@NonNull JSONWriter jsonWriter, @NonNull JSONArray rules) {
-        jsonWriter.key("tool").object().key("driver").object();
+        jsonWriter.key("tool").object();
+        processExtensions(jsonWriter);
+        jsonWriter.key("driver").object();
         jsonWriter.key("name").value(Version.getApplicationName());
         // Eclipse plugin does not follow the semantic-versioning, so use "version" instead of "semanticVersion".
         jsonWriter.key("version").value(Version.getApplicationVersion());
@@ -48,6 +48,12 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.key("rules").value(rules);
         processNotifications(jsonWriter);
         jsonWriter.endObject().endObject();
+    }
+
+    private void processExtensions(@NonNull JSONWriter jsonWriter) {
+        jsonWriter.key("extensions").array();
+        DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJSONObject).forEach(jsonWriter::value);
+        jsonWriter.endArray();
     }
 
     private void processNotifications(JSONWriter jsonWriter) {

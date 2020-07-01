@@ -146,7 +146,11 @@ class Location {
         }
 
         JSONObject toJSONObject() {
-            return new JSONObject().put("artifactLocation", artifactLocation.toJSONObject()).putOpt("region", region.toJSONObject());
+            JSONObject result = new JSONObject().put("artifactLocation", artifactLocation.toJSONObject());
+            if (region != null) {
+                result.put("region", region.toJSONObject());
+            }
+            return result;
         }
 
         static Optional<PhysicalLocation> fromBugAnnotation(SourceLineAnnotation bugAnnotation) {
