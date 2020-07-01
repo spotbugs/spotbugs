@@ -222,4 +222,23 @@ public class SarifBugReporterTest {
         assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
     }
+
+    @Test
+    public void testHelpUri() {
+        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.finish();
+
+        String json = writer.toString();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JSONArray rules = run.getJSONObject("tool").getJSONObject("driver").getJSONArray("rules");
+
+        assertThat(rules.length(), is(1));
+        JSONObject rule = rules.getJSONObject(0);
+        assertThat(rule.get("helpUri"), is("https://example.com/help.html#TYPE"));
+    }
 }
