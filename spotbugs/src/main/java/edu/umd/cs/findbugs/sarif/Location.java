@@ -15,6 +15,8 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,31 +25,26 @@ import java.util.Optional;
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317670">3.28 location object</a>
  */
 class Location {
-    @NonNull
-    private final List<PhysicalLocation> physicalLocations;
+    @Nullable
+    private final PhysicalLocation physicalLocation;
     @NonNull
     private final List<LogicalLocation> logicalLocations;
 
-    Location(PhysicalLocation physicalLocation, LogicalLocation logicalLocation) {
-        if (physicalLocation == null && logicalLocation == null) {
-            throw new IllegalArgumentException("One of physicalLocation or logicalLocation should be non-null");
+    Location(@Nullable PhysicalLocation physicalLocation, @NonNull Collection<LogicalLocation> logicalLocations) {
+        if (physicalLocation == null && (Objects.requireNonNull(logicalLocations).isEmpty())) {
+            throw new IllegalArgumentException("One of physicalLocation or logicalLocations should exist");
         }
 
-        physicalLocations = new ArrayList<>();
-        if (physicalLocation != null) {
-            physicalLocations.add(physicalLocation);
-        }
-
-        logicalLocations = new ArrayList<>();
-        if (logicalLocation != null) {
-            logicalLocations.add(logicalLocation);
-        }
+        this.physicalLocation = physicalLocation;
+        this.logicalLocations = new ArrayList<>(logicalLocations);
     }
 
     JSONObject toJSONObject() {
         JSONObject result = new JSONObject();
-        physicalLocations.forEach(physicalLocation -> result.append("physicalLocations", physicalLocation.toJSONObject()));
-        logicalLocations.forEach(logicalLocation -> result.append("logicalLocation", logicalLocation.toJSONObject()));
+        if (physicalLocation != null) {
+            result.put("physicalLocation", physicalLocation.toJSONObject());
+        }
+        logicalLocations.stream().map(LogicalLocation::toJSONObject).forEach(logicalLocation -> result.append("logicalLocation", logicalLocation));
         return result;
     }
 
@@ -56,7 +53,7 @@ class Location {
 
         final PhysicalLocation physicalLocation = findPhysicalLocation(bugInstance);
         return LogicalLocation.fromBugInstance(bugInstance).map(logicalLocation -> new Location(physicalLocation,
-                logicalLocation));
+                Collections.singleton(logicalLocation)));
     }
 
     @CheckForNull
