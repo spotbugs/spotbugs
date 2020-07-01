@@ -20,7 +20,7 @@ class BugCollectionAnalyser {
     BugCollectionAnalyser(@NonNull BugCollection bugCollection) {
         bugCollection.forEach(bug -> {
             String type = bug.getType();
-            int index = typeToIndex.computeIfAbsent(type, (t) -> processRule(t, bug.getBugPattern()));
+            int index = typeToIndex.computeIfAbsent(type, (t) -> processRule(bug.getBugPattern()));
 
             processResult(index, bug);
         });
@@ -50,9 +50,9 @@ class BugCollectionAnalyser {
         results.add(result);
     }
 
-    private int processRule(String type, BugPattern bugPattern) {
+    private int processRule(BugPattern bugPattern) {
         int index = rules.size();
-        Rule rule = new Rule(type, bugPattern.getShortDescription(), bugPattern.getLongDescription());
+        Rule rule = Rule.fromBugPattern(bugPattern);
         rules.add(rule);
         return index;
     }

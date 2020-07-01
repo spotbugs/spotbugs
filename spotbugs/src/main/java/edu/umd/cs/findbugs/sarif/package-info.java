@@ -17,6 +17,7 @@
  *     <tr><td>shortDescription</td><td>BugPattern#shortDescription</td><td></td></tr>
  *     <tr><td>messageStrings</td><td>BugPattern#longDescription</td><td></td></tr>
  *     <tr><td>category</td><td>BugCategory</td><td></td></tr>
+ *     <tr><td>helpUri</td><td>BugPattern#url</td><td></td></tr>
  *     <tr><td>level</td><td>Priorities</td><td></td></tr>
  *     <tr><td>toolExecutionNotification</td><td>AbstractBugReporter#missingClasses<br>AbstractBugReporter#queuedErrors</td><td></td></tr>
  *     <tr><td>reportingDescriptor.helpUri</td><td>BugPattern#url</td><td></td></tr>
