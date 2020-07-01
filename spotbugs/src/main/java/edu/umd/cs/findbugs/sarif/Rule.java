@@ -22,15 +22,19 @@ final class Rule {
     @NonNull
     final String shortDescription;
     @NonNull
+    final String fullDescription;
+    @NonNull
     final String defaultText;
     @Nullable
     final URI helpUri;
     @NonNull
     final List<String> tags;
 
-    Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String defaultText, @Nullable URI helpUri, @NonNull List<String> tags) {
+    Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
+            @NonNull List<String> tags) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
+        this.fullDescription = Objects.requireNonNull(fullDescription);
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
@@ -39,8 +43,9 @@ final class Rule {
     JSONObject toJSONObject() {
         JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", defaultText));
         JSONObject result = new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put(
-                "messageStrings",
-                messageStrings).putOpt("helpUri", helpUri);
+                "fullDescription", new JSONObject().put("markdown", fullDescription)).put(
+                        "messageStrings",
+                        messageStrings).putOpt("helpUri", helpUri);
         if (!tags.isEmpty()) {
             JSONObject propertyBag = new JSONObject().put("tags", new JSONArray(tags));
             result.put("properties", propertyBag);
@@ -60,6 +65,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getLongDescription(), helpUri, tags);
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), bugPattern.getLongDescription(), helpUri,
+                tags);
     }
 }
