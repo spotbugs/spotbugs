@@ -40,10 +40,10 @@ class Notification {
     static Notification fromError(@NonNull AbstractBugReporter.Error error) {
         String id = String.format("spotbugs-error-%d", error.getSequence());
         Throwable cause = error.getCause();
-        if (cause != null) {
-            return new Notification(id, error.getMessage(), Level.ERROR, SarifException.fromThrowable(cause));
-        } else {
+        if (cause == null) {
             return new Notification(id, error.getMessage(), Level.ERROR, null);
+        } else {
+            return new Notification(id, error.getMessage(), Level.ERROR, SarifException.fromThrowable(cause));
         }
     }
 }

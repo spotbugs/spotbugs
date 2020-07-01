@@ -21,10 +21,8 @@ final class Message {
 
     JSONObject toJSONObject() {
         JSONObject jsonObject = new JSONObject().put("id", "default");
-        if (!arguments.isEmpty()) {
-            for (Object arg : arguments) {
-                jsonObject.append("arguments", arg);
-            }
+        for (Object arg : arguments) {
+            jsonObject.append("arguments", arg);
         }
         return jsonObject;
     }

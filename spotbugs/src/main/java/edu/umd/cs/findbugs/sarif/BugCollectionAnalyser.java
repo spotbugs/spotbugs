@@ -27,19 +27,11 @@ class BugCollectionAnalyser {
     }
 
     JSONArray getRules() {
-        JSONArray array = new JSONArray();
-        for (Rule rule : rules) {
-            array.put(rule.toJSONObject());
-        }
-        return array;
+        return new JSONArray(rules.stream().map(Rule::toJSONObject).collect(Collectors.toList()));
     }
 
     JSONArray getResults() {
-        JSONArray array = new JSONArray();
-        for (Result result : results) {
-            array.put(result.toJSONObject());
-        }
-        return array;
+        return new JSONArray(results.stream().map(Result::toJSONObject).collect(Collectors.toList()));
     }
 
     private void processResult(int index, BugInstance bug) {

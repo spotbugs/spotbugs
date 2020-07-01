@@ -26,7 +26,7 @@ final class Result {
 
     JSONObject toJSONObject() {
         JSONObject result = new JSONObject().put("ruleId", ruleId).put("ruleIndex", ruleIndex).put("message", message.toJSONObject());
-        locations.forEach(location -> result.append("locations", location.toJSONObject()));
+        locations.stream().map(Location::toJSONObject).forEach(location -> result.append("locations", location));
         return result;
     }
 }
