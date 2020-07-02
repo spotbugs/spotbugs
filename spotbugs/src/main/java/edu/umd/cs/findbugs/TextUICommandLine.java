@@ -41,6 +41,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
 
+import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -84,6 +85,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
     private static final int HTML_REPORTER = 4;
 
     private static final int XDOCS_REPORTER = 5;
+
+    private static final int SARIF_REPORTER = 6;
 
     private int bugReporterType = PRINTING_REPORTER;
 
@@ -339,6 +342,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
             }
         } else if ("-xdocs".equals(option)) {
             bugReporterType = XDOCS_REPORTER;
+        } else if ("-sarif".equals(option)) {
+            bugReporterType = SARIF_REPORTER;
         } else if ("-applySuppression".equals(option)) {
             applySuppression = true;
         } else if ("-quiet".equals(option)) {
@@ -640,6 +645,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
             break;
         case XDOCS_REPORTER:
             textuiBugReporter = new XDocsBugReporter(project);
+            break;
+        case SARIF_REPORTER:
+            textuiBugReporter = new SarifBugReporter(project);
             break;
         default:
             throw new IllegalStateException();
