@@ -10,14 +10,18 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.ba.SourceFile;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,6 +43,11 @@ class Location {
         this.logicalLocations = new ArrayList<>(logicalLocations);
     }
 
+    @CheckForNull
+    PhysicalLocation getPhysicalLocation() {
+        return physicalLocation;
+    }
+
     JSONObject toJSONObject() {
         JSONObject result = new JSONObject();
         if (physicalLocation != null) {
@@ -48,19 +57,23 @@ class Location {
         return result;
     }
 
-    static Optional<Location> fromBugInstance(@NonNull BugInstance bugInstance) {
+    static Optional<Location> fromBugInstance(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
+            @NonNull Map<String, String> baseToId) {
         Objects.requireNonNull(bugInstance);
+        Objects.requireNonNull(sourceFinder);
+        Objects.requireNonNull(baseToId);
 
-        final PhysicalLocation physicalLocation = findPhysicalLocation(bugInstance);
+        final PhysicalLocation physicalLocation = findPhysicalLocation(bugInstance, sourceFinder, baseToId);
         return LogicalLocation.fromBugInstance(bugInstance).map(logicalLocation -> new Location(physicalLocation,
                 Collections.singleton(logicalLocation)));
     }
 
     @CheckForNull
-    private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance) {
+    private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
+            Map<String, String> baseToId) {
         try {
             SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
-            return PhysicalLocation.fromBugAnnotation(sourceLine).orElse(null);
+            return PhysicalLocation.fromBugAnnotation(sourceLine, sourceFinder, baseToId).orElse(null);
         } catch (IllegalStateException e) {
             // no sourceline info found
             return null;
@@ -85,16 +98,21 @@ class Location {
             return new JSONObject().put("uri", uri).putOpt("uriBaseId", uriBaseId);
         }
 
-        static Optional<ArtifactLocation> fromBugAnnotation(@NonNull SourceLineAnnotation bugAnnotation) {
+        static Optional<ArtifactLocation> fromBugAnnotation(@NonNull SourceLineAnnotation bugAnnotation, @NonNull SourceFinder sourceFinder,
+                @NonNull Map<String, String> baseToId) {
             Objects.requireNonNull(bugAnnotation);
-            // relative path from sourceRoot, see SourceFinder class for example
-            String sourceFile = bugAnnotation.getSourceFile();
-            // TODO support multiple srcRoot
-            try {
-                return Optional.of(new ArtifactLocation(new URI(sourceFile), "srcRoot"));
-            } catch (URISyntaxException e) {
-                return Optional.empty();
-            }
+            Objects.requireNonNull(sourceFinder);
+            Objects.requireNonNull(baseToId);
+
+            return sourceFinder.getBase(bugAnnotation).map(base -> {
+                String uriBaseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
+                try {
+                    SourceFile sourceFile = sourceFinder.findSourceFile(bugAnnotation);
+                    return new ArtifactLocation(URI.create(base).relativize(URI.create(sourceFile.getFullFileName())), uriBaseId);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
         }
     }
 
@@ -145,6 +163,11 @@ class Location {
             this.region = region;
         }
 
+        @NonNull
+        ArtifactLocation getArtifactLocation() {
+            return artifactLocation;
+        }
+
         JSONObject toJSONObject() {
             JSONObject result = new JSONObject().put("artifactLocation", artifactLocation.toJSONObject());
             if (region != null) {
@@ -153,8 +176,9 @@ class Location {
             return result;
         }
 
-        static Optional<PhysicalLocation> fromBugAnnotation(SourceLineAnnotation bugAnnotation) {
-            Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(bugAnnotation);
+        static Optional<PhysicalLocation> fromBugAnnotation(SourceLineAnnotation bugAnnotation, SourceFinder sourceFinder,
+                Map<String, String> baseToId) {
+            Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(bugAnnotation, sourceFinder, baseToId);
             Optional<Region> region = Region.fromBugAnnotation(bugAnnotation);
             return artifactLocation.map(location -> new PhysicalLocation(location, region.orElse(null)));
         }

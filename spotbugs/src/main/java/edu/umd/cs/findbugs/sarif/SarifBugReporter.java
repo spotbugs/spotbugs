@@ -1,6 +1,9 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONArray;
 import org.json.JSONWriter;
@@ -31,6 +34,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
     private void processRuns(@NonNull JSONWriter jsonWriter) {
         jsonWriter.key("runs").array().object();
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(getBugCollection());
+        jsonWriter.key("originalUriBaseIds").value(analyser.getOriginalUriBaseIds());
         processTool(jsonWriter, analyser.getRules());
         jsonWriter.key("results").value(analyser.getResults());
         jsonWriter.endObject().endArray();

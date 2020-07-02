@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -24,9 +25,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -272,5 +279,46 @@ public class SarifBugReporterTest {
 
         assertThat(extension.get("name"), is("pluginId"));
         assertThat(extension.get("version"), is("version"));
+    }
+
+    @Test
+    public void testSourceLocation() throws IOException {
+        Path tmpDir = Files.createTempDirectory("spotbugs");
+        new File(tmpDir.toFile(), "SampleClass.java").createNewFile();
+        SourceFinder sourceFinder = reporter.getProject().getSourceFinder();
+        sourceFinder.setSourceBaseList(Collections.singleton(tmpDir.toString()));
+
+        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("SampleClass"));
+        reporter.finish();
+
+        String json = writer.toString();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+
+        JSONObject originalUriBaseIds = run.getJSONObject("originalUriBaseIds");
+        String uriBaseId = takeFirstKey(originalUriBaseIds).get();
+        assertThat(new File(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri")), is(tmpDir.toFile()));
+
+        JSONArray results = run.getJSONArray("results");
+        assertThat(results.length(), is(1));
+        JSONObject result = results.getJSONObject(0);
+        JSONObject artifactLocation = result.getJSONArray("locations").getJSONObject(0).getJSONObject("physicalLocation").getJSONObject(
+                "artifactLocation");
+        String relativeUri = artifactLocation.getString("uri");
+        assertThat("relative URI that can be resolved by the uriBase",
+                relativeUri, is("SampleClass.java"));
+        assertThat(artifactLocation.getString("uriBaseId"), is(uriBaseId));
+    }
+
+    Optional<String> takeFirstKey(JSONObject object) {
+        return object.keySet().stream().findFirst();
+    }
+
+    Optional<Object> takeFirstValue(JSONObject object) {
+        return object.keySet().stream().map(object::get).findFirst();
     }
 }

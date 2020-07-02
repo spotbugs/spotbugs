@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -401,7 +402,7 @@ public class SourceFinder implements AutoCloseable {
     /**
      * Set the list of source directories.
      */
-    void setSourceBaseList(Iterable<String> sourceBaseList) {
+    public /* visible for testing */ void setSourceBaseList(Iterable<String> sourceBaseList) {
         for (String repos : sourceBaseList) {
             if (repos.endsWith(".zip") || repos.endsWith(".jar") || repos.endsWith(".z0p.gz")) {
                 // Zip or jar archive
@@ -617,5 +618,14 @@ public class SourceFinder implements AutoCloseable {
         for (SourceRepository repo : repositoryList) {
             IO.close(repo);
         }
+    }
+
+    public Optional<String> getBase(SourceLineAnnotation sourceLineAnnotation) {
+        return repositoryList.stream()
+                .filter(SourceRepository::isPlatformDependent)
+                .filter(repo -> {
+                    String relativePath = getPlatformName(sourceLineAnnotation);
+                    return repo.contains(relativePath);
+                }).map(repo -> repo.getDataSource("").getFullFileName()).findFirst();
     }
 }
