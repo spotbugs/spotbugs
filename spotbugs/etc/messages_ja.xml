@@ -172,6 +172,13 @@ SpotBugs の以前のバージョンでは，このカテゴリは Style とし�
   Detectors
   **********************************************************************
    -->
+  <Detector class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector">
+    <Details>
+      <![CDATA[
+<p>オーバーライドしているメソッドのうち、スーパークラスのメソッドを呼び出すべきものを見つけます。</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindRoughConstants">
     <Details>
 <![CDATA[
@@ -2005,6 +2012,15 @@ FindNullDeref ディテクタで，非 <code>null</code> 値だけが使われ�
   **********************************************************************
   -->
 
+  <BugPattern type="OVERRIDING_METHODS_MUST_INVOKE_SUPER">
+    <ShortDescription>スーパークラスのメソッドが @OverridingMethodsMustInvokeSuper で修飾されていますが, オーバーライドしているメソッドはスーパークラスのメソッドを呼び出していません。</ShortDescription>
+    <LongDescription>スーパークラスのメソッドが @OverridingMethodsMustInvokeSuper で修飾されていますが, {1}はスーパークラスのメソッドを呼び出していません。</LongDescription>
+    <Details>
+      <![CDATA[
+    <p>スーパークラスのメソッドが @OverridingMethodsMustInvokeSuper で修飾されていますが, オーバーライドしているメソッドはスーパークラスのメソッドを呼び出していません。</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="CNT_ROUGH_CONSTANT_VALUE">
     <ShortDescription>既知の定数の雑な値を見つけた</ShortDescription>
     <LongDescription>{3} の雑な値を見つけました: {2}</LongDescription>
