@@ -24,7 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
 
 /**
  * A class for static String utility methods.
@@ -183,7 +184,7 @@ public class Strings {
             sb.append(sChars, lastReplacement, sChars.length - lastReplacement);
         }
 
-        return StringEscapeUtils.escapeXml(sb.toString());
+        return StringEscapeUtils.escapeXml11(sb.toString());
     }
 
     private static final String unicodeUnescapeMatchExpression = "(\\\\*)(\\\\u)(\\p{XDigit}{4})";

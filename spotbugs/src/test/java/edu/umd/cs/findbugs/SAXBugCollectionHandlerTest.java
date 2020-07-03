@@ -6,9 +6,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SAXBugCollectionHandlerTest {
+
+    @Before
+    public void setUp() {
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());;
+        Global.setAnalysisCacheForCurrentThread(analysisCache);
+        FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
+    }
+
+    @After
+    public void teardown() {
+        Global.removeAnalysisCacheForCurrentThread();
+    }
 
     @Test
     public void testBugInstanceXmlPropsNoReviews() throws Exception {

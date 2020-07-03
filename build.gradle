@@ -1,9 +1,11 @@
 plugins {
-  id 'org.sonarqube' version '2.7.1'
-  id "com.diffplug.gradle.spotless" version "3.27.1"
+  id "org.sonarqube" version "3.0"
+  id "com.diffplug.gradle.spotless" version "4.4.0"
+  id "org.gradle.crypto.checksum" version "1.2.0"
+  id "com.github.spotbugs" version "4.4.1"
 }
 
-version = '4.0.0-SNAPSHOT'
+version = '4.0.7-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
@@ -55,6 +57,57 @@ task jacocoRootReport(type: JacocoReport) {
     // JaCoCo SonarQube plugin needs a XML file to parse
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
     xml.enabled = true
+  }
+}
+
+import org.gradle.crypto.checksum.Checksum
+
+def createReleaseBody = tasks.register("createReleaseBody")
+def createChecksums = tasks.register("createChecksums", Checksum)
+def publishTask = tasks.findByName("publish")
+if (publishTask == null) {
+  publishTask = tasks.findByName("publishToMavenLocal")
+}
+def outputFile = file("$buildDir/release.md")
+def inputFile =  subprojects.collect {
+  it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
+}.flatten().collect {
+  it.file
+}
+
+createChecksums.configure {
+  files = files(inputFile)
+  if (publishTask != null) {
+    dependsOn publishTask
+  }
+}
+createReleaseBody.configure {
+  inputs.files fileTree("$buildDir/checksums").matching {
+    include "*.sha256"
+  }
+  outputs.file outputFile
+  dependsOn createChecksums
+
+  doLast {
+    outputFile.delete()
+    outputFile << """SpotBugs ${project.version}
+
+### CHANGELOG
+- https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+
+### CHECKSUM
+| file | checksum (sha256) |
+| ---- | ----------------- |
+"""
+    fileTree("$buildDir/checksums").matching {
+      include "*.sha256"
+    }.sort {
+      it.name
+    }.forEach {
+      def name = it.name.replace(".sha256", "")
+      def hash = it as String[]
+      outputFile << "| ${ name } | ${hash[0]} |\n"
+    }
   }
 }
 

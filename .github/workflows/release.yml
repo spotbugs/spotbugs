@@ -1,0 +1,83 @@
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@722adc6
+      - name: Set up JDK 8
+        uses: actions/setup-java@081536e
+        with:
+          java-version: '8.0.x'
+      - uses: actions/cache@cffae95
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download Eclipse
+        run: |
+          wget 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.6.3-201703010400/eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz&r=1' -O eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz
+          tar xzvf eclipse-SDK-4.6.3-linux-gtk-x86_64.tar.gz eclipse
+          echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
+      - name: Build
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          echo ossrhUsername=eller86 >> gradle.properties
+          echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
+          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
+          ./gradlew assemble publish createReleaseBody --no-daemon
+        env:
+          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+      - name: Deploy eclipse-latest
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          external_repository: spotbugs/eclipse-latest
+          personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
+          publish_branch: gh-pages
+          publish_dir: ./eclipsePlugin/build/site/eclipse-daily
+      - name: Deploy eclipse-candidate
+        uses: peaceiris/actions-gh-pages@v3
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          external_repository: spotbugs/eclipse-candidate
+          personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
+          publish_branch: gh-pages
+          publish_dir: ./eclipsePlugin/build/site/eclipse-candidate
+      - name: Deploy eclipse
+        uses: peaceiris/actions-gh-pages@v3
+        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, '_RC') && !contains(github.ref, '_beta')
+        with:
+          external_repository: spotbugs/eclipse
+          personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
+          publish_branch: gh-pages
+          publish_dir: ./eclipsePlugin/build/site/eclipse
+      - name: Get the version
+        if: startsWith(github.ref, 'refs/tags/')
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      - name: Create Release
+        # attach zip, tgz and eclipse plugin to the GitHub Release
+        # https://github.com/github/hub#github-actions
+        # https://github.com/actions/upload-release-asset/issues/28#issuecomment-617208601
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          set -x
+          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+          assets=()
+          for asset in ./spotbugs/build/distributions/*; do
+            assets+=("-a" "$asset")
+          done
+          bin/hub release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}"

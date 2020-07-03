@@ -282,7 +282,7 @@
 		<xsl:copy-of select="$bugTableHeader"/>
 		<xsl:apply-templates select="$warningSet">
 			<xsl:sort select="@abbrev"/>
-			<xsl:sort select="Class/@classname"/>
+			<xsl:sort select="Class[1]/@classname"/>
 		</xsl:apply-templates>
 	</table>
 </xsl:template>
@@ -345,13 +345,10 @@
 						</xsl:choose>
 					</td>
 				</tr>
-				<xsl:variable name="totalClass" select="tablerow0"/>
 			</xsl:when>
-			<xsl:otherwise>
-				<xsl:variable name="totalClass" select="tablerow1"/>
-			</xsl:otherwise>
 		</xsl:choose>
 
+		<xsl:variable name = "totalClass" select="if (@priority_3) then 'tablerow0' else 'tablerow1'"/>
 		<tr class="$totalClass">
 			<td><b>Total Warnings</b></td>
 			<td align="right"><b><xsl:value-of select="@total_bugs"/></b></td>

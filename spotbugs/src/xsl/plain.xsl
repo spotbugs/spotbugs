@@ -25,7 +25,7 @@
 <xsl:output
 	method="xml"
 	omit-xml-declaration="yes"
-	standalone="yes"
+	standalone="omit"
          doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
 	indent="yes"
@@ -274,13 +274,10 @@
 			        </xsl:choose>
 				</td>
 			</tr>
-			<xsl:variable name="totalClass" select="tablerow0"/>
 		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:variable name="totalClass" select="tablerow1"/>
-		</xsl:otherwise>
 	</xsl:choose>
 
+		<xsl:variable name = "totalClass" select="if (@priority_3) then 'tablerow0' else 'tablerow1'"/>
 		<tr class="$totalClass">
 			<td><b>Total Warnings</b></td>
 			<td align="right"><b><xsl:value-of select="@total_bugs"/></b></td>

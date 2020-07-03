@@ -796,7 +796,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
      * <em>before</em> all of the worklist items representing auxiliary
      * codebases.
      *
-     * @param projectWorkList
+     * @param workList
      *            the worklist
      * @param itemToAdd
      *            the worklist item to add

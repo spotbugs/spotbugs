@@ -5,7 +5,75 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2020-??-??
+### Added
 * add custom bug annotation support
+
+### Fixed
+* Fixed not working detector 'CbeckMustOverrideSuperAnnotation' and renamed to 'OverridingMethodsMustInvokeSuperDetector'
+
+## 4.0.6 - 2020-06-23
+### Fixed
+* Use method call instead of reflection to get BCEL frame type ([#1176](https://github.com/spotbugs/spotbugs/issues/1176))
+
+## 4.0.5 - 2020-06-20
+### Fixed
+
+* dependency conflict around apache-commons-lang3 ([#1135](https://github.com/spotbugs/spotbugs/issues/1135))
+* plain.xsl declares it is a 2.0 stylesheet, but it appears to have issues with a 2.0 processor
+* eclipse plugin does not contain `lib/spotbugs.jar`  ([#1158](https://github.com/spotbugs/spotbugs/issues/1158))
+
+### Changed
+
+* Bump up Apache Commons BCEL to the version 6.5.0
+
+## 4.0.4 - 2020-06-09
+### Security
+
+* Update dom4j to 2.1.3 to fix security vulnerability. ([#1122](https://github.com/spotbugs/spotbugs/issues/1122))
+
+## 4.0.3 - 2020-05-13
+
+### Fixed
+
+* Avoid changing the SecurityManager when launched as an IntelliJ IDEA plugin.
+
+## 4.0.2 - 2020-04-15
+
+### Fixed
+
+* GUI was using older version of jdom2 compared to spotbugs in general, bumped it to match at 2.1.1
+* Numerous places in manifest, jnlp files, and sample analysis xml were indicating older asm that was already upgraded to 7.3.1, fixed
+* Added commons-text 1.8 which treats &#955; properly in xml as it is allowed as λ.  Associated test was corrected to use proper junit and &#955; was changed to λ.  The escape only was applicable to html.  Commons-lang original treatment was incorrect.
+* Resolved fatal exception in html report if BugInstance contains multiple Class elements ([#1025](https://github.com/spotbugs/spotbugs/issues/1025))
+
+### Changed
+
+* Upgrade ASM to 8.0.1 which supports Java14
+* Upgraded junit4 to 4.13
+* Upgraded ant to 1.10.7
+* Upgraded log4j2 to 2.13.1
+* Upgraded from commons-lang2 to commons-lang3 3.10
+* Added commons-text 1.8 due to items deprecated in commons-lang3 and moved to this project
+* replaced usage of org.xml.sax.helpers.XMLReaderFactory (deprecated since jdk9) with javax.xml.parsers.SAXParserFactory
+
+## 4.0.1 - 2020-03-19
+
+### Fixed
+
+* Resolved Saxon warning ([#1077](https://github.com/spotbugs/spotbugs/issues/1077))
+* Unclear message of `SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION` ([#1091](https://github.com/spotbugs/spotbugs/pull/1091))
+
+## 4.0.0 - 2020-02-15
+
+### Fixed
+
+* [Duplicated word in bug descriptions](https://github.com/spotbugs/spotbugs/commit/0d50f0056d7b34e09b472079120bf5ea2abddc45)
+
+## 4.0.0-RC3 - 2020-02-04
+
+This version contains no change, except for the solution for [a deployment problem](https://issues.sonatype.org/browse/MVNCENTRAL-5548).
+
+## 4.0.0-RC2 - 2020-01-29
 
 ### Fixed
 

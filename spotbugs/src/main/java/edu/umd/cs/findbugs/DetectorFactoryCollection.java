@@ -76,7 +76,7 @@ public class DetectorFactoryCollection {
         this(true, false, Plugin.getAllPlugins(), new ArrayList<Plugin>());
     }
 
-    protected DetectorFactoryCollection(Plugin onlyPlugin) {
+    public DetectorFactoryCollection(Plugin onlyPlugin) {
         this(false, true, Collections.singleton(onlyPlugin), new ArrayList<Plugin>());
     }
 

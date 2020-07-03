@@ -228,9 +228,6 @@ public class TypeQualifierResolver {
      *            AnnotationValue representing the use of an annotation
      * @param result
      *            LinkedList containing resolved type qualifier AnnotationValues
-     * @param onStack
-     *            stack of annotations being processed; used to detect cycles in
-     *            type qualifier nicknames
      */
     private static void resolveTypeQualifierDefaults(AnnotationValue value, ElementType defaultFor,
             LinkedList<AnnotationValue> result) {

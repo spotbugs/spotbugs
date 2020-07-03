@@ -23,6 +23,9 @@ import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.util.HTML;
 
+import java.net.URI;
+import java.util.Optional;
+
 /**
  * A BugPattern object collects all of the metadata for a particular species of
  * BugInstance. Specifically, it stores the human-readable text for displaying a
@@ -213,6 +216,14 @@ public class BugPattern implements Comparable<BugPattern> {
             return text;
         }
         return "<a href=\"" + url + "#" + type + "\">" + text + "</a>";
+    }
+
+    public Optional<URI> getUri() {
+        if (url == null) {
+            return Optional.empty();
+        }
+        URI uri = URI.create(url + '#' + type);
+        return Optional.of(uri);
     }
 
     @Override
