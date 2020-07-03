@@ -64,7 +64,14 @@ sourceSets {
   }
 }
 
+repositories {
+  mavenLocal();
+}
 dependencies {
+  spotbugs 'com.github.spotbugs:spotbugs:4.10.0-SNAPSHOT'
+  spotbugsPlugins ('com.h3xstream.findsecbugs:findsecbugs-plugin:1.13.0') {
+    exclude group: 'com.github.spotbugs', module: 'spotbugs'
+  }
   api libs.asm
   api libs.asm.analysis
   api libs.asm.commons
@@ -427,3 +434,7 @@ tasks.named('spotbugsTest').configure {
 
 // XML validation
 // TODO : validate
+spotbugs {
+  effort = 'max'
+  reportLevel = 'low'
+}
