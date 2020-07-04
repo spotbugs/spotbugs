@@ -23,7 +23,7 @@ dependencies {
   implementation 'org.checkerframework:checker-qual:2.8.1'
 
   implementation 'junit:junit:4.12'
-  implementation 'org.testng:testng:6.11'
+  implementation 'org.testng:testng:7.2.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
