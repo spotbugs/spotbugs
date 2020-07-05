@@ -4,16 +4,17 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 #
 msgid ""
-msgstr "Project-Id-Version: spotbugs 3.1\n"
+msgstr ""
+"Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-17 15:12+0900\n"
+"POT-Creation-Date: 2020-07-05 01:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.8.0\n"
 
 #: ../../ant.rst:2
 msgid "Using the SpotBugs Ant task"
@@ -25,7 +26,10 @@ msgid ""
 "Ant, which is a popular Java build and deployment tool. Using the "
 "SpotBugs Ant task, your build script can automatically run SpotBugs on "
 "your Java code."
-msgstr "この章では，一般的な Java ビルドおよびデプロイメントツールである Ant のビルドスクリプトに SpotBugs を統合する方法について説明します。SpotBugs Ant タスクを使用するとビルドスクリプトは Java コードで SpotBugs を自動的に実行できます。"
+msgstr ""
+"この章では，一般的な Java ビルドおよびデプロイメントツールである Ant のビルドスクリプトに SpotBugs "
+"を統合する方法について説明します。SpotBugs Ant タスクを使用するとビルドスクリプトは Java コードで SpotBugs "
+"を自動的に実行できます。"
 
 #: ../../ant.rst:7
 msgid "The Ant task was generously contributed by Mike Fagan."
@@ -39,7 +43,9 @@ msgstr "Ant タスクのインストール"
 msgid ""
 "To install the Ant task, simply copy ``$SPOTBUGS_HOME/lib/spotbugs-"
 "ant.jar`` into the lib subdirectory of your Ant installation."
-msgstr "Ant タスクをインストールするには，Ant インストールの lib サブディレクトリに ``$SPOTBUGS_HOME/lib/spotbugs-ant.jar`` をコピーします。"
+msgstr ""
+"Ant タスクをインストールするには，Ant インストールの lib サブディレクトリに ``$SPOTBUGS_HOME/lib"
+"/spotbugs-ant.jar`` をコピーします。"
 
 #: ../../ant.rst:16
 msgid ""
@@ -47,7 +53,9 @@ msgid ""
 "SpotBugs it was included with. We do not guarantee that the Ant task Jar "
 "file will work with any version of SpotBugs other than the one it was "
 "included with."
-msgstr "SpotBugs に含まれていたバージョンの Ant タスクを使用することを強くお勧めします。Ant タスクの Jar ファイルは SpotBugsに含まれていたバージョン以外のバージョンで動作することを保証しません。"
+msgstr ""
+"SpotBugs に含まれていたバージョンの Ant タスクを使用することを強くお勧めします。Ant タスクの Jar ファイルは "
+"SpotBugsに含まれていたバージョン以外のバージョンで動作することを保証しません。"
 
 #: ../../ant.rst:20
 msgid "Modifying build.xml"
@@ -57,7 +65,9 @@ msgstr "build.xml の変更"
 msgid ""
 "To incorporate SpotBugs into build.xml (the build script for Ant), you "
 "first need to add a task definition. This should appear as follows:"
-msgstr "SpotBugs を build.xml (Ant のビルドスクリプト) に組み込むには，まず最初にタスク定義を追加する必要があります。これは次のように記述します。"
+msgstr ""
+"SpotBugs を build.xml (Ant のビルドスクリプト) "
+"に組み込むには，まず最初にタスク定義を追加する必要があります。これは次のように記述します。"
 
 #: ../../ant.rst:30
 msgid ""
@@ -70,14 +80,19 @@ msgid ""
 "After you have added the task definition, you can define a target which "
 "uses the spotbugs task. Here is an example which could be added to the "
 "``build.xml`` for the Apache BCEL library."
-msgstr "タスク定義を追加したら，spotbugs タスクを使用するターゲットを定義できます。次の例は，``build.xml`` に追加した Apache BCEL ライブラリです。"
+msgstr ""
+"タスク定義を追加したら，spotbugs タスクを使用するターゲットを定義できます。次の例は，``build.xml`` に追加した Apache"
+" BCEL ライブラリです。"
 
 #: ../../ant.rst:49
 msgid ""
 "The spotbugs element must have the home attribute set to the directory in"
 " which SpotBugs is installed; in other words, ``$SPOTBUGS_HOME``. See "
 ":doc:`installing`."
-msgstr "spotbugs 要素のhome 属性には，SpotBugsがインストールされているディレクトリが設定されている必要があります。つまり，``$SPOTBUGS_HOME`` です。:doc:`installing` を参照してください。"
+msgstr ""
+"spotbugs 要素のhome "
+"属性には，SpotBugsがインストールされているディレクトリが設定されている必要があります。つまり，``$SPOTBUGS_HOME`` "
+"です。:doc:`installing` を参照してください。"
 
 #: ../../ant.rst:51
 msgid ""
@@ -89,7 +104,13 @@ msgid ""
 "to the aux classpath, because it is referenced by the main BCEL library. "
 "A source path is specified so that the saved bug data will have accurate "
 "references to the BCEL source code."
-msgstr "このターゲットは，``bcel.jar`` に対して SpotBugs を実行します。これは，BCEL のビルドスクリプトによって生成された Jar ファイルです。(\"jar\" ターゲットに依存させることで，SpotBugs を実行する前にライブラリが完全にコンパイルされていることを保証します) SpotBugs の出力は，XML 形式で ``bcel-sb.xml`` というファイルに保存されます。補助 Jar ファイル Regex.jar を補助クラスパスに追加します。なぜなら，BCEL ライブラリによって参照されるからです。保存されるバグデータが BCEL ソースコードへの正確な参照を持つようにするためにソースパスが指定されています。"
+msgstr ""
+"このターゲットは，``bcel.jar`` に対して SpotBugs を実行します。これは，BCEL のビルドスクリプトによって生成された "
+"Jar ファイルです。(\"jar\" ターゲットに依存させることで，SpotBugs "
+"を実行する前にライブラリが完全にコンパイルされていることを保証します) SpotBugs の出力は，XML 形式で ``bcel-sb.xml``"
+" というファイルに保存されます。補助 Jar ファイル Regex.jar を補助クラスパスに追加します。なぜなら，BCEL "
+"ライブラリによって参照されるからです。保存されるバグデータが BCEL "
+"ソースコードへの正確な参照を持つようにするためにソースパスが指定されています。"
 
 #: ../../ant.rst:57
 msgid "Executing the task"
@@ -105,7 +126,9 @@ msgstr "上記で定義した spotbugs ターゲットを使用して，コマ�
 msgid ""
 "In this case, because we saved the bug results in an XML file, we can use"
 " the SpotBugs GUI to view the results; see :doc:`running`."
-msgstr "この場合バグ結果を XML ファイルに保存したので SpotBugs GUI を使用して結果を表示できます。:doc:`running` を参照してください。"
+msgstr ""
+"この場合バグ結果を XML ファイルに保存したので SpotBugs GUI を使用して結果を表示できます。:doc:`running` "
+"を参照してください。"
 
 #: ../../ant.rst:85
 msgid "Parameters"
@@ -127,7 +150,10 @@ msgid ""
 "element must specify a location attribute which names the archive file "
 "(jar, zip, etc.), directory, or class file to be analyzed. Multiple class"
 " elements may be specified as children of a single spotbugs element."
-msgstr "オプションのネストされた要素です。解析するクラスを指定します。class 要素は，解析されるアーカイブファイル (jar，zip など)，ディレクトリ，クラスファイルの名前を location 属性に指定する必要があります。複数のクラス要素は，単一の spotbugs 要素の子要素として指定します。"
+msgstr ""
+"オプションのネストされた要素です。解析するクラスを指定します。class 要素は，解析されるアーカイブファイル (jar，zip "
+"など)，ディレクトリ，クラスファイルの名前を location 属性に指定する必要があります。複数のクラス要素は，単一の spotbugs "
+"要素の子要素として指定します。"
 
 #: ../../ant.rst:94
 msgid ""
@@ -135,7 +161,9 @@ msgid ""
 "task can contain one or more fileset element(s) that specify files to be "
 "analyzed. For example, you might use a fileset to specify that all of the"
 " jar files in a directory should be analyzed."
-msgstr "クラス要素の指定を追加する，または代わりに，SpotBugs タスクに解析するファイルを指定する 1 つまたは複数の fileset 要素を含めることができます。たとえば，fileset を使用して，ディレクトリ内のすべての jar ファイルを分析するように指定できます。"
+msgstr ""
+"クラス要素の指定を追加する，または代わりに，SpotBugs タスクに解析するファイルを指定する 1 つまたは複数の fileset "
+"要素を含めることができます。たとえば，fileset を使用して，ディレクトリ内のすべての jar ファイルを分析するように指定できます。"
 
 #: ../../ant.rst:99
 msgid "auxClasspath"
@@ -147,7 +175,9 @@ msgid ""
 "directories) containing classes used by the analyzed library or "
 "application, but which you don't want to analyze. It is specified the "
 "same way as Ant's classpath element for the Java task."
-msgstr "オプションのネストされた要素です。解析するライブラリまたはアプリケーションで使用されるが，解析したくはないクラスを含むクラスパス (jar ファイルまたはディレクトリ) を指定します。Ant のJava タスクの classpath 要素と同じ方法で指定します。"
+msgstr ""
+"オプションのネストされた要素です。解析するライブラリまたはアプリケーションで使用されるが，解析したくはないクラスを含むクラスパス (jar "
+"ファイルまたはディレクトリ) を指定します。Ant のJava タスクの classpath 要素と同じ方法で指定します。"
 
 #: ../../ant.rst:103
 msgid "sourcePath"
@@ -159,7 +189,10 @@ msgid ""
 "containing source files used to compile the Java code being analyzed. By "
 "specifying a source path, any generated XML bug output will have complete"
 " source information, which allows later viewing in the GUI."
-msgstr "オプションのネストされた要素です。解析される Java コードをコンパイルするために使用されるソースファイルを含むソースディレクトリのパスを指定します。ソースパスを指定することにより生成された XML バグ出力に完全なソース情報が含まれ，後で GUI で見ることができます。"
+msgstr ""
+"オプションのネストされた要素です。解析される Java "
+"コードをコンパイルするために使用されるソースファイルを含むソースディレクトリのパスを指定します。ソースパスを指定することにより生成された XML "
+"バグ出力に完全なソース情報が含まれ，後で GUI で見ることができます。"
 
 #: ../../ant.rst:106
 msgid "home"
@@ -180,7 +213,9 @@ msgid ""
 "An optional boolean attribute. If true, reports of serious analysis "
 "errors and missing classes will be suppressed in the SpotBugs output. "
 "Default is false."
-msgstr "オプションのブール値属性です。true のときは，SpotBugs の出力で深刻な解析エラーや見つからなかったクラスの報告が抑制されます。デフォルトは false です。"
+msgstr ""
+"オプションのブール値属性です。true のときは，SpotBugs "
+"の出力で深刻な解析エラーや見つからなかったクラスの報告が抑制されます。デフォルトは false です。"
 
 #: ../../ant.rst:115
 msgid "reportLevel"
@@ -192,7 +227,10 @@ msgid ""
 " reporting issues. If set to ``low``, confidence is not used to filter "
 "bugs. If set to ``medium`` (the default), low confidence issues are "
 "supressed. If set to ``high``, only high confidence bugs are reported."
-msgstr "オプション属性です。問題を報告するための信頼度/優先度を指定します。``low`` に設定すると，信頼度はバグをフィルタリングするために使われません。``medium`` (デフォルト) に設定すると，信頼度が低い問題が抑制されます。``high`` に設定すると，信頼度が高いバグだけが報告されます。"
+msgstr ""
+"オプション属性です。問題を報告するための信頼度/優先度を指定します。``low`` "
+"に設定すると，信頼度はバグをフィルタリングするために使われません。``medium`` (デフォルト) "
+"に設定すると，信頼度が低い問題が抑制されます。``high`` に設定すると，信頼度が高いバグだけが報告されます。"
 
 #: ../../ant.rst:120
 msgid "output"
@@ -208,7 +246,13 @@ msgid ""
 "stylesheet is default.xsl). If set to ``text``, output is in ad-hoc text "
 "format. If set to ``emacs``, output is in Emacs error message format. If "
 "set to ``xdocs``, output is xdoc XML for use with Apache Maven."
-msgstr "オプション属性です。出力形式を指定します。``xml`` (デフォルト) に設定すると，出力は XML 形式になります。「xml:withMessages」に設定されているときは，出力は人間が読めるメッセージで拡張された XML 形式になります。(XSL スタイルシートを使用してレポートを生成するときは，この形式を使用する必要があります。) 「HTML」に設定したときは，出力はHTML形式になります (デフォルトスタイルシートは default.xsl)。``text`` に設定すると，出力は特別なテキスト形式になります。``emacs`` に設定すると，出力は Emacs のエラーメッセージ形式になります。``xdocs`` に設定すると，出力は Apache Maven で使用する xdoc XML形式になります。"
+msgstr ""
+"オプション属性です。出力形式を指定します。``xml`` (デフォルト) に設定すると，出力は XML "
+"形式になります。「xml:withMessages」に設定されているときは，出力は人間が読めるメッセージで拡張された XML "
+"形式になります。(XSL スタイルシートを使用してレポートを生成するときは，この形式を使用する必要があります。) "
+"「HTML」に設定したときは，出力はHTML形式になります (デフォルトスタイルシートは default.xsl)。``text`` "
+"に設定すると，出力は特別なテキスト形式になります。``emacs`` に設定すると，出力は Emacs "
+"のエラーメッセージ形式になります。``xdocs`` に設定すると，出力は Apache Maven で使用する xdoc XML形式になります。"
 
 #: ../../ant.rst:124
 msgid "stylesheet"
@@ -221,7 +265,11 @@ msgid ""
 "FindBugs distribution include default.xsl, fancy.xsl, fancy-hist.xsl, "
 "plain.xsl, and summary.xsl. The default value, if no stylesheet attribute"
 " is provided, is default.xsl."
-msgstr "オプション属性です。出力が html に設定されているときに html 出力を生成するために使用するスタイルシートを設定します。SpotBugs 配布物に含まれるスタイルシートには，default.xsl，fancy.xsl，fancy-hist.xsl，plain.xsl，summary.xsl があります。stylesheet 属性が指定されていないときのデフォルト値は default.xsl です。"
+msgstr ""
+"オプション属性です。出力が html に設定されているときに html 出力を生成するために使用するスタイルシートを設定します。SpotBugs "
+"配布物に含まれるスタイルシートには，default.xsl，fancy.xsl，fancy-"
+"hist.xsl，plain.xsl，summary.xsl があります。stylesheet 属性が指定されていないときのデフォルト値は "
+"default.xsl です。"
 
 #: ../../ant.rst:127
 msgid "sort"
@@ -232,7 +280,9 @@ msgid ""
 "Optional attribute. If the output attribute is set to ``text``, then the "
 "sort attribute specifies whether or not reported bugs are sorted by "
 "class. Default is ``true``."
-msgstr "オプション属性です。output 属性が ``text`` に設定されているときは，sort 属性は報告されたバグをクラスごとにソートするかどうかを設定します。デフォルトは ``true`` です。"
+msgstr ""
+"オプション属性です。output 属性が ``text`` に設定されているときは，sort "
+"属性は報告されたバグをクラスごとにソートするかどうかを設定します。デフォルトは ``true`` です。"
 
 #: ../../ant.rst:131
 msgid "outputFile"
@@ -254,7 +304,9 @@ msgid ""
 "Optional boolean attribute. If set to ``true``, SpotBugs prints "
 "diagnostic information about which classes are being analyzed, and which "
 "bug pattern detectors are being run. Default is ``false``."
-msgstr "オプションのブール値属性です。``true`` に設定すると，SpotBugs はどのクラスが解析されているか，どのバグパターンディテクタが実行されているかに関する診断情報を出力します。デフォルトは ``false`` です。"
+msgstr ""
+"オプションのブール値属性です。``true`` に設定すると，SpotBugs "
+"はどのクラスが解析されているか，どのバグパターンディテクタが実行されているかに関する診断情報を出力します。デフォルトは ``false`` です。"
 
 #: ../../ant.rst:138
 msgid "effort"
@@ -266,7 +318,9 @@ msgid ""
 "``min``, ``default``, or ``max``. See `Command-line Options <running.html"
 "#command-line-options>`: for more information about setting the analysis "
 "level."
-msgstr "解析力を設定します。指定する値は，``min``，``default``，``max`` のいずれかでなければなりません。解析力の詳細については `コマンドラインオプション <running.html#command-line-options>`__ を参照してください。"
+msgstr ""
+"解析力を設定します。指定する値は，``min``，``default``，``max`` のいずれかでなければなりません。解析力の詳細については "
+"`コマンドラインオプション <running.html#command-line-options>`__ を参照してください。"
 
 #: ../../ant.rst:141
 msgid "conserveSpace"
@@ -328,20 +382,42 @@ msgid ""
 msgstr "オプション属性です。レポートから除外するバグを指定するフィルタのファイル名を指定します。:doc:`filter` を参照してください。"
 
 #: ../../ant.rst:162
-msgid "includeFilter"
+msgid "excludePath"
 msgstr ""
 
 #: ../../ant.rst:162
+#, fuzzy
+msgid ""
+"An optional nested element. It specifies a path containing filters "
+"specifying bugs to exclude from being reported. See :doc:`filter`."
+msgstr "オプション属性です。レポートから除外するバグを指定するフィルタのファイル名を指定します。:doc:`filter` を参照してください。"
+
+#: ../../ant.rst:165
+msgid "includeFilter"
+msgstr ""
+
+#: ../../ant.rst:165
 msgid ""
 "Optional attribute. It specifies the filename of a filter specifying "
 "which bugs are reported. See :doc:`filter`."
 msgstr "オプション属性です。報告するバグを指定するフィルタのファイル名を指定します。:doc:`filter` を参照してください。"
 
 #: ../../ant.rst:168
+msgid "includePath"
+msgstr ""
+
+#: ../../ant.rst:168
+#, fuzzy
+msgid ""
+"An optional nested element. It specifies a path containing filters "
+"specifying which bugs are reported. See :doc:`filter`."
+msgstr "オプション属性です。報告するバグを指定するフィルタのファイル名を指定します。:doc:`filter` を参照してください。"
+
+#: ../../ant.rst:174
 msgid "projectFile"
 msgstr ""
 
-#: ../../ant.rst:165
+#: ../../ant.rst:171
 msgid ""
 "Optional attribute. It specifies the name of a project file. Project "
 "files are created by the FindBugs GUI, and specify classes, aux classpath"
@@ -349,80 +425,96 @@ msgid ""
 "specify any class elements, nor do you need to specify ``auxClasspath`` "
 "or ``sourcePath`` attributes. See :doc:`running` for how to create a "
 "project."
-msgstr "オプション属性です。プロジェクトファイルの名前を指定します。プロジェクトファイルは，SpotBugs GUI によって作成され，クラス，補助クラスパスエントリ，ソースディレクトリを指定します。プロジェクトに名前を付けることによって，class 要素や``auxClasspath`` または ``sourcePath`` 属性を設定する必要がありません。`プロジェクトの作成 <gui.html#creating-a-project>`__ を参照してください。"
+msgstr ""
+"オプション属性です。プロジェクトファイルの名前を指定します。プロジェクトファイルは，SpotBugs GUI "
+"によって作成され，クラス，補助クラスパスエントリ，ソースディレクトリを指定します。プロジェクトに名前を付けることによって，class "
+"要素や``auxClasspath`` または ``sourcePath`` 属性を設定する必要がありません。`プロジェクトの作成 "
+"<gui.html#creating-a-project>`__ を参照してください。"
 
-#: ../../ant.rst:172
+#: ../../ant.rst:178
 msgid "jvmargs"
 msgstr ""
 
-#: ../../ant.rst:171
+#: ../../ant.rst:177
 msgid ""
 "Optional attribute. It specifies any arguments that should be passed to "
 "the Java virtual machine used to run SpotBugs. You may need to use this "
 "attribute to specify flags to increase the amount of memory the JVM may "
 "use if you are analyzing a very large program."
-msgstr "オプション属性です。SpotBugs を実行するために使用する Java 仮想マシンに渡す必要がある引数を指定します。この属性を使用して，巨大なプログラムを解析するときに JVM が使用するメモリ量を増やすためのフラグを指定する必要があります。"
+msgstr ""
+"オプション属性です。SpotBugs を実行するために使用する Java "
+"仮想マシンに渡す必要がある引数を指定します。この属性を使用して，巨大なプログラムを解析するときに JVM "
+"が使用するメモリ量を増やすためのフラグを指定する必要があります。"
 
-#: ../../ant.rst:176
+#: ../../ant.rst:182
 msgid "systemProperty"
 msgstr ""
 
-#: ../../ant.rst:175
+#: ../../ant.rst:181
 msgid ""
 "Optional nested element. If specified, defines a system property. The "
 "name attribute specifies the name of the system property, and the value "
 "attribute specifies the value of the system property."
-msgstr "オプションのネストされた要素です。システムプロパティを定義します。name 属性はシステムプロパティの名前を指定し，value 属性はシステムプロパティの値を指定します。"
+msgstr ""
+"オプションのネストされた要素です。システムプロパティを定義します。name 属性はシステムプロパティの名前を指定し，value "
+"属性はシステムプロパティの値を指定します。"
 
-#: ../../ant.rst:180
+#: ../../ant.rst:186
 msgid "timeout"
 msgstr ""
 
-#: ../../ant.rst:179
+#: ../../ant.rst:185
 msgid ""
 "Optional attribute. It specifies the amount of time, in milliseconds, "
 "that the Java process executing SpotBugs may run before it is assumed to "
 "be hung and is terminated. The default is 600,000 milliseconds, which is "
 "ten minutes. Note that for very large programs, SpotBugs may require more"
 " than ten minutes to complete its analysis."
-msgstr "オプション属性です。SpotBugs を実行している Java プロセスがハングアップして終了する前に実行される時間をミリ秒単位で指定します。デフォルトは 600,000 ミリ秒 (10 分) です。巨大なプログラムのときは，SpotBugs は解析を完了するのに 10 分以上かかることがあります。"
+msgstr ""
+"オプション属性です。SpotBugs を実行している Java "
+"プロセスがハングアップして終了する前に実行される時間をミリ秒単位で指定します。デフォルトは 600,000 ミリ秒 (10 分) "
+"です。巨大なプログラムのときは，SpotBugs は解析を完了するのに 10 分以上かかることがあります。"
 
-#: ../../ant.rst:183
+#: ../../ant.rst:189
 msgid "failOnError"
 msgstr ""
 
-#: ../../ant.rst:183
+#: ../../ant.rst:189
 msgid ""
 "Optional boolean attribute. Whether to abort the build process if there "
 "is an error running SpotBugs. Defaults to ``false``."
-msgstr "オプションのブール値属性です。SpotBugs を実行中にエラーが発生したときに，ビルドプロセスを中断するかどうか指定します。デフォルトは ``false`` です。"
+msgstr ""
+"オプションのブール値属性です。SpotBugs を実行中にエラーが発生したときに，ビルドプロセスを中断するかどうか指定します。デフォルトは "
+"``false`` です。"
 
-#: ../../ant.rst:186
+#: ../../ant.rst:192
 msgid "errorProperty"
 msgstr ""
 
-#: ../../ant.rst:186
+#: ../../ant.rst:192
 msgid ""
 "Optional attribute which specifies the name of a property that will be "
 "set to ``true`` if an error occurs while running SpotBugs."
 msgstr "オプション属性です。SpotBugs の実行中にエラーが発生したときに，``true`` に設定するプロパティの名前を指定します。"
 
-#: ../../ant.rst:189
+#: ../../ant.rst:195
 msgid "warningsProperty"
 msgstr ""
 
-#: ../../ant.rst:189
+#: ../../ant.rst:195
 msgid ""
 "Optional attribute which specifies the name of a property that will be "
 "set to ``true`` if any warnings are reported by SpotBugs on the analyzed "
 "program."
-msgstr "オプション属性です。 SpotBugs によって解析されたプログラムの警告が報告されたときに， ``true`` に設定するプロパティの名前を指定します。"
+msgstr ""
+"オプション属性です。 SpotBugs によって解析されたプログラムの警告が報告されたときに， ``true`` "
+"に設定するプロパティの名前を指定します。"
 
-#: ../../ant.rst:194
+#: ../../ant.rst:200
 msgid "userPreferencesFile"
 msgstr ""
 
-#: ../../ant.rst:192
+#: ../../ant.rst:198
 msgid ""
 "Optional attribute. Set the path of the user preferences file to use, "
 "which might override some of the options above. Specifying "
@@ -430,24 +522,30 @@ msgid ""
 "will override them, as last argument would mean they will override some "
 "previous options). This rationale behind this option is to reuse SpotBugs"
 " Eclipse project settings for command line execution."
-msgstr "オプション属性です。使用するユーザ設定ファイルを設定します。上記のオプションの一部が上書きされる可能性があります。最初の引数として ``userPreferencesFile`` を指定すると，後続のオプションで上書きすることを意味します。最後の引数として指定すると以前のオプションを上書きすることを意味します。このオプションの背後にある根拠は，コマンドライン実行で SpotBugs Eclipse プロジェクトの設定を再利用するためです。"
+msgstr ""
+"オプション属性です。使用するユーザ設定ファイルを設定します。上記のオプションの一部が上書きされる可能性があります。最初の引数として "
+"``userPreferencesFile`` "
+"を指定すると，後続のオプションで上書きすることを意味します。最後の引数として指定すると以前のオプションを上書きすることを意味します。このオプションの背後にある根拠は，コマンドライン実行で"
+" SpotBugs Eclipse プロジェクトの設定を再利用するためです。"
 
-#: ../../ant.rst:198
+#: ../../ant.rst:204
 msgid "nested"
 msgstr ""
 
-#: ../../ant.rst:197
+#: ../../ant.rst:203
 msgid ""
 "Optional attribute which enables or disables scanning of nested jar and "
 "zip files found in the list of files and directories to be analyzed. By "
 "default, scanning of nested jar/zip files is enabled."
-msgstr "オプション属性です。解析されるファイルとディレクトリのリストにあるネストされた jar/zip ファイルのスキャンを有効また無効にします。デフォルトでは，ネストされた jar/zip ファイルのスキャンが有効になっています。"
+msgstr ""
+"オプション属性です。解析されるファイルとディレクトリのリストにあるネストされた jar/zip "
+"ファイルのスキャンを有効また無効にします。デフォルトでは，ネストされた jar/zip ファイルのスキャンが有効になっています。"
 
-#: ../../ant.rst:200
+#: ../../ant.rst:206
 msgid "setExitCode"
 msgstr ""
 
-#: ../../ant.rst:201
+#: ../../ant.rst:207
 msgid ""
 "Optional boolean attribute. Whether the exit code will be returned to the"
 " main ant job. Defaults to ``true``."
