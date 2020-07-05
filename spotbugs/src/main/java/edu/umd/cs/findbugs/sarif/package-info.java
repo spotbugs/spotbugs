@@ -2,11 +2,6 @@
  * The package providing a {@code BugReporter} implementation which produces report in SARIF format.
  *
  * <table class="plain" style="width:100%">
- *   <colgroup>
- *     <col style="width:30%">
- *     <col style="width:30%">
- *     <col style="width:40%">
- *   </colgroup>
  *   <caption>Mapping from SARIF concepts to SpotBugs concepts</caption>
  *   <thead>
  *     <tr><th>SARIF</th><th>SpotBugs</th><th>Note</th></tr>
