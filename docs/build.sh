@@ -4,10 +4,10 @@ docker build -t spotbugs-sphinx .
 rm -rf .build
 
 # extract messages from base document (en) to .pot files
-docker run -it -v $(pwd)/..:/documents spotbugs-sphinx make gettext
+docker run -it -v $(pwd)/..:/docs spotbugs-sphinx make gettext
 
 # build .po files by new .pot files
-docker run -it -v $(pwd)/..:/documents spotbugs-sphinx sphinx-intl update -p .build/locale -l ja
+docker run -it -v $(pwd)/..:/docs spotbugs-sphinx sphinx-intl update -p .build/locale -l ja
 
 # build html files
-docker run -it -v $(pwd)/..:/documents spotbugs-sphinx make html
+docker run -it -v $(pwd)/..:/docs spotbugs-sphinx make html
