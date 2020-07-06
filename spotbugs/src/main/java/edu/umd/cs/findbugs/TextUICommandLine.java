@@ -177,6 +177,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitch("-sortByClass", "sort warnings by class");
         addSwitchWithOptionalExtraPart("-xml", "withMessages", "XML output (optionally with messages)");
         addSwitch("-xdocs", "xdoc XML output to use with Apache Maven");
+        addSwitch("-sarif", "SARIF 2.1.0 output");
         addSwitchWithOptionalExtraPart("-html", "stylesheet", "Generate HTML output (default stylesheet is default.xsl)");
         addSwitch("-emacs", "Use emacs reporting format");
         addSwitch("-relaxed", "Relaxed reporting mode (more false positives!)");
