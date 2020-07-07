@@ -240,7 +240,7 @@ task testPluginJar {
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
-      throw GradleException('Eclipse plugin does not contain spotbugs.jar');
+      throw new GradleException('Eclipse plugin does not contain spotbugs.jar');
     } else {
       println 'Eclipse plugin contains spotbugs.jar'
     }
