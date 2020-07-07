@@ -39,9 +39,8 @@ javadoc {
   }
 }
 
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withSourcesJar()
 }
 
 artifacts {
