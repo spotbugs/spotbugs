@@ -19,19 +19,12 @@ jar {
   archiveName "${baseName}.${extension}"
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
-}
-
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
   pom {
     name = 'SpotBugs Ant Task'
     description = 'Ant Task to run SpotBugs'

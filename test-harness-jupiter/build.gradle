@@ -28,19 +28,12 @@ javadoc {
   }
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
-}
-
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
   pom {
     name = 'JUnit 5 Test Harness for SpotBugs Plugin'
     description = 'A test harness library for SpotBugs plugin developers to test on JUnit 5'

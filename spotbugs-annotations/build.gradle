@@ -49,19 +49,12 @@ javadoc {
   }
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
-}
-
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
   pom {
     name = 'SpotBugs Annotations'
     description = 'Annotations the SpotBugs tool supports'

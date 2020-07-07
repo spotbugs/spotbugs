@@ -241,14 +241,9 @@ javadoc {
   }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier 'javadoc'
-  from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 apply plugin: 'distribution'
@@ -329,8 +324,6 @@ task smokeTest {
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
   artifact distTar
   artifact distZip
   pom {
