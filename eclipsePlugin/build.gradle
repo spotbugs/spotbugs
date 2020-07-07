@@ -231,7 +231,7 @@ def distSpec = copySpec {
 task distZip(type:Zip, dependsOn:jar) {
   with distSpec
   into "${eclipsePluginId}_${project.version}"
-  archiveName = "${eclipsePluginId}_${project.version}.zip"
+  archiveFileName.set "${eclipsePluginId}_${project.version}.zip"
 }
 
 task testPluginJar {
@@ -249,8 +249,8 @@ task testPluginJar {
 
 task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
   with distSpec
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
-  destinationDir = file("${buildDir}/site/eclipse/plugins/")
+  archiveFileName.set "${eclipsePluginId}_${project.version}.jar"
+  destinationDirectory.set file("${buildDir}/site/eclipse/plugins/")
   finalizedBy testPluginJar
 }
 
@@ -277,7 +277,7 @@ def siteFilterTokens = [
 ]
 
 task featureJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName.set "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -287,11 +287,11 @@ task featureJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse/features/")
+  destinationDirectory.set file("${buildDir}/site/eclipse/features/")
 }
 
 task featureCandidateJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName.set "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-candidate.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -301,11 +301,11 @@ task featureCandidateJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-candidate/features/")
+  destinationDirectory.set file("${buildDir}/site/eclipse-candidate/features/")
 }
 
 task featureDailyJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName.set "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-daily.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -315,11 +315,11 @@ task featureDailyJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-daily/features/")
+  destinationDirectory.set file("${buildDir}/site/eclipse-daily/features/")
 }
 
 task featureStableLatestJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName.set "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-stable_latest.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -329,7 +329,7 @@ task featureStableLatestJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest/features/")
+  destinationDirectory.set file("${buildDir}/site/eclipse-stable-latest/features/")
 }
 
 task siteHtml(type:Copy) {
@@ -518,7 +518,7 @@ task eclipseSite() {
 // create zip file to upload to GitHub release page
 task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
   from("${buildDir}/site/eclipse")
-  archiveName = "eclipsePlugin.zip"
+  archiveFileName = "eclipsePlugin.zip"
 }
 
 tasks['assemble'].dependsOn eclipseSite, eclipseSiteZip

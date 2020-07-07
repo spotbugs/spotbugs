@@ -180,7 +180,7 @@ tasks.eclipse.dependsOn(updateManifest)
 // Manually define what goes into the default jar, since it's not only main sourceset
 jar {
   // To keep backward compatibility, delete version number from jar name
-  archiveName "${baseName}.${extension}"
+  archiveName "${archiveBaseName}.${archiveExtension}"
 
   from sourceSets.main.output
   from sourceSets.gui.output

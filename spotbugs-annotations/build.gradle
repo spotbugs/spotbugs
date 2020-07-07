@@ -23,7 +23,7 @@ tasks.eclipse.dependsOn(updateManifest)
 
 jar {
   // To keep backward compatibility, delete version number from jar name
-  archiveName "${baseName}.${extension}"
+  archiveName "${archiveBaseName}.${archiveExtension}"
   manifest {
     attributes 'Bundle-Name': 'spotbugs-annotations',
                'Bundle-SymbolicName': 'spotbugs-annotations',
