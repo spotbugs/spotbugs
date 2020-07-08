@@ -8,6 +8,10 @@ configurations {
   logBinding
 }
 
+ext {
+  asmVersion = '8.0.1'
+}
+
 sourceSets {
   main {
     java {
@@ -56,11 +60,11 @@ sourceSets {
 }
 
 dependencies {
-  api 'org.ow2.asm:asm:8.0.1'
-  api 'org.ow2.asm:asm-analysis:8.0.1'
-  api 'org.ow2.asm:asm-commons:8.0.1'
-  api 'org.ow2.asm:asm-tree:8.0.1'
-  api 'org.ow2.asm:asm-util:8.0.1'
+  api "org.ow2.asm:asm:${asmVersion}"
+  api "org.ow2.asm:asm-analysis:${asmVersion}"
+  api "org.ow2.asm:asm-commons:${asmVersion}"
+  api "org.ow2.asm:asm-tree:${asmVersion}"
+  api "org.ow2.asm:asm-util:${asmVersion}"
   api 'org.apache.bcel:bcel:6.5.0'
   api 'net.jcip:jcip-annotations:1.0'
   api('org.dom4j:dom4j:2.1.3') {
