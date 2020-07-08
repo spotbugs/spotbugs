@@ -44,9 +44,9 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.key("tool").object();
         processExtensions(jsonWriter);
         jsonWriter.key("driver").object();
-        jsonWriter.key("name").value(Version.getApplicationName());
+        jsonWriter.key("name").value("SpotBugs");
         // Eclipse plugin does not follow the semantic-versioning, so use "version" instead of "semanticVersion".
-        jsonWriter.key("version").value(Version.getApplicationVersion());
+        jsonWriter.key("version").value(Version.VERSION_STRING);
         // SpotBugs refers JVM config to decide which language we use.
         jsonWriter.key("language").value(Locale.getDefault().getLanguage());
         jsonWriter.key("rules").value(rules);

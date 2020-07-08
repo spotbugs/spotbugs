@@ -94,10 +94,8 @@ public class SarifBugReporterTest {
      */
     @Test
     public void testDriver() {
-        final String EXPECTED_NAME = "SpotBugs JUnit Test";
-        final String EXPECTED_VERSION = "1.2.3";
+        final String EXPECTED_VERSION = Version.VERSION_STRING;
         final String EXPECTED_LANGUAGE = "ja";
-        Version.registerApplication(EXPECTED_NAME, EXPECTED_VERSION);
 
         Locale defaultLocale = Locale.getDefault();
         try {
@@ -113,7 +111,7 @@ public class SarifBugReporterTest {
         JSONObject tool = run.getJSONObject("tool");
         JSONObject driver = tool.getJSONObject("driver");
 
-        assertThat(driver.get("name"), is(EXPECTED_NAME));
+        assertThat(driver.get("name"), is("SpotBugs"));
         assertThat(driver.get("version"), is(EXPECTED_VERSION));
         assertThat(driver.get("language"), is(EXPECTED_LANGUAGE));
     }
