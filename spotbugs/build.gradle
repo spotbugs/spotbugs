@@ -5,7 +5,9 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
-  logBinding
+  logBinding {
+    transitive = false
+  }
 }
 
 ext {
@@ -148,7 +150,7 @@ task copyLibsForEclipse (type: Copy) {
     include "*.jar"
     exclude "*xml-apis*.jar"
     exclude "*spotbugs-annotations*.jar"
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 task updateManifest {
@@ -214,7 +216,7 @@ task scripts(type:Copy) {
   }
 
   destinationDir file("$buildDir/bin")
-  duplicatesStrategy DuplicatesStrategy.INCLUDE
+  duplicatesStrategy DuplicatesStrategy.FAIL
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -269,6 +271,8 @@ distributions {
 }
 
 distTar.compression = Compression.GZIP
+distTar.duplicatesStrategy = DuplicatesStrategy.FAIL
+distZip.duplicatesStrategy = DuplicatesStrategy.FAIL
 tasks['assemble'].dependsOn tasks['assembleDist']
 tasks['jar'].dependsOn tasks['updateManifest']
 
