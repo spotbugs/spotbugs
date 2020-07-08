@@ -163,6 +163,8 @@ task copyLibsForEclipse (type: Copy) {
 }
 
 task updateManifest {
+  inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+  outputs.file "$projectDir/META-INF/MANIFEST.MF"
   dependsOn configurations.runtimeClasspath, copyLibsForEclipse
   doLast {
     def manifestSpec = manifest {
@@ -282,7 +284,9 @@ tasks['assemble'].dependsOn tasks['assembleDist']
 tasks['jar'].dependsOn tasks['updateManifest']
 
 task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
+  def out = "${buildDir}/distributions/spotbugs-${project.version}-source.zip"
+  outputs.file out
+  commandLine 'git', 'archive', '-o', out,
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
 }
 distSrcZip.onlyIf {
