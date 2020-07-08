@@ -112,10 +112,18 @@ task copyLibsForEclipse(type: Copy) {
 }
 
 task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
+  def out = "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
+  outputs.file out
+  commandLine 'git', 'archive', '-o', out, 'HEAD'
 }
 
 task updateManifest {
+  inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+  outputs.file "$projectDir/META-INF/MANIFEST.MF"
+  outputs.file "$projectDir/META-INF/MANIFEST-DIST.MF"
+  inputs.file "$projectDir/build-template.properties"
+  outputs.file "$projectDir/build.properties"
+
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   doLast {
     def manifestSpec = manifest {
@@ -138,7 +146,7 @@ task updateManifest {
     distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
 
     // write build.properties
-    def propsTemplate = file('build-template.properties')
+    def propsTemplate = file("$projectDir/build-template.properties")
     def props = new Properties()
     props.load(propsTemplate.newDataInputStream())
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
@@ -235,8 +243,10 @@ task distZip(type:Zip, dependsOn:jar) {
 }
 
 task testPluginJar {
+  def jarFile = "$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
+  inputs.file jarFile
   doLast {
-    def spotbugsJar = zipTree("$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar")
+    def spotbugsJar = zipTree(jarFile)
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
