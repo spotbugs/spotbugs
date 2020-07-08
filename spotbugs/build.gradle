@@ -118,8 +118,8 @@ tasks.withType(Jar).all {
 }
 
 eclipse.classpath {
-  plusConfigurations += [ configurations.compileOnly ]
-  plusConfigurations += [ configurations.guiCompileOnly ]
+  plusConfigurations += [ configurations.compileClasspath ]
+  plusConfigurations += [ configurations.guiCompileClasspath ]
   plusConfigurations += [ configurations.testRuntimeClasspath ]
 }
 
@@ -139,27 +139,12 @@ eclipse.classpath.file {
 }
 
 task copyLibsForEclipse (type: Copy) {
-    from configurations.runtimeClasspath.files
+    from configurations.testCompileClasspath.files, configurations.testRuntimeClasspath.files, configurations.guiRuntimeClasspath.files, configurations.logBinding.files
     into ".libs"
     include "*.jar"
     exclude "*xml-apis*.jar"
     exclude "*spotbugs-annotations*.jar"
-
-    from configurations.logBinding.files
-    into ".libs"
-    include "*.jar"
-
-    from configurations.testRuntimeClasspath.files
-    into ".libs"
-    include "*.jar"
-
-    from configurations.compileOnly.files
-    into ".libs"
-    include "*.jar"
-
-    from configurations.guiCompileOnly.files
-    into ".libs"
-    include "*.jar"
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 task updateManifest {
