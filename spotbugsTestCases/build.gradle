@@ -10,7 +10,7 @@ dependencies {
   // TODO : Some of these can be extracted to actual dependencies
   implementation fileTree(dir: 'lib', include: '*.jar')
 
-  implementation 'com.google.code.gson:gson:2.8.1'
+  implementation 'com.google.code.gson:gson:2.8.6'
   implementation 'com.google.guava:guava:25.0-jre'
   implementation 'com.google.inject:guice:4.2.3'
   implementation 'com.google.inject.extensions:guice-assistedinject:4.2.3'
