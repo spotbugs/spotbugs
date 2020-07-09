@@ -14,7 +14,7 @@ dependencies {
   implementation 'com.google.guava:guava:25.0-jre'
   implementation 'com.google.inject:guice:4.2.3'
   implementation 'com.google.inject.extensions:guice-assistedinject:4.2.3'
-  implementation 'com.google.inject.extensions:guice-servlet:4.1.0'
+  implementation 'com.google.inject.extensions:guice-servlet:4.2.3'
   implementation 'com.google.truth:truth:1.0.1'
   implementation 'joda-time:joda-time:2.9.9'
   api 'net.jcip:jcip-annotations:1.0'
