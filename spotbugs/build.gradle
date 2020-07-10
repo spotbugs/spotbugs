@@ -92,7 +92,7 @@ dependencies {
     }
   }
   api 'org.slf4j:slf4j-api:1.8.0-beta4'
-  implementation 'net.sf.saxon:Saxon-HE:9.9.1-2'
+  implementation 'net.sf.saxon:Saxon-HE:10.1'
   logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1'
 
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
