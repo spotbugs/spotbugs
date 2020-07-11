@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -194,36 +195,46 @@ class Location {
         final String decoratedName;
         @NonNull
         final String kind;
-        // TODO resolve fullyQualifiedName parameter
+        @Nullable
+        final String fullyQualifiedName;
+        @Nullable
+        final Map<String, String> properties = new HashMap<>();
 
-        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind) {
+        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName, @Nullable Map<String, String> properties) {
             this.name = Objects.requireNonNull(name);
             this.decoratedName = decoratedName;
             this.kind = Objects.requireNonNull(kind);
+            this.fullyQualifiedName = fullyQualifiedName;
+            if (properties != null) {
+                this.properties.putAll(properties);
+            }
         }
 
         JSONObject toJSONObject() {
-            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind);
+            JSONObject propertiesBag = new JSONObject(properties);
+            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind).putOpt("fullyQualifiedName", fullyQualifiedName).putOpt("properties", propertiesBag.isEmpty() ? null : propertiesBag);
         }
 
         @NonNull
         static LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
-            String decoratedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
-            return new LogicalLocation(element.getMethodName(), decoratedName, "function");
+            String fullyQualifiedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
+            Map<String, String> properties = new HashMap<>();
+            properties.put("line-number", Integer.toString(element.getLineNumber()));
+            return new LogicalLocation(element.getMethodName(), null, "function", fullyQualifiedName, properties);
         }
 
         @NonNull
         static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
             Objects.requireNonNull(bugInstance);
             ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
+            SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
             return bugInstance.getAnnotations().stream().map(annotation -> {
                 String kind = findKind(annotation);
                 if (kind == null) {
                     return null;
                 }
                 String name = annotation.format("givenClass", primaryClass);
-                // TODO how to find decoratedName
-                return new LogicalLocation(name, null, kind);
+                return new LogicalLocation(name, null, kind, sourceLine.format("full", primaryClass), null);
             }).filter(Objects::nonNull).findFirst();
         }
 
