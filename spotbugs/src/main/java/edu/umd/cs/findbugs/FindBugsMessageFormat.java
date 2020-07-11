@@ -68,6 +68,9 @@ public class FindBugsMessageFormat {
      * @return the formatted message
      */
     public String format(BugAnnotation[] args, ClassAnnotation primaryClass, boolean abridgedMessages) {
+        // note for maintainer:
+        // This code is copied to edu.umd.cs.findbugs.sarif.MessageFormat.
+        // When you change code in this method, please reflect it even to that class.
         String pat = pattern;
         StringBuilder result = new StringBuilder();
 
