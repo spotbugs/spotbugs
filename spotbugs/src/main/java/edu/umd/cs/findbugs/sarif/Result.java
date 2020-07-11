@@ -16,16 +16,20 @@ final class Result {
     final int ruleIndex;
     final Message message;
     final List<Location> locations;
+    @NonNull
+    final Level level;
 
-    Result(@NonNull String ruleId, int ruleIndex, Message message, List<Location> locations) {
+    Result(@NonNull String ruleId, int ruleIndex, Message message, List<Location> locations, @NonNull Level level) {
         this.ruleId = Objects.requireNonNull(ruleId);
         this.ruleIndex = ruleIndex;
         this.message = Objects.requireNonNull(message);
         this.locations = Collections.unmodifiableList(Objects.requireNonNull(locations));
+        this.level = Objects.requireNonNull(level);
     }
 
     JSONObject toJSONObject() {
-        JSONObject result = new JSONObject().put("ruleId", ruleId).put("ruleIndex", ruleIndex).put("message", message.toJSONObject());
+        JSONObject result = new JSONObject().put("ruleId", ruleId).put("ruleIndex", ruleIndex).put("message", message.toJSONObject()).put("level",
+                level);
         locations.stream().map(Location::toJSONObject).forEach(location -> result.append("locations", location));
         return result;
     }

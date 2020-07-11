@@ -3,6 +3,7 @@ package edu.umd.cs.findbugs.sarif;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONArray;
@@ -63,7 +64,8 @@ class BugCollectionAnalyser {
                 .collect(Collectors.toList());
         List<Location> locations = new ArrayList<>();
         Location.fromBugInstance(bug, sourceFinder, baseToId).ifPresent(locations::add);
-        Result result = new Result(bug.getType(), index, new Message(arguments), locations);
+        int bugRank = BugRanker.findRank(bug);
+        Result result = new Result(bug.getType(), index, new Message(arguments), locations, Level.fromBugRank(bugRank));
         results.add(result);
     }
 

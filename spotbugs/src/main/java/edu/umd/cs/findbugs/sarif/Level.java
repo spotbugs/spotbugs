@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.BugRankCategory;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONString;
 
 /**
@@ -31,18 +32,20 @@ enum Level implements JSONString {
         return String.format("\"%s\"", name().toLowerCase());
     }
 
-    static Level fromPriority(int priority) {
-        switch (priority) {
-        case Priorities.HIGH_PRIORITY:
+    @NonNull
+    static Level fromBugRank(int bugRank) {
+        BugRankCategory category = BugRankCategory.getRank(bugRank);
+        switch (category) {
+        case SCARIEST:
+        case SCARY:
             return ERROR;
-        case Priorities.NORMAL_PRIORITY:
-        case Priorities.LOW_PRIORITY:
+        case TROUBLING:
             return WARNING;
-        case Priorities.EXP_PRIORITY:
-        case Priorities.IGNORE_PRIORITY:
+        case OF_CONCERN:
             return NOTE;
         default:
-            throw new IllegalArgumentException(String.format("Unknown property %d is given", priority));
+            throw new IllegalArgumentException("Illegal bugRank given: " + bugRank);
         }
     }
+
 }
