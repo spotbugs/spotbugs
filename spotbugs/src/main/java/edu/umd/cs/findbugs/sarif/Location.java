@@ -207,6 +207,12 @@ class Location {
         }
 
         @NonNull
+        static LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
+            String decoratedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
+            return new LogicalLocation(element.getMethodName(), decoratedName, "function");
+        }
+
+        @NonNull
         static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
             Objects.requireNonNull(bugInstance);
             ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
