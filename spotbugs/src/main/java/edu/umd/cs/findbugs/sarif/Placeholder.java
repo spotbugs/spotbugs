@@ -6,6 +6,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 class Placeholder {
     /**
@@ -20,9 +21,9 @@ class Placeholder {
     @NonNull
     final String key;
 
-    Placeholder(int index, @Nullable String key) {
+    Placeholder(int index, @NonNull String key) {
         this.index = index;
-        this.key = key == null ? "default" : key;
+        this.key = Objects.requireNonNull(key);
     }
 
     @NonNull
