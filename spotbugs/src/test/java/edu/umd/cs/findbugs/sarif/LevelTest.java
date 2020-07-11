@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.Priorities;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -15,7 +14,22 @@ public class LevelTest {
     }
 
     @Test
-    public void testMapLowestPriorityToNote() {
-        assertThat(Level.fromPriority(Priorities.IGNORE_PRIORITY), is(Level.NOTE));
+    public void testMapHighestRankToError() {
+        assertThat(Level.fromBugRank(1), is(Level.ERROR));
+    }
+
+    @Test
+    public void testMapHighRankToError() {
+        assertThat(Level.fromBugRank(9), is(Level.ERROR));
+    }
+
+    @Test
+    public void testMapLowRankToWarning() {
+        assertThat(Level.fromBugRank(14), is(Level.WARNING));
+    }
+
+    @Test
+    public void testMapLowestRankToNote() {
+        assertThat(Level.fromBugRank(20), is(Level.NOTE));
     }
 }
