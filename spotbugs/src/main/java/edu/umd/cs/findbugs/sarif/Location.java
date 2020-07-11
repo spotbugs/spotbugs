@@ -200,7 +200,8 @@ class Location {
         @Nullable
         final Map<String, String> properties = new HashMap<>();
 
-        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName, @Nullable Map<String, String> properties) {
+        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName,
+                @Nullable Map<String, String> properties) {
             this.name = Objects.requireNonNull(name);
             this.decoratedName = decoratedName;
             this.kind = Objects.requireNonNull(kind);
@@ -212,7 +213,8 @@ class Location {
 
         JSONObject toJSONObject() {
             JSONObject propertiesBag = new JSONObject(properties);
-            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind).putOpt("fullyQualifiedName", fullyQualifiedName).putOpt("properties", propertiesBag.isEmpty() ? null : propertiesBag);
+            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind).putOpt("fullyQualifiedName",
+                    fullyQualifiedName).putOpt("properties", propertiesBag.isEmpty() ? null : propertiesBag);
         }
 
         @NonNull
