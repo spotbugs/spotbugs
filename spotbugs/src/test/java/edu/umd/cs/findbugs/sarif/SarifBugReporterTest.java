@@ -303,7 +303,7 @@ public class SarifBugReporterTest {
 
         JSONObject originalUriBaseIds = run.getJSONObject("originalUriBaseIds");
         String uriBaseId = takeFirstKey(originalUriBaseIds).get();
-        assertThat(new File(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri")), is(tmpDir.toFile()));
+        assertThat(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri"), is(tmpDir.toUri().toString()));
 
         JSONArray results = run.getJSONArray("results");
         assertThat(results.length(), is(1));
@@ -318,9 +318,5 @@ public class SarifBugReporterTest {
 
     Optional<String> takeFirstKey(JSONObject object) {
         return object.keySet().stream().findFirst();
-    }
-
-    Optional<Object> takeFirstValue(JSONObject object) {
-        return object.keySet().stream().map(object::get).findFirst();
     }
 }
