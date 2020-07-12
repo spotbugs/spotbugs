@@ -42,10 +42,12 @@ final class Rule {
 
     JSONObject toJSONObject() {
         JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", defaultText));
-        JSONObject result = new JSONObject().put("id", id).put("shortDescription", new JSONObject().put("text", shortDescription)).put(
-                "fullDescription", new JSONObject().put("markdown", fullDescription)).put(
-                        "messageStrings",
-                        messageStrings).putOpt("helpUri", helpUri);
+        // TODO put 'fullDescription' with both of text and markdown representations
+        JSONObject result = new JSONObject()
+                .put("id", id)
+                .put("shortDescription", new JSONObject().put("text", shortDescription))
+                .put("messageStrings", messageStrings)
+                .putOpt("helpUri", helpUri);
         if (!tags.isEmpty()) {
             JSONObject propertyBag = new JSONObject().put("tags", new JSONArray(tags));
             result.put("properties", propertyBag);
