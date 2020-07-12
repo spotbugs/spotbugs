@@ -621,11 +621,15 @@ public class SourceFinder implements AutoCloseable {
     }
 
     public Optional<String> getBase(SourceLineAnnotation sourceLineAnnotation) {
+        String relativePath = getPlatformName(sourceLineAnnotation);
+        return getBase(relativePath);
+    }
+
+    public Optional<String> getBase(String fileName) {
         return repositoryList.stream()
                 .filter(SourceRepository::isPlatformDependent)
                 .filter(repo -> {
-                    String relativePath = getPlatformName(sourceLineAnnotation);
-                    return repo.contains(relativePath);
+                    return repo.contains(fileName);
                 }).map(repo -> repo.getDataSource("").getFullFileName()).findFirst();
     }
 }
