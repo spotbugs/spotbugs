@@ -48,8 +48,10 @@ class SarifException {
     }
 
     JSONObject toJSONObject() {
-        JSONObject result = new JSONObject().put("exception", new JSONObject().put("kind", kind).put("message", new JSONObject().put("text",
-                message))).put("stack", stack.toJSONObject());
+        JSONObject result = new JSONObject()
+                .put("kind", kind)
+                .put("message", new JSONObject().put("text", message))
+                .put("stack", stack.toJSONObject());
         innerExceptions.forEach(innerException -> result.append("innerExceptions", innerException.toJSONObject()));
         return result;
     }
