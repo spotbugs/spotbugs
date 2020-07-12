@@ -49,7 +49,7 @@ class BugCollectionAnalyser {
     @NonNull
     JSONObject getOriginalUriBaseIds() {
         JSONObject result = new JSONObject();
-        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", uri)));
+        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", "file://" + uri)));
         return result;
     }
 
