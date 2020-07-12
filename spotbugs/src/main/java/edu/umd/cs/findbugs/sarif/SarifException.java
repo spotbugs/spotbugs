@@ -41,9 +41,10 @@ class SarifException {
         List<Throwable> innerThrowables = new ArrayList<>();
         innerThrowables.add(throwable.getCause());
         innerThrowables.addAll(Arrays.asList(throwable.getSuppressed()));
-        List<SarifException> innerExceptions = innerThrowables.stream().filter(Objects::nonNull).map(t -> fromThrowable(t, sourceFinder, baseToId))
-                .collect(Collectors
-                        .toList());
+        List<SarifException> innerExceptions = innerThrowables.stream()
+                .filter(Objects::nonNull)
+                .map(t -> fromThrowable(t, sourceFinder, baseToId))
+                .collect(Collectors.toList());
         return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable, sourceFinder, baseToId), innerExceptions);
     }
 

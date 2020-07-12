@@ -56,7 +56,7 @@ final class Rule {
     }
 
     @NonNull
-    static Rule fromBugPattern(BugPattern bugPattern, String formatedMessage) {
+    static Rule fromBugPattern(BugPattern bugPattern, String formattedMessage) {
         URI helpUri = bugPattern.getUri().orElse(null);
 
         String category = bugPattern.getCategory();
@@ -67,7 +67,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formatedMessage, helpUri,
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, helpUri,
                 tags);
     }
 }
