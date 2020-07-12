@@ -1,12 +1,14 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -31,7 +33,7 @@ class SarifException {
     }
 
     @NonNull
-    static SarifException fromThrowable(@NonNull Throwable throwable) {
+    static SarifException fromThrowable(@NonNull Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<String, String> baseToId) {
         String message = throwable.getMessage();
         if (message == null) {
             message = "no message given";
@@ -39,9 +41,10 @@ class SarifException {
         List<Throwable> innerThrowables = new ArrayList<>();
         innerThrowables.add(throwable.getCause());
         innerThrowables.addAll(Arrays.asList(throwable.getSuppressed()));
-        List<SarifException> innerExceptions = innerThrowables.stream().filter(Objects::nonNull).map(SarifException::fromThrowable).collect(Collectors
-                .toList());
-        return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable), innerExceptions);
+        List<SarifException> innerExceptions = innerThrowables.stream().filter(Objects::nonNull).map(t -> fromThrowable(t, sourceFinder, baseToId))
+                .collect(Collectors
+                        .toList());
+        return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable, sourceFinder, baseToId), innerExceptions);
     }
 
     JSONObject toJSONObject() {

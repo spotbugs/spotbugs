@@ -194,11 +194,11 @@ public class SarifBugReporterTest {
 
     @Test
     public void testExceptionNotification() {
+        reporter.getProject().getSourceFinder().setSourceBaseList(Collections.singletonList(new File("src/test/java").getAbsolutePath()));
         reporter.logError("Unexpected Error", new Exception("Unexpected Problem"));
         reporter.finish();
 
         String json = writer.toString();
-        System.err.println(json);
         JSONObject jsonObject = new JSONObject(json);
         JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
         JSONObject tool = run.getJSONObject("tool");
@@ -210,6 +210,10 @@ public class SarifBugReporterTest {
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
         assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
+        JSONArray frames = notification.getJSONObject("exception").getJSONObject("stack").getJSONArray("frames");
+        JSONObject physicalLocation = frames.getJSONObject(0).getJSONObject("location").getJSONObject("physicalLocation");
+        String uri = physicalLocation.getJSONObject("artifactLocation").getString("uri");
+        assertThat(uri, is("edu/umd/cs/findbugs/sarif/SarifBugReporterTest.java"));
     }
 
     @Test

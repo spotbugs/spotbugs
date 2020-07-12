@@ -9,10 +9,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class BugCollectionAnalyser {
@@ -85,5 +82,9 @@ class BugCollectionAnalyser {
         indexToPlaceholders.add(placeholders);
 
         return ruleIndex;
+    }
+
+    Map<String, String> getBaseToId() {
+        return baseToId;
     }
 }
