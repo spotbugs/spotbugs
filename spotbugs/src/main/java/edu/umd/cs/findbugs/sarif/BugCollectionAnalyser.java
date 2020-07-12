@@ -32,7 +32,7 @@ class BugCollectionAnalyser {
         SourceFinder sourceFinder = bugCollection.getProject().getSourceFinder();
         bugCollection.forEach(bug -> {
             String type = bug.getType();
-            int index = typeToIndex.computeIfAbsent(type, (t) -> processRule(bug.getBugPattern()));
+            int index = typeToIndex.computeIfAbsent(type, t -> processRule(bug.getBugPattern()));
 
             processResult(index, bug, sourceFinder);
         });
@@ -49,9 +49,7 @@ class BugCollectionAnalyser {
     @NonNull
     JSONObject getOriginalUriBaseIds() {
         JSONObject result = new JSONObject();
-        baseToId.forEach((uri, uriBaseId) -> {
-            result.put(uriBaseId, new JSONObject().put("uri", uri));
-        });
+        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", uri)));
         return result;
     }
 
