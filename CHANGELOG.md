@@ -6,10 +6,14 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 ### Added
-* Support for the SARIF 2.1.0 report ([discuss#95](https://github.com/spotbugs/discuss/issues/95))
+* Experimental support for the SARIF 2.1.0 report ([discuss#95](https://github.com/spotbugs/discuss/issues/95))
 
 ### Fixed
 * Fixed not working detector 'CbeckMustOverrideSuperAnnotation' and renamed to 'OverridingMethodsMustInvokeSuperDetector'
+
+### Changed
+* Bump up Saxon-HE to 10.1 ([#1214](https://github.com/spotbugs/spotbugs/pull/1214))
+* Bump up log4j-slf4j18-impl to 2.13.3 ([#1192](https://github.com/spotbugs/spotbugs/pull/1192))
 
 ## 4.0.6 - 2020-06-23
 ### Fixed
