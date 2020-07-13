@@ -36,17 +36,17 @@ public class ExitCode {
         LOG.info("Calculating exit code...");
         if (errors > 0) {
             exitCode |= ExitCodes.ERROR_FLAG;
-            LOG.debug("Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
+            LOG.debug("Setting 'errors encountered' flag ({})", ExitCodes.ERROR_FLAG);
         }
         if (missingClasses > 0) {
             exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-            LOG.debug("Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
+            LOG.debug("Setting 'missing class' flag ({})", ExitCodes.MISSING_CLASS_FLAG);
         }
         if (bugs > 0) {
             exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-            LOG.debug("Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
+            LOG.debug("Setting 'bugs found' flag ({})", ExitCodes.BUGS_FOUND_FLAG);
         }
-        LOG.debug("Exit code set to: {0}", exitCode);
+        LOG.debug("Exit code set to: {}", exitCode);
 
         return new ExitCode(exitCode, getSignalName(exitCode));
     }
