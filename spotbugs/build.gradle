@@ -91,7 +91,7 @@ dependencies {
       because 'version 3.9 pulled from commons-text is too old, and commons-text has no later release'
     }
   }
-  api 'org.slf4j:slf4j-api:1.8.0-beta4'
+  api 'org.slf4j:slf4j-api:2.0.0-alpha1'
   implementation 'net.sf.saxon:Saxon-HE:10.1'
   logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.3'
 
