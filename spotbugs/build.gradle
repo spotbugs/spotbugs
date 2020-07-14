@@ -109,7 +109,7 @@ dependencies {
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
   guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.12'
+  guiTestImplementation 'junit:junit:4.13'
   guiTestCompileOnly project(':spotbugs-annotations')
 }
 
