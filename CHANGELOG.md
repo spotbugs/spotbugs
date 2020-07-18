@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 * Fixed not working detector 'CbeckMustOverrideSuperAnnotation' and renamed to 'OverridingMethodsMustInvokeSuperDetector'
+* Allow private methods to inherit default annotations from package or class scope. ([#374](https://github.com/spotbugs/spotbugs/issues/374))
 
 ## 4.0.6 - 2020-06-23
 ### Fixed
