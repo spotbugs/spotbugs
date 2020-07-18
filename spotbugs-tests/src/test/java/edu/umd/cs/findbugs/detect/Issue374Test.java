@@ -37,8 +37,7 @@ public class Issue374Test extends AbstractIntegrationTest {
                 "ghIssues/issue374/package-info.class",
                 "ghIssues/issue374/ClassLevel.class",
                 "ghIssues/issue374/MethodLevel.class",
-                "ghIssues/issue374/PackageLevel.class"
-        );
+                "ghIssues/issue374/PackageLevel.class");
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
                 .bugType("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
                 .build();
