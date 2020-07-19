@@ -575,7 +575,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else {
             // @Anemone, add custom bug annotation types,
             // which can be deserialized with 'fromXML' method in its class.
-            Method fromXML = qnameCache.computeIfAbsent(qName,k->{
+            Method fromXML = qnameCache.computeIfAbsent(qName, k -> {
                 for (Plugin plugin : Plugin.getAllPlugins()) {
                     Class<?> annotationClazz;
                     try {
@@ -598,10 +598,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             } catch (IllegalAccessException e) {
                 throw new SAXException("Factory method for " + qName + " is not accessible.", e);
             } catch (InvocationTargetException e) {
-                if(e.getTargetException() instanceof Exception){
+                if (e.getTargetException() instanceof Exception) {
                     throw new SAXException("Factory method for " + qName + " threw an exception.", (Exception) e.getTargetException());
                 } else {
-                    throw new SAXException("Factory method for " + qName + " threw an exception:\n"+ e.getTargetException().getStackTrace());
+                    throw new SAXException("Factory method for " + qName + " threw an exception:\n" + e.getTargetException().getStackTrace());
                 }
             }
         }

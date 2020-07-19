@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.util.NotImplementedYetException;
-import org.xml.sax.Attributes;
 
 import java.io.Serializable;
 

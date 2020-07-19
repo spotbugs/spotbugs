@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class VersionInsensitiveBugComparatorTest {
 
         }
 
-        public String toString(){
+        public String toString() {
             return desc;
         }
 
