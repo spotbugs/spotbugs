@@ -575,21 +575,21 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         } else {
             // @Anemone, add custom bug annotation types,
             // which can be deserialized with 'fromXML' method in its class.
-            Method fromXML = qnameCache.get(qName);
-            for (Plugin plugin : Plugin.getAllPlugins()) {
-                if (fromXML == null) {
+            Method fromXML = qnameCache.computeIfAbsent(qName,k->{
+                for (Plugin plugin : Plugin.getAllPlugins()) {
                     Class<?> annotationClazz;
                     try {
                         // The qName should equal to its classname, so there can reflect.
-                        annotationClazz = plugin.getClassLoader().loadClass(qName);
-                        fromXML = annotationClazz.getMethod("fromXML", String.class, Attributes.class);
-                        break;
+                        annotationClazz = plugin.getClassLoader().loadClass(k);
+                        return annotationClazz.getMethod("fromXML", String.class, Attributes.class);
                     } catch (NoSuchMethodException | ClassCastException e) {
-                        throw new SAXException("Failed to find factory method for " + qName, e);
+                        e.printStackTrace();
                     } catch (ClassNotFoundException ignored) {
+                        // The current plugin classloader doesn't have the annotation class called 'qName', ignore.
                     }
                 }
-            }
+                return null;
+            });
             if (fromXML == null) {
                 throw new SAXException("Unknown bug annotation named " + qName);
             }
@@ -598,7 +598,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             } catch (IllegalAccessException e) {
                 throw new SAXException("Factory method for " + qName + " is not accessible.", e);
             } catch (InvocationTargetException e) {
-                throw new SAXException("Factory method for " + qName + " threw an exception.", e.getTargetException());
+                if(e.getTargetException() instanceof Exception){
+                    throw new SAXException("Factory method for " + qName + " threw an exception.", (Exception) e.getTargetException());
+                } else {
+                    throw new SAXException("Factory method for " + qName + " threw an exception:\n"+ e.getTargetException().getStackTrace());
+                }
             }
         }
 
