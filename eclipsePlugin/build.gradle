@@ -112,10 +112,18 @@ task copyLibsForEclipse(type: Copy) {
 }
 
 task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
+  def out = "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
+  outputs.file out
+  commandLine 'git', 'archive', '-o', out, 'HEAD'
 }
 
 task updateManifest {
+  inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+  outputs.file "$projectDir/META-INF/MANIFEST.MF"
+  outputs.file "$projectDir/META-INF/MANIFEST-DIST.MF"
+  inputs.file "$projectDir/build-template.properties"
+  outputs.file "$projectDir/build.properties"
+
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   doLast {
     def manifestSpec = manifest {
@@ -138,7 +146,7 @@ task updateManifest {
     distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
 
     // write build.properties
-    def propsTemplate = file('build-template.properties')
+    def propsTemplate = file("$projectDir/build-template.properties")
     def props = new Properties()
     props.load(propsTemplate.newDataInputStream())
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
@@ -193,7 +201,7 @@ jar {
   dependsOn updateManifest
   includeEmptyDirs = false
   from sourceSets.main.output
-  archiveName 'spotbugs-plugin.jar'
+  archiveFileName = 'spotbugs-plugin.jar'
 }
 
 def distSpec = copySpec {
@@ -231,16 +239,18 @@ def distSpec = copySpec {
 task distZip(type:Zip, dependsOn:jar) {
   with distSpec
   into "${eclipsePluginId}_${project.version}"
-  archiveName = "${eclipsePluginId}_${project.version}.zip"
+  archiveFileName = "${eclipsePluginId}_${project.version}.zip"
 }
 
 task testPluginJar {
+  def jarFile = "$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
+  inputs.file jarFile
   doLast {
-    def spotbugsJar = zipTree("$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar")
+    def spotbugsJar = zipTree(jarFile)
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
-      throw GradleException('Eclipse plugin does not contain spotbugs.jar');
+      throw new GradleException('Eclipse plugin does not contain spotbugs.jar');
     } else {
       println 'Eclipse plugin contains spotbugs.jar'
     }
@@ -249,8 +259,8 @@ task testPluginJar {
 
 task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
   with distSpec
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
-  destinationDir = file("${buildDir}/site/eclipse/plugins/")
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
+  destinationDirectory = file("${buildDir}/site/eclipse/plugins/")
   finalizedBy testPluginJar
 }
 
@@ -277,7 +287,7 @@ def siteFilterTokens = [
 ]
 
 task featureJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -287,11 +297,11 @@ task featureJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse/features/")
+  destinationDirectory = file("${buildDir}/site/eclipse/features/")
 }
 
 task featureCandidateJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-candidate.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -301,11 +311,11 @@ task featureCandidateJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-candidate/features/")
+  destinationDirectory = file("${buildDir}/site/eclipse-candidate/features/")
 }
 
 task featureDailyJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-daily.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -315,11 +325,11 @@ task featureDailyJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-daily/features/")
+  destinationDirectory = file("${buildDir}/site/eclipse-daily/features/")
 }
 
 task featureStableLatestJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-stable_latest.xml') {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
@@ -329,7 +339,7 @@ task featureStableLatestJar(type:Zip) {
     filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest/features/")
+  destinationDirectory = file("${buildDir}/site/eclipse-stable-latest/features/")
 }
 
 task siteHtml(type:Copy) {
@@ -518,7 +528,7 @@ task eclipseSite() {
 // create zip file to upload to GitHub release page
 task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
   from("${buildDir}/site/eclipse")
-  archiveName = "eclipsePlugin.zip"
+  archiveFileName = "eclipsePlugin.zip"
 }
 
 tasks['assemble'].dependsOn eclipseSite, eclipseSiteZip

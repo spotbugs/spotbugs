@@ -94,10 +94,8 @@ public class SarifBugReporterTest {
      */
     @Test
     public void testDriver() {
-        final String EXPECTED_NAME = "SpotBugs JUnit Test";
-        final String EXPECTED_VERSION = "1.2.3";
+        final String EXPECTED_VERSION = Version.VERSION_STRING;
         final String EXPECTED_LANGUAGE = "ja";
-        Version.registerApplication(EXPECTED_NAME, EXPECTED_VERSION);
 
         Locale defaultLocale = Locale.getDefault();
         try {
@@ -113,7 +111,7 @@ public class SarifBugReporterTest {
         JSONObject tool = run.getJSONObject("tool");
         JSONObject driver = tool.getJSONObject("driver");
 
-        assertThat(driver.get("name"), is(EXPECTED_NAME));
+        assertThat(driver.get("name"), is("SpotBugs"));
         assertThat(driver.get("version"), is(EXPECTED_VERSION));
         assertThat(driver.get("language"), is(EXPECTED_LANGUAGE));
     }
@@ -196,11 +194,11 @@ public class SarifBugReporterTest {
 
     @Test
     public void testExceptionNotification() {
+        reporter.getProject().getSourceFinder().setSourceBaseList(Collections.singletonList(new File("src/test/java").getAbsolutePath()));
         reporter.logError("Unexpected Error", new Exception("Unexpected Problem"));
         reporter.finish();
 
         String json = writer.toString();
-        System.err.println(json);
         JSONObject jsonObject = new JSONObject(json);
         JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
         JSONObject tool = run.getJSONObject("tool");
@@ -212,6 +210,10 @@ public class SarifBugReporterTest {
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
         assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
+        JSONArray frames = notification.getJSONObject("exception").getJSONObject("stack").getJSONArray("frames");
+        JSONObject physicalLocation = frames.getJSONObject(0).getJSONObject("location").getJSONObject("physicalLocation");
+        String uri = physicalLocation.getJSONObject("artifactLocation").getString("uri");
+        assertThat(uri, is("edu/umd/cs/findbugs/sarif/SarifBugReporterTest.java"));
     }
 
     @Test
@@ -301,7 +303,7 @@ public class SarifBugReporterTest {
 
         JSONObject originalUriBaseIds = run.getJSONObject("originalUriBaseIds");
         String uriBaseId = takeFirstKey(originalUriBaseIds).get();
-        assertThat(new File(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri")), is(tmpDir.toFile()));
+        assertThat(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri"), is(tmpDir.toUri().toString()));
 
         JSONArray results = run.getJSONArray("results");
         assertThat(results.length(), is(1));
@@ -316,9 +318,5 @@ public class SarifBugReporterTest {
 
     Optional<String> takeFirstKey(JSONObject object) {
         return object.keySet().stream().findFirst();
-    }
-
-    Optional<Object> takeFirstValue(JSONObject object) {
-        return object.keySet().stream().map(object::get).findFirst();
     }
 }

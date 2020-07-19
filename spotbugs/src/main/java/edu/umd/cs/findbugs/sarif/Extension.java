@@ -33,8 +33,14 @@ class Extension {
     }
 
     JSONObject toJSONObject() {
-        return new JSONObject().put("version", version).put("name", name).putOpt("shortDescription", shortDescription)
-                .putOpt("fullDescription", fullDescription).putOpt("informationUri", informationUri)
+        // TODO put 'fullDescription' with both of text and markdown representations
+        JSONObject desc = null;
+        if (shortDescription != null) {
+            desc = new JSONObject().put("text", shortDescription);
+        }
+        return new JSONObject().put("version", version).put("name", name)
+                .putOpt("shortDescription", desc)
+                .putOpt("informationUri", informationUri)
                 .putOpt("organization", organization);
     }
 

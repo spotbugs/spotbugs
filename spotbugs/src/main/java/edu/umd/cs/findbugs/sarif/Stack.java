@@ -1,11 +1,13 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,10 @@ class Stack {
         this.frames = Collections.unmodifiableList(Objects.requireNonNull(frames));
     }
 
-    static Stack fromThrowable(Throwable throwable) {
-        List<StackFrame> frames = Arrays.stream(Objects.requireNonNull(throwable).getStackTrace()).map(StackFrame::fromStackTraceElement).collect(
-                Collectors.toList());
+    static Stack fromThrowable(Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<String, String> baseToId) {
+        List<StackFrame> frames = Arrays.stream(Objects.requireNonNull(throwable).getStackTrace()).map(element -> StackFrame.fromStackTraceElement(
+                element, sourceFinder, baseToId)).collect(
+                        Collectors.toList());
         String message = throwable.getMessage();
         if (message == null) {
             message = "no message given";
@@ -43,19 +46,21 @@ class Stack {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html#_Toc16012758">3.45 stackFrame object</a>
      */
     static class StackFrame {
-        final String message;
-        // TODO how to build Location object?
+        @NonNull
+        final Location location;
 
-        StackFrame(@NonNull String message) {
-            this.message = Objects.requireNonNull(message);
+        StackFrame(@NonNull Location location) {
+            this.location = Objects.requireNonNull(location);
         }
 
-        static StackFrame fromStackTraceElement(@NonNull StackTraceElement element) {
-            return new StackFrame(Objects.requireNonNull(element).toString());
+        static StackFrame fromStackTraceElement(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+                @NonNull Map<String, String> baseToId) {
+            Location location = Location.fromStackTraceElement(element, sourceFinder, baseToId);
+            return new StackFrame(location);
         }
 
         JSONObject toJSONObject() {
-            return new JSONObject().put("location", new JSONObject().put("message", message));
+            return new JSONObject().put("location", location.toJSONObject());
         }
     }
 }

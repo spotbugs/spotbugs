@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONWriter;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class SarifBugReporter extends BugCollectionBugReporter {
@@ -34,23 +35,23 @@ public class SarifBugReporter extends BugCollectionBugReporter {
     private void processRuns(@NonNull JSONWriter jsonWriter) {
         jsonWriter.key("runs").array().object();
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(getBugCollection());
-        jsonWriter.key("originalUriBaseIds").value(analyser.getOriginalUriBaseIds());
-        processTool(jsonWriter, analyser.getRules());
+        processTool(jsonWriter, analyser.getRules(), analyser.getBaseToId());
         jsonWriter.key("results").value(analyser.getResults());
+        jsonWriter.key("originalUriBaseIds").value(analyser.getOriginalUriBaseIds());
         jsonWriter.endObject().endArray();
     }
 
-    private void processTool(@NonNull JSONWriter jsonWriter, @NonNull JSONArray rules) {
+    private void processTool(@NonNull JSONWriter jsonWriter, @NonNull JSONArray rules, @NonNull Map<String, String> baseToId) {
         jsonWriter.key("tool").object();
         processExtensions(jsonWriter);
         jsonWriter.key("driver").object();
-        jsonWriter.key("name").value(Version.getApplicationName());
+        jsonWriter.key("name").value("SpotBugs");
         // Eclipse plugin does not follow the semantic-versioning, so use "version" instead of "semanticVersion".
-        jsonWriter.key("version").value(Version.getApplicationVersion());
+        jsonWriter.key("version").value(Version.VERSION_STRING);
         // SpotBugs refers JVM config to decide which language we use.
         jsonWriter.key("language").value(Locale.getDefault().getLanguage());
         jsonWriter.key("rules").value(rules);
-        processNotifications(jsonWriter);
+        processNotifications(jsonWriter, baseToId);
         jsonWriter.endObject().endObject();
     }
 
@@ -60,7 +61,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.endArray();
     }
 
-    private void processNotifications(JSONWriter jsonWriter) {
+    private void processNotifications(JSONWriter jsonWriter, @NonNull Map<String, String> baseToId) {
         jsonWriter.key("notifications").array();
         Set<String> missingClasses = getMissingClasses();
         if (missingClasses != null && !missingClasses.isEmpty()) {
@@ -68,7 +69,8 @@ public class SarifBugReporter extends BugCollectionBugReporter {
             Notification notification = new Notification("spotbugs-missing-classes", message, Level.ERROR, null);
             jsonWriter.value(notification.toJSONObject());
         }
-        getQueuedErrors().stream().map(Notification::fromError).map(Notification::toJSONObject).forEach(jsonWriter::value);
+        getQueuedErrors().stream().map(t -> Notification.fromError(t, getProject().getSourceFinder(), baseToId)).map(Notification::toJSONObject)
+                .forEach(jsonWriter::value);
         jsonWriter.endArray();
     }
 }

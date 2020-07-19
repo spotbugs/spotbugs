@@ -6,19 +6,12 @@ dependencies {
   compileOnly project(':spotbugs')
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
-}
-
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
   pom {
     name = 'Core of Test Harness for SpotBugs Plugin'
     description = 'Core feature to support unit test for SpotBugs Plugin'

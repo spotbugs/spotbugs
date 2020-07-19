@@ -12,14 +12,17 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +71,17 @@ class Location {
                 Collections.singleton(logicalLocation)));
     }
 
+    static Location fromStackTraceElement(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+            @NonNull Map<String, String> baseToId) {
+        Objects.requireNonNull(element);
+        Objects.requireNonNull(sourceFinder);
+        Objects.requireNonNull(baseToId);
+
+        Optional<PhysicalLocation> physicalLocation = findPhysicalLocation(element, sourceFinder, baseToId);
+        LogicalLocation logicalLocation = LogicalLocation.fromStackTraceElement(element);
+        return new Location(physicalLocation.orElse(null), Collections.singleton(logicalLocation));
+    }
+
     @CheckForNull
     private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
             Map<String, String> baseToId) {
@@ -78,6 +92,16 @@ class Location {
             // no sourceline info found
             return null;
         }
+    }
+
+    @CheckForNull
+    private static Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+            Map<String, String> baseToId) {
+        Optional<Region> region = Optional.of(element.getLineNumber())
+                .filter(line -> line > 0)
+                .map(line -> new Region(line, line));
+        return ArtifactLocation.fromStackTraceElement(element, sourceFinder, baseToId)
+                .map(artifactLocation -> new PhysicalLocation(artifactLocation, region.orElse(null)));
     }
 
     /**
@@ -113,6 +137,29 @@ class Location {
                     throw new UncheckedIOException(e);
                 }
             });
+        }
+
+        static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<String, String> baseToId) {
+            Objects.requireNonNull(element);
+            Objects.requireNonNull(sourceFinder);
+            Objects.requireNonNull(baseToId);
+
+            String packageName = ClassName.extractPackageName(element.getClassName());
+            String fileName = element.getFileName();
+            try {
+                SourceFile sourceFile = sourceFinder.findSourceFile(packageName, fileName);
+                String fullFileName = sourceFile.getFullFileName();
+                int index = fullFileName.indexOf(packageName.replace('.', File.separatorChar));
+                assert index >= 0;
+                String relativeFileName = fullFileName.substring(index);
+                return sourceFinder.getBase(relativeFileName).map(base -> {
+                    String baseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
+                    URI relativeUri = URI.create(base).relativize(URI.create(sourceFile.getFullFileName()));
+                    return new ArtifactLocation(relativeUri, baseId);
+                });
+            } catch (IOException fileNotFound) {
+                return Optional.empty();
+            }
         }
     }
 
@@ -163,11 +210,6 @@ class Location {
             this.region = region;
         }
 
-        @NonNull
-        ArtifactLocation getArtifactLocation() {
-            return artifactLocation;
-        }
-
         JSONObject toJSONObject() {
             JSONObject result = new JSONObject().put("artifactLocation", artifactLocation.toJSONObject());
             if (region != null) {
@@ -194,30 +236,48 @@ class Location {
         final String decoratedName;
         @NonNull
         final String kind;
-        // TODO resolve fullyQualifiedName parameter
+        @Nullable
+        final String fullyQualifiedName;
+        @Nullable
+        final Map<String, String> properties = new HashMap<>();
 
-        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind) {
+        LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName,
+                @Nullable Map<String, String> properties) {
             this.name = Objects.requireNonNull(name);
             this.decoratedName = decoratedName;
             this.kind = Objects.requireNonNull(kind);
+            this.fullyQualifiedName = fullyQualifiedName;
+            if (properties != null) {
+                this.properties.putAll(properties);
+            }
         }
 
         JSONObject toJSONObject() {
-            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind);
+            JSONObject propertiesBag = new JSONObject(properties);
+            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind).putOpt("fullyQualifiedName",
+                    fullyQualifiedName).putOpt("properties", propertiesBag.isEmpty() ? null : propertiesBag);
+        }
+
+        @NonNull
+        static LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
+            String fullyQualifiedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
+            Map<String, String> properties = new HashMap<>();
+            properties.put("line-number", Integer.toString(element.getLineNumber()));
+            return new LogicalLocation(element.getMethodName(), null, "function", fullyQualifiedName, properties);
         }
 
         @NonNull
         static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
             Objects.requireNonNull(bugInstance);
             ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
+            SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
             return bugInstance.getAnnotations().stream().map(annotation -> {
                 String kind = findKind(annotation);
                 if (kind == null) {
                     return null;
                 }
                 String name = annotation.format("givenClass", primaryClass);
-                // TODO how to find decoratedName
-                return new LogicalLocation(name, null, kind);
+                return new LogicalLocation(name, null, kind, sourceLine.format("full", primaryClass), null);
             }).filter(Objects::nonNull).findFirst();
         }
 

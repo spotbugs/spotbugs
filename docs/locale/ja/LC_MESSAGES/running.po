@@ -7,20 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spotbugs 3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-05 12:44+0000\n"
+"POT-Creation-Date: 2020-07-02 22:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.8.0\n"
 
-#: ../../running.rst:2
+#: /documents/docs/running.rst:2
 msgid "Running SpotBugs"
 msgstr "SpotBugs の実行"
 
-#: ../../running.rst:4
+#: /documents/docs/running.rst:4
 msgid ""
 "SpotBugs has two user interfaces: a graphical user interface (GUI) and a "
 "command line user interface. This chapter describes how to run each of "
@@ -29,11 +29,11 @@ msgstr ""
 "SpotBugs には，グラフィカルユーザインターフェイス (GUI) "
 "とコマンドラインユーザインターフェイスの2つのユーザインターフェイスがあります。この章では，それぞれのユーザインタフェースを実行する方法について説明します。"
 
-#: ../../running.rst:8
+#: /documents/docs/running.rst:8
 msgid "Quick Start"
 msgstr "クイックスタート"
 
-#: ../../running.rst:10
+#: /documents/docs/running.rst:10
 msgid ""
 "If you are running SpotBugs on a Windows system, double-click on the file"
 " ``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` to start the SpotBugs GUI."
@@ -41,7 +41,7 @@ msgstr ""
 "Windows で SpotBugs を実行するときは，``%SPOTBUGS_HOME%\\lib\\spotbugs.jar`` "
 "ファイルをダブルクリックして SpotBugs GUI を起動します。"
 
-#: ../../running.rst:12
+#: /documents/docs/running.rst:12
 msgid ""
 "On a Unix, Linux, or macOS system, run the "
 "``$SPOTBUGS_HOME/bin/spotbugs`` script, or run the command ``java -jar "
@@ -50,15 +50,15 @@ msgstr ""
 "Unix，Linux，macOS では，  ``$SPOTBUGS_HOME/bin/spotbugs`` スクリプト，または ``java "
 "-jar $SPOTBUGS_HOME/lib/spotbugs.jar`` コマンドで SpotBugs GUI を実行します。"
 
-#: ../../running.rst:14
+#: /documents/docs/running.rst:14
 msgid "Refer to :doc:`gui` for information on how to use the GUI."
 msgstr "GUI の使い方は :doc:`gui` を参照してください。"
 
-#: ../../running.rst:17
+#: /documents/docs/running.rst:17
 msgid "Executing SpotBugs"
 msgstr "SpotBugs の実行"
 
-#: ../../running.rst:19
+#: /documents/docs/running.rst:19
 msgid ""
 "This section describes how to invoke the SpotBugs program. There are two "
 "ways to invoke SpotBugs: directly, or using a wrapper script."
@@ -66,11 +66,11 @@ msgstr ""
 "この節では，SpotBugs プログラムを起動する方法について説明します。SpotBugs "
 "を起動するためには，直接，またはラッパースクリプトを使用する2つの方法があります。"
 
-#: ../../running.rst:23
+#: /documents/docs/running.rst:23
 msgid "Direct invocation of SpotBugs"
 msgstr "SpotBugs の直接起動"
 
-#: ../../running.rst:25
+#: /documents/docs/running.rst:25
 msgid ""
 "The preferred method of running SpotBugs is to directly execute "
 "``$SPOTBUGS_HOME/lib/spotbugs.jar`` using the -jar command line switch of"
@@ -81,73 +81,73 @@ msgstr ""
 "``$SPOTBUGS_HOME/lib/spotbugs.jar`` を直接実行する方法を推奨します。(バージョン 1.3.5 以前の "
 "SpotBugs では，SpotBugs を起動するためのラッパースクリプトが必要でした。)"
 
-#: ../../running.rst:28
+#: /documents/docs/running.rst:28
 msgid "The general syntax of invoking SpotBugs directly is the following:"
 msgstr "SpotBugs を直接起動する一般的な構文は次のようになります。"
 
-#: ../../running.rst:35
+#: /documents/docs/running.rst:35
 msgid "Choosing the User Interface"
 msgstr "ユーザインタフェースの選択"
 
-#: ../../running.rst:37
+#: /documents/docs/running.rst:37
 msgid ""
 "The first command line option chooses the SpotBugs user interface to "
 "execute. Possible values are:"
 msgstr "最初のコマンドラインオプションは，実行する SpotBugs ユーザインタフェースの選択です。指定可能な値は次のとおりです。"
 
-#: ../../running.rst:40
+#: /documents/docs/running.rst:40
 msgid "-gui:"
 msgstr ""
 
-#: ../../running.rst:40
+#: /documents/docs/running.rst:40
 msgid "runs the graphical user interface (GUI)"
 msgstr "グラフィカルユーザインタフェース (GUI) の実行"
 
-#: ../../running.rst:43
+#: /documents/docs/running.rst:43
 msgid "-textui:"
 msgstr ""
 
-#: ../../running.rst:43
+#: /documents/docs/running.rst:43
 msgid "runs the command line user interface"
 msgstr "コマンドラインユーザインタフェースの実行"
 
-#: ../../running.rst:46
+#: /documents/docs/running.rst:46
 msgid "-version:"
 msgstr ""
 
-#: ../../running.rst:46
+#: /documents/docs/running.rst:46
 msgid "displays the SpotBugs version number"
 msgstr "SpotBugs のバージョン番号の表示"
 
-#: ../../running.rst:49
+#: /documents/docs/running.rst:49
 msgid "-help:"
 msgstr ""
 
-#: ../../running.rst:49
+#: /documents/docs/running.rst:49
 msgid "displays help information for the SpotBugs command line user interface"
 msgstr "SpotBugs コマンドラインユーザインタフェースに関するヘルプ情報の表示"
 
-#: ../../running.rst:52
+#: /documents/docs/running.rst:52
 msgid "-gui1:"
 msgstr ""
 
-#: ../../running.rst:52
+#: /documents/docs/running.rst:52
 msgid "executes the original (obsolete) SpotBugs graphical user interface"
 msgstr "オリジナル SpotBugs グラフィカルユーザインタフェース (廃止されている) の実行"
 
-#: ../../running.rst:55
+#: /documents/docs/running.rst:55
 msgid "Java Virtual Machine (JVM) arguments"
 msgstr "Java 仮想マシン (JVM) の引数"
 
-#: ../../running.rst:57
+#: /documents/docs/running.rst:57
 msgid "Several Java Virtual Machine arguments are useful when invoking SpotBugs."
 msgstr "Java 仮想マシンのいくつかの引数は，SpotBugs を起動するときに役立ちます。"
 
-#: ../../running.rst:62
+#: /documents/docs/running.rst:62
 msgid "-XmxNNm:"
 msgstr ""
 
-#: ../../running.rst:60
+#: /documents/docs/running.rst:60
 msgid ""
 "Set the maximum Java heap size to NN megabytes. SpotBugs generally "
 "requires a large amount of memory. For a very large project, using 1500 "
@@ -156,11 +156,11 @@ msgstr ""
 "Java ヒープサイズの最大値を NN メガバイトに設定します。SpotBugs "
 "は，通常大量のメモリを必要とします。巨大なプロジェクトでは，1500メガバイトを使用することは珍しいことではありません。"
 
-#: ../../running.rst:66
+#: /documents/docs/running.rst:66
 msgid "-Dname=value:"
 msgstr ""
 
-#: ../../running.rst:65
+#: /documents/docs/running.rst:65
 msgid ""
 "Set a Java system property. For example, you might use the argument "
 "``-Duser.language=ja`` to display GUI messages in Japanese."
@@ -168,25 +168,25 @@ msgstr ""
 "Java システムプロパティを設定します。たとえば，GUI メッセージを日本語で表示したいときは ``-Duser.language=ja`` "
 "引数を使用します。"
 
-#: ../../running.rst:69
+#: /documents/docs/running.rst:69
 msgid "Invocation of SpotBugs using a wrapper script"
 msgstr "ラッパースクリプトを使用した SpotBugs の起動"
 
-#: ../../running.rst:71
+#: /documents/docs/running.rst:71
 msgid "Another way to run SpotBugs is to use a wrapper script."
 msgstr "SpotBugs を実行するもう一つの方法は，ラッパースクリプトを使うことです。"
 
-#: ../../running.rst:73
+#: /documents/docs/running.rst:73
 msgid ""
 "On Unix-like systems, use the following command to invoke the wrapper "
 "script:"
 msgstr "Unix 系システムでは，次のコマンドを使用してラッパースクリプトを起動します。"
 
-#: ../../running.rst:79
+#: /documents/docs/running.rst:79
 msgid "On Windows systems, the command to invoke the wrapper script is"
 msgstr "Windows では，次のコマンドを使用してラッパースクリプトを起動します。"
 
-#: ../../running.rst:85
+#: /documents/docs/running.rst:85
 msgid ""
 "On both Unix-like and Windows systems, you can simply add the "
 "``$SPOTBUGS_HOME/bin`` directory to your ``PATH`` environment variable "
@@ -195,11 +195,11 @@ msgstr ""
 "Unix 系システムと Windows のどちらでも，``$SPOTBUGS_HOME/bin`` ディレクトリを環境変数 ``PATH`` "
 "に追加するだけで，``spotbugs`` コマンドを使用して SpotBugs を起動できます。"
 
-#: ../../running.rst:88
+#: /documents/docs/running.rst:88
 msgid "Wrapper script command line options"
 msgstr "ラッパースクリプトのコマンドラインオプション"
 
-#: ../../running.rst:90
+#: /documents/docs/running.rst:90
 msgid ""
 "The SpotBugs wrapper scripts support the following command-line options. "
 "Note that these command line options are not handled by the SpotBugs "
@@ -209,31 +209,31 @@ msgstr ""
 "ラッパースクリプトは，次のようなコマンドラインオプションをサポートしています。留意すべきは，これらのコマンドラインオプションは，SpotBugs "
 "プログラム自体では処理されません。それらはラッパースクリプトによって処理されます。"
 
-#: ../../running.rst:98
+#: /documents/docs/running.rst:98
 msgid "-jvmArgs *args*:"
 msgstr ""
 
-#: ../../running.rst:94
+#: /documents/docs/running.rst:94
 msgid ""
 "Specifies arguments to pass to the JVM. For example, you might want to "
 "set a JVM property:"
 msgstr "JVM に渡す引数を指定します。たとえは，JVM プロパティを設定したいとします。"
 
-#: ../../running.rst:101
+#: /documents/docs/running.rst:101
 msgid "-javahome *directory*:"
 msgstr ""
 
-#: ../../running.rst:101
+#: /documents/docs/running.rst:101
 msgid ""
 "Specifies the directory containing the JRE (Java Runtime Environment) to "
 "use to execute FindBugs."
 msgstr "SpotBugs の実行に使用する JRE(Javaランタイム環境) があるディレクトリを指定します。"
 
-#: ../../running.rst:105
+#: /documents/docs/running.rst:105
 msgid "-maxHeap *size*:"
 msgstr ""
 
-#: ../../running.rst:104
+#: /documents/docs/running.rst:104
 msgid ""
 "Specifies the maximum Java heap size in megabytes. The default is 256. "
 "More memory may be required to analyze very large programs or libraries."
@@ -241,21 +241,21 @@ msgstr ""
 "Java "
 "ヒープサイズの最大値をメガバイトで指定します。デフォルトは256です。巨大なプログラムやライブラリを解析するためには，より多くのメモリが必要になることがあります。"
 
-#: ../../running.rst:109
+#: /documents/docs/running.rst:109
 msgid "-debug:"
 msgstr ""
 
-#: ../../running.rst:108
+#: /documents/docs/running.rst:108
 msgid ""
 "Prints a trace of detectors run and classes analyzed to standard output. "
 "Useful for troubleshooting unexpected analysis failures."
 msgstr "ディテクタの実行トレースと解析したクラスを標準出力に出力します。予期しない解析エラーのトラブルシューティングに役立ちます。"
 
-#: ../../running.rst:116
+#: /documents/docs/running.rst:116
 msgid "-property *name=value*:"
 msgstr ""
 
-#: ../../running.rst:112
+#: /documents/docs/running.rst:112
 msgid ""
 "This option sets a system property. SpotBugs uses system properties to "
 "configure analysis options. See :doc:`analysisprops`. You can use this "
@@ -267,11 +267,11 @@ msgstr ""
 "を参照してください。複数のプロパティを設定したいときは，このオプションを複数回使用します。注:ほとんどの Windows "
 "のバージョンでは，name=value 文字列を引用符で囲む必要があります。"
 
-#: ../../running.rst:119
+#: /documents/docs/running.rst:119
 msgid "Command-line Options"
 msgstr "コマンドラインオプション"
 
-#: ../../running.rst:121
+#: /documents/docs/running.rst:121
 msgid ""
 "This section describes the command line options supported by SpotBugs. "
 "These command line options may be used when invoking SpotBugs directly, "
@@ -280,19 +280,19 @@ msgstr ""
 "この節では，SpotBugs でサポートされているコマンドラインオプションについて説明します。これらのコマンドラインオプションは，SpotBugs"
 " を直接起動するとき，またはラッパースクリプトを使用するときに使えます。"
 
-#: ../../running.rst:125
+#: /documents/docs/running.rst:125
 msgid "Common command-line options"
 msgstr "共通のコマンドラインオプション"
 
-#: ../../running.rst:127
+#: /documents/docs/running.rst:127
 msgid "These options may be used with both the GUI and command-line interfaces."
 msgstr "これらのオプションは，GUI とコマンドラインユーザインタフェースの両方で使えます。"
 
-#: ../../running.rst:135
+#: /documents/docs/running.rst:135
 msgid "-effort[:min|less|default|more|max]:"
 msgstr ""
 
-#: ../../running.rst:130
+#: /documents/docs/running.rst:130
 msgid ""
 "Set analysis effort level. The -effort:min disables several analyses that"
 " increase precision but also increase memory consumption. You may want to"
@@ -308,15 +308,14 @@ msgid ""
 " to complete. See :doc:`effort`."
 msgstr ""
 "解析力を設定します。-effort:min は精度を向上させるがメモリ消費量も増やす解析を無効にします。SpotBugs "
-"を実行するためのメモリが不足したり，解析が完了するまでに異常に長い時間がかかるときは，"
-"このオプションを試してみると良いでしょう。詳細は :doc:`effort` を参照してください。"
+"を実行するためのメモリが不足したり，解析が完了するまでに異常に長い時間がかかるときは，このオプションを試してみると良いでしょう。詳細は "
+":doc:`effort` を参照してください。"
 
-
-#: ../../running.rst:139
+#: /documents/docs/running.rst:139
 msgid "-project *project*:"
 msgstr ""
 
-#: ../../running.rst:138
+#: /documents/docs/running.rst:138
 msgid ""
 "Specify a project to be analyzed. The project file you specify should be "
 "one that was created using the GUI interface. It will typically end in "
@@ -325,93 +324,93 @@ msgstr ""
 "解析するプロジェクトを指定します。指定するプロジェクトファイルは，GUI インタフェースを使用して作成したものでなければなりません。拡張子は，通常"
 " .fb または .fbp です。"
 
-#: ../../running.rst:142
+#: /documents/docs/running.rst:142
 msgid "-pluginList <jar1[;jar2...]>:"
 msgstr ""
 
-#: ../../running.rst:142
+#: /documents/docs/running.rst:142
 msgid "Specify list of plugin Jar files to load."
 msgstr ""
 
-#: ../../running.rst:145
+#: /documents/docs/running.rst:145
 msgid "-home <home directory>:"
 msgstr ""
 
-#: ../../running.rst:145
+#: /documents/docs/running.rst:145
 msgid "Specify SpotBugs home directory."
 msgstr ""
 
-#: ../../running.rst:148
+#: /documents/docs/running.rst:148
 msgid "-adjustExperimental:"
 msgstr ""
 
-#: ../../running.rst:148
+#: /documents/docs/running.rst:148
 msgid "Lower priority of experimental Bug Patterns."
 msgstr ""
 
-#: ../../running.rst:151
+#: /documents/docs/running.rst:151
 msgid "-workHard:"
 msgstr ""
 
-#: ../../running.rst:151
+#: /documents/docs/running.rst:151
 msgid "Ensure analysis effort is at least 'default'."
 msgstr ""
 
-#: ../../running.rst:154
+#: /documents/docs/running.rst:154
 msgid "-conserveSpace:"
 msgstr ""
 
-#: ../../running.rst:154
+#: /documents/docs/running.rst:154
 msgid "Same as -effort:min (for backward compatibility)."
 msgstr ""
 
-#: ../../running.rst:157
+#: /documents/docs/running.rst:157
 msgid "GUI Options"
 msgstr "GUI オプション"
 
-#: ../../running.rst:159
+#: /documents/docs/running.rst:159
 msgid "These options are only accepted by the Graphical User Interface."
 msgstr "これらのオプションは，グラフィカルユーザインタフェースだけで受け入れられます。"
 
-#: ../../running.rst:162
+#: /documents/docs/running.rst:162
 msgid "-look:plastic|gtk|native:"
 msgstr ""
 
-#: ../../running.rst:162
+#: /documents/docs/running.rst:162
 msgid "Set Swing look and feel."
 msgstr "Swing のルック & フィールを設定します。"
 
-#: ../../running.rst:165
+#: /documents/docs/running.rst:165
 msgid "Text UI Options"
 msgstr "テキスト UI オプション"
 
-#: ../../running.rst:167
+#: /documents/docs/running.rst:167
 msgid "These options are only accepted by the Text User Interface."
 msgstr "これらのオプションは，テキストユーザインタフェースだけで受け入れられます。"
 
-#: ../../running.rst:170
+#: /documents/docs/running.rst:170
 msgid "-sortByClass:"
 msgstr ""
 
-#: ../../running.rst:170
+#: /documents/docs/running.rst:170
 msgid "Sort reported bug instances by class name."
 msgstr "報告されたバグインスタンスをクラス名でソートします。"
 
-#: ../../running.rst:174
+#: /documents/docs/running.rst:174
 msgid "-include *filterFile.xml*:"
 msgstr ""
 
-#: ../../running.rst:173
+#: /documents/docs/running.rst:173
 msgid ""
 "Only report bug instances that match the filter specified by "
 "filterFile.xml. See :doc:`filter`."
 msgstr "filterFile.xml で指定したフィルタと一致するバグインスタンスだけを報告します。:doc:`filter` を参照してください。"
 
-#: ../../running.rst:178
+#: /documents/docs/running.rst:178
 msgid "-exclude *filterFile.xml*:"
 msgstr ""
 
-#: ../../running.rst:177
+#: /documents/docs/running.rst:177
 msgid ""
 "Report all bug instances except those matching the filter specified by "
 "filterFile.xml. See :doc:`filter`."
@@ -419,11 +418,11 @@ msgstr ""
 "filterFile.xml で指定したフィルタと一致するもの以外のすべてのバグインスタンスを報告します。:doc:`filter` "
 "を参照してください。"
 
-#: ../../running.rst:185
+#: /documents/docs/running.rst:185
 msgid "-onlyAnalyze *com.foobar.MyClass,com.foobar.mypkg.**:"
 msgstr ""
 
-#: ../../running.rst:181
+#: /documents/docs/running.rst:181
 msgid ""
 "Restrict analysis to find bugs to given comma-separated list of classes "
 "and packages. Unlike filtering, this option avoids running analysis on "
@@ -441,45 +440,45 @@ msgstr ""
 "Java import 文と同じ方法で指定する必要があります (つまり，パッケージの完全な名前に .* を追加します)。 .* を .- "
 "に換えるとすべてのサブパッケージも解析できます。"
 
-#: ../../running.rst:188
+#: /documents/docs/running.rst:188
 msgid "-low:"
 msgstr ""
 
-#: ../../running.rst:188
+#: /documents/docs/running.rst:188
 msgid "Report all bugs."
 msgstr "すべてのバグを報告します。"
 
-#: ../../running.rst:191
+#: /documents/docs/running.rst:191
 msgid "-medium:"
 msgstr ""
 
-#: ../../running.rst:191
+#: /documents/docs/running.rst:191
 msgid "Report medium and high priority bugs. This is the default setting."
 msgstr "優先度が中・高のバグを報告します。デフォルトの設定です。"
 
-#: ../../running.rst:194
+#: /documents/docs/running.rst:194
 msgid "-high:"
 msgstr ""
 
-#: ../../running.rst:194
+#: /documents/docs/running.rst:194
 msgid "Report only high priority bugs."
 msgstr "優先度が高のバグを報告します。"
 
-#: ../../running.rst:198
+#: /documents/docs/running.rst:198
 msgid "-relaxed:"
 msgstr ""
 
-#: ../../running.rst:197
+#: /documents/docs/running.rst:197
 msgid ""
 "Relaxed reporting mode. For many detectors, this option suppresses the "
 "heuristics used to avoid reporting false positives."
 msgstr "ざっくりとした報告をするモードです。多くのディテクタにおいて，このオプションは誤検出を回避するために使用されるヒューリスティックを抑制します。"
 
-#: ../../running.rst:204
+#: /documents/docs/running.rst:204
 msgid "-xml:"
 msgstr ""
 
-#: ../../running.rst:201
+#: /documents/docs/running.rst:201
 msgid ""
 "Produce the bug reports as XML. The XML data produced may be viewed in "
 "the GUI at a later time. You may also specify this option as "
@@ -492,11 +491,11 @@ msgstr ""
 "``-xml:withMessages`` として指定することもできます。このオプションを使用すると出力された XML "
 "ファイルには人間が読める警告を説明するメッセージが含まれるようになります。この方法で生成された XML ファイルは簡単にレポートに変換できます。"
 
-#: ../../running.rst:213
+#: /documents/docs/running.rst:213
 msgid "-html:"
 msgstr ""
 
-#: ../../running.rst:207
+#: /documents/docs/running.rst:207
 msgid ""
 "Generate HTML output. By default, SpotBugs will use the default.xsl XSLT "
 "stylesheet to generate the HTML: you can find this file in spotbugs.jar, "
@@ -519,7 +518,7 @@ msgstr ""
 "hist.xsl`` は，``fancy.xsl`` スタイルシートが進化したものです。バグのリストを動的にフィルタリングするために DOM と "
 "Javascript をフル活用します。"
 
-#: ../../running.rst:213
+#: /documents/docs/running.rst:213
 msgid ""
 "If you want to specify your own XSLT stylesheet to perform the "
 "transformation to HTML, specify the option as ``-html:myStylesheet.xsl``,"
@@ -529,43 +528,54 @@ msgstr ""
 "独自の XSLT スタイルシートを指定して HTML への変換を実行したいときは，``-html:myStylesheet.xsl`` "
 "としてオプションを指定します。ここで ``myStylesheet.xsl`` は使用するスタイルシートのファイル名です。"
 
-#: ../../running.rst:216
+#: /documents/docs/running.rst:216
+msgid "-sarif:"
+msgstr ""
+
+#: /documents/docs/running.rst:216
+msgid ""
+"Produce the bug reports in `SARIF 2.1.0 <https://docs.oasis-"
+"open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_."
+msgstr ""
+"バグレポートを `SARIF 2.1.0 <https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html>`_ 形式として出力します。"
+
+#: /documents/docs/running.rst:219
 msgid "-emacs:"
 msgstr ""
 
-#: ../../running.rst:216
+#: /documents/docs/running.rst:219
 msgid "Produce the bug reports in Emacs format."
 msgstr "バグレポートを Emacs 形式として生成します。"
 
-#: ../../running.rst:219
+#: /documents/docs/running.rst:222
 msgid "-xdocs:"
 msgstr ""
 
-#: ../../running.rst:219
+#: /documents/docs/running.rst:222
 msgid "Produce the bug reports in xdoc XML format for use with Apache Maven."
 msgstr "Apache Maven で使用するための xdoc XML 形式のバグレポートを生成します。"
 
-#: ../../running.rst:222
+#: /documents/docs/running.rst:225
 msgid "-output *filename*:"
 msgstr ""
 
-#: ../../running.rst:222
+#: /documents/docs/running.rst:225
 msgid "Produce the output in the specified file."
 msgstr "指定されたファイルに出力を生成します。"
 
-#: ../../running.rst:225
+#: /documents/docs/running.rst:228
 msgid "-outputFile *filename*:"
 msgstr ""
 
-#: ../../running.rst:225
+#: /documents/docs/running.rst:228
 msgid "This argument is deprecated. Use ``-output`` instead."
 msgstr "この引数は推奨されません。代わりに ``-output`` を使用してください。"
 
-#: ../../running.rst:229
+#: /documents/docs/running.rst:232
 msgid "-nested[:true|false]:"
 msgstr ""
 
-#: ../../running.rst:228
+#: /documents/docs/running.rst:231
 msgid ""
 "This option enables or disables scanning of nested jar and zip files "
 "found in the list of files and directories to be analyzed. By default, "
@@ -576,11 +586,11 @@ msgstr ""
 "ファイルのスキャンを有効また無効にします。デフォルトでは，ネストされた jar/zip "
 "ファイルのスキャンが有効になっています。無効にしたいときは，コマンドライン引数に ``-nested:false`` を追加します。"
 
-#: ../../running.rst:233
+#: /documents/docs/running.rst:236
 msgid "-auxclasspath *classpath*:"
 msgstr ""
 
-#: ../../running.rst:232
+#: /documents/docs/running.rst:235
 msgid ""
 "Set the auxiliary classpath for analysis. This classpath should include "
 "all jar files and directories containing classes that are part of the "
@@ -589,41 +599,41 @@ msgstr ""
 "解析のための補助クラスパスを設定します。補助クラスパスには解析するプログラムで使用するクラスを含むディレクトリと jar "
 "ファイルをすべて指定します。バグの解析対象にはなりません。"
 
-#: ../../running.rst:236
+#: /documents/docs/running.rst:239
 msgid "-auxclasspathFromInput:"
 msgstr ""
 
-#: ../../running.rst:236
+#: /documents/docs/running.rst:239
 msgid ""
 "Read the auxiliary classpath for analysis from standard input, each line "
 "adds new entry to the auxiliary classpath for analysis."
 msgstr "標準入力から解析のための補助クラスパスを読み，それぞれの行を解析のための補助クラスパスに新規登録します。"
 
-#: ../../running.rst:239
+#: /documents/docs/running.rst:242
 msgid "-auxclasspathFromFile *filepath*:"
 msgstr ""
 
-#: ../../running.rst:239
+#: /documents/docs/running.rst:242
 msgid ""
 "Read the auxiliary classpath for analysis from file, each line adds new "
 "entry to the auxiliary classpath for analysis."
 msgstr "ファイルから解析のための補助クラスパスを読み，それぞれの行を解析のための補助クラスパスに新規登録します。"
 
-#: ../../running.rst:242
+#: /documents/docs/running.rst:245
 msgid "-analyzeFromFile *filepath*:"
 msgstr ""
 
-#: ../../running.rst:242
+#: /documents/docs/running.rst:245
 msgid ""
 "Read the files to analyze from file, each line adds new entry to the "
 "classpath for analysis."
 msgstr "ファイルから解析するファイルを読み，それぞれの行を解析のためのクラスパスに新規登録します。"
 
-#: ../../running.rst:247
+#: /documents/docs/running.rst:250
 msgid "-userPrefs *edu.umd.cs.findbugs.core.prefs*:"
 msgstr ""
 
-#: ../../running.rst:245
+#: /documents/docs/running.rst:248
 msgid ""
 "Set the path of the user preferences file to use, which might override "
 "some of the options above. Specifying userPrefs as first argument would "
@@ -636,244 +646,245 @@ msgstr ""
 "を指定すると，後続のオプションで上書きすることになります。最後の引数として指定すると以前のオプションを上書きすることになります。このオプションの背後にある根拠は，コマンドライン実行で"
 " SpotBugs Eclipse プロジェクトの設定を再利用するためです。"
 
-#: ../../running.rst:250
+#: /documents/docs/running.rst:253
 msgid "-showPlugins:"
 msgstr ""
 
-#: ../../running.rst:250
+#: /documents/docs/running.rst:253
 msgid "Show list of available detector plugins."
 msgstr ""
 
-#: ../../running.rst:253
+#: /documents/docs/running.rst:256
 msgid "Output options"
 msgstr ""
 
-#: ../../running.rst:255
+#: /documents/docs/running.rst:258
 msgid "-timestampNow:"
 msgstr ""
 
-#: ../../running.rst:255
+#: /documents/docs/running.rst:258
 msgid "Set timestamp of results to be current time."
 msgstr ""
 
-#: ../../running.rst:258
+#: /documents/docs/running.rst:261
 msgid "-quiet:"
 msgstr ""
 
-#: ../../running.rst:258
+#: /documents/docs/running.rst:261
 msgid "Suppress error messages."
 msgstr ""
 
-#: ../../running.rst:261
+#: /documents/docs/running.rst:264
 msgid "-longBugCodes:"
 msgstr ""
 
-#: ../../running.rst:261
+#: /documents/docs/running.rst:264
 msgid "Report long bug codes."
 msgstr "すべてのバグを報告します。"
 
-#: ../../running.rst:264
+#: /documents/docs/running.rst:267
 msgid "-progress:"
 msgstr ""
 
-#: ../../running.rst:264
+#: /documents/docs/running.rst:267
 msgid "Display progress in terminal window."
 msgstr ""
 
-#: ../../running.rst:267
+#: /documents/docs/running.rst:270
 msgid "-release <release name>:"
 msgstr ""
 
-#: ../../running.rst:267
+#: /documents/docs/running.rst:270
 msgid "Set the release name of the analyzed application."
 msgstr ""
 
-#: ../../running.rst:270
+#: /documents/docs/running.rst:273
 msgid "-maxRank <rank>:"
 msgstr ""
 
-#: ../../running.rst:270
+#: /documents/docs/running.rst:273
 msgid "Only report issues with a bug rank at least as scary as that provided."
 msgstr ""
 
-#: ../../running.rst:273
+#: /documents/docs/running.rst:276
 msgid "-dontCombineWarnings:"
 msgstr ""
 
-#: ../../running.rst:273
+#: /documents/docs/running.rst:276
 msgid "Don't combine warnings that differ only in line number."
 msgstr ""
 
-#: ../../running.rst:276
+#: /documents/docs/running.rst:279
 msgid "-train[:outputDir]:"
 msgstr ""
 
-#: ../../running.rst:276
+#: /documents/docs/running.rst:279
 msgid "Save training data (experimental); output dir defaults to '.'."
 msgstr ""
 
-#: ../../running.rst:279
+#: /documents/docs/running.rst:282
 msgid "-useTraining[:inputDir]:"
 msgstr ""
 
-#: ../../running.rst:279
+#: /documents/docs/running.rst:282
 msgid "Use training data (experimental); input dir defaults to '.'."
 msgstr ""
 
-#: ../../running.rst:282
+#: /documents/docs/running.rst:285
 msgid "-redoAnalysis <filename>:"
 msgstr ""
 
-#: ../../running.rst:282
+#: /documents/docs/running.rst:285
 msgid "Redo analysis using configureation from previous analysis."
 msgstr ""
 
-#: ../../running.rst:285
+#: /documents/docs/running.rst:288
 msgid "-sourceInfo <filename>:"
 msgstr ""
 
-#: ../../running.rst:285
+#: /documents/docs/running.rst:288
 msgid "Specify source info file (line numbers for fields/classes)."
 msgstr ""
 
-#: ../../running.rst:288
+#: /documents/docs/running.rst:291
 msgid "-projectName <project name>:"
 msgstr ""
 
-#: ../../running.rst:288
+#: /documents/docs/running.rst:291
 msgid "Descriptive name of project."
 msgstr ""
 
-#: ../../running.rst:291
+#: /documents/docs/running.rst:294
 msgid "-reanalyze <filename>:"
 msgstr ""
 
-#: ../../running.rst:291
+#: /documents/docs/running.rst:294
 msgid "Redo analysis in provided file."
 msgstr ""
 
-#: ../../running.rst:294
+#: /documents/docs/running.rst:297
 msgid "Output filtering options"
 msgstr ""
 
-#: ../../running.rst:296
+#: /documents/docs/running.rst:299
 msgid "-bugCategories <cat1[,cat2...]>:"
 msgstr ""
 
-#: ../../running.rst:296
+#: /documents/docs/running.rst:299
 msgid "Only report bugs in given categories."
 msgstr ""
 
-#: ../../running.rst:299
+#: /documents/docs/running.rst:302
 msgid "-excludeBugs <baseline bugs>:"
 msgstr ""
 
-#: ../../running.rst:299
+#: /documents/docs/running.rst:302
 msgid "Exclude bugs that are also reported in the baseline xml output."
 msgstr ""
 
-#: ../../running.rst:302
+#: /documents/docs/running.rst:305
 msgid "-applySuppression:"
 msgstr ""
 
-#: ../../running.rst:302
+#: /documents/docs/running.rst:305
 msgid "Exclude any bugs that match suppression filter loaded from fbp file."
 msgstr "fbpファイルによって指定された抑制フィルタにマッチするバグを出力から除きます。"
 
-#: ../../running.rst:305
+#: /documents/docs/running.rst:308
 msgid "Detector (visitor) configuration options"
 msgstr "Detector（Visitor）設定用オプション"
 
-#: ../../running.rst:307
+#: /documents/docs/running.rst:310
 msgid "-visitors <v1[,v2...]>:"
 msgstr ""
 
-#: ../../running.rst:307
+#: /documents/docs/running.rst:310
 msgid "Run only named visitors."
 msgstr "指定されたVisitorのみを実行します。"
 
-#: ../../running.rst:310
+#: /documents/docs/running.rst:313
 msgid "-omitVisitors <v1[,v2...]>:"
 msgstr ""
 
-#: ../../running.rst:310
+#: /documents/docs/running.rst:313
 msgid "Omit named visitors."
 msgstr "指定されたVisitorを実行しません。"
 
-#: ../../running.rst:313
+#: /documents/docs/running.rst:316
 msgid "-chooseVisitors <+v1,-v2,...>:"
 msgstr ""
 
-#: ../../running.rst:313
+#: /documents/docs/running.rst:316
 msgid "Selectively enable/disable detectors."
 msgstr "指定されたDetectorを有効化したり無効化したりします。"
 
-#: ../../running.rst:316
+#: /documents/docs/running.rst:319
 msgid "-choosePlugins <+p1,-p2,...>:"
 msgstr ""
 
-#: ../../running.rst:316
+#: /documents/docs/running.rst:319
 msgid "Selectively enable/disable plugins."
 msgstr "指定されたプラグインを有効化したり無効化したりします。"
 
-#: ../../running.rst:319
+#: /documents/docs/running.rst:322
 msgid "-adjustPriority <v1=(raise|lower)[,...]>:"
 msgstr ""
 
-#: ../../running.rst:319
+#: /documents/docs/running.rst:322
 msgid "Raise/lower priority of warnings for given visitor(s)"
 msgstr "指定した警告の優先度を変更します。"
 
-#: ../../running.rst:322
+#: /documents/docs/running.rst:325
 msgid "Project configuration options"
 msgstr "プロジェクト設定用オプション"
 
-#: ../../running.rst:324
+#: /documents/docs/running.rst:327
 msgid "-sourcepath <source path>:"
 msgstr ""
 
-#: ../../running.rst:324
+#: /documents/docs/running.rst:327
 msgid "Set source path for analyzed classes."
 msgstr "解析対象クラスのソースコードが保管されているパスを指定します。"
 
-#: ../../running.rst:327
+#: /documents/docs/running.rst:330
 msgid "-exitcode:"
 msgstr ""
 
-#: ../../running.rst:327
+#: /documents/docs/running.rst:330
 msgid "Set exit code of process."
 msgstr "プロセスのステータスコードを設定します。"
 
-#: ../../running.rst:330
+#: /documents/docs/running.rst:333
 msgid "-noClassOk:"
 msgstr ""
 
-#: ../../running.rst:330
+#: /documents/docs/running.rst:333
 msgid "Output empty warning file if no classes are specified."
 msgstr "対象クラスが指定されなかった場合にからの警告ファイルを出力します。"
 
-#: ../../running.rst:333
+#: /documents/docs/running.rst:336
 msgid "-xargs:"
 msgstr ""
 
-#: ../../running.rst:333
+#: /documents/docs/running.rst:336
 msgid ""
 "Get list of classfiles/jarfiles from standard input rather than command "
 "line."
 msgstr "クラスファイルやjarファイルの一覧を、コマンドラインオプションではなく標準入力から読み込みます。"
 
-#: ../../running.rst:336
+#: /documents/docs/running.rst:339
 msgid "-bugReporters <name,name2,-name3>:"
 msgstr ""
 
-#: ../../running.rst:336
+#: /documents/docs/running.rst:339
 msgid "Bug reporter decorators to explicitly enable/disable."
 msgstr "バグレポーターを明示的に有効化したり無効化したりできます。"
 
-#: ../../running.rst:338
+#: /documents/docs/running.rst:341
 msgid "-printConfiguration:"
 msgstr ""
 
-#: ../../running.rst:339
+#: /documents/docs/running.rst:342
 msgid "Print configuration and exit, without running analysis."
 msgstr "設定を出力した後に、解析を実行せずに終了します。"
+

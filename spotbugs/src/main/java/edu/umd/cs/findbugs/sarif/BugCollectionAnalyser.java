@@ -3,15 +3,13 @@ package edu.umd.cs.findbugs.sarif;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class BugCollectionAnalyser {
@@ -21,6 +19,9 @@ class BugCollectionAnalyser {
     private final List<Result> results = new ArrayList<>();
     @NonNull
     private final Map<String, Integer> typeToIndex = new HashMap<>();
+    @NonNull
+    private final List<List<Placeholder>> indexToPlaceholders = new ArrayList<>();
+
     /**
      * Map baseURI to uriBaseId. e.g. {@code "/user/ubuntu/github/spotbugs/" -> "8736793520"}
      */
@@ -31,7 +32,7 @@ class BugCollectionAnalyser {
         SourceFinder sourceFinder = bugCollection.getProject().getSourceFinder();
         bugCollection.forEach(bug -> {
             String type = bug.getType();
-            int index = typeToIndex.computeIfAbsent(type, (t) -> processRule(bug.getBugPattern()));
+            int index = typeToIndex.computeIfAbsent(type, t -> processRule(bug.getBugPattern()));
 
             processResult(index, bug, sourceFinder);
         });
@@ -48,24 +49,40 @@ class BugCollectionAnalyser {
     @NonNull
     JSONObject getOriginalUriBaseIds() {
         JSONObject result = new JSONObject();
-        baseToId.forEach((uri, uriBaseId) -> {
-            result.put(uriBaseId, new JSONObject().put("uri", uri));
-        });
+        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", "file://" + uri)));
         return result;
     }
 
     private void processResult(int index, BugInstance bug, SourceFinder sourceFinder) {
-        List<String> arguments = bug.getAnnotations().stream().map(annotation -> annotation.format("", null)).collect(Collectors.toList());
+        List<String> arguments = indexToPlaceholders.get(index).stream()
+                .map(placeholder -> placeholder.toArgument(bug.getAnnotations(), bug.getPrimaryClass()))
+                .collect(Collectors.toList());
         List<Location> locations = new ArrayList<>();
         Location.fromBugInstance(bug, sourceFinder, baseToId).ifPresent(locations::add);
-        Result result = new Result(bug.getType(), index, new Message(arguments), locations);
+        int bugRank = BugRanker.findRank(bug);
+        Result result = new Result(bug.getType(), index, new Message(arguments), locations, Level.fromBugRank(bugRank));
         results.add(result);
     }
 
     private int processRule(BugPattern bugPattern) {
-        int index = rules.size();
-        Rule rule = Rule.fromBugPattern(bugPattern);
+        assert indexToPlaceholders.size() == rules.size();
+        int ruleIndex = rules.size();
+
+        List<Placeholder> placeholders = new ArrayList<>();
+        MessageFormat formatter = new MessageFormat(bugPattern.getLongDescription());
+        String formattedMessage = formatter.format((Integer index, String key) -> {
+            int indexOfPlaceholder = placeholders.size();
+            placeholders.add(new Placeholder(index, key));
+            return String.format("{%d}", indexOfPlaceholder);
+        });
+        Rule rule = Rule.fromBugPattern(bugPattern, formattedMessage);
         rules.add(rule);
-        return index;
+        indexToPlaceholders.add(placeholders);
+
+        return ruleIndex;
+    }
+
+    Map<String, String> getBaseToId() {
+        return baseToId;
     }
 }
