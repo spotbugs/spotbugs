@@ -598,8 +598,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             } catch (IllegalAccessException e) {
                 throw new SAXException("Factory method for " + qName + " is not accessible.", e);
             } catch (InvocationTargetException e) {
-                e.getTargetException().printStackTrace();
-                throw new SAXException(e.getTargetException().toString());
+                throw new SAXException("Factory method for " + qName + " threw an exception.", e.getTargetException());
             }
         }
 
