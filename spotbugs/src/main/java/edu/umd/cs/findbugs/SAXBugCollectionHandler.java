@@ -596,8 +596,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             try {
                 bugAnnotation = (BugAnnotation) fromXML.invoke(null, qName, attributes);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                throw new SAXException(e.toString());
+                throw new SAXException("Factory method for " + qName + " is not accessible.", e);
             } catch (InvocationTargetException e) {
                 e.getTargetException().printStackTrace();
                 throw new SAXException(e.getTargetException().toString());
