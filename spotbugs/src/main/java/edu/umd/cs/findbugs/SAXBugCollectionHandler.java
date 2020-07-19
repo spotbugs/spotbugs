@@ -585,8 +585,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         fromXML = annotationClazz.getMethod("fromXML", String.class, Attributes.class);
                         break;
                     } catch (NoSuchMethodException | ClassCastException e) {
-                        e.printStackTrace();
-                        throw new SAXException(e.toString());
+                        throw new SAXException("Failed to find factory method for " + qName, e);
                     } catch (ClassNotFoundException ignored) {
                     }
                 }
