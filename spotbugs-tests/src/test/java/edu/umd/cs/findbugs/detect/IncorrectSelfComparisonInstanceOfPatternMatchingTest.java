@@ -21,7 +21,7 @@ public class IncorrectSelfComparisonInstanceOfPatternMatchingTest {
     public SpotBugsRule spotbugs = new SpotBugsRule();
 
     /**
-     * @see <a href="https://github.com/spotbugs/spotbugs/issues/<TODO>">GitHub
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/1136">GitHub
      *      issue</a>
      */
     @Test
