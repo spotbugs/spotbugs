@@ -5,9 +5,7 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
-  logBinding {
-    transitive = false
-  }
+  logBinding
 }
 
 ext {
@@ -93,7 +91,9 @@ dependencies {
   }
   api 'org.slf4j:slf4j-api:1.8.0-beta4'
   implementation 'net.sf.saxon:Saxon-HE:10.1'
-  logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.3'
+  logBinding ('org.apache.logging.log4j:log4j-slf4j18-impl:2.13.3') {
+    exclude group: 'org.slf4j'
+  }
 
   // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
@@ -109,7 +109,7 @@ dependencies {
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
   guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.12'
+  guiTestImplementation 'junit:junit:4.13'
   guiTestCompileOnly project(':spotbugs-annotations')
 }
 
