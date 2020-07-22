@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -63,6 +65,9 @@ import edu.umd.cs.findbugs.util.Strings;
  * @author David Hovemeyer
  */
 public class SAXBugCollectionHandler extends DefaultHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PluginLoader.class);
+
     private static final String FIND_BUGS_FILTER = "FindBugsFilter";
 
     private static final String PROJECT = "Project";
@@ -585,6 +590,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     } catch (NoSuchMethodException | ClassCastException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException ignored) {
+                        LOG.warn(k + " not found in Plugin(" + plugin.getPluginId() + ")");
                         // The current plugin classloader doesn't have the annotation class called 'qName', ignore.
                     }
                 }
