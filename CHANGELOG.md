@@ -11,6 +11,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * Fixed not working detector 'CbeckMustOverrideSuperAnnotation' and renamed to 'OverridingMethodsMustInvokeSuperDetector'
 
+### Changed
+* Upgrade ASM to 9.0-beta which supports Java 15
+
 ## 4.0.6 - 2020-06-23
 ### Fixed
 * Use method call instead of reflection to get BCEL frame type ([#1176](https://github.com/spotbugs/spotbugs/issues/1176))
