@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VersionInsensitiveBugComparatorTest {
-    class MyBugAnnotation implements BugAnnotation {
+    static class MyBugAnnotation implements BugAnnotation {
         private String desc;
 
         public MyBugAnnotation(String desc) {

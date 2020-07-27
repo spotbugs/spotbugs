@@ -66,7 +66,7 @@ import edu.umd.cs.findbugs.util.Strings;
  */
 public class SAXBugCollectionHandler extends DefaultHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PluginLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SAXBugCollectionHandler.class);
 
     private static final String FIND_BUGS_FILTER = "FindBugsFilter";
 
@@ -114,7 +114,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     private final Map<String, Method> qnameCache = new HashMap<>();
 
     private SAXBugCollectionHandler(String topLevelName, @CheckForNull BugCollection bugCollection,
-            @CheckForNull Project project, @CheckForNull File base) {
+                                    @CheckForNull Project project, @CheckForNull File base) {
         this.topLevelName = topLevelName;
         this.bugCollection = bugCollection;
         this.project = project;
@@ -584,13 +584,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 for (Plugin plugin : Plugin.getAllPlugins()) {
                     Class<?> annotationClazz;
                     try {
-                        // The qName should equal to its classname, so there can reflect.
+                        // The qName should equal to its classname, so we can reflect the class by 'qName'.
                         annotationClazz = plugin.getClassLoader().loadClass(k);
                         return annotationClazz.getMethod("fromXML", String.class, Attributes.class);
                     } catch (NoSuchMethodException | ClassCastException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException ignored) {
-                        LOG.warn(k + " not found in Plugin(" + plugin.getPluginId() + ")");
+                        LOG.warn("{} not found in Plugin({})", k, plugin.getPluginId());
                         // The current plugin classloader doesn't have the annotation class called 'qName', ignore.
                     }
                 }
