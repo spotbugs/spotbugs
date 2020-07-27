@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 * Bump commons-lang3 from 3.10 to 3.11 ([#1231](https://github.com/spotbugs/spotbugs/pull/1231))
+* Bump commons-text from 1.8 to 1.9
 
 ## 4.0.6 - 2020-06-23
 ### Fixed
