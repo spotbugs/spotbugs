@@ -114,7 +114,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     private final Map<String, Method> qnameCache = new HashMap<>();
 
     private SAXBugCollectionHandler(String topLevelName, @CheckForNull BugCollection bugCollection,
-                                    @CheckForNull Project project, @CheckForNull File base) {
+            @CheckForNull Project project, @CheckForNull File base) {
         this.topLevelName = topLevelName;
         this.bugCollection = bugCollection;
         this.project = project;
