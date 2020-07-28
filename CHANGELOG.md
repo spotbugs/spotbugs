@@ -6,6 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2020-??-??
 ### Added
+* Support custom bug annotation 
 * Support for the SARIF 2.1.0 report ([discuss#95](https://github.com/spotbugs/discuss/issues/95))
 
 ### Fixed
