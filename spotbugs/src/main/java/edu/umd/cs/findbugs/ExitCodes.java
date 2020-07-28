@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Flags returned in the process exit code returned when the FindBugs text UI is
  * invoked with the -exitcode command line argument. These are combined in a bit
@@ -39,4 +42,25 @@ public interface ExitCodes {
      * Bugs were reported.
      */
     public static final int BUGS_FOUND_FLAG = 1;
+
+    public static int from(int errors, int missingClasses, int bugs) {
+        Logger logger = LoggerFactory.getLogger(ExitCodes.class);
+        int exitCode = 0;
+        logger.info("Calculating exit code...");
+        if (errors > 0) {
+            exitCode |= ERROR_FLAG;
+            logger.debug("Setting 'errors encountered' flag ({})", ERROR_FLAG);
+        }
+        if (missingClasses > 0) {
+            exitCode |= MISSING_CLASS_FLAG;
+            logger.debug("Setting 'missing class' flag ({})", MISSING_CLASS_FLAG);
+        }
+        if (bugs > 0) {
+            exitCode |= BUGS_FOUND_FLAG;
+            logger.debug("Setting 'bugs found' flag ({})", BUGS_FOUND_FLAG);
+        }
+        logger.debug("Exit code set to: {}", exitCode);
+
+        return exitCode;
+    }
 }
