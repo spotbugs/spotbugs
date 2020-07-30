@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2020-??-??
+### Fixed
+* Missing the version of commons-lang3 for Maven ([#1239](https://github.com/spotbugs/spotbugs/issues/1239))
 
 ## 4.1.0 - 2020-07-30
 ### Added
