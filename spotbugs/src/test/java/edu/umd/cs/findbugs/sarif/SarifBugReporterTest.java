@@ -84,7 +84,7 @@ public class SarifBugReporterTest {
 
         assertThat("the first key in JSON should be 'version'", json, startsWith("{\"version\""));
         assertThat(jsonObject.get("version"), is("2.1.0"));
-        assertThat(jsonObject.get("$schema"), is("https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json"));
+        assertThat(jsonObject.get("$schema"), is("https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"));
     }
 
     /**
@@ -162,12 +162,12 @@ public class SarifBugReporterTest {
         String json = writer.toString();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONObject tool = run.getJSONObject("tool");
-        JSONObject driver = tool.getJSONObject("driver");
-        JSONArray notifications = driver.getJSONArray("notifications");
+        JSONArray toolConfigurationNotifications = run.getJSONArray("invocations")
+                .getJSONObject(0)
+                .getJSONArray("toolConfigurationNotifications");
 
-        assertThat(notifications.length(), is(1));
-        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(toolConfigurationNotifications.length(), is(1));
+        JSONObject notification = toolConfigurationNotifications.getJSONObject(0);
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-missing-classes"));
         assertThat(notification.getJSONObject("message").getString("text"), is(
                 "Classes needed for analysis were missing: [com.github.spotbugs.MissingClass]"));
@@ -181,12 +181,12 @@ public class SarifBugReporterTest {
         String json = writer.toString();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONObject tool = run.getJSONObject("tool");
-        JSONObject driver = tool.getJSONObject("driver");
-        JSONArray notifications = driver.getJSONArray("notifications");
+        JSONArray toolExecutionNotifications = run.getJSONArray("invocations")
+                .getJSONObject(0)
+                .getJSONArray("toolExecutionNotifications");
 
-        assertThat(notifications.length(), is(1));
-        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(toolExecutionNotifications.length(), is(1));
+        JSONObject notification = toolExecutionNotifications.getJSONObject(0);
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
         assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
         assertFalse(notification.has("exception"));
@@ -201,12 +201,12 @@ public class SarifBugReporterTest {
         String json = writer.toString();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONObject tool = run.getJSONObject("tool");
-        JSONObject driver = tool.getJSONObject("driver");
-        JSONArray notifications = driver.getJSONArray("notifications");
+        JSONArray toolExecutionNotifications = run.getJSONArray("invocations")
+                .getJSONObject(0)
+                .getJSONArray("toolExecutionNotifications");
 
-        assertThat(notifications.length(), is(1));
-        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(toolExecutionNotifications.length(), is(1));
+        JSONObject notification = toolExecutionNotifications.getJSONObject(0);
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
         assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
@@ -224,12 +224,12 @@ public class SarifBugReporterTest {
         String json = writer.toString();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONObject tool = run.getJSONObject("tool");
-        JSONObject driver = tool.getJSONObject("driver");
-        JSONArray notifications = driver.getJSONArray("notifications");
+        JSONArray toolExecutionNotifications = run.getJSONArray("invocations")
+                .getJSONObject(0)
+                .getJSONArray("toolExecutionNotifications");
 
-        assertThat(notifications.length(), is(1));
-        JSONObject notification = notifications.getJSONObject(0);
+        assertThat(toolExecutionNotifications.length(), is(1));
+        JSONObject notification = toolExecutionNotifications.getJSONObject(0);
         assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
         assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
