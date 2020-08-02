@@ -888,8 +888,6 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
                     Type throwType = frame.getTopValue();
                     if (throwType instanceof ObjectType) {
                         exceptionTypeSet.addExplicit((ObjectType) throwType);
-                    } else if (throwType instanceof ExceptionObjectType) {
-                        exceptionTypeSet.addAll(((ExceptionObjectType) throwType).getExceptionSet());
                     } else {
                         // Not sure what is being thrown here.
                         // Be conservative.
