@@ -167,8 +167,6 @@ public class FindBadCast2 implements Detector {
 
         Set<SourceLineAnnotation> haveInstanceOf = new HashSet<>();
         Set<SourceLineAnnotation> haveCast = new HashSet<>();
-        Set<SourceLineAnnotation> haveMultipleInstanceOf = new HashSet<>();
-        Set<SourceLineAnnotation> haveMultipleCast = new HashSet<>();
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
@@ -180,17 +178,13 @@ public class FindBadCast2 implements Detector {
 
             SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
                     sourceFile, handle);
-            if (ins instanceof CHECKCAST) {
-                if (!haveCast.add(sourceLineAnnotation)) {
-                    haveMultipleCast.add(sourceLineAnnotation);
-                    if (DEBUG) {
+            if (DEBUG) {
+                if (ins instanceof CHECKCAST) {
+                    if (!haveCast.add(sourceLineAnnotation)) {
                         System.out.println("Have multiple casts for " + sourceLineAnnotation);
                     }
-                }
-            } else {
-                if (!haveInstanceOf.add(sourceLineAnnotation)) {
-                    haveMultipleInstanceOf.add(sourceLineAnnotation);
-                    if (DEBUG) {
+                } else {
+                    if (!haveInstanceOf.add(sourceLineAnnotation)) {
                         System.out.println("Have multiple instanceof for " + sourceLineAnnotation);
                     }
                 }
