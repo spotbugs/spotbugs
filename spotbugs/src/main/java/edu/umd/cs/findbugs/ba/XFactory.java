@@ -84,6 +84,10 @@ public class XFactory {
 
     private final Set<XField> emptyArrays = new HashSet<>();
 
+    /**
+     * @deprecated This field is not updated by any code in the project. Will be removed in 5.x release.
+     */
+    @Deprecated
     private final Set<String> calledMethodSignatures = new HashSet<>();
 
     private final Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<>();
@@ -223,6 +227,10 @@ public class XFactory {
 
     }
 
+    /**
+     * @deprecated This method does not work as expected. Will be removed in 5.x release.
+     */
+    @Deprecated
     public boolean nameAndSignatureIsCalled(XMethod m) {
         return calledMethodSignatures.contains(getDetailedSignature(m));
     }
