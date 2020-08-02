@@ -581,7 +581,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
 
         Type instanceOfType = check.getType();
-        if (!(instanceOfType instanceof ReferenceType || instanceOfType instanceof NullType)) {
+        if (!(instanceOfType instanceof ReferenceType)) {
             return tmpFact;
         }
 
