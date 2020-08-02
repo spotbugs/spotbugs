@@ -204,7 +204,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
              */
             InstructionHandle handle = basicBlock.getExceptionThrower();
             Instruction inst = handle.getInstruction();
-            if (inst instanceof InvokeInstruction || inst instanceof INVOKEDYNAMIC) {
+            if (inst instanceof InvokeInstruction) {
                 copy(start, result);
                 visitor.setFrameAndLocation(result, new Location(handle, basicBlock));
                 visitor.setHandle(handle);
