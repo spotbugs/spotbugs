@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;

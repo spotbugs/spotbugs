@@ -607,7 +607,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 if (e.getTargetException() instanceof Exception) {
                     throw new SAXException("Factory method for " + qName + " threw an exception.", (Exception) e.getTargetException());
                 } else {
-                    throw new SAXException("Factory method for " + qName + " threw an exception:\n" + Arrays.toString(e.getTargetException().getStackTrace()));
+                    throw new SAXException("Factory method for " + qName + " threw an exception:\n" + Arrays.toString(e.getTargetException()
+                            .getStackTrace()));
                 }
             }
         }
