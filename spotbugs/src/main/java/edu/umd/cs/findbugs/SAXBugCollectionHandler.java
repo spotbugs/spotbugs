@@ -587,10 +587,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                         // The qName should equal to its classname, so we can reflect the class by 'qName'.
                         annotationClazz = plugin.getClassLoader().loadClass(k);
                         return annotationClazz.getMethod("fromXML", String.class, Attributes.class);
-                    } catch (NoSuchMethodException | ClassCastException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException ignored) {
-                        LOG.warn("{} not found in Plugin({})", k, plugin.getPluginId());
+                    } catch (NoSuchMethodException | ClassCastException | ClassNotFoundException ignored) {
+                        LOG.warn("{} not found in Plugin({})", k, plugin.getPluginId(), ignored);
                         // The current plugin classloader doesn't have the annotation class called 'qName', ignore.
                     }
                 }
