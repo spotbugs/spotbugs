@@ -9,6 +9,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ class BugCollectionAnalyser {
      * Map baseURI to uriBaseId. e.g. {@code "/user/ubuntu/github/spotbugs/" -> "8736793520"}
      */
     @NonNull
-    private final Map<String, String> baseToId = new HashMap<>();
+    private final Map<URI, String> baseToId = new HashMap<>();
 
     BugCollectionAnalyser(@NonNull BugCollection bugCollection) {
         SourceFinder sourceFinder = bugCollection.getProject().getSourceFinder();
@@ -49,7 +50,7 @@ class BugCollectionAnalyser {
     @NonNull
     JSONObject getOriginalUriBaseIds() {
         JSONObject result = new JSONObject();
-        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", "file://" + uri)));
+        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", uri.toString())));
         return result;
     }
 
@@ -82,7 +83,7 @@ class BugCollectionAnalyser {
         return ruleIndex;
     }
 
-    Map<String, String> getBaseToId() {
+    Map<URI, String> getBaseToId() {
         return baseToId;
     }
 }
