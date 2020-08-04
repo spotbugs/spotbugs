@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -193,10 +194,16 @@ public class SourceFinder implements AutoCloseable {
         @Override
         public SourceFileDataSource getDataSource(final String fileName) {
             return new SourceFileDataSource() {
+                private final URI uri = URI.create(fileName);
 
                 @Override
                 public String getFullFileName() {
                     return fileName;
+                }
+
+                @Override
+                public URI getFullURI() {
+                    return uri;
                 }
 
                 @Override
@@ -620,14 +627,14 @@ public class SourceFinder implements AutoCloseable {
         }
     }
 
-    public Optional<String> getBase(SourceLineAnnotation sourceLineAnnotation) {
+    public Optional<URI> getBase(SourceLineAnnotation sourceLineAnnotation) {
         String relativePath = getPlatformName(sourceLineAnnotation);
         return getBase(relativePath);
     }
 
-    public Optional<String> getBase(String fileName) {
+    public Optional<URI> getBase(String fileName) {
         return repositoryList.stream()
                 .filter(SourceRepository::isPlatformDependent)
-                .filter(repo -> repo.contains(fileName)).map(repo -> repo.getDataSource("").getFullFileName()).findFirst();
+                .filter(repo -> repo.contains(fileName)).map(repo -> repo.getDataSource("").getFullURI()).findFirst();
     }
 }
