@@ -31,6 +31,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -351,9 +354,11 @@ public class SourceFinder implements AutoCloseable {
      */
     static class ZipSourceRepository implements SourceRepository {
         ZipFile zipFile;
+        FileSystem zipFileSystem;
 
-        public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) {
+        public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) throws IOException {
             this.zipFile = zipFile;
+            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), null);
         }
 
         @Override
@@ -368,11 +373,12 @@ public class SourceFinder implements AutoCloseable {
 
         @Override
         public SourceFileDataSource getDataSource(String fileName) {
-            return new ZipSourceFileDataSource(zipFile, fileName);
+            return new ZipSourceFileDataSource(zipFile, zipFileSystem, fileName);
         }
 
         @Override
         public void close() throws IOException {
+            zipFileSystem.close();
             zipFile.close();
         }
     }
