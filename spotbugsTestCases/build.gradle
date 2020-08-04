@@ -32,6 +32,11 @@ dependencies {
 tasks.withType(JavaCompile).all {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
+  if (it.name == 'classesJava11') {
+    options.compilerArgs.addAll(['--release', '11'])
+  } else if (it.name != 'comoileJava') {
+    options.compilerArgs.addAll(['--release', '8'])
+  }
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -49,29 +54,25 @@ javadoc {
   }
 }
 
+tasks.compileJava {
+  // workaround for https://github.com/spotbugs/spotbugs/issues/996
+  exclude 'sfBugsNew/Bug1169.java'
+}
+
 task classesJava8(type:JavaCompile) {
-  sourceCompatibility = '1.8'
-  targetCompatibility = '1.8'
   destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
 task classesJava11(type:JavaCompile) {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
   destinationDir = file("$buildDir/classes/java/java11")
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
-if (System.getProperty("java.specification.version") == "1.8") {
-  // JDK11 removed several deprecated methods like Thread#destroy() and System.runFinalizersOnExit().
-  // so code that depends on them should be built only on JDK8.
-  tasks['classes'].dependsOn classesJava8
-} else {
-  tasks['classes'].dependsOn classesJava11
-}
+tasks['classes'].dependsOn classesJava8
+tasks['classes'].dependsOn classesJava11
 
 sonarqube {
   // this project should not be analyzed with sonarqube

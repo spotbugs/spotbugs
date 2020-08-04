@@ -22,10 +22,6 @@ subprojects {
   group = 'com.github.spotbugs'
   version = rootProject.version
 
-  // Java versions
-  project.sourceCompatibility = 1.8
-  project.targetCompatibility = 1.8
-
   repositories {
     jcenter()
   }
