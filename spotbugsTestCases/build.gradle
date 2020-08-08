@@ -34,7 +34,7 @@ tasks.withType(JavaCompile).all {
   options.encoding = 'UTF-8'
   if (it.name == 'classesJava11') {
     options.compilerArgs.addAll(['--release', '11'])
-  } else if (it.name != 'comoileJava') {
+  } else if (it.name != 'compileJava') {
     options.compilerArgs.addAll(['--release', '8'])
   }
 }
