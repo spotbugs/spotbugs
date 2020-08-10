@@ -56,7 +56,7 @@ class Location {
         if (physicalLocation != null) {
             result.put("physicalLocation", physicalLocation.toJSONObject());
         }
-        logicalLocations.stream().map(LogicalLocation::toJSONObject).forEach(logicalLocation -> result.append("logicalLocation", logicalLocation));
+        logicalLocations.stream().map(LogicalLocation::toJSONObject).forEach(logicalLocation -> result.append("logicalLocations", logicalLocation));
         return result;
     }
 

@@ -413,22 +413,7 @@ public abstract class FindBugs {
         }
 
         if (commandLine.setExitCode()) {
-            int exitCode = 0;
-            LOG.info("Calculating exit code...");
-            if (errorCount > 0) {
-                exitCode |= ExitCodes.ERROR_FLAG;
-                LOG.log(FINE, "Setting 'errors encountered' flag ({0})", ExitCodes.ERROR_FLAG);
-            }
-            if (missingClassCount > 0) {
-                exitCode |= ExitCodes.MISSING_CLASS_FLAG;
-                LOG.log(FINE, "Setting 'missing class' flag ({0})", ExitCodes.MISSING_CLASS_FLAG);
-            }
-            if (bugCount > 0) {
-                exitCode |= ExitCodes.BUGS_FOUND_FLAG;
-                LOG.log(FINE, "Setting 'bugs found' flag ({0})", ExitCodes.BUGS_FOUND_FLAG);
-            }
-            LOG.log(FINE, "Exit code set to: {0}", exitCode);
-
+            int exitCode = ExitCodes.from(errorCount, missingClassCount, bugCount);
             System.exit(exitCode);
         }
     }
