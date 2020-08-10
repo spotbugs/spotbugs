@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2020-??-??
 ### Fixed
 * [A meaningless exception data from `SAXBugCollectionHandler`](https://lgtm.com/projects/g/spotbugs/spotbugs/rev/a77ab08634687b7791e902636996ab6184462693)
+* Use URI for files instead of converting string to URI each time. Fixes tests on Windows.
 
 ## 4.1.1 - 2020-07-31
 ### Fixed
