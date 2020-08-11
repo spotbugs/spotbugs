@@ -4904,6 +4904,7 @@ public class B extends A {
 フィールドは， <code>transient</code> と宣言していますが，クラスは直列化可能ではないので，まったく効果がありません。
 クラスが <code>transient</code> だったときの名残かもしれません，または直列化機構を誤解しているのかもしれません。
 </p>
+<p><em>このバグは特殊な<tt>reportTransientFieldOfNonSerializableClass</tt>オプションが指定されたときのみ報告されます。</em></p>
 ]]>
     </Details>
   </BugPattern>
