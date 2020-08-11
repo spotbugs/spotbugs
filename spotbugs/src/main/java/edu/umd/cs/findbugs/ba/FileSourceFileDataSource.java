@@ -24,15 +24,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Data source for source files which are stored in the filesystem.
  */
 public class FileSourceFileDataSource implements SourceFileDataSource {
     private final String fileName;
+    private final URI uri;
 
     public FileSourceFileDataSource(String fileName) {
         this.fileName = fileName;
+        this.uri = new File(fileName).toURI();
     }
 
     @Override
@@ -43,6 +46,11 @@ public class FileSourceFileDataSource implements SourceFileDataSource {
     @Override
     public String getFullFileName() {
         return fileName;
+    }
+
+    @Override
+    public URI getFullURI() {
+        return uri;
     }
 
     @Override

@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -303,7 +304,7 @@ public class SarifBugReporterTest {
 
         JSONObject originalUriBaseIds = run.getJSONObject("originalUriBaseIds");
         String uriBaseId = takeFirstKey(originalUriBaseIds).get();
-        assertThat(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri"), is(tmpDir.toUri().toString()));
+        assertThat(URI.create(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri")), is(tmpDir.toUri()));
 
         JSONArray results = run.getJSONArray("results");
         assertThat(results.length(), is(1));

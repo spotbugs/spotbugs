@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ class Stack {
         this.frames = Collections.unmodifiableList(Objects.requireNonNull(frames));
     }
 
-    static Stack fromThrowable(Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<String, String> baseToId) {
+    static Stack fromThrowable(Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<URI, String> baseToId) {
         List<StackFrame> frames = Arrays.stream(Objects.requireNonNull(throwable).getStackTrace()).map(element -> StackFrame.fromStackTraceElement(
                 element, sourceFinder, baseToId)).collect(
                         Collectors.toList());
@@ -54,7 +55,7 @@ class Stack {
         }
 
         static StackFrame fromStackTraceElement(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
-                @NonNull Map<String, String> baseToId) {
+                @NonNull Map<URI, String> baseToId) {
             Location location = Location.fromStackTraceElement(element, sourceFinder, baseToId);
             return new StackFrame(location);
         }

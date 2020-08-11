@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Cached data for a source file. Contains a map of line numbers to byte
@@ -117,6 +118,13 @@ public class SourceFile {
      */
     public String getFullFileName() {
         return dataSource.getFullFileName();
+    }
+
+    /**
+     * Get the full URI of the source file (with directory).
+     */
+    public URI getFullURI() {
+        return dataSource.getFullURI();
     }
 
     /**
