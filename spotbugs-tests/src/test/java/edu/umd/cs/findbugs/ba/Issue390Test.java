@@ -1,9 +1,9 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
