@@ -1660,11 +1660,45 @@ factory pattern to create these objects.</p>
       ]]>
       </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.DontAssertInstanceofInTests">
+    <Details>
+      <![CDATA[
+            <p>Detector for patterns in JUnit tests where the type of an object
+               is checked by asserting the instanceof operator before an object
+               is cast to a certain type. </p>
+            <p>
+               This should be avoided as the ClassCastException that would result
+               from an improper cast may provide more information regarding the
+               cause of the error than a "false is not true" message which would
+               result from asserting the result of the instanceof operator.
+            </p>
+			<p>It is a fast detector</p>
+            ]]>
+    </Details>
+  </Detector>
   <!--
   **********************************************************************
   BugPatterns
   **********************************************************************
    -->
+
+  <BugPattern type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS">
+    <ShortDescription> Asserting value of instanceof in tests is not recommended. </ShortDescription>
+    <LongDescription> Assertion of type {0} in {2} at {3} may hide useful information about why a cast may have failed.</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>Asserting type checks in tests is not recommended as a class cast exception message could better indicate
+            the cause of an instance of the wrong class being used than an instanceof assertion.</p>
+
+            <p>When debugging tests that fail due to bad casts, it may be more useful to observe the output of the
+            resulting ClassCastException which could provide information about the actual encountered type.
+            Asserting the type before casting would instead result in a less informative <code>"false is not true"</code>
+            message.</p>
+
+            ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="OVERRIDING_METHODS_MUST_INVOKE_SUPER">
     <ShortDescription>Super method is annotated with @OverridingMethodsMustInvokeSuper, but the overriding method isn't calling the super method.</ShortDescription>
     <LongDescription>Super method is annotated with @OverridingMethodsMustInvokeSuper, but {1} isn't calling the super method.</LongDescription>
