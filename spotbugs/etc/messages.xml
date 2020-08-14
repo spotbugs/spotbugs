@@ -1664,8 +1664,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
             <p>Detector for patterns in JUnit tests where the type of an object
-               is checked by asserting the instanceof operator before an object
-               is cast to a certain type. </p>
+               is checked by asserting the instanceof operator.</p>
             <p>
                This should be avoided as the ClassCastException that would result
                from an improper cast may provide more information regarding the
@@ -1695,6 +1694,8 @@ factory pattern to create these objects.</p>
             Asserting the type before casting would instead result in a less informative <code>"false is not true"</code>
             message.</p>
 
+            <p>If JUnit is used with hamcrest, the <a href="https://junit.org/junit4/javadoc/latest/index.html?org/hamcrest/core/IsInstanceOf.html"><code>IsInstanceOf</code></a>
+            class from hamcrest could be used instead.</p>
             ]]>
     </Details>
   </BugPattern>
