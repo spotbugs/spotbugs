@@ -47,29 +47,29 @@ public class DontAssertInstanceofInTests extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 
         switch (seen) {
-            case Const.INSTANCEOF: {
-                // Initialise the bug instance here.
-                currBug = new BugInstance(this, "JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS", NORMAL_PRIORITY);
-                String operand = getDottedClassConstantOperand();
-                currBug.addTypeOfNamedClass(operand); // {0}
+        case Const.INSTANCEOF: {
+            // Initialise the bug instance here.
+            currBug = new BugInstance(this, "JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS", NORMAL_PRIORITY);
+            String operand = getDottedClassConstantOperand();
+            currBug.addTypeOfNamedClass(operand); // {0}
 
-                break;
-            }
-            case Const.INVOKESTATIC: {
-                if (getPrevOpcode(1) == Const.INSTANCEOF) {
-                    String ciOp = getClassConstantOperand();
-                    String ncOp = getNameConstantOperand();
+            break;
+        }
+        case Const.INVOKESTATIC: {
+            if (getPrevOpcode(1) == Const.INSTANCEOF) {
+                String ciOp = getClassConstantOperand();
+                String ncOp = getNameConstantOperand();
 
-                    if ("org/junit/Assert".equals(ciOp) &&
-                            "assertTrue".equals(ncOp)) {
-                        // This condition only triggers if the previous opcode was instanceof,
-                        // so currBug is guaranteed to be a new BugInstance.
-                        currBug.addClassAndMethod(this) // {2}
-                                .addSourceLine(this); // {3}
-                        bugReporter.reportBug(currBug);
-                    }
+                if ("org/junit/Assert".equals(ciOp) &&
+                        "assertTrue".equals(ncOp)) {
+                    // This condition only triggers if the previous opcode was instanceof,
+                    // so currBug is guaranteed to be a new BugInstance.
+                    currBug.addClassAndMethod(this) // {2}
+                            .addSourceLine(this); // {3}
+                    bugReporter.reportBug(currBug);
                 }
             }
+        }
         }
 
     }
