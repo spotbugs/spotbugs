@@ -2,8 +2,8 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
@@ -17,7 +17,7 @@ import org.apache.bcel.classfile.Method;
  *
  * This detector reports bugs of the type `JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS`.
  */
-public class DontAssertInstanceofInTests extends BytecodeScanningDetector {
+public class DontAssertInstanceofInTests extends OpcodeStackDetector {
     private boolean isTest;
 
     private BugInstance currBug = null;
@@ -33,14 +33,14 @@ public class DontAssertInstanceofInTests extends BytecodeScanningDetector {
         isTest = false;
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
             String entryType = entry.getAnnotationType();
+            // Visit the method only if it's a JUnit test.
             isTest |= "Lorg/junit/Test;".equals(entryType);
         }
     }
 
     @Override
-    public void visitCode(Code obj) {
-        if (isTest)
-            super.visitCode(obj);
+    public boolean shouldVisitCode(Code obj) {
+        return isTest;
     }
 
     @Override
