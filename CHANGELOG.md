@@ -4,6 +4,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased - 2020-??-??
+
 ## 4.1.2 - 2020-08-18
 ### Fixed
 * [A meaningless exception data from `SAXBugCollectionHandler`](https://lgtm.com/projects/g/spotbugs/spotbugs/rev/a77ab08634687b7791e902636996ab6184462693)
