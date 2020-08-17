@@ -986,11 +986,6 @@ public class TypeQualifierApplications {
             // default annotations
         }
 
-        /** private methods don't inherit from class or package scope */
-        if (xmethod.isPrivate()) {
-            stopAtMethodScope = true;
-        }
-
         boolean stopAtClassScope = false;
 
         if (!xmethod.isPublic() && !xmethod.isProtected() && (xmethod.isStatic() || "<init>".equals(xmethod.getName()))) {

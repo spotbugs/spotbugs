@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * [A meaningless exception data from `SAXBugCollectionHandler`](https://lgtm.com/projects/g/spotbugs/spotbugs/rev/a77ab08634687b7791e902636996ab6184462693)
 * Use URI for files instead of converting string to URI each time. Fixes tests on Windows.
+* Allow private methods to inherit default annotations from package or class scope. ([#374](https://github.com/spotbugs/spotbugs/issues/374))
 
 ### Added
 * Implement [issue 390](https://github.com/spotbugs/spotbugs/issues/390) as a detector, `DontAssertInstanceofInTests`, which reports bugs of type `JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS`.
