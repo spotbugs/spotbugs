@@ -5,6 +5,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import org.json.JSONArray;
 import org.json.JSONWriter;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         jsonWriter.endObject().endArray();
     }
 
-
-    private void processInvocations(JSONWriter jsonWriter, @NonNull Map<String, String> baseToId) {
+    private void processInvocations(JSONWriter jsonWriter, @NonNull Map<URI, String> baseToId) {
         List<Notification> configNotifications = new ArrayList<>();
 
         Set<String> missingClasses = getMissingClasses();

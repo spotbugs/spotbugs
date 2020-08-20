@@ -6,6 +6,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
@@ -40,7 +41,7 @@ class Notification {
     }
 
     static Notification fromError(@NonNull AbstractBugReporter.Error error, @NonNull SourceFinder sourceFinder,
-            @NonNull Map<String, String> baseToId) {
+            @NonNull Map<URI, String> baseToId) {
         String id = String.format("spotbugs-error-%d", error.getSequence());
         Throwable cause = error.getCause();
         if (cause == null) {
