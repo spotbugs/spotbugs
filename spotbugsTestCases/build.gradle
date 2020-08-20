@@ -54,11 +54,6 @@ javadoc {
   }
 }
 
-tasks.compileJava {
-  // workaround for https://github.com/spotbugs/spotbugs/issues/996
-  exclude 'sfBugsNew/Bug1169.java'
-}
-
 task classesJava8(type:JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
