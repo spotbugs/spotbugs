@@ -7,6 +7,9 @@ tasks.withType(JavaCompile) {
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
+tasks.compileJava {
+    options.compilerArgs.addAll(['--release', '8'])
+}
 
 // make the build reproducible https://reproducible-builds.org/
 tasks.withType(AbstractArchiveTask) {

@@ -109,6 +109,10 @@ clean {
   delete ".libs"
 }
 
+tasks.compileGuiJava {
+  options.compilerArgs.addAll(['--release', '8'])
+}
+
 tasks.withType(Jar).all {
   includeEmptyDirs = false
   // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
