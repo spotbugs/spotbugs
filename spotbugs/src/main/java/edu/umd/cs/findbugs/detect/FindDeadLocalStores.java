@@ -432,7 +432,7 @@ public class FindDeadLocalStores implements Detector {
                         continue;
                     }
 
-                    if (prevIns instanceof LDC || prevIns instanceof ConstantPushInstruction) {
+                    if (prevIns instanceof LDC) {
                         propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_CONSTANT);
                     } else if (prevIns instanceof ACONST_NULL) {
                         storeOfNull = true;

@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 import javax.annotation.CheckForNull;
 
-import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -204,7 +203,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
              */
             InstructionHandle handle = basicBlock.getExceptionThrower();
             Instruction inst = handle.getInstruction();
-            if (inst instanceof InvokeInstruction || inst instanceof INVOKEDYNAMIC) {
+            if (inst instanceof InvokeInstruction) {
                 copy(start, result);
                 visitor.setFrameAndLocation(result, new Location(handle, basicBlock));
                 visitor.setHandle(handle);

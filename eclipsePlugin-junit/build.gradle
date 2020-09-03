@@ -5,7 +5,7 @@ dependencies {
   implementation project(':eclipsePlugin')
   testImplementation project(path: ':eclipsePlugin', configuration: 'compileOnly')
   testImplementation 'junit:junit:4.13'
-  testImplementation 'org.mockito:mockito-core:3.4.4'
+  testImplementation 'org.mockito:mockito-core:3.5.9'
 }
 
 jacocoTestReport {

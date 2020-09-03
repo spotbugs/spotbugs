@@ -79,16 +79,8 @@ dependencies {
     exclude group: 'xpp3',             module: 'xpp3'
   }
   implementation 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
-  api 'org.apache.commons:commons-lang3'
-  api 'org.apache.commons:commons-text'
-  constraints {
-    api ('org.apache.commons:commons-text:1.8') {
-      because 'this is the latest version'
-    }
-    api ('org.apache.commons:commons-lang3:3.10') {
-      because 'version 3.9 pulled from commons-text is too old, and commons-text has no later release'
-    }
-  }
+  api 'org.apache.commons:commons-lang3:3.11'
+  api 'org.apache.commons:commons-text:1.9'
   api 'org.slf4j:slf4j-api:1.8.0-beta4'
   implementation 'net.sf.saxon:Saxon-HE:10.1'
   logBinding ('org.apache.logging.log4j:log4j-slf4j18-impl:2.13.3') {
@@ -115,6 +107,10 @@ dependencies {
 
 clean {
   delete ".libs"
+}
+
+tasks.compileGuiJava {
+  options.compilerArgs.addAll(['--release', '8'])
 }
 
 tasks.withType(Jar).all {

@@ -56,12 +56,12 @@ class Location {
         if (physicalLocation != null) {
             result.put("physicalLocation", physicalLocation.toJSONObject());
         }
-        logicalLocations.stream().map(LogicalLocation::toJSONObject).forEach(logicalLocation -> result.append("logicalLocation", logicalLocation));
+        logicalLocations.stream().map(LogicalLocation::toJSONObject).forEach(logicalLocation -> result.append("logicalLocations", logicalLocation));
         return result;
     }
 
     static Optional<Location> fromBugInstance(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
-            @NonNull Map<String, String> baseToId) {
+            @NonNull Map<URI, String> baseToId) {
         Objects.requireNonNull(bugInstance);
         Objects.requireNonNull(sourceFinder);
         Objects.requireNonNull(baseToId);
@@ -72,7 +72,7 @@ class Location {
     }
 
     static Location fromStackTraceElement(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
-            @NonNull Map<String, String> baseToId) {
+            @NonNull Map<URI, String> baseToId) {
         Objects.requireNonNull(element);
         Objects.requireNonNull(sourceFinder);
         Objects.requireNonNull(baseToId);
@@ -84,7 +84,7 @@ class Location {
 
     @CheckForNull
     private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
-            Map<String, String> baseToId) {
+            Map<URI, String> baseToId) {
         try {
             SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
             return PhysicalLocation.fromBugAnnotation(sourceLine, sourceFinder, baseToId).orElse(null);
@@ -96,7 +96,7 @@ class Location {
 
     @CheckForNull
     private static Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
-            Map<String, String> baseToId) {
+            Map<URI, String> baseToId) {
         Optional<Region> region = Optional.of(element.getLineNumber())
                 .filter(line -> line > 0)
                 .map(line -> new Region(line, line));
@@ -123,7 +123,7 @@ class Location {
         }
 
         static Optional<ArtifactLocation> fromBugAnnotation(@NonNull SourceLineAnnotation bugAnnotation, @NonNull SourceFinder sourceFinder,
-                @NonNull Map<String, String> baseToId) {
+                @NonNull Map<URI, String> baseToId) {
             Objects.requireNonNull(bugAnnotation);
             Objects.requireNonNull(sourceFinder);
             Objects.requireNonNull(baseToId);
@@ -132,14 +132,14 @@ class Location {
                 String uriBaseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
                 try {
                     SourceFile sourceFile = sourceFinder.findSourceFile(bugAnnotation);
-                    return new ArtifactLocation(URI.create(base).relativize(URI.create(sourceFile.getFullFileName())), uriBaseId);
+                    return new ArtifactLocation(base.relativize(sourceFile.getFullURI()), uriBaseId);
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             });
         }
 
-        static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<String, String> baseToId) {
+        static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<URI, String> baseToId) {
             Objects.requireNonNull(element);
             Objects.requireNonNull(sourceFinder);
             Objects.requireNonNull(baseToId);
@@ -154,7 +154,7 @@ class Location {
                 String relativeFileName = fullFileName.substring(index);
                 return sourceFinder.getBase(relativeFileName).map(base -> {
                     String baseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
-                    URI relativeUri = URI.create(base).relativize(URI.create(sourceFile.getFullFileName()));
+                    URI relativeUri = base.relativize(sourceFile.getFullURI());
                     return new ArtifactLocation(relativeUri, baseId);
                 });
             } catch (IOException fileNotFound) {
@@ -219,7 +219,7 @@ class Location {
         }
 
         static Optional<PhysicalLocation> fromBugAnnotation(SourceLineAnnotation bugAnnotation, SourceFinder sourceFinder,
-                Map<String, String> baseToId) {
+                Map<URI, String> baseToId) {
             Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(bugAnnotation, sourceFinder, baseToId);
             Optional<Region> region = Region.fromBugAnnotation(bugAnnotation);
             return artifactLocation.map(location -> new PhysicalLocation(location, region.orElse(null)));
