@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2020-??-??
 ### Fixed
 * False positive `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources ([#259](https://github.com/spotbugs/spotbugs/issues/259))
+* Misconfiguration which makes ASM not supporting Java 14 ([#1276](https://github.com/spotbugs/spotbugs/issues/1276))
 
 ## 4.1.2 - 2020-08-18
 ### Fixed
