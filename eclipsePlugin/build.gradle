@@ -46,7 +46,7 @@ def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
 def localProps = new Properties()
 localProps.load(new FileInputStream("$projectDir/local.properties"))
 
-def eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
+def eclipseRootDir = file(localProps.getProperty('eclipseRoot.dir'))
 // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
 def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
 def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
