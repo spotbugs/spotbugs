@@ -371,4 +371,8 @@ public interface BugCollection extends Iterable<BugInstance> {
     public void setApplySuppressions(boolean applySuppressions);
 
     public void bugsPopulated();
+
+    public boolean remove(BugInstance bugInstance);
+
+    public boolean removeAll(Collection<BugInstance> bugInstances);
 }

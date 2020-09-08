@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 
@@ -319,6 +320,8 @@ public class BugRanker {
     }
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
-        origCollection.getCollection().removeIf(b -> BugRanker.findRank(b) > maxRank);
+        List<BugInstance> toBeRemoved = origCollection.getCollection().stream().filter(b -> BugRanker.findRank(b) > maxRank).collect(Collectors
+                .toList());
+        origCollection.removeAll(toBeRemoved);
     }
 }

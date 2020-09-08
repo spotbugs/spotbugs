@@ -24,10 +24,12 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.dom4j.DocumentException;
 
@@ -185,7 +187,8 @@ public class Update {
         matchBugs(baselineCollection, bugCollection);
         matchBugs(SortedBugCollection.BugInstanceComparator.instance, baselineCollection, bugCollection);
         matchBugs(versionInsensitiveBugComparator, baselineCollection, bugCollection);
-        bugCollection.getCollection().removeIf(matchedOldBugs::containsKey);
+        List<BugInstance> toBeRemoved = bugCollection.getCollection().stream().filter(matchedOldBugs::containsKey).collect(Collectors.toList());
+        bugCollection.removeAll(toBeRemoved);
 
     }
 
