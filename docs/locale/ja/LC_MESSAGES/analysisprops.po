@@ -67,7 +67,7 @@ msgstr ""
 msgid ""
 "Comma-separated list of fully qualified method names: e.g., "
 "\"com.foo.MyClass.checkAssertion\""
-msgstr "コンマ区切りの完全就職メソッド名のリスト (例，「com.foo.MyClass.checkAssertion」)"
+msgstr "コンマ区切りの完全修飾メソッド名のリスト (例，「com.foo.MyClass.checkAssertion」)"
 
 #: ../../analysisprops.rst:19
 msgid ""
