@@ -15,11 +15,11 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 
 dependencies {
   compileOnly project(':spotbugs')
-  compileOnly 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+  compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.0'
   implementation project(':test-harness-core')
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
   testImplementation project(':spotbugs')
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 }
 
 javadoc {
