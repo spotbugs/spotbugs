@@ -966,9 +966,16 @@ public class SortedBugCollection implements BugCollection {
         preciseHashOccurrenceNumbersAvailable = false;
     }
 
+    @Override
     public boolean remove(BugInstance bugInstance) {
         invalidateHashes();
         return bugSet.remove(bugInstance);
+    }
+
+    @Override
+    public boolean removeAll(Collection<BugInstance> bugInstances) {
+        invalidateHashes();
+        return bugSet.removeAll(bugInstances);
     }
 
     @Override
