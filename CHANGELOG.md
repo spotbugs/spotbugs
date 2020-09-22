@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * False positive `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources ([#259](https://github.com/spotbugs/spotbugs/issues/259))
 * Misconfiguration which makes ASM not supporting Java 14 ([#1276](https://github.com/spotbugs/spotbugs/issues/1276))
+* Resolved fatal exception in html report if BugInstance contains multiple Class elements and use the plain.xsl XSLT stylesheet to generate the HTML ([#1025](https://github.com/spotbugs/spotbugs/issues/1025))
 
 ## 4.1.2 - 2020-08-18
 ### Fixed
