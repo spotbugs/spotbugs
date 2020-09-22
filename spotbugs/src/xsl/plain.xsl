@@ -205,7 +205,7 @@
 				<xsl:apply-templates select="$warningSet">
 					<xsl:sort select="@priority"/>
 					<xsl:sort select="@abbrev"/>
-					<xsl:sort select="Class/@classname"/>
+					<xsl:sort select="Class[1]/@classname"/>
 				</xsl:apply-templates>
 		    </xsl:when>
 		    <xsl:otherwise>
