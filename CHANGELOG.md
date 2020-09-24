@@ -4,7 +4,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2020-??-??
+## 4.1.3 - 2020-09-25
 ### Fixed
 * False positive `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources ([#259](https://github.com/spotbugs/spotbugs/issues/259))
 * Misconfiguration which makes ASM not supporting Java 14 ([#1276](https://github.com/spotbugs/spotbugs/issues/1276))
@@ -25,7 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## 4.1.0 - 2020-07-30
 ### Added
-* Support custom bug annotation 
+* Support custom bug annotation
 * Experimental support for the SARIF 2.1.0 report ([discuss#95](https://github.com/spotbugs/discuss/issues/95))
 
 ### Fixed
