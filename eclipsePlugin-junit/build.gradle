@@ -1,5 +1,4 @@
 apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
 
 dependencies {
   implementation project(':eclipsePlugin')
@@ -8,7 +7,3 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:3.4.4'
 }
 
-jacocoTestReport {
-  additionalSourceDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
-  additionalClassDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
-}
