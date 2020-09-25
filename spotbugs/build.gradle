@@ -9,7 +9,7 @@ configurations {
 }
 
 ext {
-  asmVersion = '8.0.1'
+  asmVersion = '9.0'
 }
 
 sourceSets {
