@@ -6,6 +6,8 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
   logBinding
+  // used to make sure Eclipse config can see apple library during compilation
+  appleExtensions
 }
 
 ext {
@@ -95,7 +97,6 @@ dependencies {
   testImplementation 'junit:junit:4.13'
   testImplementation 'org.apache.ant:ant:1.10.8'
   testImplementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1'
-  testImplementation sourceSets.gui.output
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
@@ -103,6 +104,9 @@ dependencies {
   guiTestImplementation sourceSets.gui.runtimeClasspath
   guiTestImplementation 'junit:junit:4.13'
   guiTestCompileOnly project(':spotbugs-annotations')
+  
+  // for Eclipse compilation only
+  appleExtensions 'com.apple:AppleJavaExtensions:1.4'
 }
 
 clean {
@@ -120,9 +124,8 @@ tasks.withType(Jar).all {
 }
 
 eclipse.classpath {
-  plusConfigurations += [ configurations.compileClasspath ]
-  plusConfigurations += [ configurations.guiCompileClasspath ]
   plusConfigurations += [ configurations.testRuntimeClasspath ]
+  plusConfigurations += [ configurations.appleExtensions ]
 }
 
 eclipse.classpath.file {
@@ -141,7 +144,7 @@ eclipse.classpath.file {
 }
 
 task copyLibsForEclipse (type: Copy) {
-    from configurations.testCompileClasspath.files, configurations.testRuntimeClasspath.files, configurations.guiRuntimeClasspath.files, configurations.logBinding.files
+    from configurations.testCompileClasspath.files, configurations.testRuntimeClasspath.files, configurations.guiRuntimeClasspath.files, configurations.guiCompileClasspath.files, configurations.logBinding.files
     into ".libs"
     include "*.jar"
     exclude "*xml-apis*.jar"
