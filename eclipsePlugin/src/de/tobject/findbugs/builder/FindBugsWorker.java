@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.dom4j.DocumentException;
@@ -303,7 +304,7 @@ public class FindBugsWorker {
      *            fb engine, which will be <b>disposed</b> after the analysis is
      *            done
      */
-    private void runFindBugs(final FindBugs2 findBugs) {
+    private static void runFindBugs(final FindBugs2 findBugs) {
         if (DEBUG) {
             FindbugsPlugin.log("Running findbugs in thread " + Thread.currentThread().getName());
         }
@@ -311,17 +312,36 @@ public class FindBugsWorker {
         try {
             // Perform the analysis! (note: This is not thread-safe)
             findBugs.execute();
-        } catch (InterruptedException e) {
-            if (DEBUG) {
-                FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
+        } catch (Exception e) {
+            if (isInterrupted(e)) {
+                if (DEBUG) {
+                    FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
+                }
+            } else {
+                FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs analysis");
             }
-            Thread.currentThread().interrupt();
-        } catch (IOException e) {
-            FindbugsPlugin.getDefault().logException(e, "Error performing SpotBugs analysis");
         } finally {
             findBugs.dispose();
         }
 
+    }
+
+    private static boolean isInterrupted(Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+            return true;
+        }
+        Throwable cause = e.getCause();
+        if (cause instanceof InterruptedException) {
+            return true;
+        }
+        if (cause instanceof ExecutionException) {
+            ExecutionException ee = (ExecutionException) cause;
+            if (ee.getCause() instanceof InterruptedException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
