@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2020-??-??
 ### Changed
 * Bump ASM from 8.0.1 to 9.0 supporting JDK16 (sealed classes)
+* Bump Saxon-HE from 10.1 to 10.2
 
 ## 4.1.3 - 2020-09-25
 ### Fixed
