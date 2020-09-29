@@ -2194,6 +2194,10 @@ public class OpcodeStack {
         if (constant instanceof Character) {
             return ((Character) constant).charValue();
         }
+        if (constant instanceof Boolean) {
+            Boolean val = (Boolean) constant;
+            return val.booleanValue() ? 1 : 0;
+        }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
 
