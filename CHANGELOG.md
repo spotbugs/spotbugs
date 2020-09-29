@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2020-??-??
 ### Changed
 * Bump jaxen from 1.1.6 to 1.2.0 supporting Java 11 compilation ([#1316](https://github.com/spotbugs/spotbugs/issues/1316))
+* Fixed error dialog on cancelling SpotBugs job in Eclipse ([#1314](https://github.com/spotbugs/spotbugs/issues/1314))
 * Bump ASM from 8.0.1 to 9.0 supporting JDK16 (sealed classes)
 * Bump Saxon-HE from 10.1 to 10.2
 
