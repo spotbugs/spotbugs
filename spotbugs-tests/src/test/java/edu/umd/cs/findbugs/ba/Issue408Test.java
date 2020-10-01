@@ -4,7 +4,6 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 
 import java.io.IOException;
 
@@ -26,19 +25,15 @@ public class Issue408Test extends AbstractIntegrationTest {
 
     @Test
     public void testSingleClass() {
-        assumeThat(System.getProperty("java.specification.version"), is("9"));
-
         expected.expect(AssertionError.class);
         expected.expectMessage("Analysis failed with exception");
         expected.expectCause(is(instanceOf(IOException.class)));
-        performAnalysis("../java9/module-info.class");
+        performAnalysis("../java11/module-info.class");
     }
 
     @Test
     public void testFewClasses() {
-        assumeThat(System.getProperty("java.specification.version"), is("9"));
-
-        performAnalysis("../java9/module-info.class", "../java9/Issue408.class");
+        performAnalysis("../java11/module-info.class", "../java11/Issue408.class");
         BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().build();
         assertThat(getBugCollection(), containsExactly(0, bugTypeMatcher));
     }
