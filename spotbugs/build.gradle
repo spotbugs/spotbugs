@@ -95,7 +95,7 @@ dependencies {
 
   api 'org.json:json:20200518'
   testImplementation 'junit:junit:4.13'
-  testImplementation 'org.apache.ant:ant:1.10.8'
+  testImplementation 'org.apache.ant:ant:1.10.9'
   testImplementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1'
 
   guiImplementation sourceSets.main.runtimeClasspath
