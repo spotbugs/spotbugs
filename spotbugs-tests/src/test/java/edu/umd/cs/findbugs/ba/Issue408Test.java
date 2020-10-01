@@ -4,7 +4,6 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 
 import java.io.IOException;
 
