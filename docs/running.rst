@@ -282,7 +282,7 @@ Output options
   Use training data (experimental); input dir defaults to '.'.
 
 -redoAnalysis <filename>:
-  Redo analysis using configureation from previous analysis.
+  Redo analysis using configuration from previous analysis.
 
 -sourceInfo <filename>:
   Specify source info file (line numbers for fields/classes).

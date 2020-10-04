@@ -111,7 +111,7 @@ quietErrors
 reportLevel
   An optional attribute. It specifies the confidence/priority threshold for reporting issues.
   If set to ``low``, confidence is not used to filter bugs.
-  If set to ``medium`` (the default), low confidence issues are supressed.
+  If set to ``medium`` (the default), low confidence issues are suppressed.
   If set to ``high``, only high confidence bugs are reported.
 
 output

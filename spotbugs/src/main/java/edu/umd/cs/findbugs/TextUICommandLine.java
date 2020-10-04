@@ -183,7 +183,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addSwitch("-relaxed", "Relaxed reporting mode (more false positives!)");
         addSwitchWithOptionalExtraPart("-train", "outputDir", "Save training data (experimental); output dir defaults to '.'");
         addSwitchWithOptionalExtraPart("-useTraining", "inputDir", "Use training data (experimental); input dir defaults to '.'");
-        addOption("-redoAnalysis", "filename", "Redo analysis using configureation from previous analysis");
+        addOption("-redoAnalysis", "filename", "Redo analysis using configuration from previous analysis");
         addOption("-sourceInfo", "filename", "Specify source info file (line numbers for fields/classes)");
         addOption("-projectName", "project name", "Descriptive name of project");
 

@@ -12,6 +12,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump ASM from 8.0.1 to 9.0 supporting JDK16 (sealed classes)
 * Bump Saxon-HE from 10.1 to 10.2
 
+### Fixed
+* Typos in description, documentation and so on
+
 ## 4.1.3 - 2020-09-25
 ### Fixed
 * False positive `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources ([#259](https://github.com/spotbugs/spotbugs/issues/259))
