@@ -735,7 +735,7 @@ msgid "-redoAnalysis <filename>:"
 msgstr ""
 
 #: /documents/docs/running.rst:285
-msgid "Redo analysis using configureation from previous analysis."
+msgid "Redo analysis using configuration from previous analysis."
 msgstr ""
 
 #: /documents/docs/running.rst:288
