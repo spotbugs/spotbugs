@@ -9184,4 +9184,5 @@ Ulf Ochsenfahrt と Eric Fellheimer
   <BugCode abbrev="OBL">ストリームまたはリソースをクリーンアップする責務が満たされていない</BugCode>
   <BugCode abbrev="FB">SpotBugs はメソッドで期待された警告を出さない</BugCode>
   <BugCode abbrev="DL">共有オブジェクトを意図的でなくロックすることによる潜在的デッドロック</BugCode>
+  <BugCode abbrev="JUA">JUnitアサーションの問題</BugCode>
 </MessageCollection>
