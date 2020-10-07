@@ -8545,4 +8545,5 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="OBL">Unsatisfied obligation to clean up stream or resource</BugCode>
   <BugCode abbrev="FB">SpotBugs did not produce the expected warnings on a method</BugCode>
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
+  <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
 </MessageCollection>

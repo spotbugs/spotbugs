@@ -675,6 +675,7 @@
           <BugCode abbrev="ICAST" cweid="192"/>
           <BugCode abbrev="FB"/>
           <BugCode abbrev="AT"/>
+          <BugCode abbrev="JUA"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />

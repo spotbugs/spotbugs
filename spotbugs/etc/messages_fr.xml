@@ -3501,4 +3501,5 @@ double value2 =  x / (double) y;
  <BugCode abbrev="QBA">Assignation booléenne douteuse</BugCode>
  <BugCode abbrev="VR">Problème de compatibilité entre les versions</BugCode>
  <BugCode abbrev="DP">Utiliser doPrivileged</BugCode>
+ <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
 </MessageCollection>
