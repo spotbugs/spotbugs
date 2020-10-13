@@ -15,6 +15,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Bump jaxen from 1.1.6 to 1.2.0 supporting Java 11 compilation ([#1316](https://github.com/spotbugs/spotbugs/issues/1316))
 * Bump ASM from 8.0.1 to 9.0 supporting JDK16 (sealed classes)
 * Bump Saxon-HE from 10.1 to 10.2
+* The dependency from `test-harness` to `spotbugs` is now `testImplementation` ([#1317](https://github.com/spotbugs/spotbugs/pull/1317))
+* The dependency from `test-harness-core` to `spotbugs` is now `api` ([#1317](https://github.com/spotbugs/spotbugs/pull/1317))
 
 ## 4.1.3 - 2020-09-25
 ### Fixed
