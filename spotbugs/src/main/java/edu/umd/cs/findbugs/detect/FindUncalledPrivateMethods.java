@@ -19,16 +19,20 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -36,8 +40,10 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.NestedAccessUtil;
 
 /**
  * Detector to find private methods that are never called.
@@ -103,9 +109,15 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         definedPrivateMethods = new HashSet<>();
         calledMethods = new HashSet<>();
         calledMethodNames = new HashSet<>();
-        className = classContext.getJavaClass().getClassName();
+        JavaClass javaClass = classContext.getJavaClass();
+        className = javaClass.getClassName();
         String[] parts = className.split("[$+.]");
         String simpleClassName = parts[parts.length - 1];
+
+
+        if (NestedAccessUtil.supportsNestedAccess(javaClass)) {
+            checkForNestedAccess(classContext, javaClass);
+        }
 
         ConstantPool cp = classContext.getJavaClass().getConstantPool();
         for (Constant constant : cp.getConstantPool()) {
@@ -147,5 +159,53 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
         definedPrivateMethods = null;
         calledMethods = null;
+    }
+
+    private void checkForNestedAccess(ClassContext classContext, JavaClass javaClass) {
+        AnalysisContext analysisContext = classContext.getAnalysisContext();
+        List<String> nestMateClassNames = Collections.EMPTY_LIST;
+        try {
+            nestMateClassNames = NestedAccessUtil.getNestMateClassNames(javaClass, analysisContext);
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
+        for (String nestMateClassName : nestMateClassNames) {
+            try {
+                JavaClass nestMemberClass = analysisContext.lookupClass(nestMateClassName);
+                if (nestMemberClass.equals(javaClass)) {
+                    continue;
+                }
+                ConstantPool cp = nestMemberClass.getConstantPool();
+                for (Constant constant : nestMemberClass.getConstantPool().getConstantPool()) {
+                    if (constant instanceof ConstantMethodref) {
+                        ConstantMethodref ref = (ConstantMethodref) constant;
+                        ConstantNameAndType nt = (ConstantNameAndType) cp.getConstant(ref.getNameAndTypeIndex());
+                        String name = ((ConstantUtf8) cp.getConstant(nt.getNameIndex(), Const.CONSTANT_Utf8))
+                                .getBytes();
+                        String signature = ((ConstantUtf8) cp.getConstant(nt.getSignatureIndex(), Const.CONSTANT_Utf8))
+                                .getBytes();
+                        /*
+                         * We don't check if the method is static, since that is not relevant for the actual error
+                         * reporting. Called methods are removed from "definedPrivateMethods" via their hash code, which
+                         * consists of class name, method name and method signature. Finding out whether the method is
+                         * static will require checking in "definedPrivateMethods".
+                         */
+                        boolean isStatic = false;
+                        String nestMemberClassName = getClassName(nestMemberClass, ref.getClassIndex());
+                        MethodAnnotation called = new MethodAnnotation(ClassName.toDottedClassName(nestMemberClassName),
+                                name, signature, isStatic);
+                        calledMethods.add(called);
+                        calledMethodNames.add(name.toLowerCase());
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
+            }
+        }
+    }
+
+    private static String getClassName(JavaClass c, int classIndex) {
+        String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+        return ClassName.extractClassName(name).replace('/', '.');
     }
 }

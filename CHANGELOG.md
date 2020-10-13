@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 * Error dialog on cancelling SpotBugs job in Eclipse ([#1314](https://github.com/spotbugs/spotbugs/issues/1314))
 * IllegalArgumentException in OpcodeStack.constantToInt ([#893](https://github.com/spotbugs/spotbugs/issues/893))
 * Typos in description, documentation and so on
+* spotbugs reports `VR_UNRESOLVABLE_REFERENCE` and `UPM_UNCALLED_PRIVATE_METHOD` when code is compiled with Java 11 ([#1254](https://github.com/spotbugs/spotbugs/issues/1254))
 
 ### Changed
 * Bump jaxen from 1.1.6 to 1.2.0 supporting Java 11 compilation ([#1316](https://github.com/spotbugs/spotbugs/issues/1316))
