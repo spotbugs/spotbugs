@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ResolveAllReferences extends PreorderVisitor implements Detector {
@@ -83,15 +84,18 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     public void addAllDefinitions(JavaClass obj) {
         String className2 = obj.getClassName();
 
+        // ensure we allow access according to JEP 181, better support for nested member access
+        boolean addPrivateFields = NestedAccessUtil.hasNest(obj);
+
         defined.add(className2);
         for (Method m : obj.getMethods()) {
-            if (!m.isPrivate()) {
+            if (!m.isPrivate() || addPrivateFields) {
                 String name = getMemberName(obj, className2, m.getNameIndex(), m.getSignatureIndex());
                 defined.add(name);
             }
         }
         for (Field f : obj.getFields()) {
-            if (!f.isPrivate()) {
+            if (!f.isPrivate() || addPrivateFields) {
                 String name = getMemberName(obj, className2, f.getNameIndex(), f.getSignatureIndex());
                 defined.add(name);
             }
