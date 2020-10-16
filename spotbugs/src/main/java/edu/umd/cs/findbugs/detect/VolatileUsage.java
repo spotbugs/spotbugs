@@ -144,7 +144,7 @@ public class VolatileUsage extends BytecodeScanningDetector {
         Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
 
         for (XField f : AnalysisContext.currentXFactory().allFields()) {
-            if (isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
+            if (!f.isSynthetic() && isVolatileArray(f) && subtypes2.isApplicationClass(f.getClassDescriptor())) {
                 int priority = LOW_PRIORITY;
                 if (initializationWrites.contains(f) && !otherWrites.contains(f)) {
                     priority = NORMAL_PRIORITY;
