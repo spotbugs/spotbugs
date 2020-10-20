@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * False positive `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources ([#259](https://github.com/spotbugs/spotbugs/issues/259))
 * Misconfiguration which makes ASM not supporting Java 14 ([#1276](https://github.com/spotbugs/spotbugs/issues/1276))
+* False positive `OBL_UNSATIFIED_OBLIGATION with try with resources` on fallThrough edge when the obligation type is statement ([#79](https://github.com/spotbugs/spotbugs/issues/79))
 
 ## 4.1.2 - 2020-08-18
 ### Fixed
