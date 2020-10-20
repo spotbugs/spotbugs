@@ -215,6 +215,17 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                             + edge.getSource().getLastInstruction());
                 }
                 fact.deleteObligation(comparedObligation, edge.getTarget().getLabel());
+
+                // closing a Statement closes the ResultSet
+                Obligation statement = database.getFactory().getObligationByName("java.sql.Statement");
+                if (comparedObligation.equals(statement)){
+                    Obligation resultSet = database.getFactory().getObligationByName("java.sql.ResultSet");
+                    fact.deleteObligation(resultSet, edge.getTarget().getLabel());
+                    if (DEBUG_NULL_CHECK) {
+                        System.out.println("Deleting " + resultSet.toString() + " on edge from comparison "
+                                + edge.getSource().getLastInstruction());
+                    }
+                }
             }
         }
     }
