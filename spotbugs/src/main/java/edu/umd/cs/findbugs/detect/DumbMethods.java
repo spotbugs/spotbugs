@@ -687,6 +687,30 @@ public class DumbMethods extends OpcodeStackDetector {
                     BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
                             .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
                     accumulator.accumulateBug(bug, this);
+                } else if ("doubleValue".equals(called.getName())
+                        && "java/lang/Double".equals(called.getClassDescriptor().getClassName())
+                        && "java/lang/Double".equals(previousMethodCall.getSlashedClassName())
+                        && (Const.CONSTRUCTOR_NAME.equals(previousMethodCall.getName())
+                                && "(Ljava/lang/String;)V".equals(previousMethodCall.getSignature())
+                                || "valueOf".equals(previousMethodCall.getName())
+                                        && "(Ljava/lang/String;)Ljava/lang/Double;".equals(previousMethodCall.getSignature()))) {
+                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Double", "parseDouble", "(Ljava/lang/String;)J", true);
+
+                    BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
+                    accumulator.accumulateBug(bug, this);
+                } else if ("floatValue".equals(called.getName())
+                        && "java/lang/Float".equals(called.getClassDescriptor().getClassName())
+                        && "java/lang/Float".equals(previousMethodCall.getSlashedClassName())
+                        && (Const.CONSTRUCTOR_NAME.equals(previousMethodCall.getName())
+                                && "(Ljava/lang/String;)V".equals(previousMethodCall.getSignature())
+                                || "valueOf".equals(previousMethodCall.getName())
+                                        && "(Ljava/lang/String;)Ljava/lang/Float;".equals(previousMethodCall.getSignature()))) {
+                    MethodAnnotation preferred = new MethodAnnotation("java.lang.Float", "parseFloat", "(Ljava/lang/String;)J", true);
+
+                    BugInstance bug = new BugInstance(this, "DM_BOXED_PRIMITIVE_FOR_PARSING", HIGH_PRIORITY).addClassAndMethod(this)
+                            .addCalledMethod(this).addMethod(preferred).describe(MethodAnnotation.SHOULD_CALL);
+                    accumulator.accumulateBug(bug, this);
                 } else if ("compareTo".equals(called.getName())
                         && "valueOf".equals(previousMethodCall.getName())
                         && called.getClassDescriptor().equals(previousMethodCall.getClassDescriptor()) && !previousMethodCall.getSignature()
