@@ -75,7 +75,7 @@ public class PlaceholderTest {
         JSONArray rules = run.getJSONObject("tool").getJSONObject("driver").getJSONArray("rules");
         String defaultText = rules.getJSONObject(0).getJSONObject("messageStrings").getJSONObject("default").getString("text");
         assertThat("key in placeholders are removed",
-                defaultText, is("describing about this bug type with value {0} and {1}"));
+                defaultText, is("describing about this bug type with value {0} and {1}."));
 
         JSONArray results = run.getJSONArray("results");
         JSONObject message = results.getJSONObject(0).getJSONObject("message");
