@@ -330,7 +330,7 @@ class Location {
             }
 
             if (annotation == null) {
-                return null;
+                return Optional.empty();
             }
 
             String kind = findKind(annotation);
