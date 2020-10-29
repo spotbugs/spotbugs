@@ -41,8 +41,8 @@ final class Rule {
     }
 
     JSONObject toJSONObject() {
-        String textEndsWithPeriod = !defaultText.endsWith(".") ? defaultText + "." : defaultText;
-        String shortDescriptionEndsWithPeriod = !shortDescription.endsWith(".") ? shortDescription + "." : shortDescription;
+        String textEndsWithPeriod = defaultText.endsWith(".") ? defaultText : defaultText + ".";
+        String shortDescriptionEndsWithPeriod = shortDescription.endsWith(".") ? shortDescription : shortDescription + ".";
         JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", textEndsWithPeriod));
         // TODO put 'fullDescription' with both of text and markdown representations
         JSONObject result = new JSONObject()
