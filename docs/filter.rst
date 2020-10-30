@@ -50,7 +50,7 @@ Same as ``<Confidence>``, exists for backward compatibility.
 <Rank>
 ^^^^^^
 
-This element matches warnings with a particular bug rank. The ``value`` attribute should be an integer value between 1 and 20, where 1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.
+This element matches warnings having at least a specified bug rank. The ``value`` attribute should be an integer value between 1 and 20, where 1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.
 
 <Package>
 ^^^^^^^^^
