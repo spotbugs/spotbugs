@@ -8434,7 +8434,7 @@ Joshua Bloch が <a href="http://googleresearch.blogspot.com/2006/06/extra-extra
 <![CDATA[
 <p>
 このクラスは， <code>final</code> と宣言されていますが，フィールドは <code>protected</code> と宣言されています。
-クラスは <code>fainal</code> なので派生できません。<code>protected</code> の使用は紛らわしいです。
+クラスは <code>final</code> なので派生できません。<code>protected</code> の使用は紛らわしいです。
 フィールドのためのアクセス修飾子は，フィールドの真の用途を表すため， <code>private</code> か <code>public</code> に変更すべきです。
 </p>
 ]]>
