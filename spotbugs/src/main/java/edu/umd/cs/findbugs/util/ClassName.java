@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs.util;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.When;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
 
 /**
  * Utility methods for working with class names.
@@ -265,13 +267,32 @@ public abstract class ClassName {
         }
 
         for (String p : pp) {
-            if (p.length() > 0 && className.indexOf(p) >= 0) {
+            if (p.length() > 0 && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
                 return true;
             }
         }
 
         return false;
+    }
 
+    /**
+     * Perform a fuzzy matching, by comparing the Levenshtein distance of the
+     * simple class name and the search string. A maximum distance of 3 is used.
+     * This means the searchString and the className may differ by 3 single-character
+     * edits (insertions, deletions or substitutions). This limit also speeds up the computation.
+     * <p>
+     * For more information on the Levenshtein distance see
+     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the 
+     * <a href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache Commons Text JavaDoc</a>.
+     *
+     * @param className    the full class name
+     * @param searchString the search string
+     * @return true, if the strings are similar, false otherwise
+     */
+    private static boolean fuzzyMatch(String className, String searchString) {
+        // compare to a maximum Levenshtein distance of 3
+        LevenshteinDistance ld = new LevenshteinDistance(3);
+        return ld.apply(extractSimpleName(className), searchString) != -1;
     }
 
 
