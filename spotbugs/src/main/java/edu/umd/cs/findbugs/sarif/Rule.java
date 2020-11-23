@@ -41,11 +41,13 @@ final class Rule {
     }
 
     JSONObject toJSONObject() {
-        JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", defaultText));
+        String textEndsWithPeriod = defaultText.endsWith(".") ? defaultText : defaultText + ".";
+        String shortDescriptionEndsWithPeriod = shortDescription.endsWith(".") ? shortDescription : shortDescription + ".";
+        JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", textEndsWithPeriod));
         // TODO put 'fullDescription' with both of text and markdown representations
         JSONObject result = new JSONObject()
                 .put("id", id)
-                .put("shortDescription", new JSONObject().put("text", shortDescription))
+                .put("shortDescription", new JSONObject().put("text", shortDescriptionEndsWithPeriod))
                 .put("messageStrings", messageStrings)
                 .putOpt("helpUri", helpUri);
         if (!tags.isEmpty()) {

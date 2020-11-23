@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,8 +87,7 @@ class Location {
     private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
         try {
-            SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
-            return PhysicalLocation.fromBugAnnotation(sourceLine, sourceFinder, baseToId).orElse(null);
+            return PhysicalLocation.fromBugAnnotation(bugInstance, sourceFinder, baseToId).orElse(null);
         } catch (IllegalStateException e) {
             // no sourceline info found
             return null;
@@ -122,13 +122,14 @@ class Location {
             return new JSONObject().put("uri", uri).putOpt("uriBaseId", uriBaseId);
         }
 
-        static Optional<ArtifactLocation> fromBugAnnotation(@NonNull SourceLineAnnotation bugAnnotation, @NonNull SourceFinder sourceFinder,
+        static Optional<ArtifactLocation> fromBugAnnotation(@NonNull ClassAnnotation classAnnotation, @NonNull SourceLineAnnotation bugAnnotation,
+                @NonNull SourceFinder sourceFinder,
                 @NonNull Map<URI, String> baseToId) {
             Objects.requireNonNull(bugAnnotation);
             Objects.requireNonNull(sourceFinder);
             Objects.requireNonNull(baseToId);
 
-            return sourceFinder.getBase(bugAnnotation).map(base -> {
+            Optional<ArtifactLocation> location = sourceFinder.getBase(bugAnnotation).map(base -> {
                 String uriBaseId = baseToId.computeIfAbsent(base, s -> Integer.toString(s.hashCode()));
                 try {
                     SourceFile sourceFile = sourceFinder.findSourceFile(bugAnnotation);
@@ -137,6 +138,19 @@ class Location {
                     throw new UncheckedIOException(e);
                 }
             });
+
+            if (location.isPresent()) {
+                return location;
+            }
+
+            try {
+                String path = bugAnnotation.format("full", classAnnotation);
+                String pathWithoutLine = path.contains(":") ? path.split(":")[0] : path;
+                return Optional.of(new ArtifactLocation(new URI(pathWithoutLine), null));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                return Optional.empty();
+            }
         }
 
         static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<URI, String> baseToId) {
@@ -180,7 +194,7 @@ class Location {
             assert startLine > 0;
             assert endLine > 0;
             this.startLine = startLine;
-            this.endLine = endLine;
+            this.endLine = startLine == endLine ? 0 : endLine;
         }
 
         static Optional<Region> fromBugAnnotation(SourceLineAnnotation annotation) {
@@ -192,7 +206,13 @@ class Location {
         }
 
         JSONObject toJSONObject() {
-            return new JSONObject().put("startLine", startLine).put("endLine", endLine);
+            JSONObject json = new JSONObject().put("startLine", startLine);
+
+            if (endLine != 0) {
+                json = json.put("endLine", endLine);
+            }
+
+            return json;
         }
     }
 
@@ -218,10 +238,13 @@ class Location {
             return result;
         }
 
-        static Optional<PhysicalLocation> fromBugAnnotation(SourceLineAnnotation bugAnnotation, SourceFinder sourceFinder,
+        static Optional<PhysicalLocation> fromBugAnnotation(@NonNull BugInstance bugInstance, SourceFinder sourceFinder,
                 Map<URI, String> baseToId) {
-            Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(bugAnnotation, sourceFinder, baseToId);
-            Optional<Region> region = Region.fromBugAnnotation(bugAnnotation);
+            ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
+            SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
+
+            Optional<ArtifactLocation> artifactLocation = ArtifactLocation.fromBugAnnotation(primaryClass, sourceLine, sourceFinder, baseToId);
+            Optional<Region> region = Region.fromBugAnnotation(sourceLine);
             return artifactLocation.map(location -> new PhysicalLocation(location, region.orElse(null)));
         }
     }
@@ -269,16 +292,50 @@ class Location {
         @NonNull
         static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
             Objects.requireNonNull(bugInstance);
-            ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
-            SourceLineAnnotation sourceLine = bugInstance.getPrimarySourceLineAnnotation();
-            return bugInstance.getAnnotations().stream().map(annotation -> {
-                String kind = findKind(annotation);
-                if (kind == null) {
-                    return null;
+            ClassAnnotation classAnnotation = null;
+            MethodAnnotation methodAnnotation = null;
+            FieldAnnotation fieldAnnotation = null;
+            LocalVariableAnnotation localVariableAnnotation = null;
+
+            for (BugAnnotation bugAnnotation : bugInstance.getAnnotations()) {
+                if (bugAnnotation instanceof ClassAnnotation) {
+                    classAnnotation = (ClassAnnotation) bugAnnotation;
+                } else if (bugAnnotation instanceof MethodAnnotation) {
+                    methodAnnotation = (MethodAnnotation) bugAnnotation;
+                } else if (bugAnnotation instanceof FieldAnnotation) {
+                    fieldAnnotation = (FieldAnnotation) bugAnnotation;
+                } else if (bugAnnotation instanceof LocalVariableAnnotation) {
+                    localVariableAnnotation = (LocalVariableAnnotation) bugAnnotation;
                 }
-                String name = annotation.format("givenClass", primaryClass);
-                return new LogicalLocation(name, null, kind, sourceLine.format("full", primaryClass), null);
-            }).filter(Objects::nonNull).findFirst();
+            }
+
+            String fullyQualifiedName = "";
+            BugAnnotation annotation = null;
+            if (localVariableAnnotation != null) {
+                annotation = localVariableAnnotation;
+                fullyQualifiedName = String.format("%s#%s", methodAnnotation.getFullMethod(classAnnotation), localVariableAnnotation.getName());
+            } else {
+                if (fieldAnnotation != null) {
+                    annotation = fieldAnnotation;
+                    fullyQualifiedName = String.format("%s.%s", classAnnotation.getClassName(), fieldAnnotation.getFieldName());
+                } else {
+                    if (methodAnnotation != null) {
+                        annotation = methodAnnotation;
+                        fullyQualifiedName = methodAnnotation.getFullMethod(classAnnotation);
+                    } else if (classAnnotation != null) {
+                        annotation = classAnnotation;
+                        fullyQualifiedName = classAnnotation.getClassName();
+                    }
+                }
+            }
+
+            if (annotation == null) {
+                return Optional.empty();
+            }
+
+            String kind = findKind(annotation);
+            String name = annotation.format("givenClass", classAnnotation);
+            return Optional.of(new LogicalLocation(name, null, kind, fullyQualifiedName, null));
         }
 
         @CheckForNull
