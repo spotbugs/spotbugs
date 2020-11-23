@@ -12,6 +12,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 * The class search (in the GUI's class name filter) is now case-insensitive and forgives typos (part of ([#749](https://github.com/spotbugs/spotbugs/issues/749)))
 
+### Changed
+* Bump Saxon-HE from 10.2 to 10.3
+
 ## 4.1.4 - 2020-10-15
 ### Fixed
 * `IllegalArgumentException` during XML report generation ([#1272](https://github.com/spotbugs/spotbugs/issues/1272))
