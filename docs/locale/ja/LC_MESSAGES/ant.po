@@ -222,7 +222,6 @@ msgid "reportLevel"
 msgstr ""
 
 #: ../../ant.rst:112
-#, fuzzy
 msgid ""
 "An optional attribute. It specifies the confidence/priority threshold for"
 " reporting issues. If set to ``low``, confidence is not used to filter "
