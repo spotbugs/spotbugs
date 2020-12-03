@@ -1324,6 +1324,14 @@ the subclass.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.PublicAttributes">
+    <Details>
+<![CDATA[
+<p>This detector looks for public attributes that are also written by the methods of the class.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
     <Details>
 <![CDATA[
@@ -7098,6 +7106,29 @@ just use the constant. Methods detected are:
     ]]>
       </Details>
   </BugPattern>
+  <BugPattern type="PA_PUBLIC_ATTRIBUTES">
+    <ShortDescription>Field is both public and written by a method</ShortDescription>
+    <LongDescription>Field {1} is both public and written by a method</LongDescription>
+    <Details>
+   <![CDATA[
+    <p>
+    SEI CERT rule OBJ01-J requires that accessibility of fields must be limited:
+    https://wiki.sei.cmu.edu/confluence/display/java/OBJ01-J.+Limit+accessibility+of+fields
+    In general, requiring that no fields must be public is overkill and unrealistic. Even the rule
+    mentions that final fields may be public, except if the type of the field is a mutable reference
+    type which can be modified despite the reference itself being final. Besides final fields, there
+    may be other usages for public fields: some public fields may serve as "flags" which affect the
+    behavior of the class. These fields are expected to be read by the containing class itself and
+    written by other classes. If a field is both written by the methods of the containing class
+    itself and from outside is suspicious. Consider making these fields private and provide setters
+    if necessary. Please note that constructors, initializers and finalizers are exceptions, if only
+    they write the field inside the class, the field is not considered as written by the class
+    itself. Also note that for reference type fields "writing" means calling methods whose name
+    suggests modification.
+    </p>
+    ]]>
+      </Details>
+  </BugPattern>
   <BugPattern type="PS_PUBLIC_SEMAPHORES">
     <ShortDescription>Class exposes synchronization and semaphores in its public interface</ShortDescription>
     <LongDescription>Class {0} exposes synchronization and semaphores in its public interface</LongDescription>
@@ -8601,6 +8632,7 @@ after the call to initLogging, the logger configuration is lost
   <BugCode abbrev="CD">Circular Dependencies</BugCode>
   <BugCode abbrev="RI">Redundant Interfaces</BugCode>
   <BugCode abbrev="MTIA">Multithreaded Instance Access</BugCode>
+  <BugCode abbrev="PA">Public Attributes</BugCode>
   <BugCode abbrev="PS">Public Semaphores</BugCode>
   <BugCode abbrev="BSHIFT">Bad shift</BugCode>
   <BugCode abbrev="ICAST">Casting from integer values</BugCode>
