@@ -4,7 +4,7 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2020-??-??
+## Unreleased - 2021-??-??
 
 ### Fixed
 * Invalid HTML in the description of `LI_LAZY_INIT_UPDATE_STATIC` bug pattern ([#1383](https://github.com/spotbugs/spotbugs/pull/1383))
