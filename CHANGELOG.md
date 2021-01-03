@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 * Invalid HTML in the description of `LI_LAZY_INIT_UPDATE_STATIC` bug pattern ([#1383](https://github.com/spotbugs/spotbugs/pull/1383))
+* NP_NONNULL_PARAM_VIOLATION false-positive in CompletableFuture.completedStage(value) ([#1397](https://github.com/spotbugs/spotbugs/issues/1397))
 
 ## 4.2.0 - 2020-11-28
 ### Fixed
