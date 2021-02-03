@@ -4,11 +4,14 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2021-??-??
+## 4.2.1 - 2021-02-03
 
 ### Fixed
 * Invalid HTML in the description of `LI_LAZY_INIT_UPDATE_STATIC` bug pattern ([#1383](https://github.com/spotbugs/spotbugs/pull/1383))
 * NP_NONNULL_PARAM_VIOLATION false-positive in CompletableFuture.completedStage(value) ([#1397](https://github.com/spotbugs/spotbugs/issues/1397))
+
+### Changed
+* Bump json from 20200518 to 20201115 ([#1384](https://github.com/spotbugs/spotbugs/pull/1384))
 
 ## 4.2.0 - 2020-11-28
 ### Fixed
