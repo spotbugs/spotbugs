@@ -15,7 +15,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 
 dependencies {
   compileOnly project(':spotbugs')
-  compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+  compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.1'
   implementation project(':test-harness-core')
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
   testImplementation project(':spotbugs')
