@@ -22,13 +22,12 @@ subprojects {
   group = 'com.github.spotbugs'
   version = rootProject.version
 
-  repositories {
-    jcenter()
-  }
 }
 
-repositories {
-  jcenter()
+allprojects {
+  repositories {
+    mavenCentral()
+  }
 }
 
 wrapper {
