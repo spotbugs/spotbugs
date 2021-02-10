@@ -1062,7 +1062,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
             }
             if (!readOnlyFields.contains(f)) {
-                bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "UWF_NULL_FIELD", priority), f)
+                bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "UWF_NULL_FIELD", priority).addSourceLine(this), f)
                         .lowerPriorityIfDeprecated());
             }
         }
