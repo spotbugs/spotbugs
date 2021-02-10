@@ -17,7 +17,7 @@ dependencies {
 }
 
 
-test {
+tasks.named('test', Test).configure {
   doFirst {
     def auxClasspath = project(':spotbugsTestCases').configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.file
     systemProperty 'AUX_CLASSPATH', auxClasspath.join(',')
@@ -32,7 +32,7 @@ artifacts {
   archives sourcesJar
 }
 
-jacocoTestReport {
+tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
 }

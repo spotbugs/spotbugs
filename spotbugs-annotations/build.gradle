@@ -15,7 +15,7 @@ def manifestSpec = manifest {
                'Bundle-ManifestVersion': '2'
 }
 
-task updateManifest {
+def updateManifest = tasks.register('updateManifest') {
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
 }
@@ -34,7 +34,7 @@ jar {
   }
 }
 
-javadoc {
+tasks.named('javadoc', Javadoc).configure {
   options.with {
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Annotation Documentation'
