@@ -114,7 +114,7 @@ clean {
 }
 
 tasks.compileGuiJava {
-  options.compilerArgs.addAll(['--release', '8'])
+  options.release = 8
 }
 
 tasks.withType(Jar).all {
