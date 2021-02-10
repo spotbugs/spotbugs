@@ -57,7 +57,13 @@ def jacocoRootReport = tasks.register('jacocoRootReport', JacocoReport) {
 
 import org.gradle.crypto.checksum.Checksum
 
-def publishTask = tasks.named("publish").orElse({tasks.named('publishToMavenLocal')})
+def publishTask = project.providers.provider {
+  def t = tasks.findByName("publish")
+  if (t == null) {
+    t = tasks.findByName("publishToMavenLocal")
+  }
+  return t
+}
 def outputFile = file("$buildDir/release.md")
 def inputFile =  subprojects.collect {
   it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
