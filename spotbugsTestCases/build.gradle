@@ -40,34 +40,34 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
-javadoc {
-  doFirst {
-    // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
-    options.addBooleanOption('Xdoclint:all,-missing', true)
+tasks.named('javadoc', Javadoc).configure {
+  // This is supposed to enable everything except "missing" but doesn't work with gradle
+  // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
+  options.addBooleanOption('Xdoclint:all,-missing', true)
 
-    // TODO remove command and warning below if the doclint can be properly configured
-    options.addStringOption('Xmaxwarns', '3')
-  }
+  // TODO remove command and warning below if the doclint can be properly configured
+  options.addStringOption('Xmaxwarns', '3')
   doLast {
     logger.warn('Javadoc: too many warnings, only first 3 are shown, see #340!')
   }
 }
 
-task classesJava8(type:JavaCompile) {
+def classesJava8 = tasks.register('classesJava8', JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
-task classesJava11(type:JavaCompile) {
+def classesJava11 = tasks.register('classesJava11', JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java11")
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
-tasks['classes'].dependsOn classesJava8
-tasks['classes'].dependsOn classesJava11
+tasks.named('classes').configure {
+  dependsOn classesJava8
+  dependsOn classesJava11
+}
 
 sonarqube {
   // this project should not be analyzed with sonarqube

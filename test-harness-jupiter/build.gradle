@@ -22,7 +22,7 @@ dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 }
 
-javadoc {
+tasks.named('javadoc', Javadoc).configure {
   options.with {
     tags = ['Test']
   }

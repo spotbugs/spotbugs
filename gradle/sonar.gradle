@@ -10,6 +10,6 @@ sonarqube {
     }
 }
 
-tasks.sonarqube {
+tasks.named('sonarqube').configure {
     dependsOn jacocoRootReport
 }
