@@ -751,9 +751,7 @@ public class UnreadFields extends OpcodeStackDetector {
             if (DEBUG) {
                 System.out.println("get: " + f);
             }
-            if (data.writtenFields.contains(f)) {
-                data.fieldAccess.remove(f);
-            } else if (!data.fieldAccess.containsKey(f)) {
+            if (!data.fieldAccess.containsKey(f)) {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
             }
         } else if ((seen == Const.PUTFIELD || seen == Const.PUTSTATIC) && !selfAssignment) {
@@ -1062,7 +1060,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 }
             }
             if (!readOnlyFields.contains(f)) {
-                bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "UWF_NULL_FIELD", priority).addSourceLine(this), f)
+                bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "UWF_NULL_FIELD", priority), f)
                         .lowerPriorityIfDeprecated());
             }
         }
@@ -1215,6 +1213,7 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
         bugAccumulator.reportAccumulatedBugs();
+        data.fieldAccess.clear();
     }
 
     private BugInstance addClassFieldAndAccess(BugInstance instance, XField f) {
