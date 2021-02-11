@@ -144,7 +144,7 @@ eclipse.classpath.file {
 }
 
 def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-    from configurations.testCompileClasspath.files, configurations.testRuntimeClasspath.files, configurations.guiRuntimeClasspath.files, configurations.guiCompileClasspath.files, configurations.logBinding.files
+    from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
     into ".libs"
     include "*.jar"
     exclude "*xml-apis*.jar"
@@ -170,18 +170,17 @@ def updateManifest = tasks.register('updateManifest') {
 tasks.eclipse.dependsOn(updateManifest)
 
 // Manually define what goes into the default jar, since it's not only main sourceset
-jar {
+def jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
   archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
 
   from sourceSets.main.output
   from sourceSets.gui.output
-  def jarInClasspath = project.configurations.runtimeClasspath.collect{it.getName()}
-  jarInClasspath += project.configurations.logBinding.collect{it.getName()}
+  def jarInClasspath = project.configurations.runtimeClasspath + project.configurations.logBinding
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': jarInClasspath.join(' ') + ' config/'
+               'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
   }
 }
 
