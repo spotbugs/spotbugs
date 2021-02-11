@@ -16,14 +16,6 @@ dependencies {
   implementation 'org.apache.ant:ant:1.10.9'
 }
 
-
-tasks.named('test', Test).configure {
-  doFirst {
-    def auxClasspath = project(':spotbugsTestCases').configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.file
-    systemProperty 'AUX_CLASSPATH', auxClasspath.join(',')
-  }
-}
-
 java {
   withSourcesJar()
 }
