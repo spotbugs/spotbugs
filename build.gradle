@@ -35,7 +35,7 @@ wrapper {
 }
 
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
-def jacocoRootReport = tasks.register('jacocoRootReport', JacocoReport) {
+task jacocoRootReport(type: JacocoReport) {
   description = 'Merge all coverage reports before submit to SonarQube'
   def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
   dependsOn reportTasks
@@ -57,12 +57,11 @@ def jacocoRootReport = tasks.register('jacocoRootReport', JacocoReport) {
 
 import org.gradle.crypto.checksum.Checksum
 
-def publishTask = project.providers.provider {
-  def t = tasks.findByName("publish")
-  if (t == null) {
-    t = tasks.findByName("publishToMavenLocal")
-  }
-  return t
+def createReleaseBody = tasks.register("createReleaseBody")
+def createChecksums = tasks.register("createChecksums", Checksum)
+def publishTask = tasks.findByName("publish")
+if (publishTask == null) {
+  publishTask = tasks.findByName("publishToMavenLocal")
 }
 def outputFile = file("$buildDir/release.md")
 def inputFile =  subprojects.collect {
@@ -71,13 +70,13 @@ def inputFile =  subprojects.collect {
   it.file
 }
 
-def createChecksums = tasks.register("createChecksums", Checksum) {
+createChecksums.configure {
   files = files(inputFile)
   if (publishTask != null) {
     dependsOn publishTask
   }
 }
-def createReleaseBody = tasks.register("createReleaseBody") {
+createReleaseBody.configure {
   inputs.files fileTree("$buildDir/checksums").matching {
     include "*.sha256"
   }
@@ -87,10 +86,8 @@ def createReleaseBody = tasks.register("createReleaseBody") {
   doLast {
     outputFile.delete()
     outputFile << """SpotBugs ${project.version}
-
 ### CHANGELOG
 - https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
-
 ### CHECKSUM
 | file | checksum (sha256) |
 | ---- | ----------------- |
