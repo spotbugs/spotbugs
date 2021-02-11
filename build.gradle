@@ -28,6 +28,9 @@ allprojects {
   repositories {
     mavenCentral()
   }
+  dependencies {
+    implementation platform('org.junit:junit-bom:5.7.1')
+  }
 }
 
 wrapper {
