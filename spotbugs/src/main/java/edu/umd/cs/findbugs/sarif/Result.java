@@ -20,7 +20,7 @@ final class Result {
     final Level level;
 
     Result(@NonNull String ruleId, int ruleIndex, Message message, List<Location> locations, @NonNull Level level) {
-        this.ruleId = Objects.requireNonNull(ruleId);
+        this.ruleId = String.format("SPOTBUGS_%d", Objects.requireNonNull(ruleId).hashCode());
         this.ruleIndex = ruleIndex;
         this.message = Objects.requireNonNull(message);
         this.locations = Collections.unmodifiableList(Objects.requireNonNull(locations));
