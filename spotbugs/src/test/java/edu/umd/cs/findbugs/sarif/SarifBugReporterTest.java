@@ -138,15 +138,17 @@ public class SarifBugReporterTest {
         JSONArray rules = run.getJSONObject("tool").getJSONObject("driver").getJSONArray("rules");
         JSONArray results = run.getJSONArray("results");
 
+        String expectedRuleId = String.format("SPOTBUGS_%d", bugPattern.getType().hashCode());
         assertThat(rules.length(), is(1));
         JSONObject rule = rules.getJSONObject(0);
-        assertThat(rule.get("id"), is(bugPattern.getType()));
+        assertThat(rule.get("id"), is(expectedRuleId));
+        assertThat(rule.get("name"), is(bugPattern.getType()));
         String defaultText = rule.getJSONObject("messageStrings").getJSONObject("default").getString("text");
         assertThat(defaultText, is("describing about this bug type with value {0}..."));
 
         assertThat(results.length(), is(1));
         JSONObject result = results.getJSONObject(0);
-        assertThat(result.get("ruleId"), is(bugPattern.getType()));
+        assertThat(result.get("ruleId"), is(expectedRuleId));
         JSONObject message = result.getJSONObject("message");
         assertThat(message.getString("id"), is("default"));
         JSONArray arguments = message.getJSONArray("arguments");
