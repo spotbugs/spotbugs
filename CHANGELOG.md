@@ -20,6 +20,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 * Bump json from 20200518 to 20201115 ([#1384](https://github.com/spotbugs/spotbugs/pull/1384))
+* Change Sarif rule id to opaque rule id
 
 ## 4.2.0 - 2020-11-28
 ### Fixed
