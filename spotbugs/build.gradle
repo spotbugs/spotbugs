@@ -113,11 +113,11 @@ clean {
   delete ".libs"
 }
 
-tasks.compileGuiJava {
-  options.compilerArgs.addAll(['--release', '8'])
+tasks.named('compileGuiJava', JavaCompile).configure {
+  options.release = 8
 }
 
-tasks.withType(Jar).all {
+tasks.withType(Jar).configureEach {
   includeEmptyDirs = false
   // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
   //destinationDir = file("$projectDir/lib")
@@ -143,8 +143,8 @@ eclipse.classpath.file {
     }
 }
 
-task copyLibsForEclipse (type: Copy) {
-    from configurations.testCompileClasspath.files, configurations.testRuntimeClasspath.files, configurations.guiRuntimeClasspath.files, configurations.guiCompileClasspath.files, configurations.logBinding.files
+def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
+    from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
     into ".libs"
     include "*.jar"
     exclude "*xml-apis*.jar"
@@ -152,7 +152,7 @@ task copyLibsForEclipse (type: Copy) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task updateManifest {
+def updateManifest = tasks.register('updateManifest') {
   inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
   outputs.file "$projectDir/META-INF/MANIFEST.MF"
   dependsOn configurations.runtimeClasspath, copyLibsForEclipse
@@ -170,23 +170,22 @@ task updateManifest {
 tasks.eclipse.dependsOn(updateManifest)
 
 // Manually define what goes into the default jar, since it's not only main sourceset
-jar {
+def jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
   archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
 
   from sourceSets.main.output
   from sourceSets.gui.output
-  def jarInClasspath = project.configurations.runtimeClasspath.collect{it.getName()}
-  jarInClasspath += project.configurations.logBinding.collect{it.getName()}
+  def jarInClasspath = project.configurations.runtimeClasspath + project.configurations.logBinding
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': jarInClasspath.join(' ') + ' config/'
+               'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
   }
 }
 
 // Populate bin folder with scripts
-task scripts(type:Copy) {
+def scripts = tasks.register('scripts', Copy) {
   // Take the properties into account for up-to-date checking
   inputs.file "$projectDir/etc/script.properties"
 
@@ -269,30 +268,42 @@ distributions {
   }
 }
 
-distTar.compression = Compression.GZIP
-distTar.duplicatesStrategy = DuplicatesStrategy.FAIL
-distZip.duplicatesStrategy = DuplicatesStrategy.FAIL
-tasks['assemble'].dependsOn tasks['assembleDist']
-tasks['jar'].dependsOn tasks['updateManifest']
+tasks.named('distTar', Tar) {
+  compression = Compression.GZIP
+  duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+def distZip = tasks.named('distZip', Zip) {
+  duplicatesStrategy = DuplicatesStrategy.FAIL
+}
+tasks.named('jar') {
+  dependsOn tasks.named('updateManifest')
+}
 
-task distSrcZip(type:Exec) {
+def distSrcZip = tasks.register('distSrcZip', Exec) {
   def out = "${buildDir}/distributions/spotbugs-${project.version}-source.zip"
   outputs.file out
   commandLine 'git', 'archive', '-o', out,
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
-}
-distSrcZip.onlyIf {
-  file("$rootDir/.git").isDirectory()
-}
-tasks['assembleDist'].finalizedBy distSrcZip
 
-test {
+  onlyIf {
+    file("$rootDir/.git").isDirectory()
+  }
+}
+def assembleDist = tasks.named('assembleDist') {
+  finalizedBy distSrcZip
+}
+tasks.named('assemble') {
+  dependsOn assembleDist
+}
+
+tasks.named('test').configure {
   dependsOn ':spotbugsTestCases:build'
   maxHeapSize = '1G'
 }
 
-task unzipDist(type:Copy, dependsOn:distZip) {
-  from zipTree(distZip.outputs.files.singleFile)
+def unzipDist = tasks.register('unzipDist', Copy) {
+  dependsOn distZip
+  from distZip.map { zipTree(it.outputs.files.singleFile) }
   into file("$buildDir/smoketest/")
   // Remove prefix
   eachFile { details ->
@@ -301,8 +312,8 @@ task unzipDist(type:Copy, dependsOn:distZip) {
 }
 
 // TODO : actually check the output beyond it not blowing up in pieces?
-task smokeTest {
-  dependsOn unzipDist, project(':spotbugs-ant').jar
+def smokeTest = tasks.register('smokeTest') {
+  dependsOn unzipDist, project(':spotbugs-ant').tasks.named('jar')
   doLast {
     ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:project(':spotbugs-ant').jar.outputs.files.asPath)
     ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
@@ -333,19 +344,19 @@ publishing.publications.maven {
 ext.moduleName = 'com.github.spotbugs.spotbugs'
 apply from: "$rootDir/gradle/jigsaw.gradle"
 
-task guiTest(type: Test) {
+def guiTest = tasks.register('guiTest', Test) {
   classpath = project.sourceSets.guiTest.runtimeClasspath
   testClassesDirs = project.sourceSets.guiTest.output.classesDirs
 }
 
-jacocoTestReport {
+tasks.named('jacocoTestReport', JacocoReport).configure {
   dependsOn(test, guiTest)
   executionData.setFrom files("$buildDir/jacoco/test.exec", "$buildDir/jacoco/guiTest.exec")
   sourceDirectories.setFrom files(sourceSets.main.java.srcDirs, sourceSets.gui.java.srcDirs)
   classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
 }
 
-spotbugsTest {
+tasks.named('spotbugsTest').configure {
   ignoreFailures = true
 }
 // TODO : generatemanual (we should decide what to do with the manual)

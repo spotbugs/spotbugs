@@ -9,14 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@5a4ac90
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Set up JDK 11
-        uses: actions/setup-java@d202f5d
+        uses: actions/setup-java@v1
         with:
           java-version: '11.0.x'
-      - uses: actions/cache@0781355
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
