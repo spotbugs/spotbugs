@@ -36,6 +36,8 @@ import java.util.Optional;
  * @see BugInstance
  */
 public class BugPattern implements Comparable<BugPattern> {
+    final private String ruleId;
+
     final private String type;
 
     final private String abbrev;
@@ -60,7 +62,8 @@ public class BugPattern implements Comparable<BugPattern> {
 
     /**
      * Constructor.
-     *
+     * @param ruleId
+     *            the rule id used in Sarif log
      * @param type
      *            the type (species) of BugInstance
      * @param abbrev
@@ -79,9 +82,10 @@ public class BugPattern implements Comparable<BugPattern> {
      * @param bugsUrl
      *            URL of web-page containing bug descriptions or null if there's no such page.
      */
-    public BugPattern(String type, String abbrev, String category, boolean experimental, String shortDescription,
+    public BugPattern(String ruleId, String type, String abbrev, String category, boolean experimental, String shortDescription,
             String longDescription, String detailText, String bugsUrl, int cweid) {
 
+        this.ruleId = ruleId;
         this.type = type;
         this.abbrev = abbrev.intern();
         this.category = category.intern();
@@ -93,12 +97,19 @@ public class BugPattern implements Comparable<BugPattern> {
         this.url = bugsUrl;
     }
 
-    static final BugPattern REALLY_UNKNOWN = new BugPattern("REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
+    static final BugPattern REALLY_UNKNOWN = new BugPattern("SPOT0000","REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
             "Unknown warning; core bug patterns not found", "Unknown warning BUG_PATTERN in {1}; core bug patterns not found",
             "<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern "
                     + "and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration, "
                     + "or perhaps if an analysis was generated using a plugin, but that plugin is not currently loaded. "
                     + "</p>", null, 0);
+
+    /**
+     * Get the Rule Id
+     */
+    public String getRuleId() {
+        return ruleId;
+    }
 
     /**
      * Get the BugPattern

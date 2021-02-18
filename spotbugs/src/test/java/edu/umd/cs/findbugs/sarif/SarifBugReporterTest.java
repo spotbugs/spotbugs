@@ -123,7 +123,7 @@ public class SarifBugReporterTest {
         final String EXPECTED_BUG_TYPE = "BUG_TYPE";
         final int EXPECTED_PRIORITY = Priorities.NORMAL_PRIORITY;
         final String EXPECTED_DESCRIPTION = "describing about this bug type...";
-        BugPattern bugPattern = new BugPattern(EXPECTED_BUG_TYPE, "abbrev", "category", false, EXPECTED_DESCRIPTION,
+        BugPattern bugPattern = new BugPattern("SPOT0000", EXPECTED_BUG_TYPE, "abbrev", "category", false, EXPECTED_DESCRIPTION,
                 "describing about this bug type with value {0}...", "detailText", null, 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
@@ -140,13 +140,14 @@ public class SarifBugReporterTest {
 
         assertThat(rules.length(), is(1));
         JSONObject rule = rules.getJSONObject(0);
-        assertThat(rule.get("id"), is(bugPattern.getType()));
+        assertThat(rule.get("id"), is(bugPattern.getRuleId()));
+        assertThat(rule.get("name"), is(bugPattern.getType()));
         String defaultText = rule.getJSONObject("messageStrings").getJSONObject("default").getString("text");
         assertThat(defaultText, is("describing about this bug type with value {0}..."));
 
         assertThat(results.length(), is(1));
         JSONObject result = results.getJSONObject(0);
-        assertThat(result.get("ruleId"), is(bugPattern.getType()));
+        assertThat(result.get("ruleId"), is(bugPattern.getRuleId()));
         JSONObject message = result.getJSONObject("message");
         assertThat(message.getString("id"), is("default"));
         JSONArray arguments = message.getJSONArray("arguments");
@@ -238,7 +239,7 @@ public class SarifBugReporterTest {
 
     @Test
     public void testHelpUriAndTags() {
-        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+        BugPattern bugPattern = new BugPattern("SPOT0000", "TYPE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
@@ -291,7 +292,7 @@ public class SarifBugReporterTest {
         SourceFinder sourceFinder = reporter.getProject().getSourceFinder();
         sourceFinder.setSourceBaseList(Collections.singleton(tmpDir.toString()));
 
-        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+        BugPattern bugPattern = new BugPattern("SPOT0000", "TYPE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 

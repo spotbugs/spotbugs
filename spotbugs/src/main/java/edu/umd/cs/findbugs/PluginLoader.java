@@ -928,6 +928,7 @@ public class PluginLoader {
         // Create BugPatterns
         List<Node> bugPatternNodeList = XMLUtil.selectNodes(pluginDescriptor, "/FindbugsPlugin/BugPattern");
         for (Node bugPatternNode : bugPatternNodeList) {
+            String ruleId = bugPatternNode.valueOf("@ruleId");
             String type = bugPatternNode.valueOf("@type");
             String abbrev = bugPatternNode.valueOf("@abbrev");
             String category = bugPatternNode.valueOf("@category");
@@ -954,7 +955,7 @@ public class PluginLoader {
                 assert true; // ignore
             }
 
-            BugPattern bugPattern = new BugPattern(type, abbrev, category, experimental, shortDesc, longDesc, detailText, bugsUrl, cweid);
+            BugPattern bugPattern = new BugPattern(ruleId, type, abbrev, category, experimental, shortDesc, longDesc, detailText, bugsUrl, cweid);
 
             try {
                 String deprecatedStr = bugPatternNode.valueOf("@deprecated");

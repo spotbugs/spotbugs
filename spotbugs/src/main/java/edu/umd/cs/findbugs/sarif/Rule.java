@@ -20,6 +20,8 @@ final class Rule {
     @NonNull
     final String id;
     @NonNull
+    final String name;
+    @NonNull
     final String shortDescription;
     @NonNull
     final String fullDescription;
@@ -30,9 +32,10 @@ final class Rule {
     @NonNull
     final List<String> tags;
 
-    Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
+    Rule(@NonNull String id, @NonNull String name, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
             @NonNull List<String> tags) {
         this.id = Objects.requireNonNull(id);
+        this.name = Objects.requireNonNull(name);
         this.shortDescription = Objects.requireNonNull(shortDescription);
         this.fullDescription = Objects.requireNonNull(fullDescription);
         this.defaultText = Objects.requireNonNull(defaultText);
@@ -47,6 +50,7 @@ final class Rule {
         // TODO put 'fullDescription' with both of text and markdown representations
         JSONObject result = new JSONObject()
                 .put("id", id)
+                .put("name", name)
                 .put("shortDescription", new JSONObject().put("text", shortDescriptionEndsWithPeriod))
                 .put("messageStrings", messageStrings)
                 .putOpt("helpUri", helpUri);
@@ -69,7 +73,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, helpUri,
+        return new Rule(bugPattern.getRuleId(), bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, helpUri,
                 tags);
     }
 }

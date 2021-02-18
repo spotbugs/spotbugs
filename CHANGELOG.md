@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 * Bump ASM from 9.0 to 9.1 supporting JDK17
+* Add opaque rule id for Sarif Log
 
 ## 4.2.1 - 2021-02-04
 
