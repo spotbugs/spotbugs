@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class BugRankerTest {
     /**
-     * @see <a href="https://github.com/spotbugs/spotbugs/issues/1161"></a>
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/1161">GitHub issue</a>
      */
     @Test
     public void testTrimToMaxRank() {
