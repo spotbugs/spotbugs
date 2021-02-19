@@ -36,7 +36,9 @@ final class Result {
 
         JsonArray locationArray = new JsonArray();
         locations.stream().map(Location::toJsonObject).forEach(location -> locationArray.add(location));
-        result.add("locations", locationArray);
+        if (locationArray.size() > 0) {
+            result.add("locations", locationArray);
+        }
         return result;
     }
 }

@@ -28,7 +28,9 @@ final class Message {
         for (String arg : arguments) {
             jsonArray.add(arg);
         }
-        jsonObject.add("arguments", jsonArray);
+        if (jsonArray.size() > 0) {
+            jsonObject.add("arguments", jsonArray);
+        }
         return jsonObject;
     }
 }

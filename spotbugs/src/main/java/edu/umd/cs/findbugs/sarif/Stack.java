@@ -46,7 +46,9 @@ class Stack {
 
         JsonArray frameArray = new JsonArray();
         frames.forEach(stackFrame -> frameArray.add(stackFrame.toJsonObject()));
-        result.add("frames", frameArray);
+        if (frameArray.size() > 0) {
+            result.add("frames", frameArray);
+        }
         return result;
     }
 

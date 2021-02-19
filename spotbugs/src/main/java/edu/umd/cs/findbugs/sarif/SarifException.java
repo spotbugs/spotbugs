@@ -61,7 +61,9 @@ class SarifException {
 
         JsonArray exceptionArray = new JsonArray();
         innerExceptions.forEach(innerException -> exceptionArray.add(innerException.toJsonObject()));
-        result.add("innerExceptions", exceptionArray);
+        if (exceptionArray.size() > 0) {
+            result.add("innerExceptions", exceptionArray);
+        }
         return result;
     }
 }

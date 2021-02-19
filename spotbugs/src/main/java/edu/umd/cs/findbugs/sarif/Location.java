@@ -61,7 +61,9 @@ class Location {
 
         JsonArray logicalLocationArray = new JsonArray();
         logicalLocations.stream().map(LogicalLocation::toJsonObject).forEach(logicalLocation -> logicalLocationArray.add(logicalLocation));
-        result.add("logicalLocations", logicalLocationArray);
+        if (logicalLocationArray.size() > 0) {
+            result.add("logicalLocations", logicalLocationArray);
+        }
         return result;
     }
 
