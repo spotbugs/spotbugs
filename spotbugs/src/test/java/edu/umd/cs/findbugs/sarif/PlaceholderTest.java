@@ -60,7 +60,7 @@ public class PlaceholderTest {
 
     @Test
     public void testFormatWithKey() throws ClassNotFoundException {
-        BugPattern bugPattern = new BugPattern("SPOT0000","BUG_TYPE", "abbrev", "category", false, "describing about this bug type...",
+        BugPattern bugPattern = new BugPattern("SPOT0000", "BUG_TYPE", "abbrev", "category", false, "describing about this bug type...",
                 "describing about this bug type with value {0.givenClass} and {1.name}", "detailText", null, 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 

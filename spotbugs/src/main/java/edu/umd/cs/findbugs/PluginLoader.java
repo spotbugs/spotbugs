@@ -58,6 +58,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -933,6 +934,13 @@ public class PluginLoader {
             String abbrev = bugPatternNode.valueOf("@abbrev");
             String category = bugPatternNode.valueOf("@category");
             boolean experimental = Boolean.parseBoolean(bugPatternNode.valueOf("@experimental"));
+
+            // Check if provided opaque rule id
+            if (StringUtils.isEmpty(ruleId)) {
+                ruleId = type;
+                AnalysisContext.logError("Plugin " + plugin.getPluginId()
+                        + " has not provided rule id for this BugPattern. Please see define an opaque rule id. Please see http://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html#def_rule_id for more information.");
+            }
 
             // Find the matching element in messages.xml (or translations)
             String query = "/MessageCollection/BugPattern[@type='" + type + "']";

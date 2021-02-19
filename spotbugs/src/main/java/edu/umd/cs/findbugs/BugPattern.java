@@ -19,11 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.util.HTML;
-
+import javax.annotation.Nonnull;
 import java.net.URI;
 import java.util.Optional;
 
@@ -65,18 +62,20 @@ public class BugPattern implements Comparable<BugPattern> {
      * @deprecated This method does not require an opaque rule id, the preferred way to do this is via
      * the constructor that takes a String parameter ruleId: {@link #BugPattern(String, String, String, String, boolean, String, String, String, String, int)}
      *
-     *
      * @see #BugPattern(String, String, String, String, boolean, String, String, String, String, int)
+     * @see <a href="http://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html#def_rule_id">SARIF Specification#def_rule_id</a> for more information.
      */
     public BugPattern(@Nonnull String type, @Nonnull String abbrev, @Nonnull String category, boolean experimental, String shortDescription,
-                      String longDescription, String detailText, String bugsUrl, int cweid) {
+            String longDescription, String detailText, String bugsUrl, int cweid) {
         // use type as rule id
         this(type, type, abbrev, category, experimental, shortDescription, longDescription, detailText, bugsUrl, cweid);
     }
+
     /**
      * Constructor.
      * @param ruleId
-     *            the rule id used in Sarif log
+     *            the rule id used in Sarif log.
+     *            See <a href="http://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html#def_rule_id">SARIF Specification#def_rule_id</a> for more information.
      * @param type
      *            the type (species) of BugInstance
      * @param abbrev
@@ -95,8 +94,8 @@ public class BugPattern implements Comparable<BugPattern> {
      * @param bugsUrl
      *            URL of web-page containing bug descriptions or null if there's no such page.
      */
-    public BugPattern(@Nonnull String ruleId, @Nonnull String type, @Nonnull String abbrev, @Nonnull String category, boolean experimental, String shortDescription,
-            String longDescription, String detailText, String bugsUrl, int cweid) {
+    public BugPattern(@Nonnull String ruleId, @Nonnull String type, @Nonnull String abbrev, @Nonnull String category, boolean experimental,
+            String shortDescription, String longDescription, String detailText, String bugsUrl, int cweid) {
 
         this.ruleId = ruleId;
         this.type = type;
@@ -110,7 +109,7 @@ public class BugPattern implements Comparable<BugPattern> {
         this.url = bugsUrl;
     }
 
-    static final BugPattern REALLY_UNKNOWN = new BugPattern("SPOT0000","REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
+    static final BugPattern REALLY_UNKNOWN = new BugPattern("SPOT0000", "REALLY_UNKNOWN", "TEST", "CORRECTNESS", false,
             "Unknown warning; core bug patterns not found", "Unknown warning BUG_PATTERN in {1}; core bug patterns not found",
             "<p>A warning was recorded, but SpotBugs can't find the description of this bug pattern "
                     + "and so can't describe it. This should occur only in cases of a bug in SpotBugs or its configuration, "

@@ -32,8 +32,8 @@ final class Rule {
     @NonNull
     final List<String> tags;
 
-    Rule(@NonNull String id, @NonNull String name, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
-            @NonNull List<String> tags) {
+    Rule(@NonNull String id, @NonNull String name, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText,
+            @Nullable URI helpUri, @NonNull List<String> tags) {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.shortDescription = Objects.requireNonNull(shortDescription);
@@ -73,7 +73,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getRuleId(), bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, helpUri,
-                tags);
+        return new Rule(bugPattern.getRuleId(), bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage,
+                helpUri, tags);
     }
 }
