@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.util.HTML;
@@ -61,6 +62,18 @@ public class BugPattern implements Comparable<BugPattern> {
     private boolean deprecated;
 
     /**
+     * @deprecated This method does not require an opaque rule id, the preferred way to do this is via
+     * the constructor that takes a String parameter ruleId: {@link #BugPattern(String, String, String, String, boolean, String, String, String, String, int)}
+     *
+     *
+     * @see #BugPattern(String, String, String, String, boolean, String, String, String, String, int)
+     */
+    public BugPattern(@Nonnull String type, @Nonnull String abbrev, @Nonnull String category, boolean experimental, String shortDescription,
+                      String longDescription, String detailText, String bugsUrl, int cweid) {
+        // use type as rule id
+        this(type, type, abbrev, category, experimental, shortDescription, longDescription, detailText, bugsUrl, cweid);
+    }
+    /**
      * Constructor.
      * @param ruleId
      *            the rule id used in Sarif log
@@ -82,7 +95,7 @@ public class BugPattern implements Comparable<BugPattern> {
      * @param bugsUrl
      *            URL of web-page containing bug descriptions or null if there's no such page.
      */
-    public BugPattern(String ruleId, String type, String abbrev, String category, boolean experimental, String shortDescription,
+    public BugPattern(@Nonnull String ruleId, @Nonnull String type, @Nonnull String abbrev, @Nonnull String category, boolean experimental, String shortDescription,
             String longDescription, String detailText, String bugsUrl, int cweid) {
 
         this.ruleId = ruleId;
