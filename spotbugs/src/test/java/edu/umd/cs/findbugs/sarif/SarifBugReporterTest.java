@@ -87,7 +87,8 @@ public class SarifBugReporterTest {
 
         assertThat("the first key in JSON should be 'version'", json, startsWith("{\"version\""));
         assertThat(jsonObject.get("version").getAsString(), is("2.1.0"));
-        assertThat(jsonObject.get("$schema").getAsString(), is("https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"));
+        assertThat(jsonObject.get("$schema").getAsString(), is(
+                "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"));
     }
 
     /**
@@ -110,7 +111,7 @@ public class SarifBugReporterTest {
 
         String json = writer.toString();
         JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
-        JsonObject run = (JsonObject)jsonObject.getAsJsonArray("runs").get(0);
+        JsonObject run = (JsonObject) jsonObject.getAsJsonArray("runs").get(0);
         JsonObject tool = run.getAsJsonObject("tool");
         JsonObject driver = tool.getAsJsonObject("driver");
 

@@ -288,7 +288,7 @@ class Location {
 
         JsonObject toJsonObject() {
             JsonObject propertiesBag = new JsonObject();
-            properties.forEach((k,v) ->  propertiesBag.addProperty(k, v));
+            properties.forEach((k, v) -> propertiesBag.addProperty(k, v));
             JsonObject locationJson = new JsonObject();
             locationJson.addProperty("name", name);
             if (decoratedName != null) {

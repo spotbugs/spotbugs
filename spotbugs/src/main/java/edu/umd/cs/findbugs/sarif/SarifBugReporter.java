@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonWriter;
-import edu.umd.cs.findbugs.io.IO;
 
 import java.io.IOException;
 import java.net.URI;
@@ -80,8 +79,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
             jsonWriter.name("invocations").beginArray();
             gson.toJson(invocation.toJsonObject(), jsonWriter);
             jsonWriter.endArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw e;
         }
     }
@@ -113,7 +111,8 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         try {
             Gson gson = new Gson();
             jsonWriter.name("extensions").beginArray();
-            DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((jsonObject) -> gson.toJson(jsonObject, jsonWriter));
+            DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((
+                    jsonObject) -> gson.toJson(jsonObject, jsonWriter));
             jsonWriter.endArray();
         } catch (IOException e) {
             throw e;

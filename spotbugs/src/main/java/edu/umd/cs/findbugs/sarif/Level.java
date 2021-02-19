@@ -26,7 +26,9 @@ enum Level {
      */
     NONE;
 
-    public String toJsonString() { return name().toLowerCase(); }
+    public String toJsonString() {
+        return name().toLowerCase();
+    }
 
     @NonNull
     static Level fromBugRank(int bugRank) {

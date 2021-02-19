@@ -74,12 +74,12 @@ public class PlaceholderTest {
         JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
         JsonObject run = (JsonObject) jsonObject.getAsJsonArray("runs").get(0);
         JsonArray rules = run.getAsJsonObject("tool").getAsJsonObject("driver").getAsJsonArray("rules");
-        String defaultText = ((JsonObject)rules.get(0)).getAsJsonObject("messageStrings").getAsJsonObject("default").get("text").getAsString();
+        String defaultText = ((JsonObject) rules.get(0)).getAsJsonObject("messageStrings").getAsJsonObject("default").get("text").getAsString();
         assertThat("key in placeholders are removed",
                 defaultText, is("describing about this bug type with value {0} and {1}."));
 
         JsonArray results = run.getAsJsonArray("results");
-        JsonObject message = ((JsonObject)results.get(0)).getAsJsonObject("message");
+        JsonObject message = ((JsonObject) results.get(0)).getAsJsonObject("message");
         JsonArray arguments = message.getAsJsonArray("arguments");
         assertThat("BugAnnotation has been formatted by the key in placeholder",
                 arguments.get(0).getAsString(), is("PlaceholderTest"));
