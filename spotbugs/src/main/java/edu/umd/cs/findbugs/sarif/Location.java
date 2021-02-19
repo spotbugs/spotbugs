@@ -298,7 +298,7 @@ class Location {
             if (fullyQualifiedName != null) {
                 locationJson.addProperty("fullyQualifiedName", fullyQualifiedName);
             }
-            if (propertiesBag != null && propertiesBag.size() <= 0) {
+            if (propertiesBag != null && propertiesBag.size() > 0) {
                 locationJson.add("properties", propertiesBag);
             }
             return locationJson;
