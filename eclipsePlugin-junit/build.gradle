@@ -30,7 +30,7 @@ dependencies {
           ])
 }
 
-jacocoTestReport {
+tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalSourceDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
 }

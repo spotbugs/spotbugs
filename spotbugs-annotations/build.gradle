@@ -15,13 +15,13 @@ def manifestSpec = manifest {
                'Bundle-ManifestVersion': '2'
 }
 
-task updateManifest {
+def updateManifest = tasks.register('updateManifest') {
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
 }
 tasks.eclipse.dependsOn(updateManifest)
 
-jar {
+def jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
   archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
   manifest {
@@ -34,7 +34,7 @@ jar {
   }
 }
 
-javadoc {
+tasks.named('javadoc', Javadoc).configure {
   options.with {
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Annotation Documentation'
