@@ -2,7 +2,8 @@ package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -36,9 +37,16 @@ class Stack {
         return new Stack(message, frames);
     }
 
-    JSONObject toJSONObject() {
-        JSONObject result = new JSONObject().put("messsage", new JSONObject().put("text", message));
-        frames.forEach(stackFrame -> result.append("frames", stackFrame.toJSONObject()));
+    JsonObject toJsonObject() {
+        JsonObject textJson = new JsonObject();
+        textJson.addProperty("text", message);
+
+        JsonObject result = new JsonObject();
+        result.add("message", textJson);
+
+        JsonArray frameArray = new JsonArray();
+        frames.forEach(stackFrame -> frameArray.add(stackFrame.toJsonObject()));
+        result.add("frames", frameArray);
         return result;
     }
 
@@ -60,8 +68,10 @@ class Stack {
             return new StackFrame(location);
         }
 
-        JSONObject toJSONObject() {
-            return new JSONObject().put("location", location.toJSONObject());
+        JsonObject toJsonObject() {
+            JsonObject result = new JsonObject();
+            result.add("location", location.toJsonObject());
+            return result;
         }
     }
 }

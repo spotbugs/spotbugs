@@ -1,7 +1,8 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,11 +20,15 @@ final class Message {
         this.arguments = Collections.unmodifiableList(Objects.requireNonNull(arguments));
     }
 
-    JSONObject toJSONObject() {
-        JSONObject jsonObject = new JSONObject().put("id", "default");
-        for (Object arg : arguments) {
-            jsonObject.append("arguments", arg);
+    JsonObject toJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", "default");
+
+        JsonArray jsonArray = new JsonArray();
+        for (String arg : arguments) {
+            jsonArray.add(arg);
         }
+        jsonObject.add("arguments", jsonArray);
         return jsonObject;
     }
 }

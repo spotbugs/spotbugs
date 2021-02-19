@@ -6,8 +6,8 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.net.URI;
 import java.util.*;
@@ -39,18 +39,26 @@ class BugCollectionAnalyser {
         });
     }
 
-    JSONArray getRules() {
-        return new JSONArray(rules.stream().map(Rule::toJSONObject).collect(Collectors.toList()));
+    JsonArray getRules() {
+        JsonArray array = new JsonArray();
+        rules.stream().map(Rule::toJsonObject).forEach((jsonObject) -> array.add(jsonObject));
+        return array;
     }
 
-    JSONArray getResults() {
-        return new JSONArray(results.stream().map(Result::toJSONObject).collect(Collectors.toList()));
+    JsonArray getResults() {
+        JsonArray array = new JsonArray();
+        results.stream().map(Result::toJsonObject).forEach((jsonObject) -> array.add(jsonObject));
+        return array;
     }
 
     @NonNull
-    JSONObject getOriginalUriBaseIds() {
-        JSONObject result = new JSONObject();
-        baseToId.forEach((uri, uriBaseId) -> result.put(uriBaseId, new JSONObject().put("uri", uri.toString())));
+    JsonObject getOriginalUriBaseIds() {
+        JsonObject result = new JsonObject();
+        baseToId.forEach((uri, uriBaseId) -> {
+            JsonObject uriJson = new JsonObject();
+            uriJson.addProperty("uri", uri.toString());
+            result.add(uriBaseId, uriJson);
+        });
         return result;
     }
 

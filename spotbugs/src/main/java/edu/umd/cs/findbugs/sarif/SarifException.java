@@ -2,7 +2,8 @@ package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -49,12 +50,18 @@ class SarifException {
         return new SarifException(throwable.getClass().getName(), message, Stack.fromThrowable(throwable, sourceFinder, baseToId), innerExceptions);
     }
 
-    JSONObject toJSONObject() {
-        JSONObject result = new JSONObject()
-                .put("kind", kind)
-                .put("message", new JSONObject().put("text", message))
-                .put("stack", stack.toJSONObject());
-        innerExceptions.forEach(innerException -> result.append("innerExceptions", innerException.toJSONObject()));
+    JsonObject toJsonObject() {
+        JsonObject textJson = new JsonObject();
+        textJson.addProperty("text", message);
+
+        JsonObject result = new JsonObject();
+        result.addProperty("kind", kind);
+        result.add("message", textJson);
+        result.add("stack", stack.toJsonObject());
+
+        JsonArray exceptionArray = new JsonArray();
+        innerExceptions.forEach(innerException -> exceptionArray.add(innerException.toJsonObject()));
+        result.add("innerExceptions", exceptionArray);
         return result;
     }
 }

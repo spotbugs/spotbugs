@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.sarif;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 import java.net.URI;
 import java.util.Objects;
@@ -32,16 +32,26 @@ class Extension {
         this.organization = organization;
     }
 
-    JSONObject toJSONObject() {
+    JsonObject toJsonObject() {
         // TODO put 'fullDescription' with both of text and markdown representations
-        JSONObject desc = null;
+        JsonObject desc = null;
         if (shortDescription != null) {
-            desc = new JSONObject().put("text", shortDescription);
+            desc = new JsonObject();
+            desc.addProperty("text", shortDescription);
         }
-        return new JSONObject().put("version", version).put("name", name)
-                .putOpt("shortDescription", desc)
-                .putOpt("informationUri", informationUri)
-                .putOpt("organization", organization);
+        JsonObject extensionJson = new JsonObject();
+        extensionJson.addProperty("version", version);
+        extensionJson.addProperty("name", name);
+        if (desc != null) {
+            extensionJson.add("shortDescription", desc);
+        }
+        if (informationUri != null) {
+            extensionJson.addProperty("informationUri", informationUri.toString());
+        }
+        if (organization != null) {
+            extensionJson.addProperty("organization", String.valueOf(organization));
+        }
+        return extensionJson;
     }
 
     static Extension fromPlugin(@NonNull Plugin plugin) {
