@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 * `UWF_NULL_FIELD` doesn't report line number ([#1368](https://github.com/spotbugs/spotbugs/issues/1368))
 * False positive `SA_LOCAL_SELF_COMPARISON` when using instanceof pattern matching ([#1435](https://github.com/spotbugs/spotbugs/pull/1435))
+* UnsupportedOperationException in BugRanker.trimToMaxRank ([#1161](https://github.com/spotbugs/spotbugs/issues/1161))
 
 ### Changed
 * Bump ASM from 9.0 to 9.1 supporting JDK17
