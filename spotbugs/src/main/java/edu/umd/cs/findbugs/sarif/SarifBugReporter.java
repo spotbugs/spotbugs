@@ -38,23 +38,20 @@ public class SarifBugReporter extends BugCollectionBugReporter {
     }
 
     private void processRuns(@NonNull JsonWriter jsonWriter) throws IOException {
-        try {
-            jsonWriter.name("runs").beginArray().beginObject();
-            BugCollectionAnalyser analyser = new BugCollectionAnalyser(getBugCollection());
-            processTool(jsonWriter, analyser.getRules());
-            processInvocations(jsonWriter, analyser.getBaseToId());
 
-            jsonWriter.name("results").beginArray();
-            analyser.getResults().forEach((result) -> gson.toJson(result, jsonWriter));
-            jsonWriter.endArray();
+        jsonWriter.name("runs").beginArray().beginObject();
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(getBugCollection());
+        processTool(jsonWriter, analyser.getRules());
+        processInvocations(jsonWriter, analyser.getBaseToId());
 
-            jsonWriter.name("originalUriBaseIds");
-            gson.toJson(analyser.getOriginalUriBaseIds(), jsonWriter);
+        jsonWriter.name("results").beginArray();
+        analyser.getResults().forEach((result) -> gson.toJson(result, jsonWriter));
+        jsonWriter.endArray();
 
-            jsonWriter.endObject().endArray(); // end "runs", end "runs" array
-        } catch (IOException e) {
-            throw e;
-        }
+        jsonWriter.name("originalUriBaseIds");
+        gson.toJson(analyser.getOriginalUriBaseIds(), jsonWriter);
+
+        jsonWriter.endObject().endArray(); // end "runs", end "runs" array
     }
 
     private void processInvocations(JsonWriter jsonWriter, @NonNull Map<URI, String> baseToId) throws IOException {
@@ -77,46 +74,36 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         Invocation invocation = new Invocation(exitCode,
                 getSignalName(exitCode), exitCode == 0,
                 execNotifications, configNotifications);
-        try {
-            jsonWriter.name("invocations").beginArray();
-            gson.toJson(invocation.toJsonObject(), jsonWriter);
-            jsonWriter.endArray();
-        } catch (IOException e) {
-            throw e;
-        }
+
+        jsonWriter.name("invocations").beginArray();
+        gson.toJson(invocation.toJsonObject(), jsonWriter);
+        jsonWriter.endArray();
     }
 
     private void processTool(@NonNull JsonWriter jsonWriter, @NonNull JsonArray rules) throws IOException {
-        try {
-            jsonWriter.name("tool").beginObject();
-            processExtensions(jsonWriter);
+        jsonWriter.name("tool").beginObject();
+        processExtensions(jsonWriter);
 
-            jsonWriter.name("driver").beginObject();
-            jsonWriter.name("name").value("SpotBugs");
-            // Eclipse plugin does not follow the semantic-versioning, so use "version" instead of "semanticVersion".
-            jsonWriter.name("version").value(Version.VERSION_STRING);
-            // SpotBugs refers JVM config to decide which language we use.
-            jsonWriter.name("language").value(Locale.getDefault().getLanguage());
+        jsonWriter.name("driver").beginObject();
+        jsonWriter.name("name").value("SpotBugs");
+        // Eclipse plugin does not follow the semantic-versioning, so use "version" instead of "semanticVersion".
+        jsonWriter.name("version").value(Version.VERSION_STRING);
+        // SpotBugs refers JVM config to decide which language we use.
+        jsonWriter.name("language").value(Locale.getDefault().getLanguage());
 
-            jsonWriter.name("rules").beginArray();
-            rules.forEach((rule) -> gson.toJson(rule, jsonWriter));
-            jsonWriter.endArray();
+        jsonWriter.name("rules").beginArray();
+        rules.forEach((rule) -> gson.toJson(rule, jsonWriter));
+        jsonWriter.endArray();
 
-            jsonWriter.endObject().endObject(); // end "driver", end "tool"
-        } catch (IOException e) {
-            throw e;
-        }
+        jsonWriter.endObject().endObject(); // end "driver", end "tool"
     }
 
     private void processExtensions(@NonNull JsonWriter jsonWriter) throws IOException {
-        try {
-            jsonWriter.name("extensions").beginArray();
-            DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((
-                    jsonObject) -> gson.toJson(jsonObject, jsonWriter));
-            jsonWriter.endArray();
-        } catch (IOException e) {
-            throw e;
-        }
+
+        jsonWriter.name("extensions").beginArray();
+        DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((
+                jsonObject) -> gson.toJson(jsonObject, jsonWriter));
+        jsonWriter.endArray();
     }
 
     private static String getSignalName(int exitCode) {
