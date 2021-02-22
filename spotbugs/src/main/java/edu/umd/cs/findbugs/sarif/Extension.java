@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.util.Objects;
@@ -20,7 +21,7 @@ class Extension {
     @Nullable
     final URI informationUri;
     @Nullable
-    final Object organization;
+    final String organization;
 
     Extension(@NonNull String version, @NonNull String name, @Nullable String shortDescription, @Nullable String fullDescription,
             @Nullable URI informationUri, @Nullable String organization) {
@@ -48,8 +49,8 @@ class Extension {
         if (informationUri != null) {
             extensionJson.addProperty("informationUri", informationUri.toString());
         }
-        if (organization != null) {
-            extensionJson.addProperty("organization", String.valueOf(organization));
+        if (!StringUtils.isEmpty(organization)) {
+            extensionJson.addProperty("organization", organization);
         }
         return extensionJson;
     }

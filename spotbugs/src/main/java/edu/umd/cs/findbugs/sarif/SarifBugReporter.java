@@ -7,11 +7,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SarifBugReporter extends BugCollectionBugReporter {
+    private final Gson gson = new Gson();
+
     public SarifBugReporter(Project project) {
         super(project);
     }
@@ -28,6 +31,7 @@ public class SarifBugReporter extends BugCollectionBugReporter {
             getBugCollection().bugsPopulated();
         } catch (IOException e) {
             e.printStackTrace(System.err);
+            throw new UncheckedIOException("Error occurred while exporting to Sarif Json log.", e);
         } finally {
             outputStream.close();
         }
@@ -35,7 +39,6 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
     private void processRuns(@NonNull JsonWriter jsonWriter) throws IOException {
         try {
-            Gson gson = new Gson();
             jsonWriter.name("runs").beginArray().beginObject();
             BugCollectionAnalyser analyser = new BugCollectionAnalyser(getBugCollection());
             processTool(jsonWriter, analyser.getRules());
@@ -75,7 +78,6 @@ public class SarifBugReporter extends BugCollectionBugReporter {
                 getSignalName(exitCode), exitCode == 0,
                 execNotifications, configNotifications);
         try {
-            Gson gson = new Gson();
             jsonWriter.name("invocations").beginArray();
             gson.toJson(invocation.toJsonObject(), jsonWriter);
             jsonWriter.endArray();
@@ -86,7 +88,6 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
     private void processTool(@NonNull JsonWriter jsonWriter, @NonNull JsonArray rules) throws IOException {
         try {
-            Gson gson = new Gson();
             jsonWriter.name("tool").beginObject();
             processExtensions(jsonWriter);
 
@@ -109,7 +110,6 @@ public class SarifBugReporter extends BugCollectionBugReporter {
 
     private void processExtensions(@NonNull JsonWriter jsonWriter) throws IOException {
         try {
-            Gson gson = new Gson();
             jsonWriter.name("extensions").beginArray();
             DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((
                     jsonObject) -> gson.toJson(jsonObject, jsonWriter));

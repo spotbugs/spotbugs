@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.sarif;
 
+import com.google.gson.annotations.SerializedName;
 import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -12,18 +13,22 @@ enum Level {
     /**
      * The rule specified by ruleId was evaluated and a problem was found.
      */
+    @SerializedName("warning")
     WARNING,
     /**
      * The rule specified by ruleId was evaluated and a serious problem was found.
      */
+    @SerializedName("error")
     ERROR,
     /**
      * The rule specified by ruleId was evaluated and a minor problem or an opportunity to improve the code was found.
      */
+    @SerializedName("note")
     NOTE,
     /**
      * The concept of “severity” does not apply to this result because the kind property (§3.27.9) has a value other than "fail".
      */
+    @SerializedName("none")
     NONE;
 
     public String toJsonString() {
