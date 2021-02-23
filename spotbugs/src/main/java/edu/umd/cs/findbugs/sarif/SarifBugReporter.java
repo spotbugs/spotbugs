@@ -30,7 +30,6 @@ public class SarifBugReporter extends BugCollectionBugReporter {
             jsonWriter.endObject();
             getBugCollection().bugsPopulated();
         } catch (IOException e) {
-            e.printStackTrace(System.err);
             throw new UncheckedIOException("Error occurred while exporting to Sarif Json log.", e);
         } finally {
             outputStream.close();
