@@ -34,6 +34,9 @@ import java.util.Optional;
  * @see BugInstance
  */
 public class BugPattern implements Comparable<BugPattern> {
+    /**
+    * @see <a href="http://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html#def_rule_id">SARIF Specification#def_rule_id</a> for more information.
+    */
     final private String ruleId;
 
     final private String type;
@@ -63,7 +66,6 @@ public class BugPattern implements Comparable<BugPattern> {
      * the constructor that takes a String parameter ruleId: {@link #BugPattern(String, String, String, String, boolean, String, String, String, String, int)}
      *
      * @see #BugPattern(String, String, String, String, boolean, String, String, String, String, int)
-     * @see <a href="http://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html#def_rule_id">SARIF Specification#def_rule_id</a> for more information.
      */
     public BugPattern(@Nonnull String type, @Nonnull String abbrev, @Nonnull String category, boolean experimental, String shortDescription,
             String longDescription, String detailText, String bugsUrl, int cweid) {
