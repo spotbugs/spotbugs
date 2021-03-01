@@ -13,7 +13,7 @@ dependencies {
   implementation 'com.google.code.gson:gson:2.8.6'
   implementation 'com.google.guava:guava:30.1-jre'
   implementation 'com.google.inject:guice:4.2.3'
-  implementation 'com.google.inject.extensions:guice-assistedinject:4.2.3'
+  implementation 'com.google.inject.extensions:guice-assistedinject:5.0.1'
   implementation 'com.google.inject.extensions:guice-servlet:4.2.3'
   implementation 'com.google.truth:truth:1.1.2'
   implementation 'joda-time:joda-time:2.10.10'
@@ -32,7 +32,9 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava11') {
+  if (it.name == 'classesJava14') {
+    options.release = 15
+  } else if (it.name == 'classesJava11') {
     options.release = 11
   } else if (it.name != 'compileJava') {
     options.release = 8
@@ -52,6 +54,7 @@ tasks.named('javadoc', Javadoc).configure {
   }
 }
 
+def jvmVersion = Integer.parseInt(System.getProperty("java.specification.version"))
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
@@ -64,9 +67,19 @@ def classesJava11 = tasks.register('classesJava11', JavaCompile) {
   source = file('src/java11')
 }
 
+def classesJava14 = tasks.register('classesJava14', JavaCompile) {
+  options.compilerArgs.add('--enable-preview')
+  destinationDir = file("$buildDir/classes/java/java14")
+  classpath = sourceSets.main.compileClasspath
+  source = file('src/java14')
+}
+
 tasks.named('classes').configure {
   dependsOn classesJava8
   dependsOn classesJava11
+  if (jvmVersion >= 14) {
+    dependsOn classesJava14
+  }
 }
 
 sonarqube {
