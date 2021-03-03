@@ -89,8 +89,10 @@ createReleaseBody.configure {
   doLast {
     outputFile.delete()
     outputFile << """SpotBugs ${project.version}
+
 ### CHANGELOG
 - https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+
 ### CHECKSUM
 | file | checksum (sha256) |
 | ---- | ----------------- |
