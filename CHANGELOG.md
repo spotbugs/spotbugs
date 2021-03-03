@@ -8,9 +8,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 * `UWF_NULL_FIELD` doesn't report line number ([#1368](https://github.com/spotbugs/spotbugs/issues/1368))
+* UnsupportedOperationException in BugRanker.trimToMaxRank ([#1161](https://github.com/spotbugs/spotbugs/issues/1161))
 
 ### Changed
 * Bump ASM from 9.0 to 9.1 supporting JDK17
+* Replace org.json:json:20201115 with com.google.code.gson:gson:2.8.6
 * Add opaque rule id for Sarif Log
 
 ## 4.2.1 - 2021-02-04

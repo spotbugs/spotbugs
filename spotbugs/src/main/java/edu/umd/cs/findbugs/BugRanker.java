@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
@@ -319,6 +320,12 @@ public class BugRanker {
     }
 
     public static void trimToMaxRank(BugCollection origCollection, int maxRank) {
-        origCollection.getCollection().removeIf(b -> BugRanker.findRank(b) > maxRank);
+        // Avoid SortedBugCollection.getCollection() because it is immutable.
+        for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
+            BugInstance b = i.next();
+            if (BugRanker.findRank(b) > maxRank) {
+                i.remove();
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 import java.net.URI;
 import java.util.Map;
@@ -31,11 +31,19 @@ class Notification {
         this.exception = exception;
     }
 
-    JSONObject toJSONObject() {
-        JSONObject result = new JSONObject().put("descriptor", new JSONObject().put("id", id)).put("message", new JSONObject().put("text", message))
-                .put("level", level);
+    JsonObject toJsonObject() {
+        JsonObject descriptorJson = new JsonObject();
+        descriptorJson.addProperty("id", id);
+
+        JsonObject messageJson = new JsonObject();
+        messageJson.addProperty("text", message);
+
+        JsonObject result = new JsonObject();
+        result.add("descriptor", descriptorJson);
+        result.add("message", messageJson);
+        result.addProperty("level", level.toJsonString());
         if (exception != null) {
-            result.put("exception", exception.toJSONObject());
+            result.add("exception", exception.toJsonObject());
         }
         return result;
     }

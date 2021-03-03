@@ -4,8 +4,8 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.net.URI;
 import java.util.Collections;
@@ -43,20 +43,31 @@ final class Rule {
         this.tags = Collections.unmodifiableList(tags);
     }
 
-    JSONObject toJSONObject() {
+    JsonObject toJsonObject() {
         String textEndsWithPeriod = defaultText.endsWith(".") ? defaultText : defaultText + ".";
         String shortDescriptionEndsWithPeriod = shortDescription.endsWith(".") ? shortDescription : shortDescription + ".";
-        JSONObject messageStrings = new JSONObject().put("default", new JSONObject().put("text", textEndsWithPeriod));
+        JsonObject textJson = new JsonObject();
+        textJson.addProperty("text", textEndsWithPeriod);
+        JsonObject shortDescJson = new JsonObject();
+        shortDescJson.addProperty("text", shortDescriptionEndsWithPeriod);
+        JsonObject messageStrings = new JsonObject();
+        messageStrings.add("default", textJson);
+
         // TODO put 'fullDescription' with both of text and markdown representations
-        JSONObject result = new JSONObject()
-                .put("id", id)
-                .put("name", name)
-                .put("shortDescription", new JSONObject().put("text", shortDescriptionEndsWithPeriod))
-                .put("messageStrings", messageStrings)
-                .putOpt("helpUri", helpUri);
+        JsonObject result = new JsonObject();
+        result.addProperty("id", id);
+        result.addProperty("name", name);
+        result.add("shortDescription", shortDescJson);
+        result.add("messageStrings", messageStrings);
+        if (helpUri != null) {
+            result.addProperty("helpUri", helpUri.toString());
+        }
         if (!tags.isEmpty()) {
-            JSONObject propertyBag = new JSONObject().put("tags", new JSONArray(tags));
-            result.put("properties", propertyBag);
+            JsonArray propertyArray = new JsonArray();
+            tags.forEach((prop) -> propertyArray.add(prop));
+            JsonObject propertyBag = new JsonObject();
+            propertyBag.add("tags", propertyArray);
+            result.add("properties", propertyBag);
         }
         return result;
     }

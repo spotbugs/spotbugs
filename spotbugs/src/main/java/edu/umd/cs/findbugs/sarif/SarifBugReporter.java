@@ -2,14 +2,19 @@ package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.json.JSONArray;
-import org.json.JSONWriter;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SarifBugReporter extends BugCollectionBugReporter {
+    private final Gson gson = new Gson();
+
     public SarifBugReporter(Project project) {
         super(project);
     }
@@ -17,29 +22,38 @@ public class SarifBugReporter extends BugCollectionBugReporter {
     @Override
     public void finish() {
         try {
-            JSONWriter jsonWriter = new JSONWriter(outputStream);
-            jsonWriter.object();
-            jsonWriter.key("version").value("2.1.0").key("$schema").value(
+            JsonWriter jsonWriter = new JsonWriter(outputStream);
+            jsonWriter.beginObject();
+            jsonWriter.name("version").value("2.1.0").name("$schema").value(
                     "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json");
             processRuns(jsonWriter);
             jsonWriter.endObject();
             getBugCollection().bugsPopulated();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Error occurred while exporting to Sarif Json log.", e);
         } finally {
             outputStream.close();
         }
     }
 
-    private void processRuns(@NonNull JSONWriter jsonWriter) {
-        jsonWriter.key("runs").array().object();
+    private void processRuns(@NonNull JsonWriter jsonWriter) throws IOException {
+
+        jsonWriter.name("runs").beginArray().beginObject();
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(getBugCollection());
         processTool(jsonWriter, analyser.getRules());
         processInvocations(jsonWriter, analyser.getBaseToId());
-        jsonWriter.key("results").value(analyser.getResults());
-        jsonWriter.key("originalUriBaseIds").value(analyser.getOriginalUriBaseIds());
-        jsonWriter.endObject().endArray();
+
+        jsonWriter.name("results").beginArray();
+        analyser.getResults().forEach((result) -> gson.toJson(result, jsonWriter));
+        jsonWriter.endArray();
+
+        jsonWriter.name("originalUriBaseIds");
+        gson.toJson(analyser.getOriginalUriBaseIds(), jsonWriter);
+
+        jsonWriter.endObject().endArray(); // end "runs", end "runs" array
     }
 
-    private void processInvocations(JSONWriter jsonWriter, @NonNull Map<URI, String> baseToId) {
+    private void processInvocations(JsonWriter jsonWriter, @NonNull Map<URI, String> baseToId) throws IOException {
         List<Notification> configNotifications = new ArrayList<>();
 
         Set<String> missingClasses = getMissingClasses();
@@ -59,26 +73,35 @@ public class SarifBugReporter extends BugCollectionBugReporter {
         Invocation invocation = new Invocation(exitCode,
                 getSignalName(exitCode), exitCode == 0,
                 execNotifications, configNotifications);
-        jsonWriter.key("invocations").array().value(invocation.toJSONObject());
+
+        jsonWriter.name("invocations").beginArray();
+        gson.toJson(invocation.toJsonObject(), jsonWriter);
         jsonWriter.endArray();
     }
 
-    private void processTool(@NonNull JSONWriter jsonWriter, @NonNull JSONArray rules) {
-        jsonWriter.key("tool").object();
+    private void processTool(@NonNull JsonWriter jsonWriter, @NonNull JsonArray rules) throws IOException {
+        jsonWriter.name("tool").beginObject();
         processExtensions(jsonWriter);
-        jsonWriter.key("driver").object();
-        jsonWriter.key("name").value("SpotBugs");
+
+        jsonWriter.name("driver").beginObject();
+        jsonWriter.name("name").value("SpotBugs");
         // Eclipse plugin does not follow the semantic-versioning, so use "version" instead of "semanticVersion".
-        jsonWriter.key("version").value(Version.VERSION_STRING);
+        jsonWriter.name("version").value(Version.VERSION_STRING);
         // SpotBugs refers JVM config to decide which language we use.
-        jsonWriter.key("language").value(Locale.getDefault().getLanguage());
-        jsonWriter.key("rules").value(rules);
-        jsonWriter.endObject().endObject();
+        jsonWriter.name("language").value(Locale.getDefault().getLanguage());
+
+        jsonWriter.name("rules").beginArray();
+        rules.forEach((rule) -> gson.toJson(rule, jsonWriter));
+        jsonWriter.endArray();
+
+        jsonWriter.endObject().endObject(); // end "driver", end "tool"
     }
 
-    private void processExtensions(@NonNull JSONWriter jsonWriter) {
-        jsonWriter.key("extensions").array();
-        DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJSONObject).forEach(jsonWriter::value);
+    private void processExtensions(@NonNull JsonWriter jsonWriter) throws IOException {
+
+        jsonWriter.name("extensions").beginArray();
+        DetectorFactoryCollection.instance().plugins().stream().map(Extension::fromPlugin).map(Extension::toJsonObject).forEach((
+                jsonObject) -> gson.toJson(jsonObject, jsonWriter));
         jsonWriter.endArray();
     }
 

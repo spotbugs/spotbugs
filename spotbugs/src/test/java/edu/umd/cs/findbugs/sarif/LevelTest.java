@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs.sarif;
 
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -9,8 +11,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class LevelTest {
     @Test
     public void testToJsonString() {
-        JSONObject jsonObject = new JSONObject().put("level", Level.WARNING);
-        assertThat(jsonObject.toString(), is("{\"level\":\"warning\"}"));
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("level", Level.WARNING.toJsonString());
+        assertThat(gson.toJson(jsonObject), is("{\"level\":\"warning\"}"));
     }
 
     @Test
