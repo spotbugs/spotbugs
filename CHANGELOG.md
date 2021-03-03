@@ -12,6 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Changed
 * Bump ASM from 9.0 to 9.1 supporting JDK17
+* Bump commons-lang from 3.11 to 3.12.0
 * Replace org.json:json:20201115 with com.google.code.gson:gson:2.8.6
 
 ## 4.2.1 - 2021-02-04
