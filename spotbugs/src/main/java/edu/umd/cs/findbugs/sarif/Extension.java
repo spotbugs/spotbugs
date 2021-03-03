@@ -3,7 +3,8 @@ package edu.umd.cs.findbugs.sarif;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.util.Objects;
@@ -20,7 +21,7 @@ class Extension {
     @Nullable
     final URI informationUri;
     @Nullable
-    final Object organization;
+    final String organization;
 
     Extension(@NonNull String version, @NonNull String name, @Nullable String shortDescription, @Nullable String fullDescription,
             @Nullable URI informationUri, @Nullable String organization) {
@@ -32,16 +33,26 @@ class Extension {
         this.organization = organization;
     }
 
-    JSONObject toJSONObject() {
+    JsonObject toJsonObject() {
         // TODO put 'fullDescription' with both of text and markdown representations
-        JSONObject desc = null;
+        JsonObject desc = null;
         if (shortDescription != null) {
-            desc = new JSONObject().put("text", shortDescription);
+            desc = new JsonObject();
+            desc.addProperty("text", shortDescription);
         }
-        return new JSONObject().put("version", version).put("name", name)
-                .putOpt("shortDescription", desc)
-                .putOpt("informationUri", informationUri)
-                .putOpt("organization", organization);
+        JsonObject extensionJson = new JsonObject();
+        extensionJson.addProperty("version", version);
+        extensionJson.addProperty("name", name);
+        if (desc != null) {
+            extensionJson.add("shortDescription", desc);
+        }
+        if (informationUri != null) {
+            extensionJson.addProperty("informationUri", informationUri.toString());
+        }
+        if (!StringUtils.isEmpty(organization)) {
+            extensionJson.addProperty("organization", organization);
+        }
+        return extensionJson;
     }
 
     static Extension fromPlugin(@NonNull Plugin plugin) {

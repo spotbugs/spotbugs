@@ -19,8 +19,10 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,11 +83,12 @@ public class SarifBugReporterTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
 
         assertThat("the first key in JSON should be 'version'", json, startsWith("{\"version\""));
-        assertThat(jsonObject.get("version"), is("2.1.0"));
-        assertThat(jsonObject.get("$schema"), is("https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"));
+        assertThat(jsonObject.get("version").getAsString(), is("2.1.0"));
+        assertThat(jsonObject.get("$schema").getAsString(), is(
+                "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"));
     }
 
     /**
@@ -107,14 +110,14 @@ public class SarifBugReporterTest {
         }
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONObject tool = run.getJSONObject("tool");
-        JSONObject driver = tool.getJSONObject("driver");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = (JsonObject) jsonObject.getAsJsonArray("runs").get(0);
+        JsonObject tool = run.getAsJsonObject("tool");
+        JsonObject driver = tool.getAsJsonObject("driver");
 
-        assertThat(driver.get("name"), is("SpotBugs"));
-        assertThat(driver.get("version"), is(EXPECTED_VERSION));
-        assertThat(driver.get("language"), is(EXPECTED_LANGUAGE));
+        assertThat(driver.get("name").getAsString(), is("SpotBugs"));
+        assertThat(driver.get("version").getAsString(), is(EXPECTED_VERSION));
+        assertThat(driver.get("language").getAsString(), is(EXPECTED_LANGUAGE));
     }
 
     @Test
@@ -133,24 +136,24 @@ public class SarifBugReporterTest {
 
         // then
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray rules = run.getJSONObject("tool").getJSONObject("driver").getJSONArray("rules");
-        JSONArray results = run.getJSONArray("results");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonArray rules = run.getAsJsonObject("tool").getAsJsonObject("driver").getAsJsonArray("rules");
+        JsonArray results = run.getAsJsonArray("results");
 
-        assertThat(rules.length(), is(1));
-        JSONObject rule = rules.getJSONObject(0);
-        assertThat(rule.get("id"), is(bugPattern.getType()));
-        String defaultText = rule.getJSONObject("messageStrings").getJSONObject("default").getString("text");
+        assertThat(rules.size(), is(1));
+        JsonObject rule = rules.get(0).getAsJsonObject();
+        assertThat(rule.get("id").getAsString(), is(bugPattern.getType()));
+        String defaultText = rule.getAsJsonObject("messageStrings").getAsJsonObject("default").get("text").getAsString();
         assertThat(defaultText, is("describing about this bug type with value {0}..."));
 
-        assertThat(results.length(), is(1));
-        JSONObject result = results.getJSONObject(0);
-        assertThat(result.get("ruleId"), is(bugPattern.getType()));
-        JSONObject message = result.getJSONObject("message");
-        assertThat(message.getString("id"), is("default"));
-        JSONArray arguments = message.getJSONArray("arguments");
-        assertThat(arguments.getInt(0), is(10));
+        assertThat(results.size(), is(1));
+        JsonObject result = results.get(0).getAsJsonObject();
+        assertThat(result.get("ruleId").getAsString(), is(bugPattern.getType()));
+        JsonObject message = result.getAsJsonObject("message");
+        assertThat(message.get("id").getAsString(), is("default"));
+        JsonArray arguments = message.getAsJsonArray("arguments");
+        assertThat(arguments.get(0).getAsInt(), is(10));
     }
 
     @Test
@@ -161,16 +164,16 @@ public class SarifBugReporterTest {
 
         // then
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray toolConfigurationNotifications = run.getJSONArray("invocations")
-                .getJSONObject(0)
-                .getJSONArray("toolConfigurationNotifications");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonArray toolConfigurationNotifications = run.getAsJsonArray("invocations")
+                .get(0).getAsJsonObject()
+                .getAsJsonArray("toolConfigurationNotifications");
 
-        assertThat(toolConfigurationNotifications.length(), is(1));
-        JSONObject notification = toolConfigurationNotifications.getJSONObject(0);
-        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-missing-classes"));
-        assertThat(notification.getJSONObject("message").getString("text"), is(
+        assertThat(toolConfigurationNotifications.size(), is(1));
+        JsonObject notification = toolConfigurationNotifications.get(0).getAsJsonObject();
+        assertThat(notification.getAsJsonObject("descriptor").get("id").getAsString(), is("spotbugs-missing-classes"));
+        assertThat(notification.getAsJsonObject("message").get("text").getAsString(), is(
                 "Classes needed for analysis were missing: [com.github.spotbugs.MissingClass]"));
     }
 
@@ -180,16 +183,16 @@ public class SarifBugReporterTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray toolExecutionNotifications = run.getJSONArray("invocations")
-                .getJSONObject(0)
-                .getJSONArray("toolExecutionNotifications");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonArray toolExecutionNotifications = run.getAsJsonArray("invocations")
+                .get(0).getAsJsonObject()
+                .getAsJsonArray("toolExecutionNotifications");
 
-        assertThat(toolExecutionNotifications.length(), is(1));
-        JSONObject notification = toolExecutionNotifications.getJSONObject(0);
-        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
-        assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
+        assertThat(toolExecutionNotifications.size(), is(1));
+        JsonObject notification = toolExecutionNotifications.get(0).getAsJsonObject();
+        assertThat(notification.getAsJsonObject("descriptor").get("id").getAsString(), is("spotbugs-error-0"));
+        assertThat(notification.getAsJsonObject("message").get("text").getAsString(), is("Unexpected Error"));
         assertFalse(notification.has("exception"));
     }
 
@@ -200,20 +203,20 @@ public class SarifBugReporterTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray toolExecutionNotifications = run.getJSONArray("invocations")
-                .getJSONObject(0)
-                .getJSONArray("toolExecutionNotifications");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonArray toolExecutionNotifications = run.getAsJsonArray("invocations")
+                .get(0).getAsJsonObject()
+                .getAsJsonArray("toolExecutionNotifications");
 
-        assertThat(toolExecutionNotifications.length(), is(1));
-        JSONObject notification = toolExecutionNotifications.getJSONObject(0);
-        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
-        assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
+        assertThat(toolExecutionNotifications.size(), is(1));
+        JsonObject notification = toolExecutionNotifications.get(0).getAsJsonObject();
+        assertThat(notification.getAsJsonObject("descriptor").get("id").getAsString(), is("spotbugs-error-0"));
+        assertThat(notification.getAsJsonObject("message").get("text").getAsString(), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
-        JSONArray frames = notification.getJSONObject("exception").getJSONObject("stack").getJSONArray("frames");
-        JSONObject physicalLocation = frames.getJSONObject(0).getJSONObject("location").getJSONObject("physicalLocation");
-        String uri = physicalLocation.getJSONObject("artifactLocation").getString("uri");
+        JsonArray frames = notification.getAsJsonObject("exception").getAsJsonObject("stack").getAsJsonArray("frames");
+        JsonObject physicalLocation = frames.get(0).getAsJsonObject().getAsJsonObject("location").getAsJsonObject("physicalLocation");
+        String uri = physicalLocation.getAsJsonObject("artifactLocation").get("uri").getAsString();
         assertThat(uri, is("edu/umd/cs/findbugs/sarif/SarifBugReporterTest.java"));
     }
 
@@ -223,16 +226,16 @@ public class SarifBugReporterTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray toolExecutionNotifications = run.getJSONArray("invocations")
-                .getJSONObject(0)
-                .getJSONArray("toolExecutionNotifications");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonArray toolExecutionNotifications = run.getAsJsonArray("invocations")
+                .get(0).getAsJsonObject()
+                .getAsJsonArray("toolExecutionNotifications");
 
-        assertThat(toolExecutionNotifications.length(), is(1));
-        JSONObject notification = toolExecutionNotifications.getJSONObject(0);
-        assertThat(notification.getJSONObject("descriptor").getString("id"), is("spotbugs-error-0"));
-        assertThat(notification.getJSONObject("message").getString("text"), is("Unexpected Error"));
+        assertThat(toolExecutionNotifications.size(), is(1));
+        JsonObject notification = toolExecutionNotifications.get(0).getAsJsonObject();
+        assertThat(notification.getAsJsonObject("descriptor").get("id").getAsString(), is("spotbugs-error-0"));
+        assertThat(notification.getAsJsonObject("message").get("text").getAsString(), is("Unexpected Error"));
         assertTrue(notification.has("exception"));
     }
 
@@ -246,17 +249,17 @@ public class SarifBugReporterTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray rules = run.getJSONObject("tool").getJSONObject("driver").getJSONArray("rules");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonArray rules = run.getAsJsonObject("tool").getAsJsonObject("driver").getAsJsonArray("rules");
 
-        assertThat(rules.length(), is(1));
-        JSONObject rule = rules.getJSONObject(0);
-        assertThat(rule.get("helpUri"), is("https://example.com/help.html#TYPE"));
+        assertThat(rules.size(), is(1));
+        JsonObject rule = rules.get(0).getAsJsonObject();
+        assertThat(rule.get("helpUri").getAsString(), is("https://example.com/help.html#TYPE"));
 
-        JSONArray tags = rule.getJSONObject("properties").getJSONArray("tags");
-        assertThat(tags.length(), is(1));
-        assertThat(tags.get(0), is("category"));
+        JsonArray tags = rule.getAsJsonObject("properties").getAsJsonArray("tags");
+        assertThat(tags.size(), is(1));
+        assertThat(tags.get(0).getAsString(), is("category"));
     }
 
     @Test
@@ -272,16 +275,16 @@ public class SarifBugReporterTest {
         }
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONObject tool = run.getJSONObject("tool");
-        JSONArray extensions = tool.getJSONArray("extensions");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonObject tool = run.getAsJsonObject("tool");
+        JsonArray extensions = tool.getAsJsonArray("extensions");
 
-        assertThat(extensions.length(), is(1));
-        JSONObject extension = extensions.getJSONObject(0);
+        assertThat(extensions.size(), is(1));
+        JsonObject extension = extensions.get(0).getAsJsonObject();
 
-        assertThat(extension.get("name"), is("pluginId"));
-        assertThat(extension.get("version"), is("version"));
+        assertThat(extension.get("name").getAsString(), is("pluginId"));
+        assertThat(extension.get("version").getAsString(), is("version"));
     }
 
     @Test
@@ -299,25 +302,25 @@ public class SarifBugReporterTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
 
-        JSONObject originalUriBaseIds = run.getJSONObject("originalUriBaseIds");
+        JsonObject originalUriBaseIds = run.getAsJsonObject("originalUriBaseIds");
         String uriBaseId = takeFirstKey(originalUriBaseIds).get();
-        assertThat(URI.create(originalUriBaseIds.getJSONObject(uriBaseId).getString("uri")), is(tmpDir.toUri()));
+        assertThat(URI.create(originalUriBaseIds.getAsJsonObject(uriBaseId).get("uri").getAsString()), is(tmpDir.toUri()));
 
-        JSONArray results = run.getJSONArray("results");
-        assertThat(results.length(), is(1));
-        JSONObject result = results.getJSONObject(0);
-        JSONObject artifactLocation = result.getJSONArray("locations").getJSONObject(0).getJSONObject("physicalLocation").getJSONObject(
+        JsonArray results = run.getAsJsonArray("results");
+        assertThat(results.size(), is(1));
+        JsonObject result = results.get(0).getAsJsonObject();
+        JsonObject artifactLocation = result.getAsJsonArray("locations").get(0).getAsJsonObject().getAsJsonObject("physicalLocation").getAsJsonObject(
                 "artifactLocation");
-        String relativeUri = artifactLocation.getString("uri");
+        String relativeUri = artifactLocation.get("uri").getAsString();
         assertThat("relative URI that can be resolved by the uriBase",
                 relativeUri, is("SampleClass.java"));
-        assertThat(artifactLocation.getString("uriBaseId"), is(uriBaseId));
+        assertThat(artifactLocation.get("uriBaseId").getAsString(), is(uriBaseId));
     }
 
-    Optional<String> takeFirstKey(JSONObject object) {
+    Optional<String> takeFirstKey(JsonObject object) {
         return object.keySet().stream().findFirst();
     }
 }
