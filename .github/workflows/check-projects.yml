@@ -1,0 +1,258 @@
+name: check-projects
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  check-spotbugs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Checkout Baseline
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          path: spotbugs-baseline
+          persist-credentials: false
+
+      - name: Set up JDK 16
+        uses: actions/setup-java@v1
+        with:
+          java-version: '16.0.x'
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Quick-build new Spotbugs
+        run: ./gradlew installDist --no-daemon
+
+      - name: Quick-build baseline Spotbugs
+        run: ./gradlew installDist --no-daemon
+        working-directory: spotbugs-baseline
+
+      - name: Check Spotbugs with baseline
+        run: |
+          baseline_start="$(date +%s)"
+          spotbugs-baseline/spotbugs/build/install/spotbugs/bin/spotbugs -textui \
+            spotbugs-baseline/.github/workflows/check-projects-targets/spotbugs-4.2.3/spotbugs.jar \
+          | tee results_baseline
+          baseline_end="$(date +%s)"
+          echo "$((baseline_end - baseline_start))" > baseline_time
+
+      - name: Check Spotbugs with new
+        run: |
+          new_start="$(date +%s)"
+          spotbugs/build/install/spotbugs/bin/spotbugs -textui \
+            .github/workflows/check-projects-targets/spotbugs-4.2.3/spotbugs.jar \
+          | tee results_new
+          new_end="$(date +%s)"
+          echo "$((new_end - new_start))" > new_time
+
+      - name: Generate Spotbugs diff
+        id: report-diff
+        run: |
+          diff -u results_baseline results_new | \
+            sed -Ee '/^(\+\+\+|@| )/d' | tee result_diff
+
+      - name: Package artifacts
+        run: |
+          mkdir -p ./spotbugs
+          echo ${{ github.event.number }} > ./spotbugs/prnum
+          mv result_diff spotbugs/
+          mv baseline_time spotbugs/
+          mv new_time spotbugs/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: spotbugs
+          path: spotbugs/
+
+  check-matsim:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Checkout Baseline
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          path: spotbugs-baseline
+          persist-credentials: false
+
+      - name: Set up JDK 16
+        uses: actions/setup-java@v1
+        with:
+          java-version: '16.0.x'
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Quick-build new Spotbugs
+        run: ./gradlew installDist --no-daemon
+
+      - name: Quick-build baseline Spotbugs
+        run: ./gradlew installDist --no-daemon
+        working-directory: spotbugs-baseline
+
+      - name: Check Matsim with baseline
+        run: |
+          baseline_start="$(date +%s)"
+          spotbugs-baseline/spotbugs/build/install/spotbugs/bin/spotbugs -textui \
+            spotbugs-baseline/.github/workflows/check-projects-targets/matsim-13.0/matsim-13.0.jar \
+          | tee results_baseline
+          baseline_end="$(date +%s)"
+          echo "$((baseline_end - baseline_start))" > baseline_time
+
+      - name: Check Matsim with new
+        run: |
+          new_start="$(date +%s)"
+          spotbugs/build/install/spotbugs/bin/spotbugs -textui \
+            .github/workflows/check-projects-targets/matsim-13.0/matsim-13.0.jar \
+          | tee results_new
+          new_end="$(date +%s)"
+          echo "$((new_end - new_start))" > new_time
+
+      - name: Generate Matsim diff
+        id: report-diff
+        run: |
+          diff -u results_baseline results_new | \
+            sed -Ee '/^(\+\+\+|@| )/d' | tee result_diff
+
+      - name: Package artifacts
+        run: |
+          mkdir -p ./matsim
+          echo ${{ github.event.number }} > ./matsim/prnum
+          mv result_diff matsim/
+          mv baseline_time matsim/
+          mv new_time matsim/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: matsim
+          path: matsim/
+
+  check-jenkins:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Checkout Baseline
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          path: spotbugs-baseline
+          persist-credentials: false
+
+      - name: Set up JDK 16
+        uses: actions/setup-java@v1
+        with:
+          java-version: '16.0.x'
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Quick-build new Spotbugs
+        run: ./gradlew installDist --no-daemon
+
+      - name: Quick-build baseline Spotbugs
+        run: ./gradlew installDist --no-daemon
+        working-directory: spotbugs-baseline
+
+      - name: Check Jenkins with baseline
+        run: |
+          baseline_start="$(date +%s)"
+          spotbugs-baseline/spotbugs/build/install/spotbugs/bin/spotbugs -textui \
+            spotbugs-baseline/.github/workflows/check-projects-targets/jenkins-2.293/jenkins-2.293.war \
+          | tee results_baseline
+          baseline_end="$(date +%s)"
+          echo "$((baseline_end - baseline_start))" > baseline_time
+
+      - name: Check Jenkins with new
+        run: |
+          new_start="$(date +%s)"
+          spotbugs/build/install/spotbugs/bin/spotbugs -textui \
+            .github/workflows/check-projects-targets/jenkins-2.293/jenkins-2.293.war \
+          | tee results_new
+          new_end="$(date +%s)"
+          echo "$((new_end - new_start))" > new_time
+
+      - name: Generate Jenkins diff
+        id: report-diff
+        run: |
+          diff -u results_baseline results_new | \
+            sed -Ee '/^(\+\+\+|@| )/d' | tee result_diff
+
+      - name: Package artifacts
+        run: |
+          mkdir -p ./jenkins
+          echo ${{ github.event.number }} > ./jenkins/prnum
+          mv result_diff jenkins/
+          mv baseline_time jenkins/
+          mv new_time jenkins/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jenkins
+          path: jenkins/
