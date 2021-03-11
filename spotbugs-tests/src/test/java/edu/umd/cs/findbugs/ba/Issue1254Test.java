@@ -1,8 +1,13 @@
 package edu.umd.cs.findbugs.ba;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
@@ -17,6 +22,13 @@ public class Issue1254Test extends AbstractIntegrationTest {
 
     private static final String[] CLASS_LIST = { "../java11/module-info.class", "../java11/Issue1254.class",
         "../java11/Issue1254$Inner.class", "../java11/Issue1254$1.class", };
+
+    @Before
+    public void verifyJavaVersion() {
+        assumeFalse(System.getProperty("java.specification.version").startsWith("1."));
+        int javaVersion = Integer.parseInt(System.getProperty("java.specification.version"));
+        assumeThat(javaVersion, is(greaterThanOrEqualTo(11)));
+    }
 
     /**
      * Test that accessing private members of a nested class doesn't result in unresolvable reference problems.

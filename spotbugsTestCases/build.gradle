@@ -83,10 +83,12 @@ tasks.named('classes').configure {
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_11)) {
     dependsOn classesJava11
   } else {
-    throw new GradleException("Use Java 11 or later to test SpotBugs project")
+    println "skip tests for Java 11 features"
   }
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_14)) {
     dependsOn classesJava14
+  } else {
+    println "skip tests for Java 14 features"
   }
 }
 
