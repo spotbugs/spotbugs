@@ -58,7 +58,7 @@ tasks.named('javadoc', Javadoc).configure {
   }
 }
 
-def jvmVersion = Integer.parseInt(System.getProperty("java.specification.version"))
+def jvmVersion = JavaVersion.current()
 def classesJava8 = tasks.register('classesJava8', JavaCompile) {
   destinationDir = file("$buildDir/classes/java/java8")
   classpath = sourceSets.main.compileClasspath
@@ -80,8 +80,12 @@ def classesJava14 = tasks.register('classesJava14', JavaCompile) {
 
 tasks.named('classes').configure {
   dependsOn classesJava8
-  dependsOn classesJava11
-  if (jvmVersion >= 14) {
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_11)) {
+    dependsOn classesJava11
+  } else {
+    throw new GradleException("Use Java 11 or later to test SpotBugs project")
+  }
+  if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_14)) {
     dependsOn classesJava14
   }
 }
