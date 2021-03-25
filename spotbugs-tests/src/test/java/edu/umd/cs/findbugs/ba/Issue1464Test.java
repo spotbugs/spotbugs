@@ -1,20 +1,21 @@
 package edu.umd.cs.findbugs.ba;
 
-import static org.hamcrest.Matchers.hasSize;
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 public class Issue1464Test extends AbstractIntegrationTest {
 
    @Test
    public void test() {
        performAnalysis("ghIssues/Issue1464.class");
-       SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
-       assertThat(bugCollection.getErrors(), hasSize(2));
+       BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("DMI_RANDOM_USED_ONLY_ONCE").build();
+       assertThat(getBugCollection(), containsExactly(2, bugTypeMatcher));
    }
 
 }
