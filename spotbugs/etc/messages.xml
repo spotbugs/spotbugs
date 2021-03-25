@@ -2059,9 +2059,9 @@ in Java 5.0).</p>
     <LongDescription>Increment of volatile field {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>This code increments a volatile field. Increments of volatile fields aren't
-atomic. If more than one thread is incrementing the field at the same time,
-increments could be lost.
+<p>This code increments/decrements a volatile field. Increments/Decrements of volatile fields aren't
+atomic. If more than one thread is incrementing/decrementing the field at the same time,
+increments/decrements could be lost.
 </p>
 ]]>
     </Details>
@@ -4697,7 +4697,7 @@ consider removing it from the class.</p>
     <LongDescription>Complicated, subtle or wrong increment in for-loop {1}</LongDescription>
     <Details>
 <![CDATA[
-   <p>Are you sure this for loop is incrementing the correct variable?
+   <p>Are you sure this for loop is incrementing/decrementing the correct variable?
    It appears that another variable is being initialized and checked
    by the for loop.
 </p>
@@ -6732,7 +6732,7 @@ has effect. Please verify that this statement does the right thing.
     <LongDescription>Useless increment in return from {1}</LongDescription>
     <Details>
       <![CDATA[
-<p>This statement has a return such as <code>return x++;</code>.
+<p>This statement has a return such as <code>return x++;</code> / <code>return x--;</code>.
 A postfix increment/decrement does not impact the value of the expression,
 so this increment/decrement has no effect.
 Please verify that this statement does the right thing.
@@ -7455,9 +7455,9 @@ regular expression as an escape character. Among other options, you can just use
     <Details>
 <![CDATA[
 <p>
-The code performs an increment operation (e.g., <code>i++</code>) and then
-immediately overwrites it. For example, <code>i = i++</code> immediately
-overwrites the incremented value with the original value.
+The code performs an increment/decrement operation (e.g., <code>i++</code> / <code>i--</code>) and then
+immediately overwrites it. For example, <code>i = i++</code> / <code>i = i--</code> immediately
+overwrites the incremented/decremented value with the original value.
 </p>
 ]]>
     </Details>
