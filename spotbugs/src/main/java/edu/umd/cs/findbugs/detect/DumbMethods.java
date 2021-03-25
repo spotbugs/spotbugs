@@ -490,14 +490,16 @@ public class DumbMethods extends OpcodeStackDetector {
 
         @Override
         public void sawOpcode(int seen) {
-            if (seen == Const.INVOKEVIRTUAL && "java/util/Random".equals(getClassConstantOperand())
+            if (seen == Const.INVOKEVIRTUAL && ("java/util/Random".equals(getClassConstantOperand()) || "java/security/SecureRandom".equals(
+                    getClassConstantOperand()))
                     && (freshRandomOnTos || freshRandomOneBelowTos)) {
                 accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
                         .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
 
             }
             freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
-            freshRandomOnTos = seen == Const.INVOKESPECIAL && "java/util/Random".equals(getClassConstantOperand())
+            freshRandomOnTos = seen == Const.INVOKESPECIAL && ("java/util/Random".equals(getClassConstantOperand()) || "java/security/SecureRandom"
+                    .equals(getClassConstantOperand()))
                     && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
         }
     }
