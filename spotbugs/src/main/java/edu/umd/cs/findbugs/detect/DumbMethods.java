@@ -490,17 +490,25 @@ public class DumbMethods extends OpcodeStackDetector {
 
         @Override
         public void sawOpcode(int seen) {
-            if (seen == Const.INVOKEVIRTUAL && ("java/util/Random".equals(getClassConstantOperand()) || "java/security/SecureRandom".equals(
-                    getClassConstantOperand()))
-                    && (freshRandomOnTos || freshRandomOneBelowTos)) {
-                accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
-                        .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
+            if (seen == Const.INVOKEVIRTUAL) {
+                String classConstantOperand = getClassConstantOperand();
+                if ("java/util/Random".equals(classConstantOperand) || "java/security/SecureRandom".equals(
+                        classConstantOperand)
+                        && (freshRandomOnTos || freshRandomOneBelowTos)) {
+                    accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
+                            .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
 
+                }
             }
-            freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
-            freshRandomOnTos = seen == Const.INVOKESPECIAL && ("java/util/Random".equals(getClassConstantOperand()) || "java/security/SecureRandom"
-                    .equals(getClassConstantOperand()))
-                    && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
+            if (seen == Const.INVOKESPECIAL) {
+                String classConstantOperand = getClassConstantOperand();
+                freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
+                freshRandomOnTos = ("java/util/Random".equals(classConstantOperand) || "java/security/SecureRandom"
+                        .equals(classConstantOperand)) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
+            }
+
+
+
         }
     }
 
