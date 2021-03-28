@@ -5,8 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2021-??-??
-### Fixed
 
+### Fixed
+- Inconsistency in the description of `DLS_DEAD_LOCAL_INCREMENT_IN_RETURN`, `VO_VOLATILE_INCREMENT` and `QF_QUESTIONABLE_FOR_LOOP` ([#1470](https://github.com/spotbugs/spotbugs/issues/1470))
 - `SA_LOCAL_SELF_COMPUTATION` bug  ([#1472](https://github.com/spotbugs/spotbugs/issues/1472))
 
 ## 4.2.2 - 2021-03-03
