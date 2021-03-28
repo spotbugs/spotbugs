@@ -15,8 +15,9 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,19 +71,19 @@ public class PlaceholderTest {
         reporter.finish();
 
         String json = writer.toString();
-        JSONObject jsonObject = new JSONObject(json);
-        JSONObject run = jsonObject.getJSONArray("runs").getJSONObject(0);
-        JSONArray rules = run.getJSONObject("tool").getJSONObject("driver").getJSONArray("rules");
-        String defaultText = rules.getJSONObject(0).getJSONObject("messageStrings").getJSONObject("default").getString("text");
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = (JsonObject) jsonObject.getAsJsonArray("runs").get(0);
+        JsonArray rules = run.getAsJsonObject("tool").getAsJsonObject("driver").getAsJsonArray("rules");
+        String defaultText = ((JsonObject) rules.get(0)).getAsJsonObject("messageStrings").getAsJsonObject("default").get("text").getAsString();
         assertThat("key in placeholders are removed",
                 defaultText, is("describing about this bug type with value {0} and {1}."));
 
-        JSONArray results = run.getJSONArray("results");
-        JSONObject message = results.getJSONObject(0).getJSONObject("message");
-        JSONArray arguments = message.getJSONArray("arguments");
+        JsonArray results = run.getAsJsonArray("results");
+        JsonObject message = ((JsonObject) results.get(0)).getAsJsonObject("message");
+        JsonArray arguments = message.getAsJsonArray("arguments");
         assertThat("BugAnnotation has been formatted by the key in placeholder",
-                arguments.getString(0), is("PlaceholderTest"));
+                arguments.get(0).getAsString(), is("PlaceholderTest"));
         assertThat("BugAnnotation has been formatted by the key in placeholder",
-                arguments.getString(1), is("testFormatWithKey"));
+                arguments.get(1).getAsString(), is("testFormatWithKey"));
     }
 }

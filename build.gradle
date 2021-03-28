@@ -1,11 +1,11 @@
 plugins {
-  id "org.sonarqube" version "3.0"
-  id "com.diffplug.spotless" version "5.8.2"
+  id "org.sonarqube" version "3.1.1"
+  id "com.diffplug.spotless" version "5.11.0"
   id "org.gradle.crypto.checksum" version "1.2.0"
-  id "com.github.spotbugs" version "4.6.0"
+  id "com.github.spotbugs" version "4.7.0"
 }
 
-version = '4.2.0-SNAPSHOT'
+version = '4.2.3-SNAPSHOT'
 
 apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
@@ -22,13 +22,15 @@ subprojects {
   group = 'com.github.spotbugs'
   version = rootProject.version
 
-  repositories {
-    jcenter()
-  }
 }
 
-repositories {
-  jcenter()
+allprojects {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    implementation platform('org.junit:junit-bom:5.7.1')
+  }
 }
 
 wrapper {

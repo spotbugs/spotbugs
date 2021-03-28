@@ -1,32 +1,32 @@
 apply plugin: 'java-library'
 apply plugin: 'com.github.spotbugs'
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
 }
-tasks.compileJava {
-    options.compilerArgs.addAll(['--release', '8'])
+tasks.named('compileJava', JavaCompile).configure {
+    options.release = 8
 }
 
 // make the build reproducible https://reproducible-builds.org/
-tasks.withType(AbstractArchiveTask) {
+tasks.withType(AbstractArchiveTask).configureEach {
   preserveFileTimestamps = false
   reproducibleFileOrder = true
   dirMode = 0775
   fileMode = 0664
 }
 
-def classLoader = plugins.getAt( 'com.github.spotbugs' ).class.classLoader
+def classLoader = plugins['com.github.spotbugs'].class.classLoader
 def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
 spotbugs {
     effort = 'max'
     reportLevel = 'high'
     maxHeapSize = '1g'
 }
-tasks.withType(SpotBugsTask) {
+tasks.withType(SpotBugsTask).configureEach {
     reports {
         html {
             enabled = true

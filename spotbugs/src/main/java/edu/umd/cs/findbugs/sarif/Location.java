@@ -13,7 +13,8 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.util.ClassName;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,12 +53,17 @@ class Location {
         return physicalLocation;
     }
 
-    JSONObject toJSONObject() {
-        JSONObject result = new JSONObject();
+    JsonObject toJsonObject() {
+        JsonObject result = new JsonObject();
         if (physicalLocation != null) {
-            result.put("physicalLocation", physicalLocation.toJSONObject());
+            result.add("physicalLocation", physicalLocation.toJsonObject());
         }
-        logicalLocations.stream().map(LogicalLocation::toJSONObject).forEach(logicalLocation -> result.append("logicalLocations", logicalLocation));
+
+        JsonArray logicalLocationArray = new JsonArray();
+        logicalLocations.stream().map(LogicalLocation::toJsonObject).forEach(logicalLocation -> logicalLocationArray.add(logicalLocation));
+        if (logicalLocationArray.size() > 0) {
+            result.add("logicalLocations", logicalLocationArray);
+        }
         return result;
     }
 
@@ -118,8 +124,11 @@ class Location {
             this.uriBaseId = uriBaseId;
         }
 
-        JSONObject toJSONObject() {
-            return new JSONObject().put("uri", uri).putOpt("uriBaseId", uriBaseId);
+        JsonObject toJsonObject() {
+            JsonObject locationJson = new JsonObject();
+            locationJson.addProperty("uri", uri.toString());
+            locationJson.addProperty("uriBaseId", uriBaseId);
+            return locationJson;
         }
 
         static Optional<ArtifactLocation> fromBugAnnotation(@NonNull ClassAnnotation classAnnotation, @NonNull SourceLineAnnotation bugAnnotation,
@@ -205,11 +214,12 @@ class Location {
             }
         }
 
-        JSONObject toJSONObject() {
-            JSONObject json = new JSONObject().put("startLine", startLine);
+        JsonObject toJsonObject() {
+            JsonObject json = new JsonObject();
+            json.addProperty("startLine", startLine);
 
             if (endLine != 0) {
-                json = json.put("endLine", endLine);
+                json.addProperty("endLine", endLine);
             }
 
             return json;
@@ -230,10 +240,11 @@ class Location {
             this.region = region;
         }
 
-        JSONObject toJSONObject() {
-            JSONObject result = new JSONObject().put("artifactLocation", artifactLocation.toJSONObject());
+        JsonObject toJsonObject() {
+            JsonObject result = new JsonObject();
+            result.add("artifactLocation", artifactLocation.toJsonObject());
             if (region != null) {
-                result.put("region", region.toJSONObject());
+                result.add("region", region.toJsonObject());
             }
             return result;
         }
@@ -275,10 +286,22 @@ class Location {
             }
         }
 
-        JSONObject toJSONObject() {
-            JSONObject propertiesBag = new JSONObject(properties);
-            return new JSONObject().put("name", name).putOpt("decoratedName", decoratedName).put("kind", kind).putOpt("fullyQualifiedName",
-                    fullyQualifiedName).putOpt("properties", propertiesBag.isEmpty() ? null : propertiesBag);
+        JsonObject toJsonObject() {
+            JsonObject propertiesBag = new JsonObject();
+            properties.forEach((k, v) -> propertiesBag.addProperty(k, v));
+            JsonObject locationJson = new JsonObject();
+            locationJson.addProperty("name", name);
+            if (decoratedName != null) {
+                locationJson.addProperty("decoratedName", decoratedName);
+            }
+            locationJson.addProperty("kind", kind);
+            if (fullyQualifiedName != null) {
+                locationJson.addProperty("fullyQualifiedName", fullyQualifiedName);
+            }
+            if (propertiesBag != null && propertiesBag.size() > 0) {
+                locationJson.add("properties", propertiesBag);
+            }
+            return locationJson;
         }
 
         @NonNull

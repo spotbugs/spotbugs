@@ -7,14 +7,14 @@ dependencies {
   compileOnly 'org.apache.ant:ant:1.10.9'
 }
 
-javadoc {
+tasks.named('javadoc', Javadoc).configure {
   options.with {
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Ant Task Documentation'
   }
 }
 
-jar {
+tasks.named('jar', Jar).configure {
   // To keep backward compatibility, delete version number from jar name
   archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
 }

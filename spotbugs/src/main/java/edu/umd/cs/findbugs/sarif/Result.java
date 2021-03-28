@@ -1,8 +1,8 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.json.JSONObject;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -27,10 +27,18 @@ final class Result {
         this.level = Objects.requireNonNull(level);
     }
 
-    JSONObject toJSONObject() {
-        JSONObject result = new JSONObject().put("ruleId", ruleId).put("ruleIndex", ruleIndex).put("message", message.toJSONObject()).put("level",
-                level);
-        locations.stream().map(Location::toJSONObject).forEach(location -> result.append("locations", location));
+    JsonObject toJsonObject() {
+        JsonObject result = new JsonObject();
+        result.addProperty("ruleId", ruleId);
+        result.addProperty("ruleIndex", ruleIndex);
+        result.add("message", message.toJsonObject());
+        result.addProperty("level", level.toJsonString());
+
+        JsonArray locationArray = new JsonArray();
+        locations.stream().map(Location::toJsonObject).forEach(location -> locationArray.add(location));
+        if (locationArray.size() > 0) {
+            result.add("locations", locationArray);
+        }
         return result;
     }
 }

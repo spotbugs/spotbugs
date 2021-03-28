@@ -2,27 +2,16 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
-// to test with JUnit 5
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.2.0'
-  }
-}
-apply plugin: 'org.junit.platform.gradle.plugin'
-
 dependencies {
   compileOnly project(':spotbugs')
-  compileOnly 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+  compileOnly 'org.junit.jupiter:junit-jupiter-api'
   implementation project(':test-harness-core')
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation project(':spotbugs')
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api'
 }
 
-javadoc {
+tasks.named('javadoc', Javadoc).configure {
   options.with {
     tags = ['Test']
   }
@@ -31,6 +20,10 @@ javadoc {
 java {
   withJavadocJar()
   withSourcesJar()
+}
+
+test {
+  useJUnitPlatform()
 }
 
 publishing.publications.maven {

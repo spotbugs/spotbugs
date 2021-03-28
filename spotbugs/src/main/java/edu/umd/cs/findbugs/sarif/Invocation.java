@@ -1,7 +1,8 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,17 +31,27 @@ class Invocation {
     }
 
     @NonNull
-    JSONObject toJSONObject() {
-        JSONObject result = new JSONObject()
-                .put("exitCode", exitCode)
-                .put("exitSignalName", exitSignalName)
-                .put("executionSuccessful", executionSuccessful);
+    JsonObject toJsonObject() {
+        JsonObject result = new JsonObject();
+        result.addProperty("exitCode", exitCode);
+        result.addProperty("exitSignalName", exitSignalName);
+        result.addProperty("executionSuccessful", executionSuccessful);
+
+        JsonArray execNotificationArray = new JsonArray();
         toolExecutionNotifications.stream()
-                .map(Notification::toJSONObject)
-                .forEach(json -> result.append("toolExecutionNotifications", json));
+                .map(Notification::toJsonObject)
+                .forEach(json -> execNotificationArray.add(json));
+        if (execNotificationArray.size() > 0) {
+            result.add("toolExecutionNotifications", execNotificationArray);
+        }
+
+        JsonArray configNotificationArray = new JsonArray();
         toolConfigurationNotifications.stream()
-                .map(Notification::toJSONObject)
-                .forEach(json -> result.append("toolConfigurationNotifications", json));
+                .map(Notification::toJsonObject)
+                .forEach(json -> configNotificationArray.add(json));
+        if (configNotificationArray.size() > 0) {
+            result.add("toolConfigurationNotifications", configNotificationArray);
+        }
         return result;
     }
 }

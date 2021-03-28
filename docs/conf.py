@@ -16,10 +16,10 @@ import sys
 import os
 
 html_context = {
-  'version' : '4.1',
-  'full_version' : '4.1.4',
-  'maven_plugin_version' : '4.1.3',
-  'gradle_plugin_version' : '4.5.1',
+  'version' : '4.2',
+  'full_version' : '4.2.2',
+  'maven_plugin_version' : '4.2.0',
+  'gradle_plugin_version' : '4.6.2',
   'archetype_version' : '0.2.3'
 }
 
@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'spotbugs'
-copyright = u'2016-2019, spotbugs community'
+copyright = u'2016-2021, spotbugs community'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
