@@ -1,8 +1,7 @@
 package ghIssues;
 
-import edu.umd.cs.findbugs.log.ProfileSummary;
 import org.slf4j.LoggerFactory;
-
+import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +9,7 @@ import java.sql.SQLException;
 
 public class Issue79 {
     private static final String QUERY = "";
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ProfileSummary.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public void f(Connection cnx) throws SQLException {
         PreparedStatement st = null;

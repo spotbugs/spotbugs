@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other resources which
@@ -88,6 +89,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     private StateSet cachedEntryFact;
 
     static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor(WillClose.class);
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ObligationAnalysis.class);
 
     /**
      * Constructor.
@@ -222,7 +225,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                     Obligation resultSet = database.getFactory().getObligationByName("java.sql.ResultSet");
                     fact.deleteObligation(resultSet, edge.getTarget().getLabel());
                     if (DEBUG_NULL_CHECK) {
-                        System.out.println("Deleting " + resultSet.toString() + " on edge from comparison "
+                        LOG.debug("Deleting " + resultSet.toString() + " on edge from comparison "
                                 + edge.getSource().getLastInstruction());
                     }
                 }
