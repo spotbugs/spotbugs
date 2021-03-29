@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,7 +91,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor(WillClose.class);
 
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ObligationAnalysis.class);
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Constructor.
@@ -225,8 +226,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                     Obligation resultSet = database.getFactory().getObligationByName("java.sql.ResultSet");
                     fact.deleteObligation(resultSet, edge.getTarget().getLabel());
                     if (DEBUG_NULL_CHECK) {
-                        LOG.debug("Deleting " + resultSet.toString() + " on edge from comparison "
-                                + edge.getSource().getLastInstruction());
+                        LOG.debug("Deleting {} on edge from comparison {}", resultSet, edge.getSource().getLastInstruction());
                     }
                 }
             }
