@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dataflow analysis to track obligations (i/o streams and other resources which
@@ -88,6 +90,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     private StateSet cachedEntryFact;
 
     static final ClassDescriptor willClose = DescriptorFactory.createClassDescriptor(WillClose.class);
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Constructor.
@@ -215,6 +219,16 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                             + edge.getSource().getLastInstruction());
                 }
                 fact.deleteObligation(comparedObligation, edge.getTarget().getLabel());
+
+                // closing a Statement closes the ResultSet
+                Obligation statement = database.getFactory().getObligationByName("java.sql.Statement");
+                if (comparedObligation.equals(statement)) {
+                    Obligation resultSet = database.getFactory().getObligationByName("java.sql.ResultSet");
+                    fact.deleteObligation(resultSet, edge.getTarget().getLabel());
+                    if (DEBUG_NULL_CHECK) {
+                        LOG.debug("Deleting {} on edge from comparison {}", resultSet, edge.getSource().getLastInstruction());
+                    }
+                }
             }
         }
     }

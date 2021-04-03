@@ -7,9 +7,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2021-??-??
 
 ### Fixed
-
 - Inconsistency in the description of `DLS_DEAD_LOCAL_INCREMENT_IN_RETURN`, `VO_VOLATILE_INCREMENT` and `QF_QUESTIONABLE_FOR_LOOP` ([#1470](https://github.com/spotbugs/spotbugs/issues/1470))
 - Should issue warning for SecureRandom object created and used only once ([#1464](https://github.com/spotbugs/spotbugs/issues/1464))
+- False positive OBL_UNSATIFIED_OBLIGATION with try with resources ([#79](https://github.com/spotbugs/spotbugs/issues/79))
 
 ## 4.2.2 - 2021-03-03
 
