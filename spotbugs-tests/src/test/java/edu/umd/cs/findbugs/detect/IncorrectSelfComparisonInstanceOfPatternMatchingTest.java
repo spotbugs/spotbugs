@@ -1,7 +1,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeThat;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
@@ -26,7 +28,9 @@ public class IncorrectSelfComparisonInstanceOfPatternMatchingTest {
      */
     @Test
     public void testIssue1136() {
-        assumeThat(System.getProperty("java.specification.version"), is("14"));
+        assumeFalse(System.getProperty("java.specification.version").startsWith("1."));
+        int javaVersion = Integer.parseInt(System.getProperty("java.specification.version"));
+        assumeThat(javaVersion, is(greaterThanOrEqualTo(14)));
 
         final BugInstanceMatcher selfComparisonMatcher = new BugInstanceMatcherBuilder()
                 .bugType("SA_LOCAL_SELF_COMPARISON").build();
