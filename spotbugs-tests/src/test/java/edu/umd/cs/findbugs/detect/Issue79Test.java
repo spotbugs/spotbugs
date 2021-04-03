@@ -1,17 +1,16 @@
 package edu.umd.cs.findbugs.detect;
 
+import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
+import static org.junit.Assert.assertThat;
+
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 import org.junit.Test;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
-
 /**
- * SpotBugs should remove the ResultSet obligation from all set
- * when one occurrence of that type of obligation is Statement
- * from all states.
+ * SpotBugs should remove the ResultSet obligation from all set when one occurrence of that type of
+ * obligation is Statement from all states.
  *
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/79">GitHub issue</a>
  * @since 4.1.3
